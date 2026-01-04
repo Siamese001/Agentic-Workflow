@@ -82,6 +82,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             "L5_safety/guardrails": ("L5", "Critical"),
             "L5_safety/gravity": ("L5", "High"),
             "L5_safety/red_teaming": ("L5", "High"),
+            "L5_safety/utilities": ("L5", "High"),
             
             # L4-L0 Layers - single territory per layer to avoid double-counting
             "L4_state": ("L4", "High"),
@@ -130,6 +131,37 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             elif hasattr(base, "attr"):
                 bases.append(base.attr)
         return bases
+
+    def _compute_complexity_health(self, avg_cc: float) -> float:
+        """Convert Avg CC into a 0-100 Complexity Health percentage.
+
+        The legacy formula (100 - 2*CC) collapses to 0% for portfolios with Avg CC > 50,
+        which removes all informational value. This mapping keeps the target anchor (≤10)
+        but remains expressive in high-CC regimes.
+        """
+        cc = float(avg_cc or 0)
+
+        # Keypoints: (Avg CC -> Health)
+        # - ≤10: perfect
+        # - 20: still strong
+        # - 40: medium
+        # - 80: low
+        # - ≥120: floor
+        if cc <= 10:
+            return 100.0
+        if cc <= 20:
+            # 10..20 => 100..80
+            return round(100.0 - ((cc - 10.0) * 2.0), 1)
+        if cc <= 40:
+            # 20..40 => 80..50
+            return round(80.0 - ((cc - 20.0) * 1.5), 1)
+        if cc <= 80:
+            # 40..80 => 50..20
+            return round(50.0 - ((cc - 40.0) * 0.75), 1)
+        if cc <= 120:
+            # 80..120 => 20..0
+            return round(20.0 - ((cc - 80.0) * 0.5), 1)
+        return 0.0
     
     def _check_base_class_compliance(self, file_path: str) -> tuple:
         """Phase 5: Verify agent inherits from correct layer base class."""
@@ -1407,6 +1439,24 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         dashboard_rows = []
         territory_stats = []
         # Use class attribute for infrastructure territory keys
+
+        # Registry map for metadata reconciliation (path -> registry entry)
+        registry = self._load_agent_registry()
+        registry_by_path: Dict[str, Dict[str, Any]] = {}
+        for entry in registry:
+            p = (entry.get("path") or "").replace("\\", "/")
+            if p:
+                registry_by_path[p] = entry
+
+        required_metadata_fields = [
+            "class_name",
+            "path",
+            "layer",
+            "sub_dir",
+            "inheritance",
+            "has_tools",
+            "pascal_compliant",
+        ]
         
         for territory_key, (layer_filter, priority) in self.territories.items():
             agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
@@ -1439,7 +1489,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             # - Added perc_typing @ 10%: reduces runtime errors, strong quality signal
             # - Reduced complexity weight to 5% to keep total 100%
             # Rationale: Empirical evidence shows typed code has ~50-70% fewer bugs
-            cc_health_component = max(0, min(100, 100 - (avg_cc * 2)))  # CC of 0 = 100%, CC of 50 = 0%
+            cc_health_component = self._compute_complexity_health(avg_cc)
             # Health Score v2.2 - Fixed weights to sum to 100%
             # Previous v2.1 had weights summing to 105% (bug)
             health = round((
@@ -1451,17 +1501,6 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 cc_health_component * 0.05 +   # Maintainability (5%)
                 perc_typed * 0.10              # Runtime safety via type hints (10%)
             ), 1)  # Total: 25+18+18+14+10+5+10 = 100%
-            
-            # Code Quality Score v1.1 (new separate metric)
-            # Focuses on static/maintainability quality, independent of operational health
-            # Weights: Typing (35%), MCP Capable (25%), Complexity Health (20%), Documentation (20%)
-            # Rationale: Decouple modernization and code hygiene from runtime autonomy signals
-            code_quality = round((
-                perc_typed * 0.35 +              # Runtime safety via type hints (reduced)
-                perc_mcp_capable * 0.25 +        # Modernization / external tool integration (reduced)
-                cc_health_component * 0.20 +     # Structural maintainability (reduced)
-                perc_documented * 0.20           # Self-documenting code (NEW)
-            ), 1)
             
             risk_score = 0
             if avg_cc > 10: risk_score += 3
@@ -1488,6 +1527,31 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                        for pattern in self.infrastructure_path_patterns)
             ) if agents else 0
             is_infrastructure = False  # Territory-level flag not used; we track per-agent
+
+            # Governance metadata completeness (based on discovery registry schema)
+            metadata_ok_count = 0
+            for agent in agents:
+                rel_path_norm = str(agent.relative_to(self.project_root)).replace("\\", "/")
+                entry = registry_by_path.get(rel_path_norm)
+                ok = bool(entry) and all(entry.get(k) not in (None, "") for k in required_metadata_fields)
+                if ok:
+                    metadata_ok_count += 1
+            metadata_pct = round(metadata_ok_count / total * 100, 1) if total else 0
+
+            # Code Quality Score v1.1 (new separate metric)
+            # Focuses on static/maintainability quality, independent of operational health
+            # Gemini-hardened weights:
+            # - Typing (35%)
+            # - Schema Strictness (30%)  [fallback to MCP Capable until analyzer exists]
+            # - Metadata Completeness (15%)
+            # - Docstrings (20%)
+            schema_strictness_pct = perc_mcp_capable  # Fallback until we compute schema strictness
+            code_quality = round((
+                perc_typed * 0.35 +
+                schema_strictness_pct * 0.30 +
+                metadata_pct * 0.15 +
+                perc_documented * 0.20
+            ), 1)
             
             # Phase 5: Check base class compliance for this territory
             proper_base_count = 0
@@ -1513,6 +1577,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Avg LOC": round(avg_loc),  # Medium-Term #2: Average source lines of code
                 "Typed %": perc_typed,
                 "Documented %": perc_documented,  # NEW: Documentation coverage
+                "Metadata %": metadata_pct,
                 "Proper Base %": perc_proper_base,  # Phase 5: Base class compliance
                 "Complexity Health": cc_health_component,  # Inverted CC health (higher = better)
                 "Code Quality Score": code_quality,  # Weighted composite quality metric
@@ -1536,7 +1601,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 has_tests = False
                 compliant = False
                 agent_typed_pct = 0
-                agent_complexity = 0
+                # Default to territory-level avg_cc so risk-matrix CC never collapses to 0
+                # even if a given file fails AST parsing.
+                agent_complexity = round(avg_cc, 1)
+                is_infra_agent = any(
+                    pattern in rel_str.replace("\\", "/").lower()
+                    for pattern in self.infrastructure_path_patterns
+                )
                 obs_logging = obs_metrics = obs_tracing = False
                 obs_summary = "Logging: ✗ | Metrics: ✗ | Tracing: ✗"
                 has_mcp_capability = False
@@ -1636,7 +1707,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                         "MCPClient"
                     ]
                     for pattern in mcp_imports:
-                        if pattern in content:
+                        if pattern in source:
                             has_mcp_capability = True
                             break
                     
@@ -1741,6 +1812,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     "has_tests": has_tests,
                     "typed_pct": agent_typed_pct,
                     "complexity": agent_complexity,
+                    "is_infrastructure": is_infra_agent,
                     "obs_logging": obs_logging,
                     "obs_metrics": obs_metrics,
                     "obs_tracing": obs_tracing,
@@ -1818,6 +1890,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_typed = round(sum(r["Typed %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
                 # Portfolio-average documentation coverage (granular signal, not threshold-based)
                 total_documented = round(sum(r.get("Documented %", 0) * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_metadata = round(sum(r.get("Metadata %", 0) * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
                 total_proper_base = round(sum(r.get("Proper Base %", 0) * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
                 total_observable = round(sum(r["Observable %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
                 total_used = round(sum(r["Used %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
@@ -1825,9 +1898,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 infra_total_agents = 0
                 infra_territories = []
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
-                total_hardened = total_mcp_capable = total_tests = total_cc = total_loc = total_typed = total_documented = total_proper_base = total_observable = total_used = 0
+                total_hardened = total_mcp_capable = total_tests = total_cc = total_loc = total_typed = total_documented = total_metadata = total_proper_base = total_observable = total_used = 0
             # Calculate total health with new formula (v2.2 with fixed weights)
-            total_cc_health = max(0, min(100, 100 - (total_cc * 2)))
+            total_cc_health = self._compute_complexity_health(total_cc)
             total_health = round((
                 total_healing_invoke * 0.25 +   # Proven L5 autonomy in production (25%)
                 total_hardened * 0.18 +         # Critical security control (18%)
@@ -1839,10 +1912,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             ), 1)  # Total: 25+18+18+14+10+5+10 = 100%
             
             # Portfolio-wide Code Quality Score v1.1
+            # Gemini-hardened weights (see per-territory code_quality)
+            total_schema_strictness = total_mcp_capable  # Fallback until analyzer exists
             total_code_quality = round((
                 total_typed * 0.35 +
-                total_mcp_capable * 0.25 +
-                total_cc_health * 0.20 +
+                total_schema_strictness * 0.30 +
+                total_metadata * 0.15 +
                 total_documented * 0.20
             ), 1)
             
@@ -1871,6 +1946,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Avg LOC": total_loc,  # Medium-Term #2: Average source lines of code
                 "Typed %": total_typed,
                 "Documented %": total_documented,
+                "Metadata %": total_metadata,
                 "Proper Base %": total_proper_base,  # Phase 5: Base class compliance
                 "Observable %": total_observable,
                 "Criticality": 75,
@@ -2550,18 +2626,41 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "score": 72,
                 "file_links": []
             })
+
+        # === 16. L2 EXECUTION CONSOLIDATION OPPORTUNITY ===
+        l2_execution_key = next((k for k in territory_counts.keys() if k.startswith("L2")), None)
+        l2_execution_count = territory_counts.get("L2 Execution", 0)
+        if l2_execution_count == 0 and l2_execution_key:
+            l2_execution_count = territory_counts.get(l2_execution_key, 0)
+        l2_execution_name = "L2 Execution" if "L2 Execution" in territory_counts else (l2_execution_key or "L2 Execution")
+        territory_file_links = {stat["name"]: stat.get("file_links", []) for stat in territory_stats}
+        if l2_execution_count >= 35:
+            consolidation_score = 80 + min(20, (l2_execution_count - 35) * 0.5)
+            holistic_recs.append({
+                "territory": "🏗️ Strategic: Execution Consolidation",
+                "priority": "High",
+                "total": l2_execution_count,
+                "used": territory_usage.get(l2_execution_name, 100.0),
+                "rationale": f"⚠️ {l2_execution_name} has {l2_execution_count} execution agents → duplication risk and inconsistent tool/IO patterns\n💡 Action: Consolidate into a small set of composable executors + shared adapters\n📊 Impact: Fewer overlapping agents reduces maintenance burden and increases reliability of downstream orchestration",
+                "gaps": f"{l2_execution_count} execution agents • Target: 15–25 composable executors/adapters",
+                "guidance": f"**Consolidation Strategy:**\n1. Inventory overlapping responsibilities in {l2_execution_name}\n2. Extract shared I/O + tool adapters (filesystem/http/db)\n3. Collapse near-duplicate executors into a unified Executor framework\n4. Enforce shared retries/timeouts/observability hooks\n5. Target: reduce count by ~30–40% while preserving coverage",
+                "score": consolidation_score,
+                "file_links": territory_file_links.get(l2_execution_name, [])
+            })
         
         # Prepend holistic recommendations to top of list
         recommendations = holistic_recs + recommendations
         recommendations.sort(key=lambda r: r["score"], reverse=True)
-        
-        # For "Top Recommendations" display: ONLY show macro-level (holistic) recommendations
-        # Filter to show only strategic/architectural recommendations, not metric-focused ones
-        top_recommendations = [r for r in holistic_recs if r["territory"].startswith(("🎯", "🔧", "🏗️", "📊", "💾", "🧠", "🔌"))][:10]
-        
-        # If not enough macro recommendations, pad with top holistic ones
+
+        macro_recommendations = [
+            r for r in holistic_recs
+            if r.get("territory", "").startswith(("🎯", "🔧", "🏗️", "📊", "💾", "🧠", "🔌"))
+        ]
+        macro_recommendations.sort(key=lambda r: r.get("score", 0), reverse=True)
+        top_recommendations = macro_recommendations[:10]
         if len(top_recommendations) < 3:
-            top_recommendations = holistic_recs[:10]
+            holistic_sorted = sorted(holistic_recs, key=lambda r: r.get("score", 0), reverse=True)
+            top_recommendations = holistic_sorted[:10]
         
         # === Generate Self-Contained HTML ===
         # Template now lives with agent code (package resource)

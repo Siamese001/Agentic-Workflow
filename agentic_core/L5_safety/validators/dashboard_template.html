@@ -208,7 +208,7 @@
 
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: 1fr;
             gap: 30px;
             margin-bottom: 60px;
         }
@@ -410,6 +410,7 @@
                             <div class="chart-subtitle">Macro-level architectural recommendations + metric-focused improvements (top priorities embedded in the relevant cards)</div>
                         </div>
                         <div class="chart-body">
+                            <div id="executiveSummary" style="padding: 16px; border-radius: 12px; border: 1px solid #ddd6fe; background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); margin-bottom: 20px;"></div>
                             <div style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr;">
                                 <!-- Macro Observations -->
                                 <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 20px; border-radius: 12px; border: 1px solid #bae6fd;">
@@ -869,7 +870,7 @@
             });
         });
 
-        function renderTerritorySummaryTable(territoryData) {
+        function renderTerritorySummaryTable(totalRow, territoryData) {
             const container = document.getElementById('kpiGrid');
             if (!container) return;
 
@@ -898,6 +899,16 @@
                     };
                 }
 
+                function computeComplexityHealth(avgCC) {
+                    const cc = parseFloat(avgCC || 0) || 0;
+                    if (cc <= 10) return 100.0;
+                    if (cc <= 20) return Math.round((100.0 - ((cc - 10.0) * 2.0)) * 10) / 10;
+                    if (cc <= 40) return Math.round((80.0 - ((cc - 20.0) * 1.5)) * 10) / 10;
+                    if (cc <= 80) return Math.round((50.0 - ((cc - 40.0) * 0.75)) * 10) / 10;
+                    if (cc <= 120) return Math.round((20.0 - ((cc - 80.0) * 0.5)) * 10) / 10;
+                    return 0.0;
+                }
+
                 const healCap = agents.filter(a => !!a.has_mixin).length;
                 const invocation = agents.filter(a => a.invocation === 'Yes' || a.invocation === 'Inherited').length;
                 const hardened = agents.filter(a => !!a.has_mcpshield || !!a.has_hardened_decorator || !!a.mcp_safe_overrides).length;
@@ -915,7 +926,7 @@
                 const hardenedPct = (hardened / total) * 100;
                 const testsPct = (tests / total) * 100;
                 const observablePct = (observable / total) * 100;
-                const complexityHealth = Math.max(0, Math.min(100, 100 - (avgCC * 2)));
+                const complexityHealth = computeComplexityHealth(avgCC);
 
                 const health =
                     (invocationPct * 0.25) +
@@ -957,8 +968,32 @@
 
                 // No explicit slash => compute per sub-territory from agents if available.
                 if (row.agents && row.agents.length > 0) {
+                    // Spike-out infrastructure agents for visibility and tracking.
+                    // These are still counted in the territory Total, but we render them as a distinct sub-row.
+                    const infraAgents = row.agents.filter(a => !!a?.is_infrastructure);
+                    const nonInfraAgents = row.agents.filter(a => !a?.is_infrastructure);
+                    if (infraAgents.length > 0) {
+                        const infraMetrics = computeMetricsFromAgents(infraAgents);
+                        expandedRows.push({
+                            ...row,
+                            Total: infraMetrics.Total,
+                            'Heal Cap %': infraMetrics['Heal Cap %'],
+                            'Invocation %': infraMetrics['Invocation %'],
+                            'Hardened %': infraMetrics['Hardened %'],
+                            'Test %': infraMetrics['Test %'],
+                            'Observable %': infraMetrics['Observable %'],
+                            'Avg CC': infraMetrics['Avg CC'],
+                            'Typed %': infraMetrics['Typed %'],
+                            Health: infraMetrics.Health,
+                            _displayTerritory: split.territory,
+                            _displaySubTerritory: 'Infrastructure',
+                            _drillTerritory: row.Territory,
+                            _drillSubTerritory: '__INFRA__'
+                        });
+                    }
+
                     const groups = {};
-                    row.agents.forEach(a => {
+                    nonInfraAgents.forEach(a => {
                         const label = getSubTerritoryLabel(a);
                         groups[label] = groups[label] || [];
                         groups[label].push(a);
@@ -1041,7 +1076,16 @@
             
             // Continuous gradient for complexity (lower is better, inverted scale)
             const getComplexityGradientBg = (value) => {
-                const inverted = Math.max(0, Math.min(100, 100 - (value * 2)));
+                function computeComplexityHealth(avgCC) {
+                    const cc = parseFloat(avgCC || 0) || 0;
+                    if (cc <= 10) return 100.0;
+                    if (cc <= 20) return Math.round((100.0 - ((cc - 10.0) * 2.0)) * 10) / 10;
+                    if (cc <= 40) return Math.round((80.0 - ((cc - 20.0) * 1.5)) * 10) / 10;
+                    if (cc <= 80) return Math.round((50.0 - ((cc - 40.0) * 0.75)) * 10) / 10;
+                    if (cc <= 120) return Math.round((20.0 - ((cc - 80.0) * 0.5)) * 10) / 10;
+                    return 0.0;
+                }
+                const inverted = computeComplexityHealth(value);
                 return getGradientBg(inverted, 80);
             };
 
@@ -1060,24 +1104,30 @@
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% agents with runtime safety hardening at external tool boundaries (MCPShield mixin, @hardened decorators, safe overrides) — Critical for Gemini-era prompt/tool safety">MCP Hardened %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures">Test %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with observability infrastructure (logging/metrics/tracing) — Dashboard monitoring at each station">Observable %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Average Cyclomatic Complexity — High CC blocks safe healing and increases regression surface. Target ≤10 in hot paths.">Avg CC</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;">Complexity Health</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Complexity Health derived from Avg Cyclomatic Complexity (target ≤10). Expressive mapping avoids collapsing to 0% for high-CC portfolios.">Complexity Health</th>
                                 <th style="padding:16px; text-align:center; font-weight:800;" title="Composite readiness score (Invocation + Hardening + Tests + Healing)">Health Score</th>
                             </tr>
                         </thead>
                         <tbody>`;
 
             // Add TOTAL row first
-            const totalRow = territoryData.find(r => r.Territory === 'TOTAL') || territoryData[0];
             if (totalRow) {
                 const totalComplexityHealth = (totalRow['Complexity Health'] !== undefined && totalRow['Complexity Health'] !== null)
                     ? totalRow['Complexity Health']
-                    : Math.max(0, Math.min(100, 100 - ((totalRow['Avg CC'] || 0) * 2)));
+                    : (() => {
+                        const cc = parseFloat(totalRow['Avg CC'] || 0) || 0;
+                        if (cc <= 10) return 100.0;
+                        if (cc <= 20) return Math.round((100.0 - ((cc - 10.0) * 2.0)) * 10) / 10;
+                        if (cc <= 40) return Math.round((80.0 - ((cc - 20.0) * 1.5)) * 10) / 10;
+                        if (cc <= 80) return Math.round((50.0 - ((cc - 40.0) * 0.75)) * 10) / 10;
+                        if (cc <= 120) return Math.round((20.0 - ((cc - 80.0) * 0.5)) * 10) / 10;
+                        return 0.0;
+                    })();
                 const healthColor = totalRow.Health >= 80 ? '#065f46' : totalRow.Health >= 60 ? '#ea580c' : '#dc2626';
                 const invocationColor = totalRow['Invocation %'] >= 80 ? '#065f46' : totalRow['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
                 const hardenedColor = (totalRow['Hardened %'] || 0) >= 80 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
                 const testColor = totalRow['Test %'] >= 80 ? '#065f46' : totalRow['Test %'] >= 60 ? '#ea580c' : '#dc2626';
-                const ccColor = totalRow['Avg CC'] <= 10 ? '#065f46' : totalRow['Avg CC'] <= 20 ? '#ea580c' : '#dc2626';
+                
                 
                 html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
@@ -1093,7 +1143,6 @@
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Hardened %'] || 0).toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Test %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Observable %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Observable %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getComplexityGradientBg(totalRow['Avg CC'])}; color:${ccColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Avg CC'].toFixed(1)}</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${totalComplexityHealth.toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(Math.min(100, totalRow.Health))}; color:${healthColor}; font-weight:800; font-size:1.05em;">${Math.min(100, totalRow.Health).toFixed(1)}%</td>
                     </tr>`;
@@ -1105,13 +1154,21 @@
                 const displaySubTerritory = row._displaySubTerritory || '—';
                 const rowComplexityHealth = (row['Complexity Health'] !== undefined && row['Complexity Health'] !== null)
                     ? row['Complexity Health']
-                    : Math.max(0, Math.min(100, 100 - ((row['Avg CC'] || 0) * 2)));
+                    : (() => {
+                        const cc = parseFloat(row['Avg CC'] || 0) || 0;
+                        if (cc <= 10) return 100.0;
+                        if (cc <= 20) return Math.round((100.0 - ((cc - 10.0) * 2.0)) * 10) / 10;
+                        if (cc <= 40) return Math.round((80.0 - ((cc - 20.0) * 1.5)) * 10) / 10;
+                        if (cc <= 80) return Math.round((50.0 - ((cc - 40.0) * 0.75)) * 10) / 10;
+                        if (cc <= 120) return Math.round((20.0 - ((cc - 80.0) * 0.5)) * 10) / 10;
+                        return 0.0;
+                    })();
                 
                 const healthColor = row.Health >= 80 ? '#065f46' : row.Health >= 60 ? '#ea580c' : '#dc2626';
                 const invocationColor = row['Invocation %'] >= 80 ? '#065f46' : row['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
                 const hardenedColor = (row['Hardened %'] || 0) >= 80 ? '#065f46' : (row['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
                 const testColor = row['Test %'] >= 80 ? '#065f46' : row['Test %'] >= 60 ? '#ea580c' : '#dc2626';
-                const ccColor = row['Avg CC'] <= 10 ? '#065f46' : row['Avg CC'] <= 20 ? '#ea580c' : '#dc2626';
+                
                 
                 const agentsToolsDisplay = row.ToolCount !== undefined
                     ? `${row.Total} / ${row.ToolCount}`
@@ -1131,7 +1188,6 @@
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getComplexityGradientBg(row['Avg CC'])}; color:${ccColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Avg CC'].toFixed(1)}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(rowComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${rowComplexityHealth.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, row.Health))}; color:${healthColor}; font-weight:700;">${Math.min(100, row.Health).toFixed(1)}%</td>
                     </tr>`;
@@ -1150,8 +1206,7 @@
                     <div><strong>MCP Hardened %:</strong> % protected at external tool boundary (MCP hardening/mixins/decorators).</div>
                     <div><strong>Test Coverage %:</strong> % with tests detected (enables safe refactoring/hardening).</div>
                     <div><strong>Observability %:</strong> % with logging/metrics/tracing signals (production diagnosability).</div>
-                    <div><strong>Avg Complexity:</strong> Average cyclomatic complexity (lower = safer, more maintainable autonomy).</div>
-                    <div><strong>Complexity Health:</strong> Inverted complexity score (higher = better): 100 - (Avg CC × 2).</div>
+                    <div><strong>Complexity Health:</strong> % score derived from Avg Cyclomatic Complexity (target ≤10). Mapping is designed to stay informative even when average CC is high.</div>
                     <div><strong>Health Score:</strong> Composite autonomy readiness signal derived from the columns above.</div>
                     <div style="margin-top:6px; font-size:0.9em;">Health Score weighting (Gemini-hardened): Invocation 30% + MCP Hardened 30% + Tests 20% + Observability 20%.<br>
                     Rationale: Runtime safety (invocation + boundary hardening) is highest leverage for production autonomy and tool-calling reliability.</div>
@@ -1218,8 +1273,12 @@
                     </tr>`;
             
             // Add Code Quality rows
-            territoryData.forEach((row, index) => {
-                const split = splitTerritoryName(row.Territory);
+            const codeQualityRows = expandedRows.filter(r => r.Territory !== 'TOTAL');
+            codeQualityRows.forEach((row, index) => {
+                const split = {
+                    territory: row._displayTerritory || splitTerritoryName(row.Territory).territory,
+                    subTerritory: row._displaySubTerritory || splitTerritoryName(row.Territory).subTerritory
+                };
                 const codeQualityScore = row['Code Quality Score'] || 0;
                 const typing = row['Typed %'] || 0;
                 // Schema Strictness - fallback to MCP Capable until new analyzer
@@ -2147,14 +2206,31 @@ ${rec.guidance.split('\n').map((line, i) =>
             });
 
             // Portfolio health is the executive summary and should always appear in Macro Observations.
-            macroObs.push({
-                icon: '💚',
-                title: 'Health Score (Executive Summary)',
-                gap: `Overall health is ${totalRow.Health.toFixed(1)}% (target ≥80%), with one or more component gaps still below target (invocation/tests/hardening/complexity).`,
-                impact: `Health is the "executive summary" for autonomy readiness: low invocation, low tests, or high complexity each reduces reliability and makes reasoning brittle under load.`,
-                solve: `Focus on the top three priorities (ranked #1–#3 in the relevant cards). Each improvement compounds: better tests enable safer refactors, lower complexity makes healing hooks easier, and better invocation closes the loop.`,
-                priority: ''
-            });
+            const execSummaryContainer = document.getElementById('executiveSummary');
+            if (execSummaryContainer) {
+                const health = Math.min(100, totalRow.Health || 0);
+                const healthColor = health >= 80 ? '#065f46' : health >= 60 ? '#ea580c' : '#dc2626';
+                execSummaryContainer.innerHTML = `
+                    <div style="display:flex; gap: 14px; align-items: flex-start;">
+                        <div style="font-size: 1.8em; line-height: 1;">💚</div>
+                        <div style="flex:1;">
+                            <div style="display:flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+                                <div style="font-size: 1.15em; font-weight: 900; color: #4c1d95;">Executive Summary</div>
+                                <div style="font-size: 1.1em; font-weight: 900; color: ${healthColor};">Health: ${health.toFixed(1)}%</div>
+                            </div>
+                            <div style="margin-top: 8px; color: #4b5563; font-size: 0.95em;">Overall autonomy readiness expressed as a single composite signal (Invocation + MCP Hardened + Tests + Healing + Typing + Complexity).</div>
+                            <div style="margin-top: 12px; display: grid; gap: 10px; grid-template-columns: 1fr;">
+                                <div style="padding: 10px; background: rgba(255,255,255,0.75); border-radius: 10px; border-left: 4px solid #4c1d95;">
+                                    <div style="font-size: 0.85em; color: #111827;"><strong>Gap:</strong> Overall health is ${health.toFixed(1)}% (target ≥80%). One or more component gaps are still below target (invocation/tests/hardening/complexity).</div>
+                                </div>
+                                <div style="padding: 10px; background: rgba(255,255,255,0.75); border-radius: 10px; border-left: 4px solid #4c1d95;">
+                                    <div style="font-size: 0.85em; color: #111827;"><strong>How to fix:</strong> Focus on the top three priorities (ranked #1–#3). Each improvement compounds: better tests enable safer refactors, lower complexity makes healing hooks easier, and better invocation closes the loop.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
 
             // Highest-priority observations first (P1 → P2 → P3), then stable ordering.
             macroObs.sort((a, b) => {
@@ -2366,7 +2442,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 }
 
                 renderStrategicObservations(totalRow, territoryData);
-                renderTerritorySummaryTable(territoryData);
+                renderTerritorySummaryTable(totalRow, territoryData);
                 renderRiskMatrix(territoryData);
                 renderRecommendations();
                 renderInterviewQuestions(totalRow);
@@ -2404,7 +2480,12 @@ ${rec.guidance.split('\n').map((line, i) =>
                 if (!row) return;
 
                 const subFilter = (subTerritoryName && subTerritoryName !== '—') ? subTerritoryName : null;
-                const filteredAgents = subFilter && row.agents ? row.agents.filter(a => getSubTerritoryLabel(a) === subFilter) : (row.agents || []);
+                const filteredAgents = (() => {
+                    if (!row.agents) return [];
+                    if (!subFilter) return row.agents;
+                    if (subFilter === '__INFRA__') return row.agents.filter(a => !!a?.is_infrastructure);
+                    return row.agents.filter(a => getSubTerritoryLabel(a) === subFilter);
+                })();
 
                 const modalTitle = document.getElementById('modalTitle');
                 const modalSubtitle = document.getElementById('modalSubtitle');
@@ -2435,9 +2516,24 @@ ${rec.guidance.split('\n').map((line, i) =>
                 content += '<th style="padding:12px; font-weight:600;" title="Has dedicated test coverage">Tests</th>';
                 content += '<th style="padding:12px; font-weight:600;" title="Observability = dash cams + health trackers\nLogging: structured_log calls\nMetrics: log_metric\nTracing: span starts\nEssential for production debugging">Observability Flags</th>';
                 content += '<th style="padding:12px; font-weight:600;" title="MCP Hardening = security hardening around MCP connections (NOT about using MCP)\nShield: MCPShield mixin inheritance\n@hardened: decorator on critical methods\nSafe: no direct os/subprocess calls\nEssential for L5 safety and production trust">MCP Hardening Flags</th>';
-                content += '<th style="padding:12px; font-weight:600;" title="Typing = clear road signs\nInit: __init__ params/return typed\nMethods: >70% defs typed\nReturns: return annotations\nEnables static analysis + safe refactoring">Typing Flags</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Typing summary">Typing</th>';
                 content += '<th style="padding:12px; font-weight:600;" title="Cyclomatic complexity (lower = better)">Complexity</th>';
                 content += '</tr></thead><tbody>';
+
+                // Sort by architectural priority: worst invocation first, then hardening, then mixin
+                filteredAgents.sort((a, b) => {
+                    const invScore = (x) => {
+                        const v = (x?.invocation || '').toString();
+                        if (v === 'No' || v.startsWith('No')) return 4; // includes "No (missing super)"
+                        if (v === 'Unknown') return 3;
+                        if (v === 'Inherited') return 1;
+                        if (v === 'Yes') return 0;
+                        return 2; // any other non-standard state
+                    };
+                    const hardScore = (x) => ((x?.mcp_summary || '').includes('Shield: ✗') ? 2 : 0);
+                    const mixinScore = (x) => (x?.has_mixin ? 0 : 1);
+                    return invScore(b) - invScore(a) || hardScore(b) - hardScore(a) || mixinScore(b) - mixinScore(a);
+                });
 
                 filteredAgents.forEach(agent => {
                     const mixinIcon = agent.has_mixin 

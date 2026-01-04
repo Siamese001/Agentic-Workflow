@@ -434,7 +434,148 @@ class TestDashboardGeneration(unittest.TestCase):
         infra_total = total_row.get('Infrastructure Total', -1)
         self.assertGreaterEqual(infra_total, 0, 
             "Infrastructure Total should be >= 0")
-    
+        
+        # Infrastructure Territories should be a list
+        infra_territories = total_row.get('Infrastructure Territories')
+        self.assertIsInstance(infra_territories, list, "Infrastructure Territories should be a list")
+
+    def test_15a_dashboard_reconciles_agent_registry_paths_exactly(self):
+        """Dashboard must include every unique path from agent_discovery_full.json exactly once."""
+        import json
+        import re
+
+        if self.dashboard_content is None:
+            self.skipTest("Dashboard not generated yet")
+
+        project_root = self.template_path.parent.parent.parent.parent
+        discovery_path = project_root / "agent_discovery_full.json"
+        if not discovery_path.exists():
+            self.skipTest(f"agent_discovery_full.json not found at {discovery_path}")
+
+        discovery_agents = json.loads(discovery_path.read_text(encoding="utf-8"))
+        discovery_paths = {
+            (a.get("path") or "").replace("\\\\", "/")
+            for a in discovery_agents
+            if a.get("path")
+        }
+
+        match = re.search(r"const dashboardData = (\[.*?\]);", self.dashboard_content, re.DOTALL)
+        self.assertIsNotNone(match, "Dashboard should contain dashboardData")
+        data = json.loads(match.group(1))
+
+        dashboard_paths = set()
+        for row in data:
+            if row.get("Territory") == "TOTAL":
+                continue
+            for agent in row.get("agents") or []:
+                rel = (agent.get("rel") or "").replace("\\\\", "/")
+                if rel:
+                    dashboard_paths.add(rel)
+
+        missing = discovery_paths - dashboard_paths
+        extra = dashboard_paths - discovery_paths
+
+        self.assertEqual(
+            len(missing),
+            0,
+            f"Dashboard is missing {len(missing)} discovery path(s). Sample: {sorted(list(missing))[:10]}"
+        )
+        self.assertEqual(
+            len(extra),
+            0,
+            f"Dashboard contains {len(extra)} unknown path(s). Sample: {sorted(list(extra))[:10]}"
+        )
+
+    def test_15b_infrastructure_counts_reconcile(self):
+        """Infra counts must reconcile between TOTAL and row-level/per-agent flags."""
+        import json
+        import re
+
+        if self.dashboard_content is None:
+            self.skipTest("Dashboard not generated yet")
+
+        match = re.search(r"const dashboardData = (\[.*?\]);", self.dashboard_content, re.DOTALL)
+        self.assertIsNotNone(match, "Dashboard should contain dashboardData")
+        data = json.loads(match.group(1))
+
+        total_row = next((r for r in data if r.get("Territory") == "TOTAL"), None)
+        self.assertIsNotNone(total_row, "Dashboard should have TOTAL row")
+
+        infra_total = total_row.get("Infrastructure Total")
+        self.assertIsInstance(infra_total, int, "Infrastructure Total should be an int")
+
+        territory_rows = [r for r in data if r.get("Territory") != "TOTAL"]
+        infra_sum_rows = sum(int(r.get("InfraAgentCount") or 0) for r in territory_rows)
+
+        infra_flag_count = 0
+        for r in territory_rows:
+            for a in (r.get("agents") or []):
+                if a.get("is_infrastructure") is True:
+                    infra_flag_count += 1
+
+        self.assertEqual(infra_total, infra_sum_rows, "Infra total should equal sum of InfraAgentCount across territories")
+        self.assertEqual(infra_total, infra_flag_count, "Infra total should equal count of agents flagged is_infrastructure")
+
+    def test_15c_metadata_present_and_non_blank(self):
+        """Metadata % must be present on all rows (including TOTAL) and be a numeric value."""
+        import json
+        import re
+
+        if self.dashboard_content is None:
+            self.skipTest("Dashboard not generated yet")
+
+        match = re.search(r"const dashboardData = (\[.*?\]);", self.dashboard_content, re.DOTALL)
+        self.assertIsNotNone(match, "Dashboard should contain dashboardData")
+        data = json.loads(match.group(1))
+
+        for row in data:
+            self.assertIn("Metadata %", row, f"Row {row.get('Territory')} missing 'Metadata %'")
+            val = row.get("Metadata %")
+            self.assertIsInstance(val, (int, float), f"Row {row.get('Territory')} Metadata % should be numeric")
+
+    def test_15d_complexity_health_consistent_with_avg_cc(self):
+        """Complexity Health must match the piecewise mapping derived from Avg CC."""
+        import json
+        import re
+
+        if self.dashboard_content is None:
+            self.skipTest("Dashboard not generated yet")
+
+        def compute_complexity_health(avg_cc: float) -> float:
+            cc = float(avg_cc or 0)
+            if cc <= 10:
+                return 100.0
+            if cc <= 20:
+                return round(100.0 - ((cc - 10.0) * 2.0), 1)
+            if cc <= 40:
+                return round(80.0 - ((cc - 20.0) * 1.5), 1)
+            if cc <= 80:
+                return round(50.0 - ((cc - 40.0) * 0.75), 1)
+            if cc <= 120:
+                return round(20.0 - ((cc - 80.0) * 0.5), 1)
+            return 0.0
+
+        match = re.search(r"const dashboardData = (\[.*?\]);", self.dashboard_content, re.DOTALL)
+        self.assertIsNotNone(match, "Dashboard should contain dashboardData")
+        data = json.loads(match.group(1))
+
+        for row in data:
+            # Must exist and be numeric
+            self.assertIn("Complexity Health", row, f"Row {row.get('Territory')} missing 'Complexity Health'")
+            self.assertIn("Avg CC", row, f"Row {row.get('Territory')} missing 'Avg CC'")
+
+            avg_cc = float(row.get("Avg CC") or 0)
+            expected = compute_complexity_health(avg_cc)
+            actual = float(row.get("Complexity Health") or 0)
+
+            # Allow tiny rounding jitter
+            self.assertAlmostEqual(
+                actual,
+                expected,
+                delta=0.2,
+                msg=f"Row {row.get('Territory')} Complexity Health {actual} does not match expected {expected} from Avg CC {avg_cc}"
+            )
+
     def test_14_health_score_observation_is_macro_not_metric(self):
         """Health Score executive summary should be a macro observation, not a metric-focused observation."""
         self.assertIsNotNone(self.template_content, "Template content not loaded")
