@@ -287,16 +287,24 @@ async function loadDashboard() {
 
     } catch (error) {
         console.error('Error loading dashboard:', error);
-        document.getElementById('entropy-display').innerHTML = `
-            <div class="error">
-                <strong>Error loading dashboard:</strong> ${error.message}
-            </div>
-        `;
-        document.getElementById('glossary-content').innerHTML = `
-            <div class="error">
-                Failed to load metrics. Please check the server is running.
-            </div>
-        `;
+        const entropyDisplay = document.getElementById('entropy-display');
+        const glossaryContent = document.getElementById('glossary-content');
+        
+        if (entropyDisplay) {
+            entropyDisplay.innerHTML = `
+                <div class="error">
+                    <strong>Error loading dashboard:</strong> ${error.message}
+                </div>
+            `;
+        }
+        
+        if (glossaryContent) {
+            glossaryContent.innerHTML = `
+                <div class="error">
+                    Failed to load metrics. Please check the server is running.
+                </div>
+            `;
+        }
     }
 }
 

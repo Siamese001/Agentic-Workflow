@@ -81,8 +81,16 @@ class TestStaticAssetServing:
     
     def test_static_directory_exists(self):
         """Test that static directory exists"""
-        from agentic_core.observability.metrics.dashboard.dashboard_server import STATIC_DIR
-        assert STATIC_DIR.exists() or STATIC_DIR.parent.exists()
+        from pathlib import Path
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+            get_validated_project_root, safe_path_join
+        )
+        PROJECT_ROOT = get_validated_project_root()
+        STATIC_DIR = safe_path_join(
+            PROJECT_ROOT,
+            "agentic_core", "observability", "metrics", "dashboard", "static"
+        )
+        assert STATIC_DIR.exists(), f"Static directory does not exist: {STATIC_DIR}"
     
     def test_static_mount_path(self, client):
         """Test that static mount path is configured"""

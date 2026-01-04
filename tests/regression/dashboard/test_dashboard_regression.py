@@ -23,12 +23,15 @@ def reset_counters():
     yield
     reset_layer_counts()
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def baseline():
     """Load regression baseline"""
     baseline_path = Path(__file__).parent / "regression_baseline.json"
+    if not baseline_path.exists():
+        raise FileNotFoundError(f"Baseline file not found: {baseline_path}")
     with open(baseline_path, "r") as f:
-        return json.load(f)
+        data = json.load(f)
+    return data
 
 class TestMetricsRegressionBaseline:
     """Regression tests against golden baseline"""
