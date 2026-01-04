@@ -14,11 +14,10 @@ from typing import Any, Dict
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 
 
 @dataclass
-class L4Agent(HealerMixin, MCPHardenedMixin, L4SubatomicTestingMixin):
+class L4Agent(HealerMixin, MCPHardenedMixin):
     """
     Consolidated base for L4 State agents.
     
@@ -38,10 +37,10 @@ class L4Agent(HealerMixin, MCPHardenedMixin, L4SubatomicTestingMixin):
         """Override in subclass to implement healing logic."""
         return {"status": "not_implemented", "agent": self.name}
     
+    def _run_self_tests(self) -> Dict[str, Any]:
+        """Override in subclass to implement self-tests."""
+        return {"status": "not_implemented", "tests": 0}
+    
     async def update_state(self, task: Dict) -> Dict:
         """Override in subclass to implement state update logic."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
         raise NotImplementedError(f"{self.name} must implement update_state()")
-\nimport logging\n\nLogger = logging.getLogger(__name__)

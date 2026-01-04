@@ -95,12 +95,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             "apps_rg": ("apps_rg", "High"),
             "apps_shared": ("apps_shared", "Medium"),
             
-            # Utils - single territory
-            "utils": ("utils", "Medium"),
-            
             # Tests
             "tests": ("tests", "Medium"),
         }
+        
+        # Infrastructure path patterns - agents matching these are annotated as infrastructure
+        # but still counted in their layer territory (no double-counting)
+        self.infrastructure_path_patterns = {"observability", "config/validators"}
         
         # Phase 5: Layer base class mapping (SSOT - sync with pre-commit hook)
         self.LAYER_BASE_MAP = {
@@ -1405,7 +1406,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         # Build dashboard data rows from territories
         dashboard_rows = []
         territory_stats = []
-        infrastructure_territories = {"observability", "knowledge"}  # Infrastructure - separate section
+        # Use class attribute for infrastructure territory keys
         
         for territory_key, (layer_filter, priority) in self.territories.items():
             agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
@@ -1479,8 +1480,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             
             territory_name = territory_key.replace("_", " ").title()
             
-            # Mark infrastructure territories
-            is_infrastructure = territory_key in infrastructure_territories
+            # Count infrastructure agents in this territory (agents in observability paths)
+            # These are still counted in their layer but annotated for separate tracking
+            infra_agent_count = sum(
+                1 for agent in agents 
+                if any(pattern in str(agent).replace("\\", "/").lower() 
+                       for pattern in self.infrastructure_path_patterns)
+            ) if agents else 0
+            is_infrastructure = False  # Territory-level flag not used; we track per-agent
             
             # Phase 5: Check base class compliance for this territory
             proper_base_count = 0
@@ -1514,7 +1521,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Risk": risk,
                 "Used %": perc_used,
                 "Priority": priority,
-                "IsInfrastructure": is_infrastructure  # Flag for UI rendering
+                "IsInfrastructure": is_infrastructure,  # Territory-level flag
+                "InfraAgentCount": infra_agent_count  # Count of infrastructure agents in this territory
             }
             
             # Collect per-agent diagnostics with detailed metrics
@@ -1526,6 +1534,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 has_mixin = False
                 invocation_status = "Unknown"
                 has_tests = False
+                compliant = False
                 agent_typed_pct = 0
                 agent_complexity = 0
                 obs_logging = obs_metrics = obs_tracing = False
@@ -1559,6 +1568,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     invocation_status = "Inherited"  # Default if no override
                     heal_methods = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "heal_repository"]
                     if heal_methods:
+                        compliant = True
                         # Check if super().heal_repository() is called
                         has_super_call = False
                         for node in ast.walk(heal_methods[0]):
@@ -1569,6 +1579,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                                             has_super_call = True
                                             break
                         invocation_status = "Yes" if has_super_call else "No (missing super)"
+
+                    # Test presence should be evaluated per-agent (not per-territory)
+                    has_tests = bool(self._detect_tests(agent, source))
                     
                     # Observability flags detection
                     obs_logging = False
@@ -1711,7 +1724,6 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     agent_documented_pct = self._detect_documentation_coverage(source)
                     
                     # Proxy metrics from territory-level (can be refined per-agent if needed)
-                    has_tests = perc_tests > 0
                     agent_typed_pct = round(perc_typed, 1)
                     agent_complexity = round(avg_cc, 1)
                     
@@ -1723,6 +1735,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     "abs_file": abs_str,
                     "abs_class": f"{abs_str}:{class_line}",
                     "class_line": class_line,
+                    "compliant": compliant,
                     "has_mixin": has_mixin,
                     "invocation": invocation_status,
                     "has_tests": has_tests,
@@ -1782,31 +1795,35 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "file_links": file_links
             })
         
-        # Add TOTAL row (excluding infrastructure territories)
+        # Add TOTAL row
         if len(dashboard_rows) > 0:
-            # Filter out infrastructure territories for TOTAL calculation
-            non_infrastructure_rows = [r for r in dashboard_rows if not r.get("IsInfrastructure", False)]
-            
-            if len(non_infrastructure_rows) > 0:
-                total_agents = sum(r["Total"] for r in non_infrastructure_rows)
-                total_compliant = sum(r["Compliant"] for r in non_infrastructure_rows)
+            # Sum infrastructure agents across all territories using InfraAgentCount
+            infra_total_agents = sum(r.get("InfraAgentCount", 0) for r in dashboard_rows)
+            # List territories that contain infrastructure agents
+            infra_territories = [r.get("Territory", "") for r in dashboard_rows if r.get("InfraAgentCount", 0) > 0]
+
+            if len(dashboard_rows) > 0:
+                total_agents = sum(r["Total"] for r in dashboard_rows)
+                total_compliant = sum(r["Compliant"] for r in dashboard_rows)
                 total_perc = round(total_compliant / total_agents * 100, 1) if total_agents else 0
                 
                 # Compute weighted averages
-                total_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_healing_invoke = round(sum(r["Invocation %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_hardened = round(sum(r["Hardened %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_mcp_capable = round(sum(r["MCP Capable %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_tests = round(sum(r["Test %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_cc = round(sum(r["Avg CC"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_loc = round(sum(r.get("Avg LOC", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents) if total_agents else 0
-                total_typed = round(sum(r["Typed %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
+                total_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_healing_invoke = round(sum(r["Invocation %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_hardened = round(sum(r["Hardened %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_mcp_capable = round(sum(r["MCP Capable %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_tests = round(sum(r["Test %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_cc = round(sum(r["Avg CC"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_loc = round(sum(r.get("Avg LOC", 0) * r["Total"] for r in dashboard_rows) / total_agents) if total_agents else 0
+                total_typed = round(sum(r["Typed %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
                 # Portfolio-average documentation coverage (granular signal, not threshold-based)
-                total_documented = round(sum(r.get("Documented %", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_proper_base = round(sum(r.get("Proper Base %", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_observable = round(sum(r["Observable %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_used = round(sum(r["Used %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
+                total_documented = round(sum(r.get("Documented %", 0) * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_proper_base = round(sum(r.get("Proper Base %", 0) * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_observable = round(sum(r["Observable %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+                total_used = round(sum(r["Used %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
             else:
+                infra_total_agents = 0
+                infra_territories = []
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
                 total_hardened = total_mcp_capable = total_tests = total_cc = total_loc = total_typed = total_documented = total_proper_base = total_observable = total_used = 0
             # Calculate total health with new formula (v2.2 with fixed weights)
@@ -1863,7 +1880,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Complexity Health": total_cc_health,
                 "Risk": "HIGH",
                 "Used %": total_used,
-                "Priority": "ALL"
+                "Priority": "ALL",
+                "Infrastructure Total": infra_total_agents,
+                "Infrastructure Territories": infra_territories
             }
             dashboard_rows.insert(0, total_row)
         else:

@@ -6,6 +6,7 @@ These tests MUST pass before any dashboard update is allowed.
 import unittest
 import json
 import re
+import pytest
 from pathlib import Path
 from html.parser import HTMLParser
 
@@ -161,6 +162,7 @@ class TestDashboardGeneration(unittest.TestCase):
             "SVG-based sparkline arrows not found in template"
         )
 
+    @pytest.mark.usefixtures("disable_path_shield")
     def test_02g_gen_dashboard_has_opt_in_server_controls(self):
         """gen_dashboard.py should support opt-in local server start without forcing it."""
         gen_path = Path(__file__).parent.parent / "gen_dashboard.py"
@@ -355,6 +357,101 @@ class TestDashboardGeneration(unittest.TestCase):
                 self.template_content,
                 f"Required CSS variable '{var}' not defined in template"
             )
+
+    def test_13_complexity_observation_uses_consistent_complexity_health(self):
+        """Template Complexity observation must use the same Complexity Health value as dashboardData."""
+        self.assertIsNotNone(self.template_content, "Template content not loaded")
+
+        # The metric observation should use totalRow['Complexity Health'] if present, otherwise fall back.
+        self.assertIn(
+            "const complexityHealth = (totalRow['Complexity Health']",
+            self.template_content,
+            "Complexity observation does not reference totalRow['Complexity Health'] for consistency"
+        )
+        self.assertIn(
+            "Complexity Health is ${complexityHealth.toFixed(1)}%",
+            self.template_content,
+            "Complexity observation gap text does not render complexityHealth value"
+        )
+
+    def test_14a_dashboard_total_matches_discovery_json(self):
+        """Test that dashboard TOTAL matches agent_discovery_full.json count."""
+        import json
+        import re
+        
+        # Use class paths set up in setUpClass
+        if self.dashboard_content is None:
+            self.skipTest("Dashboard not generated yet")
+        
+        # Get project root from template path
+        project_root = self.template_path.parent.parent.parent.parent
+        
+        # Get count from discovery JSON
+        discovery_path = project_root / "agent_discovery_full.json"
+        if not discovery_path.exists():
+            self.skipTest(f"agent_discovery_full.json not found at {discovery_path}")
+        
+        discovery_agents = json.loads(discovery_path.read_text(encoding='utf-8'))
+        discovery_count = len(discovery_agents)
+        
+        # Use dashboard content loaded in setUpClass
+        match = re.search(r'const dashboardData = (\[.*?\]);', self.dashboard_content, re.DOTALL)
+        self.assertIsNotNone(match, "Dashboard should contain dashboardData")
+        
+        data = json.loads(match.group(1))
+        total_row = next((r for r in data if r.get('Territory') == 'TOTAL'), None)
+        self.assertIsNotNone(total_row, "Dashboard should have TOTAL row")
+        
+        dashboard_total = total_row.get('Total', 0)
+        
+        # Allow for 1-agent variance due to TOTAL row itself being in data
+        self.assertAlmostEqual(dashboard_total, discovery_count, delta=1,
+            msg=f"Dashboard TOTAL ({dashboard_total}) should match discovery ({discovery_count})")
+    
+    def test_14b_infrastructure_tracking_present(self):
+        """Test that infrastructure tracking fields are present in TOTAL row."""
+        import json
+        import re
+        
+        # Use dashboard content loaded in setUpClass
+        if self.dashboard_content is None:
+            self.skipTest("Dashboard not generated yet")
+        
+        match = re.search(r'const dashboardData = (\[.*?\]);', self.dashboard_content, re.DOTALL)
+        self.assertIsNotNone(match, "Dashboard should contain dashboardData")
+        
+        data = json.loads(match.group(1))
+        total_row = next((r for r in data if r.get('Territory') == 'TOTAL'), None)
+        self.assertIsNotNone(total_row, "Dashboard should have TOTAL row")
+        
+        # Check infrastructure tracking fields exist
+        self.assertIn('Infrastructure Total', total_row, 
+            "TOTAL row should have 'Infrastructure Total' field")
+        self.assertIn('Infrastructure Territories', total_row,
+            "TOTAL row should have 'Infrastructure Territories' field")
+        
+        # Infrastructure Total should be a number >= 0
+        infra_total = total_row.get('Infrastructure Total', -1)
+        self.assertGreaterEqual(infra_total, 0, 
+            "Infrastructure Total should be >= 0")
+    
+    def test_14_health_score_observation_is_macro_not_metric(self):
+        """Health Score executive summary should be a macro observation, not a metric-focused observation."""
+        self.assertIsNotNone(self.template_content, "Template content not loaded")
+
+        # Must exist in macro observations.
+        self.assertIn(
+            "title: 'Health Score (Executive Summary)'",
+            self.template_content,
+            "Health Score executive summary macro observation not found"
+        )
+
+        # Must NOT be pushed into metricObs (older behavior).
+        self.assertNotIn(
+            "metric: 'Health Score'",
+            self.template_content,
+            "Health Score appears in metric-focused observations (should be macro)"
+        )
 
 
 def run_dashboard_tests():

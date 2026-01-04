@@ -89,15 +89,14 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
     return False
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.bases import L5Agent
 
 @registers_prompt(
     template_name="file_placement.jinja",
     purpose="Enforces territory/file placement rules",
     territory="templates"
 )
-class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class LocationAgent(L5Agent):
     """
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.

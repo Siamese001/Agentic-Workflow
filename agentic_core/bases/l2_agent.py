@@ -40,4 +40,3 @@ class L2Agent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
             _call_path = set()
         super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
         return {"status": "not_implemented", "agent": self.name}
-\nimport logging\n\nLogger = logging.getLogger(__name__)
