@@ -153,6 +153,14 @@ class TestDashboardGeneration(unittest.TestCase):
             self.template_content,
             "Risk Matrix click-to-drill handler not found"
         )
+
+    def test_02g_gen_dashboard_has_opt_in_server_controls(self):
+        """gen_dashboard.py should support opt-in local server start without forcing it."""
+        gen_path = Path(__file__).parent.parent / "gen_dashboard.py"
+        self.assertTrue(gen_path.exists(), f"gen_dashboard.py not found at {gen_path}")
+        content = gen_path.read_text(encoding='utf-8')
+        self.assertIn('--serve', content, "--serve flag not found in gen_dashboard.py")
+        self.assertIn('DASHBOARD_AUTO_SERVE', content, "DASHBOARD_AUTO_SERVE env var not found in gen_dashboard.py")
     
     def test_03_template_has_data_injection_points(self):
         """Test 3: Template must have data injection placeholders."""
