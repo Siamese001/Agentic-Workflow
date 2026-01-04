@@ -10,11 +10,47 @@ import os
 
 sys.path.insert(0, str(Path(__file__).parent))
 
+EXCLUDED_DISCOVERY_DIRS = {
+    '.git',
+    '__pycache__',
+    '.venv',
+    'node_modules',
+    'reports',
+    'archives',
+    '.sovereign_healing_backup',
+}
+
+
+def _latest_py_mtime(search_root: Path) -> float:
+    """Return the latest modified time of any .py file under search_root."""
+    latest = 0.0
+    if not search_root.exists():
+        return latest
+
+    for dirpath, dirnames, filenames in os.walk(search_root):
+        # mutate in-place so os.walk prunes
+        dirnames[:] = [d for d in dirnames if d not in EXCLUDED_DISCOVERY_DIRS]
+        for filename in filenames:
+            if not filename.endswith('.py'):
+                continue
+            try:
+                mtime = (Path(dirpath) / filename).stat().st_mtime
+            except OSError:
+                continue
+            if mtime > latest:
+                latest = mtime
+    return latest
+
+
 def ensure_agent_discovery():
     """Run agent discovery if JSON is missing or out of date."""
     project_root = Path(__file__).parent
     discovery_script = project_root / "scripts" / "full_agent_discovery.py"
     json_path = project_root / "agent_discovery_full.json"
+
+    # Allow opting out for fast iterations
+    if os.getenv('AGENT_DISCOVERY_AUTO_REFRESH', '1').strip().lower() in {'0', 'false', 'no'}:
+        return
     
     # If JSON doesn't exist, run discovery
     if not json_path.exists():
@@ -32,8 +68,33 @@ def ensure_agent_discovery():
         print("✅ Agent discovery completed")
         return
     
-    # Optional: add timestamp check to auto-run if repo is newer than JSON
-    # For now, just ensure it exists
+    # If Python sources are newer than the JSON, re-run discovery so dashboard isn't stale
+    try:
+        json_mtime = json_path.stat().st_mtime
+    except OSError:
+        json_mtime = 0.0
+
+    # Check the main repo areas that contain agents
+    latest_source_mtime = max(
+        _latest_py_mtime(project_root / 'agentic_core'),
+        _latest_py_mtime(project_root / 'apps_lic'),
+        _latest_py_mtime(project_root / 'apps_rg'),
+        _latest_py_mtime(project_root / 'apps_shared'),
+    )
+
+    if latest_source_mtime > json_mtime:
+        print("\n🔍 Agent discovery appears stale (Python sources newer than agent_discovery_full.json). Running discovery...")
+        print("=" * 60)
+        result = subprocess.run(
+            [sys.executable, str(discovery_script)],
+            cwd=project_root,
+            capture_output=False,
+            text=True
+        )
+        if result.returncode != 0:
+            print("\n❌ Agent discovery failed")
+            sys.exit(1)
+        print("✅ Agent discovery refreshed")
 
 def run_comprehensive_dashboard_qa():
     """Run comprehensive QA: unit, integration, e2e, regression tests."""
