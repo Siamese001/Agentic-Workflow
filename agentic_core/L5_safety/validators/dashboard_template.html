@@ -1918,7 +1918,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 macroObs.push({
                     icon: '🎯',
                     title: 'Expand Red Teaming Capability',
-                    gap: `**Gap: Red teaming coverage is thin (only ${redTeamCount} agents), leaving high-risk failure modes untested.**`,
+                    gap: `Red teaming coverage is thin: ${redTeamCount} agents (target ≥5) and limited coverage across attack families/tool surfaces.`,
                     impact: `In a production agentic system, missing adversarial probes means you discover prompt-injection and tool-misuse failures in prod instead of in a safe harness. That undermines autonomy because the system learns from failures too late, and guardrails become reactive instead of preventative.`,
                     solve: `Add dedicated PromptInjectionAgent, BoundaryTestingAgent, and AdversarialProbeAgent variants, and wire them into your compliance/regression loop. Interview prep example: explain how you validate jailbreak resistance before shipping and how you measure coverage (attack families, tool surfaces, and policy bypass attempts).`,
                     priority: ''
@@ -1931,7 +1931,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 macroObs.push({
                     icon: '🔧',
                     title: 'Consolidate L5 Safety Guardrails',
-                    gap: `**Gap: Guardrails are sprawling (${guardrailsRow.Total} agents), increasing rule overlap and making enforcement inconsistent.**`,
+                    gap: `Guardrails sprawl: ${guardrailsRow.Total} agents (target ~8–12 core validators) with overlapping responsibilities and unclear rule precedence.`,
                     impact: `When validators overlap, autonomy suffers: agents get conflicting signals and spend cycles "arguing with the rules" instead of reasoning about the user task. Canon compliance also degrades because exceptions accumulate and become tribal knowledge.`,
                     solve: `Refactor into composable rule-sets with a single orchestrator deciding precedence (e.g., "Naming → Hierarchy → Imports"), and verify via regression tests. Interview prep example: explain how you prevent rule conflicts and keep the enforcement surface legible to both humans and agents.`,
                     priority: ''
@@ -1944,7 +1944,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 macroObs.push({
                     icon: '🏗️',
                     title: 'Simplify Orchestration Layer',
-                    gap: `**Gap: Orchestration is fragmented (${orchRow.Total} orchestrators), increasing coordination and failure coupling.**`,
+                    gap: `Orchestration sprawl: ${orchRow.Total} orchestrators (target ~10–15) with fragmented ownership of retries, state handoffs, and workflow semantics.`,
                     impact: `In agentic systems, orchestration sprawl multiplies edge cases: retry behavior diverges, state handoffs drift, and observability becomes inconsistent. That reduces autonomy because the system can't reliably reason about its own execution pathway.`,
                     solve: `Unify around one workflow engine and keep a small set of well-scoped coordinators. Interview prep example: describe how you design idempotent orchestration steps and how you debug distributed runs using traces and state ledgers.`,
                     priority: ''
@@ -1957,7 +1957,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 macroObs.push({
                     icon: '🧠',
                     title: 'Strengthen Cognitive Layer',
-                    gap: `**Gap: L1 Cognition health is ${cogRow.Health.toFixed(1)}%, weakening planning and decision quality.**`,
+                    gap: `L1 Cognition health is ${cogRow.Health.toFixed(1)}% (target ≥70%), with deficits across tests/invocation/hardening that reduce reliability in the reasoning layer.`,
                     impact: `If the cognitive layer is brittle, downstream execution becomes "guessy": more retries, more compensating actions, and higher risk of policy drift. This is a direct autonomy risk because the system can't reliably choose correct next steps under uncertainty.`,
                     solve: `Improve testing + observability around core reasoning modules, reduce cyclomatic complexity in hot paths, and enforce naming conventions so the agent registry remains discoverable. Interview prep example: articulate how you detect reasoning regressions and why traceability matters for debugging chain-of-thought proxies (not raw CoT).`,
                     priority: ''
@@ -1968,7 +1968,7 @@ ${rec.guidance.split('\n').map((line, i) =>
             macroObs.push({
                 icon: '🔌',
                 title: 'Cross-Cutting Infrastructure',
-                gap: `**Gap: Resilience patterns are uneven (circuit breakers, retries, rate limits, feature flags).**`,
+                gap: `Resilience primitives are missing or inconsistent across layers (circuit breakers, retries/backoff, rate limits, feature flags, and standardized timeouts).`,
                 impact: `Autonomy at scale depends on graceful degradation. If one layer lacks backpressure or retry discipline, it can DOS adjacent layers and cause cascading failures. Canon compliance also suffers when every team invents its own patterns.`,
                 solve: `Standardize a small set of cross-cutting primitives and enforce them through templates and validators. Interview prep example: explain how you roll out circuit breakers and measure impact (reduced incident blast radius, faster MTTR).`,
                 priority: ''
@@ -1980,7 +1980,9 @@ ${rec.guidance.split('\n').map((line, i) =>
                     <span style="font-size: 1.6em;">${obs.icon}</span>
                     <div style="flex: 1;">
                         <strong style="color: #0c4a6e; font-size: 1.05em;">${obs.title}${obs.priority ? obs.priority : ''}</strong>
-                        <p style="margin: 6px 0 8px 0; font-size: 0.92em; color: #0f172a;">${obs.gap}</p>
+                        <div style="margin-top: 8px; padding: 10px; background: #f0f9ff; border-radius: 6px; border-left: 3px solid #0369a1;">
+                            <p style="margin: 0; font-size: 0.85em; color: #1e40af;"><strong>Gap:</strong> ${obs.gap}</p>
+                        </div>
                         <div style="margin-top: 6px; padding: 10px; background: #f0f9ff; border-radius: 6px; border-left: 3px solid #0369a1;">
                             <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #1e40af;"><strong>Impact:</strong> ${obs.impact}</p>
                             <p style="margin: 0; font-size: 0.85em; color: #334155;"><strong>How to fix:</strong> ${obs.solve}</p>
@@ -2019,20 +2021,24 @@ ${rec.guidance.split('\n').map((line, i) =>
                     value: `${(totalRow['Hardened %'] || 0).toFixed(1)}%`,
                     sparkline: mcpSparkline,
                     priorityComponent: 'MCP Hardened',
-                    gap: `**Gap: MCP hardening is ${(totalRow['Hardened %'] || 0).toFixed(1)}%, leaving agents exposed to unsafe tool-call surfaces.**`,
+                    gap: `MCP hardening is ${(totalRow['Hardened %'] || 0).toFixed(1)}% (target ≥80%) across agents that touch external tool boundaries.`,
                     impact: `In production agentic systems, external tool calls are the highest-risk boundary. Without a hardened wrapper, malformed responses and prompt-injection payloads can escalate into data exfiltration or policy bypass.`,
                     solve: `Apply MCPHardenedMixin / MCPShield and @hardened decorators to all agents that touch external surfaces. Interview prep example: explain how you sandbox tool calls and validate responses before they enter planning.`
                 });
             }
             
             if (totalRow['Avg CC'] > 30) {
+                const cc = totalRow['Avg CC'];
+                const ccTarget = 10;
+                const ccOver = cc - ccTarget;
+                const complexityHealth = Math.max(0, Math.min(100, 100 - (cc * 2)));
                 metricObs.push({
                     icon: '🔀',
                     metric: 'Complexity',
                     value: `${totalRow['Avg CC'].toFixed(1)}`,
                     sparkline: ccSparkline,
                     priorityComponent: 'Complexity Health',
-                    gap: `**Gap: Average complexity is ${totalRow['Avg CC'].toFixed(1)}, increasing defect rate and slowing safe refactors.**`,
+                    gap: `Average cyclomatic complexity is ${cc.toFixed(1)} (target ≤${ccTarget}), i.e., ${ccOver.toFixed(1)} points above target. Complexity Health is ${complexityHealth.toFixed(1)}%.`,
                     impact: `High complexity blocks autonomy because agents cannot reliably reason about control-flow: more branches means more hidden failure paths and more fragile healing hooks. In interview terms: CC correlates with incident frequency and MTTR.`,
                     solve: `Extract helpers, flatten conditionals, and introduce small pure functions (target <25, ideally ≤10 in hot paths). Then lock it in with unit tests so refactors are safe.`
                 });
@@ -2045,7 +2051,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                     value: `${(totalRow['Invocation %'] || 0).toFixed(1)}%`,
                     sparkline: invSparkline,
                     priorityComponent: 'Healing Invocation',
-                    gap: `**Gap: Healing invocation is ${(totalRow['Invocation %'] || 0).toFixed(1)}% — agents have capabilities but are not executing the repair chain.**`,
+                    gap: `Healing invocation is ${(totalRow['Invocation %'] || 0).toFixed(1)}% (target ≥80%) — the explicit super().heal_repository() chain is missing in many agents.`,
                     impact: `Autonomy depends on closed-loop correction. If agents don't invoke healing, the system accumulates drift: small errors compound, and incident recovery becomes manual. In production, this shows up as "works in dev, fails in prod" because runtime paths differ.`,
                     solve: `Add explicit super().heal_repository() calls in each agent's heal path and enforce via CI tests. Interview prep example: explain why explicit chains are auditable and how you validate invocation coverage portfolio-wide.`
                 });
@@ -2058,7 +2064,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                     value: `${(totalRow['Test %'] || 0).toFixed(1)}%`,
                     sparkline: generateSparkline([40, 45, 52, 60, totalRow['Test %'] || 0], '#2563eb'),
                     priorityComponent: 'Test Coverage',
-                    gap: `**Gap: Test coverage is ${(totalRow['Test %'] || 0).toFixed(1)}%, limiting safe hardening and refactoring.**`,
+                    gap: `Test coverage is ${(totalRow['Test %'] || 0).toFixed(1)}% (target ≥80%) across the portfolio.`,
                     impact: `In agentic systems, refactors happen constantly (routing, prompts, tool wrappers). Without tests, every change becomes a regression lottery and autonomy degrades because agents cannot trust invariants.`,
                     solve: `Add unit tests for core behaviors and regression baselines for APIs. Interview prep example: explain what you test (contracts, failure modes, and invariants) rather than only happy paths.`
                 });
@@ -2070,7 +2076,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 value: `${totalRow.Health.toFixed(1)}%`,
                 sparkline: healthSparkline,
                 priorityComponent: '',
-                gap: `**Gap: Overall health is ${totalRow.Health.toFixed(1)}% — key autonomy signals are not yet production-grade.**`,
+                gap: `Overall health is ${totalRow.Health.toFixed(1)}% (target ≥80%), with one or more component gaps still below target (invocation/tests/hardening/complexity).`,
                 impact: `Health is the "executive summary" for autonomy readiness: low invocation, low tests, or high complexity each reduces reliability and makes reasoning brittle under load.`,
                 solve: `Focus on the top three priorities (ranked #1–#3 in the relevant cards). Each improvement compounds: better tests enable safer refactors, lower complexity makes healing hooks easier, and better invocation closes the loop.`
             });
@@ -2081,7 +2087,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 value: `${(totalRow['Doc %'] || 50).toFixed(1)}%`,
                 sparkline: docSparkline,
                 priorityComponent: '',
-                gap: `**Gap: Documentation coverage is ${(totalRow['Doc %'] || 50).toFixed(1)}%, reducing agent discoverability and reuse.**`,
+                gap: `Documentation coverage is ${(totalRow['Doc %'] || 50).toFixed(1)}% (target ≥80%) across public agent interfaces.`,
                 impact: `In a production agentic system, unclear interfaces reduce reuse by ~30–50% because agents (and humans) cannot quickly infer intent, constraints, and safe usage patterns. That increases duplication and makes canon compliance harder to enforce.`,
                 solve: `Add docstrings to public methods and stabilize naming so registry search works. Interview prep example: explain how docs + naming reduce hallucinated tool usage by constraining the search space.`
             });
@@ -2097,7 +2103,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                             ${obs.sparkline}
                         </div>
                         <div style="margin-top: 8px; padding: 10px; background: #f0fdf4; border-radius: 6px; border-left: 3px solid #16a34a;">
-                            <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #166534;">${obs.gap}</p>
+                            <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #166534;"><strong>Gap:</strong> ${obs.gap}</p>
                             <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #334155;"><strong>Impact:</strong> ${obs.impact}</p>
                             <p style="margin: 0; font-size: 0.85em; color: #334155;"><strong>How to fix:</strong> ${obs.solve}</p>
                         </div>
