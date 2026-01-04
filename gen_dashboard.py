@@ -132,9 +132,11 @@ def validate_dashboard_crash_resistance():
         
         # Check for common crash patterns
         crash_patterns = [
-            ('undefined access', r'\bundefined\b.*\.'),
-            ('null reference', r'\bnull\b.*\.'),
-            ('missing variable', r'\b\w+\s+is\s+not\s+defined'),
+            # Real browser/runtime error signatures (avoid false positives from legitimate JS checks like `x !== undefined`)
+            ('uncaught typeerror', r'\bUncaught\s+TypeError\b'),
+            ('cannot read properties', r'Cannot\s+read\s+properties\s+of\s+(?:undefined|null)'),
+            ('cannot read property', r'Cannot\s+read\s+property\s+\"[^\"]+\"\s+of\s+(?:undefined|null)'),
+            ('is not defined', r'\b\w+\s+is\s+not\s+defined'),
             ('throw statements', r'\bthrow\s+'),
         ]
         
