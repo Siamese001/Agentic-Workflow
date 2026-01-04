@@ -297,8 +297,22 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         return False
 
     # Strong negative signals (AST-friendly): not agents.
+    # NOTE: Some real agents are implemented as @dataclass (e.g., red-teaming agents).
+    # Treat dataclass/attrs as disqualifying only when there is no strong positive agent signal.
     decorators = extract_decorators(class_node)
-    if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators):
+    agent_bases = {
+        'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
+        'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+        'ExecutionCanonBaseAgent',
+        'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
+        'BaseAgent',
+    }
+    has_strong_positive_signal = (
+        name.endswith('Agent')
+        or bool(bases & agent_bases)
+        or ('HealerMixin' in bases)
+    )
+    if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators) and not has_strong_positive_signal:
         return False
     if name.endswith('Mixin'):
         return False
@@ -344,13 +358,6 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     # only accept if the class is actually in a canonical agent inheritance chain.
     
     # Pattern 4: Inherits from canonical agent bases
-    agent_bases = {
-        'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-        'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
-        'ExecutionCanonBaseAgent',
-        'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
-        'BaseAgent',
-    }
     if bases & agent_bases:
         return True
 

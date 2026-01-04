@@ -909,6 +909,30 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         if territory_key.startswith("L5_safety/"):
             # L5 has distinct subfolders (validators, guardrails, gravity, red_teaming)
             subfolder = territory_key.split("/")[1]
+
+            def is_red_team_agent_file(p: Path) -> bool:
+                s = str(p).replace("\\", "/").lower()
+                if "/l5_safety/red_teaming/" in s:
+                    return True
+                if "/l5_safety/guardrails/" in s:
+                    fname = p.name.lower()
+                    return any(t in fname for t in ("redteam", "redteamer", "promptinjection", "adversarial"))
+                return False
+
+            if subfolder == "red_teaming":
+                return [
+                    p for p in all_agents
+                    if path_to_layer.get(str(p)) == "L5" and is_red_team_agent_file(p)
+                ]
+
+            if subfolder == "guardrails":
+                return [
+                    p for p in all_agents
+                    if path_to_layer.get(str(p)) == "L5"
+                    and subfolder in str(p).replace("\\", "/")
+                    and not is_red_team_agent_file(p)
+                ]
+
             return [
                 p for p in all_agents
                 if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")
