@@ -1536,36 +1536,137 @@
 
         function renderRiskMatrix(territoryData) {
             if (!territoryData || territoryData.length === 0) return;
-            const categories = territoryData.map(d => {
-                try {
-                    return getSubTerritoryForTerritory(d.Territory, d.Total, d.agents).replace(/<[^>]*>/g, '');
-                } catch {
-                    return '—';
+            // Bubble per Sub-Territory (not just per Territory).
+            // Size ∝ agent count (area-based sizing).
+            // Color matches table thresholds via getColor(health).
+            function stableHashInt(str) {
+                const s = (str || '').toString();
+                let h = 0;
+                for (let i = 0; i < s.length; i++) {
+                    h = ((h << 5) - h) + s.charCodeAt(i);
+                    h |= 0;
                 }
+                return Math.abs(h);
+            }
+
+            function deterministicJitter(key, magnitude) {
+                const h = stableHashInt(key);
+                const unit = ((h % 2000) / 1000) - 1; // [-1, 1)
+                return unit * magnitude;
+            }
+
+            function computeRiskPoint(territoryName, subTerritoryName, agents) {
+                const total = agents.length;
+                if (total === 0) {
+                    return {
+                        territory: territoryName,
+                        subTerritory: subTerritoryName,
+                        total,
+                        avgCC: 0,
+                        compliancePct: 0,
+                        health: 0
+                    };
+                }
+
+                const healCap = agents.filter(a => !!a?.has_mixin).length;
+                const invocation = agents.filter(a => a?.invocation === 'Yes' || a?.invocation === 'Inherited').length;
+                const hardened = agents.filter(a => !!a?.has_mcpshield || !!a?.has_hardened_decorator || !!a?.mcp_safe_overrides).length;
+                const tests = agents.filter(a => !!a?.has_tests).length;
+                const observable = agents.filter(a => !!a?.obs_logging || !!a?.obs_metrics || !!a?.obs_tracing).length;
+                const compliant = agents.filter(a => a?.compliant === true).length;
+
+                const ccVals = agents.map(a => parseFloat(a?.complexity ?? a?.['complexity'] ?? 0) || 0);
+                const avgCC = ccVals.reduce((s, v) => s + v, 0) / total;
+
+                const typedVals = agents.map(a => parseFloat(a?.overall_typed_pct ?? a?.typed_pct ?? 0) || 0);
+                const avgTyped = typedVals.reduce((s, v) => s + v, 0) / total;
+
+                const healCapPct = (healCap / total) * 100;
+                const invocationPct = (invocation / total) * 100;
+                const hardenedPct = (hardened / total) * 100;
+                const testsPct = (tests / total) * 100;
+                const observablePct = (observable / total) * 100;
+                const complexityHealth = Math.max(0, Math.min(100, 100 - (avgCC * 2)));
+
+                // Match Territory Summary weighting.
+                const health =
+                    (invocationPct * 0.25) +
+                    (hardenedPct * 0.18) +
+                    (testsPct * 0.18) +
+                    (healCapPct * 0.14) +
+                    (observablePct * 0.10) +
+                    (avgTyped * 0.10) +
+                    (complexityHealth * 0.05);
+
+                const compliancePct = (compliant / total) * 100;
+
+                return {
+                    territory: territoryName,
+                    subTerritory: subTerritoryName,
+                    total,
+                    avgCC,
+                    compliancePct,
+                    health
+                };
+            }
+
+            const points = [];
+            territoryData.forEach(row => {
+                const territoryName = (row?.Territory || '').toString();
+                const agents = row?.agents || [];
+                if (!agents || agents.length === 0) return;
+
+                const groups = {};
+                agents.forEach(a => {
+                    const label = getSubTerritoryLabel(a);
+                    groups[label] = groups[label] || [];
+                    groups[label].push(a);
+                });
+
+                Object.entries(groups)
+                    .sort((a, b) => b[1].length - a[1].length)
+                    .forEach(([sub, groupAgents]) => {
+                        const base = computeRiskPoint(territoryName, sub, groupAgents);
+                        const key = `${territoryName}::${sub}`;
+                        points.push({
+                            ...base,
+                            // Reduce overlap when many points share similar CC/compliance
+                            x: base.avgCC + deterministicJitter(key, 0.9),
+                            y: base.compliancePct + deterministicJitter(key + ':y', 1.8)
+                        });
+                    });
             });
+
+            if (points.length === 0) return;
+
+            const sizes = points.map(p => p.total);
+            const maxSize = Math.max(...sizes, 1);
+            const desiredMaxPx = 70;
+            const sizeref = (2.0 * maxSize) / (desiredMaxPx ** 2);
+
             const trace = {
-                x: territoryData.map(d => parseFloat(d['Avg CC']) || 0),
-                y: territoryData.map(d => parseFloat(d['Compliance %']) || 0),
-                text: territoryData.map(d => d.Territory),
-                mode: 'markers+text',
+                x: points.map(p => p.x),
+                y: points.map(p => p.y),
+                mode: 'markers',
                 type: 'scatter',
                 cliponaxis: false,
                 marker: {
-                    size: territoryData.map(d => {
-                        const used = Math.max(0, Math.min(100, parseFloat(d.Used || d['Used %'] || 20) || 0));
-                        return 18 + (used / 100) * 60;
-                    }),
-                    color: territoryData.map(d => getColor(d.Health, true)),
-                    opacity: 0.8,
+                    size: points.map(p => p.total),
+                    sizemode: 'area',
+                    sizeref,
+                    sizemin: 10,
+                    color: points.map(p => getColor(p.health, true)),
+                    opacity: 0.62,
                     line: { color: '#ffffff', width: 2 }
                 },
-                customdata: territoryData.map((d, i) => [d.Health, d.Total, d['Invocation %'], d['Test %'], categories[i]]),
-                hovertemplate: '<b>%{text}</b><br>' +
-                    'Avg CC: <b>%{x:.1f}</b><br>' +
-                    'Compliance: <b>%{y:.1f}%</b><br>' +
-                    'Health: <b>%{customdata[0]:.1f}%</b><br>' +
-                    'Agents: <b>%{customdata[1]}</b><br>' +
-                    'Sub-Territory: <b>%{customdata[4]}</b><br>' +
+                customdata: points.map(p => [p.territory, p.subTerritory, p.total, p.health, p.avgCC, p.compliancePct]),
+                hovertemplate:
+                    '<b>%{customdata[0]}</b><br>' +
+                    'Sub-Territory: <b>%{customdata[1]}</b><br>' +
+                    'Agents: <b>%{customdata[2]}</b><br>' +
+                    'Health: <b>%{customdata[3]:.1f}%</b><br>' +
+                    'Complexity: <b>%{customdata[4]:.1f}</b> (target ≤10)<br>' +
+                    'Compliance: <b>%{customdata[5]:.1f}%</b> (target ≥80%)<br><br>' +
                     '<i>Click to drill down</i><extra></extra>'
             };
 
@@ -1575,12 +1676,12 @@
                 plot_bgcolor: 'transparent',
                 font: { color: '#1f2937' },
                 xaxis: (() => {
-                    const maxCC = Math.max(...territoryData.map(d => parseFloat(d['Avg CC']) || 0), 30);
+                    const maxCC = Math.max(...points.map(p => parseFloat(p.avgCC) || 0), 30);
                     return { title: 'Avg Cyclomatic Complexity', range: [0, maxCC * 1.05] };
                 })(),
                 yaxis: { title: 'Compliance %', range: [0, 110] },
                 shapes: (() => {
-                    const maxCC = Math.max(...territoryData.map(d => parseFloat(d['Avg CC']) || 0), 30);
+                    const maxCC = Math.max(...points.map(p => parseFloat(p.avgCC) || 0), 30);
                     const maxX = maxCC * 1.05;
                     return [
                     { type: 'line', x0: 10, x1: 10, y0: 0, y1: 100, line: { color: '#16a34a', width: 2, dash: 'dash' } },
@@ -1590,18 +1691,23 @@
                 })()
             };
 
-            trace.hovertemplate = 
-                '<b>%{text}</b><br>' +
-                'Sub-Territory: <b>%{customdata[4]}</b><br>' +
-                'Agents: <b>%{customdata[1]}</b><br>' +
-                'Health: <b>%{customdata[0]:.1f}%</b><br>' +
-                'Complexity: <b>%{x:.1f}</b> (target ≤10, lower is better)<br>' +
-                'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
-                '<i>Analogy:</i> Like a risk dashboard for drivers — complexity = road hazards, compliance = safety features<br>' +
-                'Green zone (top-left) = safe to extend<br>' +
-                'Red zone (bottom-right) = high risk<extra></extra>';
-
             Plotly.newPlot('riskMatrix', [trace], layout, { responsive: true, displayModeBar: false });
+            try {
+                const rm = document.getElementById('riskMatrix');
+                if (rm && rm.on) {
+                    rm.removeAllListeners && rm.removeAllListeners('plotly_click');
+                    rm.on('plotly_click', (evt) => {
+                        const p = evt?.points?.[0];
+                        const cd = p?.customdata;
+                        if (!cd) return;
+                        const territory = cd[0];
+                        const subTerritory = cd[1];
+                        openDrillModal(territory, subTerritory);
+                    });
+                }
+            } catch (e) {
+                console.warn('Failed to attach risk matrix click handler:', e);
+            }
         }
 
         function renderComplianceChart(territoryData) {

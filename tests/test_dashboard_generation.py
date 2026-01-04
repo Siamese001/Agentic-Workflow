@@ -134,6 +134,25 @@ class TestDashboardGeneration(unittest.TestCase):
             self.template_content,
             "focus reload hook not found"
         )
+
+    def test_02f_template_risk_matrix_subterritory_bubbles(self):
+        """Risk Matrix should be sub-territory bubble plot with area-based sizing and click handler."""
+        self.assertIsNotNone(self.template_content, "Template content not loaded")
+        self.assertIn(
+            "// Bubble per Sub-Territory (not just per Territory).",
+            self.template_content,
+            "Risk Matrix sub-territory comment not found"
+        )
+        self.assertIn(
+            "sizemode: 'area'",
+            self.template_content,
+            "Risk Matrix should use area-based sizing"
+        )
+        self.assertIn(
+            "plotly_click",
+            self.template_content,
+            "Risk Matrix click-to-drill handler not found"
+        )
     
     def test_03_template_has_data_injection_points(self):
         """Test 3: Template must have data injection placeholders."""
