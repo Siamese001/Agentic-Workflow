@@ -154,6 +154,13 @@ class TestDashboardGeneration(unittest.TestCase):
             "Risk Matrix click-to-drill handler not found"
         )
 
+        # Sparkline arrows should be SVG-based for bold/thick rendering.
+        self.assertIn(
+            '<svg viewBox="0 0 24 24" aria-hidden="true">',
+            self.template_content,
+            "SVG-based sparkline arrows not found in template"
+        )
+
     def test_02g_gen_dashboard_has_opt_in_server_controls(self):
         """gen_dashboard.py should support opt-in local server start without forcing it."""
         gen_path = Path(__file__).parent.parent / "gen_dashboard.py"

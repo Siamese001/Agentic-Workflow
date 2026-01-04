@@ -38,6 +38,18 @@ OUTPUT_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
 
 EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv'}
 
+
+def should_exclude_file(py_file: Path) -> bool:
+    """Return True if file should not be scanned for agent discovery.
+
+    Baseline scan: do not exclude repo areas like tests/ or scripts/.
+    Only exclude obvious non-source/vendor dirs.
+    """
+    parts = {p.lower() for p in py_file.parts}
+    if parts & {d.lower() for d in EXCLUDED_DIRS}:
+        return True
+    return False
+
 # Healing-capable bases (for detection) - expanded for full MRO coverage
 HEALING_BASES = {
     # Core mixin
@@ -275,7 +287,7 @@ def count_loc(source: str) -> int:
     return count
 
 
-def is_agent_class(class_node: ast.ClassDef, bases: Set[str]) -> bool:
+def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional[Path] = None) -> bool:
     """Determine if a class is an agent - precise detection (240 core target)."""
     name = class_node.name
     
@@ -283,6 +295,36 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str]) -> bool:
     skip_patterns = ('Test', 'Mock', 'Stub', 'Fake', 'Dummy')
     if name.startswith(skip_patterns) and 'Agent' not in name:
         return False
+
+    # Strong negative signals (AST-friendly): not agents.
+    decorators = extract_decorators(class_node)
+    if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators):
+        return False
+    if name.endswith('Mixin'):
+        return False
+    if name.endswith('Protocol') or name.startswith('I') and name[1:2].isupper():
+        return False
+    if name.endswith('Error') or name.endswith('Exception'):
+        return False
+
+    non_agent_bases = {
+        'Protocol', 'ABC',
+        'BaseModel', 'TypedDict',
+        'Enum',
+        'Exception', 'BaseException',
+        'TestCase',
+    }
+    if bases & non_agent_bases:
+        return False
+
+    # Even if a class is named like an agent, do not count test harness classes.
+    path_str = str(rel_path).replace('\\', '/').lower() if rel_path else ''
+    if path_str.startswith('tests/') or '/tests/' in path_str:
+        method_names = extract_methods(class_node)
+        if name.startswith('Test'):
+            return False
+        if any(m.startswith('test_') for m in method_names):
+            return False
     
     # Pattern 1: Ends with Agent (primary pattern)
     if name.endswith('Agent'):
@@ -296,35 +338,28 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str]) -> bool:
         'Guard', 'Detector', 'Hunter', 'Fixer', 'Reconciler',
         'Mapper', 'Classifier', 'Auditor', 'Monitor', 'Witness',
     )
-    if name.endswith(agent_suffixes):
-        return True
+    # Suffix-only detection is too permissive; require anchored evidence.
     
-    # Pattern 3: Contains 'Agent' anywhere in name
-    if 'Agent' in name:
-        return True
+    # Pattern 3: Contains 'Agent' anywhere in name is too permissive;
+    # only accept if the class is actually in a canonical agent inheritance chain.
     
     # Pattern 4: Inherits from canonical agent bases
     agent_bases = {
         'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
         'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
-        'HealerMixin', 'SubatomicTestingMixin', 'ExecutionCanonBaseAgent',
+        'ExecutionCanonBaseAgent',
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
-        'AutonomyMixin', 'AdaptiveExecutionMixin', 'MCPHardenedMixin',
-        'OutreachAgent', 'ResumeAgent', 'BaseAgent',
+        'BaseAgent',
     }
     if bases & agent_bases:
         return True
-    
-    # Pattern 5: Testing/Delegation Mixins (agent infrastructure)
-    if name.endswith('Mixin') and any(x in name for x in ['Testing', 'Healing', 'Delegation', 'Autonomy', 'Hardened']):
+
+    # Secondary acceptance: role suffix, but only when anchored by canonical agent inheritance.
+    if name.endswith(agent_suffixes) and (bases & agent_bases):
         return True
     
-    # Pattern 6: Sovereign agent patterns
-    if name.startswith('Sovereign') and any(x in name for x in ['Agent', 'Client', 'Store', 'Cache', 'Orchestrator']):
-        return True
-    
-    # Pattern 7: AgenticWorkflowError (core exception)
-    if name == 'AgenticWorkflowError':
+    # Sovereign patterns can be agents, but only when they end with Agent.
+    if name.startswith('Sovereign') and name.endswith('Agent'):
         return True
     
     return False
@@ -361,7 +396,7 @@ def main():
     print("[PASS 1] Building inheritance map...")
     parsed_files = {}  # Cache parsed ASTs
     for py_file in all_py_files:
-        if any(ex in str(py_file) for ex in EXCLUDED_DIRS):
+        if should_exclude_file(py_file):
             continue
         try:
             source = py_file.read_text(encoding='utf-8', errors='replace')
@@ -388,7 +423,7 @@ def main():
             bases = extract_bases(node)
             
             # Skip if not an agent class
-            if not is_agent_class(node, bases):
+            if not is_agent_class(node, bases, rel_path=rel_path):
                 continue
             
             # Skip lowercase/snake_case (aliases)
@@ -433,6 +468,8 @@ def main():
             agents.append({
                 'class_name': node.name,
                 'path': str(rel_path),
+                'top_dir': rel_path.parts[0] if len(rel_path.parts) >= 1 else '',
+                'sub_dir': '/'.join(rel_path.parts[:2]) if len(rel_path.parts) >= 2 else (rel_path.parts[0] if len(rel_path.parts) >= 1 else ''),
                 'layer': layer,
                 'inheritance': list(bases),
                 'key_methods': methods[:10],  # Top 10 methods
@@ -458,10 +495,14 @@ def main():
     
     # Statistics
     layers = defaultdict(int)
+    top_dirs = defaultdict(int)
+    sub_dirs = defaultdict(int)
     healing_count = 0
     testing_count = 0
     for a in agents:
         layers[a['layer']] += 1
+        top_dirs[a.get('top_dir', '')] += 1
+        sub_dirs[a.get('sub_dir', '')] += 1
         if a['has_healing']:
             healing_count += 1
         if a['testing'] != 'None':
@@ -478,6 +519,16 @@ def main():
     print(f"\nBy layer:")
     for layer in sorted(layers.keys()):
         print(f"  {layer}: {layers[layer]}")
+
+    print(f"\nBy top-level folder (baseline location):")
+    for k, v in sorted(top_dirs.items(), key=lambda kv: kv[1], reverse=True):
+        label = k or '(root)'
+        print(f"  {label}: {v}")
+
+    print(f"\nTop 15 subfolders (top_dir/second_dir):")
+    for k, v in sorted(sub_dirs.items(), key=lambda kv: kv[1], reverse=True)[:15]:
+        label = k or '(root)'
+        print(f"  {label}: {v}")
     
     print(f"\nHealing: {healing_count}/{len(agents)} ({100*healing_count//len(agents) if agents else 0}%)")
     print(f"Testing: {testing_count}/{len(agents)} ({100*testing_count//len(agents) if agents else 0}%)")
