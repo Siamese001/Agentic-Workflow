@@ -44,9 +44,10 @@
         }
         
         .sparkline-trend {
-            font-size: 0.85em;
-            font-weight: 600;
+            font-size: 1.15em;
+            font-weight: 900;
             margin-left: 4px;
+            text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
         }
 
         .refresh-controls {
@@ -370,16 +371,12 @@
     <div class="container">
         <header>
             <h1>🎯 Autonomy Compliance Dashboard</h1>
-            <p class="subtitle">Portfolio-wide health, healing capabilities, test coverage, and complexity metrics</p>
             <div class="timestamp" id="lastUpdated"></div>
         </header>
 
         <div class="dashboard-container">
             <div class="nav-tabs">
                 <a href="#" class="nav-tab active" data-target="executive">Executive Dashboard</a>
-                <a href="#" class="nav-tab" data-target="territory">Territory Analysis</a>
-                <a href="#" class="nav-tab" data-target="risk">Risk Assessment</a>
-                <a href="#" class="nav-tab" data-target="compliance">Compliance Metrics</a>
                 <a href="#" class="nav-tab" data-target="recommendations">Prioritized Recommendations</a>
                 <a href="#" class="nav-tab" data-target="interview">Interview Prep</a>
             </div>
@@ -412,16 +409,7 @@
 
                 <div class="kpi-grid" id="kpiGrid"></div>
 
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">Health Score by Territory</div>
-                            <div class="chart-subtitle">Click any bar to drill down into per-agent diagnostics</div>
-                        </div>
-                        <div class="chart-body">
-                            <div id="healthChart"></div>
-                        </div>
-                    </div>
+                <div class="charts-grid full-width">
                     <div class="chart-card">
                         <div class="chart-header">
                             <div class="chart-title">Risk Matrix</div>
@@ -429,39 +417,6 @@
                         </div>
                         <div class="chart-body">
                             <div id="riskMatrix"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Territory Analysis Tab -->
-            <div id="territory-content" class="tab-content" style="display:none;">
-                <div class="charts-grid full-width">
-                    <div class="chart-card">
-                        <div class="chart-body">
-                            <p class="loading">Detailed territory deep-dive charts coming soon...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Risk Assessment Tab -->
-            <div id="risk-content" class="tab-content" style="display:none;">
-                <div class="charts-grid full-width">
-                    <div class="chart-card">
-                        <div class="chart-body">
-                            <p class="loading">Advanced risk modeling coming soon...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Compliance Metrics Tab -->
-            <div id="compliance-content" class="tab-content" style="display:none;">
-                <div class="charts-grid full-width">
-                    <div class="chart-card">
-                        <div class="chart-body">
-                            <p class="loading">Historical compliance trends coming soon...</p>
                         </div>
                     </div>
                 </div>
@@ -640,7 +595,8 @@
                 showDots = true,
                 showArea = true,
                 color = '#2563eb',
-                areaOpacity = 0.15
+                areaOpacity = 0.15,
+                highGood = true
             } = options;
             
             if (!values || values.length < 2) {
@@ -674,7 +630,10 @@
             // Determine trend color
             const firstVal = values[0];
             const lastVal = values[values.length - 1];
-            const trendColor = lastVal > firstVal ? '#16a34a' : lastVal < firstVal ? '#dc2626' : color;
+            const direction = lastVal > firstVal ? 'up' : lastVal < firstVal ? 'down' : 'flat';
+            const trendColor = highGood
+                ? (direction === 'up' ? '#16a34a' : direction === 'down' ? '#dc2626' : color)
+                : (direction === 'up' ? '#dc2626' : direction === 'down' ? '#16a34a' : color);
             
             return `
                 <svg class="sparkline-svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
@@ -689,20 +648,22 @@
         }
         
         // Format sparkline with trend indicator
-        function formatSparkline(values, currentValue, previousValue) {
+        function formatSparkline(values, currentValue, previousValue, highGood = true) {
             if (!values || values.length < 2) {
                 return '<span style="color:#999; font-size:0.85em;">—</span>';
             }
             
-            const delta = currentValue - previousValue;
-            const direction = delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat';
+            const rawDelta = currentValue - previousValue;
+            const direction = rawDelta > 0 ? 'up' : rawDelta < 0 ? 'down' : 'flat';
             const arrow = direction === 'up' ? '↑' : direction === 'down' ? '↓' : '→';
-            const trendColor = direction === 'up' ? '#16a34a' : direction === 'down' ? '#dc2626' : '#6b7280';
+            const trendColor = highGood
+                ? (direction === 'up' ? '#16a34a' : direction === 'down' ? '#dc2626' : '#6b7280')
+                : (direction === 'up' ? '#dc2626' : direction === 'down' ? '#16a34a' : '#6b7280');
             
             return `
                 <span class="sparkline-container">
-                    ${createSparklineSVG(values, { showArea: true, showDots: false })}
-                    <span class="sparkline-trend" style="color:${trendColor};">${arrow}${Math.abs(delta).toFixed(1)}%</span>
+                    ${createSparklineSVG(values, { showArea: true, showDots: false, highGood })}
+                    <span class="sparkline-trend" style="color:${trendColor};">${arrow}${Math.abs(rawDelta).toFixed(1)}%</span>
                 </span>
             `;
         }
@@ -812,31 +773,31 @@
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; border-right:1px solid #e5e7eb; font-weight:600;">
                             ${totalRow['Heal Cap %'].toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.heal_cap ? formatSparkline(dashboardData[0].sparklines.heal_cap, totalRow['Heal Cap %'], dashboardData[0].trends?.heal_cap_delta ? totalRow['Heal Cap %'] - dashboardData[0].trends.heal_cap_delta : totalRow['Heal Cap %']) : ''}
+                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.heal_cap ? formatSparkline(dashboardData[0].sparklines.heal_cap, totalRow['Heal Cap %'], dashboardData[0].trends?.heal_cap_delta ? totalRow['Heal Cap %'] - dashboardData[0].trends.heal_cap_delta : totalRow['Heal Cap %'], true) : ''}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">
                             ${totalRow['Invocation %'].toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.invocation ? formatSparkline(dashboardData[0].sparklines.invocation, totalRow['Invocation %'], dashboardData[0].trends?.invocation_delta ? totalRow['Invocation %'] - dashboardData[0].trends.invocation_delta : totalRow['Invocation %']) : ''}
+                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.invocation ? formatSparkline(dashboardData[0].sparklines.invocation, totalRow['Invocation %'], dashboardData[0].trends?.invocation_delta ? totalRow['Invocation %'] - dashboardData[0].trends.invocation_delta : totalRow['Invocation %'], true) : ''}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">
                             ${(totalRow['Hardened %'] || 0).toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.mcp_hardened ? formatSparkline(dashboardData[0].sparklines.mcp_hardened, totalRow['Hardened %'] || 0, dashboardData[0].trends?.mcp_hardened_delta ? (totalRow['Hardened %'] || 0) - dashboardData[0].trends.mcp_hardened_delta : totalRow['Hardened %'] || 0) : ''}
+                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.mcp_hardened ? formatSparkline(dashboardData[0].sparklines.mcp_hardened, totalRow['Hardened %'] || 0, dashboardData[0].trends?.mcp_hardened_delta ? (totalRow['Hardened %'] || 0) - dashboardData[0].trends.mcp_hardened_delta : totalRow['Hardened %'] || 0, true) : ''}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">
                             ${totalRow['Test %'].toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.tests ? formatSparkline(dashboardData[0].sparklines.tests, totalRow['Test %'], dashboardData[0].trends?.tests_delta ? totalRow['Test %'] - dashboardData[0].trends.tests_delta : totalRow['Test %']) : ''}
+                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.tests ? formatSparkline(dashboardData[0].sparklines.tests, totalRow['Test %'], dashboardData[0].trends?.tests_delta ? totalRow['Test %'] - dashboardData[0].trends.tests_delta : totalRow['Test %'], true) : ''}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Observable %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">
                             ${(totalRow['Observable %'] || 0).toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.observable ? formatSparkline(dashboardData[0].sparklines.observable, totalRow['Observable %'] || 0, dashboardData[0].trends?.observable_delta ? (totalRow['Observable %'] || 0) - dashboardData[0].trends.observable_delta : totalRow['Observable %'] || 0) : ''}
+                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.observable ? formatSparkline(dashboardData[0].sparklines.observable, totalRow['Observable %'] || 0, dashboardData[0].trends?.observable_delta ? (totalRow['Observable %'] || 0) - dashboardData[0].trends.observable_delta : totalRow['Observable %'] || 0, true) : ''}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getComplexityGradientBg(totalRow['Avg CC'])}; color:${ccColor}; font-weight:700; border-right:1px solid #e5e7eb;">
                             ${totalRow['Avg CC'].toFixed(1)}
-                            ${generateSparkline([45, 43, 41, 40, totalRow['Avg CC']], '#ea580c')}
+                            ${generateSparkline([45, 43, 41, 40, totalRow['Avg CC']], '#ea580c', false)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(Math.min(100, totalRow.Health))}; color:${healthColor}; font-weight:800; font-size:1.05em;">
                             ${Math.min(100, totalRow.Health).toFixed(1)}%
-                            ${generateSparkline([55, 58, 61, 64, Math.min(100, totalRow.Health)], '#16a34a')}
+                            ${generateSparkline([55, 58, 61, 64, Math.min(100, totalRow.Health)], '#16a34a', true)}
                         </td>
                     </tr>`;
             }
@@ -909,6 +870,8 @@
                 const tSpark = territorySparklines[row.Territory] || {};
                 const territoryTrends = dashboardData[0].territory_trends || {};
                 const tTrend = territoryTrends[row.Territory] || {};
+
+                const healthTooltip = `Health Score: ${row.Health.toFixed(1)}% (target ≥80%).\nCategory: ${category.replace(/<[^>]*>/g, '')}\n\nHealth is a composite autonomy readiness signal across healing, tests, observability, and maintainability.\nClick to drill down into per-agent diagnostics.`;
                 
                 html += `
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
@@ -924,8 +887,8 @@
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getComplexityGradientBg(row['Avg CC'])}; color:${ccColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Avg CC'].toFixed(1)}</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, row.Health))}; color:${healthColor}; font-weight:700;">${Math.min(100, row.Health).toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getComplexityGradientBg(row['Avg CC'])}; color:${ccColor}; font-weight:600; border-right:1px solid #e5e7eb;" title="Avg Cyclomatic Complexity: ${row['Avg CC'].toFixed(1)} (lower is better; target ≤10).\nLower complexity improves maintainability and makes agentic healing safer to extend.">${row['Avg CC'].toFixed(1)}</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, row.Health))}; color:${healthColor}; font-weight:700;" title="${healthTooltip}">${Math.min(100, row.Health).toFixed(1)}%</td>
                     </tr>`;
             });
             
@@ -933,7 +896,19 @@
                         </tbody>
                     </table>
                 </div>
-                <p style="margin-top:8px; font-size:0.75em; color:#888;">Health Score = Invocation 25% + Hardened 18% + Tests 18% + Heal Cap 14% + Observable 10% + Typed 10% + Complexity 5%. Color: <span style="color:#991b1b;">■</span>0-20% <span style="color:#ea580c;">■</span>20-60% <span style="color:#a16207;">■</span>60-75% <span style="color:#65a30d;">■</span>75-85% <span style="color:#065f46;">■</span>85-100%</p>
+                <div style="margin-top:12px; font-size:0.85em; color:var(--text-light); line-height:1.5;">
+                    <div><strong>Territory:</strong> Domain slice (layer/app) for governance and compliance analysis.</div>
+                    <div><strong>Category:</strong> Non-overlapping role breakdown of agents in that territory (counts sum to total).</div>
+                    <div><strong># Agents:</strong> Total agents detected in this territory.</div>
+                    <div><strong>Heal Capability %:</strong> % with HealerMixin / healing capability available.</div>
+                    <div><strong>Heal Invocation %:</strong> % actually invoking healing chain (explicit super().heal_repository() usage).</div>
+                    <div><strong>MCP Hardened %:</strong> % protected at external tool boundary (MCP hardening/mixins/decorators).</div>
+                    <div><strong>Test Coverage %:</strong> % with tests detected (enables safe refactoring/hardening).</div>
+                    <div><strong>Observability %:</strong> % with logging/metrics/tracing signals (production diagnosability).</div>
+                    <div><strong>Avg Complexity:</strong> Average cyclomatic complexity (lower = safer, more maintainable autonomy).</div>
+                    <div><strong>Health Score:</strong> Composite autonomy readiness signal derived from the columns above.</div>
+                    <div style="margin-top:6px; font-size:0.9em;">Health Score weighting: Invocation 25% + Hardened 18% + Tests 18% + Heal Cap 14% + Observable 10% + Typed 10% + Complexity 5%.</div>
+                </div>
                 
                 <!-- Code Quality Score Section -->
                 <div style="margin-top:40px; margin-bottom:20px;">
@@ -1066,7 +1041,13 @@
                             </tbody>
                         </table>
                     </div>
-                    <p style="margin-top:8px; font-size:0.75em; color:#888;">Code Quality Score = Typing 35% + MCP Capable 25% + Complexity Health 20% + Documentation 20%</p>
+                    <div style="margin-top:10px; font-size:0.85em; color:var(--text-light); line-height:1.5;">
+                        <div><strong>Typing %:</strong> % with type hints; improves refactor safety and reduces tool misuse.</div>
+                        <div><strong>MCP Capable %:</strong> % touching external tools/surfaces (the boundary where hardening matters most).</div>
+                        <div><strong>Complexity Health:</strong> Inverted cyclomatic complexity (higher = better maintainability).</div>
+                        <div><strong>Documentation %:</strong> % with docstrings; boosts discoverability and reuse.</div>
+                        <div><strong>Code Quality Score:</strong> Weighted composite = Typing 35% + MCP Capable 25% + Complexity Health 20% + Documentation 20%.</div>
+                    </div>
                 </div>
                 
                 <!-- Health Score Breakdown (compact text) -->
@@ -1284,13 +1265,20 @@
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
                 font: { color: '#1f2937' },
-                xaxis: { title: 'Avg Cyclomatic Complexity' },
+                xaxis: (() => {
+                    const maxCC = Math.max(...territoryData.map(d => parseFloat(d['Avg CC']) || 0), 30);
+                    return { title: 'Avg Cyclomatic Complexity', range: [0, maxCC * 1.05] };
+                })(),
                 yaxis: { title: 'Compliance %', range: [0, 100] },
-                shapes: [
+                shapes: (() => {
+                    const maxCC = Math.max(...territoryData.map(d => parseFloat(d['Avg CC']) || 0), 30);
+                    const maxX = maxCC * 1.05;
+                    return [
                     { type: 'line', x0: 10, x1: 10, y0: 0, y1: 100, line: { color: '#16a34a', width: 2, dash: 'dash' } },
                     { type: 'line', x0: 20, x1: 20, y0: 0, y1: 100, line: { color: '#dc2626', width: 2, dash: 'dash' } },
-                    { type: 'line', x0: 0, x1: 100, y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
-                ]
+                    { type: 'line', x0: 0, x1: maxX, y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                    ];
+                })()
             };
 
             trace.hovertemplate = 
@@ -1298,7 +1286,7 @@
                 'Category: <b>%{customdata[4]}</b><br>' +
                 'Agents: <b>%{customdata[1]}</b><br>' +
                 'Health: <b>%{customdata[0]:.1f}%</b><br>' +
-                'Complexity: <b>%{x:.1f}</b> (target ≤10)<br>' +
+                'Complexity: <b>%{x:.1f}</b> (target ≤10, lower is better)<br>' +
                 'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
                 '<i>Analogy:</i> Like a risk dashboard for drivers — complexity = road hazards, compliance = safety features<br>' +
                 'Green zone (top-left) = safe to extend<br>' +
@@ -1668,7 +1656,7 @@ ${rec.guidance.split('\n').map((line, i) =>
             container.innerHTML = html;
         }
 
-        function generateSparkline(values, color = '#2563eb') {
+        function generateSparkline(values, color = '#2563eb', highGood = true) {
             if (!values || values.length < 2) return '';
             const min = Math.min(...values);
             const max = Math.max(...values);
@@ -1681,7 +1669,9 @@ ${rec.guidance.split('\n').map((line, i) =>
                 return `${x},${y}`;
             }).join(' ');
             const trend = values[values.length - 1] > values[0] ? '↑' : values[values.length - 1] < values[0] ? '↓' : '→';
-            const trendColor = trend === '↑' ? '#16a34a' : trend === '↓' ? '#dc2626' : '#6b7280';
+            const trendColor = highGood
+                ? (trend === '↑' ? '#16a34a' : trend === '↓' ? '#dc2626' : '#6b7280')
+                : (trend === '↑' ? '#dc2626' : trend === '↓' ? '#16a34a' : '#6b7280');
             return `<span class="sparkline-container">
                 <svg class="sparkline-svg" viewBox="0 0 ${width} ${height}">
                     <polyline fill="none" stroke="${color}" stroke-width="2" points="${points}"/>
@@ -1947,7 +1937,6 @@ ${rec.guidance.split('\n').map((line, i) =>
 
                 renderStrategicObservations(totalRow, territoryData);
                 renderTerritorySummaryTable(territoryData);
-                renderHealthChart(territoryData);
                 renderRiskMatrix(territoryData);
                 renderRecommendations();
                 renderInterviewQuestions(totalRow);
@@ -2110,7 +2099,6 @@ ${rec.guidance.split('\n').map((line, i) =>
 
         // Setup all drill-down handlers
         function setupDrillDowns() {
-            attachDrillDown('healthChart');
             attachDrillDown('riskMatrix');
         }
 
