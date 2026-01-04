@@ -5,15 +5,15 @@
 
 ## 🎯 Executive Summary
 
-**System Health:** 62.9/100 | **Risk Level:** HIGH | **Criticality:** 100/100
+**System Health:** 63.1/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
 ### Key Metrics
-- **Total Agents:** 246
-- **Compliant:** 117 (47.6%) ❌
-- **Healing Capabilities:** 232 (94.3%) ✅
-- **Healing Invocation:** 88 (35.8%) ❌
-- **With Tests:** 179 (72.8%) ⚠️
-- **Avg Complexity:** 67.0 ❌
+- **Total Agents:** 245
+- **Compliant:** 117 (47.8%) ❌
+- **Healing Capabilities:** 232 (94.7%) ✅
+- **Healing Invocation:** 88 (35.9%) ❌
+- **With Tests:** 179 (73.1%) ⚠️
+- **Avg Complexity:** 67.2 ❌
 
 ## 📊 Territory Analysis
 
@@ -24,7 +24,7 @@
 ### High Priority Territories
 
 - 🔥 **L5 Safety/Red Teaming**: 1/5 compliant | Health: 73.3% | Risk: HIGH | Heal Gap: 80.0%
-- 🔥 **L2 Execution**: 24/75 compliant | Health: 64.4% | Risk: HIGH | Heal Gap: 69.4%
+- 🔥 **L2 Execution**: 24/74 compliant | Health: 65.3% | Risk: HIGH | Heal Gap: 70.3%
 - 🔥 **L5 Safety/Guardrails**: 15/25 compliant | Health: 77.3% | Risk: HIGH | Heal Gap: 24.0%
 
 ### Medium Priority Territories
@@ -69,7 +69,7 @@
 - **L1 Cognition**: Add heal_repository() methods (Gap: 75.0%)
 - **Apps Lic**: Add heal_repository() methods (Gap: 75.0%)
 - **Apps Rg**: Add heal_repository() methods (Gap: 73.3%)
-- **L2 Execution**: Add heal_repository() methods (Gap: 69.4%)
+- **L2 Execution**: Add heal_repository() methods (Gap: 70.3%)
 - **L4 State**: Add heal_repository() methods (Gap: 66.6%)
 - **Apps Shared**: Add heal_repository() methods (Gap: 50.0%)
 - **L3 Orchestration**: Add heal_repository() methods (Gap: 43.6%)

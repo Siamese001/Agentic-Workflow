@@ -51,6 +51,9 @@ server.watch("*.css")
 server.watch("*.js")
 server.watch("assets/*")
 
+# Regenerate dashboard when canonical discovery JSON changes
+server.watch(str(PROJECT_ROOT / "agent_discovery_full.json"), func=regenerate_dashboard, delay=1)
+
 # Auto-regeneration - watch agent source code
 # Triggers dashboard regeneration when any .py file in agentic_core/ changes
 # Live reload then auto-refreshes browser on new HTML
