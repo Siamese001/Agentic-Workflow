@@ -588,6 +588,8 @@
             const path = (rel || absFile).replace(/\\/g, '/');
             const name = (agent?.class_name || agent?.name || '').toString();
 
+            const isBaseClass = /\bBaseAgent\b|\bBase\b|\bCanonBaseAgent\b|\bMaintenanceBaseAgent\b|\bOrchestrationBaseAgent\b|\bStateBaseAgent\b|\bSafetyBaseAgent\b/.test(name) || /base_agent|baseagent|base\.py/i.test(path);
+
             function titleizeSegment(seg) {
                 return seg
                     .replace(/_/g, ' ')
@@ -671,6 +673,7 @@
 
             // L1 Cognition: avoid repeating "Cognition"
             if (path.includes('/L1_cognition/')) {
+                if (isBaseClass) return 'Base Classes';
                 if (/Planner|Plan|Strategy/i.test(name) || /planner|strategy/i.test(path)) return 'Planning';
                 if (/Reason|Infer|Evaluate|Scorer/i.test(name) || /reason|infer|score|eval/i.test(path)) return 'Reasoning & Evaluation';
                 if (/Memory|Recall|RAG|Retriev/i.test(name) || /memory|rag|retriev/i.test(path)) return 'Memory & Retrieval';
@@ -680,6 +683,7 @@
 
             // L0 Maintenance
             if (path.includes('/L0_maintenance/')) {
+                if (isBaseClass) return 'Base Classes';
                 if (/Healer|Repair|Fix|Cleanup|Dedup/i.test(name) || /healer|repair|cleanup|dedup/i.test(path)) return 'Maintenance & Repair';
                 if (/Config|Settings|Bootstrap/i.test(name) || /config|bootstrap/i.test(path)) return 'Bootstrapping';
                 return 'Ops Utilities';
@@ -1194,7 +1198,7 @@
                         onclick="openDrillModal('${row._drillTerritory || row.Territory}', '${displaySubTerritory.replace(/'/g, "\\'")}')" 
                         title="Click to view detailed per-agent diagnostics for ${displayTerritory}">
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${displayTerritory}</td>
-                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; font-size:0.85em; color:#475569; max-width:220px;">${displaySubTerritory}</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; font-size:1.0em; color:#475569; max-width:260px;">${displaySubTerritory}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${agentsToolsDisplay}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
@@ -2261,7 +2265,9 @@ ${rec.guidance.split('\n').map((line, i) =>
                             <p style="margin: 0; font-size: 0.85em; color: #1e40af;"><strong>Gap:</strong> ${obs.gap}</p>
                         </div>
                         <div style="margin-top: 6px; padding: 10px; background: #f0f9ff; border-radius: 6px; border-left: 3px solid #0369a1;">
-                            <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #1e40af;"><strong>Impact:</strong> ${obs.impact}</p>
+                            <p style="margin: 0; font-size: 0.85em; color: #1e40af;"><strong>Impact:</strong> ${obs.impact}</p>
+                        </div>
+                        <div style="margin-top: 6px; padding: 10px; background: #f0f9ff; border-radius: 6px; border-left: 3px solid #0369a1;">
                             <p style="margin: 0; font-size: 0.85em; color: #334155;"><strong>How to fix:</strong> ${obs.solve}</p>
                         </div>
                     </div>
@@ -2390,8 +2396,12 @@ ${rec.guidance.split('\n').map((line, i) =>
                             ${obs.sparkline}
                         </div>
                         <div style="margin-top: 8px; padding: 10px; background: #f0fdf4; border-radius: 6px; border-left: 3px solid #16a34a;">
-                            <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #166534;"><strong>Gap:</strong> ${obs.gap}</p>
-                            <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #334155;"><strong>Impact:</strong> ${obs.impact}</p>
+                            <p style="margin: 0; font-size: 0.85em; color: #166534;"><strong>Gap:</strong> ${obs.gap}</p>
+                        </div>
+                        <div style="margin-top: 6px; padding: 10px; background: #f0fdf4; border-radius: 6px; border-left: 3px solid #16a34a;">
+                            <p style="margin: 0; font-size: 0.85em; color: #334155;"><strong>Impact:</strong> ${obs.impact}</p>
+                        </div>
+                        <div style="margin-top: 6px; padding: 10px; background: #f0fdf4; border-radius: 6px; border-left: 3px solid #16a34a;">
                             <p style="margin: 0; font-size: 0.85em; color: #334155;"><strong>How to fix:</strong> ${obs.solve}</p>
                         </div>
                     </div>
