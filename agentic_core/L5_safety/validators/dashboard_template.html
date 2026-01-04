@@ -2136,15 +2136,22 @@ ${rec.guidance.split('\n').map((line, i) =>
 
             function computeTopPriorities() {
                 const breakdown = (dashboardData && dashboardData[0] && dashboardData[0]['Health Breakdown']) ? dashboardData[0]['Health Breakdown'] : [];
-                return breakdown
-                    .filter(item => item && item.raw < 80)
+                const fallback = [
+                    { component: 'Healing Invocation', raw: totalRow['Invocation %'] || 0, weight: 0.25, points: 0 },
+                    { component: 'Test Coverage', raw: totalRow['Test %'] || 0, weight: 0.18, points: 0 },
+                    { component: 'MCP Hardened', raw: totalRow['Hardened %'] || 0, weight: 0.18, points: 0 },
+                ];
+
+                const items = (breakdown && breakdown.length) ? breakdown : fallback;
+                return items
+                    .filter(item => item && item.component)
                     .map(item => ({
                         component: item.component,
-                        currentRaw: item.raw,
-                        weight: item.weight,
-                        currentPts: item.points,
-                        maxPts: 100 * item.weight,
-                        potentialGain: (100 - item.raw) * item.weight,
+                        currentRaw: (item.raw !== undefined && item.raw !== null) ? item.raw : 0,
+                        weight: (item.weight !== undefined && item.weight !== null) ? item.weight : 0,
+                        currentPts: (item.points !== undefined && item.points !== null) ? item.points : 0,
+                        maxPts: 100 * ((item.weight !== undefined && item.weight !== null) ? item.weight : 0),
+                        potentialGain: (100 - ((item.raw !== undefined && item.raw !== null) ? item.raw : 0)) * ((item.weight !== undefined && item.weight !== null) ? item.weight : 0),
                         action: getActionForComponent(item.component)
                     }))
                     .sort((a, b) => b.potentialGain - a.potentialGain)
@@ -2276,6 +2283,35 @@ ${rec.guidance.split('\n').map((line, i) =>
 
             // Metric-Focused Observations with WHY explanations
             const metricObs = [];
+
+            function buildMetricObservationForComponent(component) {
+                if (!component) return null;
+
+                const valuesByComponent = {
+                    'Healing Invocation': { value: totalRow['Invocation %'] || 0, label: 'Healing Invocation', fmt: v => `${v.toFixed(1)}%`, icon: '🔗', spark: [15, 18, 21, 23, totalRow['Invocation %'] || 0] },
+                    'MCP Hardened': { value: totalRow['Hardened %'] || 0, label: 'MCP Hardened', fmt: v => `${v.toFixed(1)}%`, icon: '🛡️', spark: [40, 44, 47, 49, totalRow['Hardened %'] || 0] },
+                    'Test Coverage': { value: totalRow['Test %'] || 0, label: 'Test Coverage', fmt: v => `${v.toFixed(1)}%`, icon: '🧪', spark: [40, 45, 52, 60, totalRow['Test %'] || 0] },
+                    'Healing Capability': { value: totalRow['Heal Cap %'] || 0, label: 'Healing Capability', fmt: v => `${v.toFixed(1)}%`, icon: '💉', spark: [70, 75, 80, 85, totalRow['Heal Cap %'] || 0] },
+                    'Observability': { value: totalRow['Observable %'] || 0, label: 'Observability', fmt: v => `${v.toFixed(1)}%`, icon: '📡', spark: [50, 55, 60, 65, totalRow['Observable %'] || 0] },
+                    'Typing': { value: totalRow['Typed %'] || 0, label: 'Typing', fmt: v => `${v.toFixed(1)}%`, icon: '🧾', spark: [55, 60, 65, 70, totalRow['Typed %'] || 0] },
+                    'Complexity Health': { value: totalRow['Avg CC'] || 0, label: 'Complexity', fmt: v => `${v.toFixed(1)}`, icon: '🔀', spark: [45, 42, 40, 39, totalRow['Avg CC'] || 0], highGood: false },
+                };
+
+                const meta = valuesByComponent[component];
+                if (!meta) return null;
+
+                const sparkline = generateSparkline(meta.spark, '#2563eb', meta.highGood !== false);
+                return {
+                    icon: meta.icon,
+                    metric: meta.label,
+                    value: meta.fmt(meta.value),
+                    sparkline,
+                    priorityComponent: component,
+                    gap: `${meta.label} is ${meta.fmt(meta.value)}. ${getActionForComponent(component)}.`,
+                    impact: `Even if this metric is currently strong, improving it further compounds autonomy: better guardrails, faster recovery, and fewer regressions during refactors.`,
+                    solve: getActionForComponent(component)
+                };
+            }
             
             // Health sparkline data (simulated historical)
             const healthHistory = [55, 58, 61, 64, totalRow.Health];
@@ -2373,6 +2409,17 @@ ${rec.guidance.split('\n').map((line, i) =>
                 gap: `Documentation coverage is ${(totalRow['Doc %'] || 50).toFixed(1)}% (target ≥80%) across public agent interfaces.`,
                 impact: `In a production agentic system, unclear interfaces reduce reuse by ~30–50% because agents (and humans) cannot quickly infer intent, constraints, and safe usage patterns. That increases duplication and makes canon compliance harder to enforce.`,
                 solve: `Add docstrings to public methods and stabilize naming so registry search works. Interview prep example: explain how docs + naming reduce hallucinated tool usage by constraining the search space.`
+            });
+
+            // Ensure the top 3 priorities always have visible cards (even if thresholds didn't trigger them).
+            priorities.forEach(p => {
+                const component = p?.component;
+                if (!component) return;
+                const alreadyPresent = metricObs.some(o => o && o.priorityComponent === component);
+                if (!alreadyPresent) {
+                    const obs = buildMetricObservationForComponent(component);
+                    if (obs) metricObs.push(obs);
+                }
             });
 
             // Highest-priority observations first (P1 → P2 → P3), then stable ordering.

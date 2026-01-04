@@ -6,9 +6,9 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -30,10 +30,10 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "Agent",
-      "SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -264,9 +264,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -293,9 +293,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -325,8 +325,8 @@
     "layer": "L1",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "execute",
@@ -378,8 +378,8 @@
     "layer": "L1",
     "inheritance": [
       "MCPHardenedMixin",
-      "CanonBaseAgentInterface",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonBaseAgentInterface"
     ],
     "key_methods": [
       "__init__",
@@ -411,9 +411,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -446,8 +446,8 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "CanonBaseAgentInterface",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonBaseAgentInterface"
     ],
     "key_methods": [
       "__init__",
@@ -618,9 +618,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -710,8 +710,8 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "ICognitivePlane",
-      "HealerMixin"
+      "HealerMixin",
+      "ICognitivePlane"
     ],
     "key_methods": [
       "__init__",
@@ -805,8 +805,8 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "CanonBaseAgentInterface",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonBaseAgentInterface"
     ],
     "key_methods": [
       "__init__",
@@ -864,8 +864,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "SubAtomicAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
       "SubatomicTestingMixin"
     ],
@@ -932,8 +932,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "SubAtomicAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
       "SubatomicTestingMixin"
     ],
@@ -987,8 +987,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "SubAtomicAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
       "SubatomicTestingMixin"
     ],
@@ -1050,8 +1050,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "CanonBaseAgent",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -1181,8 +1181,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "SubAtomicAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
       "SubatomicTestingMixin"
     ],
@@ -1247,9 +1247,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1280,9 +1280,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1543,8 +1543,8 @@
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "AutonomyMixin",
+      "HealerMixin",
       "AdaptiveExecutionMixin"
     ],
     "key_methods": [
@@ -1609,8 +1609,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "CanonBaseAgent",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -1704,8 +1704,8 @@
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -1760,9 +1760,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__"
@@ -1915,9 +1915,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1974,9 +1974,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2009,9 +2009,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2032,33 +2032,6 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true
-  },
-  {
-    "class_name": "OmniContext",
-    "path": "agentic_core\\L2_execution\\tool_registry\\context.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L2_execution",
-    "layer": "L2",
-    "inheritance": [
-      "SubAtomicAgent"
-    ],
-    "key_methods": [
-      "__init__",
-      "execute",
-      "_build_context_buffer",
-      "consult"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 53,
-    "class_count": 1,
-    "description": "\n    ROLE: Global Architectural Context. Concatenates all non-excluded .py files\n    into a single c",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": false
   },
   {
     "class_name": "OmniContextAgent",
@@ -2091,9 +2064,9 @@
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
+      "CanonBaseAgent",
       "MCPHardenedMixin",
-      "ASTEnforcementMixin",
-      "CanonBaseAgent"
+      "ASTEnforcementMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2126,8 +2099,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "SubAtomicAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
       "SubatomicTestingMixin"
     ],
@@ -2242,8 +2215,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "SubAtomicAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
       "SubatomicTestingMixin"
     ],
@@ -2358,10 +2331,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -2392,8 +2365,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "IActionPlane",
-      "HealerMixin"
+      "HealerMixin",
+      "IActionPlane"
     ],
     "key_methods": [
       "__init__",
@@ -2743,9 +2716,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2853,8 +2826,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "CanonBaseAgent",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -2887,8 +2860,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "CanonBaseAgent",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -2921,8 +2894,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "CanonBaseAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
       "SubatomicTestingMixin"
     ],
@@ -2982,8 +2955,8 @@
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3042,9 +3015,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3127,8 +3100,8 @@
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "NodeTransformer",
-      "HealerMixin"
+      "HealerMixin",
+      "NodeTransformer"
     ],
     "key_methods": [
       "__init__",
@@ -3301,9 +3274,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3359,8 +3332,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3394,8 +3367,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3429,8 +3402,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3458,8 +3431,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3492,9 +3465,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3554,8 +3527,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3582,9 +3555,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3641,9 +3614,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3703,8 +3676,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3794,8 +3767,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -3911,9 +3884,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3975,9 +3948,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4061,9 +4034,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4095,8 +4068,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__"
@@ -4121,8 +4094,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4182,9 +4155,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4284,9 +4257,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4344,8 +4317,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4379,8 +4352,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4585,8 +4558,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -4654,8 +4627,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4721,8 +4694,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4751,8 +4724,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4848,8 +4821,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -5150,9 +5123,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5180,9 +5153,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5209,9 +5182,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5240,9 +5213,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5273,9 +5246,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5304,9 +5277,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5336,10 +5309,10 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin",
       "CachedSafetyShield",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5368,9 +5341,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5401,8 +5374,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -5435,9 +5408,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5467,9 +5440,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5502,9 +5475,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5537,9 +5510,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5567,8 +5540,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "MCPHardenedMixin",
       "CanonBaseAgent",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -5598,8 +5571,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5632,9 +5605,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5692,9 +5665,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5756,9 +5729,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5791,9 +5764,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5883,12 +5856,12 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "MCPHardenedMixin",
-      "AdaptiveExecutionMixin",
-      "HealerMixin",
+      "AutonomyMixin",
       "SubatomicTestingMixin",
+      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5947,10 +5920,10 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ASTEnforcementMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "ASTEnforcementMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6041,9 +6014,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6074,9 +6047,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -6134,9 +6107,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6190,9 +6163,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6257,9 +6230,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6285,8 +6258,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "NodeTransformer",
-      "HealerMixin"
+      "HealerMixin",
+      "NodeTransformer"
     ],
     "key_methods": [
       "__init__",
@@ -6735,8 +6708,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6790,8 +6763,8 @@
     "inheritance": [
       "MCPHardenedMixin",
       "HealerMixin",
-      "SubatomicTestingMixin",
-      "ValidationGateExecutor"
+      "ValidationGateExecutor",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7027,8 +7000,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7054,8 +7027,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7082,8 +7055,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7112,8 +7085,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7212,8 +7185,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7246,9 +7219,9 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -7326,8 +7299,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "L3SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",

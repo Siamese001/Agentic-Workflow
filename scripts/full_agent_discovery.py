@@ -298,7 +298,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     # 1. IMMEDIATE HARD NEGATIVES (Maximal Precision)
     # - Obvious mock/test prefixes without 'Agent'
     # - Fundamental non-agent bases (Protocol/ABC/Data structures) — never concrete agents
-    skip_patterns = ('Test', 'Mock', 'Stub', 'Fake', 'Dummy')
+    skip_patterns = ('Test', 'Mock', 'Stub', 'Fake', 'Dummy', 'Baseline', 'Sample', 'Example')
     if name.startswith(skip_patterns) and 'Agent' not in name:
         return False
 
@@ -316,6 +316,13 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     if bases & non_agent_bases:
         return False
 
+    # HARD NEGATIVE: Data/container patterns — pure configs/schemas/states are never agents
+    # Rationale: Zero FP from Pydantic/dataclass schemas misnamed without agent identity
+    # Exceptions forgiven later via strong positive override
+    data_container_suffixes = ('Config', 'Settings', 'Context', 'Options', 'Schema', 'State')
+    if name.endswith(data_container_suffixes) and 'Agent' not in name:
+        return False
+
     # Extract methods early — needed for harness detection and optional anchoring
     method_names = extract_methods(class_node)
 
@@ -330,7 +337,6 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     agent_bases = {
         'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
         'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
-        'IActionPlane', 'ValidationProtocol', 'Protocol', 'ABC',
         'ExecutionCanonBaseAgent',
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
         'BaseAgent',
@@ -340,7 +346,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     has_strong_positive_signal = (
         name.endswith('Agent')
         or bool(bases & agent_bases)
-        or has_healing_in_chain(name, bases)  # MRO-aware is sufficient for healing proof
+        or has_healing_in_chain(name, bases)  # MRO-aware healing is the gold standard for agent hierarchy
     )
 
     # Signal 4: Anchored role suffixes (historical recovery with precision)
@@ -356,9 +362,6 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         anchored = (
             bool(bases & agent_bases)
             or has_healing_in_chain(name, bases)
-            or 'HealerMixin' in bases
-            or 'ASTEnforcementMixin' in bases
-            or 'MCPHardenedMixin' in bases  # Optional: only if needed for hardened L5 agents without healing chain
         )
         if anchored:
             has_strong_positive_signal = True
