@@ -435,14 +435,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         diversity_bonus = len(signal_types) * 0.05
         confidence = min(raw_confidence + diversity_bonus, 1.0)
         
-        if confidence >= PLACEMENT_CONFIDENCE["HIGH"]:
-            ConfidenceLevel = "HIGH"
-        elif confidence >= PLACEMENT_CONFIDENCE["MEDIUM"]:
-            ConfidenceLevel = "MEDIUM"
-        elif confidence >= PLACEMENT_CONFIDENCE["LOW"]:
-            ConfidenceLevel = "LOW"
-        else:
-            ConfidenceLevel = "REJECT"
+        ConfidenceLevel = self._determine_confidence_level(confidence)
         
         path_parts = top_path.split("/")
         l1_folder = path_parts[1] if len(path_parts) > 1 else ""
@@ -464,6 +457,19 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             reasoning=reasoning,
             alternative_paths=alternatives
         )
+
+    def _determine_confidence_level(self, confidence: float) -> str:
+        """Determine confidence level using lookup table pattern."""
+        confidence_thresholds = [
+            (PLACEMENT_CONFIDENCE["HIGH"], "HIGH"),
+            (PLACEMENT_CONFIDENCE["MEDIUM"], "MEDIUM"),
+            (PLACEMENT_CONFIDENCE["LOW"], "LOW"),
+        ]
+        
+        for threshold, level in confidence_thresholds:
+            if confidence >= threshold:
+                return level
+        return "REJECT"
 
     def _extract_decorators(self, content: str) -> List[str]:
         try:
@@ -1243,70 +1249,147 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         actual_execute = execute and not dry_run
         
-        # AUTONOMY LAW ENFORCEMENT (Canon Key 51)
-        script_violations = self._detect_runner_script_violations()
-        if script_violations:
-            print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[!] AUTONOMY LAW VIOLATION: Found {len(script_violations)} forbidden runner scripts")
-            for script in script_violations:
-                print(f"    → {script.relative_to(self.project_root)} — DELETE THIS FILE")
+        try:
+            # CRITICAL FIRST: Invoke parent healing chain (HealerMixin + upper layers)
+            parent_result = super().heal_repository(
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth + 1,
+                max_depth=max_depth,
+                _call_path=_call_path
+            )
+            
+            # AUTONOMY LAW ENFORCEMENT (Canon Key 51)
+            script_violations = self._detect_runner_script_violations()
+            if script_violations:
+                print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[!] AUTONOMY LAW VIOLATION: Found {len(script_violations)} forbidden runner scripts")
+                for script in script_violations:
+                    print(f"    → {script.relative_to(self.project_root)} — DELETE THIS FILE")
+                    if actual_execute:
+                        try:
+                            script.unlink()
+                            print(f"      [+] DELETED forbidden script")
+                        except Exception as e:
+                            print(f"      [!] Failed to delete: {e}")
                 if actual_execute:
-                    try:
-                        script.unlink()
-                        print(f"      [+] DELETED forbidden script")
-                    except Exception as e:
-                        print(f"      [!] Failed to delete: {e}")
-            if actual_execute:
-                print("[+] Autonomy law enforced — external scripts removed")
+                    print("[+] Autonomy law enforced — external scripts removed")
+            
+            violations = self.run()  # uses existing full scan
+            print(f"[NAMING HEAL @ depth {depth}] Found {len(violations)} violations")
+            
+            summary = self._initialize_summary()
+            
+            for file_path, reason in violations:
+                # Only process AGENT FILE NAMING VIOLATION (not other naming issues)
+                if not self._is_agent_naming_violation(reason):
+                    summary['skipped'] += 1
+                    continue
+                    
+                proposal = self.auto_rename_proposal(file_path, dry_run=not actual_execute)
+                self._process_healing_status(proposal, file_path, summary)
+            
+            self._print_healing_summary(summary)
+            
+            # Merge parent results with agent-specific results
+            merged = self._merge_healing_results(parent_result, summary)
+            return merged
+        finally:
+            _call_path.discard(agent_name)
+    
+    def _merge_healing_results(self, parent: Dict[str, Any], agent: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Merge parent healing results with agent-specific results.
         
-        violations = self.run()  # uses existing full scan
-        print(f"[NAMING HEAL @ depth {depth}] Found {len(violations)} violations")
+        Args:
+            parent: Parent/HealerMixin healing results
+            agent: Agent-specific healing results
+            
+        Returns:
+            Merged results with summed metrics
+        """
+        merged = {}
         
-        summary = {
+        # Standard metrics (sum parent + agent)
+        for key in ['renamed', 'collisions_blocked', 'multi_agent_needs_split', 'skipped', 'errors', 'healed', 'total']:
+            merged[key] = parent.get(key, 0) + agent.get(key, 0)
+        
+        # Preserve other keys from both dicts
+        for key in set(parent.keys()) | set(agent.keys()):
+            if key not in merged:
+                # For non-numeric keys, preserve from agent (more specific)
+                if key in agent:
+                    merged[key] = agent[key]
+                elif key in parent:
+                    merged[key] = parent[key]
+        
+        return merged
+    
+    def _initialize_summary(self) -> Dict[str, int]:
+        """Initialize healing summary dictionary."""
+        return {
             "renamed": 0,
             "collisions_blocked": 0,
             "multi_agent_needs_split": 0,
             "skipped": 0,
             "errors": 0
         }
+    
+    def _is_agent_naming_violation(self, reason: str) -> bool:
+        """Check if reason is an agent file naming violation."""
+        return 'AGENT FILE NAMING VIOLATION' in reason
+    
+    def _process_healing_status(self, proposal: Dict[str, Any], file_path: Path, summary: Dict[str, int]) -> None:
+        """Dispatch healing status to appropriate handler."""
+        status_handlers = {
+            'renamed': self._handle_renamed,
+            'proposed': self._handle_proposed,
+            'collision': self._handle_collision,
+            'multi_agent_needs_split': self._handle_multi_agent_split,
+            'compliant': self._handle_compliant,
+        }
         
-        for file_path, reason in violations:
-            # Only process AGENT FILE NAMING VIOLATION (not other naming issues)
-            if 'AGENT FILE NAMING VIOLATION' not in reason:
-                summary['skipped'] += 1
-                continue
-                
-            proposal = self.auto_rename_proposal(file_path, dry_run=not actual_execute)
-            status = proposal.get('status', 'unknown')
-            
-            if status == 'renamed':
-                summary['renamed'] += 1
-                print(f"  [+] RENAMED: {file_path.name} → {Path(proposal['new_path']).name}")
-            elif status == 'proposed':
-                summary['renamed'] += 1
-                print(f"  [→] WOULD RENAME: {file_path.name} → {Path(proposal['new_path']).name}")
-            elif status == 'collision':
-                summary['collisions_blocked'] += 1
-                print(f"  [!] BLOCKED (collision): {file_path.name} → {proposal.get('best_name')} — {proposal.get('error')}")
-            elif status == 'multi_agent_needs_split':
-                summary['multi_agent_needs_split'] += 1
-                print(f"  [!] SPLIT REQUIRED: {file_path.name} contains multiple agents — manual split needed")
-            elif status == 'compliant':
-                summary['skipped'] += 1
-            else:
-                summary['errors'] += 1
-                print(f"  [!] ERROR: {file_path.name} — {proposal.get('error', status)}")
-        
+        status = proposal.get('status', 'error')
+        handler = status_handlers.get(status, self._handle_error)
+        handler(proposal, file_path, summary)
+    
+    def _handle_renamed(self, proposal: Dict[str, Any], file_path: Path, summary: Dict[str, int]) -> None:
+        """Handle renamed status."""
+        summary['renamed'] += 1
+        print(f"  [+] RENAMED: {file_path.name} → {Path(proposal['new_path']).name}")
+    
+    def _handle_proposed(self, proposal: Dict[str, Any], file_path: Path, summary: Dict[str, int]) -> None:
+        """Handle proposed status."""
+        summary['renamed'] += 1
+        print(f"  [→] WOULD RENAME: {file_path.name} → {Path(proposal['new_path']).name}")
+    
+    def _handle_collision(self, proposal: Dict[str, Any], file_path: Path, summary: Dict[str, int]) -> None:
+        """Handle collision status."""
+        summary['collisions_blocked'] += 1
+        print(f"  [!] BLOCKED (collision): {file_path.name} → {proposal.get('best_name')} — {proposal.get('error')}")
+    
+    def _handle_multi_agent_split(self, proposal: Dict[str, Any], file_path: Path, summary: Dict[str, int]) -> None:
+        """Handle multi-agent split required status."""
+        summary['multi_agent_needs_split'] += 1
+        print(f"  [!] SPLIT REQUIRED: {file_path.name} contains multiple agents — manual split needed")
+    
+    def _handle_compliant(self, proposal: Dict[str, Any], file_path: Path, summary: Dict[str, int]) -> None:
+        """Handle compliant status."""
+        summary['skipped'] += 1
+    
+    def _handle_error(self, proposal: Dict[str, Any], file_path: Path, summary: Dict[str, int]) -> None:
+        """Handle error status."""
+        summary['errors'] += 1
+        status = proposal.get('status', 'unknown')
+        print(f"  [!] ERROR: {file_path.name} — {proposal.get('error', status)}")
+    
+    def _print_healing_summary(self, summary: Dict[str, int]) -> None:
+        """Print healing summary."""
         print(f"\n[NAMING HEAL SUMMARY] "
               f"Renamed: {summary['renamed']} | "
               f"Collisions: {summary['collisions_blocked']} | "
               f"Split needed: {summary['multi_agent_needs_split']} | "
               f"Skipped: {summary['skipped']} | "
               f"Errors: {summary['errors']}")
-        
-        # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
-        
-        return summary
 
     async def _assess_naming_signal(self, name: str, file_path: Path) -> float:
         """Assess naming signal strength (0.0-1.0)."""

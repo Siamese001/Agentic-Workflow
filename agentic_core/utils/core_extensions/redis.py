@@ -83,7 +83,7 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
     
     def execute(self, operation: str, **payload) -> Dict[str, Any]:
         """
-        Route Redis operations safely.
+        Route Redis operations safely via dispatch pattern.
         
         Args:
             operation: Redis operation (set, get, delete, etc.)
@@ -92,79 +92,93 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
         Returns:
             Result dictionary with success status and data
         """
+        handlers = {
+            'set': self._handle_set,
+            'get': self._handle_get,
+            'delete': self._handle_delete,
+            'exists': self._handle_exists,
+            'keys': self._handle_keys,
+            'expire': self._handle_expire,
+            'ping': self._handle_ping,
+        }
+        
+        handler = handlers.get(operation)
+        if not handler:
+            return {'success': False, 'error': f'Unsupported Redis operation: {operation}'}
+        
         key = payload.get('key', '')
         Logger.debug(f"[SOVEREIGN REDIS] {operation}: {key[:50]}")
         
-        client = self._get_client()
-        
         try:
-            if operation == 'set':
-                value = payload.get('value', '')
-                ttl = payload.get('ttl')
-                
-                if client:
-                    if ttl:
-                        client.setex(key, ttl, value)
-                    else:
-                        client.set(key, value)
-                else:
-                    self._fallback_set(key, value)
-                
-                result = {'success': True}
-            
-            elif operation == 'get':
-                if client:
-                    value = client.get(key)
-                else:
-                    value = self._fallback_cache.get(key)
-                
-                result = {'success': True, 'value': value}
-            
-            elif operation == 'delete':
-                if client:
-                    deleted = client.delete(key)
-                else:
-                    deleted = 1 if key in self._fallback_cache else 0
-                    if key in self._fallback_cache:
-                        del self._fallback_cache[key]
-                
-                result = {'success': True, 'deleted': deleted}
-            
-            elif operation == 'exists':
-                if client:
-                    exists = client.exists(key) > 0
-                else:
-                    exists = key in self._fallback_cache
-                
-                result = {'success': True, 'exists': exists}
-            
-            elif operation == 'keys':
-                pattern = payload.get('pattern', '*')
-                if client:
-                    keys = client.keys(pattern)
-                else:
-                    import fnmatch
-                    keys = [k for k in self._fallback_cache.keys() if fnmatch.fnmatch(k, pattern)]
-                
-                result = {'success': True, 'keys': keys}
-            
-            elif operation == 'expire':
-                ttl = payload.get('ttl', 3600)
-                if client:
-                    client.expire(key, ttl)
-                result = {'success': True}
-            
-            elif operation == 'ping':
-                if client:
-                    client.ping()
-                result = {'success': True, 'pong': True, 'fallback': self._use_fallback}
-            
-            else:
-                result = {'success': False, 'error': f'Unsupported Redis operation: {operation}'}
-        
+            result = handler(**payload)
         except Exception as e:
             Logger.error(f"[SOVEREIGN REDIS] {operation} failed: {e}")
             result = {'success': False, 'error': str(e)}
         
         self._audit(operation, key, result)
         return result
+    
+    def _handle_set(self, key: str, value: str, ttl: Optional[int] = None, **kwargs) -> Dict[str, Any]:
+        """Sub-atomic set handler."""
+        client = self._get_client()
+        if client:
+            if ttl:
+                client.setex(key, ttl, value)
+            else:
+                client.set(key, value)
+        else:
+            self._fallback_set(key, value)
+        return {'success': True}
+    
+    def _handle_get(self, key: str, **kwargs) -> Dict[str, Any]:
+        """Sub-atomic get handler."""
+        client = self._get_client()
+        if client:
+            value = client.get(key)
+        else:
+            value = self._fallback_cache.get(key)
+        return {'success': True, 'value': value}
+    
+    def _handle_delete(self, key: str, **kwargs) -> Dict[str, Any]:
+        """Sub-atomic delete handler."""
+        client = self._get_client()
+        if client:
+            deleted = client.delete(key)
+        else:
+            deleted = 1 if key in self._fallback_cache else 0
+            if key in self._fallback_cache:
+                del self._fallback_cache[key]
+        return {'success': True, 'deleted': deleted}
+    
+    def _handle_exists(self, key: str, **kwargs) -> Dict[str, Any]:
+        """Sub-atomic exists handler."""
+        client = self._get_client()
+        if client:
+            exists = client.exists(key) > 0
+        else:
+            exists = key in self._fallback_cache
+        return {'success': True, 'exists': exists}
+    
+    def _handle_keys(self, pattern: str = '*', **kwargs) -> Dict[str, Any]:
+        """Sub-atomic keys handler."""
+        client = self._get_client()
+        if client:
+            keys = client.keys(pattern)
+        else:
+            import fnmatch
+            keys = [k for k in self._fallback_cache.keys() if fnmatch.fnmatch(k, pattern)]
+        return {'success': True, 'keys': keys}
+    
+    def _handle_expire(self, key: str, ttl: int = 3600, **kwargs) -> Dict[str, Any]:
+        """Sub-atomic expire handler."""
+        client = self._get_client()
+        if client:
+            client.expire(key, ttl)
+        return {'success': True}
+    
+    def _handle_ping(self, **kwargs) -> Dict[str, Any]:
+        """Sub-atomic ping handler."""
+        client = self._get_client()
+        if client:
+            client.ping()
+        return {'success': True, 'pong': True, 'fallback': self._use_fallback}
