@@ -1966,47 +1966,75 @@ ${rec.guidance.split('\n').map((line, i) =>
         }
 
         function loadData() {
-            const data = dashboardData;
-            const territoryData = data.filter(row => row.Territory !== 'TOTAL');
-            const totalRow = data.find(row => row.Territory === 'TOTAL');
+            try {
+                const data = dashboardData || [];
+                const territoryData = data.filter(row => row && row.Territory !== 'TOTAL');
+                const totalRow = data.find(row => row && row.Territory === 'TOTAL');
 
-            if (!totalRow) {
-                document.getElementById('kpiGrid').innerHTML = '<div class="loading">No data available.</div>';
-                return;
+                if (!totalRow) {
+                    const container = document.getElementById('kpiGrid');
+                    if (container) {
+                        container.innerHTML = '<div class="loading">No data available.</div>';
+                    }
+                    return;
+                }
+
+                renderStrategicObservations(totalRow, territoryData);
+                renderTerritorySummaryTable(territoryData);
+                renderTopRecommendations();
+                renderHealthChart(territoryData);
+                renderRiskMatrix(territoryData);
+                renderRecommendations();
+                renderInterviewQuestions(totalRow);
+
+                // Update timestamp to current time on each load/refresh
+                const now = new Date();
+                const options = { year: 'numeric', month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                const currentTime = now.toLocaleDateString('en-US', options);
+                const lastUpdatedElement = document.getElementById('lastUpdated');
+                if (lastUpdatedElement) {
+                    lastUpdatedElement.textContent = `Last updated: ${currentTime}`;
+                }
+                
+                // Setup drill-down click handlers after all charts are rendered
+                setTimeout(() => {
+                    try {
+                        setupDrillDowns();
+                    } catch (error) {
+                        console.warn('Failed to setup drill-downs:', error);
+                    }
+                }, 100);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                const container = document.getElementById('kpiGrid');
+                if (container) {
+                    container.innerHTML = '<div class="loading">Error loading dashboard. Please refresh.</div>';
+                }
             }
-
-            renderStrategicObservations(totalRow, territoryData);
-            renderTerritorySummaryTable(territoryData);
-            renderTopRecommendations();
-            renderHealthChart(territoryData);
-            renderRiskMatrix(territoryData);
-            renderRecommendations();
-            renderInterviewQuestions(totalRow);
-
-            // Update timestamp to current time on each load/refresh
-            const now = new Date();
-            const options = { year: 'numeric', month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            const currentTime = now.toLocaleDateString('en-US', options);
-            document.getElementById('lastUpdated').textContent = `Last updated: ${currentTime}`;
-            
-            // Setup drill-down click handlers after all charts are rendered
-            setTimeout(setupDrillDowns, 100);
         }
 
         // Drill-down modal functions
         function openDrillModal(territoryName) {
-            const row = dashboardData.find(r => r.Territory === territoryName);
-            if (!row) return;
+            try {
+                const row = dashboardData?.find(r => r && r.Territory === territoryName);
+                if (!row) return;
 
-            document.getElementById('modalTitle').textContent = `${territoryName} Territory Drill-Down`;
-            document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Health ${row.Health.toFixed(1)}% • Invocation ${row['Invocation %'].toFixed(1)}%`;
+                const modalTitle = document.getElementById('modalTitle');
+                const modalSubtitle = document.getElementById('modalSubtitle');
+                
+                if (modalTitle) {
+                    modalTitle.textContent = `${territoryName} Territory Drill-Down`;
+                }
+                if (modalSubtitle) {
+                    modalSubtitle.textContent = `${row.Total} agents • Health ${row.Health?.toFixed(1)}% • Invocation ${row['Invocation %']?.toFixed(1)}%`;
+                }
 
             let content = '<strong style="font-size:1.2em;">Territory Metrics Recap:</strong><ul style="margin-top:10px;">';
-            content += `<li>Healing Capability: <strong>${row['Heal Cap %'].toFixed(1)}%</strong></li>`;
-            content += `<li>Healing Invocation: <strong>${row['Invocation %'].toFixed(1)}%</strong> (gap = opportunity)</li>`;
+            content += `<li>Healing Capability: <strong>${row['Heal Cap %']?.toFixed(1)}%</strong></li>`;
+            content += `<li>Healing Invocation: <strong>${row['Invocation %']?.toFixed(1)}%</strong> (gap = opportunity)</li>`;
             content += `<li>MCP Hardened: <strong>${(row['Hardened %'] || 0).toFixed(1)}%</strong></li>`;
-            content += `<li>Tests: <strong>${row['Test %'].toFixed(1)}%</strong></li>`;
-            content += `<li>Avg Complexity: <strong>${row['Avg CC'].toFixed(1)}</strong></li>`;
+            content += `<li>Tests: <strong>${row['Test %']?.toFixed(1)}%</strong></li>`;
+            content += `<li>Avg Complexity: <strong>${row['Avg CC']?.toFixed(1)}</strong></li>`;
             content += '</ul>';
 
             // Per-agent diagnostics table
@@ -2042,8 +2070,8 @@ ${rec.guidance.split('\n').map((line, i) =>
                         ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
                         : '<span style="color:#dc2626; font-weight:700;">✗</span>';
                     
-                    const typedColor = getColor(agent.typed_pct, true);
-                    const complexityColor = getColor(agent.complexity, false);
+                    const typedColor = getColor(agent.typed_pct || 0, true);
+                    const complexityColor = getColor(agent.complexity || 0, false);
                     
                     // Observability flags with color coding
                     const obsTitle = "Observability flags:\nLogging: structured logs\nMetrics: log_metric calls\nTracing: OpenTelemetry spans\nEssential for production debugging";
@@ -2087,8 +2115,18 @@ ${rec.guidance.split('\n').map((line, i) =>
                 content += '<p style="margin-top:20px; color:var(--text-light);">No per-agent diagnostics available for this territory.</p>';
             }
 
-            document.getElementById('modalContent').innerHTML = content;
-            document.getElementById('drillModal').style.display = 'flex';
+            const modalContent = document.getElementById('modalContent');
+            const drillModal = document.getElementById('drillModal');
+            
+            if (modalContent) {
+                modalContent.innerHTML = content;
+            }
+            if (drillModal) {
+                drillModal.style.display = 'flex';
+            }
+            } catch (error) {
+                console.error('Error opening drill modal:', error);
+            }
         }
 
         // Attach click handlers to all territory charts
