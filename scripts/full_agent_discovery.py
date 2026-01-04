@@ -34,7 +34,11 @@ from collections import defaultdict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / 'agentic_core'
-OUTPUT_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
+CANONICAL_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
+LEGACY_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
+MISTAKE_JSON = PROJECT_ROOT / 'agent_full.json'
+MISTAKE_JSON_2 = PROJECT_ROOT / 'agent_discovery_legacy.json'
+OUTPUT_JSON = CANONICAL_JSON
 
 EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv'}
 
@@ -312,26 +316,21 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     if bases & non_agent_bases:
         return False
 
-    # ENVIRONMENTAL NEGATIVE SIGNAL: Weaken secondary signals in tests/
-    # - In tests/: only allow classes strictly named '*Agent' (primary signal)
-    # - Disallow role-suffix recovery or inheritance-only triggers in tests/
-    # - Rationale: Prevents test harness FP explosion while forgiving misplaced real agents
+    # Extract methods early — needed for harness detection and optional anchoring
+    method_names = extract_methods(class_node)
+
+    # Compute path once for reuse
     path_str = str(rel_path).replace('\\', '/').lower() if rel_path else ''
     in_tests = path_str.startswith('tests/') or '/tests/' in path_str
-    if in_tests and not name.endswith('Agent'):
-        return False
-
-    method_names = extract_methods(class_node)
 
     # === ULTRA-HARDENED AGENT DETECTION (Single Source of Truth) ===
     # Four high-confidence positive signals (prioritized in order of strength):
     # 1. Strict naming: ends with 'Agent' (primary canonical pattern)
     # 2. Direct inheritance from known agent base classes
-    # 3. Healing capability anywhere in MRO chain (strong structural proof)
-    # 4. Curated role suffix + anchored hierarchy/healing (recovers historical valid agents)
     agent_bases = {
         'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
         'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+        'IActionPlane', 'ValidationProtocol', 'Protocol', 'ABC',
         'ExecutionCanonBaseAgent',
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
         'BaseAgent',
@@ -341,11 +340,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     has_strong_positive_signal = (
         name.endswith('Agent')
         or bool(bases & agent_bases)
-        or has_healing_in_chain(name, bases)
-        or 'HealerMixin' in bases
-        or 'MCPHardenedMixin' in bases
-        or 'SubatomicTestingMixin' in bases
-        or 'ASTEnforcementMixin' in bases
+        or has_healing_in_chain(name, bases)  # MRO-aware is sufficient for healing proof
     )
 
     # Signal 4: Anchored role suffixes (historical recovery with precision)
@@ -363,7 +358,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
             or has_healing_in_chain(name, bases)
             or 'HealerMixin' in bases
             or 'ASTEnforcementMixin' in bases
-            or any(m in method_names for m in ('heal_repository', 'execute', 'act', 'run', 'run_async'))
+            or 'MCPHardenedMixin' in bases  # Optional: only if needed for hardened L5 agents without healing chain
         )
         if anchored:
             has_strong_positive_signal = True
@@ -382,12 +377,16 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         if name.startswith('I') and len(name) > 1 and name[1].isupper():
             return False
 
-    # Test harness negative (applies everywhere, including outside tests/)
+    # TEST HARNESS REJECTION (Strongest in tests/, weaker elsewhere)
+    # - In tests/: unconditionally reject obvious harness patterns (Test* name or test_* methods)
+    # - Outside tests/: reject only if NO strong positive signal (allows real agents with test_ methods)
+    is_harness = name.startswith('Test') or any(m.startswith('test_') for m in method_names)
     if in_tests:
-        # Extra-strong in tests/: always exclude obvious harness patterns
-        # (Even if misplaced '*Agent' has test_ methods, treat as harness)
-        if name.startswith('Test') or any(m.startswith('test_') for m in method_names):
-            return False
+        if is_harness:
+            return False  # Unconditional in tests/ — eliminates FP explosion
+    else:
+        if is_harness and not has_strong_positive_signal:
+            return False  # Conditional outside — prevents stray harnesses but allows real agents
 
     # Sovereign edge case: covered by primary 'Agent' suffix signal above — no special path needed
 
@@ -411,10 +410,14 @@ def main():
     print("FULL AGENT DISCOVERY - Single Source of Truth")
     print("=" * 80)
     
-    # Force fresh - delete old JSON
-    if OUTPUT_JSON.exists():
-        os.remove(OUTPUT_JSON)
-        print(f"[FRESH] Deleted stale {OUTPUT_JSON.name}")
+    # Force fresh - delete stale JSON(s)
+    for stale_path in {CANONICAL_JSON, LEGACY_JSON, MISTAKE_JSON, MISTAKE_JSON_2}:
+        try:
+            if stale_path.exists():
+                os.remove(stale_path)
+                print(f"[FRESH] Deleted stale {stale_path.name}")
+        except OSError:
+            pass
     
     agents = []
     parse_errors = []

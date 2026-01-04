@@ -164,6 +164,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             return self._agent_registry_cache
         
         json_path = self.project_root / "agent_discovery_full.json"
+        legacy_json_path = self.project_root / "agent_discovery_full.json"
+        if not json_path.exists() and legacy_json_path.exists():
+            json_path = legacy_json_path
+
         if json_path.exists():
             try:
                 self._agent_registry_cache = json.loads(json_path.read_text(encoding="utf-8"))

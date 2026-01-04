@@ -49,6 +49,26 @@ def ensure_agent_discovery():
     project_root = Path(__file__).parent
     discovery_script = project_root / "scripts" / "full_agent_discovery.py"
     json_path = project_root / "agent_discovery_full.json"
+    legacy_json_path = project_root / "agent_discovery_full.json"
+
+    # Clean up / migrate legacy discovery output to prevent split-brain dashboards.
+    # If both exist, keep the newest as canonical and remove the other.
+    if legacy_json_path.exists():
+        try:
+            if not json_path.exists():
+                legacy_json_path.replace(json_path)
+                print(f"[MIGRATE] Renamed {legacy_json_path.name} -> {json_path.name}")
+            else:
+                legacy_mtime = legacy_json_path.stat().st_mtime
+                canonical_mtime = json_path.stat().st_mtime
+                if legacy_mtime > canonical_mtime:
+                    legacy_json_path.replace(json_path)
+                    print(f"[MIGRATE] Replaced {json_path.name} with newer {legacy_json_path.name}")
+                else:
+                    legacy_json_path.unlink(missing_ok=True)
+                    print(f"[CLEAN] Deleted legacy {legacy_json_path.name}")
+        except OSError:
+            pass
 
     # Allow opting out for fast iterations
     if os.getenv('AGENT_DISCOVERY_AUTO_REFRESH', '1').strip().lower() in {'0', 'false', 'no'}:
@@ -78,6 +98,7 @@ def ensure_agent_discovery():
 
     # Check the main repo areas that contain agents
     latest_source_mtime = max(
+        _latest_py_mtime(project_root / 'scripts'),
         _latest_py_mtime(project_root / 'agentic_core'),
         _latest_py_mtime(project_root / 'apps_lic'),
         _latest_py_mtime(project_root / 'apps_rg'),
