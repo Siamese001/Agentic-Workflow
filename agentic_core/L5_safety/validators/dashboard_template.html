@@ -61,6 +61,14 @@
             margin-right: 2px;
         }
 
+        .sparkline-arrow svg {
+            width: 13px;
+            height: 13px;
+            display: inline-block;
+            vertical-align: -2px;
+            fill: currentColor;
+        }
+
         .refresh-controls {
             position: fixed;
             top: 20px;
@@ -826,15 +834,20 @@
             
             const rawDelta = currentValue - previousValue;
             const direction = rawDelta > 0 ? 'up' : rawDelta < 0 ? 'down' : 'flat';
-            const arrow = direction === 'up' ? '↑' : direction === 'down' ? '↓' : '→';
             const trendColor = highGood
                 ? (direction === 'up' ? '#16a34a' : direction === 'down' ? '#dc2626' : '#6b7280')
                 : (direction === 'up' ? '#dc2626' : direction === 'down' ? '#16a34a' : '#6b7280');
+
+            const arrowSvg = direction === 'up'
+                ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 10h-5v8H9v-8H4z"/></svg>'
+                : direction === 'down'
+                    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21L4 11h5V3h6v8h5z"/></svg>'
+                    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h10V6l6 6-6 6v-4H4z"/></svg>';
             
             return `
                 <span class="sparkline-container">
                     ${createSparklineSVG(values, { showArea: true, showDots: false, highGood })}
-                    <span class="sparkline-trend" style="color:${trendColor};"><span class="sparkline-arrow">${arrow}</span>${Math.abs(rawDelta).toFixed(1)}%</span>
+                    <span class="sparkline-trend" style="color:${trendColor};"><span class="sparkline-arrow">${arrowSvg}</span>${Math.abs(rawDelta).toFixed(1)}%</span>
                 </span>
             `;
         }
@@ -1065,8 +1078,8 @@
                         <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">TOTAL</td>
                         <td style="padding:14px; text-align:center; font-weight:600; border-right:1px solid #e5e7eb; color:#6b7280;">—</td>
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">
-                            ${totalRow.Total} agents
-                            ${totalRow.ToolCount !== undefined ? ` <span style="color:#64748b; font-weight:normal;">/</span> <span style="color:var(--primary); font-weight:600;">${totalRow.ToolCount}</span> tools` : ''}
+                            ${totalRow.Total}
+                            ${totalRow.ToolCount !== undefined ? ` <span style="color:#64748b; font-weight:normal;">/</span> <span style="color:var(--primary); font-weight:600;">${totalRow.ToolCount}</span>` : ''}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; border-right:1px solid #e5e7eb; font-weight:600;">
                             ${totalRow['Heal Cap %'].toFixed(1)}%
@@ -1170,7 +1183,7 @@
 
                 const agentsToolsDisplay = row.ToolCount !== undefined
                     ? `${row.Total} <span style="color:#64748b;">/</span> <span style="color:var(--primary); font-weight:600;">${row.ToolCount}</span>`
-                    : `${row.Total} agents`;
+                    : `${row.Total}`;
 
                 const healthTooltip = `Health Score: ${row.Health.toFixed(1)}% (target ≥80%).\nSub-Territory: ${displaySubTerritory.replace(/<[^>]*>/g, '')}\n\nHealth is a composite autonomy readiness signal across healing, tests, observability, typing, and maintainability.\nClick to drill down into per-agent diagnostics.`;
                 
@@ -1858,12 +1871,16 @@
                 const rank = index + 1;
                 const status = rank <= 3 ? 'danger' : rank <= 6 ? 'warning' : 'primary';
                 const fileCount = rec.file_links ? rec.file_links.length : 0;
+
+                const border = rank === 1 ? '#dc2626' : rank === 2 ? '#ea580c' : rank === 3 ? '#eab308' : null;
+                const glow = rank === 1 ? 'rgba(220,38,38,0.22)' : rank === 2 ? 'rgba(234,88,12,0.20)' : rank === 3 ? 'rgba(234,179,8,0.22)' : null;
+                const topStyle = border ? `border:2px solid ${border}; box-shadow: 0 0 0 4px ${glow};` : '';
                 
                 html += `
-                <div class="kpi-box ${status}" style="padding:30px; margin-bottom:30px;">
+                <div class="kpi-box ${status}" style="padding:30px; margin-bottom:30px; ${topStyle}">
                     <div class="kpi-label" style="font-size:1.1em; font-weight:600;">Recommendation #${rank} (${rec.score.toFixed(1)} urgency) • ${rec.priority} Priority</div>
                     <div class="kpi-value" style="font-size:1.6em; margin:15px 0; font-weight:700;">${rec.territory}</div>
-                    <div style="margin:10px 0; color:var(--text-light); font-size:1.1em;">${rec.total} agents${rec.used !== undefined ? `, ${rec.used.toFixed(1)}% used` : ''}</div>
+                    <div style="margin:10px 0; color:var(--text-light); font-size:1.1em;">${rec.total}${rec.used !== undefined ? `, ${rec.used.toFixed(1)}% used` : ''}</div>
                     
                     <div style="margin:20px 0;">
                         <strong style="font-size:1.2em; color:var(--text);">Rationale:</strong>
@@ -2082,15 +2099,20 @@ ${rec.guidance.split('\n').map((line, i) =>
                 const y = height - ((v - min) / range) * height;
                 return `${x},${y}`;
             }).join(' ');
-            const trend = values[values.length - 1] > values[0] ? '↑' : values[values.length - 1] < values[0] ? '↓' : '→';
+            const trendDir = values[values.length - 1] > values[0] ? 'up' : values[values.length - 1] < values[0] ? 'down' : 'flat';
             const trendColor = highGood
-                ? (trend === '↑' ? '#16a34a' : trend === '↓' ? '#dc2626' : '#6b7280')
-                : (trend === '↑' ? '#dc2626' : trend === '↓' ? '#16a34a' : '#6b7280');
+                ? (trendDir === 'up' ? '#16a34a' : trendDir === 'down' ? '#dc2626' : '#6b7280')
+                : (trendDir === 'up' ? '#dc2626' : trendDir === 'down' ? '#16a34a' : '#6b7280');
+            const trendSvg = trendDir === 'up'
+                ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 10h-5v8H9v-8H4z"/></svg>'
+                : trendDir === 'down'
+                    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21L4 11h5V3h6v8h5z"/></svg>'
+                    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h10V6l6 6-6 6v-4H4z"/></svg>';
             return `<span class="sparkline-container">
                 <svg class="sparkline-svg" viewBox="0 0 ${width} ${height}">
                     <polyline fill="none" stroke="${color}" stroke-width="2" points="${points}"/>
                 </svg>
-                <span class="sparkline-trend" style="color:${trendColor}"><span class="sparkline-arrow">${trend}</span></span>
+                <span class="sparkline-trend" style="color:${trendColor}"><span class="sparkline-arrow">${trendSvg}</span></span>
             </span>`;
         }
 
