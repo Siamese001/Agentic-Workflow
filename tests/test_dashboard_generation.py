@@ -83,6 +83,15 @@ class TestDashboardGeneration(unittest.TestCase):
                 self.template_content,
                 f"Required element '{element_id}' not found in template"
             )
+
+    def test_02b_template_code_quality_has_sub_territory_column(self):
+        """Template Code Quality table must include Sub-Territory column."""
+        self.assertIsNotNone(self.template_content, "Template content not loaded")
+        self.assertIn(
+            'Sub-Territory within the territory',
+            self.template_content,
+            "Sub-Territory column not found in Code Quality table"
+        )
     
     def test_03_template_has_data_injection_points(self):
         """Test 3: Template must have data injection placeholders."""
