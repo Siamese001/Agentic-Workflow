@@ -296,10 +296,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     if name.startswith(skip_patterns) and 'Agent' not in name:
         return False
 
-    # Strong negative signals (AST-friendly): not agents.
-    # NOTE: Some real agents are implemented as @dataclass (e.g., red-teaming agents).
-    # Treat dataclass/attrs as disqualifying only when there is no strong positive agent signal.
-    decorators = extract_decorators(class_node)
+    # Define canonical agent bases early for use in signal detection
     agent_bases = {
         'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
         'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
@@ -307,20 +304,15 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
         'BaseAgent',
     }
+
+    # Strong positive signals: identity overrides decorator negatives
     has_strong_positive_signal = (
         name.endswith('Agent')
         or bool(bases & agent_bases)
-        or ('HealerMixin' in bases)
+        or has_healing_in_chain(name, bases)  # MRO-aware detection
     )
-    if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators) and not has_strong_positive_signal:
-        return False
-    if name.endswith('Mixin'):
-        return False
-    if name.endswith('Protocol') or name.startswith('I') and name[1:2].isupper():
-        return False
-    if name.endswith('Error') or name.endswith('Exception'):
-        return False
 
+    # Negative Signal Filter: Protocol, ABCs, and Data Structures
     non_agent_bases = {
         'Protocol', 'ABC',
         'BaseModel', 'TypedDict',
@@ -329,6 +321,18 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         'TestCase',
     }
     if bases & non_agent_bases:
+        return False
+
+    # NOTE: Some real agents are implemented as @dataclass (e.g., L5 Red Teaming agents).
+    # Disqualify dataclass/attrs ONLY if no strong agent identity is detected.
+    decorators = extract_decorators(class_node)
+    if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators) and not has_strong_positive_signal:
+        return False
+    if name.endswith('Mixin'):
+        return False
+    if name.endswith('Protocol') or name.startswith('I') and name[1:2].isupper():
+        return False
+    if name.endswith('Error') or name.endswith('Exception'):
         return False
 
     # Even if a class is named like an agent, do not count test harness classes.
@@ -398,6 +402,10 @@ def main():
     # Scan ALL Python files in project
     all_py_files = list(PROJECT_ROOT.rglob('*.py'))
     print(f"\nScanning {len(all_py_files)} Python files...")
+
+    # Diagnostic: Report on files explicitly skipped by EXCLUDED_DIRS
+    excluded_files = [f for f in all_py_files if should_exclude_file(f)]
+    print(f"   -> Excluding {len(excluded_files)} files in non-source dirs (archives, backups, etc.)")
     
     # First pass: Build inheritance map for MRO-like detection
     print("[PASS 1] Building inheritance map...")
