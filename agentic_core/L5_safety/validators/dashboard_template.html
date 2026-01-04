@@ -391,7 +391,7 @@
                     <div class="chart-card" style="border-left: 4px solid var(--primary);">
                         <div class="chart-header">
                             <div class="chart-title" style="font-size:1.6em;">📋 Strategic Observations & Prioritized Actions</div>
-                            <div class="chart-subtitle">Macro-level architectural recommendations + metric-focused improvements + top priority actions</div>
+                            <div class="chart-subtitle">Macro-level architectural recommendations + metric-focused improvements (top priorities embedded in the relevant cards)</div>
                         </div>
                         <div class="chart-body">
                             <div style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr;">
@@ -405,11 +405,6 @@
                                     <h3 style="color: #15803d; margin-bottom: 15px; font-size: 1.2em;">📊 Metric-Focused Observations</h3>
                                     <div id="metricObservations" style="display: flex; flex-direction: column; gap: 12px;"></div>
                                 </div>
-                            </div>
-                            <!-- Top Prioritized Actions -->
-                            <div style="margin-top: 20px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 12px; border: 1px solid #fcd34d;">
-                                <h3 style="color: #92400e; margin-bottom: 15px; font-size: 1.2em;">🎯 Top Prioritized Actions</h3>
-                                <div id="topRecommendations" style="display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));"></div>
                             </div>
                         </div>
                     </div>
@@ -575,6 +570,60 @@
             }
         }
 
+        // Category breakdown based on agent role + path prefix (non-overlapping, counts sum to total)
+        function getCategoryForTerritory(territory, total, agents) {
+            if (total <= 10) return '—';
+
+            const categories = {};
+
+            function add(cat) {
+                categories[cat] = (categories[cat] || 0) + 1;
+            }
+
+            function categorizeAgent(agent) {
+                const name = (agent?.class_name || agent?.name || '').toString();
+                const rel = (agent?.rel || '').toString();
+                const absFile = (agent?.abs_file || '').toString();
+                const path = (rel || absFile).replace(/\\/g, '/');
+
+                const rules = [
+                    { cat: 'Naming & Identity', match: () => /\/utils\/naming\//i.test(path) || /Naming/i.test(name) },
+                    { cat: 'Safety & Governance', match: () => /\/L5_safety\//i.test(path) || /Validator|Validation|Compliance|Enforce|Guard|Guardian|Safety|Security/i.test(name) },
+                    { cat: 'Observability', match: () => /\/observability\//i.test(path) || /Telemetry|Tracing|Metrics|Monitor|Observer/i.test(name) },
+                    { cat: 'Orchestration', match: () => /\/L3_orchestration\//i.test(path) || /Orchestrat|Coordinator|Workflow|Pipeline/i.test(name) },
+                    { cat: 'Execution', match: () => /\/L2_execution\//i.test(path) || /Executor|Execute|Runner|Worker/i.test(name) },
+                    { cat: 'Cognition', match: () => /\/L1_cognition\//i.test(path) || /Cognitive|Think|Reason|Infer/i.test(name) },
+                    { cat: 'State & Memory', match: () => /\/L4_state\//i.test(path) || /State|Ledger|Cache|Memory|Store|Persist/i.test(name) },
+                    { cat: 'Applications', match: () => /\/apps_/i.test(path) },
+                    { cat: 'Testing', match: () => /\/tests\//i.test(path) || /Test|Mock|Stub|Fixture/i.test(name) },
+                    { cat: 'Core', match: () => true },
+                ];
+
+                for (const rule of rules) {
+                    if (rule.match()) return rule.cat;
+                }
+                return 'Core';
+            }
+
+            if (agents && agents.length > 0) {
+                agents.forEach(agent => add(categorizeAgent(agent)));
+            }
+
+            const sorted = Object.entries(categories).sort((a, b) => b[1] - a[1]);
+            if (sorted.length === 0) return '—';
+
+            const maxVisible = total > 50 ? 5 : total > 30 ? 4 : total > 15 ? 3 : 2;
+            const visible = sorted.slice(0, maxVisible);
+            const visibleCount = visible.reduce((sum, [, count]) => sum + count, 0);
+            const remainder = Math.max(0, total - visibleCount);
+
+            const parts = visible.map(([cat, count]) => `<span style="white-space:nowrap;">${cat} (${count})</span>`);
+            if (remainder > 0) {
+                parts.push(`<span style="white-space:nowrap;">Other (${remainder})</span>`);
+            }
+            return parts.join(' · ');
+        }
+
         // Data injection points
         const dashboardData = [];
         const recommendationsData = [];
@@ -684,7 +733,7 @@
                         <thead>
                             <tr style="background:var(--primary); color:white;">
                                 <th style="padding:16px; text-align:left; font-weight:600;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Subcategory breakdown for territories with >10 agents">Category</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Category breakdown for territories with >10 agents (non-overlapping; counts sum to total)">Category</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Total number of agents in this territory"># Agents</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list">Heal Capability %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Heal Invocation %</th>
@@ -792,80 +841,6 @@
                     </tr>`;
             }
             
-            // Function to get category based on territory and agent count
-            function getCategoryForTerritory(territory, total, agents) {
-                if (total <= 10) return '—';
-                
-                // Semantic categorization rules - high signal, no "Other"
-                const categoryRules = [
-                    { pattern: /Validator|Validation|Compliance|Enforce|Check/i, cat: 'Validation & Compliance' },
-                    { pattern: /Healer|Healing|Repair|Fix|Recovery/i, cat: 'Self-Healing' },
-                    { pattern: /Guardian|Guard|Protect|Safety|Security/i, cat: 'Safety & Security' },
-                    { pattern: /Orchestrat|Coordinator|Workflow|Pipeline/i, cat: 'Orchestration' },
-                    { pattern: /Manager|Controller|Supervisor/i, cat: 'Management' },
-                    { pattern: /Executor|Execute|Runner|Worker/i, cat: 'Execution' },
-                    { pattern: /Monitor|Observer|Watch|Telemetry|Metric/i, cat: 'Observability' },
-                    { pattern: /Detector|Scanner|Audit|Inspect/i, cat: 'Detection & Audit' },
-                    { pattern: /Router|Dispatch|Route|Gateway/i, cat: 'Routing' },
-                    { pattern: /Processor|Handler|Transform|Parse/i, cat: 'Data Processing' },
-                    { pattern: /Analyzer|Analysis|Evaluate|Assess/i, cat: 'Analysis' },
-                    { pattern: /Generator|Builder|Create|Factory/i, cat: 'Generation' },
-                    { pattern: /Planner|Strategic|Plan|Schedule/i, cat: 'Planning' },
-                    { pattern: /Test|Mock|Stub|Fixture/i, cat: 'Testing' },
-                    { pattern: /Cache|Store|Persist|Memory/i, cat: 'State & Caching' },
-                    { pattern: /Client|Connect|API|Service/i, cat: 'Integration' },
-                    { pattern: /Config|Setting|Param|Option/i, cat: 'Configuration' },
-                    { pattern: /Log|Trace|Debug|Report/i, cat: 'Logging & Tracing' },
-                    { pattern: /Schema|Model|Entity|Contract/i, cat: 'Data Models' },
-                    { pattern: /Auth|Permission|Access|Token/i, cat: 'Auth & Access' },
-                    { pattern: /Dedup|Clean|Prune|Garbage/i, cat: 'Cleanup & Dedup' },
-                    { pattern: /Import|Export|Load|Migrate/i, cat: 'Data Movement' },
-                    { pattern: /Cognitive|Think|Reason|Infer/i, cat: 'Cognition' },
-                    { pattern: /Red|Adversar|Attack|Probe/i, cat: 'Red Teaming' },
-                ];
-                
-                const categories = {};
-                if (agents && agents.length > 0) {
-                    agents.forEach(agent => {
-                        const name = agent.class_name || agent.name || '';
-                        let matched = false;
-                        
-                        for (const rule of categoryRules) {
-                            if (rule.pattern.test(name)) {
-                                categories[rule.cat] = (categories[rule.cat] || 0) + 1;
-                                matched = true;
-                                break;
-                            }
-                        }
-                        
-                        // Fallback: use territory-based semantic category
-                        if (!matched) {
-                            const territoryLower = territory.toLowerCase();
-                            if (territoryLower.includes('validator')) categories['Validation & Compliance'] = (categories['Validation & Compliance'] || 0) + 1;
-                            else if (territoryLower.includes('guardrail')) categories['Safety & Security'] = (categories['Safety & Security'] || 0) + 1;
-                            else if (territoryLower.includes('orchestrat')) categories['Orchestration'] = (categories['Orchestration'] || 0) + 1;
-                            else if (territoryLower.includes('execution')) categories['Execution'] = (categories['Execution'] || 0) + 1;
-                            else if (territoryLower.includes('cognition')) categories['Cognition'] = (categories['Cognition'] || 0) + 1;
-                            else if (territoryLower.includes('maintenance')) categories['Maintenance'] = (categories['Maintenance'] || 0) + 1;
-                            else if (territoryLower.includes('state')) categories['State & Caching'] = (categories['State & Caching'] || 0) + 1;
-                            else if (territoryLower.includes('app')) categories['Application Logic'] = (categories['Application Logic'] || 0) + 1;
-                            else categories['Core Agents'] = (categories['Core Agents'] || 0) + 1;
-                        }
-                    });
-                }
-                
-                // Number of categories to show based on agent count
-                const numCategories = total > 50 ? 5 : total > 30 ? 4 : total > 15 ? 3 : 2;
-                
-                const sorted = Object.entries(categories)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, numCategories);
-                
-                if (sorted.length === 0) return '—';
-                
-                return sorted.map(([cat, count]) => `<span style="white-space:nowrap;">${cat} (${count})</span>`).join(' · ');
-            }
-
             territoryData.forEach((row, index) => {
                 // Get category breakdown for this territory
                 const category = getCategoryForTerritory(row.Territory, row.Total, row.agents);
@@ -1186,6 +1161,13 @@
             const territories = territoryData.map(d => d.Territory);
             const health = territoryData.map(d => parseFloat(d.Health) || 0);
             const invocation = territoryData.map(d => parseFloat(d['Invocation %']) || 0);
+            const categories = territoryData.map(d => {
+                try {
+                    return getCategoryForTerritory(d.Territory, d.Total, d.agents).replace(/<[^>]*>/g, '');
+                } catch {
+                    return '—';
+                }
+            });
             const tests = territoryData.map(d => parseFloat(d['Test %']) || 0);
             const observable = territoryData.map(d => parseFloat(d['Observable %']) || 0);
             const avgCC = territoryData.map(d => parseFloat(d['Avg CC']) || 0);
@@ -1198,14 +1180,12 @@
                     color: health.map(h => getColor(h, true)),
                     line: { color: 'white', width: 2 }
                 },
-                customdata: territoryData.map((row, i) => [invocation[i], tests[i], observable[i], avgCC[i]]),
+                customdata: categories,
                 hovertemplate: 
                     '<b>%{x}</b><br>' +
                     'Health Score: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
-                    'Healing Invocation: <b>%{customdata[0]:.1f}%</b> (core autonomy)<br>' +
-                    'Test Coverage: <b>%{customdata[1]:.1f}%</b> (reliability gate)<br>' +
-                    'Observability: <b>%{customdata[2]:.1f}%</b> (production readiness)<br>' +
-                    'Avg Complexity: <b>%{customdata[3]:.1f}</b> (target ≤10)<extra></extra>'
+                    'Category: <b>%{customdata}</b><br>' +
+                    '<i>Click to drill down</i><extra></extra>'
             };
 
             const layout = {
@@ -1223,20 +1203,6 @@
                 ]
             };
 
-            trace.hovertemplate = 
-                '<b>%{x}</b><br><br>' +
-                'Health Score: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
-                '<i>Didactic Analogy:</i> Full health checkup — averages healing ability, test fitness, observability vitals, and code cleanliness<br>' +
-                'High = robust, self-correcting territory<br>' +
-                'Low = fragile agents needing windsurf<br><br>' +
-                '<i>Why it matters:</i> Health teaches interdependencies — e.g., high complexity or low tests drag the score even if healing is good<br>' +
-                'Interview tip: "Composite scores reveal hidden risks"<br><br>' +
-                'Key drivers in this territory:<br>' +
-                '• Healing Invocation: <b>%{customdata[0]:.1f}%</b> (self-repair usage — like immune response)<br>' +
-                '• Tests: <b>%{customdata[1]:.1f}%</b> (safety net)<br>' +
-                '• Observability: <b>%{customdata[2]:.1f}%</b> (monitoring tools)<br>' +
-                '• Avg Complexity: <b>%{customdata[3]:.1f}</b> (code tangles — target ≤10)<extra></extra>';
-
             Plotly.newPlot('healthChart', [trace], layout, { responsive: true, displayModeBar: false });
         }
 
@@ -1251,7 +1217,9 @@
                 y: invocation,
                 name: 'Invocation',
                 type: 'bar',
-                marker: { color: '#2563eb' },
+                marker: {
+                    color: '#2563eb'
+                },
                 customdata: territoryData.map((row, i) => [healingCap[i], health[i]]),
                 hovertemplate: 
                     '<b>%{x}</b><br>' +
@@ -1277,40 +1245,38 @@
                 ]
             };
 
-            trace1.hovertemplate = 
-                '<b>%{x}</b><br>' +
-                'Healing Invocation: <b>%{y:.1f}%</b><br><br>' +
-                '<i>Factory Analogy:</i> Workers have personal toolkits (capabilities), but this shows how often they consult the master factory safety checklist when problems occur<br>' +
-                'Gap vs capabilities = workers ignoring centralized healing protocol<br>' +
-                'Target ≥80% for coordinated factory-wide error recovery<extra></extra>';
-
             Plotly.newPlot('healingChart', [trace1], layout, { responsive: true, displayModeBar: false });
         }
 
         function renderRiskMatrix(territoryData) {
             if (!territoryData || territoryData.length === 0) return;
+            const categories = territoryData.map(d => {
+                try {
+                    return getCategoryForTerritory(d.Territory, d.Total, d.agents).replace(/<[^>]*>/g, '');
+                } catch {
+                    return '—';
+                }
+            });
             const trace = {
                 x: territoryData.map(d => parseFloat(d['Avg CC']) || 0),
                 y: territoryData.map(d => parseFloat(d['Compliance %']) || 0),
-                mode: 'markers',
-                type: 'scatter',
                 text: territoryData.map(d => d.Territory),
+                mode: 'markers+text',
+                type: 'scatter',
                 marker: {
-                    size: territoryData.map(d => Math.sqrt(parseFloat(d.Total) || 1) * 3),
-                    color: territoryData.map(d => parseFloat(d.Health) || 0),
-                    colorscale: [[0, '#dc2626'], [0.5, '#ea580c'], [1, '#16a34a']],
-                    showscale: true,
-                    colorbar: { title: 'Health' }
+                    size: territoryData.map(d => Math.max(12, Math.min(40, (d.Used || 20) / 2))),
+                    color: territoryData.map(d => getColor(d.Health, true)),
+                    opacity: 0.8,
+                    line: { color: '#ffffff', width: 2 }
                 },
-                customdata: territoryData.map(d => [parseFloat(d.Health) || 0, parseFloat(d['Invocation %']) || 0, parseFloat(d.Risk) || 'MED']),
-                hovertemplate: 
-                    '<b>%{text}</b><br>' +
+                customdata: territoryData.map((d, i) => [d.Health, d.Total, d['Invocation %'], d['Test %'], categories[i]]),
+                hovertemplate: '<b>%{text}</b><br>' +
+                    'Avg CC: <b>%{x:.1f}</b><br>' +
+                    'Compliance: <b>%{y:.1f}%</b><br>' +
                     'Health: <b>%{customdata[0]:.1f}%</b><br>' +
-                    'Complexity: <b>%{x:.1f}</b> (target ≤10)<br>' +
-                    'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
-                    'Healing Invocation: <b>%{customdata[1]:.1f}%</b><br>' +
-                    'Risk Level: <b>%{customdata[2]}</b><br>' +
-                    'Red zone = high risk (fix urgently)<extra></extra>'
+                    'Agents: <b>%{customdata[1]}</b><br>' +
+                    'Category: <b>%{customdata[4]}</b><br>' +
+                    '<i>Click to drill down</i><extra></extra>'
             };
 
             const layout = {
@@ -1329,6 +1295,8 @@
 
             trace.hovertemplate = 
                 '<b>%{text}</b><br>' +
+                'Category: <b>%{customdata[4]}</b><br>' +
+                'Agents: <b>%{customdata[1]}</b><br>' +
                 'Health: <b>%{customdata[0]:.1f}%</b><br>' +
                 'Complexity: <b>%{x:.1f}</b> (target ≤10)<br>' +
                 'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
@@ -1471,74 +1439,6 @@
             };
 
             Plotly.newPlot('complexityChart', [trace], layout, { responsive: true, displayModeBar: false });
-        }
-
-        function renderTopRecommendations() {
-            const container = document.getElementById('topRecommendations');
-            if (!container) return;
-
-            // Calculate potential score impact for each action based on Health Score weights
-            // Health = Invocation 25% + Hardened 20% + Tests 20% + Heal Cap 15% + Observable 10% + Typed 10% + CC 5%
-            const weights = {
-                'Invocation': 0.25, 'Hardened': 0.20, 'Tests': 0.20, 'Test': 0.20,
-                'Heal': 0.15, 'Observable': 0.10, 'Observability': 0.10, 'Typed': 0.10, 'Complexity': 0.05
-            };
-            
-            // Build impact-scored actions from Health Breakdown
-            const breakdown = dashboardData[0]['Health Breakdown'] || [];
-            const impactActions = breakdown
-                .filter(item => item.raw < 80) // Only gaps worth fixing
-                .map(item => {
-                    const potential = (100 - item.raw) * item.weight; // max points we could gain
-                    return {
-                        component: item.component,
-                        currentRaw: item.raw,
-                        weight: item.weight,
-                        currentPts: item.points,
-                        maxPts: 100 * item.weight,
-                        potentialGain: potential,
-                        action: getActionForComponent(item.component)
-                    };
-                })
-                .sort((a, b) => b.potentialGain - a.potentialGain)
-                .slice(0, 3);
-
-            function getActionForComponent(comp) {
-                const actions = {
-                    'Healing Invocation': 'Add super().heal_repository() calls to agent heal methods',
-                    'MCP Hardened': 'Add MCPShield mixin or @hardened decorator to agents',
-                    'Test Coverage': 'Add unit tests for untested agents',
-                    'Healing Capability': 'Add HealerMixin to agent base classes',
-                    'Observability': 'Add logging/metrics/tracing infrastructure',
-                    'Typing': 'Add type hints to function signatures',
-                    'Complexity Health': 'Refactor high-CC methods (extract to smaller functions)'
-                };
-                return actions[comp] || 'Review and remediate gaps';
-            }
-
-            if (impactActions.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:var(--success);">All components healthy!</p>';
-                return;
-            }
-
-            let html = '';
-            impactActions.forEach((action, index) => {
-                const borderColor = action.potentialGain >= 15 ? '#dc2626' : action.potentialGain >= 8 ? '#ea580c' : '#eab308';
-                const bgColor = action.potentialGain >= 15 
-                    ? 'linear-gradient(135deg, rgba(220,38,38,0.12) 0%, rgba(220,38,38,0.05) 100%)'
-                    : action.potentialGain >= 8
-                    ? 'linear-gradient(135deg, rgba(234,88,12,0.1) 0%, rgba(234,88,12,0.04) 100%)'
-                    : 'linear-gradient(135deg, rgba(234,179,8,0.08) 0%, rgba(234,179,8,0.03) 100%)';
-                
-                html += `
-                <div style="padding:16px; border-radius:8px; border-left:5px solid ${borderColor}; background:${bgColor}; box-shadow:var(--shadow);">
-                    <div style="font-size:1.1em; font-weight:700; margin-bottom:6px; color:var(--text);">#${index+1} ${action.component}</div>
-                    <div style="font-size:0.9em; color:var(--text-light); margin-bottom:8px;">Current: ${action.currentRaw.toFixed(0)}% → ${action.currentPts.toFixed(1)}/${action.maxPts.toFixed(0)} pts (${(action.weight*100).toFixed(0)}% weight)</div>
-                    <div style="font-size:1em; font-weight:600; margin-bottom:6px; color:${borderColor};">+${action.potentialGain.toFixed(1)} pts potential gain</div>
-                    <div style="font-size:0.85em; color:var(--text-light);">→ ${action.action}</div>
-                </div>`;
-            });
-            container.innerHTML = html;
         }
 
         function renderRecommendations() {
@@ -1791,6 +1691,49 @@ ${rec.guidance.split('\n').map((line, i) =>
         }
 
         function renderStrategicObservations(totalRow, territoryData) {
+            function getActionForComponent(comp) {
+                const actions = {
+                    'Healing Invocation': 'Add super().heal_repository() calls to agent heal methods',
+                    'MCP Hardened': 'Add MCPHardenedMixin / MCPShield mixin or @hardened decorator to agents',
+                    'Test Coverage': 'Add unit tests for untested agents',
+                    'Healing Capability': 'Add HealerMixin to agent base classes',
+                    'Observability': 'Add logging/metrics/tracing infrastructure',
+                    'Typing': 'Add type hints to function signatures',
+                    'Complexity Health': 'Refactor high-CC methods (extract to smaller functions)'
+                };
+                return actions[comp] || 'Review and remediate gaps';
+            }
+
+            function computeTopPriorities() {
+                const breakdown = (dashboardData && dashboardData[0] && dashboardData[0]['Health Breakdown']) ? dashboardData[0]['Health Breakdown'] : [];
+                return breakdown
+                    .filter(item => item && item.raw < 80)
+                    .map(item => ({
+                        component: item.component,
+                        currentRaw: item.raw,
+                        weight: item.weight,
+                        currentPts: item.points,
+                        maxPts: 100 * item.weight,
+                        potentialGain: (100 - item.raw) * item.weight,
+                        action: getActionForComponent(item.component)
+                    }))
+                    .sort((a, b) => b.potentialGain - a.potentialGain)
+                    .slice(0, 3);
+            }
+
+            const priorities = computeTopPriorities();
+            const priorityRankByComponent = {};
+            priorities.forEach((p, idx) => {
+                if (p && p.component) priorityRankByComponent[p.component] = idx + 1;
+            });
+
+            function priorityBadge(component) {
+                const rank = priorityRankByComponent[component];
+                if (!rank) return '';
+                const color = rank === 1 ? '#dc2626' : rank === 2 ? '#ea580c' : '#eab308';
+                return `<span style="margin-left:8px; font-size:0.8em; font-weight:800; color:${color};">#${rank}</span>`;
+            }
+
             // Macro Observations with WHY explanations and analogies
             const macroObs = [];
             
@@ -1800,9 +1743,10 @@ ${rec.guidance.split('\n').map((line, i) =>
                 macroObs.push({
                     icon: '🎯',
                     title: 'Expand Red Teaming Capability',
-                    desc: `Consider adding: PromptInjectionAgent, ChaosEngineeringAgent, BoundaryTestingAgent, AdversarialProbeAgent (current: ${redTeamCount} agents)`,
-                    why: `<strong>Why it matters:</strong> Like a bank hiring ethical hackers to test vault security before real criminals try, red team agents proactively find vulnerabilities in your AI system before production failures expose them. Without adversarial testing, you're flying blind on edge cases.`,
-                    analogy: '🏦 Bank Security Analogy: You wouldn\'t open a bank without testing if the vault can be cracked.'
+                    gap: `**Gap: Red teaming coverage is thin (only ${redTeamCount} agents), leaving high-risk failure modes untested.**`,
+                    impact: `In a production agentic system, missing adversarial probes means you discover prompt-injection and tool-misuse failures in prod instead of in a safe harness. That undermines autonomy because the system learns from failures too late, and guardrails become reactive instead of preventative.`,
+                    solve: `Add dedicated PromptInjectionAgent, BoundaryTestingAgent, and AdversarialProbeAgent variants, and wire them into your compliance/regression loop. Interview prep example: explain how you validate jailbreak resistance before shipping and how you measure coverage (attack families, tool surfaces, and policy bypass attempts).`,
+                    priority: ''
                 });
             }
             
@@ -1812,9 +1756,10 @@ ${rec.guidance.split('\n').map((line, i) =>
                 macroObs.push({
                     icon: '🔧',
                     title: 'Consolidate L5 Safety Guardrails',
-                    desc: `${guardrailsRow.Total} guardrail agents detected. Consider merging overlapping validators into composable rule sets (target: 15-20)`,
-                    why: `<strong>Why it matters:</strong> Too many guardrails create "validation fatigue" — like having 35 security checkpoints at an airport. Each adds latency, and overlapping rules cause conflicts. Consolidation improves both performance and maintainability.`,
-                    analogy: '✈️ Airport Security Analogy: One thorough checkpoint beats 5 redundant pat-downs.'
+                    gap: `**Gap: Guardrails are sprawling (${guardrailsRow.Total} agents), increasing rule overlap and making enforcement inconsistent.**`,
+                    impact: `When validators overlap, autonomy suffers: agents get conflicting signals and spend cycles "arguing with the rules" instead of reasoning about the user task. Canon compliance also degrades because exceptions accumulate and become tribal knowledge.`,
+                    solve: `Refactor into composable rule-sets with a single orchestrator deciding precedence (e.g., "Naming → Hierarchy → Imports"), and verify via regression tests. Interview prep example: explain how you prevent rule conflicts and keep the enforcement surface legible to both humans and agents.`,
+                    priority: ''
                 });
             }
             
@@ -1824,9 +1769,10 @@ ${rec.guidance.split('\n').map((line, i) =>
                 macroObs.push({
                     icon: '🏗️',
                     title: 'Simplify Orchestration Layer',
-                    desc: `${orchRow.Total} orchestrators detected. Consider unified workflow engine + 10-15 specialized coordinators`,
-                    why: `<strong>Why it matters:</strong> Like having 51 different conductors for one orchestra — chaos! A unified workflow engine with specialized coordinators creates clear ownership and reduces coordination overhead.`,
-                    analogy: '🎼 Orchestra Analogy: One conductor with section leaders, not 51 people waving batons.'
+                    gap: `**Gap: Orchestration is fragmented (${orchRow.Total} orchestrators), increasing coordination and failure coupling.**`,
+                    impact: `In agentic systems, orchestration sprawl multiplies edge cases: retry behavior diverges, state handoffs drift, and observability becomes inconsistent. That reduces autonomy because the system can't reliably reason about its own execution pathway.`,
+                    solve: `Unify around one workflow engine and keep a small set of well-scoped coordinators. Interview prep example: describe how you design idempotent orchestration steps and how you debug distributed runs using traces and state ledgers.`,
+                    priority: ''
                 });
             }
             
@@ -1836,9 +1782,10 @@ ${rec.guidance.split('\n').map((line, i) =>
                 macroObs.push({
                     icon: '🧠',
                     title: 'Strengthen Cognitive Layer',
-                    desc: `L1 Cognition health at ${cogRow.Health.toFixed(1)}% — the "thinking brain" of your system needs attention`,
-                    why: `<strong>Why it matters:</strong> The cognitive layer is your system's prefrontal cortex — where reasoning, planning, and decision-making happen. Low health here means poor decisions cascade through all downstream layers.`,
-                    analogy: '🧠 Brain Analogy: A foggy prefrontal cortex leads to bad decisions everywhere else.'
+                    gap: `**Gap: L1 Cognition health is ${cogRow.Health.toFixed(1)}%, weakening planning and decision quality.**`,
+                    impact: `If the cognitive layer is brittle, downstream execution becomes "guessy": more retries, more compensating actions, and higher risk of policy drift. This is a direct autonomy risk because the system can't reliably choose correct next steps under uncertainty.`,
+                    solve: `Improve testing + observability around core reasoning modules, reduce cyclomatic complexity in hot paths, and enforce naming conventions so the agent registry remains discoverable. Interview prep example: articulate how you detect reasoning regressions and why traceability matters for debugging chain-of-thought proxies (not raw CoT).`,
+                    priority: ''
                 });
             }
             
@@ -1846,9 +1793,10 @@ ${rec.guidance.split('\n').map((line, i) =>
             macroObs.push({
                 icon: '🔌',
                 title: 'Cross-Cutting Infrastructure',
-                desc: 'Ensure circuit breakers, rate limiters, retry logic, and feature flags are implemented across all layers',
-                why: `<strong>Why it matters:</strong> Like a building's electrical system — you need circuit breakers everywhere, not just in one room. Without cross-cutting resilience patterns, one failure cascades into system-wide outages.`,
-                analogy: '🏠 Electrical Analogy: Every room needs its own circuit breaker, not just the kitchen.'
+                gap: `**Gap: Resilience patterns are uneven (circuit breakers, retries, rate limits, feature flags).**`,
+                impact: `Autonomy at scale depends on graceful degradation. If one layer lacks backpressure or retry discipline, it can DOS adjacent layers and cause cascading failures. Canon compliance also suffers when every team invents its own patterns.`,
+                solve: `Standardize a small set of cross-cutting primitives and enforce them through templates and validators. Interview prep example: explain how you roll out circuit breakers and measure impact (reduced incident blast radius, faster MTTR).`,
+                priority: ''
             });
 
             const macroContainer = document.getElementById('macroObservations');
@@ -1856,11 +1804,11 @@ ${rec.guidance.split('\n').map((line, i) =>
                 <div style="display: flex; gap: 12px; align-items: flex-start; padding: 14px; background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); margin-bottom: 4px;">
                     <span style="font-size: 1.6em;">${obs.icon}</span>
                     <div style="flex: 1;">
-                        <strong style="color: #0c4a6e; font-size: 1.05em;">${obs.title}</strong>
-                        <p style="margin: 6px 0; font-size: 0.9em; color: #334155;">${obs.desc}</p>
-                        <div style="margin-top: 8px; padding: 10px; background: #f0f9ff; border-radius: 6px; border-left: 3px solid #0369a1;">
-                            <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #1e40af;">${obs.why}</p>
-                            <p style="margin: 0; font-size: 0.8em; color: #64748b; font-style: italic;">${obs.analogy}</p>
+                        <strong style="color: #0c4a6e; font-size: 1.05em;">${obs.title}${obs.priority ? obs.priority : ''}</strong>
+                        <p style="margin: 6px 0 8px 0; font-size: 0.92em; color: #0f172a;">${obs.gap}</p>
+                        <div style="margin-top: 6px; padding: 10px; background: #f0f9ff; border-radius: 6px; border-left: 3px solid #0369a1;">
+                            <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #1e40af;"><strong>Impact:</strong> ${obs.impact}</p>
+                            <p style="margin: 0; font-size: 0.85em; color: #334155;"><strong>How to fix:</strong> ${obs.solve}</p>
                         </div>
                     </div>
                 </div>
@@ -1895,9 +1843,10 @@ ${rec.guidance.split('\n').map((line, i) =>
                     metric: 'MCP Hardened',
                     value: `${(totalRow['Hardened %'] || 0).toFixed(1)}%`,
                     sparkline: mcpSparkline,
-                    action: 'Add MCPHardenedMixin to agents without MCP hardening',
-                    why: `<strong>Why:</strong> MCP hardening is like wearing a seatbelt when driving — it protects agents from unsafe external tool calls. Without it, a malicious MCP response could compromise your entire system.`,
-                    analogy: '🚗 Seatbelt: Protects you when external calls go wrong.'
+                    priorityComponent: 'MCP Hardened',
+                    gap: `**Gap: MCP hardening is ${(totalRow['Hardened %'] || 0).toFixed(1)}%, leaving agents exposed to unsafe tool-call surfaces.**`,
+                    impact: `In production agentic systems, external tool calls are the highest-risk boundary. Without a hardened wrapper, malformed responses and prompt-injection payloads can escalate into data exfiltration or policy bypass.`,
+                    solve: `Apply MCPHardenedMixin / MCPShield and @hardened decorators to all agents that touch external surfaces. Interview prep example: explain how you sandbox tool calls and validate responses before they enter planning.`
                 });
             }
             
@@ -1907,9 +1856,10 @@ ${rec.guidance.split('\n').map((line, i) =>
                     metric: 'Complexity',
                     value: `${totalRow['Avg CC'].toFixed(1)}`,
                     sparkline: ccSparkline,
-                    action: 'Extract helper methods from high-CC functions (target: <25)',
-                    why: `<strong>Why:</strong> High cyclomatic complexity is like spaghetti code — every branch is another place bugs can hide. Functions with CC>15 are statistically 3x more likely to contain defects.`,
-                    analogy: '🍝 Spaghetti Code: More branches = more places for bugs to hide.'
+                    priorityComponent: 'Complexity Health',
+                    gap: `**Gap: Average complexity is ${totalRow['Avg CC'].toFixed(1)}, increasing defect rate and slowing safe refactors.**`,
+                    impact: `High complexity blocks autonomy because agents cannot reliably reason about control-flow: more branches means more hidden failure paths and more fragile healing hooks. In interview terms: CC correlates with incident frequency and MTTR.`,
+                    solve: `Extract helpers, flatten conditionals, and introduce small pure functions (target <25, ideally ≤10 in hot paths). Then lock it in with unit tests so refactors are safe.`
                 });
             }
             
@@ -1919,9 +1869,23 @@ ${rec.guidance.split('\n').map((line, i) =>
                     metric: 'Healing Invocation',
                     value: `${(totalRow['Invocation %'] || 0).toFixed(1)}%`,
                     sparkline: invSparkline,
-                    action: 'Add super().heal_repository() calls to agent heal methods',
-                    why: `<strong>Why:</strong> Healing invocation is like actually using your insurance policy. Having coverage (capability) means nothing if you never file claims (invoke). Low invocation = dormant self-healing.`,
-                    analogy: '📋 Insurance: Having a policy is useless if you never file claims.'
+                    priorityComponent: 'Healing Invocation',
+                    gap: `**Gap: Healing invocation is ${(totalRow['Invocation %'] || 0).toFixed(1)}% — agents have capabilities but are not executing the repair chain.**`,
+                    impact: `Autonomy depends on closed-loop correction. If agents don't invoke healing, the system accumulates drift: small errors compound, and incident recovery becomes manual. In production, this shows up as "works in dev, fails in prod" because runtime paths differ.`,
+                    solve: `Add explicit super().heal_repository() calls in each agent's heal path and enforce via CI tests. Interview prep example: explain why explicit chains are auditable and how you validate invocation coverage portfolio-wide.`
+                });
+            }
+
+            if (totalRow['Test %'] < 70) {
+                metricObs.push({
+                    icon: '🧪',
+                    metric: 'Test Coverage',
+                    value: `${(totalRow['Test %'] || 0).toFixed(1)}%`,
+                    sparkline: generateSparkline([40, 45, 52, 60, totalRow['Test %'] || 0], '#2563eb'),
+                    priorityComponent: 'Test Coverage',
+                    gap: `**Gap: Test coverage is ${(totalRow['Test %'] || 0).toFixed(1)}%, limiting safe hardening and refactoring.**`,
+                    impact: `In agentic systems, refactors happen constantly (routing, prompts, tool wrappers). Without tests, every change becomes a regression lottery and autonomy degrades because agents cannot trust invariants.`,
+                    solve: `Add unit tests for core behaviors and regression baselines for APIs. Interview prep example: explain what you test (contracts, failure modes, and invariants) rather than only happy paths.`
                 });
             }
             
@@ -1930,9 +1894,10 @@ ${rec.guidance.split('\n').map((line, i) =>
                 metric: 'Health Score',
                 value: `${totalRow.Health.toFixed(1)}%`,
                 sparkline: healthSparkline,
-                action: totalRow.Health < 70 ? 'Improve healing invocation and test coverage' : 'Maintain current trajectory',
-                why: `<strong>Why:</strong> Health Score is your system's vital signs dashboard — a composite of healing, testing, observability, and code quality. Like a patient's chart, it tells you if the system is thriving or needs intervention.`,
-                analogy: '🏥 Vital Signs: Blood pressure, heart rate, oxygen — all in one number.'
+                priorityComponent: '',
+                gap: `**Gap: Overall health is ${totalRow.Health.toFixed(1)}% — key autonomy signals are not yet production-grade.**`,
+                impact: `Health is the "executive summary" for autonomy readiness: low invocation, low tests, or high complexity each reduces reliability and makes reasoning brittle under load.`,
+                solve: `Focus on the top three priorities (ranked #1–#3 in the relevant cards). Each improvement compounds: better tests enable safer refactors, lower complexity makes healing hooks easier, and better invocation closes the loop.`
             });
             
             metricObs.push({
@@ -1940,9 +1905,10 @@ ${rec.guidance.split('\n').map((line, i) =>
                 metric: 'Documentation',
                 value: `${(totalRow['Doc %'] || 50).toFixed(1)}%`,
                 sparkline: docSparkline,
-                action: 'Add docstrings to undocumented public methods',
-                why: `<strong>Why:</strong> Documentation is institutional memory. Without it, every new developer (or AI agent) must reverse-engineer intent from code. Poor docs = slower onboarding, more bugs, higher maintenance cost.`,
-                analogy: '📚 Recipe Book: Without it, every chef has to guess the ingredients.'
+                priorityComponent: '',
+                gap: `**Gap: Documentation coverage is ${(totalRow['Doc %'] || 50).toFixed(1)}%, reducing agent discoverability and reuse.**`,
+                impact: `In a production agentic system, unclear interfaces reduce reuse by ~30–50% because agents (and humans) cannot quickly infer intent, constraints, and safe usage patterns. That increases duplication and makes canon compliance harder to enforce.`,
+                solve: `Add docstrings to public methods and stabilize naming so registry search works. Interview prep example: explain how docs + naming reduce hallucinated tool usage by constraining the search space.`
             });
 
             const metricContainer = document.getElementById('metricObservations');
@@ -1951,14 +1917,14 @@ ${rec.guidance.split('\n').map((line, i) =>
                     <span style="font-size: 1.6em;">${obs.icon}</span>
                     <div style="flex: 1;">
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                            <strong style="color: #166534; font-size: 1.05em;">${obs.metric}:</strong>
+                            <strong style="color: #166534; font-size: 1.05em;">${obs.metric}:${obs.priorityComponent ? priorityBadge(obs.priorityComponent) : ''}</strong>
                             <span style="font-weight: 700; color: #1f2937; font-size: 1.1em;">${obs.value}</span>
                             ${obs.sparkline}
                         </div>
-                        <p style="margin: 6px 0; font-size: 0.9em; color: #334155;">${obs.action}</p>
                         <div style="margin-top: 8px; padding: 10px; background: #f0fdf4; border-radius: 6px; border-left: 3px solid #16a34a;">
-                            <p style="margin: 0 0 4px 0; font-size: 0.85em; color: #166534;">${obs.why}</p>
-                            <p style="margin: 0; font-size: 0.8em; color: #64748b; font-style: italic;">${obs.analogy}</p>
+                            <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #166534;">${obs.gap}</p>
+                            <p style="margin: 0 0 6px 0; font-size: 0.85em; color: #334155;"><strong>Impact:</strong> ${obs.impact}</p>
+                            <p style="margin: 0; font-size: 0.85em; color: #334155;"><strong>How to fix:</strong> ${obs.solve}</p>
                         </div>
                     </div>
                 </div>
@@ -1966,47 +1932,74 @@ ${rec.guidance.split('\n').map((line, i) =>
         }
 
         function loadData() {
-            const data = dashboardData;
-            const territoryData = data.filter(row => row.Territory !== 'TOTAL');
-            const totalRow = data.find(row => row.Territory === 'TOTAL');
+            try {
+                const data = dashboardData || [];
+                const territoryData = data.filter(row => row && row.Territory !== 'TOTAL');
+                const totalRow = data.find(row => row && row.Territory === 'TOTAL');
 
-            if (!totalRow) {
-                document.getElementById('kpiGrid').innerHTML = '<div class="loading">No data available.</div>';
-                return;
+                if (!totalRow) {
+                    const container = document.getElementById('kpiGrid');
+                    if (container) {
+                        container.innerHTML = '<div class="loading">No data available.</div>';
+                    }
+                    return;
+                }
+
+                renderStrategicObservations(totalRow, territoryData);
+                renderTerritorySummaryTable(territoryData);
+                renderHealthChart(territoryData);
+                renderRiskMatrix(territoryData);
+                renderRecommendations();
+                renderInterviewQuestions(totalRow);
+
+                // Update timestamp to current time on each load/refresh
+                const now = new Date();
+                const options = { year: 'numeric', month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                const currentTime = now.toLocaleDateString('en-US', options);
+                const lastUpdatedEl = document.getElementById('lastUpdated');
+                if (lastUpdatedEl) {
+                    lastUpdatedEl.textContent = `Last updated: ${currentTime}`;
+                }
+
+                // Setup drill-down click handlers after all charts are rendered
+                setTimeout(() => {
+                    try {
+                        setupDrillDowns();
+                    } catch (error) {
+                        console.warn('Failed to setup drill-downs:', error);
+                    }
+                }, 100);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                const container = document.getElementById('kpiGrid');
+                if (container) {
+                    container.innerHTML = '<div class="loading">Error loading dashboard. Please refresh.</div>';
+                }
             }
-
-            renderStrategicObservations(totalRow, territoryData);
-            renderTerritorySummaryTable(territoryData);
-            renderTopRecommendations();
-            renderHealthChart(territoryData);
-            renderRiskMatrix(territoryData);
-            renderRecommendations();
-            renderInterviewQuestions(totalRow);
-
-            // Update timestamp to current time on each load/refresh
-            const now = new Date();
-            const options = { year: 'numeric', month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            const currentTime = now.toLocaleDateString('en-US', options);
-            document.getElementById('lastUpdated').textContent = `Last updated: ${currentTime}`;
-            
-            // Setup drill-down click handlers after all charts are rendered
-            setTimeout(setupDrillDowns, 100);
         }
 
         // Drill-down modal functions
         function openDrillModal(territoryName) {
-            const row = dashboardData.find(r => r.Territory === territoryName);
-            if (!row) return;
+            try {
+                const row = dashboardData?.find(r => r && r.Territory === territoryName);
+                if (!row) return;
 
-            document.getElementById('modalTitle').textContent = `${territoryName} Territory Drill-Down`;
-            document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Health ${row.Health.toFixed(1)}% • Invocation ${row['Invocation %'].toFixed(1)}%`;
+                const modalTitle = document.getElementById('modalTitle');
+                const modalSubtitle = document.getElementById('modalSubtitle');
+                if (modalTitle) {
+                    modalTitle.textContent = `${territoryName} Territory Drill-Down`;
+                }
+                if (modalSubtitle) {
+                    modalSubtitle.textContent = `${row.Total} agents • Health ${row.Health?.toFixed(1)}% • Invocation ${row['Invocation %']?.toFixed(1)}%`;
+                }
 
             let content = '<strong style="font-size:1.2em;">Territory Metrics Recap:</strong><ul style="margin-top:10px;">';
-            content += `<li>Healing Capability: <strong>${row['Heal Cap %'].toFixed(1)}%</strong></li>`;
-            content += `<li>Healing Invocation: <strong>${row['Invocation %'].toFixed(1)}%</strong> (gap = opportunity)</li>`;
+            content += `<li>Category breakdown: <strong>${getCategoryForTerritory(row.Territory, row.Total, row.agents)}</strong></li>`;
+            content += `<li>Healing Capability: <strong>${row['Heal Cap %']?.toFixed(1)}%</strong></li>`;
+            content += `<li>Healing Invocation: <strong>${row['Invocation %']?.toFixed(1)}%</strong> (gap = opportunity)</li>`;
             content += `<li>MCP Hardened: <strong>${(row['Hardened %'] || 0).toFixed(1)}%</strong></li>`;
-            content += `<li>Tests: <strong>${row['Test %'].toFixed(1)}%</strong></li>`;
-            content += `<li>Avg Complexity: <strong>${row['Avg CC'].toFixed(1)}</strong></li>`;
+            content += `<li>Tests: <strong>${row['Test %']?.toFixed(1)}%</strong></li>`;
+            content += `<li>Avg Complexity: <strong>${row['Avg CC']?.toFixed(1)}</strong></li>`;
             content += '</ul>';
 
             // Per-agent diagnostics table
@@ -2087,8 +2080,17 @@ ${rec.guidance.split('\n').map((line, i) =>
                 content += '<p style="margin-top:20px; color:var(--text-light);">No per-agent diagnostics available for this territory.</p>';
             }
 
-            document.getElementById('modalContent').innerHTML = content;
-            document.getElementById('drillModal').style.display = 'flex';
+            const modalContent = document.getElementById('modalContent');
+            const drillModal = document.getElementById('drillModal');
+            if (modalContent) {
+                modalContent.innerHTML = content;
+            }
+            if (drillModal) {
+                drillModal.style.display = 'flex';
+            }
+            } catch (error) {
+                console.error('Error opening drill modal:', error);
+            }
         }
 
         // Attach click handlers to all territory charts

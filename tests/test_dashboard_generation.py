@@ -72,7 +72,8 @@ class TestDashboardGeneration(unittest.TestCase):
             'riskMatrix',
             'interviewQuestions',
             'recommendationsList',
-            'topRecommendations',
+            'macroObservations',
+            'metricObservations',
             'lastUpdated'
         ]
         
@@ -115,7 +116,7 @@ class TestDashboardGeneration(unittest.TestCase):
             'function renderComplexityChart(',
             'function renderInterviewQuestions(',
             'function renderRecommendations(',
-            'function renderTopRecommendations(',
+            'function renderStrategicObservations(',
             'function loadData('
         ]
         
