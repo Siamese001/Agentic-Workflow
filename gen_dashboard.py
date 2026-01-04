@@ -6,8 +6,34 @@ Tests MUST pass before dashboard is generated.
 from pathlib import Path
 import sys
 import subprocess
+import os
 
 sys.path.insert(0, str(Path(__file__).parent))
+
+def ensure_agent_discovery():
+    """Run agent discovery if JSON is missing or out of date."""
+    project_root = Path(__file__).parent
+    discovery_script = project_root / "scripts" / "full_agent_discovery.py"
+    json_path = project_root / "agent_discovery_full.json"
+    
+    # If JSON doesn't exist, run discovery
+    if not json_path.exists():
+        print("\n🔍 Agent discovery JSON not found. Running discovery...")
+        print("=" * 60)
+        result = subprocess.run(
+            [sys.executable, str(discovery_script)],
+            cwd=project_root,
+            capture_output=False,
+            text=True
+        )
+        if result.returncode != 0:
+            print("\n❌ Agent discovery failed")
+            sys.exit(1)
+        print("✅ Agent discovery completed")
+        return
+    
+    # Optional: add timestamp check to auto-run if repo is newer than JSON
+    # For now, just ensure it exists
 
 def run_dashboard_tests():
     """Run unit tests before dashboard generation."""
@@ -49,6 +75,9 @@ def run_dashboard_tests():
 
 
 if __name__ == "__main__":
+    # Ensure agent discovery is up to date
+    ensure_agent_discovery()
+    
     # Run tests first
     if not run_dashboard_tests():
         sys.exit(1)
