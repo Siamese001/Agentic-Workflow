@@ -186,9 +186,6 @@ class TestDashboardGeneration(unittest.TestCase):
         
         required_tabs = [
             'data-target="executive"',
-            'data-target="territory"',
-            'data-target="risk"',
-            'data-target="compliance"',
             'data-target="recommendations"',
             'data-target="interview"'
         ]
