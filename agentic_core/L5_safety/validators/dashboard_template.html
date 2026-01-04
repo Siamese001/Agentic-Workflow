@@ -934,6 +934,7 @@
                     'Test %': testsPct,
                     'Observable %': observablePct,
                     'Avg CC': avgCC,
+                    'Complexity Health': complexityHealth,
                     'Typed %': avgTyped,
                     Health: health
                 };
@@ -997,269 +998,8 @@
             });
 
             // Build table with key metrics per territory
-            let html = `
-            <div style="margin-bottom:40px;">
-                <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">Territory Summary</h3>
-                <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
-                        <thead>
-                            <tr style="background:var(--primary); color:white;">
-                                <th style="padding:16px; text-align:left; font-weight:600;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Sub-Territory breakdown for this territory (didactic; counts sum to total)">Sub-Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Active agents and (when available) total MCP tools integrated in this territory">Agents / Tools</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list">Heal Capability %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Heal Invocation %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with SECURITY PROTECTION around MCP connections — Safety harnesses preventing dangerous operations (NOT about using MCP tools)">MCP Hardened %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures">Test Coverage %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with observability infrastructure (logging/metrics/tracing) — Dashboard monitoring at each station">Observability %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Average workflow complexity — Tangled assembly lines slow down production (target ≤10 steps)">Avg Complexity</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Composite health score: (Heal Cap + Invocation + Tests + Observability + Inverted CC) / 5">Health Score</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-            
-            // Add TOTAL row first
-            const totalRow = dashboardData.find(row => row.Territory === 'TOTAL');
-            if (totalRow) {
-                // 7-color gradient: Deep Red → Red → Orange → Yellow → Yellow-Green → Light Green → Green
-                const getGradientBg = (value, target = 80) => {
-                    const normalized = Math.max(0, Math.min(100, value)) / 100;
-                    let r, g, b;
-                    
-                    if (normalized < 0.2) {
-                        // Deep Red (0-20%)
-                        const t = normalized * 5;
-                        r = Math.round(139 + (220 - 139) * t);
-                        g = Math.round(0 + (38 - 0) * t);
-                        b = Math.round(0 + (38 - 0) * t);
-                    } else if (normalized < 0.4) {
-                        // Red to Orange (20-40%)
-                        const t = (normalized - 0.2) * 5;
-                        r = Math.round(220 + (255 - 220) * t);
-                        g = Math.round(38 + (140 - 38) * t);
-                        b = 38;
-                    } else if (normalized < 0.6) {
-                        // Orange to Yellow (40-60%)
-                        const t = (normalized - 0.4) * 5;
-                        r = Math.round(255 - (21) * t);
-                        g = Math.round(140 + (39) * t);
-                        b = Math.round(38 - (30) * t);
-                    } else if (normalized < 0.75) {
-                        // Yellow to Yellow-Green (60-75%)
-                        const t = (normalized - 0.6) / 0.15;
-                        r = Math.round(234 - (84) * t);
-                        g = Math.round(179 + (11) * t);
-                        b = Math.round(8 + (32) * t);
-                    } else if (normalized < 0.85) {
-                        // Yellow-Green to Light Green (75-85%)
-                        const t = (normalized - 0.75) / 0.1;
-                        r = Math.round(150 - (84) * t);
-                        g = Math.round(190 - (7) * t);
-                        b = Math.round(40 + (34) * t);
-                    } else {
-                        // Light Green to Green (85-100%)
-                        const t = (normalized - 0.85) / 0.15;
-                        r = Math.round(66 - (44) * t);
-                        g = Math.round(183 - (20) * t);
-                        b = Math.round(74);
-                    }
-                    
-                    const alpha = 0.15 + normalized * 0.15;
-                    return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
-                };
-                const getComplexityGradientBg = (value) => {
-                    const inverted = Math.max(0, Math.min(100, 100 - (value * 2)));
-                    return getGradientBg(inverted, 80);
-                };
-                const healthColor = totalRow.Health >= 85 ? '#065f46' : totalRow.Health >= 75 ? '#047857' : totalRow.Health >= 60 ? '#65a30d' : totalRow.Health >= 40 ? '#a16207' : totalRow.Health >= 20 ? '#c2410c' : '#991b1b';
-                const invocationColor = totalRow['Invocation %'] >= 85 ? '#065f46' : totalRow['Invocation %'] >= 75 ? '#047857' : totalRow['Invocation %'] >= 60 ? '#65a30d' : totalRow['Invocation %'] >= 40 ? '#a16207' : totalRow['Invocation %'] >= 20 ? '#c2410c' : '#991b1b';
-                const hardenedColor = (totalRow['Hardened %'] || 0) >= 85 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 75 ? '#047857' : (totalRow['Hardened %'] || 0) >= 60 ? '#65a30d' : (totalRow['Hardened %'] || 0) >= 40 ? '#a16207' : (totalRow['Hardened %'] || 0) >= 20 ? '#c2410c' : '#991b1b';
-                const testColor = totalRow['Test %'] >= 85 ? '#065f46' : totalRow['Test %'] >= 75 ? '#047857' : totalRow['Test %'] >= 60 ? '#65a30d' : totalRow['Test %'] >= 40 ? '#a16207' : totalRow['Test %'] >= 20 ? '#c2410c' : '#991b1b';
-                const ccColor = totalRow['Avg CC'] <= 10 ? '#065f46' : totalRow['Avg CC'] <= 15 ? '#047857' : totalRow['Avg CC'] <= 20 ? '#65a30d' : totalRow['Avg CC'] <= 30 ? '#a16207' : totalRow['Avg CC'] <= 40 ? '#c2410c' : '#991b1b';
-                
-                html += `
-                    <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
-                        <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">TOTAL</td>
-                        <td style="padding:14px; text-align:center; font-weight:600; border-right:1px solid #e5e7eb; color:#6b7280;">—</td>
-                        <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">
-                            ${totalRow.Total}
-                            ${totalRow.ToolCount !== undefined ? ` <span style="color:#64748b; font-weight:normal;">/</span> <span style="color:var(--primary); font-weight:600;">${totalRow.ToolCount}</span>` : ''}
-                        </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; border-right:1px solid #e5e7eb; font-weight:600;">
-                            ${totalRow['Heal Cap %'].toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.heal_cap ? formatSparkline(dashboardData[0].sparklines.heal_cap, totalRow['Heal Cap %'], dashboardData[0].trends?.heal_cap_delta ? totalRow['Heal Cap %'] - dashboardData[0].trends.heal_cap_delta : totalRow['Heal Cap %'], true) : ''}
-                        </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            ${totalRow['Invocation %'].toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.invocation ? formatSparkline(dashboardData[0].sparklines.invocation, totalRow['Invocation %'], dashboardData[0].trends?.invocation_delta ? totalRow['Invocation %'] - dashboardData[0].trends.invocation_delta : totalRow['Invocation %'], true) : ''}
-                        </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            ${(totalRow['Hardened %'] || 0).toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.mcp_hardened ? formatSparkline(dashboardData[0].sparklines.mcp_hardened, totalRow['Hardened %'] || 0, dashboardData[0].trends?.mcp_hardened_delta ? (totalRow['Hardened %'] || 0) - dashboardData[0].trends.mcp_hardened_delta : totalRow['Hardened %'] || 0, true) : ''}
-                        </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            ${totalRow['Test %'].toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.tests ? formatSparkline(dashboardData[0].sparklines.tests, totalRow['Test %'], dashboardData[0].trends?.tests_delta ? totalRow['Test %'] - dashboardData[0].trends.tests_delta : totalRow['Test %'], true) : ''}
-                        </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Observable %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            ${(totalRow['Observable %'] || 0).toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.observable ? formatSparkline(dashboardData[0].sparklines.observable, totalRow['Observable %'] || 0, dashboardData[0].trends?.observable_delta ? (totalRow['Observable %'] || 0) - dashboardData[0].trends.observable_delta : totalRow['Observable %'] || 0, true) : ''}
-                        </td>
-                        <td style="padding:14px; text-align:center; background:${getComplexityGradientBg(totalRow['Avg CC'])}; color:${ccColor}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            ${totalRow['Avg CC'].toFixed(1)}
-                            ${generateSparkline([45, 43, 41, 40, totalRow['Avg CC']], '#ea580c', false)}
-                        </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(Math.min(100, totalRow.Health))}; color:${healthColor}; font-weight:800; font-size:1.05em;">
-                            ${Math.min(100, totalRow.Health).toFixed(1)}%
-                            ${generateSparkline([55, 58, 61, 64, Math.min(100, totalRow.Health)], '#16a34a', true)}
-                        </td>
-                    </tr>`;
-            }
-            
-            expandedRows.forEach((row, index) => {
-                const displayTerritory = row._displayTerritory || row.Territory;
-                const displaySubTerritory = row._displaySubTerritory || '—';
-                
-                // 7-color gradient: Deep Red → Red → Orange → Yellow → Yellow-Green → Light Green → Green
-                const getGradientBg = (value, target = 80) => {
-                    const normalized = Math.max(0, Math.min(100, value)) / 100;
-                    let r, g, b;
-                    
-                    if (normalized < 0.2) {
-                        // Deep Red (0-20%)
-                        const t = normalized * 5;
-                        r = Math.round(139 + (220 - 139) * t);
-                        g = Math.round(0 + (38 - 0) * t);
-                        b = Math.round(0 + (38 - 0) * t);
-                    } else if (normalized < 0.4) {
-                        // Red to Orange (20-40%)
-                        const t = (normalized - 0.2) * 5;
-                        r = Math.round(220 + (255 - 220) * t);
-                        g = Math.round(38 + (140 - 38) * t);
-                        b = 38;
-                    } else if (normalized < 0.6) {
-                        // Orange to Yellow (40-60%)
-                        const t = (normalized - 0.4) * 5;
-                        r = Math.round(255 - (21) * t);
-                        g = Math.round(140 + (39) * t);
-                        b = Math.round(38 - (30) * t);
-                    } else if (normalized < 0.75) {
-                        // Yellow to Yellow-Green (60-75%)
-                        const t = (normalized - 0.6) / 0.15;
-                        r = Math.round(234 - (84) * t);
-                        g = Math.round(179 + (11) * t);
-                        b = Math.round(8 + (32) * t);
-                    } else if (normalized < 0.85) {
-                        // Yellow-Green to Light Green (75-85%)
-                        const t = (normalized - 0.75) / 0.1;
-                        r = Math.round(150 - (84) * t);
-                        g = Math.round(190 - (7) * t);
-                        b = Math.round(40 + (34) * t);
-                    } else {
-                        // Light Green to Green (85-100%)
-                        const t = (normalized - 0.85) / 0.15;
-                        r = Math.round(66 - (44) * t);
-                        g = Math.round(183 - (20) * t);
-                        b = Math.round(74);
-                    }
-                    
-                    const alpha = 0.15 + normalized * 0.15;
-                    return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
-                };
-                
-                // Continuous gradient for complexity (lower is better, inverted scale)
-                const getComplexityGradientBg = (value) => {
-                    // Invert: 0 CC = 100%, 50+ CC = 0%
-                    const inverted = Math.max(0, Math.min(100, 100 - (value * 2)));
-                    return getGradientBg(inverted, 80);
-                };
-                
-                const healthColor = row.Health >= 85 ? '#065f46' : row.Health >= 75 ? '#047857' : row.Health >= 60 ? '#65a30d' : row.Health >= 40 ? '#a16207' : row.Health >= 20 ? '#c2410c' : '#991b1b';
-                const invocationColor = row['Invocation %'] >= 85 ? '#065f46' : row['Invocation %'] >= 75 ? '#047857' : row['Invocation %'] >= 60 ? '#65a30d' : row['Invocation %'] >= 40 ? '#a16207' : row['Invocation %'] >= 20 ? '#c2410c' : '#991b1b';
-                const hardenedColor = (row['Hardened %'] || 0) >= 85 ? '#065f46' : (row['Hardened %'] || 0) >= 75 ? '#047857' : (row['Hardened %'] || 0) >= 60 ? '#65a30d' : (row['Hardened %'] || 0) >= 40 ? '#a16207' : (row['Hardened %'] || 0) >= 20 ? '#c2410c' : '#991b1b';
-                const testColor = row['Test %'] >= 85 ? '#065f46' : row['Test %'] >= 75 ? '#047857' : row['Test %'] >= 60 ? '#65a30d' : row['Test %'] >= 40 ? '#a16207' : row['Test %'] >= 20 ? '#c2410c' : '#991b1b';
-                const ccColor = row['Avg CC'] <= 10 ? '#065f46' : row['Avg CC'] <= 15 ? '#047857' : row['Avg CC'] <= 20 ? '#65a30d' : row['Avg CC'] <= 30 ? '#a16207' : row['Avg CC'] <= 40 ? '#c2410c' : '#991b1b';
-                
-                const territorySparklines = dashboardData[0].territory_sparklines || {};
-                const tSpark = territorySparklines[row.Territory] || {};
-                const territoryTrends = dashboardData[0].territory_trends || {};
-                const tTrend = territoryTrends[row.Territory] || {};
-
-                const agentsToolsDisplay = row.ToolCount !== undefined
-                    ? `${row.Total} <span style="color:#64748b;">/</span> <span style="color:var(--primary); font-weight:600;">${row.ToolCount}</span>`
-                    : `${row.Total}`;
-
-                const healthTooltip = `Health Score: ${row.Health.toFixed(1)}% (target ≥80%).\nSub-Territory: ${displaySubTerritory.replace(/<[^>]*>/g, '')}\n\nHealth is a composite autonomy readiness signal across healing, tests, observability, typing, and maintainability.\nClick to drill down into per-agent diagnostics.`;
-                
-                html += `
-                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
-                        onmouseover="this.style.background='#f0f9ff'" 
-                        onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'" 
-                        onclick="openDrillModal('${row._drillTerritory || row.Territory}', '${displaySubTerritory.replace(/'/g, "\\'")}')" 
-                        title="Click to view detailed per-agent diagnostics for ${displayTerritory}">
-                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${displayTerritory}</td>
-                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; font-size:1.0em; color:#475569; max-width:260px;">${displaySubTerritory}</td>
-                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${agentsToolsDisplay}</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getComplexityGradientBg(row['Avg CC'])}; color:${ccColor}; font-weight:600; border-right:1px solid #e5e7eb;" title="Avg Cyclomatic Complexity: ${row['Avg CC'].toFixed(1)} (lower is better; target ≤10).\nLower complexity improves maintainability and makes agentic healing safer to extend.">${row['Avg CC'].toFixed(1)}</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, row.Health))}; color:${healthColor}; font-weight:700;" title="${healthTooltip}">${Math.min(100, row.Health).toFixed(1)}%</td>
-                    </tr>`;
-            });
-            
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-                <div style="margin-top:12px; font-size:0.85em; color:var(--text-light); line-height:1.5;">
-                    <div><strong>Territory:</strong> Domain slice (layer/app) for governance and compliance analysis. <strong>Config</strong> and <strong>Observability</strong> are territories too (rows), not special table columns.</div>
-                    <div><strong>Sub-Territory:</strong> Didactic component breakdown of what the territory contains (counts sum to total).</div>
-                    <div><strong>Agents / Tools:</strong> Active agents and (when available) total MCP tools integrated in this territory.</div>
-                    <div><strong>Heal Capability %:</strong> % with HealerMixin / healing capability available.</div>
-                    <div><strong>Heal Invocation %:</strong> % actually invoking healing chain (explicit super().heal_repository() usage).</div>
-                    <div><strong>MCP Hardened %:</strong> % protected at external tool boundary (MCP hardening/mixins/decorators).</div>
-                    <div><strong>Test Coverage %:</strong> % with tests detected (enables safe refactoring/hardening).</div>
-                    <div><strong>Observability %:</strong> % with logging/metrics/tracing signals (production diagnosability).</div>
-                    <div><strong>Avg Complexity:</strong> Average cyclomatic complexity (lower = safer, more maintainable autonomy).</div>
-                    <div><strong>Health Score:</strong> Composite autonomy readiness signal derived from the columns above.</div>
-                    <div style="margin-top:6px; font-size:0.9em;">Health Score weighting: Invocation 25% + Hardened 18% + Tests 18% + Heal Cap 14% + Observable 10% + Typed 10% + Complexity 5%.</div>
-                </div>
-                
-                <!-- Code Quality Score Section -->
-                <div style="margin-top:40px; margin-bottom:20px;">
-                    <h3 style="font-size:1.3em; color:var(--primary); font-weight:700; margin-bottom:10px;">Code Quality Score</h3>
-                    <p style="font-size:0.95em; color:#555; margin-bottom:15px;">Independent score focusing on static code quality and modernization (separate from operational Health Score).</p>
-                    <div style="overflow-x:auto;">
-                        <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
-                            <thead>
-                                <tr style="background:var(--primary); color:white;">
-                                    <th style="padding:16px; text-align:left; font-weight:600;">Territory</th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Sub-Territory within the territory">Sub-Territory</th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Percentage of agents with type hints (35% weight)">Typing % <span style="font-size:0.75em;opacity:0.8">(35%)</span></th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="% agents with MCP tool access (25% weight)">MCP Capable % <span style="font-size:0.75em;opacity:0.8">(25%)</span></th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Inverted cyclomatic complexity (20% weight, higher = better)">Complexity Health <span style="font-size:0.75em;opacity:0.8">(20%)</span></th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Docstring coverage (20% weight)">Documentation % <span style="font-size:0.75em;opacity:0.8">(20%)</span></th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Weighted composite score">Code Quality Score</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-            
-            // Add TOTAL row FIRST (like Territory Summary)
-            let totalCodeQuality = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['Code Quality Score'] || 0), 0) / territoryData.length) : 0;
-            let totalTyping = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['Typed %'] || 0), 0) / territoryData.length) : 0;
-            let totalMcpCapable = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['MCP Capable %'] || 0), 0) / territoryData.length) : 0;
-            let totalComplexityHealth = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['Complexity Health'] || 0), 0) / territoryData.length) : 0;
-            let totalDocumented = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['Documented %'] || 0), 0) / territoryData.length) : 0;
-            
-            const getGradientBg = (value, target = 100) => {
+            // 7-color gradient: Deep Red → Red → Orange → Yellow → Yellow-Green → Light Green → Green
+            const getGradientBg = (value, target = 80) => {
                 const normalized = Math.max(0, Math.min(100, value)) / 100;
                 let r, g, b;
                 
@@ -1299,6 +1039,158 @@
                 return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
             };
             
+            // Continuous gradient for complexity (lower is better, inverted scale)
+            const getComplexityGradientBg = (value) => {
+                const inverted = Math.max(0, Math.min(100, 100 - (value * 2)));
+                return getGradientBg(inverted, 80);
+            };
+
+            let html = `
+            <div style="margin-bottom:40px;">
+                <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">Territory Summary</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
+                        <thead>
+                            <tr style="background:var(--primary); color:white;">
+                                <th style="padding:16px; text-align:left; font-weight:600;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Sub-Territory breakdown for this territory (didactic; counts sum to total)">Sub-Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Active agents / Total MCP tools integrated in this territory (when data available)">Agents / Tools</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list">Heal Cap %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Invocation %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% agents with runtime safety hardening at external tool boundaries (MCPShield mixin, @hardened decorators, safe overrides) — Critical for Gemini-era prompt/tool safety">MCP Hardened %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures">Test %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with observability infrastructure (logging/metrics/tracing) — Dashboard monitoring at each station">Observable %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Average Cyclomatic Complexity — High CC blocks safe healing and increases regression surface. Target ≤10 in hot paths.">Avg CC</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;">Complexity Health</th>
+                                <th style="padding:16px; text-align:center; font-weight:800;" title="Composite readiness score (Invocation + Hardening + Tests + Healing)">Health Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            // Add TOTAL row first
+            const totalRow = territoryData.find(r => r.Territory === 'TOTAL') || territoryData[0];
+            if (totalRow) {
+                const totalComplexityHealth = (totalRow['Complexity Health'] !== undefined && totalRow['Complexity Health'] !== null)
+                    ? totalRow['Complexity Health']
+                    : Math.max(0, Math.min(100, 100 - ((totalRow['Avg CC'] || 0) * 2)));
+                const healthColor = totalRow.Health >= 80 ? '#065f46' : totalRow.Health >= 60 ? '#ea580c' : '#dc2626';
+                const invocationColor = totalRow['Invocation %'] >= 80 ? '#065f46' : totalRow['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
+                const hardenedColor = (totalRow['Hardened %'] || 0) >= 80 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
+                const testColor = totalRow['Test %'] >= 80 ? '#065f46' : totalRow['Test %'] >= 60 ? '#ea580c' : '#dc2626';
+                const ccColor = totalRow['Avg CC'] <= 10 ? '#065f46' : totalRow['Avg CC'] <= 20 ? '#ea580c' : '#dc2626';
+                
+                html += `
+                    <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
+                        <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">TOTAL</td>
+                        <td style="padding:14px; text-align:center; font-weight:600; border-right:1px solid #e5e7eb; color:#6b7280;">—</td>
+                        <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">
+                            ${totalRow.Total}
+                            ${totalRow.ToolCount !== undefined ? ` <span style="color:#64748b;">/</span> <span style="color:var(--primary); font-weight:600;">${totalRow.ToolCount}</span>` : ''}
+                            ${(totalRow['Infrastructure Total'] || 0) > 0 ? `<div style="font-size:0.78em; color:#0f766e;">Incl. ${totalRow['Infrastructure Total']} infra</div>` : ''}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Heal Cap %'].toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Invocation %'].toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Hardened %'] || 0).toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Test %'].toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Observable %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Observable %'] || 0).toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getComplexityGradientBg(totalRow['Avg CC'])}; color:${ccColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Avg CC'].toFixed(1)}</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${totalComplexityHealth.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(Math.min(100, totalRow.Health))}; color:${healthColor}; font-weight:800; font-size:1.05em;">${Math.min(100, totalRow.Health).toFixed(1)}%</td>
+                    </tr>`;
+            }
+
+            // Add territory rows (skip TOTAL)
+            expandedRows.filter(r => r.Territory !== 'TOTAL').forEach((row, index) => {
+                const displayTerritory = row._displayTerritory || row.Territory;
+                const displaySubTerritory = row._displaySubTerritory || '—';
+                const rowComplexityHealth = (row['Complexity Health'] !== undefined && row['Complexity Health'] !== null)
+                    ? row['Complexity Health']
+                    : Math.max(0, Math.min(100, 100 - ((row['Avg CC'] || 0) * 2)));
+                
+                const healthColor = row.Health >= 80 ? '#065f46' : row.Health >= 60 ? '#ea580c' : '#dc2626';
+                const invocationColor = row['Invocation %'] >= 80 ? '#065f46' : row['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
+                const hardenedColor = (row['Hardened %'] || 0) >= 80 ? '#065f46' : (row['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
+                const testColor = row['Test %'] >= 80 ? '#065f46' : row['Test %'] >= 60 ? '#ea580c' : '#dc2626';
+                const ccColor = row['Avg CC'] <= 10 ? '#065f46' : row['Avg CC'] <= 20 ? '#ea580c' : '#dc2626';
+                
+                const agentsToolsDisplay = row.ToolCount !== undefined
+                    ? `${row.Total} / ${row.ToolCount}`
+                    : `${row.Total}`;
+
+                html += `
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
+                        onmouseover="this.style.background='#f0f9ff'" 
+                        onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'"
+                        onclick="openDrillModal('${row._drillTerritory || row.Territory}', '${(displaySubTerritory || '').replace(/'/g, "\\'")}')"
+                        title="Click to drill down">
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${displayTerritory}</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; font-size:0.95em; color:#475569;">${displaySubTerritory}</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${agentsToolsDisplay}</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getComplexityGradientBg(row['Avg CC'])}; color:${ccColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Avg CC'].toFixed(1)}</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(rowComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${rowComplexityHealth.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, row.Health))}; color:${healthColor}; font-weight:700;">${Math.min(100, row.Health).toFixed(1)}%</td>
+                    </tr>`;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:12px; font-size:0.85em; color:var(--text-light); line-height:1.5;">
+                    <div><strong>Territory:</strong> Domain slice (layer/app) for governance and compliance analysis. <strong>Config</strong> and <strong>Observability</strong> are territories too (rows), not special table columns.</div>
+                    <div><strong>Sub-Territory:</strong> Didactic component breakdown of what the territory contains (counts sum to total).</div>
+                    <div><strong>Agents / Tools:</strong> Active agents and (when available) total MCP tools integrated in this territory.</div>
+                    <div><strong>Heal Capability %:</strong> % with HealerMixin / healing capability available.</div>
+                    <div><strong>Heal Invocation %:</strong> % actually invoking healing chain (explicit super().heal_repository() usage).</div>
+                    <div><strong>MCP Hardened %:</strong> % protected at external tool boundary (MCP hardening/mixins/decorators).</div>
+                    <div><strong>Test Coverage %:</strong> % with tests detected (enables safe refactoring/hardening).</div>
+                    <div><strong>Observability %:</strong> % with logging/metrics/tracing signals (production diagnosability).</div>
+                    <div><strong>Avg Complexity:</strong> Average cyclomatic complexity (lower = safer, more maintainable autonomy).</div>
+                    <div><strong>Complexity Health:</strong> Inverted complexity score (higher = better): 100 - (Avg CC × 2).</div>
+                    <div><strong>Health Score:</strong> Composite autonomy readiness signal derived from the columns above.</div>
+                    <div style="margin-top:6px; font-size:0.9em;">Health Score weighting (Gemini-hardened): Invocation 30% + MCP Hardened 30% + Tests 20% + Observability 20%.<br>
+                    Rationale: Runtime safety (invocation + boundary hardening) is highest leverage for production autonomy and tool-calling reliability.</div>
+                </div>
+            </div>`;
+                
+            // Code Quality Score Section
+            html += `
+                <div style="margin-top:40px; margin-bottom:20px;">
+                    <h3 style="font-size:1.3em; color:var(--primary); font-weight:700; margin-bottom:10px;">Code Quality Score</h3>
+                    <p style="font-size:0.95em; color:#555; margin-bottom:15px;">Independent score focusing on static code quality and modernization (separate from operational Health Score).</p>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
+                            <thead>
+                                <tr style="background:var(--primary); color:white;">
+                                    <th style="padding:16px; text-align:left; font-weight:600;">Territory</th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Sub-Territory within the territory">Sub-Territory</th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Percentage of agents with type hints (35% weight)">Typing % <span style="font-size:0.75em;opacity:0.8">(35%)</span></th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Strict Pydantic/JSON schema usage on tool interfaces — prevents Gemini hallucinated arguments (30% weight)">Schema Strictness % <span style="font-size:0.75em;opacity:0.8">(30%)</span></th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Presence of required governance metadata/tags (capability, risk tier, owner) — essential for registry safety (15% weight)">Metadata Completeness % <span style="font-size:0.75em;opacity:0.8">(15%)</span></th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Docstring coverage — critical for accurate LLM self-reference during tool selection (20% weight)">Docstrings % <span style="font-size:0.75em;opacity:0.8">(20%)</span></th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Weighted composite score">Code Quality Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+            
+            // Add TOTAL row FIRST (like Territory Summary)
+            let totalCodeQuality = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Code Quality Score'] || 0), 0) / territoryData.length) : 0;
+            let totalTyping = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Typed %'] || 0), 0) / territoryData.length) : 0;
+            // Schema Strictness - fallback to MCP Capable until new analyzer
+            let totalSchemaStrictness = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Schema Strictness %'] || r['MCP Capable %'] || 0), 0) / territoryData.length) : 0;
+            let totalMetadata = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Metadata %'] || 0), 0) / territoryData.length) : 0;
+            let totalDocumented = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Documented %'] || 0), 0) / territoryData.length) : 0;
+            
             html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
                         <td style="padding:14px; font-weight:700; font-size:1.05em; border-right:1px solid #e5e7eb;">TOTAL</td>
@@ -1307,13 +1199,13 @@
                             ${totalTyping.toFixed(1)}%
                             ${dashboardData[0].sparklines && dashboardData[0].sparklines.typing ? formatSparkline(dashboardData[0].sparklines.typing, totalTyping, dashboardData[0].trends?.typing_delta ? totalTyping - dashboardData[0].trends.typing_delta : totalTyping) : ''}
                         </td>
-                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalMcpCapable)}; border-right:1px solid #e5e7eb;">
-                            ${totalMcpCapable.toFixed(1)}%
-                            ${generateSparkline([40, 44, 47, 49, totalMcpCapable], '#2563eb')}
+                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalSchemaStrictness)}; border-right:1px solid #e5e7eb;">
+                            ${totalSchemaStrictness.toFixed(1)}%
+                            ${generateSparkline([40, 44, 47, 49, totalSchemaStrictness], '#2563eb')}
                         </td>
-                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(Math.min(100, totalComplexityHealth))}; border-right:1px solid #e5e7eb;">
-                            ${Math.min(100, totalComplexityHealth).toFixed(1)}%
-                            ${generateSparkline([50, 52, 54, 56, Math.min(100, totalComplexityHealth)], '#ea580c')}
+                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalMetadata)}; border-right:1px solid #e5e7eb;">
+                            ${totalMetadata > 0 ? totalMetadata.toFixed(1) + '%' : '—'}
+                            ${totalMetadata > 0 ? generateSparkline([0, 0, 0, 0, totalMetadata], '#ea580c') : ''}
                         </td>
                         <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalDocumented)}; border-right:1px solid #e5e7eb;">
                             ${totalDocumented.toFixed(1)}%
@@ -1330,8 +1222,9 @@
                 const split = splitTerritoryName(row.Territory);
                 const codeQualityScore = row['Code Quality Score'] || 0;
                 const typing = row['Typed %'] || 0;
-                const mcp_capable = row['MCP Capable %'] || 0;
-                const complexityHealth = row['Complexity Health'] || 0;
+                // Schema Strictness - fallback to MCP Capable until new analyzer
+                const schemaStrictness = row['Schema Strictness %'] || row['MCP Capable %'] || 0;
+                const metadata = row['Metadata %'] || 0;
                 const documented = row['Documented %'] || 0;
                 const avgLoc = row['Avg LOC'] || 0;
                 const properBase = row['Proper Base %'] || 0;
@@ -1346,8 +1239,8 @@
                         <td style="padding:12px; font-weight:600; color:var(--primary);">${split.territory}</td>
                         <td style="padding:12px; text-align:center; color:#475569; border-right:1px solid #e5e7eb;">${split.subTerritory}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(typing)}; border-right:1px solid #e5e7eb;">${typing.toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(mcp_capable)}; border-right:1px solid #e5e7eb;">${mcp_capable.toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, complexityHealth))}; border-right:1px solid #e5e7eb;">${Math.min(100, complexityHealth).toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(schemaStrictness)}; border-right:1px solid #e5e7eb;">${schemaStrictness.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(metadata)}; border-right:1px solid #e5e7eb;">${metadata > 0 ? metadata.toFixed(1) + '%' : '—'}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(documented)}; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, codeQualityScore))}; font-weight:700;">${Math.min(100, codeQualityScore).toFixed(1)}%</td>
                     </tr>`;
@@ -1365,10 +1258,11 @@
                     </div>
                     <div style="margin-top:10px; font-size:0.85em; color:var(--text-light); line-height:1.5;">
                         <div><strong>Typing %:</strong> % with type hints; improves refactor safety and reduces tool misuse.</div>
-                        <div><strong>MCP Capable %:</strong> % touching external tools/surfaces (the boundary where hardening matters most).</div>
-                        <div><strong>Complexity Health:</strong> Inverted cyclomatic complexity (higher = better maintainability).</div>
-                        <div><strong>Documentation %:</strong> % with docstrings; boosts discoverability and reuse.</div>
-                        <div><strong>Code Quality Score:</strong> Weighted composite = Typing 35% + MCP Capable 25% + Complexity Health 20% + Documentation 20%.</div>
+                        <div><strong>Schema Strictness %:</strong> % of tool interfaces using strict Pydantic/JSON schemas — highest-leverage defense against Gemini argument hallucination.</div>
+                        <div><strong>Metadata Completeness %:</strong> Required governance tags (risk tier, owner, capability flags) — enables safe registry filtering.</div>
+                        <div><strong>Docstrings %:</strong> Documentation coverage — critical for accurate LLM tool selection and self-reference.</div>
+                        <div style="margin-top:6px; font-size:0.9em;">Code Quality Score weighting (Gemini-hardened): Typing 35% + Schema Strictness 30% + Metadata 15% + Docstrings 20%.<br>
+                        Rationale: Schema strictness is the #1 predictor of valid tool calls in Gemini-era agents.</div>
                     </div>
                 </div>
                 
@@ -2252,6 +2146,16 @@ ${rec.guidance.split('\n').map((line, i) =>
                 priority: ''
             });
 
+            // Portfolio health is the executive summary and should always appear in Macro Observations.
+            macroObs.push({
+                icon: '💚',
+                title: 'Health Score (Executive Summary)',
+                gap: `Overall health is ${totalRow.Health.toFixed(1)}% (target ≥80%), with one or more component gaps still below target (invocation/tests/hardening/complexity).`,
+                impact: `Health is the "executive summary" for autonomy readiness: low invocation, low tests, or high complexity each reduces reliability and makes reasoning brittle under load.`,
+                solve: `Focus on the top three priorities (ranked #1–#3 in the relevant cards). Each improvement compounds: better tests enable safer refactors, lower complexity makes healing hooks easier, and better invocation closes the loop.`,
+                priority: ''
+            });
+
             // Highest-priority observations first (P1 → P2 → P3), then stable ordering.
             macroObs.sort((a, b) => {
                 const ra = getPriorityRankForObs(a);
@@ -2350,7 +2254,9 @@ ${rec.guidance.split('\n').map((line, i) =>
                 const cc = totalRow['Avg CC'];
                 const ccTarget = 10;
                 const ccOver = cc - ccTarget;
-                const complexityHealth = Math.max(0, Math.min(100, 100 - (cc * 2)));
+                const complexityHealth = (totalRow['Complexity Health'] !== undefined && totalRow['Complexity Health'] !== null)
+                    ? totalRow['Complexity Health']
+                    : Math.max(0, Math.min(100, 100 - (cc * 2)));
                 metricObs.push({
                     icon: '🔀',
                     metric: 'Complexity',
@@ -2388,17 +2294,6 @@ ${rec.guidance.split('\n').map((line, i) =>
                     solve: `Add unit tests for core behaviors and regression baselines for APIs. Interview prep example: explain what you test (contracts, failure modes, and invariants) rather than only happy paths.`
                 });
             }
-            
-            metricObs.push({
-                icon: '💚',
-                metric: 'Health Score',
-                value: `${totalRow.Health.toFixed(1)}%`,
-                sparkline: healthSparkline,
-                priorityComponent: '',
-                gap: `Overall health is ${totalRow.Health.toFixed(1)}% (target ≥80%), with one or more component gaps still below target (invocation/tests/hardening/complexity).`,
-                impact: `Health is the "executive summary" for autonomy readiness: low invocation, low tests, or high complexity each reduces reliability and makes reasoning brittle under load.`,
-                solve: `Focus on the top three priorities (ranked #1–#3 in the relevant cards). Each improvement compounds: better tests enable safer refactors, lower complexity makes healing hooks easier, and better invocation closes the loop.`
-            });
             
             metricObs.push({
                 icon: '📝',

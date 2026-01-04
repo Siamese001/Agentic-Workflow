@@ -12,11 +12,11 @@ import os
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
+from agentic_core.bases import L0Agent
 
 
-class HygieneValidatorAgent(HealerMixin, MCPHardenedMixin):
+class HygieneValidatorAgent(L0Agent):
     """
     Detects 'Rot' within the system:
     1. Dead Code (Orphaned files that are never imported)
