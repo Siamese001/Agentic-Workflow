@@ -7,6 +7,8 @@ from pathlib import Path
 import sys
 import subprocess
 import os
+import argparse
+import socket
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -285,7 +287,54 @@ def run_dashboard_tests():
     return True
 
 
+def _env_truthy(name: str, default: str = "0") -> bool:
+    val = os.getenv(name, default)
+    if val is None:
+        return False
+    return val.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def _is_port_open(host: str, port: int) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=0.35):
+            return True
+    except OSError:
+        return False
+
+
+def start_dashboard_server(project_root: Path, port: int = 8000, host: str = "127.0.0.1") -> bool:
+    """Start a local HTTP server rooted at reports/. Opt-in only; safe to call repeatedly."""
+    reports_dir = project_root / "reports"
+    if not reports_dir.exists():
+        print(f"⚠️  Cannot start server: reports directory not found at {reports_dir}")
+        return False
+
+    if _is_port_open(host, port):
+        print(f"✅ Server already running: http://{host}:{port}/autonomy_dashboard.html")
+        return True
+
+    try:
+        subprocess.Popen(
+            [sys.executable, "-m", "http.server", str(port), "--bind", host],
+            cwd=reports_dir,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0),
+        )
+        print(f"🚀 Started local server: http://{host}:{port}/autonomy_dashboard.html")
+        return True
+    except Exception as e:
+        print(f"⚠️  Failed to start server on {host}:{port}: {e}")
+        return False
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate autonomy dashboard (with QA) and optionally serve it locally")
+    parser.add_argument("--serve", action="store_true", help="After generation, start a local HTTP server for reports/ (opt-in)")
+    parser.add_argument("--port", type=int, default=int(os.getenv("DASHBOARD_PORT", "8000")), help="Port for --serve (default 8000)")
+    parser.add_argument("--host", type=str, default=os.getenv("DASHBOARD_HOST", "127.0.0.1"), help="Bind host for --serve (default 127.0.0.1)")
+    args = parser.parse_args()
+
     # Ensure agent discovery is up to date
     ensure_agent_discovery()
     
@@ -318,6 +367,9 @@ if __name__ == "__main__":
     print("\n✅ Dashboard generated successfully!")
     print("   → Open: reports/autonomy_dashboard.html")
     print("   → Server: http://localhost:8000/autonomy_dashboard.html")
+
+    if args.serve or _env_truthy("DASHBOARD_AUTO_SERVE", "0"):
+        start_dashboard_server(Path(__file__).parent, port=args.port, host=args.host)
     print("\n🛡️  QA Summary:")
     print("   ✅ Unit tests passed")
     print("   ✅ Integration tests passed")
