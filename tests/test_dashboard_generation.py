@@ -101,6 +101,20 @@ class TestDashboardGeneration(unittest.TestCase):
             self.template_content,
             "Didactic clarification about Config/Observability as territories not found"
         )
+
+    def test_02d_template_agents_tools_column_present(self):
+        """Template Territory Summary should include Agents / Tools header and legend."""
+        self.assertIsNotNone(self.template_content, "Template content not loaded")
+        self.assertIn(
+            '>Agents / Tools<',
+            self.template_content,
+            "Agents / Tools column header not found in template"
+        )
+        self.assertIn(
+            '<strong>Agents / Tools:</strong>',
+            self.template_content,
+            "Agents / Tools legend not found in template"
+        )
     
     def test_03_template_has_data_injection_points(self):
         """Test 3: Template must have data injection placeholders."""

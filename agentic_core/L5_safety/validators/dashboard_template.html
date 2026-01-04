@@ -950,7 +950,7 @@
                             <tr style="background:var(--primary); color:white;">
                                 <th style="padding:16px; text-align:left; font-weight:600;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Sub-Territory breakdown for this territory (didactic; counts sum to total)">Sub-Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Total number of agents in this territory"># Agents</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Active agents and (when available) total MCP tools integrated in this territory">Agents / Tools</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list">Heal Capability %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Heal Invocation %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with SECURITY PROTECTION around MCP connections — Safety harnesses preventing dangerous operations (NOT about using MCP tools)">MCP Hardened %</th>
@@ -1025,7 +1025,10 @@
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
                         <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">TOTAL</td>
                         <td style="padding:14px; text-align:center; font-weight:600; border-right:1px solid #e5e7eb; color:#6b7280;">—</td>
-                        <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
+                        <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">
+                            ${totalRow.Total} agents
+                            ${totalRow.ToolCount !== undefined ? ` <span style="color:#64748b; font-weight:normal;">/</span> <span style="color:var(--primary); font-weight:600;">${totalRow.ToolCount}</span> tools` : ''}
+                        </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; border-right:1px solid #e5e7eb; font-weight:600;">
                             ${totalRow['Heal Cap %'].toFixed(1)}%
                             ${dashboardData[0].sparklines && dashboardData[0].sparklines.heal_cap ? formatSparkline(dashboardData[0].sparklines.heal_cap, totalRow['Heal Cap %'], dashboardData[0].trends?.heal_cap_delta ? totalRow['Heal Cap %'] - dashboardData[0].trends.heal_cap_delta : totalRow['Heal Cap %'], true) : ''}
@@ -1126,7 +1129,11 @@
                 const territoryTrends = dashboardData[0].territory_trends || {};
                 const tTrend = territoryTrends[row.Territory] || {};
 
-                const healthTooltip = `Health Score: ${row.Health.toFixed(1)}% (target ≥80%).\nSub-Territory: ${displaySubTerritory.replace(/<[^>]*>/g, '')}\n\nHealth is a composite autonomy readiness signal across healing, tests, observability, and maintainability.\nClick to drill down into per-agent diagnostics.`;
+                const agentsToolsDisplay = row.ToolCount !== undefined
+                    ? `${row.Total} <span style="color:#64748b;">/</span> <span style="color:var(--primary); font-weight:600;">${row.ToolCount}</span>`
+                    : `${row.Total} agents`;
+
+                const healthTooltip = `Health Score: ${row.Health.toFixed(1)}% (target ≥80%).\nSub-Territory: ${displaySubTerritory.replace(/<[^>]*>/g, '')}\n\nHealth is a composite autonomy readiness signal across healing, tests, observability, typing, and maintainability.\nClick to drill down into per-agent diagnostics.`;
                 
                 html += `
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
@@ -1136,7 +1143,7 @@
                         title="Click to view detailed per-agent diagnostics for ${displayTerritory}">
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${displayTerritory}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; font-size:0.85em; color:#475569; max-width:220px;">${displaySubTerritory}</td>
-                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${agentsToolsDisplay}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td>
@@ -1154,7 +1161,7 @@
                 <div style="margin-top:12px; font-size:0.85em; color:var(--text-light); line-height:1.5;">
                     <div><strong>Territory:</strong> Domain slice (layer/app) for governance and compliance analysis. <strong>Config</strong> and <strong>Observability</strong> are territories too (rows), not special table columns.</div>
                     <div><strong>Sub-Territory:</strong> Didactic component breakdown of what the territory contains (counts sum to total).</div>
-                    <div><strong># Agents:</strong> Total agents detected in this territory.</div>
+                    <div><strong>Agents / Tools:</strong> Active agents and (when available) total MCP tools integrated in this territory.</div>
                     <div><strong>Heal Capability %:</strong> % with HealerMixin / healing capability available.</div>
                     <div><strong>Heal Invocation %:</strong> % actually invoking healing chain (explicit super().heal_repository() usage).</div>
                     <div><strong>MCP Hardened %:</strong> % protected at external tool boundary (MCP hardening/mixins/decorators).</div>
