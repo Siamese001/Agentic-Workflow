@@ -1979,6 +1979,12 @@ ${rec.guidance.split('\n').map((line, i) =>
                 return `border:2px solid ${border}; box-shadow: 0 0 0 3px ${glow};`;
             }
 
+            function getPriorityRankForObs(obs) {
+                const c = obs?.priorityComponent;
+                const r = c ? priorityRankByComponent[c] : null;
+                return r ? r : 999;
+            }
+
             // Macro Observations with WHY explanations and analogies
             const macroObs = [];
             
@@ -2042,6 +2048,16 @@ ${rec.guidance.split('\n').map((line, i) =>
                 impact: `Autonomy at scale depends on graceful degradation. If one layer lacks backpressure or retry discipline, it can DOS adjacent layers and cause cascading failures. Canon compliance also suffers when every team invents its own patterns.`,
                 solve: `Standardize a small set of cross-cutting primitives and enforce them through templates and validators. Interview prep example: explain how you roll out circuit breakers and measure impact (reduced incident blast radius, faster MTTR).`,
                 priority: ''
+            });
+
+            // Highest-priority observations first (P1 → P2 → P3), then stable ordering.
+            macroObs.sort((a, b) => {
+                const ra = getPriorityRankForObs(a);
+                const rb = getPriorityRankForObs(b);
+                if (ra !== rb) return ra - rb;
+                const ta = (a?.title || '').toString();
+                const tb = (b?.title || '').toString();
+                return ta.localeCompare(tb);
             });
 
             const macroContainer = document.getElementById('macroObservations');
@@ -2160,6 +2176,16 @@ ${rec.guidance.split('\n').map((line, i) =>
                 gap: `Documentation coverage is ${(totalRow['Doc %'] || 50).toFixed(1)}% (target ≥80%) across public agent interfaces.`,
                 impact: `In a production agentic system, unclear interfaces reduce reuse by ~30–50% because agents (and humans) cannot quickly infer intent, constraints, and safe usage patterns. That increases duplication and makes canon compliance harder to enforce.`,
                 solve: `Add docstrings to public methods and stabilize naming so registry search works. Interview prep example: explain how docs + naming reduce hallucinated tool usage by constraining the search space.`
+            });
+
+            // Highest-priority observations first (P1 → P2 → P3), then stable ordering.
+            metricObs.sort((a, b) => {
+                const ra = getPriorityRankForObs(a);
+                const rb = getPriorityRankForObs(b);
+                if (ra !== rb) return ra - rb;
+                const ma = (a?.metric || '').toString();
+                const mb = (b?.metric || '').toString();
+                return ma.localeCompare(mb);
             });
 
             const metricContainer = document.getElementById('metricObservations');
