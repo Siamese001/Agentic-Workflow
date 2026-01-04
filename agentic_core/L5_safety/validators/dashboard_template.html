@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="30">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Autonomy Compliance Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
     <style>
@@ -490,17 +493,53 @@
     </div>
 
     <script>
-        // Auto-refresh every 30 seconds
+        // Auto-refresh every 30 seconds.
+        // Use cache-busting + focus/visibility hooks so refresh still happens after IDE/browser restarts.
         let lastRefreshTime = new Date();
-        let refreshInterval = setInterval(() => {
-            location.reload();
+        let lastRefreshEpochMs = Date.now();
+
+        function forceReload() {
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.set('_ts', Date.now().toString());
+                window.location.replace(url.toString());
+            } catch (e) {
+                // Fallback: best-effort reload
+                window.location.reload();
+            }
+        }
+
+        const refreshInterval = setInterval(() => {
+            lastRefreshTime = new Date();
+            lastRefreshEpochMs = Date.now();
+            forceReload();
         }, 30000);  // 30 seconds
 
         function manualRefresh() {
-            // Clear the interval and reload immediately
-            clearInterval(refreshInterval);
-            location.reload();
+            lastRefreshTime = new Date();
+            lastRefreshEpochMs = Date.now();
+            forceReload();
         }
+
+        function maybeReloadIfStale() {
+            const now = Date.now();
+            // If timers were throttled/suspended (common after restarts), catch up on focus.
+            if (now - lastRefreshEpochMs > 45000) {
+                lastRefreshTime = new Date();
+                lastRefreshEpochMs = now;
+                forceReload();
+            }
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                maybeReloadIfStale();
+            }
+        });
+
+        window.addEventListener('focus', () => {
+            maybeReloadIfStale();
+        });
 
         // Update refresh status display
         setInterval(() => {
