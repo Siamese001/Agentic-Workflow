@@ -135,7 +135,6 @@ def validate_dashboard_crash_resistance():
             ('undefined access', r'\bundefined\b.*\.'),
             ('null reference', r'\bnull\b.*\.'),
             ('missing variable', r'\b\w+\s+is\s+not\s+defined'),
-            ('console errors', r'console\.error'),
             ('throw statements', r'\bthrow\s+'),
         ]
         

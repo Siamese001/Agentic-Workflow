@@ -2035,8 +2035,8 @@ ${rec.guidance.split('\n').map((line, i) =>
                         ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
                         : '<span style="color:#dc2626; font-weight:700;">✗</span>';
                     
-                    const typedColor = getColor(agent.typed_pct, true);
-                    const complexityColor = getColor(agent.complexity, false);
+                    const typedColor = getColor(agent.typed_pct || 0, true);
+                    const complexityColor = getColor(agent.complexity || 0, false);
                     
                     // Observability flags with color coding
                     const obsTitle = "Observability flags:\nLogging: structured logs\nMetrics: log_metric calls\nTracing: OpenTelemetry spans\nEssential for production debugging";
