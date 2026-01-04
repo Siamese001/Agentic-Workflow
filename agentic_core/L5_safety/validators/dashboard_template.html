@@ -525,54 +525,102 @@
             }
         }
 
-        // Category breakdown based on agent role + path prefix (non-overlapping, counts sum to total)
-        function getCategoryForTerritory(territory, total, agents) {
-            if (total <= 10) return '—';
+        // Sub-Territory breakdown: didactic, territory-aware, and path-driven.
+        // Goal: teach what each L0-L5/app directory actually contains.
+        function getSubTerritoryForTerritory(territory, total, agents) {
+            if (!agents || agents.length === 0) return '—';
 
-            const categories = {};
-
-            function add(cat) {
-                categories[cat] = (categories[cat] || 0) + 1;
+            const counts = {};
+            function bump(label) {
+                counts[label] = (counts[label] || 0) + 1;
             }
 
-            function categorizeAgent(agent) {
-                const name = (agent?.class_name || agent?.name || '').toString();
+            function normalizePath(agent) {
                 const rel = (agent?.rel || '').toString();
                 const absFile = (agent?.abs_file || '').toString();
-                const path = (rel || absFile).replace(/\\/g, '/');
+                return (rel || absFile).replace(/\\/g, '/');
+            }
 
-                const rules = [
-                    { cat: 'Naming & Identity', match: () => /\/utils\/naming\//i.test(path) || /Naming/i.test(name) },
-                    { cat: 'Safety & Governance', match: () => /\/L5_safety\//i.test(path) || /Validator|Validation|Compliance|Enforce|Guard|Guardian|Safety|Security/i.test(name) },
-                    { cat: 'Observability', match: () => /\/observability\//i.test(path) || /Telemetry|Tracing|Metrics|Monitor|Observer/i.test(name) },
-                    { cat: 'Orchestration', match: () => /\/L3_orchestration\//i.test(path) || /Orchestrat|Coordinator|Workflow|Pipeline/i.test(name) },
-                    { cat: 'Execution', match: () => /\/L2_execution\//i.test(path) || /Executor|Execute|Runner|Worker/i.test(name) },
-                    { cat: 'Cognition', match: () => /\/L1_cognition\//i.test(path) || /Cognitive|Think|Reason|Infer/i.test(name) },
-                    { cat: 'State & Memory', match: () => /\/L4_state\//i.test(path) || /State|Ledger|Cache|Memory|Store|Persist/i.test(name) },
-                    { cat: 'Applications', match: () => /\/apps_/i.test(path) },
-                    { cat: 'Testing', match: () => /\/tests\//i.test(path) || /Test|Mock|Stub|Fixture/i.test(name) },
-                    { cat: 'Core', match: () => true },
-                ];
+            function classify(agent) {
+                const path = normalizePath(agent);
+                const name = (agent?.class_name || agent?.name || '').toString();
 
-                for (const rule of rules) {
-                    if (rule.match()) return rule.cat;
+                // L5 Safety: teach the main components explicitly (path is highest signal)
+                if (path.includes('/L5_safety/validators/')) return 'Validators';
+                if (path.includes('/L5_safety/guardrails/')) return 'Guardrails';
+                if (path.includes('/L5_safety/gravity/')) return 'Gravity';
+                if (path.includes('/L5_safety/red_teaming/')) return 'Red Teaming';
+
+                // L4 State: avoid repeating "State"; teach storage primitives
+                if (path.includes('/L4_state/')) {
+                    if (/Ledger|StateLedger|Journal|Audit/i.test(name) || /ledger|journal|audit/i.test(path)) return 'Ledgers & Journals';
+                    if (/Cache|HotCache|SemanticCache/i.test(name) || /cache/i.test(path)) return 'Caching & Retrieval';
+                    if (/Blackboard|AtomicBlackboard|Board/i.test(name) || /blackboard/i.test(path)) return 'Blackboards & Coordination';
+                    if (/Store|Persist|Persistence|Snapshot/i.test(name) || /persist|snapshot/i.test(path)) return 'Persistence & Snapshots';
+                    return 'State Primitives';
                 }
-                return 'Core';
+
+                // L3 Orchestration: avoid repeating "Orchestration"
+                if (path.includes('/L3_orchestration/')) {
+                    if (/Workflow|Orchestrator|Coordinator|Dag|Graph/i.test(name) || /workflow|orchestr|coord|dag/i.test(path)) return 'Workflow & Coordination';
+                    if (/Router|Dispatch|Gateway/i.test(name) || /router|dispatch|gateway/i.test(path)) return 'Routing & Dispatch';
+                    if (/Scheduler|Queue|Async/i.test(name) || /schedule|queue|async/i.test(path)) return 'Scheduling & Async';
+                    return 'Coordination Utilities';
+                }
+
+                // L2 Execution
+                if (path.includes('/L2_execution/')) {
+                    if (/Executor|Runner|Worker|Tool/i.test(name) || /executor|runner|worker|tool/i.test(path)) return 'Executors & Tools';
+                    if (/IO|Filesystem|Network|HTTP/i.test(name) || /io|filesystem|http|network/i.test(path)) return 'I/O & Integrations';
+                    return 'Execution Utilities';
+                }
+
+                // L1 Cognition: avoid repeating "Cognition"
+                if (path.includes('/L1_cognition/')) {
+                    if (/Planner|Plan|Strategy/i.test(name) || /planner|strategy/i.test(path)) return 'Planning';
+                    if (/Reason|Infer|Evaluate|Scorer/i.test(name) || /reason|infer|score|eval/i.test(path)) return 'Reasoning & Evaluation';
+                    if (/Memory|Recall|RAG|Retriev/i.test(name) || /memory|rag|retriev/i.test(path)) return 'Memory & Retrieval';
+                    if (/Prompt|Template/i.test(name) || /prompt/i.test(path)) return 'Prompting';
+                    return 'Decision Logic';
+                }
+
+                // L0 Maintenance
+                if (path.includes('/L0_maintenance/')) {
+                    if (/Healer|Repair|Fix|Cleanup|Dedup/i.test(name) || /healer|repair|cleanup|dedup/i.test(path)) return 'Maintenance & Repair';
+                    if (/Config|Settings|Bootstrap/i.test(name) || /config|bootstrap/i.test(path)) return 'Bootstrapping';
+                    return 'Ops Utilities';
+                }
+
+                // Apps
+                if (path.includes('/apps_lic/')) return 'LIC App Modules';
+                if (path.includes('/apps_rg/')) return 'RG App Modules';
+                if (path.includes('/apps_shared/')) return 'Shared App Modules';
+
+                // Utils
+                if (path.includes('/utils/naming/')) return 'Naming & Identity';
+                if (path.includes('/utils/')) return 'Shared Utilities';
+
+                // Observability
+                if (path.includes('/observability/')) return 'Observability';
+
+                // Tests
+                if (path.includes('/tests/')) return 'Tests';
+
+                // No low-signal fallback like "Core".
+                return 'Unclassified';
             }
 
-            if (agents && agents.length > 0) {
-                agents.forEach(agent => add(categorizeAgent(agent)));
-            }
+            agents.forEach(agent => bump(classify(agent)));
 
-            const sorted = Object.entries(categories).sort((a, b) => b[1] - a[1]);
+            const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
             if (sorted.length === 0) return '—';
 
             const maxVisible = total > 50 ? 5 : total > 30 ? 4 : total > 15 ? 3 : 2;
             const visible = sorted.slice(0, maxVisible);
-            const visibleCount = visible.reduce((sum, [, count]) => sum + count, 0);
+            const visibleCount = visible.reduce((sum, [, c]) => sum + c, 0);
             const remainder = Math.max(0, total - visibleCount);
 
-            const parts = visible.map(([cat, count]) => `<span style="white-space:nowrap;">${cat} (${count})</span>`);
+            const parts = visible.map(([label, count]) => `<span style="white-space:nowrap;">${label} (${count})</span>`);
             if (remainder > 0) {
                 parts.push(`<span style="white-space:nowrap;">Other (${remainder})</span>`);
             }
@@ -694,7 +742,7 @@
                         <thead>
                             <tr style="background:var(--primary); color:white;">
                                 <th style="padding:16px; text-align:left; font-weight:600;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Category breakdown for territories with >10 agents (non-overlapping; counts sum to total)">Category</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Sub-Territory breakdown for this territory (didactic; counts sum to total)">Sub-Territory</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Total number of agents in this territory"># Agents</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list">Heal Capability %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Heal Invocation %</th>
@@ -803,8 +851,8 @@
             }
             
             territoryData.forEach((row, index) => {
-                // Get category breakdown for this territory
-                const category = getCategoryForTerritory(row.Territory, row.Total, row.agents);
+                // Get sub-territory breakdown for this territory
+                const subTerritory = getSubTerritoryForTerritory(row.Territory, row.Total, row.agents);
                 
                 // 7-color gradient: Deep Red → Red → Orange → Yellow → Yellow-Green → Light Green → Green
                 const getGradientBg = (value, target = 80) => {
@@ -871,7 +919,7 @@
                 const territoryTrends = dashboardData[0].territory_trends || {};
                 const tTrend = territoryTrends[row.Territory] || {};
 
-                const healthTooltip = `Health Score: ${row.Health.toFixed(1)}% (target ≥80%).\nCategory: ${category.replace(/<[^>]*>/g, '')}\n\nHealth is a composite autonomy readiness signal across healing, tests, observability, and maintainability.\nClick to drill down into per-agent diagnostics.`;
+                const healthTooltip = `Health Score: ${row.Health.toFixed(1)}% (target ≥80%).\nSub-Territory: ${subTerritory.replace(/<[^>]*>/g, '')}\n\nHealth is a composite autonomy readiness signal across healing, tests, observability, and maintainability.\nClick to drill down into per-agent diagnostics.`;
                 
                 html += `
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
@@ -880,7 +928,7 @@
                         onclick="openDrillModal('${row.Territory}')" 
                         title="Click to view detailed per-agent diagnostics for ${row.Territory}">
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
-                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; font-size:0.85em; color:#475569; max-width:200px;">${category}</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; font-size:0.85em; color:#475569; max-width:200px;">${subTerritory}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
@@ -898,7 +946,7 @@
                 </div>
                 <div style="margin-top:12px; font-size:0.85em; color:var(--text-light); line-height:1.5;">
                     <div><strong>Territory:</strong> Domain slice (layer/app) for governance and compliance analysis.</div>
-                    <div><strong>Category:</strong> Non-overlapping role breakdown of agents in that territory (counts sum to total).</div>
+                    <div><strong>Sub-Territory:</strong> Didactic component breakdown of what the territory contains (counts sum to total).</div>
                     <div><strong># Agents:</strong> Total agents detected in this territory.</div>
                     <div><strong>Heal Capability %:</strong> % with HealerMixin / healing capability available.</div>
                     <div><strong>Heal Invocation %:</strong> % actually invoking healing chain (explicit super().heal_repository() usage).</div>
@@ -1142,9 +1190,9 @@
             const territories = territoryData.map(d => d.Territory);
             const health = territoryData.map(d => parseFloat(d.Health) || 0);
             const invocation = territoryData.map(d => parseFloat(d['Invocation %']) || 0);
-            const categories = territoryData.map(d => {
+            const subTerritories = territoryData.map(d => {
                 try {
-                    return getCategoryForTerritory(d.Territory, d.Total, d.agents).replace(/<[^>]*>/g, '');
+                    return getSubTerritoryForTerritory(d.Territory, d.Total, d.agents).replace(/<[^>]*>/g, '');
                 } catch {
                     return '—';
                 }
@@ -1161,11 +1209,11 @@
                     color: health.map(h => getColor(h, true)),
                     line: { color: 'white', width: 2 }
                 },
-                customdata: categories,
+                customdata: subTerritories,
                 hovertemplate: 
                     '<b>%{x}</b><br>' +
                     'Health Score: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
-                    'Category: <b>%{customdata}</b><br>' +
+                    'Sub-Territory: <b>%{customdata}</b><br>' +
                     '<i>Click to drill down</i><extra></extra>'
             };
 
@@ -1233,7 +1281,7 @@
             if (!territoryData || territoryData.length === 0) return;
             const categories = territoryData.map(d => {
                 try {
-                    return getCategoryForTerritory(d.Territory, d.Total, d.agents).replace(/<[^>]*>/g, '');
+                    return getSubTerritoryForTerritory(d.Territory, d.Total, d.agents).replace(/<[^>]*>/g, '');
                 } catch {
                     return '—';
                 }
@@ -1256,7 +1304,7 @@
                     'Compliance: <b>%{y:.1f}%</b><br>' +
                     'Health: <b>%{customdata[0]:.1f}%</b><br>' +
                     'Agents: <b>%{customdata[1]}</b><br>' +
-                    'Category: <b>%{customdata[4]}</b><br>' +
+                    'Sub-Territory: <b>%{customdata[4]}</b><br>' +
                     '<i>Click to drill down</i><extra></extra>'
             };
 
@@ -1283,7 +1331,7 @@
 
             trace.hovertemplate = 
                 '<b>%{text}</b><br>' +
-                'Category: <b>%{customdata[4]}</b><br>' +
+                'Sub-Territory: <b>%{customdata[4]}</b><br>' +
                 'Agents: <b>%{customdata[1]}</b><br>' +
                 'Health: <b>%{customdata[0]:.1f}%</b><br>' +
                 'Complexity: <b>%{x:.1f}</b> (target ≤10, lower is better)<br>' +
@@ -1983,7 +2031,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 }
 
             let content = '<strong style="font-size:1.2em;">Territory Metrics Recap:</strong><ul style="margin-top:10px;">';
-            content += `<li>Category breakdown: <strong>${getCategoryForTerritory(row.Territory, row.Total, row.agents)}</strong></li>`;
+            content += `<li>Sub-Territory breakdown: <strong>${getSubTerritoryForTerritory(row.Territory, row.Total, row.agents)}</strong></li>`;
             content += `<li>Healing Capability: <strong>${row['Heal Cap %']?.toFixed(1)}%</strong></li>`;
             content += `<li>Healing Invocation: <strong>${row['Invocation %']?.toFixed(1)}%</strong> (gap = opportunity)</li>`;
             content += `<li>MCP Hardened: <strong>${(row['Hardened %'] || 0).toFixed(1)}%</strong></li>`;
