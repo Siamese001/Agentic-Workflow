@@ -115,6 +115,25 @@ class TestDashboardGeneration(unittest.TestCase):
             self.template_content,
             "Agents / Tools legend not found in template"
         )
+
+    def test_02e_template_reload_survives_restart(self):
+        """Template should include no-cache metas and focus/visibility reload hooks."""
+        self.assertIsNotNone(self.template_content, "Template content not loaded")
+        self.assertIn(
+            'http-equiv="Cache-Control"',
+            self.template_content,
+            "No-cache meta Cache-Control not found"
+        )
+        self.assertIn(
+            'document.addEventListener(\'visibilitychange\'',
+            self.template_content,
+            "visibilitychange reload hook not found"
+        )
+        self.assertIn(
+            "window.addEventListener('focus'",
+            self.template_content,
+            "focus reload hook not found"
+        )
     
     def test_03_template_has_data_injection_points(self):
         """Test 3: Template must have data injection placeholders."""
