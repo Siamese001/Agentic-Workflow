@@ -50,6 +50,14 @@
             text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
         }
 
+        .sparkline-arrow {
+            font-weight: 900;
+            font-size: 1em;
+            line-height: 1;
+            display: inline-block;
+            margin-right: 2px;
+        }
+
         .refresh-controls {
             position: fixed;
             top: 20px;
@@ -643,7 +651,25 @@
             if (path.includes('/observability/')) return 'Observability';
 
             // Tests
-            if (path.includes('/tests/')) return 'Tests';
+            if (path.includes('/tests/')) {
+                if (path.includes('/tests/unit/')) return 'Unit';
+                if (path.includes('/tests/integration/')) return 'Integration';
+                if (path.includes('/tests/e2e/')) return 'E2E';
+                if (path.includes('/tests/regression/')) return 'Regression';
+                if (path.includes('/tests/functional/')) return 'Functional';
+                if (path.includes('/tests/fixtures/')) return 'Fixtures';
+                if (path.includes('/tests/automation/')) return 'Automation';
+                if (path.includes('/tests/performance/')) return 'Performance';
+                if (path.includes('/tests/security/')) return 'Security';
+                if (path.includes('/tests/data/')) return 'Test Data';
+                if (path.includes('/tests/core/')) return 'Test Core';
+                if (path.includes('/tests/autogen/')) return 'Autogen';
+                // Fallback: derive from tests/<subfolder>/... for high-signal grouping
+                const parts = path.split('/');
+                const ti = parts.indexOf('tests');
+                const next = ti >= 0 ? parts[ti + 1] : null;
+                return next ? titleizeSegment(next) : 'Test Core';
+            }
 
             // Fallback must remain high-signal: derive from path/module structure
             return deriveFromPath();
@@ -752,7 +778,7 @@
             return `
                 <span class="sparkline-container">
                     ${createSparklineSVG(values, { showArea: true, showDots: false, highGood })}
-                    <span class="sparkline-trend" style="color:${trendColor};">${arrow}${Math.abs(rawDelta).toFixed(1)}%</span>
+                    <span class="sparkline-trend" style="color:${trendColor};"><span class="sparkline-arrow">${arrow}</span>${Math.abs(rawDelta).toFixed(1)}%</span>
                 </span>
             `;
         }
@@ -1895,7 +1921,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 <svg class="sparkline-svg" viewBox="0 0 ${width} ${height}">
                     <polyline fill="none" stroke="${color}" stroke-width="2" points="${points}"/>
                 </svg>
-                <span class="sparkline-trend" style="color:${trendColor}">${trend}</span>
+                <span class="sparkline-trend" style="color:${trendColor}"><span class="sparkline-arrow">${trend}</span></span>
             </span>`;
         }
 
