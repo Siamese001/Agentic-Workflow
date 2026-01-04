@@ -92,6 +92,15 @@ class TestDashboardGeneration(unittest.TestCase):
             self.template_content,
             "Sub-Territory column not found in Code Quality table"
         )
+
+    def test_02c_template_didactic_config_observability_are_territories(self):
+        """Template should clarify Config/Observability are territories (rows), not table columns."""
+        self.assertIsNotNone(self.template_content, "Template content not loaded")
+        self.assertIn(
+            'Config</strong> and <strong>Observability</strong> are territories too (rows), not special table columns.',
+            self.template_content,
+            "Didactic clarification about Config/Observability as territories not found"
+        )
     
     def test_03_template_has_data_injection_points(self):
         """Test 3: Template must have data injection placeholders."""

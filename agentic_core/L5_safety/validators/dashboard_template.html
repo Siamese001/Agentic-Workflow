@@ -643,12 +643,29 @@
             if (path.includes('/apps_rg/')) return 'RG App Modules';
             if (path.includes('/apps_shared/')) return 'Shared App Modules';
 
+            // Config: teach the blueprint-driven structure (SSOT lives here)
+            if (path.includes('/config/')) {
+                if (path.includes('/config/blueprint_sovereign/')) return 'Blueprint Sovereign';
+                if (path.includes('/config/environments/')) return 'Environments';
+                if (path.includes('/config/feature_flags/')) return 'Feature Flags';
+                if (path.includes('/config/secrets_manager/')) return 'Secrets Manager';
+                if (path.includes('/config/validators/')) return 'Config Validators';
+                return 'Config';
+            }
+
             // Utils
             if (path.includes('/utils/naming/')) return 'Naming & Identity';
             if (path.includes('/utils/')) return 'Shared Utilities';
 
             // Observability
-            if (path.includes('/observability/')) return 'Observability';
+            if (path.includes('/observability/')) {
+                if (path.includes('/observability/metrics/')) return 'Metrics';
+                if (path.includes('/observability/telemetry/')) return 'Telemetry';
+                if (path.includes('/observability/tracing/')) return 'Tracing';
+                if (path.includes('/observability/compliance/')) return 'Compliance';
+                if (path.includes('/observability/dashboard/')) return 'Dashboard';
+                return 'Observability';
+            }
 
             // Tests
             if (path.includes('/tests/')) {
@@ -1135,7 +1152,7 @@
                     </table>
                 </div>
                 <div style="margin-top:12px; font-size:0.85em; color:var(--text-light); line-height:1.5;">
-                    <div><strong>Territory:</strong> Domain slice (layer/app) for governance and compliance analysis.</div>
+                    <div><strong>Territory:</strong> Domain slice (layer/app) for governance and compliance analysis. <strong>Config</strong> and <strong>Observability</strong> are territories too (rows), not special table columns.</div>
                     <div><strong>Sub-Territory:</strong> Didactic component breakdown of what the territory contains (counts sum to total).</div>
                     <div><strong># Agents:</strong> Total agents detected in this territory.</div>
                     <div><strong>Heal Capability %:</strong> % with HealerMixin / healing capability available.</div>
