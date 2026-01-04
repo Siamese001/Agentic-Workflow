@@ -115,14 +115,14 @@ These agents have unique, non-overlapping responsibilities and should be kept as
 ### Step 1: Create Consolidated Guardrails
 - [x] InputValidationGuardrail
 - [x] ConfigurationSecurityGuardrail
-- [ ] ErrorRecoveryGuardrail
-- [ ] CodeQualityGuardrail
-- [ ] ThreatDetectionGuardrail
-- [ ] ConstitutionalGovernanceGuardrail
-- [ ] ResourceManagementGuardrail
-- [ ] IntegrityValidationGuardrail
-- [ ] MCPSecurityGuardrail
-- [ ] LoggingObservabilityGuardrail
+- [x] ErrorRecoveryGuardrail ✓
+- [x] CodeQualityGuardrail ✓
+- [x] ThreatDetectionGuardrail ✓
+- [x] ConstitutionalGovernanceGuardrail ✓
+- [x] ResourceManagementGuardrail ✓
+- [x] IntegrityValidationGuardrail ✓
+- [x] MCPSecurityGuardrail ✓
+- [x] LoggingObservabilityGuardrail ✓
 
 ### Step 2: Update Registry
 - Add consolidated guardrails to L5 safety registry
