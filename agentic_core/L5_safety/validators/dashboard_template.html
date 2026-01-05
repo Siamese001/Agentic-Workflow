@@ -2809,7 +2809,14 @@ ${rec.guidance.split('\n').map((line, i) =>
                     if (!row.agents) return [];
                     if (!subFilter) return row.agents;
                     if (subFilter === '__INFRA__') return row.agents.filter(a => !!a?.is_infrastructure);
-                    return row.agents.filter(a => getSubTerritoryLabel(a) === subFilter);
+                    // Try to filter by sub-territory label
+                    const filtered = row.agents.filter(a => getSubTerritoryLabel(a) === subFilter);
+                    // If no matches, the subFilter might be from Territory name split (e.g., "Core" from "L0 Maintenance/Core")
+                    // In that case, show all agents for this territory
+                    if (filtered.length === 0 && row.agents.length > 0) {
+                        return row.agents;
+                    }
+                    return filtered;
                 })();
 
                 const modalTitle = document.getElementById('modalTitle');
