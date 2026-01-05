@@ -405,16 +405,213 @@ def test_artifact_exists():
 
 
 @dataclass
-class StateBaseAgent(CanonBaseAgent, L4SubatomicTestingMixin, HealerMixin):
+class StateBaseAgent(SovereignBaseAgent, L4SubatomicTestingMixin):
     """Base class for L4 State agents with subatomic testing.
     
     L4 Table Decision:
     - Basic Self-Testing: YES (state consistency, idempotency)
     - Delegation to TestSovereigntyAgent: YES (on failure)
     
-    Inherits from CanonBaseAgent for core capabilities.
+    Inherits from SovereignBaseAgent for core capabilities.
     Includes L4SubatomicTestingMixin for CRITIQUE hop testing.
     """
+    
+    # Short-term memory buffer for recent interactions
+    short_term_buffer: List[Dict[str, Any]] = field(default_factory=list)
+    
+    # Configuration
+    short_term_max_size: int = 50
+    semantic_top_k: int = 5
+
+    # =========================================================================
+    # L4-SPECIFIC LAYER METHODS: State/Memory Management
+    # =========================================================================
+    
+    def recall(self, query: str, k: int = None) -> List[Dict[str, Any]]:
+        """L4-specific: Hybrid retrieval combining short-term and semantic memory.
+        
+        Args:
+            query: The query to search for
+            k: Number of results to return (defaults to semantic_top_k)
+            
+        Returns:
+            List of relevant memory items, reranked by relevance
+        """
+        k = k or self.semantic_top_k
+        results = []
+        
+        # Step 1: Get recent items from short-term buffer
+        recent = self.short_term_buffer[-10:] if self.short_term_buffer else []
+        for item in recent:
+            item_copy = dict(item)
+            item_copy['source'] = 'short_term'
+            item_copy['recency_score'] = 0.8  # Recent items get high base score
+            results.append(item_copy)
+        
+        # Step 2: Get semantic matches from vector store if available
+        semantic_results = self._semantic_search(query, k=k)
+        for item in semantic_results:
+            item_copy = dict(item) if isinstance(item, dict) else {'content': str(item)}
+            item_copy['source'] = 'semantic'
+            results.append(item_copy)
+        
+        # Step 3: Rerank combined results
+        reranked = self._rerank_results(query, results, top_n=k)
+        
+        self.log_info(f"Recalled {len(reranked)} items for query: {query[:50]}...")
+        return reranked
+    
+    def persist(self, interaction: Dict[str, Any]) -> bool:
+        """L4-specific: Persist interaction to both short-term and long-term memory.
+        
+        Args:
+            interaction: Dict with 'text', 'metadata', and optional fields
+            
+        Returns:
+            True if persistence succeeded
+        """
+        try:
+            # Step 1: Add to short-term buffer
+            self.short_term_buffer.append({
+                'text': interaction.get('text', str(interaction)),
+                'timestamp': interaction.get('timestamp', self._get_timestamp()),
+                'metadata': interaction.get('metadata', {}),
+                'type': interaction.get('type', 'interaction')
+            })
+            
+            # Step 2: Compress if buffer exceeds max size
+            if len(self.short_term_buffer) > self.short_term_max_size:
+                self._summarize_and_archive()
+            
+            # Step 3: Persist to long-term semantic memory
+            success = self._persist_to_vector_store(interaction)
+            
+            self.log_info(f"Persisted interaction: {interaction.get('type', 'unknown')}")
+            return success
+            
+        except Exception as e:
+            self.log_error(f"Persist failed: {e}")
+            super().heal_repository()
+            return False
+    
+    def create_checkpoint(self, state: Dict[str, Any]) -> Optional[str]:
+        """L4-specific: Create a recoverable checkpoint of current state.
+        
+        Args:
+            state: State dictionary to checkpoint
+            
+        Returns:
+            Checkpoint ID if successful, None otherwise
+        """
+        try:
+            import hashlib
+            import json
+            
+            checkpoint_id = hashlib.sha256(
+                json.dumps(state, sort_keys=True, default=str).encode()
+            ).hexdigest()[:16]
+            
+            checkpoint = {
+                'id': checkpoint_id,
+                'state': state,
+                'timestamp': self._get_timestamp(),
+                'agent': self.__class__.__name__
+            }
+            
+            # Store checkpoint (subclasses can override storage mechanism)
+            if not hasattr(self, '_checkpoints'):
+                self._checkpoints = {}
+            self._checkpoints[checkpoint_id] = checkpoint
+            
+            self.log_info(f"Created checkpoint: {checkpoint_id}")
+            return checkpoint_id
+            
+        except Exception as e:
+            self.log_error(f"Checkpoint creation failed: {e}")
+            return None
+    
+    def recover_from_checkpoint(self, checkpoint_id: str) -> Optional[Dict[str, Any]]:
+        """L4-specific: Recover state from a checkpoint.
+        
+        Args:
+            checkpoint_id: ID of checkpoint to recover
+            
+        Returns:
+            Recovered state dict, or None if not found
+        """
+        try:
+            if not hasattr(self, '_checkpoints') or checkpoint_id not in self._checkpoints:
+                self.log_warning(f"Checkpoint not found: {checkpoint_id}")
+                return None
+            
+            checkpoint = self._checkpoints[checkpoint_id]
+            recovered_state = checkpoint.get('state', {})
+            
+            self.log_info(f"Recovered from checkpoint: {checkpoint_id}")
+            return recovered_state
+            
+        except Exception as e:
+            self.log_error(f"Checkpoint recovery failed: {e}")
+            super().heal_repository()
+            return None
+    
+    def _semantic_search(self, query: str, k: int = 5) -> List[Dict[str, Any]]:
+        """Search semantic memory (vector store). Override in subclasses with actual implementation."""
+        # Placeholder - subclasses integrate with Pinecone/other vector stores
+        return []
+    
+    def _persist_to_vector_store(self, interaction: Dict[str, Any]) -> bool:
+        """Persist to vector store. Override in subclasses with actual implementation."""
+        # Placeholder - subclasses integrate with Pinecone/other vector stores
+        return True
+    
+    def _rerank_results(self, query: str, results: List[Dict], top_n: int = 5) -> List[Dict]:
+        """Rerank combined results by relevance to query."""
+        if not results:
+            return []
+        
+        # Simple relevance scoring based on text overlap
+        query_lower = query.lower()
+        for result in results:
+            text = str(result.get('text', result.get('content', ''))).lower()
+            
+            # Calculate overlap score
+            query_words = set(query_lower.split())
+            text_words = set(text.split())
+            overlap = len(query_words & text_words)
+            
+            # Combine with existing scores
+            base_score = result.get('score', result.get('recency_score', 0.5))
+            result['relevance_score'] = base_score * 0.6 + (overlap / max(1, len(query_words))) * 0.4
+        
+        # Sort by relevance and return top N
+        sorted_results = sorted(results, key=lambda x: x.get('relevance_score', 0), reverse=True)
+        return sorted_results[:top_n]
+    
+    def _summarize_and_archive(self) -> None:
+        """Summarize old short-term items and archive to long-term memory."""
+        if len(self.short_term_buffer) <= self.short_term_max_size // 2:
+            return
+        
+        # Archive oldest half
+        to_archive = self.short_term_buffer[:self.short_term_max_size // 2]
+        self.short_term_buffer = self.short_term_buffer[self.short_term_max_size // 2:]
+        
+        # Create summary (placeholder - subclasses can use LLM)
+        summary = {
+            'text': f"Archived {len(to_archive)} interactions",
+            'type': 'archive_summary',
+            'item_count': len(to_archive),
+            'timestamp': self._get_timestamp()
+        }
+        
+        self._persist_to_vector_store(summary)
+        self.log_info(f"Archived {len(to_archive)} items from short-term buffer")
+    
+    def _get_timestamp(self) -> str:
+        """Get current ISO timestamp."""
+        from datetime import datetime, timezone
+        return datetime.now(timezone.utc).isoformat()
 
     async def update_state(self, Task: Dict) -> Dict:
         """Execute state update logic. Override in subclasses."""
