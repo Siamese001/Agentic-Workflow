@@ -140,4 +140,3 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
 def create_threat_evolution_agent(SafetyEngine=None) -> AutonomousThreatEvolution:
     """Create and configure the threat evolution agent"""
     return AutonomousThreatEvolution(SafetyEngine=SafetyEngine)
-\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

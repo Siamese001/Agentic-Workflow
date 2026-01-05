@@ -135,4 +135,3 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
             _call_path.discard(agent_name)
 
 # PascalCase is now the canonical name
-\nimport logging\n\nLogger = logging.getLogger(__name__)

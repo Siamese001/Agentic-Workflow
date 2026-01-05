@@ -183,4 +183,4 @@ def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_thres
     Returns:
         AutonomicMonitorAgent instance
     """
-    return AutonomicMonitorAgent(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return AutonomicMonitorAgent(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)

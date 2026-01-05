@@ -94,4 +94,4 @@ def load_mcp_config(config_path: str) -> Dict[str, Any]:
         return {'roles': {}}
 
 # Backward compatibility alias
-MCPConnectionManager = McpConnectionManagerAgent\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+MCPConnectionManager = McpConnectionManagerAgent

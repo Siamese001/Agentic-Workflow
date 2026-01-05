@@ -46,4 +46,3 @@ class GlobalComplianceAggregatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
-\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

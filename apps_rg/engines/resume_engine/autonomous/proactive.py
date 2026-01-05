@@ -465,4 +465,3 @@ class ProactiveAgent(ResumeAgent):
 
         self.record_result(True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending")
         print(f"   [{self.name}] ✅ Proactive analysis complete")
-\nimport logging\n\nLogger = logging.getLogger(__name__)

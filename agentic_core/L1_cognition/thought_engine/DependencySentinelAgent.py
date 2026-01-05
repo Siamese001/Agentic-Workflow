@@ -298,4 +298,4 @@ def check_dependencies(file_path: Path=None, directory: Path=None) -> List[Depen
     elif directory:
         return sentinel.check_directory(directory)
     else:
-        return sentinel.check_directory(sentinel.root_dir)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+        return sentinel.check_directory(sentinel.root_dir)

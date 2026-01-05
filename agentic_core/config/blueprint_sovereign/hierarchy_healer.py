@@ -46,4 +46,4 @@ class HierarchyHealerAgent(HealerMixin, MCPHardenedMixin):
                 shutil.move(str(path_obj), str(new_path)) #
                 
                 return {"healed": True, "move_to": str(new_path), "reason": "Depth-4 Alignment"}
-        return {"healed": False}\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n\nLogger = logging.getLogger(__name__)
+        return {"healed": False}

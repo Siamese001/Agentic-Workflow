@@ -135,4 +135,3 @@ def create_threat_evolution_agent(SafetyEngine=None) -> AutonomousThreatEvolutio
     super().heal_repository()
 
     return AutonomousThreatEvolutionAgent(SafetyEngine=SafetyEngine)
-\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

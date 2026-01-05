@@ -167,4 +167,4 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
             return False
         
         Logger.info(f"All {results['found']} agents validated successfully")
-        return True\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+        return True

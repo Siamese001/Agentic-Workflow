@@ -340,4 +340,4 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
 
-        return ProactiveResourceManagerAgent(thresholds=thresholds)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+        return ProactiveResourceManagerAgent(thresholds=thresholds)

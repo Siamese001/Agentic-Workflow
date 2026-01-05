@@ -49,4 +49,4 @@ def validate_resume_content(self: Any, resume_data: Dict[str, Any]) -> Dict[str,
     Returns:
         Validation results
     """
-    return {"valid": True, "warnings": [], "score": 0.95}\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return {"valid": True, "warnings": [], "score": 0.95}

@@ -132,4 +132,4 @@ def get_mcp_router(tui_handle: Any=None) -> MCPRouter:
     Returns:
         MCPRouter instance
     """
-    return MCPRouter(tui_handle=tui_handle)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+    return MCPRouter(tui_handle=tui_handle)

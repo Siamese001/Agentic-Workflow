@@ -226,4 +226,4 @@ def create_workflow_orchestrator(workflow_id: str, Provider: Provider=Provider.O
     Returns:
         WorkflowOrchestratorAgent instance
     """
-    return WorkflowOrchestratorAgent(workflow_id=workflow_id, PROVIDER=Provider, MODEL=model)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+    return WorkflowOrchestratorAgent(workflow_id=workflow_id, PROVIDER=Provider, MODEL=model)

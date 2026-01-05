@@ -234,4 +234,3 @@ class MaintenanceBaseAgent(SovereignBaseAgent, L0DelegationMixin, L0DelegationTe
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
-\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

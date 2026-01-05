@@ -202,4 +202,3 @@ class GovernanceAgent(MCPHardenedMixin, SubatomicTestingMixin,
         super().heal_repository()
 
         return await self.make_decision(context)
-\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

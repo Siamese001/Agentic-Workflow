@@ -367,4 +367,3 @@ class _ClassExtractionVisitor(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef):
         self.classes.append(node)
         self.generic_visit(node)
-\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

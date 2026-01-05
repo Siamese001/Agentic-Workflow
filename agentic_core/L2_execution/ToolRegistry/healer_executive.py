@@ -337,4 +337,4 @@ def create_executive_title_composer(
     config: Optional[TitleComposerConfig] = None
 ) -> ExecutiveTitleComposer:
     """Factory function to create ExecutiveTitleComposer instance"""
-    return ExecutiveTitleComposer(config=config)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return ExecutiveTitleComposer(config=config)

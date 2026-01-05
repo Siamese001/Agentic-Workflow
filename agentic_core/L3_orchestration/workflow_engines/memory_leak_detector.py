@@ -227,4 +227,4 @@ def end_memory_cycle(cycle_id: str=None) -> Any:
 def take_memory_snapshot(label: str='') -> Any:
     """Take a memory snapshot."""
     detector: Any = get_memory_detector()
-    detector.take_snapshot(label)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    detector.take_snapshot(label)

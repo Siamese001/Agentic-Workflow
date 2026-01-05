@@ -168,4 +168,4 @@ def validate_async_blocking(file_path: Path, content: str) -> List[Dict[str, Any
 
 def validate_dangerous_builtins(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 42: No dangerous builtins."""
-    return parse_and_validate(file_path, content, 42, DangerousBuiltinsValidatorAgent)\nimport logging\n\nLogger = logging.getLogger(__name__)
+    return parse_and_validate(file_path, content, 42, DangerousBuiltinsValidatorAgent)

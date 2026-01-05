@@ -266,4 +266,3 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
 def create_autonomous_state_guardian() -> AutonomousStateGuardian:
     """Factory function to create autonomous state guardian"""
     return AutonomousStateGuardian()
-\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

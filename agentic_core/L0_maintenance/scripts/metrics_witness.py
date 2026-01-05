@@ -118,4 +118,3 @@ class MetricsWitnessAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, 
             "Structural SSOT": self.calculate_structural_ssot_score(),
             "Healing Resilience": self.calculate_healing_resilience_score(),
         }
-\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

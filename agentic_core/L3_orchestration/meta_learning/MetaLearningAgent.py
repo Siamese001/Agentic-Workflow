@@ -204,4 +204,3 @@ class MetaLearningAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
         """Standard mode - full strategy evolution."""
         agent_name = context.get("agent_name", "HealingOrchestratorAgent")
         return await self.evolve_agent_strategy(agent_name)
-\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

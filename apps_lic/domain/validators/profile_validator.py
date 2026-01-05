@@ -601,4 +601,4 @@ class ValidationAgent:
                 current_row.append(min(insertions, deletions, substitutions))
             previous_row = current_row
         
-        return previous_row[-1]\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)
+        return previous_row[-1]

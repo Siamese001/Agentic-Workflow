@@ -323,4 +323,4 @@ def create_section_scope_integrator( # Fixed: Removed misplaced docstring from h
     config: Optional[SectionIntegratorConfig] = None
 ) -> SectionScopeIntegrator:
     """Factory function to create SectionScopeIntegrator instance"""
-    return SectionScopeIntegrator(config=config)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return SectionScopeIntegrator(config=config)
