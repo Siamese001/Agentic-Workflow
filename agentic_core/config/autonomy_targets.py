@@ -45,7 +45,9 @@ TARGETS: Dict[str, Dict[str, Union[int, str]]] = {
 
     # --- Base Classes (Abstract) ---
     # Cannot run directly; invocation/observability N/A.
-    ".*base_class": {
+    # Matches any territory ending exactly with "Base Class" (case-insensitive).
+    # Covers L1-L5 uniformly without hard-coding layers.
+    "Base Class": {
         "invocation": "N/A",
         "observability": "N/A",
         "tests": 70,                # Interface tests only
@@ -79,7 +81,7 @@ def get_target(territory: str, metric: str, extra_context: Optional[Dict[str, An
     # Infrastructure and Base Class are more specific than L0/L5 layer patterns
     pattern_order = [
         ".*infrastructure",
-        ".*base_class", 
+        "Base Class",
         "L5_.*",
         "L0_.*",
     ]
@@ -89,7 +91,10 @@ def get_target(territory: str, metric: str, extra_context: Optional[Dict[str, An
             continue
         overrides = TARGETS[pattern]
         # Normalize pattern for loose matching (underscore -> space optional)
-        regex = pattern.replace('.*', '.*').replace('_', '[ _]')
+        if pattern == "Base Class":
+            regex = r"Base Class$"
+        else:
+            regex = pattern.replace('.*', '.*').replace('_', '[ _]')
         if re.search(regex, territory, re.IGNORECASE):
             val = overrides.get(metric)
             if val == "conditional_tools":

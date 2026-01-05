@@ -1,6 +1,7 @@
 from __future__ import annotations
 import ast
 '''Brief description of functionality and purpose.'''
+import difflib
 
 'Brief description of functionality and purpose.'
 import hashlib
@@ -32,12 +33,13 @@ except ImportError:
     Language = None
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
+    Now with conservative fuzzy structural matching (default threshold=0.98).
     
     Responsibilities:
     - Computes perceptual hashes of normalized AST nodes.
@@ -51,10 +53,10 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
     Consolidates functionality from deprecated FilenameUniquenessGuardianAgent (2025-12-31).
     """
 
-    def __init__(self, similarity_threshold: float=0.95, min_lines: int=8) -> None:
+    def __init__(self, similarity_threshold: float=0.98, min_lines: int=8) -> None:
         self.threshold = similarity_threshold
         self.min_lines = min_lines
-        self.duplicate_groups: Dict[str, List[Tuple[Path, str, int]]] = defaultdict(list)
+        self.duplicate_groups: Dict[str, List[Tuple[Path, str, int, str]]] = defaultdict(list)  # key synthetic, value [(path, name, line, code), ...]
         self.file_duplicate_groups: Dict[str, List[Path]] = defaultdict(list)  # hash → paths (identical whole files)
         self.filename_duplicates: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)  # basename → [(path, file_hash)]
         self.extracted_count = 0
@@ -113,6 +115,11 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
         children = [self._normalize_ts_tree(child) for child in node.children]
         return f'{node.type}({"|".join(children)})'
 
+    def _block_similarity(self, norm_a: str, norm_b: str) -> float:
+        """Conservative structural/text similarity using difflib (built-in, no deps)."""
+        # SequenceMatcher is efficient and suitable for code strings
+        return difflib.SequenceMatcher(None, norm_a, norm_b).ratio()
+
     def _hash_block(self, code: str) -> str:
         """Generate AST fingerprint for code block."""
         # Try AST fingerprinting first
@@ -152,21 +159,68 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
     def scan_for_duplicates(self, python_files: List[str]) -> Any:
         """Phase 2 entry point - cross-file territory sweep."""
         print('\n[*] CodeDeduplicationAgent: Scanning for cross-file duplicates...')
-        hash_to_blocks: Any = defaultdict(list)
+        # Collect all candidate blocks with their best normalized representation
+        candidates: List[Tuple[Path, str, int, str, str]] = []  # (path, name, line, code, norm_str)
         for file_str in python_files:
             file_path: Any = Path(file_str)
             # EXCLUDE archives/ directory
             if not file_path.exists() or 'archives' in str(file_path):
                 continue
             for name, code, line in self._extract_functions_classes(file_path):
-                block_hash: Any = self._hash_block(code)
-                hash_to_blocks[block_hash].append((file_path, name, line, code))
-        for block_hash, occurrences in hash_to_blocks.items():
-            if len(occurrences) > 1:
-                print(f'   [!] DUPLICATE FOUND ({len(occurrences)} copies):')
-                for path, name, line, _ in occurrences:
-                    print(f'      -> {path.name}:{line} ({name})')
-                self.duplicate_groups[block_hash] = occurrences
+                # Get best normalized string (tree-sitter > AST > text fallback)
+                norm_str = ''
+                try:
+                    if self.ts_parser:
+                        tree = self.ts_parser.parse(bytes(code, 'utf8'))
+                        norm_str = self._normalize_ts_tree(tree.root_node)
+                    else:
+                        tree = ast.parse(code)
+                        norm_str = self._normalize_ast_tree(tree)
+                except Exception:
+                    normalized = self._normalize_code(code)
+                    norm_str = normalized
+
+                if not norm_str:
+                    continue
+                candidates.append((file_path, name, line, code, norm_str))
+
+        # Conservative leader-based clustering with high threshold (very similar only)
+        groups: List[List[Tuple[Path, str, int, str, str, float]]] = []  # list of groups, each with (..., norm_str, sim_to_rep)
+        for path, name, line, code, norm_str in candidates:
+            best_group = None
+            best_sim = 0.0
+            for group in groups:
+                rep_norm = group[0][4]  # norm_str of group representative (first member)
+                sim = self._block_similarity(rep_norm, norm_str)
+                if sim > best_sim:
+                    best_sim = sim
+                    best_group = group
+            if best_group and best_sim >= self.threshold:
+                best_group.append((path, name, line, code, norm_str, best_sim))
+            else:
+                groups.append([(path, name, line, code, norm_str, 1.0)])
+
+        # Store only high-confidence groups (min similarity to primary >= threshold)
+        group_id = 0
+        for group in groups:
+            if len(group) < 2:
+                continue
+            primary_norm = group[0][4]
+            sims_to_primary = [self._block_similarity(primary_norm, t[4]) for t in group]
+            min_sim = min(sims_to_primary)
+            if min_sim < self.threshold:
+                continue  # Extra conservative filter – drop if any member diverges too much
+
+            print(f'   [!] SIMILAR BLOCK GROUP ({len(group)} copies, min similarity {min_sim:.1%} to primary):')
+            for t in group:
+                print(f'      -> {t[0].name}:{t[2]} ({t[1]}) similarity {t[5]:.1%}')
+
+            # Store in compatible format for existing extraction logic
+            members = [(t[0], t[1], t[2], t[3]) for t in group]  # (path, name, line, code)
+            key = f'similar_group_{group_id}_{min_sim:.2f}'
+            self.duplicate_groups[key] = members
+            group_id += 1
+
         if not self.duplicate_groups:
             print('   [OK] No significant code duplicates detected.')
 
@@ -180,7 +234,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
         while candidate.exists():
             candidate = utils_dir / f'{safe_name}_shared_{counter}.py'
             counter += 1
-        header = f'# Auto-extracted shared utility by CodeDeduplicationAgent\n# Original function: {func_name}\n\n'
+        header = f'# Auto-extracted shared utility by CodeDeduplicationAgent (fuzzy structural match >= {self.threshold:.0%})\n# Original function: {func_name}\n\n'
         candidate.write_text(header + textwrap.dedent(code), encoding='utf-8')
         return candidate
 

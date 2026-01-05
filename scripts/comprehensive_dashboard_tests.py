@@ -128,6 +128,13 @@ class DashboardTestSuite:
         self.test_invocation_update_detection()
         print()
         
+        # Category 18: Territory Structure Consistency Tests
+        print("🛡️ TERRITORY STRUCTURE CONSISTENCY TESTS")
+        self.test_base_class_territories_complete()
+        self.test_l5_domain_subterritories_exception()
+        self.test_no_abbreviated_subterritory_names()
+        print()
+        
         # Summary
         print("=" * 80)
         print("TEST SUMMARY")
@@ -199,7 +206,7 @@ class DashboardTestSuite:
                     # Infrastructure pattern wins (target=70)
                     if target_inv != 70:
                         valid_targets = False
-                elif 'Base Cl' in territory:
+                elif 'Base Class' in territory:
                     # Base Class pattern (target=N/A)
                     if target_inv != 'N/A':
                         valid_targets = False
@@ -634,7 +641,7 @@ class DashboardTestSuite:
                      f"Infrastructure targets incorrect: {infra_targets}")
         
         # Verify Base Class targets are N/A
-        base_rows = [r for r in non_total_rows if 'Base Cl' in r.get('Territory', '')]
+        base_rows = [r for r in non_total_rows if 'Base Class' in r.get('Territory', '')]
         if base_rows:
             base_targets = [r.get('Target Invocation') for r in base_rows]
             self.test("Base Class target is N/A", 
@@ -654,6 +661,61 @@ class DashboardTestSuite:
             self.test("TOTAL Invocation % is dynamic", 
                      total_inv != 100.0,  # If it's exactly 100, might be hardcoded
                      "TOTAL invocation suspiciously at 100%")
+
+    def test_base_class_territories_complete(self):
+        """Ensure Base Class territory exists for every L1-L5 layer (critical consistency)."""
+        expected = {
+            'L1 Cognition/Base Class',
+            'L2 Execution/Base Class',
+            'L3 Orchestration/Base Class',
+            'L4 State/Base Class',
+            'L5 Safety/Base Class',
+        }
+        actual = {r.get('Territory') for r in self.dashboard_data if r.get('Territory') != 'TOTAL'}
+        missing = expected - actual
+        self.test(
+            "All L1-L5 layers have Base Class territory",
+            not missing,
+            f"Missing Base Class territories: {missing}",
+        )
+
+    def test_l5_domain_subterritories_exception(self):
+        """L5 uses domain-specific categories (intentional exception — no Core/Infrastructure/Specialized)."""
+        l5_territories = [
+            r.get('Territory') for r in self.dashboard_data
+            if r.get('Territory', '').startswith('L5 Safety/')
+        ]
+        actual_subs = {t.split('/')[-1] for t in l5_territories if t}
+
+        required = {'Guardrails', 'Validators', 'Gravity', 'Red Teaming', 'Base Class'}
+        self.test(
+            "L5 has required domain-specific territories",
+            required.issubset(actual_subs),
+            f"Missing L5 domain territories: {required - actual_subs}",
+        )
+
+        forbidden = {'Core', 'Infrastructure', 'Specialized'}
+        overlap = forbidden & actual_subs
+        self.test(
+            "L5 does NOT use generic Core/Infrastructure/Specialized",
+            not overlap,
+            f"L5 incorrectly uses generic categories: {overlap}",
+        )
+
+    def test_no_abbreviated_subterritory_names(self):
+        """No abbreviated names remaining (LOW-severity naming fix)."""
+        abbreviated = {'Base Cl', 'Infrast', 'Special'}
+        used = {
+            r.get('Territory', '').split('/')[-1]
+            for r in self.dashboard_data
+            if '/' in r.get('Territory', '')
+        }
+        overlap = abbreviated & used
+        self.test(
+            "All subterritory names use full form (no abbreviations)",
+            not overlap,
+            f"Abbreviated names still present: {overlap}",
+        )
 
 
 def main():
