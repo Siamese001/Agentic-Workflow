@@ -1,5 +1,14 @@
 from __future__ import annotations
 """
+AutonomyGuardianAgent - Sovereign Blueprint/Template (Historical Snapshot)
+
+Pre-2026 reference implementation for scaffolding new guardian agents.
+DO NOT edit directly — use as copy-paste starting point only.
+
+Renamed on 2026-01-05 to eliminate filename conflict with active canonical version:
+    agentic_core/L5_safety/validators/AutonomyGuardianAgent.py
+
+Original docstring:
 Autonomy Guardian Agent - Autonomy Meta-Enforcement
 Ensures all domain agents have heal_repository() and no external scripts.
 This is the sovereign guardian for agent autonomy across the repository.
