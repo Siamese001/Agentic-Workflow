@@ -4,7 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minimal Dashboard Test</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script>
+        (function () {
+            function loadScript(src) {
+                return new Promise(function (resolve, reject) {
+                    var s = document.createElement('script');
+                    s.src = src;
+                    s.async = true;
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.head.appendChild(s);
+                });
+            }
+
+            loadScript('plotly.min.js')
+                .catch(function () {
+                    return loadScript('https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js');
+                })
+                .catch(function () {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var msg = document.createElement('div');
+                        msg.style.cssText = 'margin:16px;padding:16px;border:2px solid #dc2626;background:#fff1f2;border-radius:8px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;';
+                        msg.innerHTML = '<strong>Plotly failed to load.</strong><br>Copy <code>plotly.min.js</code> next to this HTML file or allow CDN access.';
+                        document.body.insertBefore(msg, document.body.firstChild);
+                    });
+                });
+        })();
+    </script>
     <style>
         :root {
             --primary: #2563eb;

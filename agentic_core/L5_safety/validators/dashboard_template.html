@@ -3,12 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="30">
+    <meta http-equiv="refresh" content="300">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Autonomy Compliance Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script>
+        // Plotly loader (local-first) — exposes window.__plotlyReady Promise
+        (function () {
+            function loadScript(src) {
+                return new Promise(function (resolve, reject) {
+                    var s = document.createElement('script');
+                    s.src = src;
+                    s.async = true;
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.head.appendChild(s);
+                });
+            }
+
+            function showPlotlyErrorBanner() {
+                var msg = document.createElement('div');
+                msg.style.cssText = 'margin:16px;padding:16px;border:2px solid #dc2626;background:#fff1f2;border-radius:8px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;';
+                msg.innerHTML = '<strong>Dashboard failed to load Plotly.</strong><br>' +
+                    'To use this dashboard offline, copy <code>plotly.min.js</code> next to <code>autonomy_dashboard.html</code> (same folder). ' +
+                    'Otherwise allow access to the Plotly CDN.';
+                document.body.insertBefore(msg, document.body.firstChild);
+            }
+
+            window.__plotlyReady = loadScript('plotly.min.js')
+                .catch(function () {
+                    return loadScript('https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js');
+                })
+                .then(function () {
+                    if (typeof window.Plotly === 'undefined') {
+                        throw new Error('Plotly loaded but not available on window');
+                    }
+                })
+                .catch(function () {
+                    document.addEventListener('DOMContentLoaded', showPlotlyErrorBanner);
+                    throw new Error('Plotly failed to load');
+                });
+        })();
+    </script>
     <style>
         * {
             margin: 0;
@@ -383,7 +420,7 @@
         <button class="refresh-button" onclick="manualRefresh()">🔄 Refresh Now</button>
         <div class="refresh-status">
             <div class="refresh-indicator"></div>
-            <span id="refreshStatus">Auto-refresh: 30s</span>
+            <span id="refreshStatus">Auto-refresh: 4m 59s</span>
         </div>
     </div>
 
@@ -402,26 +439,62 @@
 
             <!-- Executive Dashboard Tab -->
             <div id="executive-content" class="tab-content">
-                <!-- Strategic Observations Section - TOP -->
-                <div class="charts-grid full-width" style="margin-bottom:20px;">
-                    <div class="chart-card" style="border-left: 4px solid var(--primary);">
+                
+                <!-- NEW: Simplified Top Overview per Request -->
+                <div class="charts-grid full-width" style="margin-bottom:60px;">
+                    <div class="chart-card" style="border-left: 6px solid var(--primary);">
                         <div class="chart-header">
-                            <div class="chart-title" style="font-size:1.6em;">📋 Strategic Observations & Prioritized Actions</div>
-                            <div class="chart-subtitle">Macro-level architectural recommendations + metric-focused improvements (top priorities embedded in the relevant cards)</div>
+                            <div class="chart-title" style="font-size:2em;">🎯 Autonomy Readiness Overview</div>
+                            <div class="chart-subtitle">Composite signals for immediate executive review</div>
                         </div>
-                        <div class="chart-body">
-                            <div id="executiveSummary" style="padding: 16px; border-radius: 12px; border: 1px solid #ddd6fe; background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); margin-bottom: 20px;"></div>
-                            <div style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr;">
-                                <!-- Macro Observations -->
-                                <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 20px; border-radius: 12px; border: 1px solid #bae6fd;">
-                                    <h3 style="color: #0369a1; margin-bottom: 15px; font-size: 1.2em;">🏗️ Macro Observations</h3>
-                                    <div id="macroObservations" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                        <div class="chart-body" style="padding:50px 20px; text-align:center;">
+                            <!-- Big KPI Grid -->
+                            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:50px; margin-bottom:50px;">
+                                <!-- Health Score -->
+                                <div style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow);">
+                                    <div style="font-size:1.2em; color:var(--text-light); margin-bottom:10px;">Health Score</div>
+                                    <div id="healthScoreValue" style="font-size:5em; font-weight:800; line-height:1; color:var(--primary);">--%</div>
+                                    <div style="font-size:1em; color:var(--text-light); margin-top:10px;">
+                                        Composite autonomy readiness<br>
+                                        (Invocation + MCP Hardened + Tests + Healing + Typing + Complexity)
+                                    </div>
                                 </div>
-                                <!-- Metric-Focused Observations -->
-                                <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 20px; border-radius: 12px; border: 1px solid #bbf7d0;">
-                                    <h3 style="color: #15803d; margin-bottom: 15px; font-size: 1.2em;">📊 Metric-Focused Observations</h3>
-                                    <div id="metricObservations" style="display: flex; flex-direction: column; gap: 12px;"></div>
+
+                                <!-- Code Quality Score -->
+                                <div style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow);">
+                                    <div style="font-size:1.2em; color:var(--text-light); margin-bottom:10px;">Code Quality Score</div>
+                                    <div id="codeQualityScoreValue" style="font-size:5em; font-weight:800; line-height:1; color:#16a34a;">--%</div>
+                                    <div style="font-size:1em; color:var(--text-light); margin-top:10px;">
+                                        Maintainability composite<br>
+                                        (Tests + Typing + Complexity inverse)
+                                    </div>
                                 </div>
+
+                                <!-- Canonical Base Inheritance Score -->
+                                <div style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow);">
+                                    <div style="font-size:1.2em; color:var(--text-light); margin-bottom:10px;">Canonical Base Inheritance</div>
+                                    <div id="baseInheritanceValue" style="font-size:5em; font-weight:800; line-height:1; color:#7c3aed;">--%</div>
+                                    <div style="font-size:1em; color:var(--text-light); margin-top:10px;">
+                                        % agents inheriting correct layer base class<br>
+                                        (e.g., SafetyBaseAgent for L5)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Executive Summary Box -->
+                            <div style="max-width:1000px; margin:0 auto; background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:30px; box-shadow:var(--shadow);">
+                                <h3 style="font-size:1.6em; margin-bottom:20px; color:var(--primary);">Executive Summary</h3>
+                                <div style="font-size:1.1em; line-height:1.8; text-align:left;">
+                                    <p><strong>Health:</strong> <span id="execHealth">--%</span></p>
+                                    <p>Overall autonomy readiness expressed as a single composite signal (Invocation + MCP Hardened + Tests + Healing + Typing + Complexity).</p>
+                                    <p id="execGap"><strong>Gap:</strong> Calculating...</p>
+                                    <p><strong>How to fix:</strong> Focus on the top three priorities (ranked #1–#3). Each improvement compounds: better tests enable safer refactors, lower complexity makes healing hooks easier, and better invocation closes the loop.</p>
+                                </div>
+                            </div>
+
+                            <!-- Anomaly Flags Section -->
+                            <div id="anomalyFlags" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); gap:20px; margin-top:40px;">
+                                <!-- JS will inject cards here -->
                             </div>
                         </div>
                     </div>
@@ -437,6 +510,22 @@
                         </div>
                         <div class="chart-body">
                             <div id="riskMatrix"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canonical Base Inheritance by Layer -->
+                <div class="charts-grid full-width" style="margin-top:40px;">
+                    <div class="chart-card" style="border-left: 4px solid #7c3aed;">
+                        <div class="chart-header">
+                            <div class="chart-title">🧬 Canonical Base Inheritance by Layer</div>
+                            <div class="chart-subtitle">
+                                Each layer has a required base class that provides healing, safety hooks, and observability contracts. 
+                                Agents inheriting from the wrong base (or no base) break the autonomy chain.
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="baseInheritanceTable"></div>
                         </div>
                     </div>
                 </div>
@@ -502,8 +591,9 @@
     </div>
 
     <script>
-        // Auto-refresh every 30 seconds.
+        // Auto-refresh every 5 minutes.
         // Use cache-busting + focus/visibility hooks so refresh still happens after IDE/browser restarts.
+        const REFRESH_INTERVAL_MS = 300000;  // 5 minutes
         let lastRefreshTime = new Date();
         let lastRefreshEpochMs = Date.now();
 
@@ -522,7 +612,7 @@
             lastRefreshTime = new Date();
             lastRefreshEpochMs = Date.now();
             forceReload();
-        }, 30000);  // 30 seconds
+        }, REFRESH_INTERVAL_MS);  // 5 minutes
 
         function manualRefresh() {
             lastRefreshTime = new Date();
@@ -533,7 +623,8 @@
         function maybeReloadIfStale() {
             const now = Date.now();
             // If timers were throttled/suspended (common after restarts), catch up on focus.
-            if (now - lastRefreshEpochMs > 45000) {
+            // Stale threshold = refresh interval + 30s buffer
+            if (now - lastRefreshEpochMs > REFRESH_INTERVAL_MS + 30000) {
                 lastRefreshTime = new Date();
                 lastRefreshEpochMs = now;
                 forceReload();
@@ -550,14 +641,17 @@
             maybeReloadIfStale();
         });
 
-        // Update refresh status display
+        // Update refresh status display every second
         setInterval(() => {
-            const now = new Date();
-            const secondsSinceRefresh = Math.floor((now - lastRefreshTime) / 1000);
-            const secondsUntilRefresh = 30 - secondsSinceRefresh;
+            const now = Date.now();
+            const msSinceRefresh = now - lastRefreshEpochMs;
+            const msUntilRefresh = Math.max(0, REFRESH_INTERVAL_MS - msSinceRefresh);
+            const minutes = Math.floor(msUntilRefresh / 60000);
+            const seconds = Math.floor((msUntilRefresh % 60000) / 1000);
             
-            if (secondsUntilRefresh > 0) {
-                document.getElementById('refreshStatus').textContent = `Auto-refresh: ${secondsUntilRefresh}s`;
+            const statusEl = document.getElementById('refreshStatus');
+            if (statusEl) {
+                statusEl.textContent = `Auto-refresh: ${minutes}m ${seconds}s`;
             }
         }, 1000);
 
@@ -1118,7 +1212,6 @@
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % of workers trained in self-repair. Like workers who have their own toolbox and repair manual — they CAN fix small equipment problems themselves without calling maintenance.">Heal Cap %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % actually FOLLOWING the factory repair checklist. Having a toolbox is useless if workers never open it. This measures active use of the standardized repair protocol.">Invocation %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % with safety guards on machinery. Like emergency stop buttons and protective shields — prevents workers from getting hurt when operating dangerous equipment.">MCP Hardened %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % following correct department procedures (L1-L5). Like workers using the right safety manual for their floor — ensures consistent behavior within each production area.">Base Class %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % with quality control checkpoints. Like inspectors testing each product batch — catches defects before shipping to customers.">Test %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % with monitoring cameras/sensors. Like security cameras and production line sensors — when something breaks, you can review the footage to see what went wrong.">Observable %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: Assembly instruction simplicity (target: CC≤10). Like IKEA manual clarity — complex instructions = more assembly errors = more defects. Simple procedures = reliable production.">Complexity Health</th>
@@ -1157,7 +1250,6 @@
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Heal Cap %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Invocation %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Hardened %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Proper Base %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Proper Base %'] || 0).toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Test %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Observable %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Observable %'] || 0).toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${totalComplexityHealth.toFixed(1)}%</td>
@@ -1203,7 +1295,6 @@
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Proper Base %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Proper Base %'] || 0).toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(rowComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${rowComplexityHealth.toFixed(1)}%</td>
@@ -1216,18 +1307,18 @@
                     </table>
                 </div>
                 <div style="margin-top:12px; font-size:0.85em; color:var(--text-light); line-height:1.5;">
-                    <div><strong>Territory:</strong> Domain slice (layer/app) for governance and compliance analysis. <strong>Config</strong> and <strong>Observability</strong> are territories too (rows), not special table columns.</div>
-                    <div><strong>Sub-Territory:</strong> Didactic component breakdown of what the territory contains (counts sum to total).</div>
-                    <div><strong>Agents / Tools:</strong> Active agents and (when available) total MCP tools integrated in this territory.</div>
-                    <div><strong>Heal Capability %:</strong> % with HealerMixin / healing capability available.</div>
-                    <div><strong>Heal Invocation %:</strong> % actually invoking healing chain (explicit super().heal_repository() usage).</div>
-                    <div><strong>MCP Hardened %:</strong> % protected at external tool boundary (MCP hardening/mixins/decorators).</div>
-                    <div><strong>Test Coverage %:</strong> % with tests detected (enables safe refactoring/hardening).</div>
-                    <div><strong>Observability %:</strong> % with logging/metrics/tracing signals (production diagnosability).</div>
-                    <div><strong>Complexity Health:</strong> % score derived from Avg Cyclomatic Complexity (target ≤10). Mapping is designed to stay informative even when average CC is high.</div>
-                    <div><strong>Health Score:</strong> Composite autonomy readiness signal derived from the columns above.</div>
-                    <div style="margin-top:6px; font-size:0.9em;">Health Score weighting: Invocation 25% + MCP Hardened 25% + Tests 20% + Observability 15% + Complexity Health 15%.<br>
-                    <em>Analogy:</em> Like a factory floor audit — workers using the master checklist (invocation), safety gear at dangerous machines (MCP), quality inspections (tests), monitoring cameras (observability), and simple, maintainable procedures (complexity).</div>
+                    <div><strong>Territory:</strong> Production department (L5=Safety/QA, L4=Warehouse, L3=Floor Managers, L2=Assembly Line, L1=Design, L0=Facilities). Each territory is a slice of the factory floor.</div>
+                    <div><strong>Sub-Territory:</strong> Teams within a department — Base Class (standard operating procedures), Infrastructure (utilities/monitoring), Core (main workers), Specialized (QA/logistics units).</div>
+                    <div><strong>Agents / Tools:</strong> Worker headcount / machinery they operate. Like factory employees and the equipment they use daily.</div>
+                    <div><strong>Heal Capability %:</strong> Workers trained in self-repair — they have a toolbox and repair manual. Can fix small problems without calling maintenance. <em>Why it matters:</em> Autonomous systems need self-healing agents that don't escalate every issue.</div>
+                    <div><strong>Heal Invocation %:</strong> Workers actually FOLLOWING the factory repair checklist. Having a toolbox is useless if never opened. Measures active use of the standardized repair protocol (super().heal_repository() calls). <em>Why it matters:</em> Capability without invocation = dead code.</div>
+                    <div><strong>MCP Hardened %:</strong> Machinery with safety guards — emergency stop buttons and protective shields. Prevents workers from getting hurt when operating dangerous equipment (external tool calls). <em>Why it matters:</em> Unguarded tools = production incidents and data corruption.</div>
+                    <div><strong>Test Coverage %:</strong> Quality control checkpoints — inspectors testing each product batch before shipping. Catches defects early. <em>Why it matters:</em> No tests = shipping broken code to customers.</div>
+                    <div><strong>Observability %:</strong> Monitoring cameras and sensors on the production line. When something breaks, you can review footage to diagnose what went wrong. <em>Why it matters:</em> Silent failures are impossible to debug in production.</div>
+                    <div><strong>Complexity Health:</strong> Assembly instruction simplicity (target: CC≤10). Like IKEA manual clarity — complex instructions = more assembly errors = more defects. Simple procedures = reliable production. <em>Why it matters:</em> High complexity = maintenance nightmare and bug breeding ground.</div>
+                    <div><strong>Health Score:</strong> Overall production line readiness. Composite signal: Can the factory run autonomously without constant human intervention? Higher = more reliable, self-sufficient operation.</div>
+                    <div style="margin-top:6px; font-size:0.9em;">Health Score weighting: Invocation 22% + MCP Hardened 16% + Tests 16% + Heal Capability 12% + Observability 9% + Complexity 5% + Typing 10% + Documentation 10%.<br>
+                    <em>Factory floor audit:</em> Workers using the master checklist (invocation), safety gear at dangerous machines (MCP), quality inspections (tests), monitoring cameras (observability), simple maintainable procedures (complexity), and proper documentation (typing/docs).</div>
                 </div>
             </div>`;
                 
@@ -1702,6 +1793,95 @@
             }
         }
 
+        function renderBaseInheritanceChart(territoryData, totalRow) {
+            // Define canonical layers with their required base classes
+            const layerConfig = [
+                { key: 'L5 Safety',        name: 'L5 Safety',        baseClass: 'SafetyBaseAgent',        prefix: 'L5 Safety' },
+                { key: 'L4 State',         name: 'L4 State',         baseClass: 'StateBaseAgent',         prefix: 'L4 State' },
+                { key: 'L3 Orchestration', name: 'L3 Orchestration', baseClass: 'OrchestrationBaseAgent', prefix: 'L3 Orchestration' },
+                { key: 'L2 Execution',     name: 'L2 Execution',     baseClass: 'L2ExecutionBaseAgent',   prefix: 'L2 Execution' },
+                { key: 'L1 Cognition',     name: 'L1 Cognition',     baseClass: 'L1CognitionBaseAgent',   prefix: 'L1 Cognition' },
+                { key: 'L0 Maintenance',   name: 'L0 Maintenance',   baseClass: 'N/A (tooling layer)',    prefix: 'L0 Maintenance' }
+            ];
+
+            // Aggregate weighted inheritance % per layer
+            const layerStats = {};
+            layerConfig.forEach(cfg => {
+                layerStats[cfg.key] = { totalAgents: 0, compliantAgents: 0, territories: [] };
+            });
+
+            territoryData.forEach(row => {
+                const matchingCfg = layerConfig.find(cfg => row.Territory.startsWith(cfg.prefix));
+                if (matchingCfg) {
+                    const stats = layerStats[matchingCfg.key];
+                    const pct = row['Proper Base %'] || row['Canonical Base Inheritance %'] || 100;
+                    stats.totalAgents += row.Total;
+                    stats.compliantAgents += row.Total * (pct / 100);
+                    stats.territories.push(row.Territory);
+                }
+            });
+
+            // Build table rows (only layers with agents)
+            const layers = layerConfig
+                .filter(cfg => layerStats[cfg.key].totalAgents > 0)
+                .map(cfg => {
+                    const s = layerStats[cfg.key];
+                    const inheritancePct = s.totalAgents > 0 
+                        ? (s.compliantAgents / s.totalAgents * 100).toFixed(1) 
+                        : 0;
+                    return {
+                        name: cfg.name,
+                        baseClass: cfg.baseClass,
+                        pct: parseFloat(inheritancePct),
+                        agentCount: s.totalAgents,
+                        territories: s.territories
+                    };
+                });
+
+            // Render as table
+            const getGradientBg = (val) => {
+                if (val >= 90) return '#dcfce7';
+                if (val >= 70) return '#fef3c7';
+                if (val >= 50) return '#fed7aa';
+                return '#fecaca';
+            };
+
+            let html = `
+                <table style="width:100%; border-collapse:collapse; font-size:0.95em;">
+                    <thead>
+                        <tr style="background:#f3f4f6; border-bottom:2px solid #d1d5db;">
+                            <th style="padding:12px; text-align:left; font-weight:600;">Layer</th>
+                            <th style="padding:12px; text-align:left; font-weight:600;">Required Base Class</th>
+                            <th style="padding:12px; text-align:center; font-weight:600;">Agents</th>
+                            <th style="padding:12px; text-align:center; font-weight:600;">Inheritance %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            layers.forEach(layer => {
+                const bgColor = getGradientBg(layer.pct);
+                html += `
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer;" 
+                        onclick="openDrillModal('${layer.territories[0]}')" 
+                        onmouseover="this.style.background='#f9fafb'" 
+                        onmouseout="this.style.background='white'">
+                        <td style="padding:12px; font-weight:600;">${layer.name}</td>
+                        <td style="padding:12px; font-family:monospace; color:#7c3aed;">${layer.baseClass}</td>
+                        <td style="padding:12px; text-align:center;">${layer.agentCount}</td>
+                        <td style="padding:12px; text-align:center; background:${bgColor}; font-weight:600;">${layer.pct}%</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('baseInheritanceTable').innerHTML = html;
+        }
+
         function renderComplianceChart(territoryData) {
             const territories = territoryData.map(d => d.Territory);
             const compliance = territoryData.map(d => parseFloat(d['Compliance %']) || 0);
@@ -2096,6 +2276,9 @@ ${rec.guidance.split('\n').map((line, i) =>
         }
 
         function renderStrategicObservations(totalRow, territoryData) {
+            // NOTE: Strategic Observations section replaced by simplified Autonomy Readiness Overview
+            // This function is now a no-op to avoid errors from missing DOM elements
+            return;
             function getActionForComponent(comp) {
                 const actions = {
                     'Healing Invocation': 'Add super().heal_repository() calls to agent heal methods',
@@ -2474,9 +2657,118 @@ ${rec.guidance.split('\n').map((line, i) =>
                     return;
                 }
 
+                // NEW: Populate simplified top overview
+                if (totalRow) {
+                    const healthPct = totalRow.Health?.toFixed(1) || '0.0';
+                    document.getElementById('healthScoreValue').textContent = `${healthPct}%`;
+                    document.getElementById('execHealth').textContent = `${healthPct}%`;
+
+                    // Code Quality Score — uses generator totals + improved complexity health mapping
+                    const testsPct = totalRow['Test %'] || 0;
+                    const typedPct = totalRow['Typed %'] || totalRow['total_typed'] || 60; // fallback
+                    const avgCC = totalRow['Avg CC'] || totalRow['overall_avg_cc'] || 10;
+                    // Mirror generator's improved complexity health (non-collapsing)
+                    let complexityHealth = 100.0;
+                    if (avgCC > 10) complexityHealth = Math.max(0, 100 - ((avgCC - 10) * 4)); // tunable scale
+                    const codeQuality = ((testsPct + typedPct + complexityHealth) / 3).toFixed(1);
+
+                    document.getElementById('codeQualityScoreValue').textContent = `${codeQuality}%`;
+
+                    // Canonical Base Inheritance
+                    const baseInheritancePct = totalRow['Canonical Base Inheritance %'] ?? totalRow['Proper Base %'] ?? 100;
+                    document.getElementById('baseInheritanceValue').textContent = `${baseInheritancePct.toFixed(1)}%`;
+                    // Color red if <100%
+                    const baseEl = document.getElementById('baseInheritanceValue');
+                    if (baseInheritancePct < 100) baseEl.style.color = '#dc2626';
+
+                    // Gap text + color
+                    const gapEl = document.getElementById('execGap');
+                    if (parseFloat(healthPct) < 80) {
+                        gapEl.innerHTML = `<strong>Gap:</strong> Overall health is ${healthPct}% (target ≥80%). One or more component gaps are still below target (invocation/tests/hardening/complexity).`;
+                        gapEl.style.color = '#dc2626';
+                    } else {
+                        gapEl.innerHTML = `<strong>Gap:</strong> Health at ${healthPct}% — on target! Maintain momentum.`;
+                        gapEl.style.color = '#16a34a';
+                    }
+                }
+
+                // NEW: Intelligent Anomaly Detection Flags
+                const anomalyContainer = document.getElementById('anomalyFlags');
+                if (anomalyContainer && territoryData && totalRow) {
+                    anomalyContainer.innerHTML = ''; // clear
+
+                    const totalAgents = totalRow.Total || 0;
+                    const layers = [
+                        {name: 'L5 Safety', prefix: 'L5 Safety', expectInfra: true},
+                        {name: 'L4 State', prefix: 'L4 State', expectInfra: false},
+                        {name: 'L3 Orchestration', prefix: 'L3 Orchestration', expectInfra: true},
+                        {name: 'L2 Execution', prefix: 'L2 Execution', expectInfra: false},
+                        {name: 'L1 Cognition', prefix: 'L1 Cognition', expectInfra: true},
+                        {name: 'L0 Maintenance', prefix: 'L0 Maintenance', expectInfra: false}
+                    ];
+
+                    const stats = {};
+                    layers.forEach(l => stats[l.name] = {agents: 0, hasInfra: false});
+
+                    territoryData.forEach(row => {
+                        const layer = layers.find(l => row.Territory?.startsWith(l.prefix));
+                        if (layer && row.Total > 0) {
+                            stats[layer.name].agents += row.Total;
+                            const sub = (row['Sub-Territory'] || '').toLowerCase();
+                            if (sub.includes('infrastructure') || sub.includes('infra')) {
+                                stats[layer.name].hasInfra = true;
+                            }
+                        }
+                    });
+
+                    const anomalies = [];
+
+                    // Missing infra in critical layers
+                    const missingInfra = layers.filter(l => l.expectInfra && !stats[l.name].hasInfra && stats[l.name].agents > 0);
+                    if (missingInfra.length > 0) {
+                        anomalies.push({
+                            color: '#dc2626',
+                            title: '🚨 Missing Infrastructure in Critical Layers',
+                            text: `Zero infra agents in: ${missingInfra.map(l => l.name).join(', ')}<br>
+                                   <strong>Impact:</strong> Risks scalability/reliability in safety, orchestration, cognition.<br>
+                                   <strong>Fix:</strong> Add dedicated infra agents (e.g., monitors, provisioners).`
+                        });
+                    }
+
+                    // L2 disproportion
+                    const l2 = stats['L2 Execution'];
+                    const nonL2Max = Math.max(...layers.filter(l => l.name !== 'L2 Execution').map(l => stats[l.name].agents));
+                    const l2Pct = totalAgents ? (l2.agents / totalAgents * 100).toFixed(1) : 0;
+                    if (l2.agents > totalAgents * 0.30 || l2.agents > nonL2Max * 1.5) {
+                        anomalies.push({
+                            color: '#ea580c',
+                            title: '⚠️ L2 Execution Disproportionately Large',
+                            text: `${l2.agents} agents (${l2Pct}% of total)<br>
+                                   <strong>Impact:</strong> Risks brittleness and coordination overhead.<br>
+                                   <strong>Fix:</strong> Consolidate similar agents, promote patterns to L3, target <25% share.`
+                        });
+                    }
+
+                    // Render cards (or positive if none)
+                    if (anomalies.length === 0) {
+                        const card = document.createElement('div');
+                        card.style.cssText = 'padding:20px; background:#f0fdf4; border-left:6px solid #16a34a; border-radius:8px;';
+                        card.innerHTML = '<strong style="color:#16a34a;">✅ Portfolio Balanced</strong><br>No critical layer infra gaps or L2 disproportion detected.';
+                        anomalyContainer.appendChild(card);
+                    } else {
+                        anomalies.forEach(a => {
+                            const card = document.createElement('div');
+                            card.style.cssText = `padding:20px; background:#fef2f2; border-left:6px solid ${a.color}; border-radius:8px;`;
+                            card.innerHTML = `<strong style="color:${a.color};">${a.title}</strong><br><small>${a.text}</small>`;
+                            anomalyContainer.appendChild(card);
+                        });
+                    }
+                }
+
                 renderStrategicObservations(totalRow, territoryData);
                 renderTerritorySummaryTable(totalRow, territoryData);
                 renderRiskMatrix(territoryData);
+                renderBaseInheritanceChart(territoryData, totalRow);
                 renderRecommendations();
                 renderInterviewQuestions(totalRow);
 
@@ -2678,7 +2970,14 @@ ${rec.guidance.split('\n').map((line, i) =>
             }
         });
 
-        loadData();
+        // Delay initial render until Plotly has loaded (local file or CDN)
+        (window.__plotlyReady || Promise.resolve())
+            .then(function () {
+                loadData();
+            })
+            .catch(function () {
+                // Banner already shown by loader; keep page interactive
+            });
     </script>
 </body>
 </html>

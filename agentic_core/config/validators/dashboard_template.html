@@ -3,9 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="30">
+    <meta http-equiv="refresh" content="300">
     <title>Autonomy Compliance Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script>
+        // Auto-refresh fallback (JavaScript-based, more reliable than meta refresh on file://)
+        (function() {
+            const REFRESH_INTERVAL_MS = 300000; // 5 minutes
+            const startTime = Date.now();
+            
+            function updateCountdown() {
+                const elapsed = Date.now() - startTime;
+                const timeRemaining = Math.max(0, REFRESH_INTERVAL_MS - elapsed);
+                const minutes = Math.floor(timeRemaining / 60000);
+                const seconds = Math.floor((timeRemaining % 60000) / 1000);
+                const statusEl = document.getElementById('refreshStatus');
+                if (statusEl) {
+                    statusEl.textContent = 'Auto-refresh: ' + minutes + 'm ' + seconds + 's';
+                }
+                if (timeRemaining <= 0) {
+                    clearInterval(countdownInterval);
+                }
+            }
+            
+            // Update immediately when DOM is ready, then every second
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', updateCountdown);
+            } else {
+                updateCountdown();
+            }
+            const countdownInterval = setInterval(updateCountdown, 1000);
+            
+            // Actual refresh timer
+            setTimeout(function() {
+                window.location.reload(true); // Force reload from server, bypass cache
+            }, REFRESH_INTERVAL_MS);
+        })();
+        
+        // Plotly loader (local-first) — exposes window.__plotlyReady Promise
+        (function () {
+            function loadScript(src) {
+                return new Promise(function (resolve, reject) {
+                    var s = document.createElement('script');
+                    s.src = src;
+                    s.async = true;
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.head.appendChild(s);
+                });
+            }
+
+            function showPlotlyErrorBanner() {
+                var msg = document.createElement('div');
+                msg.style.cssText = 'margin:16px;padding:16px;border:2px solid #dc2626;background:#fff1f2;border-radius:8px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;';
+                msg.innerHTML = '<strong>Dashboard failed to load Plotly.</strong><br>' +
+                    'To use this dashboard offline, copy <code>plotly.min.js</code> next to <code>autonomy_dashboard.html</code> (same folder). ' +
+                    'Otherwise allow access to the Plotly CDN.';
+                document.body.insertBefore(msg, document.body.firstChild);
+            }
+
+            window.__plotlyReady = loadScript('plotly.min.js')
+                .catch(function () {
+                    return loadScript('https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js');
+                })
+                .then(function () {
+                    if (typeof window.Plotly === 'undefined') {
+                        throw new Error('Plotly loaded but not available on window');
+                    }
+                })
+                .catch(function () {
+                    document.addEventListener('DOMContentLoaded', showPlotlyErrorBanner);
+                    throw new Error('Plotly failed to load');
+                });
+        })();
+    </script>
     <style>
         * {
             margin: 0;
@@ -1476,7 +1546,14 @@ ${rec.guidance.split('\n').map((line, i) =>
             }
         });
 
-        loadData();
+        // Delay initial render until Plotly has loaded (local file or CDN)
+        (window.__plotlyReady || Promise.resolve())
+            .then(function () {
+                loadData();
+            })
+            .catch(function () {
+                // Banner already shown by loader; keep page interactive
+            });
     </script>
 </body>
 </html>
