@@ -5,15 +5,15 @@
 
 ## 🎯 Executive Summary
 
-**System Health:** 71.2/100 | **Risk Level:** HIGH | **Criticality:** 100/100
+**System Health:** 71.1/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
 ### Key Metrics
-- **Total Agents:** 312
-- **Compliant:** 160 (51.3%) ❌
-- **Healing Capabilities:** 299 (95.8%) ✅
-- **Healing Invocation:** 154 (49.4%) ❌
-- **With Tests:** 294 (94.2%) ✅
-- **Avg Complexity:** 59.0 ❌
+- **Total Agents:** 313
+- **Compliant:** 161 (51.4%) ❌
+- **Healing Capabilities:** 300 (95.8%) ✅
+- **Healing Invocation:** 155 (49.5%) ❌
+- **With Tests:** 295 (94.2%) ✅
+- **Avg Complexity:** 58.9 ❌
 
 ## 📊 Territory Analysis
 
@@ -44,6 +44,7 @@
 - 🔥 **L4 State/Infrastructure**: 1/3 compliant | Health: 77.8% | Risk: HIGH | Heal Gap: 33.3%
 - ⚠️ **L1 Cognition/Base Class**: 1/1 compliant | Health: 66.7% | Risk: MED | Heal Gap: 100.0%
 - 🔥 **Apps Shared**: 0/2 compliant | Health: 50.0% | Risk: HIGH | Heal Gap: 50.0%
+- ⚠️ **L2 Execution/Base Class**: 1/1 compliant | Health: 100.0% | Risk: MED
 - 🔥 **L0 Maintenance/Core**: 0/6 compliant | Health: 66.7% | Risk: HIGH | Heal Gap: 100.0%
 - 🔥 **L4 State/Specialized**: 3/5 compliant | Health: 80.0% | Risk: HIGH | Heal Gap: 20.0%
 - ⚠️ **L3 Orchestration/Infrastructure**: 2/2 compliant | Health: 83.3% | Risk: MED

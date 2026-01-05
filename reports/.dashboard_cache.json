@@ -2934,20 +2934,20 @@
     }
   },
   "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py": {
-    "hash": "fb9d709c522baddb",
+    "hash": "353bc9e289dd4cd0",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 180,
+      "loc": 248,
       "compliant": 1,
       "hardened": 0,
       "mcp_capable": 0,
       "healing_cap": 1,
       "healing_invoke": 0,
       "tests": 1,
-      "cc_sum": 40,
+      "cc_sum": 49,
       "max_cc": 21,
       "typed": 100.0,
-      "documented": 90.0,
+      "documented": 92.85714285714286,
       "observable": 100
     }
   },
@@ -5558,6 +5558,24 @@
       "max_cc": 7,
       "typed": 95.65217391304348,
       "documented": 84.375,
+      "observable": 0
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py": {
+    "hash": "41f8ab412a6d8707",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 203,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 44,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 77.77777777777779,
       "observable": 0
     }
   }

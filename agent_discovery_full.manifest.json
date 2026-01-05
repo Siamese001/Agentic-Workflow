@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-01-05T12:52:57.019404Z",
-  "scan_duration_seconds": 16.91,
-  "agent_count": 312,
-  "content_hash": "sha256:a2ddfaf3ce1f60759c0e991e8ae546be903bc0665e9e2a1fca71d4357e778b63",
+  "generated_at": "2026-01-05T13:33:21.594111Z",
+  "scan_duration_seconds": 20.94,
+  "agent_count": 313,
+  "content_hash": "sha256:c35cd612ac2ff6b08560dfd50e7dcb08f1511ee4651c1a4d44b6bb0472e7bd4a",
   "layer_breakdown": {
     "L0": 9,
     "L1": 26,
-    "L2": 75,
+    "L2": 76,
     "L3": 62,
     "L4": 20,
     "L5": 58,
