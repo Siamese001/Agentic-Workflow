@@ -451,46 +451,33 @@
                             <!-- Big KPI Grid -->
                             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:50px; margin-bottom:50px;">
                                 <!-- Health Score -->
-                                <div style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow);">
+                                <div id="healthScoreBox" style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow); border:3px solid #e5e7eb;">
                                     <div style="font-size:1.2em; color:var(--text-light); margin-bottom:10px;">Health Score</div>
-                                    <div id="healthScoreValue" style="font-size:5em; font-weight:800; line-height:1; color:var(--primary);">--%</div>
-                                    <div style="font-size:1em; color:var(--text-light); margin-top:10px;">
-                                        Composite autonomy readiness<br>
-                                        (Invocation + MCP Hardened + Tests + Healing + Typing + Complexity)
+                                    <div id="healthScoreValue" style="font-size:5em; font-weight:800; line-height:1;">--%</div>
+                                    <div style="font-size:0.9em; color:var(--text-light); margin-top:10px; line-height:1.3;">
+                                        Target: ≥80% • Composite autonomy readiness
                                     </div>
                                 </div>
 
                                 <!-- Code Quality Score -->
-                                <div style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow);">
+                                <div id="codeQualityBox" style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow); border:3px solid #e5e7eb;">
                                     <div style="font-size:1.2em; color:var(--text-light); margin-bottom:10px;">Code Quality Score</div>
-                                    <div id="codeQualityScoreValue" style="font-size:5em; font-weight:800; line-height:1; color:#16a34a;">--%</div>
-                                    <div style="font-size:1em; color:var(--text-light); margin-top:10px;">
-                                        Maintainability composite<br>
-                                        (Tests + Typing + Complexity inverse)
+                                    <div id="codeQualityScoreValue" style="font-size:5em; font-weight:800; line-height:1;">--%</div>
+                                    <div style="font-size:0.9em; color:var(--text-light); margin-top:10px; line-height:1.3;">
+                                        Target: ≥85% • Maintainability composite
                                     </div>
                                 </div>
 
                                 <!-- Canonical Base Inheritance Score -->
-                                <div style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow);">
+                                <div id="baseInheritanceBox" style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow); border:3px solid #e5e7eb;">
                                     <div style="font-size:1.2em; color:var(--text-light); margin-bottom:10px;">Canonical Base Inheritance</div>
-                                    <div id="baseInheritanceValue" style="font-size:5em; font-weight:800; line-height:1; color:#7c3aed;">--%</div>
-                                    <div style="font-size:1em; color:var(--text-light); margin-top:10px;">
-                                        % agents inheriting correct layer base class<br>
-                                        (e.g., SafetyBaseAgent for L5)
+                                    <div id="baseInheritanceValue" style="font-size:5em; font-weight:800; line-height:1;">--%</div>
+                                    <div style="font-size:0.9em; color:var(--text-light); margin-top:10px; line-height:1.3;">
+                                        Target: ≥90% • Correct layer base classes
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Executive Summary Box -->
-                            <div style="max-width:1000px; margin:0 auto; background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:30px; box-shadow:var(--shadow);">
-                                <h3 style="font-size:1.6em; margin-bottom:20px; color:var(--primary);">Executive Summary</h3>
-                                <div style="font-size:1.1em; line-height:1.8; text-align:left;">
-                                    <p><strong>Health:</strong> <span id="execHealth">--%</span></p>
-                                    <p>Overall autonomy readiness expressed as a single composite signal (Invocation + MCP Hardened + Tests + Healing + Typing + Complexity).</p>
-                                    <p id="execGap"><strong>Gap:</strong> Calculating...</p>
-                                    <p><strong>How to fix:</strong> Focus on the top three priorities (ranked #1–#3). Each improvement compounds: better tests enable safer refactors, lower complexity makes healing hooks easier, and better invocation closes the loop.</p>
-                                </div>
-                            </div>
 
                             <!-- Anomaly Flags Section -->
                             <div id="anomalyFlags" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); gap:20px; margin-top:40px;">
@@ -1282,23 +1269,11 @@
                     ? `${row.Total} / ${row.ToolCount}`
                     : `${row.Total}`;
 
-                html += `
-                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
-                        onmouseover="this.style.background='#f0f9ff'" 
-                        onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'"
-                        onclick="openDrillModal('${row._drillTerritory || row.Territory}', '${(displaySubTerritory || '').replace(/'/g, "\\'")}')"
-                        title="Click to drill down">
-                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${displayTerritory}</td>
-                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; font-size:0.95em; color:#475569;">${displaySubTerritory}</td>
-                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${agentsToolsDisplay}</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(rowComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${rowComplexityHealth.toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, row.Health))}; color:${healthColor}; font-weight:700;">${Math.min(100, row.Health).toFixed(1)}%</td>
-                    </tr>`;
+                const bgColor = index % 2 === 0 ? '#f9fafb' : 'white';
+                const drillTerritory = (row._drillTerritory || row.Territory).replace(/'/g, "\\'");
+                const drillSubTerritory = (displaySubTerritory || '').replace(/'/g, "\\'");
+                
+                html += `<tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='${bgColor}'" onclick="openDrillModal('${drillTerritory}', '${drillSubTerritory}')" title="Click to drill down"><td style="padding:12px; font-weight:600; background:${bgColor}; border-right:1px solid #e5e7eb; color:var(--primary);">${displayTerritory}</td><td style="padding:12px; text-align:center; background:${bgColor}; border-right:1px solid #e5e7eb; font-size:0.95em; color:#475569;">${displaySubTerritory}</td><td style="padding:12px; text-align:center; background:${bgColor}; border-right:1px solid #e5e7eb;">${agentsToolsDisplay}</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(rowComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${rowComplexityHealth.toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, row.Health))}; color:${healthColor}; font-weight:700;">${Math.min(100, row.Health).toFixed(1)}%</td></tr>`;
             });
             
             html += `
@@ -1433,18 +1408,6 @@
                     </div>
                 </div>
                 
-                <!-- Health Score Breakdown (compact text) -->
-                <div style="margin-top:20px; padding:12px; background:#f9fafb; border-left:4px solid #E24A4A; border-radius:4px; font-size:0.8em;">
-                    <strong style="color:#E24A4A;">Health Score Breakdown:</strong>
-                    ${(() => {
-                        const breakdown = dashboardData[0]['Health Breakdown'] || [];
-                        const sorted = [...breakdown].sort((a, b) => b.weight - a.weight);
-                        return sorted.map(item => {
-                            const color = item.points < 3 ? '#dc2626' : item.points < 5 ? '#ea580c' : '#666';
-                            return `<span style="color:${color};">${item.component} ${item.raw.toFixed(0)}%×${(item.weight*100).toFixed(0)}%=${item.points.toFixed(1)}pts</span>`;
-                        }).join(' • ');
-                    })()} → <strong style="color:${dashboardData[0]['Health'] >= 80 ? '#16a34a' : dashboardData[0]['Health'] >= 60 ? '#ea580c' : '#dc2626'};">Total: ${(dashboardData[0]['Health'] || 0).toFixed(1)}%</strong>
-                </div>
             </div>`;
             
             container.innerHTML = html;
@@ -2656,38 +2619,76 @@ ${rec.guidance.split('\n').map((line, i) =>
                     return;
                 }
 
-                // NEW: Populate simplified top overview
+                // NEW: Populate simplified top overview with color-coded KPI boxes
                 if (totalRow) {
-                    const healthPct = totalRow.Health?.toFixed(1) || '0.0';
-                    document.getElementById('healthScoreValue').textContent = `${healthPct}%`;
-                    document.getElementById('execHealth').textContent = `${healthPct}%`;
+                    const healthPct = parseFloat(totalRow.Health?.toFixed(1) || '0.0');
+                    
+                    // Color-code Health Score box
+                    const healthBox = document.getElementById('healthScoreBox');
+                    const healthValue = document.getElementById('healthScoreValue');
+                    healthValue.textContent = `${healthPct.toFixed(1)}%`;
+                    
+                    if (healthPct >= 80) {
+                        healthBox.style.borderColor = '#16a34a';
+                        healthBox.style.background = '#f0fdf4';
+                        healthValue.style.color = '#16a34a';
+                    } else if (healthPct >= 60) {
+                        healthBox.style.borderColor = '#ea580c';
+                        healthBox.style.background = '#fff7ed';
+                        healthValue.style.color = '#ea580c';
+                    } else {
+                        healthBox.style.borderColor = '#dc2626';
+                        healthBox.style.background = '#fef2f2';
+                        healthValue.style.color = '#dc2626';
+                    }
 
                     // Code Quality Score — uses generator totals + improved complexity health mapping
                     const testsPct = totalRow['Test %'] || 0;
-                    const typedPct = totalRow['Typed %'] || totalRow['total_typed'] || 60; // fallback
+                    const typedPct = totalRow['Typed %'] || totalRow['total_typed'] || 60;
                     const avgCC = totalRow['Avg CC'] || totalRow['overall_avg_cc'] || 10;
-                    // Mirror generator's improved complexity health (non-collapsing)
                     let complexityHealth = 100.0;
-                    if (avgCC > 10) complexityHealth = Math.max(0, 100 - ((avgCC - 10) * 4)); // tunable scale
-                    const codeQuality = ((testsPct + typedPct + complexityHealth) / 3).toFixed(1);
+                    if (avgCC > 10) complexityHealth = Math.max(0, 100 - ((avgCC - 10) * 4));
+                    const codeQuality = parseFloat(((testsPct + typedPct + complexityHealth) / 3).toFixed(1));
 
-                    document.getElementById('codeQualityScoreValue').textContent = `${codeQuality}%`;
+                    // Color-code Code Quality box
+                    const codeQualityBox = document.getElementById('codeQualityBox');
+                    const codeQualityValue = document.getElementById('codeQualityScoreValue');
+                    codeQualityValue.textContent = `${codeQuality.toFixed(1)}%`;
+                    
+                    if (codeQuality >= 85) {
+                        codeQualityBox.style.borderColor = '#16a34a';
+                        codeQualityBox.style.background = '#f0fdf4';
+                        codeQualityValue.style.color = '#16a34a';
+                    } else if (codeQuality >= 70) {
+                        codeQualityBox.style.borderColor = '#ea580c';
+                        codeQualityBox.style.background = '#fff7ed';
+                        codeQualityValue.style.color = '#ea580c';
+                    } else {
+                        codeQualityBox.style.borderColor = '#dc2626';
+                        codeQualityBox.style.background = '#fef2f2';
+                        codeQualityValue.style.color = '#dc2626';
+                    }
 
                     // Canonical Base Inheritance
-                    const baseInheritancePct = totalRow['Canonical Base Inheritance %'] ?? totalRow['Proper Base %'] ?? 100;
-                    document.getElementById('baseInheritanceValue').textContent = `${baseInheritancePct.toFixed(1)}%`;
-                    // Color red if <100%
-                    const baseEl = document.getElementById('baseInheritanceValue');
-                    if (baseInheritancePct < 100) baseEl.style.color = '#dc2626';
-
-                    // Gap text + color
-                    const gapEl = document.getElementById('execGap');
-                    if (parseFloat(healthPct) < 80) {
-                        gapEl.innerHTML = `<strong>Gap:</strong> Overall health is ${healthPct}% (target ≥80%). One or more component gaps are still below target (invocation/tests/hardening/complexity).`;
-                        gapEl.style.color = '#dc2626';
+                    const baseInheritancePct = parseFloat(totalRow['Canonical Base Inheritance %'] ?? totalRow['Proper Base %'] ?? 100);
+                    
+                    // Color-code Base Inheritance box
+                    const baseBox = document.getElementById('baseInheritanceBox');
+                    const baseValue = document.getElementById('baseInheritanceValue');
+                    baseValue.textContent = `${baseInheritancePct.toFixed(1)}%`;
+                    
+                    if (baseInheritancePct >= 90) {
+                        baseBox.style.borderColor = '#16a34a';
+                        baseBox.style.background = '#f0fdf4';
+                        baseValue.style.color = '#16a34a';
+                    } else if (baseInheritancePct >= 75) {
+                        baseBox.style.borderColor = '#ea580c';
+                        baseBox.style.background = '#fff7ed';
+                        baseValue.style.color = '#ea580c';
                     } else {
-                        gapEl.innerHTML = `<strong>Gap:</strong> Health at ${healthPct}% — on target! Maintain momentum.`;
-                        gapEl.style.color = '#16a34a';
+                        baseBox.style.borderColor = '#dc2626';
+                        baseBox.style.background = '#fef2f2';
+                        baseValue.style.color = '#dc2626';
                     }
                 }
 
@@ -2903,13 +2904,34 @@ ${rec.guidance.split('\n').map((line, i) =>
                                 <a href="vscode://file/${agent.abs_file}" target="_blank" style="color:var(--text-light);">Full file</a>
                             </small>
                         </td>
-                        <td style="padding:12px; text-align:center;">${mixinIcon}</td>
-                        <td style="padding:12px; text-align:center;">${invIcon}</td>
-                        <td style="padding:12px; text-align:center;">${testIcon}</td>
-                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${obsTitle}">${obsSummary}</td>
-                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${mcpTitle}">${mcpSummary}</td>
-                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${typingTitle}">${typingSummary}<br><small style="color:var(--text-light);">${overallTyped}% overall</small></td>
-                        <td style="padding:12px; text-align:center; color:${complexityColor}; font-weight:600;">${agent.complexity}</td>
+                        <td style="padding:12px; text-align:center;" 
+                            title="Heal Capability (HealerMixin presence)&#10;&#10;${agent.has_mixin ? '✓ This agent inherits HealerMixin → equipped with standardized self-recovery tools.' : '✗ Missing HealerMixin → agent has no access to heal_repository() or scripted recovery.'}&#10;&#10;Windsurf fix: Add HealerMixin to class bases (e.g., class MyAgent(HealerMixin, BaseAgent)).&#10;&#10;Factory analogy: Imagine the factory floor humming smoothly until a conveyor belt jams. With HealerMixin, every worker grabs their issued red toolbox, flips open the laminated repair manual, and fixes it in minutes — line keeps moving. Without it, they stand helpless, red lights flashing, waiting hours for the maintenance crew while production grinds to a halt.">
+                            ${mixinIcon}
+                        </td>
+                        <td style="padding:12px; text-align:center;" 
+                            title="Heal Invocation Chain&#10;&#10;${agent.invocation === 'Yes' ? '✓ Explicit super().heal_repository() call → follows protocol.' : agent.invocation === 'Inherited' ? '✓ Inherited from base (still disciplined).' : agent.invocation === 'Unknown' ? '? Could not verify due to dynamic flow.' : '✗ No call detected → risk of ad-hoc fixes.'}&#10;&#10;Windsurf fix: Insert super().heal_repository() in except/failure blocks.&#10;&#10;Factory analogy: Toolboxes are on every bench, manuals dog-eared from daily use. Disciplined workers pause, flip to the exact page, and follow steps precisely — fixes are uniform, auditable. Rogue workers improvise with duct tape and hope; one shift's shortcut becomes the next shift's cascading breakdown, parts piling up in chaos.">
+                            ${invIcon}
+                        </td>
+                        <td style="padding:12px; text-align:center;" 
+                            title="Test Coverage&#10;&#10;${agent.has_tests ? '✓ Tests exist → decision paths validated.' : '✗ No tests → blind deployment risk.'}&#10;&#10;Windsurf fix: Create test_myagent.py with cases for happy path, tool failures, healing.&#10;&#10;Factory analogy: At each station, sharp-eyed inspectors in white gloves probe, measure, and stress-test every tenth widget under bright lights. Defective ones are pulled aside immediately. Skip the inspectors and boxes of misaligned, cracked products roll out the loading dock — customers open them to find junk, trust shattered.">
+                            ${testIcon}
+                        </td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" 
+                            title="${obsTitle}&#10;&#10;Current flags:&#10;${obsSummary.replace(/ \| /g, '&#10;')}&#10;&#10;Factory analogy: High-mounted cameras whir quietly, red sensor lights blinking along the line, capturing every clank and spark. A belt snaps — rewind the footage and you see the exact frayed spot, the overload moment. Without them, alarms blare blindly, workers scramble in the dark, guessing and patching, same breakdown repeating shift after shift.">
+                            ${obsSummary}
+                        </td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" 
+                            title="${mcpTitle}&#10;&#10;Current flags:&#10;${mcpSummary.replace(/ \| /g, '&#10;')}&#10;&#10;Factory analogy: Gleaming steel guards and big red e-stop buttons surround the massive presses and saws. A glove catches, hand slips — the shield slams down, machine freezes instantly, worker safe, line pauses briefly. Remove the guards and one careless moment becomes blood, screams, shutdowns, and lawsuits.">
+                            ${mcpSummary}
+                        </td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" 
+                            title="${typingTitle}&#10;&#10;Overall typed: ${overallTyped}%&#10;${typingSummary.replace(/ \| /g, '&#10;')}&#10;&#10;Factory analogy: Parts bins gleam with bold stamped labels — M8×1.25 bolts here, ¼-inch here. Workers snap matches perfectly under fluorescent lights. Strip the labels and bins become mystery piles — frantic sorting, wrong bolts forced in, stripped threads, and the whole chassis collapses at final shake-test.">
+                            ${typingSummary}<br><small style="color:var(--text-light);">${overallTyped}% overall</small>
+                        </td>
+                        <td style="padding:12px; text-align:center; color:${complexityColor}; font-weight:600;" 
+                            title="Cyclomatic Complexity: ${agent.complexity}&#10;${agent.complexity <= 10 ? '✓ Good — simple, maintainable control flow (target ≤10).' : agent.complexity <= 15 ? '⚠ Marginal — consider refactoring nested conditionals/loops.' : '✗ High — bug risk and hard to test/heal. Break into smaller methods.'}&#10;&#10;Factory analogy: Crisp IKEA booklet — big colorful diagrams, ten numbered steps, parts laid out neatly. Workers breeze through, humming. Contrast the yellowed 50-page tome dense with footnotes and nested clauses — confused frowns, wrong turns, misassembled frames crashing down when tested.">
+                            ${agent.complexity}
+                        </td>
                     </tr>`;
                 });
                 content += '</tbody></table>';
