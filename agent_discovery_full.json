@@ -32,8 +32,8 @@
     "inheritance": [
       "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "Agent"
+      "Agent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -865,8 +865,8 @@
     "inheritance": [
       "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -892,7 +892,7 @@
   },
   {
     "class_name": "AutonomyGuardianAgent",
-    "path": "agentic_core\\config\\validators\\AutonomyGuardianAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\AutonomyGuardianAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -933,8 +933,8 @@
     "inheritance": [
       "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute"
@@ -953,7 +953,7 @@
   },
   {
     "class_name": "BiasAuditorAgent",
-    "path": "agentic_core\\config\\validators\\bias_auditor.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\bias_auditor.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -988,8 +988,8 @@
     "inheritance": [
       "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "can_run",
@@ -1050,8 +1050,8 @@
     "layer": "L2",
     "inheritance": [
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -1079,7 +1079,7 @@
   },
   {
     "class_name": "CodeSSOTEnforcerAgent",
-    "path": "agentic_core\\config\\validators\\CodeSSOTEnforcerAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\CodeSSOTEnforcerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1113,7 +1113,7 @@
   },
   {
     "class_name": "CognitiveContractManagerAgent",
-    "path": "agentic_core\\L2_execution\\contracts\\CognitiveContractManagerAgent.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\CognitiveContractManagerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -1141,7 +1141,7 @@
   },
   {
     "class_name": "ComplianceOrchestratorAgent",
-    "path": "agentic_core\\config\\validators\\ComplianceOrchestratorAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\ComplianceOrchestratorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1182,8 +1182,8 @@
     "inheritance": [
       "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "can_run",
@@ -1389,7 +1389,7 @@
   },
   {
     "class_name": "DocstringComplianceAgent",
-    "path": "agentic_core\\config\\validators\\DocstringComplianceAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\DocstringComplianceAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1416,7 +1416,7 @@
   },
   {
     "class_name": "FilenameUniquenessGuardianAgent",
-    "path": "agentic_core\\config\\validators\\FilenameUniquenessGuardianAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\FilenameUniquenessGuardianAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1446,7 +1446,7 @@
   },
   {
     "class_name": "FilesystemAgent",
-    "path": "agentic_core\\config\\validators\\FilesystemAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\FilesystemAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1537,14 +1537,14 @@
   },
   {
     "class_name": "GovernanceAgent",
-    "path": "agentic_core\\config\\validators\\GovernanceAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\GovernanceAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
       "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1572,7 +1572,7 @@
   },
   {
     "class_name": "HealValidatorAgent",
-    "path": "agentic_core\\config\\validators\\heal_validator.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\heal_validator.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1609,8 +1609,8 @@
     "layer": "L2",
     "inheritance": [
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -1638,7 +1638,7 @@
   },
   {
     "class_name": "HierarchyAgent",
-    "path": "agentic_core\\config\\validators\\HierarchyAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\HierarchyAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1698,13 +1698,13 @@
   },
   {
     "class_name": "HygieneGuardianAgent",
-    "path": "agentic_core\\config\\validators\\HygieneGuardianAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\HygieneGuardianAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -1727,7 +1727,7 @@
   },
   {
     "class_name": "InferenceTypeHintAgent",
-    "path": "agentic_core\\config\\validators\\InferenceTypeHintAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\InferenceTypeHintAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1780,14 +1780,14 @@
   },
   {
     "class_name": "L0Agent",
-    "path": "agentic_core\\bases\\l0_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\l0_agent.py",
     "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/bases",
+    "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L0DelegationTestingMixin"
+      "L0DelegationTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -1806,9 +1806,9 @@
   },
   {
     "class_name": "L1Agent",
-    "path": "agentic_core\\bases\\l1_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\l1_agent.py",
     "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/bases",
+    "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
       "HealerMixin",
@@ -1832,9 +1832,9 @@
   },
   {
     "class_name": "L2Agent",
-    "path": "agentic_core\\bases\\l2_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\l2_agent.py",
     "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/bases",
+    "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
       "HealerMixin",
@@ -1858,9 +1858,9 @@
   },
   {
     "class_name": "L3Agent",
-    "path": "agentic_core\\bases\\l3_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\l3_agent.py",
     "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/bases",
+    "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
       "HealerMixin",
@@ -1885,9 +1885,9 @@
   },
   {
     "class_name": "L4Agent",
-    "path": "agentic_core\\bases\\l4_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\l4_agent.py",
     "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/bases",
+    "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
       "HealerMixin",
@@ -1912,9 +1912,9 @@
   },
   {
     "class_name": "L5Agent",
-    "path": "agentic_core\\bases\\l5_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\l5_agent.py",
     "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/bases",
+    "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
       "HealerMixin",
@@ -1939,7 +1939,7 @@
   },
   {
     "class_name": "LocationAgent",
-    "path": "agentic_core\\config\\validators\\LocationAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\LocationAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1978,9 +1978,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
+      "HealerMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2041,7 +2041,7 @@
   },
   {
     "class_name": "MethodChangeDetectorAgent",
-    "path": "agentic_core\\config\\validators\\RegressionOracleAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\RegressionOracleAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -2217,14 +2217,14 @@
   },
   {
     "class_name": "PascalSovereigntyEnforcerAgent",
-    "path": "agentic_core\\config\\validators\\PascalSovereigntyEnforcerAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\PascalSovereigntyEnforcerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
       "CanonBaseAgent",
-      "ASTEnforcementMixin"
+      "ASTEnforcementMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2259,8 +2259,8 @@
     "inheritance": [
       "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -2316,7 +2316,7 @@
   },
   {
     "class_name": "PromptGovernorAgent",
-    "path": "agentic_core\\L2_execution\\prompts\\PromptGovernorAgent.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\PromptGovernorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -2375,8 +2375,8 @@
     "inheritance": [
       "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2396,7 +2396,7 @@
   },
   {
     "class_name": "RegressionOracleAgent",
-    "path": "agentic_core\\config\\validators\\RegressionOracleAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\RegressionOracleAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -2491,8 +2491,8 @@
     "inheritance": [
       "SubAtomicAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2985,8 +2985,8 @@
     "layer": "L2",
     "inheritance": [
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -3019,8 +3019,8 @@
     "layer": "L2",
     "inheritance": [
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -3054,8 +3054,8 @@
     "inheritance": [
       "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -3108,13 +3108,13 @@
   },
   {
     "class_name": "TestSovereigntyAgent",
-    "path": "agentic_core\\config\\validators\\TestSovereigntyAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\TestSovereigntyAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3225,7 +3225,7 @@
   },
   {
     "class_name": "TypeHintEnforcementAgent",
-    "path": "agentic_core\\config\\validators\\TypeHintEnforcementAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\TypeHintEnforcementAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -3251,7 +3251,7 @@
   },
   {
     "class_name": "TypeHintFixerAgent",
-    "path": "agentic_core\\config\\validators\\TypeHintEnforcementAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\TypeHintEnforcementAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -4473,8 +4473,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4508,8 +4508,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4535,7 +4535,7 @@
   },
   {
     "class_name": "CheckpointManagerAgent",
-    "path": "agentic_core\\L4_state\\checkpoint\\CheckpointManagerAgent.py",
+    "path": "agentic_core\\L4_state\\ValidationContext\\CheckpointManagerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
@@ -4783,8 +4783,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4850,8 +4850,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4880,8 +4880,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5031,7 +5031,7 @@
     "has_healing": true,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 2142,
+    "loc": 2141,
     "class_count": 2,
     "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    Responsibilities:\n  ",
     "pascal_compliant": true,
@@ -5277,11 +5277,14 @@
   },
   {
     "class_name": "DeadCodeDetectorAgent",
-    "path": "agentic_core\\L5_safety\\utilities\\DeadCodeDetectorAgent.py",
+    "path": "agentic_core\\L5_safety\\guardrails\\DeadCodeDetectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin"
+    ],
     "key_methods": [
       "__init__",
       "heal_repository",
@@ -5289,19 +5292,20 @@
       "_scan_dead_code",
       "_remove_unused_imports",
       "_remove_dead_functions",
-      "_merge_healing_results"
+      "_merge_healing_results",
+      "_run_self_tests"
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
+    "has_healing": true,
+    "testing": "Self",
     "has_subatomic": false,
-    "loc": 122,
+    "loc": 107,
     "class_count": 1,
     "description": "Dead code detection and pruning agent with parent chain healing.",
     "pascal_compliant": true,
     "external_touch": false,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "DependencyPruningAgent",
@@ -5684,7 +5688,7 @@
     "has_healing": true,
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 793,
+    "loc": 794,
     "class_count": 4,
     "description": "\n    Autonomous agent for hierarchical structure compliance.\n    Scans folders only (no file content",
     "pascal_compliant": true,
@@ -5715,7 +5719,7 @@
     "has_healing": true,
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 233,
+    "loc": 234,
     "class_count": 1,
     "description": "\n    L5 Hierarchy Healer Agent\n    \n    Heals hierarchy violations by:\n    1. Relocating files from ",
     "pascal_compliant": true,
@@ -5730,8 +5734,8 @@
     "layer": "L5",
     "inheritance": [
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -5760,8 +5764,8 @@
     "layer": "L5",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6045,11 +6049,11 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "HealerMixin",
+      "SubatomicTestingMixin",
       "AutonomyMixin",
       "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -6110,9 +6114,9 @@
     "layer": "L5",
     "inheritance": [
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
+      "ASTEnforcementMixin",
       "CanonBaseAgent",
-      "ASTEnforcementMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",

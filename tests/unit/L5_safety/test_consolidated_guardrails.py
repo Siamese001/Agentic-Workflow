@@ -18,7 +18,7 @@ import asyncio
 import sys
 sys.path.insert(0, 'c:/Git/Agentic-Workflow')
 
-from agentic_core.L5_safety.guardrails.consolidated import (
+from agentic_core.L5_safety.guardrails import (
     # Error Recovery
     ErrorRecoveryGuardrail,
     ErrorCategory,
