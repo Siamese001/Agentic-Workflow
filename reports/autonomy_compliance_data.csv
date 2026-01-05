@@ -1,6 +1,6 @@
 Territory,Total,Compliant,Heal_Cap_Pct,Heal_Inv_Pct,MCP_Pct,Test_Pct,Avg_CC,Typed_Pct,Obs_Pct,Criticality,Health,Risk,Used_Pct,Priority
 L5 Safety/Base Class,2,2,100.0,100.0,100.0,100.0,32.5,100.0,50.0,57.4,83.3,MED,100.0,Critical
-L5 Safety/Validators,19,15,100.0,94.7,94.7,100.0,116.0,100.0,89.5,69.8,94.7,HIGH,100.0,Critical
+L5 Safety/Validators,19,15,100.0,94.7,94.7,100.0,115.9,100.0,89.5,69.8,94.7,HIGH,100.0,Critical
 L5 Safety/Guardrails,31,27,100.0,100.0,87.1,100.0,53.5,100.0,83.9,70.5,94.6,MED,87.1,Critical
 L5 Safety/Gravity,2,2,100.0,100.0,100.0,100.0,89.5,100.0,100.0,57.4,100.0,MED,100.0,High
 L5 Safety/Red Teaming,6,6,100.0,100.0,33.3,100.0,27.2,100.0,100.0,60.2,100.0,MED,100.0,High

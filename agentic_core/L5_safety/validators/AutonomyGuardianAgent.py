@@ -2053,14 +2053,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     "typing_summary": typing_summary
                 })
             
-            # Sort: gap-first (mixin → invocation → observability → MCP → typing → alphabetical)
+            # Sort: gap-first (mixin → invocation → typing → complexity → alphabetical)
+            # Prioritizes agents needing the most critical fixes for windsurf workflow
             territory_agents.sort(key=lambda x: (
-                not x["has_mixin"],  # No mixin first (needs adding)
+                not x["has_mixin"],  # No HealerMixin first (critical gap)
                 x["invocation"] != "Yes" and x["invocation"] != "Inherited",  # Missing super() second
-                not (x["obs_logging"] or x["obs_metrics"] or x["obs_tracing"]),  # No observability third
-                not x["has_mcpshield"],  # No MCP shield fourth
-                not x["mcp_safe_overrides"],  # Unsafe patterns fifth
-                x["typed_methods_ratio"] < 70,  # Weak typing sixth
+                x["typed_methods_ratio"] < 70,  # Weak typing third (< 70%)
+                -x["complexity"],  # High complexity fourth (descending)
                 x["rel"]  # Alphabetical for ties
             ))
             
