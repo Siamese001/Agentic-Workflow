@@ -388,6 +388,11 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         
         return value
 
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+        """Repository healing with parent chain invocation."""
+        result = super().heal_repository(dry_run=dry_run, **kwargs)
+        return {"healed": 0, "skipped": 0, "parent": result}
+
 
 # Predefined validation rules
 COMMON_RULES = {

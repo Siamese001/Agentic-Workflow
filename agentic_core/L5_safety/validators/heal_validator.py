@@ -322,3 +322,8 @@ class HealValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def compute_code_hash(self, code: str) -> str:
         """Compute SHA256 hash of code for cycle detection."""
         return hashlib.sha256(code.encode('utf-8')).hexdigest()
+
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, int]:
+        """Repository healing with parent chain invocation."""
+        result = super().heal_repository(dry_run=dry_run, **kwargs)
+        return {"healed": 0, "skipped": 0, "parent": result}

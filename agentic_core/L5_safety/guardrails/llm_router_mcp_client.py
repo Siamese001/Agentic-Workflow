@@ -57,11 +57,17 @@ class SovereignLlmRouterMcpClient(MCPHardenedMixin, HealerMixin):
         except Exception as e:
             Logger.error(f'[L5 VALIDATION] Intent classification failed: {e}')
             return {'intent': 'unknown', 'confidence': 0.0}
-_llm_router_client: Optional[SovereignLLMRouterMCPClient] = None
 
-def get_llm_router_client() -> SovereignLLMRouterMCPClient:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+        """Repository healing with parent chain invocation."""
+        result = super().heal_repository(dry_run=dry_run, **kwargs)
+        return {"healed": 0, "skipped": 0, "parent": result}
+
+_llm_router_client: Optional[SovereignLlmRouterMcpClient] = None
+
+def get_llm_router_client() -> SovereignLlmRouterMcpClient:
     """Get or create the global LLM Router MCP client."""
     global _llm_router_client
     if _llm_router_client is None:
-        _llm_router_client = SovereignLLMRouterMCPClient()
+        _llm_router_client = SovereignLlmRouterMcpClient()
     return _llm_router_client

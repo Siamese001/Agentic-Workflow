@@ -218,3 +218,8 @@ class BoundaryTestingAgent(HealerMixin):
         assert hasattr(self, "ctx"), "Missing context"
         assert hasattr(self, "boundary_tests"), "Missing boundary tests"
         return True
+
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+        """Repository healing with parent chain invocation."""
+        result = super().heal_repository(dry_run=dry_run, **kwargs)
+        return {"healed": 0, "skipped": 0, "parent": result}

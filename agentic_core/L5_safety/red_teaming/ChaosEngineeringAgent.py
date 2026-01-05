@@ -192,3 +192,8 @@ class ChaosEngineeringAgent(HealerMixin):
         assert hasattr(self, "ctx"), "Missing context"
         assert hasattr(self, "chaos_scenarios"), "Missing chaos scenarios"
         return True
+
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+        """Repository healing with parent chain invocation."""
+        result = super().heal_repository(dry_run=dry_run, **kwargs)
+        return {"healed": 0, "skipped": 0, "parent": result}

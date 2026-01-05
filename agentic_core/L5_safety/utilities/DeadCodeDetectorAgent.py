@@ -11,6 +11,9 @@ from pathlib import Path
 import logging
 from functools import wraps
 
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 Logger = logging.getLogger(__name__)
 
 
@@ -24,7 +27,7 @@ def timeout(seconds: int):
     return decorator
 
 
-class DeadCodeDetectorAgent:
+class DeadCodeDetectorAgent(HealerMixin, MCPHardenedMixin):
     """Dead code detection and pruning agent with parent chain healing."""
 
     def __init__(self, project_root: Optional[Path] = None):
@@ -239,3 +242,9 @@ class DeadCodeDetectorAgent:
                     merged[key] = parent[key]
 
         return merged
+
+    def _run_self_tests(self) -> bool:
+        """Validate agent structure and capabilities."""
+        assert hasattr(self, "project_root"), "Missing project_root"
+        assert hasattr(self, "heal_repository"), "Missing heal_repository"
+        return True

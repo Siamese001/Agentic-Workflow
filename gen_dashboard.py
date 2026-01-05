@@ -2,6 +2,10 @@
 """
 Dashboard generation with mandatory unit test validation.
 Tests MUST pass before dashboard is generated.
+
+*** THIS IS THE SINGLE BLESSED DASHBOARD ENTRYPOINT ***
+All other scripts (serve_dashboard.py, scripts/*_dashboard_*.py, etc.) are deprecated.
+Run: python gen_dashboard.py [--serve]
 """
 from pathlib import Path
 import sys
