@@ -563,13 +563,20 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         return counts
 
 
-    def generate_compliance_report(self, markdown: bool = True) -> None:
+    def generate_compliance_report(self, markdown: bool = True, context: dict = None) -> None:
         """
         Final high-signal autonomy compliance dashboard — exhaustive, on-demand.
         All territories + unclassified, full prioritization columns.
+        
+        Args:
+            markdown: Whether to output markdown format
+            context: Optional context dict with 'target_resolver' function for metric exceptions
         """
         today = date.today().strftime("%B %d, %Y")
         print(f"### Autonomy Compliance Report — {today}\n")
+        
+        # Store context for use in dashboard generation
+        self.context = context or {}
 
         if markdown:
             self._print_markdown_header()
@@ -2883,9 +2890,21 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         else:
             gauge_healing_cap = gauge_compliance = gauge_health = 0
         
+        # Generate strategic recommendations using L3 orchestration agent
+        strategic_output = {"review": "", "recommendations": []}
+        try:
+            from agentic_core.L3_orchestration.strategic_recommendation.StrategicRecommendationAgent import StrategicRecommendationAgent
+            strategic_agent = StrategicRecommendationAgent(project_root=self.project_root)
+            strategic_output = strategic_agent.run(dashboard_rows)
+            print(f"   [STRATEGIC] Generated {len(strategic_output.get('recommendations', []))} recommendations")
+        except Exception as e:
+            print(f"   [STRATEGIC] Failed to generate recommendations: {e}")
+        
         # Prepare data for embedding
         data_json = json.dumps(dashboard_rows)
         recommendations_json = json.dumps(top_recommendations)
+        strategic_review = strategic_output.get('review', '')
+        strategic_recs_html = '<ol>' + ''.join(f'<li>{rec}</li>' for rec in strategic_output.get('recommendations', [])[:10]) + '</ol>'
         last_updated = f"Last updated: {today} at {datetime.now().strftime('%H:%M:%S')}"
         gauge_data = json.dumps({
             "healing_cap": gauge_healing_cap,
@@ -2898,6 +2917,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         html = html.replace('const recommendationsData = [];', f'const recommendationsData = {recommendations_json};')
         html = html.replace('const lastUpdatedStr = "";', f'const lastUpdatedStr = "{last_updated}";')
         html = html.replace('const gaugeData = {};', f'const gaugeData = {gauge_data};')
+        
+        # Inject strategic recommendations
+        html = html.replace('<!-- STRATEGIC_REVIEW_INSERT -->', strategic_review)
+        html = html.replace('<!-- TOP_RECS_INSERT -->', strategic_recs_html)
         
         # Validate injection succeeded
         if 'const dashboardData = [];' in html or 'const recommendationsData = [];' in html:

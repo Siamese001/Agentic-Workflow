@@ -642,8 +642,10 @@
         }, 1000);
 
         // Color coding helper for consistent thresholds
-        function getColor(value, highGood = true) {
+        function getColor(value, highGood = true, isNA = false) {
+            if (isNA || value === 'N/A') return '#9ca3af'; // Neutral gray for N/A
             const v = parseFloat(value);
+            if (isNaN(v)) return '#4b5563';
             if (highGood) {
                 if (v === 0) return '#ff0000';   // Bright red for 0.0%
                 if (v >= 85) return '#16a34a';  // Green
@@ -663,7 +665,8 @@
         }
         
         // Format percentage with bright red for 0.0%
-        function formatPctCell(value) {
+        function formatPctCell(value, target = null) {
+            if (target === 'N/A') return `<span style="color:#9ca3af; font-weight:600;">N/A</span>`;
             const v = parseFloat(value) || 0;
             const color = getColor(v, true);
             const fontWeight = v === 0 ? '900' : '600';
@@ -1206,6 +1209,20 @@
                         </thead>
                         <tbody>`;
 
+            // Helper to determine cell background based on Target vs Actual
+            // If Target is N/A, return neutral background.
+            const getContextualBg = (value, target) => {
+                if (target === 'N/A') return '#f3f4f6'; // Light gray
+                return getGradientBg(value);
+            };
+            
+            // Helper to generate tooltip text for targets
+            const getTargetTooltip = (metricName, actual, target) => {
+                if (target === undefined || target === null) return `${metricName}: ${actual.toFixed(1)}%`;
+                if (target === 'N/A') return `${metricName}: N/A (Exception applied)`;
+                return `${metricName}\nActual: ${actual.toFixed(1)}%\nTarget: ${target}%`;
+            };
+
             // Add TOTAL row first
             if (totalRow) {
                 const totalComplexityHealth = (totalRow['Complexity Health'] !== undefined && totalRow['Complexity Health'] !== null)
@@ -1247,6 +1264,14 @@
             expandedRows.filter(r => r.Territory !== 'TOTAL').forEach((row, index) => {
                 const displayTerritory = row._displayTerritory || row.Territory;
                 const displaySubTerritory = row._displaySubTerritory || '—';
+                
+                // Resolve Targets (injected by Python script, defaulting to standard if missing)
+                const tgtInv = row['Target Invocation']; 
+                const tgtMcp = row['Target MCP'];
+                const tgtTest = row['Target Tests'];
+                const tgtObs = row['Target Observability'];
+                const tgtComp = row['Target Complexity'];
+
                 const rowComplexityHealth = (row['Complexity Health'] !== undefined && row['Complexity Health'] !== null)
                     ? row['Complexity Health']
                     : (() => {
@@ -1260,9 +1285,16 @@
                     })();
                 
                 const healthColor = row.Health === 0 ? '#ff0000' : row.Health >= 80 ? '#065f46' : row.Health >= 60 ? '#ea580c' : '#dc2626';
-                const invocationColor = row['Invocation %'] === 0 ? '#ff0000' : row['Invocation %'] >= 80 ? '#065f46' : row['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
-                const hardenedColor = (row['Hardened %'] || 0) === 0 ? '#ff0000' : (row['Hardened %'] || 0) >= 80 ? '#065f46' : (row['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
-                const testColor = row['Test %'] === 0 ? '#ff0000' : row['Test %'] >= 80 ? '#065f46' : row['Test %'] >= 60 ? '#ea580c' : '#dc2626';
+                
+                // Colors respect N/A targets (gray text if N/A)
+                const invVal = row['Invocation %'];
+                const invocationColor = tgtInv === 'N/A' ? '#6b7280' : (invVal === 0 ? '#ff0000' : invVal >= (tgtInv || 80) ? '#065f46' : invVal >= 60 ? '#ea580c' : '#dc2626');
+                
+                const hardVal = row['Hardened %'] || 0;
+                const hardenedColor = tgtMcp === 'N/A' ? '#6b7280' : (hardVal === 0 ? '#ff0000' : hardVal >= (tgtMcp || 80) ? '#065f46' : hardVal >= 60 ? '#ea580c' : '#dc2626');
+                
+                const testVal = row['Test %'];
+                const testColor = tgtTest === 'N/A' ? '#6b7280' : (testVal === 0 ? '#ff0000' : testVal >= (tgtTest || 80) ? '#065f46' : testVal >= 60 ? '#ea580c' : '#dc2626');
                 
                 
                 const agentsToolsDisplay = row.ToolCount !== undefined
@@ -1273,7 +1305,28 @@
                 const drillTerritory = (row._drillTerritory || row.Territory).replace(/'/g, "\\'");
                 const drillSubTerritory = (displaySubTerritory || '').replace(/'/g, "\\'");
                 
-                html += `<tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='${bgColor}'" onclick="openDrillModal('${drillTerritory}', '${drillSubTerritory}')" title="Click to drill down"><td style="padding:12px; font-weight:600; background:${bgColor}; border-right:1px solid #e5e7eb; color:var(--primary);">${displayTerritory}</td><td style="padding:12px; text-align:center; background:${bgColor}; border-right:1px solid #e5e7eb; font-size:0.95em; color:#475569;">${displaySubTerritory}</td><td style="padding:12px; text-align:center; background:${bgColor}; border-right:1px solid #e5e7eb;">${agentsToolsDisplay}</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(rowComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${rowComplexityHealth.toFixed(1)}%</td><td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, row.Health))}; color:${healthColor}; font-weight:700;">${Math.min(100, row.Health).toFixed(1)}%</td></tr>`;
+                html += `<tr style="border-bottom:1px solid #e5e7eb; cursor:pointer;" onclick="openDrillModal('${drillTerritory}', '${drillSubTerritory}')">
+                    <td style="padding:12px; font-weight:600; background:${bgColor}; border-right:1px solid #e5e7eb; color:var(--primary);">${displayTerritory}</td>
+                    <td style="padding:12px; text-align:center; background:${bgColor}; border-right:1px solid #e5e7eb; font-size:0.95em; color:#475569;">${displaySubTerritory}</td>
+                    <td style="padding:12px; text-align:center; background:${bgColor}; border-right:1px solid #e5e7eb;">${agentsToolsDisplay}</td>
+                    <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
+                    
+                    <td style="padding:12px; text-align:center; background:${getContextualBg(row['Invocation %'], tgtInv)}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;" title="${getTargetTooltip('Invocation', row['Invocation %'], tgtInv)}">
+                        ${tgtInv === 'N/A' ? 'N/A' : row['Invocation %'].toFixed(1) + '%'}
+                    </td>
+                    
+                    <td style="padding:12px; text-align:center; background:${getContextualBg(row['Hardened %'] || 0, tgtMcp)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;" title="${getTargetTooltip('MCP Hardening', row['Hardened %'] || 0, tgtMcp)}">
+                        ${tgtMcp === 'N/A' ? 'N/A' : (row['Hardened %'] || 0).toFixed(1) + '%'}
+                    </td>
+                    
+                    <td style="padding:12px; text-align:center; background:${getContextualBg(row['Test %'], tgtTest)}; color:${testColor}; border-right:1px solid #e5e7eb;" title="${getTargetTooltip('Test Coverage', row['Test %'], tgtTest)}">
+                        ${tgtTest === 'N/A' ? 'N/A' : row['Test %'].toFixed(1) + '%'}
+                    </td>
+                    
+                    <td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td>
+                    <td style="padding:12px; text-align:center; background:${getGradientBg(rowComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;" title="Avg CC: ${row['Avg CC']?.toFixed(1) || 0} (Target: ≤${tgtComp || 10})">${rowComplexityHealth.toFixed(1)}%</td>
+                    <td style="padding:12px; text-align:center; background:${getGradientBg(Math.min(100, row.Health))}; color:${healthColor}; font-weight:700;">${Math.min(100, row.Health).toFixed(1)}%</td>
+                </tr>`;
             });
             
             html += `
@@ -3007,6 +3060,89 @@ ${rec.guidance.split('\n').map((line, i) =>
                 this.style.display = 'none';
             }
         });
+
+        /**
+         * Injects Strategic Deep Dive cards into the Interview Prep tab.
+         * These cards provide didactic narratives for high-level architectural concepts
+         * designed for interview preparation and system walk-throughs.
+         */
+        function injectStrategicCards() {
+            const grid = document.getElementById('interviewQuestions');
+            if (!grid) return;
+            
+            const cards = [
+                {
+                    title: "Pinecone & Semantic Memory",
+                    content: `
+                        <p><strong>Embeddings (L1):</strong> The 'Cognition' step. We transform text into 1536-dimensional math vectors.</p>
+                        <p><strong>Pinecone (L4):</strong> The 'State' step. A vector database optimized for 'Nearest Neighbor' lookups.</p>
+                        <p><strong>Semantic Caching:</strong> Using L4 to check if we've already answered a similar question to save LLM costs.</p>`,
+                    tip: "Interview Nugget: 'We decouple Embedding generation (L1) from Vector storage (L4) so we can swap our DB provider without rewriting our logic.'"
+                },
+                {
+                    title: "RAG Multi-Layer Architecture",
+                    content: `
+                        <p><strong>L1 Cognition:</strong> Core recall logic (Search/Retrieval Strategy)</p>
+                        <p><strong>L3 Orchestration:</strong> The LLM "Handshake" (Context Injection)</p>
+                        <p><strong>L4 State:</strong> Vector DB & Semantic Caching (Storage Tier)</p>`,
+                    tip: "Analogy: L4 is the warehouse, L1 is the inventory clerk, and L3 is the floor manager."
+                },
+                {
+                    title: "Autonomous Domain Healing",
+                    content: `
+                        <p><strong>L0 Maintenance:</strong> Passive bootstrapping and state resets.</p>
+                        <p><strong>L5 Safety:</strong> The 'Heal Repository' protocol enforcing canon.</p>
+                        <p><strong>Mechanism:</strong> Agents detect drift and self-correct naming/location.</p>`,
+                    tip: "Strategic Value: This reduces 'Architectural Entropy' without human intervention."
+                },
+                {
+                    title: "Sovereign Multi-Agent Orchestration",
+                    content: `
+                        <p><strong>Mission Control:</strong> L3 workflow engines managing task trees.</p>
+                        <p><strong>Concurrency:</strong> Handling L1 cognition calls in parallel.</p>
+                        <p><strong>Isolation:</strong> Sovereign runtimes ensuring agent state purity.</p>`,
+                    tip: "Key Phrase: 'Coordinating specialized intelligence into a deterministic output.'"
+                },
+                {
+                    title: "Guardian & The Gravity Anchor",
+                    content: `
+                        <p><strong>50-Key Canon:</strong> The rigid DNA every agent must follow.</p>
+                        <p><strong>Compliance:</strong> Real-time gating via the Autonomy Guardian.</p>
+                        <p><strong>Gravity Anchor:</strong> Rooting the project in a single Source of Truth.</p>`,
+                    tip: "Interview Edge: Explain how L5 acts as the 'Sovereign Law' of the repository."
+                }
+            ];
+
+            // Clear existing if any and prepend new cards
+            cards.reverse().forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'kpi-box primary';
+                cardEl.style.textAlign = 'left';
+                cardEl.style.minHeight = '240px';
+                cardEl.style.borderLeft = '4px solid var(--primary)';
+                
+                cardEl.innerHTML = `
+                    <div class="kpi-label" style="text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Strategic Deep Dive</div>
+                    <div class="kpi-value" style="font-size:1.3em; margin-bottom: 10px;">${card.title}</div>
+                    <div style="margin-top:10px; font-size:0.9em; line-height:1.5; color: #334155;">
+                        ${card.content}
+                    </div>
+                    <div style="margin-top:15px; padding-top: 10px; border-top: 1px solid #e2e8f0; font-style:italic; font-size:0.85em; color:var(--primary);">
+                        <strong>Prep Tip:</strong> ${card.tip}
+                    </div>
+                `;
+                grid.prepend(cardEl);
+            });
+        }
+
+        /**
+         * Initialize didactic enhancements and strategic cards.
+         * Set with a slight timeout to ensure DOM availability.
+         */
+        setTimeout(() => {
+            injectStrategicCards();
+            console.log("[OK] Sovereign Didactic Cards Injected.");
+        }, 1000);
 
         // Delay initial render until Plotly has loaded (local file or CDN)
         (window.__plotlyReady || Promise.resolve())
