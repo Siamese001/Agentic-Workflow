@@ -38,10 +38,7 @@ class DeadCodeDetectorAgent(HealerMixin, MCPHardenedMixin):
     def heal_repository(
         self,
         dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: Optional[set] = None
+        **kwargs
     ) -> Dict[str, int]:
         """
         Repository-wide dead code healing - invoke shared chain.
@@ -56,42 +53,16 @@ class DeadCodeDetectorAgent(HealerMixin, MCPHardenedMixin):
         Returns:
             Healing results with metrics
         """
-        if _call_path is None:
-            _call_path = set()
+        # CRITICAL FIRST: Invoke parent healing chain
+        parent_result = super().heal_repository(dry_run=dry_run, **kwargs)
 
-        agent_name = self.__class__.__name__
+        # Agent-specific dead code detection and pruning
+        execute = kwargs.get('execute', False)
+        pruning_result = self._perform_dead_code_pruning(dry_run, execute)
 
-        # Cycle detection
-        if agent_name in _call_path:
-            Logger.info(f"Cycle detected: {agent_name} already in path")
-            return {"skipped": 1}
-
-        # Depth limiting
-        if depth > max_depth:
-            Logger.info(f"Depth limit reached: {depth}/{max_depth}")
-            return {"skipped": 1}
-
-        _call_path.add(agent_name)
-
-        try:
-            # CRITICAL FIRST: Invoke parent healing chain
-            parent_result = super().heal_repository(
-                dry_run=dry_run,
-                execute=execute,
-                depth=depth + 1,
-                max_depth=max_depth,
-                _call_path=_call_path
-            )
-
-            # Agent-specific dead code detection and pruning
-            pruning_result = self._perform_dead_code_pruning(dry_run, execute)
-
-            # Standardized merge: parent + pruning-specific
-            merged = self._merge_healing_results(parent_result, pruning_result)
-            return merged
-
-        finally:
-            _call_path.discard(agent_name)
+        # Standardized merge: parent + pruning-specific
+        merged = self._merge_healing_results(parent_result, pruning_result)
+        return merged
 
     def _perform_dead_code_pruning(self, dry_run: bool, execute: bool) -> Dict[str, int]:
         """

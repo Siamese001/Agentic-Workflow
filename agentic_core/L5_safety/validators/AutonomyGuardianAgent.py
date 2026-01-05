@@ -651,7 +651,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             
             terr_total = len(agents)
             terr_compliant = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
-            terr_healing_invoke = sum(1 for a in agents if "super().heal_repository()" in a.read_text(errors="ignore"))
+            terr_healing_invoke = sum(1 for a in agents if "super().heal_repository(" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             # Healing capabilities: ONLY count agents that inherit HealerMixin or have heal_repository method
             terr_healing_cap = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore") or "def heal_repository" in a.read_text(errors="ignore"))
@@ -752,7 +752,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         if unclassified:
             terr_total = len(unclassified)
             terr_compliant = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
-            terr_healing_invoke = sum(1 for a in unclassified if "super().heal_repository()" in a.read_text(errors="ignore"))
+            terr_healing_invoke = sum(1 for a in unclassified if "super().heal_repository(" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             # Healing capabilities: ONLY count agents that inherit HealerMixin or have heal_repository method
             terr_healing_cap = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore") or "def heal_repository" in a.read_text(errors="ignore"))
@@ -868,10 +868,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             print(f"\n[SAVED] Markdown: {report_path}")
             print(f"[SAVED] CSV Data: {csv_path}")
             print(f"[READY] Interactive Dashboard: {dashboard_path}")
-            print(f"\n🚀 VIEW DASHBOARD:")
-            print(f"   1. Install 'Live Server' extension in VS Code")
-            print(f"   2. Right-click {dashboard_path.name} → 'Open with Live Server'")
-            print(f"   3. Or open file directly in browser for static view")
+            print(f"\n🚀 VIEW DASHBOARD (no server required):")
+            print(f"   → Double-click: {dashboard_path}")
+            print(f"   → Or paste in browser: file:///{dashboard_path.as_posix()}")
         else:
             print(f"\n[SAVED] Markdown: {report_path}")
             print(f"[SAVED] CSV Data: {csv_path}")
@@ -1180,10 +1179,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
     def _detect_healing_invocation(self, tree: ast.AST, content: str) -> int:
         """Detect super().heal_repository() calls using string matching (more reliable)."""
         # String-based detection catches all patterns
-        if "super().heal_repository()" in content:
+        if "super().heal_repository(" in content:
             return 1
         # Also catch super(ClassName, self).heal_repository() pattern
-        if "super(" in content and ".heal_repository()" in content:
+        if "super(" in content and ".heal_repository(" in content:
             return 1
         return 0
 

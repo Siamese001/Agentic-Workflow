@@ -565,6 +565,7 @@
         function getColor(value, highGood = true) {
             const v = parseFloat(value);
             if (highGood) {
+                if (v === 0) return '#ff0000';   // Bright red for 0.0%
                 if (v >= 85) return '#16a34a';  // Green
                 if (v >= 75) return '#42a35a';  // Light Green
                 if (v >= 60) return '#96b746';  // Yellow-Green
@@ -579,6 +580,14 @@
                 if (v <= 40) return '#ea580c';
                 return '#dc2626';
             }
+        }
+        
+        // Format percentage with bright red for 0.0%
+        function formatPctCell(value) {
+            const v = parseFloat(value) || 0;
+            const color = getColor(v, true);
+            const fontWeight = v === 0 ? '900' : '600';
+            return `<span style="color:${color}; font-weight:${fontWeight};">${v.toFixed(1)}%</span>`;
         }
 
         // Sub-Territory breakdown: didactic, territory-aware, and path-driven.
@@ -643,51 +652,59 @@
             }
 
             // L5 Safety: teach the main components explicitly (path is highest signal)
-            if (path.includes('/L5_safety/validators/')) return 'Validators';
-            if (path.includes('/L5_safety/guardrails/')) return 'Guardrails';
-            if (path.includes('/L5_safety/gravity/')) return 'Gravity';
-            if (path.includes('/L5_safety/red_teaming/')) return 'Red Teaming';
-
-            // L4 State: avoid repeating "State"; teach storage primitives
-            if (path.includes('/L4_state/')) {
-                if (/Ledger|StateLedger|Journal|Audit/i.test(name) || /ledger|journal|audit/i.test(path)) return 'Ledgers & Journals';
-                if (/Cache|HotCache|SemanticCache/i.test(name) || /cache/i.test(path)) return 'Caching & Retrieval';
-                if (/Blackboard|AtomicBlackboard|Board/i.test(name) || /blackboard/i.test(path)) return 'Blackboards & Coordination';
-                if (/Store|Persist|Persistence|Snapshot/i.test(name) || /persist|snapshot/i.test(path)) return 'Persistence & Snapshots';
-                return 'State Primitives';
+            if (path.includes('/L5_safety/')) {
+                if (isBaseClass) return 'Base Class';
+                if (path.includes('/validators/')) return 'Validators';
+                if (path.includes('/guardrails/')) return 'Guardrails';
+                if (path.includes('/gravity/')) return 'Gravity';
+                if (path.includes('/red_teaming/')) return 'Red Teaming';
+                if (path.includes('/utilities/')) return 'Infrastructure';
+                return 'Core Components';
             }
 
-            // L3 Orchestration: avoid repeating "Orchestration"
+            // L4 State: storage primitives
+            if (path.includes('/L4_state/')) {
+                if (isBaseClass) return 'Base Class';
+                if (/Ledger|StateLedger|Journal|Audit/i.test(name) || /ledger|journal|audit/i.test(path)) return 'Ledgers & Journals';
+                if (/Cache|HotCache|SemanticCache/i.test(name) || /cache/i.test(path)) return 'Caching';
+                if (/Blackboard|AtomicBlackboard|Board/i.test(name) || /blackboard/i.test(path)) return 'Blackboards';
+                if (/Store|Persist|Persistence|Snapshot/i.test(name) || /persist|snapshot/i.test(path)) return 'Persistence';
+                return 'Infrastructure';
+            }
+
+            // L3 Orchestration
             if (path.includes('/L3_orchestration/')) {
-                if (/Workflow|Orchestrator|Coordinator|Dag|Graph/i.test(name) || /workflow|orchestr|coord|dag/i.test(path)) return 'Workflow & Coordination';
-                if (/Router|Dispatch|Gateway/i.test(name) || /router|dispatch|gateway/i.test(path)) return 'Routing & Dispatch';
-                if (/Scheduler|Queue|Async/i.test(name) || /schedule|queue|async/i.test(path)) return 'Scheduling & Async';
-                return 'Coordination Utilities';
+                if (isBaseClass) return 'Base Class';
+                if (/Workflow|Orchestrator|Coordinator|Dag|Graph/i.test(name) || /workflow|orchestr|coord|dag/i.test(path)) return 'Workflow Engines';
+                if (/Router|Dispatch|Gateway/i.test(name) || /router|dispatch|gateway/i.test(path)) return 'Routing';
+                if (/Scheduler|Queue|Async/i.test(name) || /schedule|queue|async/i.test(path)) return 'Scheduling';
+                return 'Infrastructure';
             }
 
             // L2 Execution
             if (path.includes('/L2_execution/')) {
+                if (isBaseClass) return 'Base Class';
                 if (/Executor|Runner|Worker|Tool/i.test(name) || /executor|runner|worker|tool/i.test(path)) return 'Executors & Tools';
                 if (/IO|Filesystem|Network|HTTP/i.test(name) || /io|filesystem|http|network/i.test(path)) return 'I/O & Integrations';
-                return 'Execution Utilities';
+                return 'Infrastructure';
             }
 
-            // L1 Cognition: avoid repeating "Cognition"
+            // L1 Cognition
             if (path.includes('/L1_cognition/')) {
-                if (isBaseClass) return 'Base Classes';
+                if (isBaseClass) return 'Base Class';
                 if (/Planner|Plan|Strategy/i.test(name) || /planner|strategy/i.test(path)) return 'Planning';
-                if (/Reason|Infer|Evaluate|Scorer/i.test(name) || /reason|infer|score|eval/i.test(path)) return 'Reasoning & Evaluation';
+                if (/Reason|Infer|Evaluate|Scorer/i.test(name) || /reason|infer|score|eval/i.test(path)) return 'Reasoning';
                 if (/Memory|Recall|RAG|Retriev/i.test(name) || /memory|rag|retriev/i.test(path)) return 'Memory & Retrieval';
                 if (/Prompt|Template/i.test(name) || /prompt/i.test(path)) return 'Prompting';
-                return 'Decision Logic';
+                return 'Infrastructure';
             }
 
             // L0 Maintenance
             if (path.includes('/L0_maintenance/')) {
-                if (isBaseClass) return 'Base Classes';
+                if (isBaseClass) return 'Base Class';
                 if (/Healer|Repair|Fix|Cleanup|Dedup/i.test(name) || /healer|repair|cleanup|dedup/i.test(path)) return 'Maintenance & Repair';
                 if (/Config|Settings|Bootstrap/i.test(name) || /config|bootstrap/i.test(path)) return 'Bootstrapping';
-                return 'Ops Utilities';
+                return 'Infrastructure';
             }
 
             // Apps
@@ -928,14 +945,13 @@
                 const observablePct = (observable / total) * 100;
                 const complexityHealth = computeComplexityHealth(avgCC);
 
+                // Health Score: Invocation 25% + MCP 25% + Tests 20% + Observability 15% + Complexity 15%
                 const health =
                     (invocationPct * 0.25) +
-                    (hardenedPct * 0.18) +
-                    (testsPct * 0.18) +
-                    (healCapPct * 0.14) +
-                    (observablePct * 0.10) +
-                    (avgTyped * 0.10) +
-                    (complexityHealth * 0.05);
+                    (hardenedPct * 0.25) +
+                    (testsPct * 0.20) +
+                    (observablePct * 0.15) +
+                    (complexityHealth * 0.15);
 
                 return {
                     Total: total,
@@ -1096,16 +1112,16 @@
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
                         <thead>
                             <tr style="background:var(--primary); color:white;">
-                                <th style="padding:16px; text-align:left; font-weight:600;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Sub-Territory breakdown for this territory (didactic; counts sum to total)">Sub-Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Active agents / Total MCP tools integrated in this territory (when data available)">Agents / Tools</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list">Heal Cap %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Invocation %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% agents with runtime safety hardening at external tool boundaries (MCPShield mixin, @hardened decorators, safe overrides) — Critical for Gemini-era prompt/tool safety">MCP Hardened %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures">Test %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with observability infrastructure (logging/metrics/tracing) — Dashboard monitoring at each station">Observable %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Complexity Health derived from Avg Cyclomatic Complexity (target ≤10). Expressive mapping avoids collapsing to 0% for high-CC portfolios.">Complexity Health</th>
-                                <th style="padding:16px; text-align:center; font-weight:800;" title="Composite readiness score (Invocation + Hardening + Tests + Healing)">Health Score</th>
+                                <th style="padding:16px; text-align:left; font-weight:600;" title="INTERVIEW: Like departments in a company — L5=Safety/Compliance, L4=Database, L3=Project Management, L2=Workers, L1=Strategy, L0=IT/Maintenance">Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: Like teams within a department — Base Class (shared blueprints), Infrastructure (utilities), or specialized units (Validators, Routing, etc.)">Sub-Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: Count of AI workers (agents) / external tools they can call. Like headcount and equipment inventory.">Agents / Tools</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % of agents with self-repair capability. Like workers who have their own first-aid kit — they CAN fix small problems themselves.">Heal Cap %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % actually USING the repair protocol. Having a first-aid kit is useless if you never open it. This measures active self-healing behavior.">Invocation %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % protected at LLM tool-call boundaries. Like safety guards on power tools — prevents the AI from hurting itself when calling external APIs.">MCP Hardened %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % with automated tests. Like quality inspectors checking each worker's output — catches bugs before production.">Test %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % with logging/metrics/tracing. Like security cameras in a factory — when something breaks, you can replay what happened.">Observable %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: Code simplicity score (target: CC≤10). Like instruction manual clarity — complex code = harder to maintain = more bugs. Simple procedures = reliable workers.">Complexity Health</th>
+                                <th style="padding:16px; text-align:center; font-weight:800;" title="INTERVIEW: Overall production readiness. Weighted: 25% Invocation + 25% MCP Safety + 20% Tests + 15% Observability + 15% Complexity. Higher = more autonomous and reliable.">Health Score</th>
                             </tr>
                         </thead>
                         <tbody>`;
@@ -1123,10 +1139,10 @@
                         if (cc <= 120) return Math.round((20.0 - ((cc - 80.0) * 0.5)) * 10) / 10;
                         return 0.0;
                     })();
-                const healthColor = totalRow.Health >= 80 ? '#065f46' : totalRow.Health >= 60 ? '#ea580c' : '#dc2626';
-                const invocationColor = totalRow['Invocation %'] >= 80 ? '#065f46' : totalRow['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
-                const hardenedColor = (totalRow['Hardened %'] || 0) >= 80 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
-                const testColor = totalRow['Test %'] >= 80 ? '#065f46' : totalRow['Test %'] >= 60 ? '#ea580c' : '#dc2626';
+                const healthColor = totalRow.Health === 0 ? '#ff0000' : totalRow.Health >= 80 ? '#065f46' : totalRow.Health >= 60 ? '#ea580c' : '#dc2626';
+                const invocationColor = totalRow['Invocation %'] === 0 ? '#ff0000' : totalRow['Invocation %'] >= 80 ? '#065f46' : totalRow['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
+                const hardenedColor = (totalRow['Hardened %'] || 0) === 0 ? '#ff0000' : (totalRow['Hardened %'] || 0) >= 80 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
+                const testColor = totalRow['Test %'] === 0 ? '#ff0000' : totalRow['Test %'] >= 80 ? '#065f46' : totalRow['Test %'] >= 60 ? '#ea580c' : '#dc2626';
                 
                 
                 html += `
@@ -1136,7 +1152,6 @@
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">
                             ${totalRow.Total}
                             ${totalRow.ToolCount !== undefined ? ` <span style="color:#64748b;">/</span> <span style="color:var(--primary); font-weight:600;">${totalRow.ToolCount}</span>` : ''}
-                            ${(totalRow['Infrastructure Total'] || 0) > 0 ? `<div style="font-size:0.78em; color:#0f766e;">Incl. ${totalRow['Infrastructure Total']} infra</div>` : ''}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Heal Cap %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Invocation %'].toFixed(1)}%</td>
@@ -1164,10 +1179,10 @@
                         return 0.0;
                     })();
                 
-                const healthColor = row.Health >= 80 ? '#065f46' : row.Health >= 60 ? '#ea580c' : '#dc2626';
-                const invocationColor = row['Invocation %'] >= 80 ? '#065f46' : row['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
-                const hardenedColor = (row['Hardened %'] || 0) >= 80 ? '#065f46' : (row['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
-                const testColor = row['Test %'] >= 80 ? '#065f46' : row['Test %'] >= 60 ? '#ea580c' : '#dc2626';
+                const healthColor = row.Health === 0 ? '#ff0000' : row.Health >= 80 ? '#065f46' : row.Health >= 60 ? '#ea580c' : '#dc2626';
+                const invocationColor = row['Invocation %'] === 0 ? '#ff0000' : row['Invocation %'] >= 80 ? '#065f46' : row['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
+                const hardenedColor = (row['Hardened %'] || 0) === 0 ? '#ff0000' : (row['Hardened %'] || 0) >= 80 ? '#065f46' : (row['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
+                const testColor = row['Test %'] === 0 ? '#ff0000' : row['Test %'] >= 80 ? '#065f46' : row['Test %'] >= 60 ? '#ea580c' : '#dc2626';
                 
                 
                 const agentsToolsDisplay = row.ToolCount !== undefined
@@ -1208,8 +1223,8 @@
                     <div><strong>Observability %:</strong> % with logging/metrics/tracing signals (production diagnosability).</div>
                     <div><strong>Complexity Health:</strong> % score derived from Avg Cyclomatic Complexity (target ≤10). Mapping is designed to stay informative even when average CC is high.</div>
                     <div><strong>Health Score:</strong> Composite autonomy readiness signal derived from the columns above.</div>
-                    <div style="margin-top:6px; font-size:0.9em;">Health Score weighting (Gemini-hardened): Invocation 30% + MCP Hardened 30% + Tests 20% + Observability 20%.<br>
-                    Rationale: Runtime safety (invocation + boundary hardening) is highest leverage for production autonomy and tool-calling reliability.</div>
+                    <div style="margin-top:6px; font-size:0.9em;">Health Score weighting: Invocation 25% + MCP Hardened 25% + Tests 20% + Observability 15% + Complexity Health 15%.<br>
+                    <em>Analogy:</em> Like a factory floor audit — workers using the master checklist (invocation), safety gear at dangerous machines (MCP), quality inspections (tests), monitoring cameras (observability), and simple, maintainable procedures (complexity).</div>
                 </div>
             </div>`;
                 
@@ -1558,15 +1573,13 @@
                 const observablePct = (observable / total) * 100;
                 const complexityHealth = Math.max(0, Math.min(100, 100 - (avgCC * 2)));
 
-                // Match Territory Summary weighting.
+                // Health Score: Invocation 25% + MCP 25% + Tests 20% + Observability 15% + Complexity 15%
                 const health =
                     (invocationPct * 0.25) +
-                    (hardenedPct * 0.18) +
-                    (testsPct * 0.18) +
-                    (healCapPct * 0.14) +
-                    (observablePct * 0.10) +
-                    (avgTyped * 0.10) +
-                    (complexityHealth * 0.05);
+                    (hardenedPct * 0.25) +
+                    (testsPct * 0.20) +
+                    (observablePct * 0.15) +
+                    (complexityHealth * 0.15);
 
                 const compliancePct = (compliant / total) * 100;
 
