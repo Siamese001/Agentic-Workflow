@@ -25,44 +25,48 @@ TARGETS: Dict[str, Dict[str, Union[int, str]]] = {
     "default": DEFAULT_TARGETS,
 
     # --- L0 Maintenance (Passive/Bootstrapping) ---
-    # MAX INVOCATION TARGET: All agents should aim for 100% invocation
+    # Low invocation is normal; they only run during startup or specific failures.
     "L0_.*": {
-        "heal_capability": 100,     # Max target
-        "invocation": 100,          # MAX TARGET - all agents should invoke healing
-        "observability": 100,       # Max target
-        "mcp_hardened": 100,        # Max target
-        "tests": 100,               # Max target
+        "heal_capability": 60,      # Simple scripts may not need full healing
+        "invocation": 20,           # Rare execution path
+        "observability": 70,        # Minimal runtime events
+        "mcp_hardened": "N/A",      # Often no external tools
+        "tests": 80,
     },
 
     # --- Infrastructure (Utilities/Wrappers) ---
-    # MAX INVOCATION TARGET: All agents should aim for 100% invocation
+    # Wrappers around DBs/APIs; heavy on complexity, light on autonomous decision making.
     ".*infrastructure": {
-        "invocation": 100,          # MAX TARGET
-        "tests": 100,               # Max target
-        "mcp_hardened": 100,        # Max target
+        "invocation": 70,
+        "tests": 85,
+        "mcp_hardened": "conditional_tools", # Special flag handled in logic
         "complexity_max": 20,       # Validation logic often requires nesting
     },
 
     # --- Base Classes (Abstract) ---
-    # MAX INVOCATION TARGET: Even abstract classes should define heal patterns
+    # Cannot run directly; invocation/observability N/A.
     ".*base_class": {
-        "invocation": 100,          # MAX TARGET
-        "observability": 100,       # Max target
-        "tests": 100,               # Max target
-        "mcp_hardened": 100,        # Max target
+        "invocation": "N/A",
+        "observability": "N/A",
+        "tests": 70,                # Interface tests only
+        "mcp_hardened": "N/A",
     },
 
     # --- L5 Safety (High Criticality) ---
-    # MAX INVOCATION TARGET
+    # Complexity allowed for rigorous validation chains.
     "L5_.*": {
-        "invocation": 100,          # MAX TARGET
-        "complexity_max": 20,       # Validation logic often requires nesting
+        "complexity_max": 20,
     },
 }
 
 def get_target(territory: str, metric: str, extra_context: Optional[Dict[str, Any]] = None) -> Union[int, str]:
     """
     Resolve target metric for a specific territory.
+    
+    Patterns are checked in order of specificity:
+    1. More specific patterns (e.g., ".*infrastructure") checked first
+    2. Less specific patterns (e.g., "L0_.*") checked last
+    3. First match wins, so order matters
 
     Args:
         territory: The territory name (e.g., "L0 Maintenance/Infrastructure")
@@ -71,9 +75,19 @@ def get_target(territory: str, metric: str, extra_context: Optional[Dict[str, An
     """
     extra_context = extra_context or {}
     
-    for pattern, overrides in TARGETS.items():
-        if pattern == "default":
+    # Check patterns in order of specificity (more specific first)
+    # Infrastructure and Base Class are more specific than L0/L5 layer patterns
+    pattern_order = [
+        ".*infrastructure",
+        ".*base_class", 
+        "L5_.*",
+        "L0_.*",
+    ]
+    
+    for pattern in pattern_order:
+        if pattern not in TARGETS:
             continue
+        overrides = TARGETS[pattern]
         # Normalize pattern for loose matching (underscore -> space optional)
         regex = pattern.replace('.*', '.*').replace('_', '[ _]')
         if re.search(regex, territory, re.IGNORECASE):
