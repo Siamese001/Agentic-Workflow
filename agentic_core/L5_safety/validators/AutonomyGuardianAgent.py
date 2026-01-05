@@ -111,8 +111,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         self.infrastructure_path_patterns = {"observability", "config/validators"}
         
         # Phase 5: Layer base class mapping (SSOT - sync with pre-commit hook)
+        # Note: L0 (Maintenance) is infrastructure/tooling, not an agent layer - no base class required
         self.LAYER_BASE_MAP = {
-            "L0": "MaintenanceBaseAgent",
             "L1": "L1CognitionBaseAgent",
             "L2": "L2ExecutionBaseAgent",
             "L3": "OrchestrationBaseAgent",
@@ -1568,17 +1568,26 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             # - Reduced complexity weight to 5% to keep total 100%
             # Rationale: Empirical evidence shows typed code has ~50-70% fewer bugs
             cc_health_component = self._compute_complexity_health(avg_cc)
-            # Health Score v2.2 - Fixed weights to sum to 100%
-            # Previous v2.1 had weights summing to 105% (bug)
+            
+            # Phase 5: Check base class compliance for this territory (moved up for health calc)
+            proper_base_count = 0
+            for agent in agents:
+                ok, _ = self._check_base_class_compliance(str(agent))
+                if ok:
+                    proper_base_count += 1
+            perc_proper_base = round(proper_base_count / total * 100, 1) if total else 0
+            
+            # Health Score v2.3 - Added Base Class % (10%)
             health = round((
-                perc_healing_invoke * 0.25 +   # Proven L5 autonomy in production (25%)
-                perc_hardened * 0.18 +         # Critical security control (18%, was 20%)
-                perc_tests * 0.18 +            # Regression prevention (18%, was 20%)
-                perc_healing_cap * 0.14 +      # Foundational capability (14%, was 15%)
-                perc_observable * 0.10 +       # Visibility (10%)
+                perc_healing_invoke * 0.22 +   # Proven L5 autonomy in production (22%)
+                perc_hardened * 0.16 +         # Critical security control (16%)
+                perc_tests * 0.16 +            # Regression prevention (16%)
+                perc_healing_cap * 0.12 +      # Foundational capability (12%)
+                perc_proper_base * 0.10 +      # Layer base class compliance (10%)
+                perc_observable * 0.09 +       # Visibility (9%)
                 cc_health_component * 0.05 +   # Maintainability (5%)
                 perc_typed * 0.10              # Runtime safety via type hints (10%)
-            ), 1)  # Total: 25+18+18+14+10+5+10 = 100%
+            ), 1)  # Total: 22+16+16+12+10+9+5+10 = 100%
             
             risk_score = 0
             if avg_cc > 10: risk_score += 3
@@ -1630,14 +1639,6 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 metadata_pct * 0.15 +
                 perc_documented * 0.20
             ), 1)
-            
-            # Phase 5: Check base class compliance for this territory
-            proper_base_count = 0
-            for agent in agents:
-                ok, _ = self._check_base_class_compliance(str(agent))
-                if ok:
-                    proper_base_count += 1
-            perc_proper_base = round(proper_base_count / total * 100, 1) if total else 0
             
             # Add to dashboard data (agents array will be added after collection below)
             row = {
@@ -1977,17 +1978,18 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 infra_territories = []
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
                 total_hardened = total_mcp_capable = total_tests = total_cc = total_loc = total_typed = total_documented = total_metadata = total_proper_base = total_observable = total_used = 0
-            # Calculate total health with new formula (v2.2 with fixed weights)
+            # Calculate total health with new formula (v2.3 with Base Class %)
             total_cc_health = self._compute_complexity_health(total_cc)
             total_health = round((
-                total_healing_invoke * 0.25 +   # Proven L5 autonomy in production (25%)
-                total_hardened * 0.18 +         # Critical security control (18%)
-                total_tests * 0.18 +            # Regression prevention (18%)
-                total_healing_cap * 0.14 +      # Foundational capability (14%)
-                total_observable * 0.10 +       # Visibility (10%)
+                total_healing_invoke * 0.22 +   # Proven L5 autonomy in production (22%)
+                total_hardened * 0.16 +         # Critical security control (16%)
+                total_tests * 0.16 +            # Regression prevention (16%)
+                total_healing_cap * 0.12 +      # Foundational capability (12%)
+                total_proper_base * 0.10 +      # Layer base class compliance (10%)
+                total_observable * 0.09 +       # Visibility (9%)
                 total_cc_health * 0.05 +        # Maintainability (5%)
                 total_typed * 0.10              # Runtime safety via type hints (10%)
-            ), 1)  # Total: 25+18+18+14+10+5+10 = 100%
+            ), 1)  # Total: 22+16+16+12+10+9+5+10 = 100%
             
             # Portfolio-wide Code Quality Score v1.1
             # Gemini-hardened weights (see per-territory code_quality)
@@ -1999,13 +2001,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_documented * 0.20
             ), 1)
             
-            # Health Score component breakdown for dashboard transparency (v2.2 weights)
+            # Health Score component breakdown for dashboard transparency (v2.3 weights with Base Class)
             total_breakdown = [
-                {"component": "Healing Invocation", "raw": total_healing_invoke, "weight": 0.25, "points": round(total_healing_invoke * 0.25, 1)},
-                {"component": "MCP Hardened",       "raw": total_hardened,       "weight": 0.18, "points": round(total_hardened * 0.18, 1)},
-                {"component": "Test Coverage",      "raw": total_tests,          "weight": 0.18, "points": round(total_tests * 0.18, 1)},
-                {"component": "Healing Capability", "raw": total_healing_cap,    "weight": 0.14, "points": round(total_healing_cap * 0.14, 1)},
-                {"component": "Observability",      "raw": total_observable,     "weight": 0.10, "points": round(total_observable * 0.10, 1)},
+                {"component": "Healing Invocation", "raw": total_healing_invoke, "weight": 0.22, "points": round(total_healing_invoke * 0.22, 1)},
+                {"component": "MCP Hardened",       "raw": total_hardened,       "weight": 0.16, "points": round(total_hardened * 0.16, 1)},
+                {"component": "Test Coverage",      "raw": total_tests,          "weight": 0.16, "points": round(total_tests * 0.16, 1)},
+                {"component": "Healing Capability", "raw": total_healing_cap,    "weight": 0.12, "points": round(total_healing_cap * 0.12, 1)},
+                {"component": "Base Class",         "raw": total_proper_base,    "weight": 0.10, "points": round(total_proper_base * 0.10, 1)},
+                {"component": "Observability",      "raw": total_observable,     "weight": 0.09, "points": round(total_observable * 0.09, 1)},
                 {"component": "Typing",             "raw": total_typed,          "weight": 0.10, "points": round(total_typed * 0.10, 1)},
                 {"component": "Complexity Health",  "raw": total_cc_health,      "weight": 0.05, "points": round(total_cc_health * 0.05, 1)},
             ]

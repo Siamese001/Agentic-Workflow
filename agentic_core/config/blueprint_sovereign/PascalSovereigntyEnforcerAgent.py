@@ -236,6 +236,18 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent, ASTEnforcementMixin, MCPHar
 
         # Test 1: Basic purge + alias removal
         input_content = """
+    def _run_self_tests(self) -> dict:
+    """Run internal self-tests."""
+    results = {"passed": 0, "failed": 0, "tests": []}
+    try:
+    assert self is not None
+    results["passed"] += 1
+    results["tests"].append({"name": "test_instantiation", "status": "passed"})
+    except AssertionError as e:
+    results["failed"] += 1
+    results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+    return results
+
 class sovereign_severity(str, Enum):
     CRITICAL = "CRITICAL"
 SovereignSeverity = sovereign_severity

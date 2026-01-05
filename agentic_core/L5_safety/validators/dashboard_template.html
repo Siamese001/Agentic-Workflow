@@ -1112,16 +1112,17 @@
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
                         <thead>
                             <tr style="background:var(--primary); color:white;">
-                                <th style="padding:16px; text-align:left; font-weight:600;" title="INTERVIEW: Like departments in a company — L5=Safety/Compliance, L4=Database, L3=Project Management, L2=Workers, L1=Strategy, L0=IT/Maintenance">Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: Like teams within a department — Base Class (shared blueprints), Infrastructure (utilities), or specialized units (Validators, Routing, etc.)">Sub-Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: Count of AI workers (agents) / external tools they can call. Like headcount and equipment inventory.">Agents / Tools</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % of agents with self-repair capability. Like workers who have their own first-aid kit — they CAN fix small problems themselves.">Heal Cap %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % actually USING the repair protocol. Having a first-aid kit is useless if you never open it. This measures active self-healing behavior.">Invocation %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % protected at LLM tool-call boundaries. Like safety guards on power tools — prevents the AI from hurting itself when calling external APIs.">MCP Hardened %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % with automated tests. Like quality inspectors checking each worker's output — catches bugs before production.">Test %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: % with logging/metrics/tracing. Like security cameras in a factory — when something breaks, you can replay what happened.">Observable %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="INTERVIEW: Code simplicity score (target: CC≤10). Like instruction manual clarity — complex code = harder to maintain = more bugs. Simple procedures = reliable workers.">Complexity Health</th>
-                                <th style="padding:16px; text-align:center; font-weight:800;" title="INTERVIEW: Overall production readiness. Weighted: 25% Invocation + 25% MCP Safety + 20% Tests + 15% Observability + 15% Complexity. Higher = more autonomous and reliable.">Health Score</th>
+                                <th style="padding:16px; text-align:left; font-weight:600;" title="FACTORY ANALOGY: Production departments — L5=Safety/QA, L4=Warehouse/Inventory, L3=Floor Managers, L2=Assembly Line Workers, L1=Design/Planning, L0=Facilities/Maintenance">Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: Teams within a department — Base Class (standard operating procedures), Infrastructure (utilities), or specialized units (Quality Control, Logistics, etc.)">Sub-Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: Worker count (agents) / machinery they operate (tools). Like factory headcount and equipment inventory.">Agents / Tools</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % of workers trained in self-repair. Like workers who have their own toolbox and repair manual — they CAN fix small equipment problems themselves without calling maintenance.">Heal Cap %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % actually FOLLOWING the factory repair checklist. Having a toolbox is useless if workers never open it. This measures active use of the standardized repair protocol.">Invocation %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % with safety guards on machinery. Like emergency stop buttons and protective shields — prevents workers from getting hurt when operating dangerous equipment.">MCP Hardened %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % following correct department procedures (L1-L5). Like workers using the right safety manual for their floor — ensures consistent behavior within each production area.">Base Class %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % with quality control checkpoints. Like inspectors testing each product batch — catches defects before shipping to customers.">Test %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % with monitoring cameras/sensors. Like security cameras and production line sensors — when something breaks, you can review the footage to see what went wrong.">Observable %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: Assembly instruction simplicity (target: CC≤10). Like IKEA manual clarity — complex instructions = more assembly errors = more defects. Simple procedures = reliable production.">Complexity Health</th>
+                                <th style="padding:16px; text-align:center; font-weight:800;" title="FACTORY ANALOGY: Overall production line readiness. Weighted: 22% Using Repair Checklist + 16% Safety Guards + 16% Quality Checkpoints + 12% Repair Training + 10% Correct Procedures + 9% Monitoring + 5% Instruction Clarity + 10% Documentation. Higher = more autonomous and reliable factory.">Health Score</th>
                             </tr>
                         </thead>
                         <tbody>`;
@@ -1156,6 +1157,7 @@
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Heal Cap %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Invocation %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Hardened %'] || 0).toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Proper Base %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Proper Base %'] || 0).toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Test %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Observable %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Observable %'] || 0).toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${totalComplexityHealth.toFixed(1)}%</td>
@@ -1201,6 +1203,7 @@
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Proper Base %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Proper Base %'] || 0).toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Observable %'] || 0)}; border-right:1px solid #e5e7eb;">${(row['Observable %'] || 0).toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(rowComplexityHealth)}; font-weight:700; border-right:1px solid #e5e7eb;">${rowComplexityHealth.toFixed(1)}%</td>
@@ -1660,12 +1663,18 @@
                 font: { color: '#1f2937' },
                 xaxis: (() => {
                     const maxCC = Math.max(...points.map(p => parseFloat(p.avgCC) || 0), 30);
-                    return { title: 'Avg Cyclomatic Complexity', range: [0, maxCC * 1.05] };
+                    // INVERTED: Lower CC (simpler) = higher x-value (right side = better, like Gartner quadrant)
+                    return { 
+                        title: 'Code Simplicity (inverted CC: higher = simpler)', 
+                        range: [0, maxCC * 1.05],
+                        autorange: 'reversed'  // Invert axis so low CC is on right
+                    };
                 })(),
                 yaxis: { title: 'Compliance %', range: [0, 110] },
                 shapes: (() => {
                     const maxCC = Math.max(...points.map(p => parseFloat(p.avgCC) || 0), 30);
                     const maxX = maxCC * 1.05;
+                    // Lines stay at same CC values but appear reversed due to inverted axis
                     return [
                     { type: 'line', x0: 10, x1: 10, y0: 0, y1: 100, line: { color: '#16a34a', width: 2, dash: 'dash' } },
                     { type: 'line', x0: 20, x1: 20, y0: 0, y1: 100, line: { color: '#dc2626', width: 2, dash: 'dash' } },
