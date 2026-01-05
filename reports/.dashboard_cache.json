@@ -1,16 +1,16 @@
 {
   "agentic_core/L5_safety/validators/AutonomyGuardianAgent.py": {
-    "hash": "769c11f6fd2f3667",
+    "hash": "b423209d1d50f3ae",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 2361,
+      "loc": 2371,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 1,
       "healing_cap": 1,
       "healing_invoke": 1,
       "tests": 1,
-      "cc_sum": 674,
+      "cc_sum": 678,
       "max_cc": 267,
       "typed": 88.13559322033898,
       "documented": 83.60655737704919,
@@ -5576,6 +5576,78 @@
       "max_cc": 8,
       "typed": 100.0,
       "documented": 77.77777777777779,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/guardrails/SafetyBaseAgent.py": {
+    "hash": "791158c7ba5a12d9",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 200,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 36,
+      "max_cc": 8,
+      "typed": 90.0,
+      "documented": 90.9090909090909,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/StateBaseAgent.py": {
+    "hash": "ec1ca370e4b27f73",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 609,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 81,
+      "max_cc": 14,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/OrchestrationBaseAgent.py": {
+    "hash": "4a8643adcd00003b",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 411,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 67,
+      "max_cc": 12,
+      "typed": 100.0,
+      "documented": 95.23809523809523,
+      "observable": 0
+    }
+  },
+  "agentic_core/L3_orchestration/strategic_recommendation/StrategicRecommendationAgent.py": {
+    "hash": "0268e737e66a7650",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 163,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 44,
+      "max_cc": 22,
+      "typed": 100.0,
+      "documented": 100.0,
       "observable": 0
     }
   }

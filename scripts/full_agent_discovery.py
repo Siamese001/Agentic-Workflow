@@ -57,7 +57,10 @@ EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup',
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
 MINIMUM_AGENT_COUNT = 300  # Hard floor - abort if below this
 MAX_AGENT_DROP_PERCENT = 10  # Warn if drop exceeds this percentage from previous run
-EXPECTED_AGENT_COUNT = 312  # Current expected count (update when agents added/removed)
+EXPECTED_AGENT_COUNT = 316  # Current expected count (update when agents added/removed)
+# 2026-01-05: Updated from 312 to 316 after enabling discovery of L3-L5 BaseAgent classes
+# (+3 base agents: OrchestrationBaseAgent, StateBaseAgent, SafetyBaseAgent)
+# (+1 additional agent discovered during scan)
 
 
 def should_exclude_file(py_file: Path) -> bool:
@@ -612,10 +615,27 @@ def main():
             if '_' in node.name and not node.name[0].isupper():
                 continue
             
-            # Skip known base classes (not concrete agents)
-            skip_names = {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-                         'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
-                         'IActionPlane', 'ValidationProtocol', 'Protocol', 'ABC'}
+            # Known higher-level abstract bases that are NOT concrete agents and should be excluded
+            # (e.g. shared mixins or root ABCs across the hierarchy).
+            #
+            # IMPORTANT: Layer-specific BaseAgents (L1-L5) are intentionally NOT skipped here.
+            # They are abstract but must be discovered as agents so they can be placed in
+            # dedicated "Base Class" territories for consistent compliance tracking.
+            # Current layer-specific bases:
+            #   - L1: L1CognitionBaseAgent (or CognitionCanonBaseAgent)
+            #   - L2: L2ExecutionBaseAgent (or ExecutionCanonBaseAgent)
+            #   - L3: OrchestrationBaseAgent
+            #   - L4: StateBaseAgent
+            #   - L5: SafetyBaseAgent
+            skip_names = {
+                'SubAtomicAgent',
+                'CanonBaseAgent',
+                'MaintenanceBaseAgent',
+                'IActionPlane',
+                'ValidationProtocol',
+                'Protocol',
+                'ABC'
+            }
             if node.name in skip_names:
                 continue
 

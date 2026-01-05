@@ -86,8 +86,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         # Factory Analogy: Base Class (manual), Core (workers), Infrastructure (utilities), Specialized (QA/support)
         self.territories = {
             # L5 Safety - Most Critical (Quality Control Department)
-            # NOTE: L5 uses folder-based territories only (no sub-territory classification)
-            # to avoid duplication between folder matching and name-pattern classification
+            # Uses BOTH folder-based territories AND base_class subterritory for consistency
+            # Base class territory added 2026-01-05 for uniform L1-L5 base class tracking
+            "L5_safety/base_class": ("L5", "Critical"),       # Safety procedures manual (SafetyBaseAgent)
             "L5_safety/validators": ("L5", "Critical"),       # Quality inspectors
             "L5_safety/guardrails": ("L5", "Critical"),       # Safety barriers/shields
             "L5_safety/gravity": ("L5", "High"),              # Import compliance
@@ -1090,6 +1091,17 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             return [
                 p for p in all_agents
                 if path_to_layer.get(str(p)) == layer_filter
+            ]
+        
+        # Handle L5 base_class subterritory (added 2026-01-05 for uniform L1-L5 tracking)
+        if layer_part == "L5_safety" and subterritory == "base_class":
+            layer_agents = [
+                p for p in all_agents
+                if path_to_layer.get(str(p)) == "L5"
+            ]
+            return [
+                p for p in layer_agents
+                if self._classify_subterritory(p) == "base_class"
             ]
         
         # Handle L5 with existing folder-based sub-territories
