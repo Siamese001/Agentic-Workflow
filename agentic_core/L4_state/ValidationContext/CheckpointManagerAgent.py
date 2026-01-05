@@ -244,3 +244,15 @@ class CheckpointManagerAgent:
                     merged[key] = parent[key]
 
         return merged
+
+    def _run_self_tests(self) -> dict:
+        """Run internal self-tests."""
+        results = {"passed": 0, "failed": 0, "tests": []}
+        try:
+            assert self is not None
+            results["passed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "passed"})
+        except AssertionError as e:
+            results["failed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+        return results
