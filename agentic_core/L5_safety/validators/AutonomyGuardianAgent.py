@@ -8,8 +8,10 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import List, Dict, Any, Set, Optional, Tuple
 import ast
+import hashlib
 import json
 import re
+import subprocess
 import webbrowser
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -72,6 +74,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         
         # Load agents from authoritative JSON (agent_discovery_full.json)
         self._agent_registry_cache = None
+        
+        # Incremental caching for per-agent metrics (best-effort, non-critical)
+        self.metrics_cache_path = self.project_root / "reports" / ".dashboard_cache.json"
+        self.metrics_cache: Dict[str, Any] = self._load_metrics_cache()
         
         # Territory definitions for compliance report - map to JSON layers
         # IMPORTANT: Use layer-based matching to avoid double-counting
@@ -203,7 +209,22 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
         if json_path.exists():
             try:
-                self._agent_registry_cache = json.loads(json_path.read_text(encoding="utf-8"))
+                data = json.loads(json_path.read_text(encoding="utf-8"))
+
+                # SSOT enforcement: discovery JSON must be list of dicts with required keys
+                if not isinstance(data, list):
+                    raise ValueError(
+                        f"agent_discovery_full.json must be a JSON list; got {type(data).__name__}"
+                    )
+                required_keys = {"path", "layer"}
+                for i, entry in enumerate(data[:50]):
+                    if not isinstance(entry, dict):
+                        raise ValueError(f"Entry[{i}] must be dict; got {type(entry).__name__}")
+                    missing = required_keys - set(entry.keys())
+                    if missing:
+                        raise ValueError(f"Entry[{i}] missing keys: {sorted(missing)}")
+
+                self._agent_registry_cache = data
                 return self._agent_registry_cache
             except Exception as e:
                 print(f"Error loading agent registry: {e}")
@@ -213,6 +234,31 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         # Fallback to empty list if JSON not found
         self._agent_registry_cache = []
         return self._agent_registry_cache
+
+    def _load_metrics_cache(self) -> Dict[str, Any]:
+        """Load persistent per-agent metrics cache (hash-keyed)."""
+        try:
+            if self.metrics_cache_path.exists():
+                data = json.loads(self.metrics_cache_path.read_text(encoding="utf-8"))
+                if isinstance(data, dict):
+                    return data
+        except Exception:
+            pass
+        return {}
+
+    def _save_metrics_cache(self) -> None:
+        """Persist metrics cache atomically (best-effort)."""
+        try:
+            self.metrics_cache_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = self.metrics_cache_path.with_suffix(".tmp")
+            tmp.write_text(json.dumps(self.metrics_cache, indent=2), encoding="utf-8")
+            tmp.replace(self.metrics_cache_path)
+        except Exception:
+            pass
+
+    def _hash_text(self, text: str) -> str:
+        """SHA-256 hash of text content for cache keying."""
+        return hashlib.sha256(text.encode("utf-8", errors="replace")).hexdigest()[:16]
     
     def _get_all_agent_paths(self) -> List[Path]:
         """Get all agent file paths from the authoritative JSON registry (deduplicated)."""
@@ -516,6 +562,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             
             # === Self-Contained Interactive Dashboard Generation ===
             self._generate_self_contained_dashboard(today, all_agents, classified_paths, used_stems, path_to_layer)
+
+        # Persist incremental metrics cache after all processing
+        self._save_metrics_cache()
 
         # Portfolio-wide top violations — sub-atomic refactor backlog
         if global_sub_atomic_violations:
@@ -1029,6 +1078,29 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         
         try:
             content = agent.read_text(errors="ignore")
+
+            # Cache check: skip expensive AST parsing if content unchanged
+            rel_path = str(agent.relative_to(self.project_root)).replace("\\", "/")
+            content_hash = self._hash_text(content)
+            cached = self.metrics_cache.get(rel_path)
+            if (
+                isinstance(cached, dict)
+                and cached.get("hash") == content_hash
+                and cached.get("atomic_threshold") == atomic_threshold
+                and isinstance(cached.get("metrics"), dict)
+            ):
+                cached_metrics = cached["metrics"]
+                file_metrics.update({k: cached_metrics.get(k, 0) for k in file_metrics})
+                # Replay violations from cache
+                for v in cached_metrics.get("_violations", []):
+                    try:
+                        cc, fn = int(v.get("cc", 0)), str(v.get("func", ""))
+                        if cc > atomic_threshold:
+                            global_violations.append((cc, rel_path, fn))
+                    except Exception:
+                        pass
+                return file_metrics
+
             lines = content.splitlines()
             file_metrics["loc"] = len([l for l in lines if l.strip() and not l.strip().startswith("#")])
 
@@ -1067,6 +1139,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             
             # Phase 1d: Observability detection
             file_metrics["observable"] = 100 if any(imp in content for imp in ["import logging", "from logging", "logger.", "log."]) else 0
+
+            # Cache write-through (best-effort)
+            self.metrics_cache[rel_path] = {
+                "hash": content_hash,
+                "atomic_threshold": atomic_threshold,
+                "metrics": file_metrics,
+            }
                 
         except Exception:
             pass
@@ -2743,8 +2822,41 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         print("     - Coverage Score KPI (composite: tests + invocation + observability)")
         print("     - Didactic tooltips with non-technical analogies for interview prep\n")
 
+        # Write provenance manifest for traceability
+        try:
+            discovery_path = self.project_root / "agent_discovery_full.json"
+            discovery_hash = self._hash_text(discovery_path.read_text(encoding="utf-8")) if discovery_path.exists() else "missing"
+            template_hash = self._hash_text(template) if template else "missing"
+            manifest = {
+                "generated_at": datetime.now().isoformat(),
+                "discovery_hash": discovery_hash,
+                "template_hash": template_hash,
+                "git_sha": self._get_git_head_sha(),
+                "output_path": str(output_path),
+            }
+            manifest_path = output_path.with_suffix(".manifest.json")
+            manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+            print(f"→ Provenance manifest: {manifest_path}")
+        except Exception:
+            pass
 
-# Singleton accessor
+    def _get_git_head_sha(self) -> str:
+        """Best-effort git SHA for provenance; never blocks generation."""
+        try:
+            result = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=str(self.project_root),
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+            if result.returncode == 0:
+                sha = (result.stdout or "").strip()
+                return sha if sha else "unknown"
+        except Exception:
+            pass
+        return "unknown"
+
     def _calculate_global_metrics(self, totals: dict) -> dict:
         """Phase 1: Calculate all global metrics from totals — isolated for low CC."""
         t = totals

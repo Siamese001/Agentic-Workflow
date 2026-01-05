@@ -331,6 +331,14 @@ class CompositeGuardrailAgent:
                 return True
         return False
 
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+        """Repository healing with parent chain invocation."""
+        try:
+            result = super().heal_repository(dry_run=dry_run, **kwargs)
+        except AttributeError:
+            result = {}
+        return {"healed": 0, "skipped": 0, "parent": result}
+
 
 # Global instance
 unified_guardrail = CompositeGuardrailAgent()

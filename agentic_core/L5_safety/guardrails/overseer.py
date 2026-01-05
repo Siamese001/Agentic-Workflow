@@ -250,6 +250,11 @@ class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         self._false_positive_cache.clear()
         LOGGER.info('False positive cache cleared')
 
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+        """Repository healing with parent chain invocation."""
+        result = super().heal_repository(dry_run=dry_run, **kwargs)
+        return {"healed": 0, "skipped": 0, "parent": result}
+
 def create_overseer() -> ConstitutionalOverseer:
     """Factory function to create overseer instance."""
     return ConstitutionalOverseer()

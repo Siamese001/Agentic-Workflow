@@ -2206,6 +2206,16 @@ ${rec.guidance.split('\n').map((line, i) =>
             });
 
             // Portfolio health is the executive summary and should always appear in Macro Observations.
+            // NOTE: Rendered separately under the Strategic Observations header, not as a macro observation card.
+            macroObs.push({
+                icon: '💚',
+                title: 'Health Score (Executive Summary)',
+                gap: `Overall health is ${totalRow.Health.toFixed(1)}% (target ≥80%), with one or more component gaps still below target (invocation/tests/hardening/complexity).`,
+                impact: `Health is the "executive summary" for autonomy readiness: low invocation, low tests, or high complexity each reduces reliability and makes reasoning brittle under load.`,
+                solve: `Focus on the top three priorities (ranked #1–#3). Each improvement compounds: better tests enable safer refactors, lower complexity makes healing hooks easier, and better invocation closes the loop.`,
+                priority: '',
+                __hidden: true
+            });
             const execSummaryContainer = document.getElementById('executiveSummary');
             if (execSummaryContainer) {
                 const health = Math.min(100, totalRow.Health || 0);
@@ -2243,7 +2253,8 @@ ${rec.guidance.split('\n').map((line, i) =>
             });
 
             const macroContainer = document.getElementById('macroObservations');
-            macroContainer.innerHTML = macroObs.map(obs => `
+            const macroVisible = macroObs.filter(obs => !obs.__hidden);
+            macroContainer.innerHTML = macroVisible.map(obs => `
                 <div style="display: flex; gap: 12px; align-items: flex-start; padding: 14px; background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); margin-bottom: 4px; ${obs.priorityComponent ? priorityCardStyle(obs.priorityComponent) : ''}">
                     <span style="font-size: 1.6em;">${obs.icon}</span>
                     <div style="flex: 1;">

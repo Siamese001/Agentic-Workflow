@@ -1,0 +1,3602 @@
+{
+  "agentic_core/L5_safety/validators/AutonomyGuardianAgent.py": {
+    "hash": "d91d788d3f59cf55",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 2263,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 649,
+      "max_cc": 262,
+      "typed": 87.93103448275862,
+      "documented": 83.33333333333334,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/BaseClassEnforcerAgent.py": {
+    "hash": "c0879d3735b09157",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 240,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 29,
+      "max_cc": 11,
+      "typed": 85.71428571428571,
+      "documented": 87.5,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/validators/ComplianceOrchestratorAgent.py": {
+    "hash": "9d203864d366a961",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 621,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 198,
+      "max_cc": 34,
+      "typed": 81.81818181818183,
+      "documented": 91.30434782608695,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/DocstringComplianceAgent.py": {
+    "hash": "8327b4ee110b7669",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 99,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 23,
+      "max_cc": 15,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/FilenameUniquenessGuardianAgent.py": {
+    "hash": "3769308736c93294",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 139,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 37,
+      "max_cc": 11,
+      "typed": 85.71428571428571,
+      "documented": 87.5,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/FilesystemAgent.py": {
+    "hash": "7ce968d30c37c378",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 301,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 51,
+      "max_cc": 20,
+      "typed": 100.0,
+      "documented": 87.5,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/heal_validator.py": {
+    "hash": "1870d8a7231f1a4b",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 273,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 35,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 88.88888888888889,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/HierarchyAgent.py": {
+    "hash": "a8f291b2240f2dea",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 983,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 224,
+      "max_cc": 29,
+      "typed": 86.11111111111111,
+      "documented": 80.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/validators/HygieneGuardianAgent.py": {
+    "hash": "804c03c981a94ad3",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 87,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 23,
+      "max_cc": 9,
+      "typed": 100.0,
+      "documented": 85.71428571428571,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/InferenceTypeHintAgent.py": {
+    "hash": "259ed538ba2400a9",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 107,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 30,
+      "max_cc": 22,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/LocationAgent.py": {
+    "hash": "c7505613cbb65bd7",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 1652,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 443,
+      "max_cc": 43,
+      "typed": 100.0,
+      "documented": 96.22641509433963,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/RegressionOracleAgent.py": {
+    "hash": "1b5a24856890d1a3",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 537,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 115,
+      "max_cc": 12,
+      "typed": 100.0,
+      "documented": 91.17647058823529,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/PascalSovereigntyEnforcerAgent.py": {
+    "hash": "e9c3cd7eea334e71",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 261,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 55,
+      "max_cc": 12,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/validators/TypeHintEnforcementAgent.py": {
+    "hash": "209cfe9da99adaf3",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 127,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 26,
+      "max_cc": 7,
+      "typed": 100.0,
+      "documented": 58.333333333333336,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/BiasDetectorAgent.py": {
+    "hash": "c8596d6d7f226427",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 35,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 6,
+      "max_cc": 2,
+      "typed": 40.0,
+      "documented": 83.33333333333334,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/guardrails/UnifiedGuardrailAgent.py": {
+    "hash": "fa2c1e71b99d0215",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 267,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 56,
+      "max_cc": 5,
+      "typed": 86.95652173913044,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/guardrails/ConfigurationSecurityGuardrail.py": {
+    "hash": "5691ed978c9f1e2f",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 133,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 24,
+      "max_cc": 5,
+      "typed": 87.5,
+      "documented": 88.88888888888889,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/ConstitutionalReviewerAgent.py": {
+    "hash": "fa5198295321a3e7",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 89,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 13,
+      "max_cc": 4,
+      "typed": 50.0,
+      "documented": 75.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/guardrails/DependencyPruningAgent.py": {
+    "hash": "cacace6fe3826545",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 103,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 23,
+      "max_cc": 11,
+      "typed": 100.0,
+      "documented": 83.33333333333334,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/DuplicateCodeDetectorAgent.py": {
+    "hash": "b53a7660c05b85dd",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 122,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 31,
+      "max_cc": 12,
+      "typed": 100.0,
+      "documented": 85.71428571428571,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/FileCleanupAgent.py": {
+    "hash": "078e46d9e7f685fa",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 184,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 43,
+      "max_cc": 13,
+      "typed": 100.0,
+      "documented": 90.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/GravityEnforcerAgent.py": {
+    "hash": "fc8fb59d8e02b7ea",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 126,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 32,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 85.71428571428571,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/HallucinationHunterAgent.py": {
+    "hash": "a36c0b71bc7f59a1",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 391,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 80,
+      "max_cc": 11,
+      "typed": 100.0,
+      "documented": 89.28571428571429,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/HealerAgent.py": {
+    "hash": "fb4dff015b23b1f5",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 1034,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 255,
+      "max_cc": 20,
+      "typed": 100.0,
+      "documented": 85.36585365853658,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/hierarchy_healer.py": {
+    "hash": "feee0256346286a7",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 267,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 78,
+      "max_cc": 27,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/InputValidationGuardrail.py": {
+    "hash": "f75efbe462d716f6",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 157,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 27,
+      "max_cc": 5,
+      "typed": 88.88888888888889,
+      "documented": 90.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/input_validator.py": {
+    "hash": "dc40657c7d015f72",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 396,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 105,
+      "max_cc": 22,
+      "typed": 89.47368421052632,
+      "documented": 96.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/L5SafetyExerciserAgent.py": {
+    "hash": "6b00f2fb9ae94644",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 151,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 35,
+      "max_cc": 4,
+      "typed": 60.0,
+      "documented": 62.5,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/guardrails/MCPGuardianAgent.py": {
+    "hash": "d017fd8a1d6e0878",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 221,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 38,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/multi_provider_router_agent.py": {
+    "hash": "4dc33379461871fb",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 522,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 111,
+      "max_cc": 11,
+      "typed": 78.94736842105263,
+      "documented": 91.30434782608695,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/NeuralAutoImmuneAgent.py": {
+    "hash": "13f18f28fc8f8719",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 235,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 49,
+      "max_cc": 13,
+      "typed": 100.0,
+      "documented": 69.23076923076923,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/PIISanitizerAgent.py": {
+    "hash": "b2e9670ec903af6f",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 46,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 17,
+      "max_cc": 6,
+      "typed": 66.66666666666666,
+      "documented": 57.14285714285714,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/guardrails/RedSentinelAgent.py": {
+    "hash": "8f4e6742da664bbc",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 226,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 43,
+      "max_cc": 9,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/overseer.py": {
+    "hash": "123dfff9e78deed3",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 230,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 64,
+      "max_cc": 27,
+      "typed": 100.0,
+      "documented": 94.44444444444444,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/llm_router_mcp_client.py": {
+    "hash": "5e8f6f4eb36837a0",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 62,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 10,
+      "max_cc": 3,
+      "typed": 100.0,
+      "documented": 83.33333333333334,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/TerritoryHealerAgent.py": {
+    "hash": "1109660f8196f040",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 229,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 85,
+      "max_cc": 18,
+      "typed": 88.88888888888889,
+      "documented": 90.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/TestCoverageGuardianAgent.py": {
+    "hash": "fc904b91bbc3d738",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 363,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 70,
+      "max_cc": 14,
+      "typed": 100.0,
+      "documented": 91.66666666666666,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/gravity/GravityLeakRepairAgent.py": {
+    "hash": "b8aeca1a72b14a66",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 231,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 39,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/gravity/ImportAgent.py": {
+    "hash": "e45769910e1cd776",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 537,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 140,
+      "max_cc": 18,
+      "typed": 84.0,
+      "documented": 65.51724137931035,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/red_teaming/AdversarialProbeAgent.py": {
+    "hash": "48308a902f7b099c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 170,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 24,
+      "max_cc": 8,
+      "typed": 91.66666666666666,
+      "documented": 92.3076923076923,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/AdversarialRedTeamerAgent.py": {
+    "hash": "d398b84270593478",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 263,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 46,
+      "max_cc": 12,
+      "typed": 80.76923076923077,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/red_teaming/BoundaryTestingAgent.py": {
+    "hash": "9a52984ecaf8b282",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 195,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 26,
+      "max_cc": 10,
+      "typed": 92.85714285714286,
+      "documented": 93.33333333333333,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/red_teaming/ChaosEngineeringAgent.py": {
+    "hash": "2decbb6a176451e5",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 168,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 24,
+      "max_cc": 8,
+      "typed": 91.66666666666666,
+      "documented": 92.3076923076923,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/red_teaming/PromptInjectionAgent.py": {
+    "hash": "adf9d8323e790130",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 162,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 22,
+      "max_cc": 8,
+      "typed": 91.66666666666666,
+      "documented": 92.3076923076923,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/guardrails/PromptInjectionDetectorAgent.py": {
+    "hash": "3dbc0d0827eb580b",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 75,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 10,
+      "max_cc": 4,
+      "typed": 33.33333333333333,
+      "documented": 77.77777777777779,
+      "observable": 0
+    }
+  },
+  "agentic_core/L5_safety/red_teaming/RedTeamAgent.py": {
+    "hash": "1219d2c18bdc243c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 121,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 21,
+      "max_cc": 11,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L5_safety/utilities/DeadCodeDetectorAgent.py": {
+    "hash": "a066e5ee2f3d7493",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 180,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 33,
+      "max_cc": 6,
+      "typed": 80.0,
+      "documented": 81.81818181818183,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/blackboard.py": {
+    "hash": "da83a2cac57cc874",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 409,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 84,
+      "max_cc": 8,
+      "typed": 95.83333333333334,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/cached_state_ledger.py": {
+    "hash": "7efa9c804a5ce14c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 151,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 30,
+      "max_cc": 6,
+      "typed": 100.0,
+      "documented": 77.77777777777779,
+      "observable": 0
+    }
+  },
+  "agentic_core/L4_state/checkpoint/CheckpointManagerAgent.py": {
+    "hash": "d4c9489b6856876d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 183,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 34,
+      "max_cc": 7,
+      "typed": 80.0,
+      "documented": 81.81818181818183,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/filesystem/FileManagerAgent.py": {
+    "hash": "7cea739f786ec655",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 163,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 31,
+      "max_cc": 7,
+      "typed": 77.77777777777779,
+      "documented": 80.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/L4StateExerciserAgent.py": {
+    "hash": "1750eb1c47556875",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 137,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 27,
+      "max_cc": 4,
+      "typed": 54.54545454545454,
+      "documented": 58.333333333333336,
+      "observable": 0
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/PineconeSovereignAgent.py": {
+    "hash": "3dafca360a52414d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 331,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 63,
+      "max_cc": 11,
+      "typed": 85.71428571428571,
+      "documented": 93.33333333333333,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/storage.py": {
+    "hash": "1ac9b26cea55f3c3",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 706,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 156,
+      "max_cc": 18,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/SchemaEvolverAgent.py": {
+    "hash": "5012d473f0d867ee",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 280,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 70,
+      "max_cc": 10,
+      "typed": 87.5,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/knowledge_graph_sovereign_graph_client.py": {
+    "hash": "9281138a2563ddb1",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 216,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 43,
+      "max_cc": 12,
+      "typed": 83.33333333333334,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/pinecone_mcp_client.py": {
+    "hash": "26240a52b7f77a20",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 179,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 26,
+      "max_cc": 5,
+      "typed": 88.88888888888889,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/SovereignPineconeStoreAgent.py": {
+    "hash": "8db81cef71330a80",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 178,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 26,
+      "max_cc": 4,
+      "typed": 91.66666666666666,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/caching_redis_mcp_client.py": {
+    "hash": "6341ca14e3593edb",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 114,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 19,
+      "max_cc": 5,
+      "typed": 100.0,
+      "documented": 85.71428571428571,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/semantic_cache_sovereign.py": {
+    "hash": "d36a9a50722e2fdf",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 95,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 21,
+      "max_cc": 7,
+      "typed": 100.0,
+      "documented": 71.42857142857143,
+      "observable": 100
+    }
+  },
+  "agentic_core/L4_state/ValidationContext/SubAtomicRegistryAgent.py": {
+    "hash": "c978304bd74e2b76",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 144,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 32,
+      "max_cc": 9,
+      "typed": 77.77777777777779,
+      "documented": 80.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/ActorCriticOrchestratorAgent.py": {
+    "hash": "acc701eec518d787",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 112,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 20,
+      "max_cc": 7,
+      "typed": 87.5,
+      "documented": 70.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/agent_factory.py": {
+    "hash": "5956518aeec2535c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 143,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 12,
+      "max_cc": 4,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/agent_gym_impl.py": {
+    "hash": "e5932198b1b9c487",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 214,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 50,
+      "max_cc": 7,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/subatomic_orchestrator_impl.py": {
+    "hash": "523077600ebc05ea",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 464,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 75,
+      "max_cc": 12,
+      "typed": 61.53846153846154,
+      "documented": 77.14285714285715,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/context_curator_impl.py": {
+    "hash": "2b8e99ab8d429e1a",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 200,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 49,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/observability/metrics/CoordinateObservabilityOperationsAgent.py": {
+    "hash": "fe37dd74b055243e",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 82,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 14,
+      "max_cc": 4,
+      "typed": 100.0,
+      "documented": 88.88888888888889,
+      "observable": 100
+    }
+  },
+  "agentic_core/observability/metrics/CoverageAgent.py": {
+    "hash": "7b1443fcdc7f4628",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 133,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 27,
+      "max_cc": 6,
+      "typed": 100.0,
+      "documented": 41.66666666666667,
+      "observable": 0
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/DAGManagerAgent.py": {
+    "hash": "8c2a8137bd1108cb",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 560,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 102,
+      "max_cc": 8,
+      "typed": 82.75862068965517,
+      "documented": 94.73684210526315,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/deadlock_detector.py": {
+    "hash": "705d4e3070c561d6",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 265,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 63,
+      "max_cc": 7,
+      "typed": 66.66666666666666,
+      "documented": 88.46153846153845,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/WorkflowFissionManagerAgent.py": {
+    "hash": "a0c795773459a14c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 298,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 58,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/observability/metrics/GeneralExerciserAgent.py": {
+    "hash": "b8d8ecae0c6c56e6",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 37,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 5,
+      "max_cc": 1,
+      "typed": 100.0,
+      "documented": 83.33333333333334,
+      "observable": 0
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/HardenedWorkflowOrchestratorAgent.py": {
+    "hash": "bab4e94be8f1839d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 73,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 9,
+      "max_cc": 4,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/observability/metrics/HierarchyEnforcerAgent.py": {
+    "hash": "6b8449b163826fb3",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 193,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 48,
+      "max_cc": 9,
+      "typed": 87.5,
+      "documented": 77.77777777777779,
+      "observable": 100
+    }
+  },
+  "agentic_core/observability/metrics/MetaCoverageOptimizerAgent.py": {
+    "hash": "3fdbc28d841a2695",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 102,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 20,
+      "max_cc": 6,
+      "typed": 80.0,
+      "documented": 83.33333333333334,
+      "observable": 0
+    }
+  },
+  "agentic_core/observability/metrics/MetricsAgent.py": {
+    "hash": "a8640b9af1f50ee7",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 230,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 49,
+      "max_cc": 13,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/NervousSystemAgent.py": {
+    "hash": "40f29c0bdbf994b3",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 1370,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 259,
+      "max_cc": 21,
+      "typed": 91.37931034482759,
+      "documented": 76.47058823529412,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/PPOOrchestratorAgent.py": {
+    "hash": "f7b871d78b96a9a3",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 112,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 14,
+      "max_cc": 3,
+      "typed": 75.0,
+      "documented": 70.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/observability/metrics/PredictiveCostAuditorAgent.py": {
+    "hash": "2a85a1e6c7468808",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 282,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 68,
+      "max_cc": 9,
+      "typed": 85.71428571428571,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/QLearningOrchestratorAgent.py": {
+    "hash": "1bc7c537c9fccdd1",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 114,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 20,
+      "max_cc": 5,
+      "typed": 100.0,
+      "documented": 87.5,
+      "observable": 0
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/RLOrchestratorAgent.py": {
+    "hash": "346773553ab69431",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 123,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 23,
+      "max_cc": 7,
+      "typed": 88.88888888888889,
+      "documented": 72.72727272727273,
+      "observable": 0
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/ReinforceCriticOrchestratorAgent.py": {
+    "hash": "13921b6e78c0b410",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 111,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 13,
+      "max_cc": 3,
+      "typed": 75.0,
+      "documented": 70.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/observability/compliance/ReportingAgent.py": {
+    "hash": "2ccb6e77919cb67f",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 165,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 27,
+      "max_cc": 6,
+      "typed": 100.0,
+      "documented": 87.5,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/SemanticTerritoryMapperAgent.py": {
+    "hash": "2f03b552c0f0c960",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 188,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 40,
+      "max_cc": 14,
+      "typed": 88.88888888888889,
+      "documented": 90.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/observability/metrics/SignatureVerifierAgent.py": {
+    "hash": "67f2ad86d7a85113",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 53,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 10,
+      "max_cc": 4,
+      "typed": 100.0,
+      "documented": 85.71428571428571,
+      "observable": 100
+    }
+  },
+  "agentic_core/observability/metrics/canon_audit.py": {
+    "hash": "a2462ea032e15ac5",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 150,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 18,
+      "max_cc": 5,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py": {
+    "hash": "f4a2f25cf2d4f536",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 148,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 47,
+      "max_cc": 41,
+      "typed": 100.0,
+      "documented": 80.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/SovereignRagOrchestratorAgent.py": {
+    "hash": "1030084b0682d427",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 144,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 37,
+      "max_cc": 10,
+      "typed": 72.72727272727273,
+      "documented": 83.33333333333334,
+      "observable": 100
+    }
+  },
+  "agentic_core/observability/telemetry/TelemetryAgent.py": {
+    "hash": "09ead0a4e70852fe",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 216,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 36,
+      "max_cc": 9,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/TerritoryHealerAgent.py": {
+    "hash": "816403b3d314ef92",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 252,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 68,
+      "max_cc": 18,
+      "typed": 100.0,
+      "documented": 90.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L3_orchestration/workflow_engines/TestPilotAgent.py": {
+    "hash": "8272aa1efbf103a8",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 423,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 99,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/observability/tracing/TracingAgent.py": {
+    "hash": "b50aeebb849fc313",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 323,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 86,
+      "max_cc": 13,
+      "typed": 66.66666666666666,
+      "documented": 42.10526315789473,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/governance.py": {
+    "hash": "d8678fac01e34c79",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 322,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 83,
+      "max_cc": 15,
+      "typed": 100.0,
+      "documented": 92.85714285714286,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/AutonomyGuardianAgent.py": {
+    "hash": "1fb5230ae6be09d0",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 1698,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 527,
+      "max_cc": 181,
+      "typed": 82.22222222222221,
+      "documented": 80.85106382978722,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/infrastructure.py": {
+    "hash": "0a6cf9861a9c6e59",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 112,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 29,
+      "max_cc": 6,
+      "typed": 66.66666666666666,
+      "documented": 35.294117647058826,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/bias_auditor.py": {
+    "hash": "9b75fe77a1fa0be5",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 198,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 20,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/specialized.py": {
+    "hash": "c1c735b2db96d9f6",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 78,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 19,
+      "max_cc": 3,
+      "typed": 90.0,
+      "documented": 37.5,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/CodeDeduplicationAgent.py": {
+    "hash": "1e8c263debaa00b3",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 304,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 87,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 94.44444444444444,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/CodeJanitorAgent.py": {
+    "hash": "d054d5fc9bac0b35",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 365,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 79,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/CodeSSOTEnforcerAgent.py": {
+    "hash": "65de81376d0edfc2",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 219,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 56,
+      "max_cc": 18,
+      "typed": 100.0,
+      "documented": 90.9090909090909,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/contracts/CognitiveContractManagerAgent.py": {
+    "hash": "40dabf962bda908e",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 182,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 34,
+      "max_cc": 7,
+      "typed": 80.0,
+      "documented": 81.81818181818183,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/ComplianceOrchestratorAgent.py": {
+    "hash": "6ce3b2456bde3f0f",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 621,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 198,
+      "max_cc": 34,
+      "typed": 81.81818181818183,
+      "documented": 91.30434782608695,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/security.py": {
+    "hash": "33ff5e949459b1a9",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 175,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 43,
+      "max_cc": 7,
+      "typed": 57.89473684210527,
+      "documented": 30.434782608695656,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/ContextCuratorAgent.py": {
+    "hash": "91006b220bb7168e",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 274,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 70,
+      "max_cc": 12,
+      "typed": 84.21052631578947,
+      "documented": 90.9090909090909,
+      "observable": 100
+    }
+  },
+  "agentic_core/utils/core_extensions/DeadCodeDetectorAgent.py": {
+    "hash": "13360d72c6faebdb",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 282,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 76,
+      "max_cc": 11,
+      "typed": 90.0,
+      "documented": 90.9090909090909,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/concurrency.py": {
+    "hash": "03657389ffc6990d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 670,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 211,
+      "max_cc": 28,
+      "typed": 21.052631578947366,
+      "documented": 57.14285714285714,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/DependencyDiplomatAgent.py": {
+    "hash": "ea8c6a0f4a2c7fb6",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 278,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 65,
+      "max_cc": 9,
+      "typed": 80.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/DocstringComplianceAgent.py": {
+    "hash": "6a9b94f3b65f9e0c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 99,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 23,
+      "max_cc": 15,
+      "typed": 80.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/config/validators/FilenameUniquenessGuardianAgent.py": {
+    "hash": "2d3c5a907cb3d71b",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 138,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 37,
+      "max_cc": 11,
+      "typed": 85.71428571428571,
+      "documented": 87.5,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/FilesystemAgent.py": {
+    "hash": "6becfc2829fba4bc",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 301,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 51,
+      "max_cc": 20,
+      "typed": 100.0,
+      "documented": 87.5,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/GitAgent.py": {
+    "hash": "d7276c1c043e2429",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 349,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 71,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/GovernanceAgent.py": {
+    "hash": "eb30dd84aa8060d6",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 160,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 23,
+      "max_cc": 4,
+      "typed": 90.9090909090909,
+      "documented": 75.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/heal_validator.py": {
+    "hash": "7dc73f5cd78e506d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 269,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 34,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 87.5,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/HealerAgent.py": {
+    "hash": "0a5556e1086dd741",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 422,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 68,
+      "max_cc": 18,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/HierarchyAgent.py": {
+    "hash": "bc5c9035ca74930b",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 983,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 224,
+      "max_cc": 29,
+      "typed": 86.11111111111111,
+      "documented": 80.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/config/validators/HygieneGuardianAgent.py": {
+    "hash": "65e3393f1e0776c7",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 87,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 23,
+      "max_cc": 9,
+      "typed": 83.33333333333334,
+      "documented": 85.71428571428571,
+      "observable": 0
+    }
+  },
+  "agentic_core/config/validators/InferenceTypeHintAgent.py": {
+    "hash": "9f599c90e80a6c70",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 107,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 30,
+      "max_cc": 22,
+      "typed": 80.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/peer_intelligence_auditor_impl.py": {
+    "hash": "e3d48bb933e42c68",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 156,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 40,
+      "max_cc": 7,
+      "typed": 100.0,
+      "documented": 69.56521739130434,
+      "observable": 100
+    }
+  },
+  "agentic_core/bases/l0_agent.py": {
+    "hash": "7093a610312db735",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 34,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 2,
+      "max_cc": 2,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/bases/l1_agent.py": {
+    "hash": "947d941fc47d5ace",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 33,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 2,
+      "max_cc": 1,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/bases/l2_agent.py": {
+    "hash": "ad24b9aedb4d246a",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 34,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 2,
+      "max_cc": 2,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/bases/l3_agent.py": {
+    "hash": "a71642e1f7caba88",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 36,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 3,
+      "max_cc": 1,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/bases/l4_agent.py": {
+    "hash": "04832b0f59d9268b",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 36,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 3,
+      "max_cc": 1,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/bases/l5_agent.py": {
+    "hash": "df6e74796bbce53c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 37,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 3,
+      "max_cc": 1,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/config/validators/LocationAgent.py": {
+    "hash": "2c4f046761df3cbd",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 1653,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 443,
+      "max_cc": 43,
+      "typed": 100.0,
+      "documented": 96.22641509433963,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/MemoryArchitectAgent.py": {
+    "hash": "2bc15078ba93705b",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 502,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 87,
+      "max_cc": 11,
+      "typed": 92.3076923076923,
+      "documented": 90.32258064516128,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/RegressionOracleAgent.py": {
+    "hash": "3de0fd6136375f4d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 537,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 115,
+      "max_cc": 12,
+      "typed": 92.5925925925926,
+      "documented": 91.17647058823529,
+      "observable": 100
+    }
+  },
+  "agentic_core/utils/core_extensions/NamingAgent.py": {
+    "hash": "24b18c32adb02f1c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 1395,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 362,
+      "max_cc": 37,
+      "typed": 98.07692307692307,
+      "documented": 85.18518518518519,
+      "observable": 100
+    }
+  },
+  "agentic_core/utils/core_extensions/NamingLawHealerAgent.py": {
+    "hash": "bd35f8ac4dd58510",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 225,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 48,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 92.3076923076923,
+      "observable": 100
+    }
+  },
+  "agentic_core/utils/core_extensions/NamingNormalizationAgent.py": {
+    "hash": "a0627c956b3f31b6",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 145,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 31,
+      "max_cc": 17,
+      "typed": 66.66666666666666,
+      "documented": 70.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/PascalSovereigntyEnforcerAgent.py": {
+    "hash": "9a748a02e3119bbe",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 261,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 55,
+      "max_cc": 12,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/engineering.py": {
+    "hash": "80f63cfb3c7c9dda",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 311,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 120,
+      "max_cc": 14,
+      "typed": 100.0,
+      "documented": 88.88888888888889,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/prompts/PromptGovernorAgent.py": {
+    "hash": "fc13746c48761f73",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 182,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 34,
+      "max_cc": 7,
+      "typed": 80.0,
+      "documented": 81.81818181818183,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/planning.py": {
+    "hash": "eddacbe16812a881",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 97,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 18,
+      "max_cc": 13,
+      "typed": 100.0,
+      "documented": 33.33333333333333,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/repair.py": {
+    "hash": "ddab84a068962d76",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 189,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 43,
+      "max_cc": 11,
+      "typed": 100.0,
+      "documented": 47.05882352941176,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/SovereignActionPlaneAgent.py": {
+    "hash": "8857595c2a8a6efa",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 261,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 71,
+      "max_cc": 13,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/deepwiki_client_sovereign.py": {
+    "hash": "a79055af65f94abf",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 206,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 42,
+      "max_cc": 9,
+      "typed": 90.9090909090909,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/fetch_client_sovereign.py": {
+    "hash": "4b569ee1b99b73e7",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 53,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 13,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 75.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/fetch_mcp_client.py": {
+    "hash": "450a83ed69df5aff",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 188,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 45,
+      "max_cc": 10,
+      "typed": 77.77777777777779,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/figma_client_sovereign.py": {
+    "hash": "f59e685c5a6750b1",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 87,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 17,
+      "max_cc": 6,
+      "typed": 80.0,
+      "documented": 50.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/utils/core_extensions/git.py": {
+    "hash": "6c5687f2b5591e4a",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 130,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 25,
+      "max_cc": 4,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/utils/core_extensions/http.py": {
+    "hash": "697d65198fd3d8cf",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 144,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 24,
+      "max_cc": 10,
+      "typed": 80.0,
+      "documented": 83.33333333333334,
+      "observable": 100
+    }
+  },
+  "agentic_core/utils/core_extensions/pinecone.py": {
+    "hash": "f59029d04498a2eb",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 113,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 18,
+      "max_cc": 9,
+      "typed": 75.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/playwright_mcp_client.py": {
+    "hash": "4e112529ad0cde5c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 196,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 33,
+      "max_cc": 6,
+      "typed": 81.81818181818183,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/utils/core_extensions/redis.py": {
+    "hash": "6a1e49a66b8f7ce6",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 158,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 33,
+      "max_cc": 8,
+      "typed": 91.66666666666666,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/utils/core_extensions/sovereignty_auditor.py": {
+    "hash": "da8f82cb53f460b4",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 166,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 32,
+      "max_cc": 9,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/sprawl_inspector.py": {
+    "hash": "661eb5d649de5f0c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 58,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 14,
+      "max_cc": 7,
+      "typed": 100.0,
+      "documented": 75.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/StructuralEngineerAgent.py": {
+    "hash": "0a1c018bb8b4d188",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 210,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 52,
+      "max_cc": 11,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/SystemArchitectAgent.py": {
+    "hash": "7d587cf15d88dd98",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 245,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 67,
+      "max_cc": 14,
+      "typed": 90.0,
+      "documented": 90.9090909090909,
+      "observable": 100
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/system_architect.py": {
+    "hash": "2919d281278703b4",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 248,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 64,
+      "max_cc": 14,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/TestSovereigntyAgent.py": {
+    "hash": "eccef828c1d7e685",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 210,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 34,
+      "max_cc": 8,
+      "typed": 91.66666666666666,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L2_execution/ToolRegistry/ToolsmithAgent.py": {
+    "hash": "1e6a4764f317fa01",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 308,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 63,
+      "max_cc": 9,
+      "typed": 95.83333333333334,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/config/validators/TypeHintEnforcementAgent.py": {
+    "hash": "607d27e0e958db1d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 126,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 26,
+      "max_cc": 7,
+      "typed": 88.88888888888889,
+      "documented": 63.63636363636363,
+      "observable": 0
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/sovereign_cognitive_plane.py": {
+    "hash": "e2ee20b2565c6989",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 62,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 16,
+      "max_cc": 3,
+      "typed": 55.55555555555556,
+      "documented": 72.72727272727273,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/sovereign_cognitive_plane_with_streamer.py": {
+    "hash": "5d0c807f22de183c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 72,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 16,
+      "max_cc": 4,
+      "typed": 85.71428571428571,
+      "documented": 88.88888888888889,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/agent_logic.py": {
+    "hash": "972919b64be889af",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 413,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 62,
+      "max_cc": 7,
+      "typed": 100.0,
+      "documented": 88.88888888888889,
+      "observable": 100
+    }
+  },
+  "agentic_core/schemas/models/CognitiveContractManagerAgent.py": {
+    "hash": "caa6d142c487db51",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 387,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 62,
+      "max_cc": 13,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/concurrency_guardian.py": {
+    "hash": "67cb467fbb3e3fa2",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 171,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 31,
+      "max_cc": 11,
+      "typed": 100.0,
+      "documented": 93.75,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/orchestration_main_handler.py": {
+    "hash": "b51af120342eb562",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 492,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 92,
+      "max_cc": 22,
+      "typed": 91.30434782608695,
+      "documented": 89.65517241379311,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/canon_agents_quality.py": {
+    "hash": "aebb26be7fbd05f7",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 257,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 73,
+      "max_cc": 6,
+      "typed": 96.15384615384616,
+      "documented": 93.54838709677419,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/metacognition_hypothesis_generation.py": {
+    "hash": "e0d5429cc0cb0725",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 33,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 7,
+      "max_cc": 3,
+      "typed": 100.0,
+      "documented": 66.66666666666666,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/CanonHealerAgent.py": {
+    "hash": "9c93964106c14d43",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 422,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 107,
+      "max_cc": 15,
+      "typed": 92.85714285714286,
+      "documented": 78.26086956521739,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/GovernanceAgent.py": {
+    "hash": "425c65a60576eec8",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 697,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 166,
+      "max_cc": 14,
+      "typed": 86.20689655172413,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py": {
+    "hash": "0c496719c26b2ccd",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 169,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 38,
+      "max_cc": 21,
+      "typed": 100.0,
+      "documented": 88.88888888888889,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/L1CognitionExerciserAgent.py": {
+    "hash": "021889ec92c503d7",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 161,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 37,
+      "max_cc": 4,
+      "typed": 53.333333333333336,
+      "documented": 56.25,
+      "observable": 0
+    }
+  },
+  "agentic_core/L1_cognition/learning/MetaLearningAgent.py": {
+    "hash": "fabdde30765031b1",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 244,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 40,
+      "max_cc": 12,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/canon_agents_pattern.py": {
+    "hash": "d4bb3b4e20d69ba8",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 246,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 88,
+      "max_cc": 10,
+      "typed": 95.45454545454545,
+      "documented": 96.15384615384616,
+      "observable": 100
+    }
+  },
+  "agentic_core/L1_cognition/thought_engine/strategic_planner.py": {
+    "hash": "e09b41ab468523d9",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 270,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 58,
+      "max_cc": 9,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L0_maintenance/scripts/shared_safety_bias_auditor.py": {
+    "hash": "98e0a5bfec12af89",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 121,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 20,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L0_maintenance/scripts/runtime_shared_gap_closure_architect.py": {
+    "hash": "6c2d6c044ee5b648",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 184,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 26,
+      "max_cc": 6,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L0_maintenance/scripts/hygiene_validator.py": {
+    "hash": "feafe6393516472e",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 164,
+      "compliant": 0,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 0,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 50,
+      "max_cc": 11,
+      "typed": 87.5,
+      "documented": 88.88888888888889,
+      "observable": 100
+    }
+  },
+  "agentic_core/L0_maintenance/scripts/filesystem_mcp_client.py": {
+    "hash": "bb308af5f1a92072",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 100,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 21,
+      "max_cc": 6,
+      "typed": 100.0,
+      "documented": 90.0,
+      "observable": 100
+    }
+  },
+  "agentic_core/L0_maintenance/scripts/gitkraken_mcp_client.py": {
+    "hash": "c156e249adb03cb4",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 162,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 1,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 21,
+      "max_cc": 3,
+      "typed": 100.0,
+      "documented": 90.9090909090909,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/rag/campaign_rag.py": {
+    "hash": "4fe91b218919b7e2",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 749,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 0,
+      "cc_sum": 151,
+      "max_cc": 16,
+      "typed": 89.1891891891892,
+      "documented": 81.25,
+      "observable": 0
+    }
+  },
+  "apps_lic/engines/outreach_engine/hop_agents/HOP1ProfileAnalysisAgent.py": {
+    "hash": "d4ad4f2a496d5f53",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 147,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 35,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/HOP2ResearchAgent.py": {
+    "hash": "ecf169b4efff76ba",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 255,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 48,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 93.33333333333333,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/hop_agents/HOP3SenderGroundingAgent.py": {
+    "hash": "d09b2f214e418f85",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 104,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 21,
+      "max_cc": 18,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/hop_agents/HOP4RoutingAgent.py": {
+    "hash": "fff985684fa95455",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 92,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 15,
+      "max_cc": 12,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/HOP5GenerationAgent.py": {
+    "hash": "bdde21fecc8bfc84",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 213,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 50,
+      "max_cc": 9,
+      "typed": 100.0,
+      "documented": 92.85714285714286,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/HOP6ValidationAgent.py": {
+    "hash": "60ea3f918a6a7a6d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 221,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 55,
+      "max_cc": 19,
+      "typed": 100.0,
+      "documented": 88.88888888888889,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/hop_agents/HOP7GateDecisionAgent.py": {
+    "hash": "8e115fd7c492cfa9",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 162,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 15,
+      "max_cc": 8,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/HOP8QAReportAgent.py": {
+    "hash": "1f5eebbdbd9267c4",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 143,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 15,
+      "max_cc": 5,
+      "typed": 100.0,
+      "documented": 83.33333333333334,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/hop_agents/HOPOrchestratorAgent.py": {
+    "hash": "65251964821b77bf",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 92,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 12,
+      "max_cc": 9,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/intelligence_librarian.py": {
+    "hash": "f053097bbc0bf434",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 451,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 59,
+      "max_cc": 9,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/autonomous/healing.py": {
+    "hash": "497781126117b796",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 334,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 51,
+      "max_cc": 9,
+      "typed": 93.33333333333333,
+      "documented": 90.9090909090909,
+      "observable": 0
+    }
+  },
+  "apps_lic/engines/outreach_engine/outreach_validation_executor_engine.py": {
+    "hash": "c13d1b38a0182e16",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 364,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 64,
+      "max_cc": 18,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_lic/engines/outreach_engine/WorkflowOrchestratorAgent.py": {
+    "hash": "f3ae904fe2a57926",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 159,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 16,
+      "max_cc": 12,
+      "typed": 75.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_rg/engines/resume_engine/autonomous/healing.py": {
+    "hash": "73ed0256f742745a",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 388,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 70,
+      "max_cc": 9,
+      "typed": 87.5,
+      "documented": 87.87878787878788,
+      "observable": 0
+    }
+  },
+  "apps_rg/engines/DispatchOutreachToolsAgent.py": {
+    "hash": "892909061bfd92a5",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 74,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 20,
+      "max_cc": 5,
+      "typed": 100.0,
+      "documented": 90.0,
+      "observable": 100
+    }
+  },
+  "apps_rg/engines/DispatchResumeToolsAgent.py": {
+    "hash": "19784a58d98d3516",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 118,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 33,
+      "max_cc": 4,
+      "typed": 100.0,
+      "documented": 92.85714285714286,
+      "observable": 100
+    }
+  },
+  "apps_rg/engines/resume_engine/autonomous/gitops.py": {
+    "hash": "c9e057cfdad52ede",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 788,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 140,
+      "max_cc": 16,
+      "typed": 100.0,
+      "documented": 87.8048780487805,
+      "observable": 100
+    }
+  },
+  "apps_rg/engines/resume_engine/autonomous/intelligence.py": {
+    "hash": "e2de27d6e06a7c75",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 750,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 96,
+      "max_cc": 10,
+      "typed": 100.0,
+      "documented": 87.2340425531915,
+      "observable": 100
+    }
+  },
+  "apps_rg/engines/resume_engine/autonomous/governance.py": {
+    "hash": "d0f8768aa896768d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 756,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 134,
+      "max_cc": 13,
+      "typed": 97.91666666666666,
+      "documented": 90.1639344262295,
+      "observable": 100
+    }
+  },
+  "apps_rg/engines/resume_generator.py": {
+    "hash": "c4e5aab27395542c",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 199,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 0,
+      "cc_sum": 54,
+      "max_cc": 9,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_rg/engines/resume_engine/autonomous/learning.py": {
+    "hash": "6998238a4278e7ae",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 678,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 128,
+      "max_cc": 11,
+      "typed": 87.8048780487805,
+      "documented": 90.19607843137256,
+      "observable": 100
+    }
+  },
+  "apps_rg/engines/resume_engine/AppsResumeOrchestratorAgent.py": {
+    "hash": "59125dfbfa97c6d0",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 94,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 20,
+      "max_cc": 3,
+      "typed": 100.0,
+      "documented": 100.0,
+      "observable": 100
+    }
+  },
+  "apps_rg/engines/rg_contact_research_executor.py": {
+    "hash": "98a40f1fc9831177",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 36,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 3,
+      "max_cc": 2,
+      "typed": 100.0,
+      "documented": 66.66666666666666,
+      "observable": 100
+    }
+  },
+  "apps_shared/utils/common_patterns.py": {
+    "hash": "0b483ad96802362d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 170,
+      "compliant": 0,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 22,
+      "max_cc": 6,
+      "typed": 100.0,
+      "documented": 80.0,
+      "observable": 0
+    }
+  },
+  "apps_shared/utils/StateManagerAgent.py": {
+    "hash": "7e9bbd5a50749f2d",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 433,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 71,
+      "max_cc": 10,
+      "typed": 88.88888888888889,
+      "documented": 100.0,
+      "observable": 0
+    }
+  },
+  "tests/integration/test_healing_chain.py": {
+    "hash": "91ed55a95fd5333a",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 269,
+      "compliant": 1,
+      "hardened": 0,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 0,
+      "tests": 1,
+      "cc_sum": 31,
+      "max_cc": 3,
+      "typed": 19.047619047619047,
+      "documented": 85.18518518518519,
+      "observable": 0
+    }
+  }
+}

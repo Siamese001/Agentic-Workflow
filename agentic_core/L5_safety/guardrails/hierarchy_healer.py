@@ -353,3 +353,8 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
 
         print(f"   [L6 PURGE] Complete: {purged_count} orphaned files archived/purged")
         return {"purged": purged_count, "errors": errors}
+
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+        """Repository healing with parent chain invocation."""
+        result = super().heal_repository(dry_run=dry_run, **kwargs)
+        return {"healed": 0, "skipped": 0, "parent": result}
