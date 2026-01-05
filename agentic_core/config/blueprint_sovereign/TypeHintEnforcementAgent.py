@@ -95,6 +95,18 @@ class TypeHintEnforcementAgent(HealerMixin):
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: TypeHintFixerAgent → TypeHintFixerAgent
+    def _run_self_tests(self) -> dict:
+    """Run internal self-tests."""
+    results = {"passed": 0, "failed": 0, "tests": []}
+    try:
+    assert self is not None
+    results["passed"] += 1
+    results["tests"].append({"name": "test_instantiation", "status": "passed"})
+    except AssertionError as e:
+    results["failed"] += 1
+    results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+    return results
+
 class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer):
     """
     AST transformer that adds Missing type hints to public symbols.

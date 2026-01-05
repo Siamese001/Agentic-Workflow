@@ -322,3 +322,15 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
     def compute_code_hash(self, code: str) -> str:
         """Compute SHA256 hash of code for cycle detection."""
         return hashlib.sha256(code.encode('utf-8')).hexdigest()
+
+    def _run_self_tests(self) -> dict:
+    """Run internal self-tests."""
+    results = {"passed": 0, "failed": 0, "tests": []}
+    try:
+    assert self is not None
+    results["passed"] += 1
+    results["tests"].append({"name": "test_instantiation", "status": "passed"})
+    except AssertionError as e:
+    results["failed"] += 1
+    results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+    return results

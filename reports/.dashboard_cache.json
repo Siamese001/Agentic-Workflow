@@ -1,9 +1,9 @@
 {
   "agentic_core/L5_safety/validators/AutonomyGuardianAgent.py": {
-    "hash": "faf5be7d9e191664",
+    "hash": "612a9720ec72f559",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 2262,
+      "loc": 2264,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 1,
@@ -2286,10 +2286,10 @@
     }
   },
   "agentic_core/utils/core_extensions/NamingAgent.py": {
-    "hash": "24b18c32adb02f1c",
+    "hash": "2a0e050bbc9774ab",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 1395,
+      "loc": 1396,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
