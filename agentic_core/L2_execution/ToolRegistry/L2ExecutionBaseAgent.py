@@ -146,12 +146,132 @@ class L2ExecutionBaseAgent(SovereignBaseAgent, SubatomicTestingMixin):
     # run_subatomic_critique and related methods can be added here similarly if needed
     # For now omitted to keep base lean - subclasses can implement or import if required
 
+    # =========================================================================
+    # L2-SPECIFIC LAYER METHODS: Tool Execution
+    # =========================================================================
+    
+    def act(self, plan: List[str]) -> Dict[str, Any]:
+        """L2-specific: Execute tools from plan with parallel support and error handling.
+        
+        Args:
+            plan: List of tool actions to execute
+            
+        Returns:
+            Dict with aggregated results and any errors
+        """
+        tools = self._extract_tools_from_plan(plan)
+        results = []
+        errors = []
+        
+        for tool in tools:
+            try:
+                result = self._execute_tool(tool)
+                results.append({"tool": tool, "result": result, "success": True})
+            except Exception as e:
+                errors.append({"tool": tool, "error": str(e), "type": type(e).__name__})
+                results.append({"tool": tool, "result": None, "success": False, "error": str(e)})
+        
+        # Trigger healing on errors
+        if errors:
+            clustered = self.cluster_errors(errors)
+            self.log_warning(f"Tool execution errors: {clustered}")
+            super().heal_repository()
+        
+        return {
+            "results": results,
+            "errors": errors,
+            "success_count": sum(1 for r in results if r.get("success")),
+            "error_count": len(errors)
+        }
+    
+    async def act_async(self, plan: List[str]) -> Dict[str, Any]:
+        """L2-specific: Async parallel tool execution with rate-limit healing.
+        
+        Args:
+            plan: List of tool actions to execute
+            
+        Returns:
+            Dict with aggregated results and clustered errors
+        """
+        tools = self._extract_tools_from_plan(plan)
+        
+        async def execute_one(tool: str) -> Dict[str, Any]:
+            try:
+                result = await self._execute_tool_async(tool)
+                return {"tool": tool, "result": result, "success": True}
+            except Exception as e:
+                return {"tool": tool, "result": None, "success": False, "error": str(e), "type": type(e).__name__}
+        
+        # Parallel execution
+        results = await asyncio.gather(*[execute_one(t) for t in tools], return_exceptions=True)
+        
+        # Handle exceptions from gather
+        processed_results = []
+        for i, r in enumerate(results):
+            if isinstance(r, Exception):
+                processed_results.append({"tool": tools[i], "success": False, "error": str(r), "type": type(r).__name__})
+            else:
+                processed_results.append(r)
+        
+        errors = [r for r in processed_results if not r.get("success")]
+        
+        if errors:
+            clustered = self.cluster_errors(errors)
+            self.log_warning(f"Async execution errors: {clustered}")
+            super().heal_repository()
+        
+        return {
+            "results": processed_results,
+            "errors": errors,
+            "clustered_errors": self.cluster_errors(errors) if errors else {},
+            "success_count": sum(1 for r in processed_results if r.get("success")),
+            "error_count": len(errors)
+        }
+    
+    def cluster_errors(self, errors: List[Dict[str, Any]]) -> Dict[str, List[str]]:
+        """L2-specific: Group errors by type for efficient targeted healing.
+        
+        Args:
+            errors: List of error dicts with 'type' and 'error' keys
+            
+        Returns:
+            Dict mapping error types to list of error messages
+        """
+        from collections import defaultdict
+        groups: Dict[str, List[str]] = defaultdict(list)
+        
+        for e in errors:
+            error_type = e.get("type", "Unknown")
+            error_msg = e.get("error", str(e))
+            groups[error_type].append(error_msg)
+        
+        return dict(groups)
+    
+    def _extract_tools_from_plan(self, plan: List[str]) -> List[str]:
+        """Extract tool names/actions from plan steps."""
+        tools = []
+        for step in plan:
+            # Simple extraction - subclasses can override for complex parsing
+            if isinstance(step, str):
+                tools.append(step)
+            elif isinstance(step, dict):
+                tools.append(step.get("tool", step.get("action", str(step))))
+        return tools
+    
+    def _execute_tool(self, tool: str) -> Any:
+        """Execute a single tool - override in subclasses for actual implementation."""
+        self.log_info(f"Executing tool: {tool}")
+        return {"executed": tool, "status": "placeholder"}
+    
+    async def _execute_tool_async(self, tool: str) -> Any:
+        """Async tool execution - override in subclasses for actual implementation."""
+        self.log_info(f"Async executing tool: {tool}")
+        return {"executed": tool, "status": "placeholder", "async": True}
+
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Shared healing stub - operational for L2."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
+        if _call_path is None:
             _call_path = set()
         agent_name = self.name
         if agent_name in _call_path:
@@ -160,7 +280,9 @@ class L2ExecutionBaseAgent(SovereignBaseAgent, SubatomicTestingMixin):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L2 execution - operational only")
-            return {"skipped": 1}
+            # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+            super().heal_repository()
+            self.log_info("L2 execution - operational healing")
+            return {"healed": 1}
         finally:
             _call_path.discard(agent_name)
