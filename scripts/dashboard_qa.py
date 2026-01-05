@@ -128,8 +128,6 @@ class DashboardQA:
             'healthScoreValue',
             'codeQualityScoreValue',
             'baseInheritanceValue',
-            'execHealth',
-            'execGap',
             'anomalyFlags',
             'refreshStatus',
             'REFRESH_INTERVAL_MS'

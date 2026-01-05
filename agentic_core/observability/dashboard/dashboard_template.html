@@ -2904,13 +2904,34 @@ ${rec.guidance.split('\n').map((line, i) =>
                                 <a href="vscode://file/${agent.abs_file}" target="_blank" style="color:var(--text-light);">Full file</a>
                             </small>
                         </td>
-                        <td style="padding:12px; text-align:center;">${mixinIcon}</td>
-                        <td style="padding:12px; text-align:center;">${invIcon}</td>
-                        <td style="padding:12px; text-align:center;">${testIcon}</td>
-                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${obsTitle}">${obsSummary}</td>
-                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${mcpTitle}">${mcpSummary}</td>
-                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${typingTitle}">${typingSummary}<br><small style="color:var(--text-light);">${overallTyped}% overall</small></td>
-                        <td style="padding:12px; text-align:center; color:${complexityColor}; font-weight:600;">${agent.complexity}</td>
+                        <td style="padding:12px; text-align:center;" 
+                            title="Heal Capability (HealerMixin presence)&#10;&#10;${agent.has_mixin ? '✓ This agent inherits HealerMixin → equipped with standardized self-recovery tools.' : '✗ Missing HealerMixin → agent has no access to heal_repository() or scripted recovery.'}&#10;&#10;Windsurf fix: Add HealerMixin to class bases (e.g., class MyAgent(HealerMixin, BaseAgent)).&#10;&#10;Factory analogy: Imagine the factory floor humming smoothly until a conveyor belt jams. With HealerMixin, every worker grabs their issued red toolbox, flips open the laminated repair manual, and fixes it in minutes — line keeps moving. Without it, they stand helpless, red lights flashing, waiting hours for the maintenance crew while production grinds to a halt.">
+                            ${mixinIcon}
+                        </td>
+                        <td style="padding:12px; text-align:center;" 
+                            title="Heal Invocation Chain&#10;&#10;${agent.invocation === 'Yes' ? '✓ Explicit super().heal_repository() call → follows protocol.' : agent.invocation === 'Inherited' ? '✓ Inherited from base (still disciplined).' : agent.invocation === 'Unknown' ? '? Could not verify due to dynamic flow.' : '✗ No call detected → risk of ad-hoc fixes.'}&#10;&#10;Windsurf fix: Insert super().heal_repository() in except/failure blocks.&#10;&#10;Factory analogy: Toolboxes are on every bench, manuals dog-eared from daily use. Disciplined workers pause, flip to the exact page, and follow steps precisely — fixes are uniform, auditable. Rogue workers improvise with duct tape and hope; one shift's shortcut becomes the next shift's cascading breakdown, parts piling up in chaos.">
+                            ${invIcon}
+                        </td>
+                        <td style="padding:12px; text-align:center;" 
+                            title="Test Coverage&#10;&#10;${agent.has_tests ? '✓ Tests exist → decision paths validated.' : '✗ No tests → blind deployment risk.'}&#10;&#10;Windsurf fix: Create test_myagent.py with cases for happy path, tool failures, healing.&#10;&#10;Factory analogy: At each station, sharp-eyed inspectors in white gloves probe, measure, and stress-test every tenth widget under bright lights. Defective ones are pulled aside immediately. Skip the inspectors and boxes of misaligned, cracked products roll out the loading dock — customers open them to find junk, trust shattered.">
+                            ${testIcon}
+                        </td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" 
+                            title="${obsTitle}&#10;&#10;Current flags:&#10;${obsSummary.replace(/ \| /g, '&#10;')}&#10;&#10;Factory analogy: High-mounted cameras whir quietly, red sensor lights blinking along the line, capturing every clank and spark. A belt snaps — rewind the footage and you see the exact frayed spot, the overload moment. Without them, alarms blare blindly, workers scramble in the dark, guessing and patching, same breakdown repeating shift after shift.">
+                            ${obsSummary}
+                        </td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" 
+                            title="${mcpTitle}&#10;&#10;Current flags:&#10;${mcpSummary.replace(/ \| /g, '&#10;')}&#10;&#10;Factory analogy: Gleaming steel guards and big red e-stop buttons surround the massive presses and saws. A glove catches, hand slips — the shield slams down, machine freezes instantly, worker safe, line pauses briefly. Remove the guards and one careless moment becomes blood, screams, shutdowns, and lawsuits.">
+                            ${mcpSummary}
+                        </td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" 
+                            title="${typingTitle}&#10;&#10;Overall typed: ${overallTyped}%&#10;${typingSummary.replace(/ \| /g, '&#10;')}&#10;&#10;Factory analogy: Parts bins gleam with bold stamped labels — M8×1.25 bolts here, ¼-inch here. Workers snap matches perfectly under fluorescent lights. Strip the labels and bins become mystery piles — frantic sorting, wrong bolts forced in, stripped threads, and the whole chassis collapses at final shake-test.">
+                            ${typingSummary}<br><small style="color:var(--text-light);">${overallTyped}% overall</small>
+                        </td>
+                        <td style="padding:12px; text-align:center; color:${complexityColor}; font-weight:600;" 
+                            title="Cyclomatic Complexity: ${agent.complexity}&#10;${agent.complexity <= 10 ? '✓ Good — simple, maintainable control flow (target ≤10).' : agent.complexity <= 15 ? '⚠ Marginal — consider refactoring nested conditionals/loops.' : '✗ High — bug risk and hard to test/heal. Break into smaller methods.'}&#10;&#10;Factory analogy: Crisp IKEA booklet — big colorful diagrams, ten numbered steps, parts laid out neatly. Workers breeze through, humming. Contrast the yellowed 50-page tome dense with footnotes and nested clauses — confused frowns, wrong turns, misassembled frames crashing down when tested.">
+                            ${agent.complexity}
+                        </td>
                     </tr>`;
                 });
                 content += '</tbody></table>';
