@@ -1,4 +1,28 @@
 from __future__ import annotations
+import sys
+from pathlib import Path
+
+# === ENABLE DIRECT EXECUTION: Dynamically add project root to sys.path ===
+# This runs at module load time (before imports) when running the file directly.
+# It searches upward for the directory containing 'agentic_core' (your project root).
+# Harmless when imported as a module (idempotent).
+def _add_project_root_to_sys_path() -> None:
+    current = Path(__file__).resolve()
+    while current.parent != current:  # Stop at filesystem root
+        if (current / "agentic_core").exists():
+            root_str = str(current)
+            if root_str not in sys.path:
+                sys.path.insert(0, root_str)
+            return
+        current = current.parent
+    raise RuntimeError(
+        "Could not locate project root (directory containing 'agentic_core'). "
+        "Adjust the marker condition if your structure differs."
+    )
+
+_add_project_root_to_sys_path()
+# === END PATH FIX ===
+
 import ast
 '''Brief description of functionality and purpose.'''
 import difflib
@@ -20,17 +44,21 @@ except ImportError:
     NAMING_AGENT_AVAILABLE = False
     warnings.warn("NamingAgent not available — falling back to heuristic uniqueness resolution", RuntimeWarning)
 
-from apps_shared.config.operational_config import OPERATIONAL_EXCLUDED_DIRS
-
-# Tree-sitter for AST fingerprinting
 try:
-    from tree_sitter import Language, Parser
-    from tree_sitter_python import language
+    from apps_shared.config.operational_config import OPERATIONAL_EXCLUDED_DIRS
+except ImportError:
+    OPERATIONAL_EXCLUDED_DIRS = []  # Fallback for direct execution
+
+# Tree-sitter for AST fingerprinting (optional enhancement)
+try:
+    from tree_sitter import Parser, Language
+    import tree_sitter_python as tspython
     TREE_SITTER_AVAILABLE = True
 except ImportError:
     TREE_SITTER_AVAILABLE = False
     Parser = None
     Language = None
+    tspython = None
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -68,10 +96,11 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
         self.ts_parser: Optional[Parser] = None
         if TREE_SITTER_AVAILABLE:
             try:
+                PY_LANGUAGE = Language(tspython.language())
                 self.ts_parser = Parser()
-                self.ts_parser.language = language()
+                self.ts_parser.language = PY_LANGUAGE
             except Exception as e:
-                self.errors.append(f'Tree-sitter initialization failed: {e}')
+                self.errors.append(f"Tree-sitter initialization failed: {e}")
                 self.ts_parser = None
     
     def _run_self_tests(self) -> bool:
@@ -92,7 +121,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
                 continue
             if stripped:
                 lines.append(' '.join(stripped.split()))
-        return '\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n'.join(lines)
+        return '\n'.join(lines)
     
     def _normalize_ast_tree(self, node: ast.AST) -> str:
         """Anonymize variables and constants in AST for structural comparison."""
@@ -160,7 +189,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
         """Phase 2 entry point - cross-file territory sweep."""
         print('\n[*] CodeDeduplicationAgent: Scanning for cross-file duplicates...')
         # Collect all candidate blocks with their best normalized representation
-        candidates: List[Tuple[Path, str, int, str, str]] = []  # (path, name, line, code, norm_str)
+        candidates: List[Tuple[Path, str, int, str, str, int]] = []  # (path, name, line, code, norm_str, len_norm)
         for file_str in python_files:
             file_path: Any = Path(file_str)
             # EXCLUDE archives/ directory
@@ -180,44 +209,73 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
                     normalized = self._normalize_code(code)
                     norm_str = normalized
 
-                if not norm_str:
+                if not norm_str or len(code.splitlines()) < self.min_lines:
                     continue
-                candidates.append((file_path, name, line, code, norm_str))
+                len_norm = len(norm_str)
+                candidates.append((file_path, name, line, code, norm_str, len_norm))
 
-        # Conservative leader-based clustering with high threshold (very similar only)
-        groups: List[List[Tuple[Path, str, int, str, str, float]]] = []  # list of groups, each with (..., norm_str, sim_to_rep)
-        for path, name, line, code, norm_str in candidates:
+        # === FAST EXACT STRUCTURAL GROUPING ===
+        exact_groups: Dict[str, List[Tuple[Path, str, int, str, str, int]]] = defaultdict(list)
+        for cand in candidates:
+            struct_hash = hashlib.sha256(cand[4].encode("utf-8")).hexdigest()
+            exact_groups[struct_hash].append(cand)
+
+        group_id = 0
+        for struct_hash, mems in exact_groups.items():
+            if len(mems) >= 2:
+                print(f"   [!] EXACT STRUCTURAL DUPLICATE GROUP ({len(mems)} copies):")
+                for t in mems[:3]:
+                    print(f"      -> {t[0].name}:{t[2]} ({t[1]})")
+                if len(mems) > 3:
+                    print(f"      ... and {len(mems) - 3} more")
+                members = [(t[0], t[1], t[2], t[3]) for t in mems]
+                key = f"exact_group_{group_id}_{struct_hash[:8]}"
+                self.duplicate_groups[key] = members
+                group_id += 1
+
+        # === FUZZY CLUSTERING ONLY ON REMAINING SINGLETONS (with length pruning) ===
+        singles = [mems[0] for mems in exact_groups.values() if len(mems) == 1]
+
+        groups: List[List[Tuple[Path, str, int, str, str, int, float]]] = []
+        for cand in singles:
+            path, name, line, code, norm_str, len_norm = cand
             best_group = None
             best_sim = 0.0
             for group in groups:
-                rep_norm = group[0][4]  # norm_str of group representative (first member)
+                rep_len = group[0][5]
+                # Prune: for ≥0.98 similarity, lengths must be within ~5%
+                if abs(len_norm - rep_len) > 0.05 * max(len_norm, rep_len):
+                    continue
+                rep_norm = group[0][4]
                 sim = self._block_similarity(rep_norm, norm_str)
                 if sim > best_sim:
                     best_sim = sim
                     best_group = group
             if best_group and best_sim >= self.threshold:
-                best_group.append((path, name, line, code, norm_str, best_sim))
+                best_group.append((path, name, line, code, norm_str, len_norm, best_sim))
             else:
-                groups.append([(path, name, line, code, norm_str, 1.0)])
+                groups.append([(path, name, line, code, norm_str, len_norm, 1.0)])
 
         # Store only high-confidence groups (min similarity to primary >= threshold)
-        group_id = 0
         for group in groups:
             if len(group) < 2:
                 continue
             primary_norm = group[0][4]
-            sims_to_primary = [self._block_similarity(primary_norm, t[4]) for t in group]
+            sims_to_primary = [t[6] if len(t) > 6 else self._block_similarity(primary_norm, t[4]) for t in group]
             min_sim = min(sims_to_primary)
             if min_sim < self.threshold:
                 continue  # Extra conservative filter – drop if any member diverges too much
 
-            print(f'   [!] SIMILAR BLOCK GROUP ({len(group)} copies, min similarity {min_sim:.1%} to primary):')
-            for t in group:
-                print(f'      -> {t[0].name}:{t[2]} ({t[1]}) similarity {t[5]:.1%}')
+            print(f"   [!] FUZZY SIMILAR BLOCK GROUP ({len(group)} copies, min similarity {min_sim:.1%} to primary):")
+            for t in group[:3]:
+                sim = t[6] if len(t) > 6 else 1.0
+                print(f"      -> {t[0].name}:{t[2]} ({t[1]}) similarity {sim:.1%}")
+            if len(group) > 3:
+                print(f"      ... and {len(group) - 3} more")
 
             # Store in compatible format for existing extraction logic
             members = [(t[0], t[1], t[2], t[3]) for t in group]  # (path, name, line, code)
-            key = f'similar_group_{group_id}_{min_sim:.2f}'
+            key = f"fuzzy_group_{group_id}_{min_sim:.2f}"
             self.duplicate_groups[key] = members
             group_id += 1
 
@@ -436,7 +494,10 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
     async def execute(self, ctx: Any) -> Any:
         """Batch agent interface with enhanced duplicate detection."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
+        try:
+            super().heal_repository()
+        except AttributeError:
+            pass  # Skip if running standalone without full mixin chain
 
         if not hasattr(ctx, 'python_files'):
             return
@@ -601,3 +662,67 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
 def get_code_deduplication_agent() -> Any:
     """Brief description of functionality and purpose."""
     return CodeDeduplicationAgent()
+
+
+if __name__ == "__main__":
+    import argparse
+    import sys
+    from pathlib import Path
+    
+    # Add project root to path for imports
+    project_root = Path(__file__).parent.parent.parent.parent
+    sys.path.insert(0, str(project_root))
+
+    parser = argparse.ArgumentParser(
+        description="CodeDeduplicationAgent: direct execution for validation or healing"
+    )
+    parser.add_argument(
+        "--heal",
+        action="store_true",
+        help="Enable surgery: extract duplicates, consolidate/delete identical files, rename conflicts (creates backups)"
+    )
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Scan all Python files (ignore limit for large repositories)"
+    )
+    args = parser.parse_args()
+    
+    # Use the already-defined project_root from path setup above
+    python_files = [
+        str(f)
+        for f in project_root.rglob("*.py")
+        if f.is_file()
+        and "archives" not in str(f)
+        and ".venv" not in str(f)
+        and "__pycache__" not in str(f)
+    ]
+
+    if not args.full and len(python_files) > 300:
+        print(f"⚠️ Large repository ({len(python_files)} files). Limiting to 300 random files for speed.")
+        import random
+        random.seed(42)
+        random.shuffle(python_files)
+        python_files = python_files[:300]
+        print("   Use --full to scan everything.")
+
+    class Context:
+        project_root = str(project_root)
+        python_files = python_files
+        RUN_SPRAWL_SURGERY = False
+
+    if args.heal:
+        confirm = input("\n⚠️ HEALING MODE: This will MODIFY files (backups created). Type 'yes' to continue: ")
+        if confirm != "yes":
+            print("Aborted.")
+            exit(1)
+        Context.RUN_SPRAWL_SURGERY = True
+        print("🛠️ Running in HEALING mode")
+    else:
+        print("🔍 Running in SAFE validation mode (dry-run)")
+
+    print(f"Scanning {len(python_files)} Python files...\n")
+    agent = CodeDeduplicationAgent(similarity_threshold=0.98, min_lines=8)
+    
+    import asyncio
+    asyncio.run(agent.execute(Context()))
