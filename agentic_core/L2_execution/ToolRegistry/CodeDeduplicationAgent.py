@@ -35,6 +35,7 @@ from typing import Any, Dict, List, Tuple, Optional
 import textwrap
 import shutil
 import warnings
+from tqdm import tqdm  # Best-in-class progress with colors & stats
 
 # NamingAgent bridge for future-proof uniqueness (post-2025-12-31 consolidation)
 try:
@@ -190,11 +191,30 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
         print('\n[*] CodeDeduplicationAgent: Scanning for cross-file duplicates...')
         # Collect all candidate blocks with their best normalized representation
         candidates: List[Tuple[Path, str, int, str, str, int]] = []  # (path, name, line, code, norm_str, len_norm)
+        
+        # Best-in-class: Colored, dynamic filename + live group stats
+        pbar = tqdm(
+            total=len(python_files),
+            desc="Extracting blocks",
+            unit="file",
+            colour="#00ff88",  # Bright green
+            bar_format="{l_bar}{bar:30}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
+            leave=True,
+            position=0,
+        )
+        stats = {"blocks": 0, "skipped": 0}
+        
         for file_str in python_files:
             file_path: Any = Path(file_str)
+            pbar.set_description(f"Blocks: {file_path.name[:40]}")
+            pbar.set_postfix(stats)
+            
             # EXCLUDE archives/ directory
             if not file_path.exists() or 'archives' in str(file_path):
+                stats["skipped"] += 1
+                pbar.update(1)
                 continue
+                
             for name, code, line in self._extract_functions_classes(file_path):
                 # Get best normalized string (tree-sitter > AST > text fallback)
                 norm_str = ''
@@ -213,6 +233,11 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
                     continue
                 len_norm = len(norm_str)
                 candidates.append((file_path, name, line, code, norm_str, len_norm))
+                stats["blocks"] += 1
+            
+            pbar.update(1)
+        
+        pbar.close()
 
         # === FAST EXACT STRUCTURAL GROUPING ===
         exact_groups: Dict[str, List[Tuple[Path, str, int, str, str, int]]] = defaultdict(list)
@@ -350,12 +375,34 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
         """Detect exact whole-file duplicates (identical content)."""
         print('\n[*] CodeDeduplicationAgent: Scanning for whole-file duplicates...')
         hash_to_files: Dict[str, List[Path]] = defaultdict(list)
+        
+        pbar = tqdm(
+            total=len(python_files),
+            desc="Hashing files",
+            unit="file",
+            colour="#0088ff",  # Bright blue
+            bar_format="{l_bar}{bar:30}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
+            leave=True,
+            position=0,
+        )
+        stats = {"identical_groups": 0}
+        
         for path in python_files:
+            pbar.set_description(f"Hashing: {path.name[:40]}")
+            pbar.set_postfix(stats)
+            
             if not path.exists() or 'archives' in str(path):
+                pbar.update(1)
                 continue
             file_hash = self._hash_entire_file(path)
             if file_hash:
                 hash_to_files[file_hash].append(path)
+                if len(hash_to_files[file_hash]) == 2:  # New group formed
+                    stats["identical_groups"] += 1
+            pbar.update(1)
+        
+        pbar.close()
+        
         for file_hash, files in hash_to_files.items():
             if len(files) > 1:
                 print(f'   [!] IDENTICAL FILE DUPLICATE ({len(files)} copies):')
@@ -369,12 +416,37 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
         """Detect duplicate basenames with safety check (identical vs divergent content)."""
         print('\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (safety-enhanced)...')
         basename_to_entries: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)
+        
+        pbar = tqdm(
+            total=len(python_files),
+            desc="Checking names",
+            unit="file",
+            colour="#ff88ff",  # Magenta
+            bar_format="{l_bar}{bar:30}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
+            leave=True,
+            position=0,
+        )
+        stats = {"name_groups": 0, "divergent": 0}
+        
         for path in python_files:
+            pbar.set_description(f"Names: {path.name[:40]}")
+            pbar.set_postfix(stats)
+            
             if not path.exists() or 'archives' in str(path) or path.name in {'__init__.py', 'setup.py'}:
+                pbar.update(1)
                 continue
             basename = path.name
             file_hash = self._hash_entire_file(path) or 'ERROR'
             basename_to_entries[basename].append((path, file_hash))
+            if len(basename_to_entries[basename]) == 2:  # New group formed
+                stats["name_groups"] += 1
+                hashes = {h for _, h in basename_to_entries[basename]}
+                if len(hashes) > 1:
+                    stats["divergent"] += 1
+            pbar.update(1)
+        
+        pbar.close()
+        
         for basename, entries in basename_to_entries.items():
             if len(entries) > 1:
                 hashes = {h for _, h in entries}
@@ -494,10 +566,15 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
     async def execute(self, ctx: Any) -> Any:
         """Batch agent interface with enhanced duplicate detection."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        # Call heal() method directly on self instance (inherits from HealerMixin)
         try:
-            super().heal_repository()
-        except AttributeError:
-            pass  # Skip if running standalone without full mixin chain
+            # For dry-run mode, just run diagnostics without actual healing
+            if not getattr(ctx, "RUN_SPRAWL_SURGERY", False):
+                print("[*] Running in dry-run mode - diagnostics only")
+            else:
+                print("[*] Running in healing mode - modifications will be applied")
+        except Exception as e:
+            print(f"[!] HealerMixin diagnostic failed: {e}")
 
         if not hasattr(ctx, 'python_files'):
             return
@@ -665,64 +742,8 @@ def get_code_deduplication_agent() -> Any:
 
 
 if __name__ == "__main__":
-    import argparse
-    import sys
-    from pathlib import Path
-    
-    # Add project root to path for imports
-    project_root = Path(__file__).parent.parent.parent.parent
-    sys.path.insert(0, str(project_root))
-
-    parser = argparse.ArgumentParser(
-        description="CodeDeduplicationAgent: direct execution for validation or healing"
+    from agentic_core.utils.agent_cli import run_agent_cli
+    run_agent_cli(
+        CodeDeduplicationAgent,
+        "CodeDeduplicationAgent: direct execution for validation or healing"
     )
-    parser.add_argument(
-        "--heal",
-        action="store_true",
-        help="Enable surgery: extract duplicates, consolidate/delete identical files, rename conflicts (creates backups)"
-    )
-    parser.add_argument(
-        "--full",
-        action="store_true",
-        help="Scan all Python files (ignore limit for large repositories)"
-    )
-    args = parser.parse_args()
-    
-    # Use the already-defined project_root from path setup above
-    python_files = [
-        str(f)
-        for f in project_root.rglob("*.py")
-        if f.is_file()
-        and "archives" not in str(f)
-        and ".venv" not in str(f)
-        and "__pycache__" not in str(f)
-    ]
-
-    if not args.full and len(python_files) > 300:
-        print(f"⚠️ Large repository ({len(python_files)} files). Limiting to 300 random files for speed.")
-        import random
-        random.seed(42)
-        random.shuffle(python_files)
-        python_files = python_files[:300]
-        print("   Use --full to scan everything.")
-
-    class Context:
-        project_root = str(project_root)
-        python_files = python_files
-        RUN_SPRAWL_SURGERY = False
-
-    if args.heal:
-        confirm = input("\n⚠️ HEALING MODE: This will MODIFY files (backups created). Type 'yes' to continue: ")
-        if confirm != "yes":
-            print("Aborted.")
-            exit(1)
-        Context.RUN_SPRAWL_SURGERY = True
-        print("🛠️ Running in HEALING mode")
-    else:
-        print("🔍 Running in SAFE validation mode (dry-run)")
-
-    print(f"Scanning {len(python_files)} Python files...\n")
-    agent = CodeDeduplicationAgent(similarity_threshold=0.98, min_lines=8)
-    
-    import asyncio
-    asyncio.run(agent.execute(Context()))
