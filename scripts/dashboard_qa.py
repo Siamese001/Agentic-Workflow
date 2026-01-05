@@ -262,6 +262,65 @@ class DashboardQA:
             self.errors.append(f'Failed to parse dashboardData for drill-down validation: {e}')
             return False
     
+    def validate_discovery_freshness(self) -> bool:
+        """Validate agent discovery JSON is fresh and valid."""
+        print('🔍 Validating agent discovery freshness...')
+        
+        discovery_path = self.root / 'agent_discovery_full.json'
+        manifest_path = self.root / 'agent_discovery_full.manifest.json'
+        
+        if not discovery_path.exists():
+            self.errors.append('agent_discovery_full.json not found - run: python scripts/full_agent_discovery.py')
+            return False
+        
+        # Check manifest for validation status
+        if manifest_path.exists():
+            try:
+                manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+                agent_count = manifest.get('agent_count', 0)
+                minimum = manifest.get('minimum_agent_count', 300)
+                validation_passed = manifest.get('validation', {}).get('passed', False)
+                
+                if not validation_passed:
+                    self.errors.append(f'Discovery validation failed: {agent_count} agents (minimum: {minimum})')
+                    return False
+                
+                # Check staleness (warn if > 24 hours old)
+                generated_at = manifest.get('generated_at', '')
+                if generated_at:
+                    from datetime import datetime
+                    try:
+                        gen_time = datetime.fromisoformat(generated_at.replace('Z', '+00:00'))
+                        age_hours = (datetime.now(gen_time.tzinfo) - gen_time).total_seconds() / 3600
+                        if age_hours > 24:
+                            self.warnings.append(f'Discovery JSON is {age_hours:.1f} hours old - consider re-running')
+                    except (ValueError, TypeError):
+                        pass
+                
+                print(f'  ✅ Discovery valid: {agent_count} agents')
+                return True
+                
+            except json.JSONDecodeError:
+                self.warnings.append('Could not parse discovery manifest')
+        
+        # Fall back to counting agents in JSON
+        try:
+            agents = json.loads(discovery_path.read_text(encoding='utf-8'))
+            agent_count = len(agents)
+            
+            # Hard floor check
+            MINIMUM_AGENT_COUNT = 300
+            if agent_count < MINIMUM_AGENT_COUNT:
+                self.errors.append(f'Discovery has only {agent_count} agents (minimum: {MINIMUM_AGENT_COUNT})')
+                return False
+            
+            print(f'  ✅ Discovery valid: {agent_count} agents')
+            return True
+            
+        except json.JSONDecodeError as e:
+            self.errors.append(f'Invalid discovery JSON: {e}')
+            return False
+    
     def validate_data_integrity(self) -> bool:
         """Validate embedded data integrity."""
         print('🔍 Validating data integrity...')
@@ -310,6 +369,7 @@ class DashboardQA:
             self.validate_generated_dashboard(),
             self.validate_sparklines(),
             self.validate_drilldown_data(),
+            self.validate_discovery_freshness(),
             self.validate_data_integrity()
         ]
         

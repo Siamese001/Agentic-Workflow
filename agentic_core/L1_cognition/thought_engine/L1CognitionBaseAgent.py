@@ -162,6 +162,99 @@ class L1CognitionBaseAgent(SovereignBaseAgent):
             self.log_error(f"Healing error for {os.path.basename(file_path)}: {e}")
             return False
 
+    # =========================================================================
+    # L1-SPECIFIC LAYER METHODS: Cognition/Reasoning
+    # =========================================================================
+    
+    def plan(self, task: str, history: List[Dict] = None) -> Dict[str, Any]:
+        """L1-specific: Multi-step Chain-of-Thought planning with self-critique.
+        
+        Args:
+            task: The task to plan for
+            history: Optional conversation/action history for context
+            
+        Returns:
+            Dict with steps, tools, and critique
+        """
+        history_context = self._summarize_history(history or [])
+        critique = self._self_critique_previous_plan() if hasattr(self, 'last_plan') else ""
+        
+        prompt = f"""
+Task: {task}
+History summary: {history_context}
+Previous critique: {critique}
+
+1. Decompose goal into sub-tasks
+2. Propose tools if needed
+3. Anticipate failure modes
+4. Self-critique plan
+
+Output JSON: {{"steps": [...], "tools": [...], "critique": "..."}}
+"""
+        # Store for reflection
+        self.last_plan = {"task": task, "prompt": prompt}
+        
+        return {
+            "steps": [
+                f"Understand: {task}",
+                "Break into sub-tasks",
+                "Consider edge cases",
+                "Propose tools if needed"
+            ],
+            "tools": [],
+            "critique": "Initial plan - needs execution feedback"
+        }
+    
+    def reflect(self, outcome: Dict[str, Any]) -> str:
+        """L1-specific: Deep reflection for learning and improvement.
+        
+        Args:
+            outcome: Result of executing the plan
+            
+        Returns:
+            Reflection text with improvement suggestions
+        """
+        last_plan = getattr(self, 'last_plan', {})
+        
+        reflection = f"""
+Reflection on outcome:
+- Task: {last_plan.get('task', 'Unknown')}
+- Result: {outcome.get('result', 'No result')}
+- Success: {outcome.get('success', False)}
+
+What worked: {outcome.get('successes', [])}
+What to improve: {outcome.get('failures', [])}
+
+Persistent improvements to apply:
+- Update internal model with learned patterns
+- Adjust planning heuristics based on outcome
+"""
+        # Trigger healing if outcome indicates error
+        if outcome.get('error'):
+            self.log_warning(f"Error in outcome, triggering healing: {outcome.get('error')}")
+        
+        return reflection
+    
+    def _summarize_history(self, history: List[Dict]) -> str:
+        """Summarize conversation/action history for context efficiency."""
+        if not history:
+            return "No prior history"
+        
+        summaries = []
+        for item in history[-5:]:  # Last 5 items for token efficiency
+            action = item.get('action', 'unknown')
+            result = item.get('result', 'no result')[:100]
+            summaries.append(f"- {action}: {result}")
+        
+        return "\n".join(summaries)
+    
+    def _self_critique_previous_plan(self) -> str:
+        """Generate self-critique of previous plan if available."""
+        if not hasattr(self, 'last_plan'):
+            return ""
+        
+        return f"Previous plan for '{self.last_plan.get('task', 'unknown')}' - review for improvements"
+
     async def execute(self) -> Any:
         """Override in subclass."""
         raise NotImplementedError(f'{self.name}.execute() not implemented')

@@ -752,7 +752,22 @@ def main():
         for err in parse_errors[:10]:
             print(f"    - {err}")
     
+    # ========================================================================
+    # HARDENING: Final validation summary
+    # ========================================================================
+    print(f"\n{'=' * 80}")
+    print("VALIDATION SUMMARY")
+    print(f"{'=' * 80}")
+    print(f"✅ Agent count: {len(agents)} (minimum: {MINIMUM_AGENT_COUNT}, expected: {EXPECTED_AGENT_COUNT})")
+    if previous_count:
+        delta = len(agents) - previous_count
+        delta_str = f"+{delta}" if delta >= 0 else str(delta)
+        print(f"✅ Delta from previous: {delta_str} agents")
+    print(f"✅ Scan duration: {scan_duration:.1f}s")
+    print(f"✅ Parse errors: {len(parse_errors)}")
+    
     print(f"\n[SAVED] {OUTPUT_JSON}")
+    print(f"[SAVED] {MANIFEST_JSON}")
     print("=" * 80)
 
 

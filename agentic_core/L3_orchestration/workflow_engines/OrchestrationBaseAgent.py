@@ -341,6 +341,154 @@ class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin):
     Includes L3SubatomicTestingMixin for CRITIQUE hop testing.
     """
 
+    # =========================================================================
+    # L3-SPECIFIC LAYER METHODS: Multi-Agent Orchestration
+    # =========================================================================
+    
+    def route(self, task: str, available_agents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """L3-specific: Dynamic agent routing with capability matching and load balancing.
+        
+        Args:
+            task: The task to delegate
+            available_agents: List of agent dicts with 'id', 'capabilities', 'current_load', 'max_load'
+            
+        Returns:
+            List of delegation assignments with agent and task info
+        """
+        if not available_agents:
+            self.log_warning("No agents available for routing")
+            return []
+        
+        scores = []
+        for agent in available_agents:
+            # Calculate capability match score (0-1)
+            capability_score = self._match_capability(task, agent.get('capabilities', []))
+            
+            # Calculate load score (higher = more available)
+            current_load = agent.get('current_load', 0)
+            max_load = agent.get('max_load', 10)
+            load_score = 1 - (current_load / max_load) if max_load > 0 else 0
+            
+            # Weighted composite: 70% capability, 30% availability
+            composite_score = capability_score * 0.7 + load_score * 0.3
+            scores.append((agent, composite_score))
+        
+        # Sort by score descending
+        ranked = sorted(scores, key=lambda x: x[1], reverse=True)
+        
+        # Trigger healing if all scores are low
+        if all(score < 0.5 for _, score in ranked):
+            self.log_warning("All agent scores below 0.5, triggering healing")
+            super().heal_repository()
+        
+        # Return top 3 for parallel delegation
+        top_agents = ranked[:3]
+        delegations = [
+            {
+                "agent": agent.get('id', agent.get('name', 'unknown')),
+                "task": task,
+                "score": score,
+                "capabilities": agent.get('capabilities', [])
+            }
+            for agent, score in top_agents
+        ]
+        
+        self.log_info(f"Routed task to {len(delegations)} agents")
+        return delegations
+    
+    def aggregate(self, sub_results: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """L3-specific: Merge parallel sub-agent outputs with conflict resolution.
+        
+        Args:
+            sub_results: List of result dicts from delegated agents
+            
+        Returns:
+            Aggregated result with merged data and metadata
+        """
+        if not sub_results:
+            return {"final": None, "source_count": 0, "status": "no_results"}
+        
+        # Separate successes and failures
+        successes = [r for r in sub_results if r.get('success', True) and not r.get('error')]
+        failures = [r for r in sub_results if r.get('error') or not r.get('success', True)]
+        
+        # Aggregate successful results
+        aggregated_data = {}
+        for result in successes:
+            data = result.get('data', result.get('result', {}))
+            if isinstance(data, dict):
+                # Merge dicts, later results override earlier
+                aggregated_data.update(data)
+            elif isinstance(data, list):
+                # Extend lists
+                if 'items' not in aggregated_data:
+                    aggregated_data['items'] = []
+                aggregated_data['items'].extend(data)
+        
+        # Calculate consensus score (how many agents agreed)
+        consensus = len(successes) / len(sub_results) if sub_results else 0
+        
+        # Trigger healing if too many failures
+        if len(failures) > len(successes):
+            self.log_warning(f"More failures ({len(failures)}) than successes ({len(successes)})")
+            super().heal_repository()
+        
+        return {
+            "final": aggregated_data,
+            "source_count": len(sub_results),
+            "success_count": len(successes),
+            "failure_count": len(failures),
+            "consensus_score": consensus,
+            "failures": [{"agent": f.get('agent'), "error": f.get('error')} for f in failures],
+            "status": "complete" if successes else "all_failed"
+        }
+    
+    def _match_capability(self, task: str, capabilities: List[str]) -> float:
+        """Score how well agent capabilities match the task."""
+        if not capabilities:
+            return 0.3  # Default score for agents with no declared capabilities
+        
+        task_lower = task.lower()
+        matches = sum(1 for cap in capabilities if cap.lower() in task_lower or task_lower in cap.lower())
+        
+        # Normalize to 0-1 range
+        return min(1.0, matches / max(1, len(capabilities) * 0.5))
+    
+    async def delegate_parallel(self, task: str, agents: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """L3-specific: Delegate task to multiple agents in parallel and aggregate.
+        
+        Args:
+            task: The task to execute
+            agents: List of agent configurations
+            
+        Returns:
+            Aggregated results from all agents
+        """
+        import asyncio
+        
+        # Route to best agents
+        delegations = self.route(task, agents)
+        
+        if not delegations:
+            return {"final": None, "status": "no_agents_available"}
+        
+        # Execute in parallel (placeholder - subclasses implement actual agent calls)
+        async def execute_delegation(delegation: Dict) -> Dict:
+            try:
+                # Placeholder - subclasses override with actual agent invocation
+                return {
+                    "agent": delegation['agent'],
+                    "success": True,
+                    "data": {"task_completed": task, "by": delegation['agent']}
+                }
+            except Exception as e:
+                return {"agent": delegation['agent'], "success": False, "error": str(e)}
+        
+        results = await asyncio.gather(*[execute_delegation(d) for d in delegations])
+        
+        # Aggregate results
+        return self.aggregate(list(results))
+
     async def orchestrate(self, Task: Dict) -> Dict:
         """Execute orchestration logic. Override in subclasses."""
         raise NotImplementedError(f"{self.name} must implement orchestrate()")

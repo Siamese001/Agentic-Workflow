@@ -1307,6 +1307,7 @@
                                 <tr style="background:var(--primary); color:white;">
                                     <th style="padding:16px; text-align:left; font-weight:600;">Territory</th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Sub-Territory within the territory">Sub-Territory</th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Number of agents / tools in this territory">Agents / Tools</th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Percentage of agents with type hints (35% weight)">Typing % <span style="font-size:0.75em;opacity:0.8">(35%)</span></th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Strict Pydantic/JSON schema usage on tool interfaces — prevents Gemini hallucinated arguments (30% weight)">Schema Strictness % <span style="font-size:0.75em;opacity:0.8">(30%)</span></th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Presence of required governance metadata/tags (capability, risk tier, owner) — essential for registry safety (15% weight)">Metadata Completeness % <span style="font-size:0.75em;opacity:0.8">(15%)</span></th>
@@ -1329,10 +1330,15 @@
             let totalDocumented = territoryData.length > 0 ? 
                 (territoryData.reduce((sum, r) => sum + (r['Documented %'] || 0), 0) / territoryData.length) : 0;
             
+            // Calculate total agents count
+            const totalAgentsCount = territoryData.reduce((sum, r) => sum + (r.Total || 0), 0);
+            const totalToolsCount = territoryData.reduce((sum, r) => sum + (r['Tools Count'] || 0), 0);
+            
             html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
                         <td style="padding:14px; font-weight:700; font-size:1.05em; border-right:1px solid #e5e7eb;">TOTAL</td>
                         <td style="padding:14px; text-align:center; font-weight:600; border-right:1px solid #e5e7eb; color:#6b7280;">—</td>
+                        <td style="padding:14px; text-align:center; font-weight:600; border-right:1px solid #e5e7eb; color:#1e40af;">${totalAgentsCount}${totalToolsCount > 0 ? ' / ' + totalToolsCount : ''}</td>
                         <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalTyping)}; border-right:1px solid #e5e7eb;">
                             ${totalTyping.toFixed(1)}%
                             ${dashboardData[0].sparklines && dashboardData[0].sparklines.typing ? formatSparkline(dashboardData[0].sparklines.typing, totalTyping, dashboardData[0].trends?.typing_delta ? totalTyping - dashboardData[0].trends.typing_delta : totalTyping) : ''}
@@ -1376,10 +1382,14 @@
                 const territoryTrends = dashboardData[0].territory_trends || {};
                 const tTrend = territoryTrends[row.Territory] || {};
                 
+                const agentCount = row.Total || 0;
+                const toolsCount = row['Tools Count'] || 0;
+                
                 html += `
                     <tr style="border-bottom:1px solid #e5e7eb; ${index % 2 === 0 ? 'background:#f9fafb;' : ''}">
                         <td style="padding:12px; font-weight:600; color:var(--primary);">${split.territory}</td>
                         <td style="padding:12px; text-align:center; color:#475569; border-right:1px solid #e5e7eb;">${split.subTerritory}</td>
+                        <td style="padding:12px; text-align:center; color:#1e40af; border-right:1px solid #e5e7eb;">${agentCount}${toolsCount > 0 ? ' / ' + toolsCount : ''}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(typing)}; border-right:1px solid #e5e7eb;">${typing.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(schemaStrictness)}; border-right:1px solid #e5e7eb;">${schemaStrictness.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(metadata)}; border-right:1px solid #e5e7eb;">${metadata > 0 ? metadata.toFixed(1) + '%' : '—'}</td>

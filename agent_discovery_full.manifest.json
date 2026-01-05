@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-01-05T12:52:57.019404Z",
+  "scan_duration_seconds": 16.91,
+  "agent_count": 312,
+  "content_hash": "sha256:a2ddfaf3ce1f60759c0e991e8ae546be903bc0665e9e2a1fca71d4357e778b63",
+  "layer_breakdown": {
+    "L0": 9,
+    "L1": 26,
+    "L2": 75,
+    "L3": 62,
+    "L4": 20,
+    "L5": 58,
+    "apps_lic": 33,
+    "apps_rg": 24,
+    "apps_shared": 2,
+    "tests": 3
+  },
+  "parse_errors_count": 0,
+  "minimum_agent_count": 300,
+  "expected_agent_count": 312,
+  "validation": {
+    "passed": true,
+    "threshold": 300
+  }
+}
