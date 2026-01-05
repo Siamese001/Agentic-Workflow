@@ -35,12 +35,29 @@ from collections import defaultdict
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / 'agentic_core'
 CANONICAL_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
+MANIFEST_JSON = PROJECT_ROOT / 'agent_discovery_full.manifest.json'
 LEGACY_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
 MISTAKE_JSON = PROJECT_ROOT / 'agent_full.json'
 MISTAKE_JSON_2 = PROJECT_ROOT / 'agent_discovery_legacy.json'
 OUTPUT_JSON = CANONICAL_JSON
 
 EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv'}
+
+# ============================================================================
+# HARDENING: Agent Count Baseline Protection
+# ============================================================================
+# CRITICAL: These thresholds prevent catastrophic agent loss from bugs.
+# If discovery finds fewer agents than MINIMUM_AGENT_COUNT, it will ABORT.
+# If discovery drops more than MAX_AGENT_DROP_PERCENT from previous run, it will WARN.
+#
+# History:
+#   - 2026-01-02: 407 agents (initial baseline)
+#   - 2026-01-05: 312 agents (after string error caused 60+ agent loss - UNACCEPTABLE)
+#
+# Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
+MINIMUM_AGENT_COUNT = 300  # Hard floor - abort if below this
+MAX_AGENT_DROP_PERCENT = 10  # Warn if drop exceeds this percentage from previous run
+EXPECTED_AGENT_COUNT = 312  # Current expected count (update when agents added/removed)
 
 
 def should_exclude_file(py_file: Path) -> bool:
@@ -53,6 +70,113 @@ def should_exclude_file(py_file: Path) -> bool:
     if parts & {d.lower() for d in EXCLUDED_DIRS}:
         return True
     return False
+
+
+def validate_agent_count(agent_count: int, previous_count: Optional[int] = None) -> Tuple[bool, List[str]]:
+    """
+    HARDENING: Validate agent count against safety thresholds.
+    
+    Returns:
+        (is_valid, errors) - is_valid=False means ABORT discovery
+    """
+    errors = []
+    warnings = []
+    
+    # Hard floor check - ABORT if below minimum
+    if agent_count < MINIMUM_AGENT_COUNT:
+        errors.append(
+            f"❌ CRITICAL: Agent count {agent_count} is below MINIMUM_AGENT_COUNT ({MINIMUM_AGENT_COUNT})!\n"
+            f"   This indicates a catastrophic bug in agent detection.\n"
+            f"   Discovery ABORTED to prevent data loss.\n"
+            f"   If this is intentional, update MINIMUM_AGENT_COUNT in full_agent_discovery.py"
+        )
+        return False, errors
+    
+    # Check against previous run (if available)
+    if previous_count is not None and previous_count > 0:
+        drop = previous_count - agent_count
+        drop_percent = (drop / previous_count) * 100
+        
+        if drop > 0 and drop_percent > MAX_AGENT_DROP_PERCENT:
+            errors.append(
+                f"❌ CRITICAL: Agent count dropped by {drop} ({drop_percent:.1f}%) from previous run!\n"
+                f"   Previous: {previous_count}, Current: {agent_count}\n"
+                f"   This exceeds MAX_AGENT_DROP_PERCENT ({MAX_AGENT_DROP_PERCENT}%).\n"
+                f"   Discovery ABORTED to prevent data loss.\n"
+                f"   If this is intentional, run with --force flag"
+            )
+            return False, errors
+    
+    # Soft warning for deviation from expected count
+    if agent_count < EXPECTED_AGENT_COUNT:
+        diff = EXPECTED_AGENT_COUNT - agent_count
+        warnings.append(
+            f"⚠️  WARNING: Agent count {agent_count} is {diff} below EXPECTED_AGENT_COUNT ({EXPECTED_AGENT_COUNT})"
+        )
+    elif agent_count > EXPECTED_AGENT_COUNT:
+        diff = agent_count - EXPECTED_AGENT_COUNT
+        warnings.append(
+            f"ℹ️  INFO: Agent count {agent_count} is {diff} above EXPECTED_AGENT_COUNT ({EXPECTED_AGENT_COUNT})"
+        )
+    
+    # Print warnings but don't fail
+    for w in warnings:
+        print(w)
+    
+    return True, errors
+
+
+def get_previous_agent_count() -> Optional[int]:
+    """Get agent count from previous discovery run (from manifest or JSON)."""
+    # Try manifest first
+    if MANIFEST_JSON.exists():
+        try:
+            manifest = json.loads(MANIFEST_JSON.read_text(encoding='utf-8'))
+            return manifest.get('agent_count')
+        except (json.JSONDecodeError, KeyError):
+            pass
+    
+    # Fall back to counting agents in existing JSON
+    if CANONICAL_JSON.exists():
+        try:
+            agents = json.loads(CANONICAL_JSON.read_text(encoding='utf-8'))
+            return len(agents)
+        except json.JSONDecodeError:
+            pass
+    
+    return None
+
+
+def generate_manifest(agents: List[Dict], scan_duration: float, parse_errors: List[str]) -> Dict:
+    """Generate manifest with metadata for staleness detection and validation."""
+    import hashlib
+    from datetime import datetime
+    
+    # Compute content hash of agent data
+    content_str = json.dumps(agents, sort_keys=True)
+    content_hash = hashlib.sha256(content_str.encode()).hexdigest()
+    
+    # Layer breakdown
+    layer_counts = defaultdict(int)
+    for a in agents:
+        layer_counts[a.get('layer', 'unknown')] += 1
+    
+    manifest = {
+        'generated_at': datetime.utcnow().isoformat() + 'Z',
+        'scan_duration_seconds': round(scan_duration, 2),
+        'agent_count': len(agents),
+        'content_hash': f'sha256:{content_hash}',
+        'layer_breakdown': dict(layer_counts),
+        'parse_errors_count': len(parse_errors),
+        'minimum_agent_count': MINIMUM_AGENT_COUNT,
+        'expected_agent_count': EXPECTED_AGENT_COUNT,
+        'validation': {
+            'passed': len(agents) >= MINIMUM_AGENT_COUNT,
+            'threshold': MINIMUM_AGENT_COUNT
+        }
+    }
+    
+    return manifest
 
 # Healing-capable bases (for detection) - expanded for full MRO coverage
 HEALING_BASES = {
@@ -409,9 +533,22 @@ def get_docstring(class_node: ast.ClassDef) -> str:
 
 
 def main():
+    import sys
+    import time
+    
+    # Parse command line args
+    force_mode = '--force' in sys.argv
+    
     print("=" * 80)
-    print("FULL AGENT DISCOVERY - Single Source of Truth")
+    print("FULL AGENT DISCOVERY - Single Source of Truth (HARDENED)")
     print("=" * 80)
+    
+    # Get previous count BEFORE deleting files (for validation)
+    previous_count = get_previous_agent_count()
+    if previous_count:
+        print(f"[BASELINE] Previous agent count: {previous_count}")
+    
+    start_time = time.time()
     
     # Force fresh - delete stale JSON(s)
     for stale_path in {CANONICAL_JSON, LEGACY_JSON, MISTAKE_JSON, MISTAKE_JSON_2}:
@@ -538,9 +675,35 @@ def main():
     # Sort by layer then name
     agents.sort(key=lambda x: (x['layer'], x['class_name']))
     
+    # ========================================================================
+    # HARDENING: Validate agent count BEFORE saving
+    # ========================================================================
+    print(f"\n[VALIDATION] Checking agent count...")
+    validation_previous = None if force_mode else previous_count
+    is_valid, validation_errors = validate_agent_count(len(agents), validation_previous)
+    
+    if not is_valid:
+        print("\n" + "=" * 80)
+        print("❌ DISCOVERY ABORTED - VALIDATION FAILED")
+        print("=" * 80)
+        for err in validation_errors:
+            print(err)
+        print("\nTo force discovery despite validation failure, run:")
+        print("  python scripts/full_agent_discovery.py --force")
+        print("=" * 80)
+        sys.exit(1)
+    
+    # Calculate scan duration
+    scan_duration = time.time() - start_time
+    
     # Save JSON
     with open(OUTPUT_JSON, 'w', encoding='utf-8') as f:
         json.dump(agents, f, indent=2)
+    
+    # Generate and save manifest
+    manifest = generate_manifest(agents, scan_duration, parse_errors)
+    with open(MANIFEST_JSON, 'w', encoding='utf-8') as f:
+        json.dump(manifest, f, indent=2)
     
     # Statistics
     layers = defaultdict(int)
