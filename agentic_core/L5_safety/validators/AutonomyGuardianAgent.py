@@ -82,22 +82,54 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         # Territory definitions for compliance report - map to JSON layers
         # IMPORTANT: Use layer-based matching to avoid double-counting
         # Each territory maps to exactly one layer from agent_discovery_full.json
+        # DIDACTIC TERRITORY STRUCTURE: 4 sub-territories per layer to expose coverage gaps
+        # Factory Analogy: Base Class (manual), Core (workers), Infrastructure (utilities), Specialized (QA/support)
         self.territories = {
-            # L5 Safety - Most Critical (Top Priority) - distinct subfolders
-            "L5_safety/validators": ("L5", "Critical"),
-            "L5_safety/guardrails": ("L5", "Critical"),
-            "L5_safety/gravity": ("L5", "High"),
-            "L5_safety/red_teaming": ("L5", "High"),
-            "L5_safety/utilities": ("L5", "High"),
+            # L5 Safety - Most Critical (Quality Control Department)
+            "L5_safety/base_class": ("L5", "Critical"),      # Safety department manual
+            "L5_safety/validators": ("L5", "Critical"),       # Quality inspectors
+            "L5_safety/guardrails": ("L5", "Critical"),       # Safety barriers/shields
+            "L5_safety/gravity": ("L5", "High"),              # Import compliance
+            "L5_safety/red_teaming": ("L5", "High"),          # Security probing
+            "L5_safety/infrastructure": ("L5", "High"),       # Safety monitoring systems
             
-            # L4-L0 Layers - single territory per layer to avoid double-counting
-            "L4_state": ("L4", "High"),
-            "L3_orchestration": ("L3", "High"),
-            "L2_execution": ("L2", "High"),
-            "L1_cognition": ("L1", "Medium"),
-            "L0_maintenance": ("L0", "Medium"),
+            # L4 State - Warehouse/Inventory Department
+            "L4_state/base_class": ("L4", "High"),            # Warehouse procedures manual
+            "L4_state/core": ("L4", "High"),                  # Inventory managers
+            "L4_state/infrastructure": ("L4", "High"),        # Warehouse sensors/tracking
+            "L4_state/specialized": ("L4", "Medium"),         # Backup/recovery crew
             
-            # Apps - single territory per app to avoid double-counting
+            # L3 Orchestration - Floor Managers Department
+            "L3_orchestration/base_class": ("L3", "High"),    # Floor manager handbook
+            "L3_orchestration/core": ("L3", "High"),          # Workflow coordinators
+            "L3_orchestration/infrastructure": ("L3", "High"),# Scheduling systems
+            "L3_orchestration/specialized": ("L3", "Medium"), # RL learners/optimizers
+            
+            # L2 Execution - Assembly Line Department
+            "L2_execution/base_class": ("L2", "High"),        # Assembly line manual
+            "L2_execution/core": ("L2", "High"),              # Tool operators
+            "L2_execution/infrastructure": ("L2", "High"),    # Tool maintenance systems
+            "L2_execution/specialized": ("L2", "Medium"),     # Sovereign MCP clients
+            
+            # L1 Cognition - Design/Planning Department
+            "L1_cognition/base_class": ("L1", "Medium"),      # Design team handbook
+            "L1_cognition/core": ("L1", "Medium"),            # Thinkers/planners
+            "L1_cognition/infrastructure": ("L1", "Medium"),  # Learning/memory systems
+            "L1_cognition/specialized": ("L1", "Low"),        # Meta-learning optimizers
+            
+            # L0 Maintenance - Facilities Department
+            "L0_maintenance/base_class": ("L0", "Medium"),    # Facilities manual
+            "L0_maintenance/core": ("L0", "Medium"),          # Maintenance workers
+            "L0_maintenance/infrastructure": ("L0", "Medium"),# Boot-time validation
+            "L0_maintenance/specialized": ("L0", "Low"),      # ❌ Gap detection row
+            
+            # Cross-cutting Observability (spans all layers)
+            "observability/metrics": ("observability", "High"),
+            "observability/telemetry": ("observability", "High"),
+            "observability/tracing": ("observability", "Medium"),
+            "observability/compliance": ("observability", "Medium"),
+            
+            # Apps - Business Applications
             "apps_lic": ("apps_lic", "High"),
             "apps_rg": ("apps_rg", "High"),
             "apps_shared": ("apps_shared", "Medium"),
@@ -106,9 +138,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             "tests": ("tests", "Medium"),
         }
         
-        # Infrastructure path patterns - agents matching these are annotated as infrastructure
-        # but still counted in their layer territory (no double-counting)
-        self.infrastructure_path_patterns = {"observability", "config/validators"}
+        # Sub-territory classification patterns (for agent routing)
+        self.subterritory_patterns = {
+            "base_class": ["BaseAgent", "Base", "Mixin"],
+            "infrastructure": ["Metrics", "Telemetry", "Tracing", "Config", "Validator", "Checkpoint", "Storage"],
+            "specialized": ["Sovereign", "MCP", "Client", "RL", "PPO", "Q-Learning", "Meta"],
+            "core": []  # Default fallback
+        }
+        
+        # Infrastructure path patterns - for agent annotation in dashboard (legacy compatibility)
+        self.infrastructure_path_patterns = {"observability", "config/validators", "metrics", "telemetry", "tracing"}
         
         # Phase 5: Layer base class mapping (SSOT - sync with pre-commit hook)
         # Note: L0 (Maintenance) is infrastructure/tooling, not an agent layer - no base class required
@@ -982,19 +1021,65 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 
         return classified_paths
 
+    def _classify_subterritory(self, agent_path: Path, class_name: str = "") -> str:
+        """Classify agent into sub-territory based on patterns.
+        
+        Returns: 'base_class', 'infrastructure', 'specialized', or 'core' (default)
+        """
+        path_str = str(agent_path).replace("\\", "/").lower()
+        name_lower = class_name.lower() if class_name else agent_path.stem.lower()
+        
+        # Base class detection
+        if any(pattern.lower() in name_lower for pattern in ["baseagent", "base"]) and "base" in name_lower:
+            return "base_class"
+        if "mixin" in name_lower:
+            return "base_class"
+        
+        # Infrastructure detection (observability, config, validation, storage)
+        infra_patterns = ["metrics", "telemetry", "tracing", "config", "checkpoint", "storage", "cache", "ledger", "validator"]
+        if any(p in name_lower for p in infra_patterns) or any(p in path_str for p in ["observability", "config/", "validation"]):
+            return "infrastructure"
+        
+        # Specialized detection (sovereign clients, RL agents, meta-agents)
+        specialized_patterns = ["sovereign", "mcp", "client", "ppo", "qlearning", "reinforc", "meta", "exerciser"]
+        if any(p in name_lower for p in specialized_patterns):
+            return "specialized"
+        
+        # Default to core
+        return "core"
+
     def _get_territory_agents(
         self, territory_key: str, layer_filter: str, 
         all_agents: List[Path], path_to_layer: Dict[str, str]
     ) -> List[Path]:
-        """Get agents for a specific territory using layer-based matching.
+        """Get agents for a specific territory using layer-based + sub-territory matching.
         
-        Uses the 'layer' field from agent_discovery_full.json to ensure
-        each agent is counted in exactly one territory (no double-counting).
+        Uses the 'layer' field from agent_discovery_full.json plus sub-territory
+        classification to ensure granular visibility into coverage gaps.
         """
-        if territory_key.startswith("L5_safety/"):
-            # L5 has distinct subfolders (validators, guardrails, gravity, red_teaming)
-            subfolder = territory_key.split("/")[1]
-
+        # Parse territory key into layer and sub-territory
+        parts = territory_key.split("/")
+        layer_part = parts[0]
+        subterritory = parts[1] if len(parts) > 1 else None
+        
+        # Handle observability cross-cutting territory
+        if layer_part == "observability":
+            path_filter = subterritory or ""
+            return [
+                p for p in all_agents
+                if "observability" in str(p).replace("\\", "/").lower()
+                and path_filter in str(p).replace("\\", "/").lower()
+            ]
+        
+        # Handle apps (no sub-territories)
+        if layer_part.startswith("apps_") or layer_part == "tests":
+            return [
+                p for p in all_agents
+                if path_to_layer.get(str(p)) == layer_filter
+            ]
+        
+        # Handle L5 with existing folder-based sub-territories
+        if layer_part == "L5_safety" and subterritory in ["validators", "guardrails", "gravity", "red_teaming"]:
             def is_red_team_agent_file(p: Path) -> bool:
                 s = str(p).replace("\\", "/").lower()
                 if "/l5_safety/red_teaming/" in s:
@@ -1004,31 +1089,53 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     return any(t in fname for t in ("redteam", "redteamer", "promptinjection", "adversarial"))
                 return False
 
-            if subfolder == "red_teaming":
+            if subterritory == "red_teaming":
                 return [
                     p for p in all_agents
                     if path_to_layer.get(str(p)) == "L5" and is_red_team_agent_file(p)
                 ]
 
-            if subfolder == "guardrails":
+            if subterritory == "guardrails":
                 return [
                     p for p in all_agents
                     if path_to_layer.get(str(p)) == "L5"
-                    and subfolder in str(p).replace("\\", "/")
+                    and subterritory in str(p).replace("\\", "/")
                     and not is_red_team_agent_file(p)
                 ]
 
             return [
                 p for p in all_agents
-                if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")
+                if path_to_layer.get(str(p)) == "L5" and subterritory in str(p).replace("\\", "/")
             ]
-        else:
-            # All other territories: match by layer field from JSON
-            # This ensures each agent is counted exactly once
-            return [
+        
+        # Handle sub-territory classification for L0-L4 (base_class, core, infrastructure, specialized)
+        if subterritory in ["base_class", "core", "infrastructure", "specialized"]:
+            layer_agents = [
                 p for p in all_agents
                 if path_to_layer.get(str(p)) == layer_filter
             ]
+            # Classify each agent and filter by sub-territory
+            return [
+                p for p in layer_agents
+                if self._classify_subterritory(p) == subterritory
+            ]
+        
+        # Handle L5 new sub-territories (base_class, infrastructure)
+        if layer_part == "L5_safety" and subterritory in ["base_class", "infrastructure"]:
+            layer_agents = [
+                p for p in all_agents
+                if path_to_layer.get(str(p)) == "L5"
+            ]
+            return [
+                p for p in layer_agents
+                if self._classify_subterritory(p) == subterritory
+            ]
+        
+        # Fallback: match by layer field from JSON
+        return [
+            p for p in all_agents
+            if path_to_layer.get(str(p)) == layer_filter
+        ]
 
     def _compute_territory_metrics_with_violations(
         self, agents: List[Path], used_stems: set, 
