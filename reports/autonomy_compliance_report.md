@@ -8,12 +8,12 @@
 **System Health:** 71.1/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
 ### Key Metrics
-- **Total Agents:** 313
-- **Compliant:** 161 (51.4%) ❌
-- **Healing Capabilities:** 300 (95.8%) ✅
-- **Healing Invocation:** 155 (49.5%) ❌
-- **With Tests:** 295 (94.2%) ✅
-- **Avg Complexity:** 59.0 ❌
+- **Total Agents:** 312
+- **Compliant:** 160 (51.3%) ❌
+- **Healing Capabilities:** 299 (95.8%) ✅
+- **Healing Invocation:** 154 (49.4%) ❌
+- **With Tests:** 294 (94.2%) ✅
+- **Avg Complexity:** 59.3 ❌
 
 ## 📊 Territory Analysis
 
@@ -30,7 +30,7 @@
 
 ### Medium Priority Territories
 
-- ⚠️ **L5 Safety/Validators**: 16/20 compliant | Health: 95.0% | Risk: MED
+- 🔥 **L5 Safety/Validators**: 15/19 compliant | Health: 94.7% | Risk: HIGH
 - ⚠️ **L5 Safety/Guardrails**: 26/30 compliant | Health: 94.4% | Risk: MED
 - 🔥 **L0 Maintenance/Infrastructure**: 0/3 compliant | Health: 55.6% | Risk: HIGH | Heal Gap: 66.7%
 - 🔥 **L3 Orchestration/Specialized**: 0/5 compliant | Health: 80.0% | Risk: HIGH
@@ -66,6 +66,7 @@
 - **L1 Cognition/Core**: Focus on complexity reduction (CC=31.0) and test coverage
 - **Apps Lic**: Focus on complexity reduction (CC=31.0) and test coverage
 - **Apps Rg**: Focus on complexity reduction (CC=31.0) and test coverage
+- **L5 Safety/Validators**: Focus on complexity reduction (CC=31.0) and test coverage
 - **L4 State/Core**: Focus on complexity reduction (CC=31.0) and test coverage
 - **L4 State/Infrastructure**: Focus on complexity reduction (CC=31.0) and test coverage
 - **L4 State/Specialized**: Focus on complexity reduction (CC=31.0) and test coverage

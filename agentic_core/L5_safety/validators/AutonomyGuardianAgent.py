@@ -572,11 +572,11 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             markdown: Whether to output markdown format
             context: Optional context dict with 'target_resolver' function for metric exceptions
         """
+        # Store context for dashboard generation
+        self.context = context or {}
+        
         today = date.today().strftime("%B %d, %Y")
         print(f"### Autonomy Compliance Report — {today}\n")
-        
-        # Store context for use in dashboard generation
-        self.context = context or {}
 
         if markdown:
             self._print_markdown_header()
@@ -1785,6 +1785,22 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "IsInfrastructure": is_infrastructure,  # Territory-level flag
                 "InfraAgentCount": infra_agent_count  # Count of infrastructure agents in this territory
             }
+            
+            # Resolve autonomy targets from context if available
+            if hasattr(self, 'context') and self.context and 'target_resolver' in self.context:
+                target_resolver = self.context['target_resolver']
+                row["Target Invocation"] = target_resolver(territory_name, "invocation")
+                row["Target MCP"] = target_resolver(territory_name, "mcp_hardening")
+                row["Target Tests"] = target_resolver(territory_name, "test_coverage")
+                row["Target Observability"] = target_resolver(territory_name, "observability")
+                row["Target Complexity"] = target_resolver(territory_name, "complexity")
+            else:
+                # Default targets if no resolver provided
+                row["Target Invocation"] = 60
+                row["Target MCP"] = 80
+                row["Target Tests"] = 80
+                row["Target Observability"] = 70
+                row["Target Complexity"] = 15
             
             # Collect per-agent diagnostics with detailed metrics
             territory_agents = []

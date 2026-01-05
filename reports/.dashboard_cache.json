@@ -1,17 +1,17 @@
 {
   "agentic_core/L5_safety/validators/AutonomyGuardianAgent.py": {
-    "hash": "0f19950b900b7beb",
+    "hash": "769c11f6fd2f3667",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 2348,
+      "loc": 2361,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 1,
       "healing_cap": 1,
       "healing_invoke": 1,
       "tests": 1,
-      "cc_sum": 671,
-      "max_cc": 264,
+      "cc_sum": 674,
+      "max_cc": 267,
       "typed": 88.13559322033898,
       "documented": 83.60655737704919,
       "observable": 100
@@ -1746,20 +1746,20 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/CodeDeduplicationAgent.py": {
-    "hash": "1e8c263debaa00b3",
+    "hash": "ecf91d6eaf65e9f8",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 304,
+      "loc": 463,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
       "healing_cap": 1,
       "healing_invoke": 1,
       "tests": 1,
-      "cc_sum": 87,
-      "max_cc": 10,
+      "cc_sum": 144,
+      "max_cc": 15,
       "typed": 100.0,
-      "documented": 94.44444444444444,
+      "documented": 95.65217391304348,
       "observable": 100
     }
   },

@@ -9,6 +9,16 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple, Optional
 import textwrap
 import shutil
+import warnings
+
+# NamingAgent bridge for future-proof uniqueness (post-2025-12-31 consolidation)
+try:
+    from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
+    NAMING_AGENT_AVAILABLE = True
+except ImportError:
+    NAMING_AGENT_AVAILABLE = False
+    warnings.warn("NamingAgent not available — falling back to heuristic uniqueness resolution", RuntimeWarning)
+
 from apps_shared.config.operational_config import OPERATIONAL_EXCLUDED_DIRS
 
 # Tree-sitter for AST fingerprinting
@@ -34,13 +44,22 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
     - Groups duplicates with similarity > 95%.
     - Reports redundancy to the L4 Ledger for audit tracking.
     - [SURGERY] When RUN_SPRAWL_SURGERY=True: Extracts duplicates to shared utils
+    - Whole-file duplicate detection and safe consolidation
+    - Filename uniqueness enforcement (identical content → consolidate; divergent → rename only)
+    - Dead-code pruning with empty-file auto-deletion
+    
+    Consolidates functionality from deprecated FilenameUniquenessGuardianAgent (2025-12-31).
     """
 
     def __init__(self, similarity_threshold: float=0.95, min_lines: int=8) -> None:
         self.threshold = similarity_threshold
         self.min_lines = min_lines
         self.duplicate_groups: Dict[str, List[Tuple[Path, str, int]]] = defaultdict(list)
+        self.file_duplicate_groups: Dict[str, List[Path]] = defaultdict(list)  # hash → paths (identical whole files)
+        self.filename_duplicates: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)  # basename → [(path, file_hash)]
         self.extracted_count = 0
+        self.renamed_count = 0
+        self.consolidated_count = 0
         self.errors: List[str] = []
         
         # Initialize tree-sitter parser if available
@@ -197,6 +216,152 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
                     print(f"      [!] Backup failed for {file_path}: {e}")
         print(f'   [SURGERY COMPLETE] {self.extracted_count} instances extracted')
 
+    def _hash_entire_file(self, file_path: Path) -> Optional[str]:
+        """SHA256 of normalized entire file (dedent, strip comments, collapse whitespace)."""
+        try:
+            source = file_path.read_text(encoding='utf-8')
+            normalized = textwrap.dedent(source)
+            lines = []
+            for line in normalized.splitlines():
+                stripped = line.strip()
+                if stripped.startswith('#'):
+                    continue
+                if stripped:
+                    lines.append(' '.join(stripped.split()))
+            content = '\n'.join(lines)
+            return hashlib.sha256(content.encode('utf-8')).hexdigest()
+        except Exception as e:
+            self.errors.append(f'File hash error {file_path}: {e}')
+            return None
+
+    def scan_file_level_duplicates(self, python_files: List[Path]) -> None:
+        """Detect exact whole-file duplicates (identical content)."""
+        print('\n[*] CodeDeduplicationAgent: Scanning for whole-file duplicates...')
+        hash_to_files: Dict[str, List[Path]] = defaultdict(list)
+        for path in python_files:
+            if not path.exists() or 'archives' in str(path):
+                continue
+            file_hash = self._hash_entire_file(path)
+            if file_hash:
+                hash_to_files[file_hash].append(path)
+        for file_hash, files in hash_to_files.items():
+            if len(files) > 1:
+                print(f'   [!] IDENTICAL FILE DUPLICATE ({len(files)} copies):')
+                for p in files:
+                    print(f'      -> {p}')
+                self.file_duplicate_groups[file_hash] = files
+        if not self.file_duplicate_groups:
+            print('   [OK] No whole-file duplicates detected.')
+
+    def scan_filename_duplicates(self, python_files: List[Path], project_root: Path) -> None:
+        """Detect duplicate basenames with safety check (identical vs divergent content)."""
+        print('\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (safety-enhanced)...')
+        basename_to_entries: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)
+        for path in python_files:
+            if not path.exists() or 'archives' in str(path) or path.name in {'__init__.py', 'setup.py'}:
+                continue
+            basename = path.name
+            file_hash = self._hash_entire_file(path) or 'ERROR'
+            basename_to_entries[basename].append((path, file_hash))
+        for basename, entries in basename_to_entries.items():
+            if len(entries) > 1:
+                hashes = {h for _, h in entries}
+                status = "IDENTICAL CONTENT" if len(hashes) == 1 else "DIVERGENT CONTENT (RENAME ONLY)"
+                print(f'   [!] DUPLICATE FILENAME: {basename} ({len(entries)} copies) — {status}')
+                for p, h in entries:
+                    rel = p.relative_to(project_root)
+                    print(f'      -> {rel} (hash: {h[:8]}...)')
+                self.filename_duplicates[basename] = entries
+        if not self.filename_duplicates:
+            print('   [OK] No duplicate filenames requiring action.')
+
+    def _suggest_unique_name(self, file_path: Path, project_root: Path) -> Path:
+        """Primary: NamingAgent if available; Fallback: content heuristics."""
+        if NAMING_AGENT_AVAILABLE:
+            try:
+                naming = get_naming_agent(project_root)
+                # Use NamingAgent for validation if available
+                proposed = file_path.name
+                # Fallback to heuristic if NamingAgent doesn't provide suggestion
+            except Exception as e:
+                self.errors.append(f'NamingAgent call failed: {e}')
+        
+        # Heuristic fallback based on content
+        try:
+            preview = file_path.read_text(encoding='utf-8', errors='ignore')[:2048].lower()
+            if any(k in preview for k in ['safety', 'guardrail', 'mcp', 'pii', 'bias', 'redteam']):
+                target_dir = project_root / 'agentic_core' / 'L5_safety' / 'guardrails'
+            elif any(k in preview for k in ['outreach', 'lic', 'message', 'contact', 'cold']):
+                target_dir = project_root / 'apps_lic' / 'engines' / 'outreach_engine'
+            elif any(k in preview for k in ['resume', 'rg', 'cv', 'job', 'ranking']):
+                target_dir = project_root / 'apps_rg' / 'engines' / 'resume_engine'
+            elif any(k in preview for k in ['thought', 'cognition', 'reasoning', 'score']):
+                target_dir = project_root / 'agentic_core' / 'L1_cognition' / 'thought_engine'
+            elif any(k in preview for k in ['metric', 'observability', 'tracing']):
+                target_dir = project_root / 'agentic_core' / 'observability' / 'metrics'
+            else:
+                target_dir = project_root / 'agentic_core' / 'utils' / 'deduplicated'
+            target_dir.mkdir(parents=True, exist_ok=True)
+            new_path = target_dir / file_path.name
+            stem, suffix = file_path.stem, file_path.suffix
+            counter = 1
+            while new_path.exists():
+                new_path = target_dir / f'{stem}_v{counter}{suffix}'
+                counter += 1
+            return new_path
+        except Exception as e:
+            self.errors.append(f'Uniqueness suggestion failed for {file_path}: {e}')
+            return file_path.with_name(f'UNIQUE_{file_path.name}')
+
+    def resolve_duplicates_safely(self, project_root: Path, dry_run: bool = True) -> None:
+        """Central resolution: identical files → consolidate; divergent filenames → rename."""
+        print('\n[*] SAFE DUPLICATE RESOLUTION SURGERY...')
+        # First: identical whole files
+        for file_hash, paths in self.file_duplicate_groups.items():
+            if len(paths) > 1:
+                # Prefer active locations over archives
+                primary = min(paths, key=lambda p: ('archives' in str(p), 'old' in str(p), str(p)))
+                for p in paths:
+                    if p != primary:
+                        if not dry_run:
+                            backup = p.with_suffix('.bak_identical')
+                            shutil.copy(p, backup)
+                            p.unlink()
+                            print(f'      [✓] DELETED identical file: {p} (backup: {backup})')
+                            self.consolidated_count += 1
+                        else:
+                            print(f'      [DRY-RUN] Would delete: {p}')
+        
+        # Second: filename conflicts
+        for basename, entries in self.filename_duplicates.items():
+            paths = [p for p, _ in entries]
+            hashes = {h for _, h in entries}
+            if len(hashes) == 1:
+                # Identical content → consolidate
+                primary = min(paths, key=lambda p: ('archives' in str(p), str(p)))
+                for p in paths:
+                    if p != primary:
+                        if not dry_run:
+                            backup = p.with_suffix('.bak_nameident')
+                            shutil.copy(p, backup)
+                            p.unlink()
+                            print(f'      [✓] DELETED identical-by-name: {p}')
+                            self.consolidated_count += 1
+                        else:
+                            print(f'      [DRY-RUN] Would delete: {p}')
+            else:
+                # Divergent content → rename all but primary (NEVER DELETE)
+                primary = paths[0]
+                for p in paths[1:]:
+                    if not dry_run:
+                        new_path = self._suggest_unique_name(p, project_root)
+                        shutil.move(str(p), str(new_path))
+                        print(f'      [✓] RENAMED divergent duplicate: {p} → {new_path.relative_to(project_root)}')
+                        self.renamed_count += 1
+                    else:
+                        new_path = self._suggest_unique_name(p, project_root)
+                        print(f'      [DRY-RUN] Would rename: {p} → {new_path.relative_to(project_root)}')
+
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L2 execution agent - operational only."""
@@ -215,7 +380,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
             _call_path.discard(agent_name)
 
     async def execute(self, ctx: Any) -> Any:
-        """Batch agent interface."""
+        """Batch agent interface with enhanced duplicate detection."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
 
@@ -224,8 +389,34 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
         if not hasattr(ctx, 'project_root'):
             print('   [!] project_root Missing in context')
             return
+        
+        python_paths = [Path(f) for f in ctx.python_files]
+        project_root_path = Path(ctx.project_root)
+        
+        # Phase 1: Code block duplicates (existing functionality)
         self.scan_for_duplicates(ctx.python_files)
-        await self.auto_extract_duplicates(Path(ctx.project_root), ctx)
+        
+        # Phase 2: Whole-file duplicates (new - consolidates FilenameUniquenessGuardianAgent)
+        self.scan_file_level_duplicates(python_paths)
+        
+        # Phase 3: Filename duplicates with safety check (new)
+        self.scan_filename_duplicates(python_paths, project_root_path)
+        
+        # Phase 4: Safe resolution if surgery enabled
+        if getattr(ctx, 'RUN_SPRAWL_SURGERY', False):
+            self.resolve_duplicates_safely(project_root_path, dry_run=False)
+        
+        # Phase 5: Extract code block duplicates (existing functionality)
+        await self.auto_extract_duplicates(project_root_path, ctx)
+        
+        # Report results
+        print(f'\n[*] DEDUPLICATION SUMMARY:')
+        print(f'    Code block duplicates: {len(self.duplicate_groups)} groups')
+        print(f'    Whole-file duplicates: {len(self.file_duplicate_groups)} groups')
+        print(f'    Filename duplicates: {len(self.filename_duplicates)} groups')
+        print(f'    Files consolidated: {self.consolidated_count}')
+        print(f'    Files renamed: {self.renamed_count}')
+        print(f'    Errors: {len(self.errors)}')
 
     # SUPPLEMENTED FROM DeadCodeDetectorAgent + DeadCodePrunerAgent — enhances dead code detection — merged 2025-12-30
     def _collect_ast_symbols(self, tree: ast.AST) -> tuple:

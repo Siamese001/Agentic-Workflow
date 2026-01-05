@@ -25,37 +25,38 @@ TARGETS: Dict[str, Dict[str, Union[int, str]]] = {
     "default": DEFAULT_TARGETS,
 
     # --- L0 Maintenance (Passive/Bootstrapping) ---
-    # Low invocation is normal; they only run during startup or specific failures.
+    # MAX INVOCATION TARGET: All agents should aim for 100% invocation
     "L0_.*": {
-        "heal_capability": 60,      # Simple scripts may not need full healing
-        "invocation": 20,           # Rare execution path
-        "observability": 70,        # Minimal runtime events
-        "mcp_hardened": "N/A",      # Often no external tools
-        "tests": 80,
+        "heal_capability": 100,     # Max target
+        "invocation": 100,          # MAX TARGET - all agents should invoke healing
+        "observability": 100,       # Max target
+        "mcp_hardened": 100,        # Max target
+        "tests": 100,               # Max target
     },
 
     # --- Infrastructure (Utilities/Wrappers) ---
-    # Wrappers around DBs/APIs; heavy on complexity, light on autonomous decision making.
+    # MAX INVOCATION TARGET: All agents should aim for 100% invocation
     ".*infrastructure": {
-        "invocation": 70,
-        "tests": 85,
-        "mcp_hardened": "conditional_tools", # Special flag handled in logic
+        "invocation": 100,          # MAX TARGET
+        "tests": 100,               # Max target
+        "mcp_hardened": 100,        # Max target
         "complexity_max": 20,       # Validation logic often requires nesting
     },
 
     # --- Base Classes (Abstract) ---
-    # Cannot run directly; invocation/observability N/A.
+    # MAX INVOCATION TARGET: Even abstract classes should define heal patterns
     ".*base_class": {
-        "invocation": "N/A",
-        "observability": "N/A",
-        "tests": 70,                # Interface tests only
-        "mcp_hardened": "N/A",
+        "invocation": 100,          # MAX TARGET
+        "observability": 100,       # Max target
+        "tests": 100,               # Max target
+        "mcp_hardened": 100,        # Max target
     },
 
     # --- L5 Safety (High Criticality) ---
-    # Complexity allowed for rigorous validation chains.
+    # MAX INVOCATION TARGET
     "L5_.*": {
-        "complexity_max": 20,
+        "invocation": 100,          # MAX TARGET
+        "complexity_max": 20,       # Validation logic often requires nesting
     },
 }
 
