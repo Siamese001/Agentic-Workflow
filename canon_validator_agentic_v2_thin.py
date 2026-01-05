@@ -101,6 +101,11 @@ def main():
         help="List all discoverable agents"
     )
     parser.add_argument(
+        "--yes", "-y",
+        action="store_true",
+        help="Automatic yes to all prompts (non-interactive mode)"
+    )
+    parser.add_argument(
         "--report",
         action="store_true",
         help="Run autonomy compliance report"
@@ -151,9 +156,14 @@ def main():
 
         # Case 1: Cached JSON exists → prompt user
         if json_path.exists():
-            print(f"\n[*] Cached agent discovery found ({json_path.name}, {json_path.stat().st_mtime:.0f} timestamp)")
-            choice = input("   Use cached JSON (faster) [Y/n]? ").strip().lower()
-            if choice != "n":  # Default yes
+            if not args.yes:
+                print(f"\n[*] Cached agent discovery found ({json_path.name})")
+                choice = input("   Use cached JSON (faster) [Y/n]? ").strip().lower()
+                use_cache = (choice != "n")
+            else:
+                use_cache = True
+            
+            if use_cache:
                 try:
                     data = json.loads(json_path.read_text(encoding="utf-8"))
                     agents = process_discovery_data(data)
@@ -181,9 +191,14 @@ def main():
                 if json_path.exists():
                     print("   Proceeding with live scan as requested...")
                 else:
-                    print(f"\n[*] No cached discovery file found.")
-                    choice = input("   Run live agent discovery now [Y/n]? ").strip().lower()
-                    if choice == "n":
+                    if not args.yes:
+                        print(f"\n[*] No cached discovery file found.")
+                        choice = input("   Run live agent discovery now [Y/n]? ").strip().lower()
+                        run_live = (choice != "n")
+                    else:
+                        run_live = True
+                    
+                    if not run_live:
                         print("   [ABORT] Cannot proceed without agent list")
                         return []
 
@@ -226,9 +241,13 @@ def main():
     if args.report:
         print("\n[*] Running Autonomy Compliance Report...")
         try:
+            # Import Guardian and Targets Config
+            from agentic_core.config.autonomy_targets import get_target
             from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
             guardian = get_autonomy_guardian(project_root)
-            guardian.generate_compliance_report()
+            # Pass extra config if needed to inject targets during JSON generation
+            print("   [TARGETS] Exceptions config loaded from agentic_core/config/autonomy_targets.py")
+            guardian.generate_compliance_report(context={"target_resolver": get_target})
         except Exception as e:
             print(f"   [!] Report failed: {e}")
             traceback.print_exc()
