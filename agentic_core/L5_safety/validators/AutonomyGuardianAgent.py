@@ -86,12 +86,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         # Factory Analogy: Base Class (manual), Core (workers), Infrastructure (utilities), Specialized (QA/support)
         self.territories = {
             # L5 Safety - Most Critical (Quality Control Department)
-            "L5_safety/base_class": ("L5", "Critical"),      # Safety department manual
+            # NOTE: L5 uses folder-based territories only (no sub-territory classification)
+            # to avoid duplication between folder matching and name-pattern classification
             "L5_safety/validators": ("L5", "Critical"),       # Quality inspectors
             "L5_safety/guardrails": ("L5", "Critical"),       # Safety barriers/shields
             "L5_safety/gravity": ("L5", "High"),              # Import compliance
             "L5_safety/red_teaming": ("L5", "High"),          # Security probing
-            "L5_safety/infrastructure": ("L5", "High"),       # Safety monitoring systems
             
             # L4 State - Warehouse/Inventory Department
             "L4_state/base_class": ("L4", "High"),            # Warehouse procedures manual
@@ -676,14 +676,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         medium_priority_territories = []
         low_priority_territories = []
         
-        # Phase 3: Process classified territories
+        # Phase 3: Process classified territories using proper sub-territory classification
         for territory_key, (layer_filter, priority) in self.territories.items():
-            # Get agents for this territory using path_to_layer
-            if territory_key.startswith("L5_safety"):
-                subfolder = territory_key.split("/")[1]
-                agents = [p for p in all_agents if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")]
-            else:
-                agents = [p for p in all_agents if path_to_layer.get(str(p)) == layer_filter]
+            # Use _get_territory_agents for proper sub-territory filtering
+            agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
             
             if not agents:
                 continue
@@ -852,7 +848,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         # Add CSV totals
         csv_data.append([
             "TOTAL", global_metrics['agents'], global_metrics['compliant'], global_metrics['total_healing_cap'], global_metrics['total_healing_invoke'],
-            global_metrics['total_hardened'], global_metrics['tests'], global_metrics['overall_avg_cc'], global_metrics['total_typed'], global_metrics['total_observable'], global_metrics['overall_criticality'], global_metrics['overall_health'], global_metrics['overall_risk'], global_metrics['total_used'], "ALL"
+            global_metrics['total_hardened'], global_metrics['total_tests'], global_metrics['overall_avg_cc'], global_metrics['total_typed'], global_metrics['total_observable'], global_metrics['overall_criticality'], global_metrics['overall_health'], global_metrics['overall_risk'], global_metrics['total_used'], "ALL"
         ])
 
         # Finish markdown report
@@ -1025,27 +1021,38 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         """Classify agent into sub-territory based on patterns.
         
         Returns: 'base_class', 'infrastructure', 'specialized', or 'core' (default)
+        
+        Priority order (most specific first):
+        1. base_class - foundational mixins/bases
+        2. specialized - sovereign clients, RL agents, exercisers (high specificity)
+        3. infrastructure - observability, caching, checkpointing (medium specificity)
+        4. core - default business logic agents
         """
         path_str = str(agent_path).replace("\\", "/").lower()
         name_lower = class_name.lower() if class_name else agent_path.stem.lower()
         
-        # Base class detection
+        # 1. Base class detection (highest priority - foundational)
         if any(pattern.lower() in name_lower for pattern in ["baseagent", "base"]) and "base" in name_lower:
             return "base_class"
         if "mixin" in name_lower:
             return "base_class"
         
-        # Infrastructure detection (observability, config, validation, storage)
-        infra_patterns = ["metrics", "telemetry", "tracing", "config", "checkpoint", "storage", "cache", "ledger", "validator"]
-        if any(p in name_lower for p in infra_patterns) or any(p in path_str for p in ["observability", "config/", "validation"]):
-            return "infrastructure"
-        
-        # Specialized detection (sovereign clients, RL agents, meta-agents)
-        specialized_patterns = ["sovereign", "mcp", "client", "ppo", "qlearning", "reinforc", "meta", "exerciser"]
+        # 2. Specialized detection BEFORE infrastructure (sovereign clients, RL agents, meta-agents)
+        # These have very specific naming conventions that should take precedence
+        specialized_patterns = ["sovereign", "mcpclient", "ppo", "qlearning", "reinforc", "meta", "exerciser"]
         if any(p in name_lower for p in specialized_patterns):
             return "specialized"
         
-        # Default to core
+        # 3. Infrastructure detection (observability, config, storage, caching)
+        # Note: Use specific path patterns to avoid false matches (e.g., "validation" would match "ValidationContext")
+        infra_name_patterns = ["metrics", "telemetry", "tracing", "checkpoint", "storage", "cache", "ledger", "validator"]
+        infra_path_patterns = ["/observability/", "/config/validators/"]  # More specific path patterns
+        if any(p in name_lower for p in infra_name_patterns):
+            return "infrastructure"
+        if any(p in path_str for p in infra_path_patterns):
+            return "infrastructure"
+        
+        # 4. Default to core (business logic agents)
         return "core"
 
     def _get_territory_agents(
@@ -1109,10 +1116,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             ]
         
         # Handle sub-territory classification for L0-L4 (base_class, core, infrastructure, specialized)
+        # DEDUPLICATION: Exclude observability-path agents from L-layer territories
+        # (they're counted in the cross-cutting observability territories instead)
         if subterritory in ["base_class", "core", "infrastructure", "specialized"]:
             layer_agents = [
                 p for p in all_agents
                 if path_to_layer.get(str(p)) == layer_filter
+                and "/observability/" not in str(p).replace("\\", "/").lower()
             ]
             # Classify each agent and filter by sub-territory
             return [
@@ -1120,16 +1130,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 if self._classify_subterritory(p) == subterritory
             ]
         
-        # Handle L5 new sub-territories (base_class, infrastructure)
-        if layer_part == "L5_safety" and subterritory in ["base_class", "infrastructure"]:
-            layer_agents = [
-                p for p in all_agents
-                if path_to_layer.get(str(p)) == "L5"
-            ]
-            return [
-                p for p in layer_agents
-                if self._classify_subterritory(p) == subterritory
-            ]
+        # NOTE: L5 uses folder-based territories only (validators, guardrails, gravity, red_teaming)
+        # Sub-territory classification (base_class, infrastructure) is NOT used for L5
+        # to prevent duplication between folder matching and name-pattern classification
         
         # Fallback: match by layer field from JSON
         return [
