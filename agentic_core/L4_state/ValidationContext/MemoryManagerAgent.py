@@ -341,4 +341,4 @@ def get_memory_manager(base_dir: str=None) -> MemoryManagerAgent:
     global _memory_manager
     if _memory_manager is None:
         _memory_manager = MemoryManagerAgent(base_dir)
-    return _memory_manager\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)
+    return _memory_manager

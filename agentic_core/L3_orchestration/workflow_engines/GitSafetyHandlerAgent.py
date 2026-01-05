@@ -204,4 +204,4 @@ def get_git_safety_handler(McpRouterAgent: Any) -> GitSafetyHandlerAgent:
     Returns:
         GitSafetyHandlerAgent instance
     """
-    return GitSafetyHandlerAgent(McpRouterAgent=McpRouterAgent)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return GitSafetyHandlerAgent(McpRouterAgent=McpRouterAgent)

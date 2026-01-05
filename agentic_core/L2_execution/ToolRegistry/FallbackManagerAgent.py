@@ -210,4 +210,4 @@ def create_fallback_manager(strategy: FallbackStrategy=FallbackStrategy.SEQUENTI
 
 def get_fallback_manager() -> FallbackManagerAgent:
     """Factory function to get fallback manager instance."""
-    return FallbackManagerAgent()\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return FallbackManagerAgent()

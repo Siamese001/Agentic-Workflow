@@ -262,4 +262,4 @@ def run(
     except Exception as e:
         Logger.critical(
             f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
-        return f"CRITICAL EXCEPTION running destructive action: {e}"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+        return f"CRITICAL EXCEPTION running destructive action: {e}"

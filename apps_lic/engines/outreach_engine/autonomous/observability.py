@@ -336,4 +336,3 @@ class OutreachPhase5OrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             "metrics": self.metrics.get_summary(),
             "reports": len(self.reporter.get_reports()),
         }
-\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

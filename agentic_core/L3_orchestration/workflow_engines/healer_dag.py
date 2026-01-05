@@ -77,4 +77,4 @@ def get_execution_history(self: Any) -> List[DAGExecutionResult]:
     Returns:
         List of past execution results
     """
-    return self.execution_history.copy()\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return self.execution_history.copy()

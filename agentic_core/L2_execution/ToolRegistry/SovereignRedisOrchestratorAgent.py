@@ -146,4 +146,4 @@ def get_sovereign_redis_orchestrator() -> SovereignRedisOrchestratorAgent:
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
-    return SovereignRedisOrchestratorAgent()\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)
+    return SovereignRedisOrchestratorAgent()

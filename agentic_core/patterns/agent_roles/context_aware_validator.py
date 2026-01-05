@@ -139,4 +139,3 @@ class ContextAwareValidatorAgent(HealerMixin, MCPHardenedMixin):
     async def health_check(self) -> Dict[str, bool]:
         """Standard interface for SelfDiagnosisMixin."""
         return {"healthy": True}
-\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin

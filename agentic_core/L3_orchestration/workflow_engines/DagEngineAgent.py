@@ -354,4 +354,4 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         print(f"[{agent_name}] L3 orchestration/workflow_engines - operational only")
         return {"skipped": 1}
     finally:
-        _call_path.discard(agent_name)\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+        _call_path.discard(agent_name)

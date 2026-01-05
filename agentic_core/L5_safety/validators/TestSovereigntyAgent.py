@@ -254,4 +254,3 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
 def create_test_sovereignty(ctx=None) -> Any:
     """Brief description of functionality and purpose."""
     return TestSovereigntyAgent(ctx)
-\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

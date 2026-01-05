@@ -331,4 +331,4 @@ def create_autonomous_checkpoint_manager(checkpoint_dir: Optional[str]=None) -> 
 
 def get_checkpoint_manager(project_root: Path) -> AutonomousCheckpointManagerAgent:
     """Factory function to get checkpoint manager instance."""
-    return AutonomousCheckpointManagerAgent(project_root=project_root)\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return AutonomousCheckpointManagerAgent(project_root=project_root)

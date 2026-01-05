@@ -63,4 +63,3 @@ class AutonomyMixin(MCPHardenedMixin):
             return {"proactive": True, "success": True, "result": result}
         except Exception as e:
             return {"proactive": True, "success": False, "error": str(e)}
-\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

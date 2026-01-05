@@ -331,4 +331,4 @@ def validate_research_output(
     super().heal_repository()
 
     EXECUTOR = IntegrityGateExecutorAgent(min_depth_score=min_depth_score)
-    return EXECUTOR.execute(research_output)\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nLogger = logging.getLogger(__name__)
+    return EXECUTOR.execute(research_output)

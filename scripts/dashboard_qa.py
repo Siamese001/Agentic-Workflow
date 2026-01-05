@@ -22,7 +22,8 @@ class DashboardQA:
     
     def __init__(self):
         self.root = Path(__file__).parent.parent
-        self.template_path = self.root / 'agentic_core' / 'L5_safety' / 'validators' / 'dashboard_template.html'
+        # Consolidated dashboard location: agentic_core/observability/dashboard/
+        self.template_path = self.root / 'agentic_core' / 'observability' / 'dashboard' / 'dashboard_template.html'
         self.dashboard_path = self.root / 'reports' / 'autonomy_dashboard.html'
         self.errors: List[str] = []
         self.warnings: List[str] = []

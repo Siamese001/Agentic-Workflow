@@ -136,4 +136,3 @@ async def with_gatekeeping(trace_id: str, operation: str, coro: Any) -> Any:
     """
     GATEKEEPER: Any = get_gatekeeper()
     return await gatekeeper.run_with_gating(trace_id, operation, coro)
-\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

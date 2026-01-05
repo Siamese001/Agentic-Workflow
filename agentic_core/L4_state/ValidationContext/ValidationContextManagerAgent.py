@@ -281,4 +281,4 @@ def get_context_manager() -> ValidationContextManagerAgent:
 def get_current_context() -> Optional[ValidationContext]:
     """Get the current validation context."""
     manager: Any = get_context_manager()
-    return manager.current_context\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return manager.current_context

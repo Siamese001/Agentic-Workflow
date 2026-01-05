@@ -99,4 +99,4 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             results.append(result)
             if not result['valid']:
                 total_violations += 1
-        return {'total_files': len(files), 'total_violations': total_violations, 'results': results}\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+        return {'total_files': len(files), 'total_violations': total_violations, 'results': results}

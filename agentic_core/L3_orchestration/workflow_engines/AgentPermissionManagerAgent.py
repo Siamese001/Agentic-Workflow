@@ -182,4 +182,4 @@ def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> "Ag
     Returns:
         AgentPermissionManagerAgent instance
     """
-    return AgentPermissionManagerAgent(control_plane=control_plane)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    return AgentPermissionManagerAgent(control_plane=control_plane)

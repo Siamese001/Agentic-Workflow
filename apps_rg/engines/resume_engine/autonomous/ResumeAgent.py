@@ -161,4 +161,3 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
-\nimport logging\n\nLogger = logging.getLogger(__name__)
