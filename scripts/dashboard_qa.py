@@ -160,6 +160,108 @@ class DashboardQA:
         print('  ✅ Generated dashboard valid')
         return True
     
+    def validate_sparklines(self) -> bool:
+        """Validate sparkline infrastructure is present and functional."""
+        print('🔍 Validating sparkline infrastructure...')
+        
+        if not self.template_path.exists():
+            self.errors.append(f'Template not found: {self.template_path}')
+            return False
+        
+        content = self.template_path.read_text(encoding='utf-8')
+        
+        # Check for sparkline CSS classes (critical for rendering)
+        sparkline_css = [
+            '.sparkline-container',
+            '.sparkline-svg',
+            '.sparkline-trend',
+            '.sparkline-arrow'
+        ]
+        missing_css = [css for css in sparkline_css if css not in content]
+        if missing_css:
+            self.errors.append(f'Missing sparkline CSS classes: {missing_css}')
+            return False
+        
+        # Check for sparkline generator functions
+        sparkline_functions = [
+            'function createSparklineSVG(',
+            'function formatSparkline(',
+            'function generateSparkline('
+        ]
+        missing_funcs = [fn for fn in sparkline_functions if fn not in content]
+        if missing_funcs:
+            self.errors.append(f'Missing sparkline functions: {missing_funcs}')
+            return False
+        
+        # Check for sparkline data in dashboardData structure
+        sparkline_data_refs = [
+            'sparklines',
+            'territory_sparklines'
+        ]
+        missing_data = [ref for ref in sparkline_data_refs if ref not in content]
+        if missing_data:
+            self.warnings.append(f'Sparkline data references may be missing: {missing_data}')
+        
+        # Check generated dashboard for sparkline SVG elements
+        if self.dashboard_path.exists():
+            dashboard_content = self.dashboard_path.read_text(encoding='utf-8')
+            
+            # Count sparkline SVG elements in generated dashboard
+            sparkline_svg_count = dashboard_content.count('class="sparkline-svg"')
+            if sparkline_svg_count == 0:
+                self.errors.append('No sparkline SVGs found in generated dashboard - sparklines may have been removed!')
+                return False
+            
+            # Check for sparkline containers
+            sparkline_container_count = dashboard_content.count('class="sparkline-container"')
+            if sparkline_container_count == 0:
+                self.errors.append('No sparkline containers found in generated dashboard')
+                return False
+            
+            # Verify sparkline trend indicators exist
+            if 'sparkline-trend' not in dashboard_content:
+                self.warnings.append('Sparkline trend indicators may be missing from generated dashboard')
+        
+        print('  ✅ Sparkline infrastructure valid')
+        return True
+    
+    def validate_drilldown_data(self) -> bool:
+        """Validate drill-down data is present for all territories."""
+        print('🔍 Validating drill-down data...')
+        
+        if not self.dashboard_path.exists():
+            return False
+        
+        content = self.dashboard_path.read_text(encoding='utf-8')
+        
+        try:
+            start = content.find('const dashboardData = ') + len('const dashboardData = ')
+            end = content.find(';', start)
+            data_json = content[start:end]
+            data = json.loads(data_json)
+            
+            # Check each territory has agents data
+            missing_agents = []
+            for row in data:
+                territory = row.get('Territory', 'Unknown')
+                if territory == 'TOTAL':
+                    continue
+                total = row.get('Total', 0)
+                agents = row.get('agents', [])
+                if total > 0 and len(agents) == 0:
+                    missing_agents.append(territory)
+            
+            if missing_agents:
+                self.errors.append(f'Territories missing drill-down agent data: {missing_agents}')
+                return False
+            
+            print('  ✅ Drill-down data valid')
+            return True
+            
+        except (ValueError, json.JSONDecodeError) as e:
+            self.errors.append(f'Failed to parse dashboardData for drill-down validation: {e}')
+            return False
+    
     def validate_data_integrity(self) -> bool:
         """Validate embedded data integrity."""
         print('🔍 Validating data integrity...')
@@ -206,6 +308,8 @@ class DashboardQA:
             self.validate_template_syntax(),
             self.validate_timer_configuration(),
             self.validate_generated_dashboard(),
+            self.validate_sparklines(),
+            self.validate_drilldown_data(),
             self.validate_data_integrity()
         ]
         
@@ -228,6 +332,8 @@ class DashboardQA:
         print('  [ ] Open reports/autonomy_dashboard.html in browser')
         print('  [ ] Verify 3 KPIs display correctly (not "---%")')
         print('  [ ] Verify countdown shows "Xm Ys" format')
+        print('  [ ] Verify sparklines appear next to metrics (trend arrows + mini charts)')
+        print('  [ ] Click any territory row → verify drill-down shows agent table')
         print('  [ ] Check browser console for errors')
         print('  [ ] Test manual refresh button')
         print('  [ ] Clear cache and reload')
