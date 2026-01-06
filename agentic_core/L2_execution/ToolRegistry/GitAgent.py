@@ -1,6 +1,7 @@
 from __future__ import annotations
 """
 GitAgent - L6 GitOps & Remote Synchronization
+CANONICAL: True - Standalone extraction 2026-01-06 (from infrastructure.py)
 
 Manages git operations for self-healing commits and remote pushes.
 Ensures changes are committed and pushed to remote repository.
