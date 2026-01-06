@@ -147,6 +147,11 @@ class MessageComplianceAgent(OutreachAgent):
             return super().heal_repository()
 
 
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: apps_lic outreach-specific vs apps_rg resume-specific)
+# - Intentional variant for application-specific optimization
+# - Documented 2026-01-06
+
 class TemplateOptimizerAgent(OutreachAgent):
     """Optimizes message templates for engagement."""
 

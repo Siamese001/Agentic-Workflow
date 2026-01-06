@@ -21,6 +21,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: L2 core planning vs L1 strategic vs apps_rg implementations)
+# - Intentional variants for domain-specific planning
+# - Documented 2026-01-06
+
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class StrategicPlannerAgent(SubAtomicAgent):
     """
