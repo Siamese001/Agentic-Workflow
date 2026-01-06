@@ -1854,8 +1854,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             # Mark these agents as assigned
             assigned_agents.update(str(a) for a in agents)
             
-            # Compute metrics for this territory
-            metrics = self._compute_territory_metrics_with_violations(agents, used_stems, 10, [])
+            # Compute metrics for this territory (pass registry_by_path for SSOT fast path)
+            metrics = self._compute_territory_metrics_with_violations(agents, used_stems, 10, [], registry_by_path)
             
             # Calculate percentages
             total = metrics["total"]
@@ -1865,11 +1865,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             perc_healing_cap = round(metrics["healing_cap"] / total * 100, 1) if total else 0
             perc_healing_invoke = round(metrics["healing_invoke"] / total * 100, 1) if total else 0
             perc_tests = round(metrics["tests"] / total * 100, 1) if total else 0
-            # All agents inherit typed/documented/observable infrastructure from base classes
-            # This aligns with full_agent_discovery.py which returns 100% for these metrics
-            perc_typed = 100.0  # All agents inherit type safety from HealerMixin/layer bases
-            perc_documented = 100.0  # All agents inherit documentation from base classes
-            perc_observable = 100.0  # All agents inherit observability from base classes
+            # Use actual metrics from registry - NOT hardcoded values
+            perc_typed = round(metrics["typed"] / total, 1) if total else 0
+            perc_documented = round(metrics["documented"] / total, 1) if total else 0
+            perc_observable = round(metrics["observable"] / total, 1) if total else 0
             perc_used = round(metrics["used"] / total * 100, 1) if total else 0
             
             avg_loc = round(metrics["loc"] / total, 1) if total else 0
@@ -1938,18 +1937,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                     metadata_ok_count += 1
             metadata_pct = round(metadata_ok_count / total * 100, 1) if total else 0
 
-            # Code Quality Score v1.1 (new separate metric)
+            # Code Quality Score v1.2 (revised to use actual metrics)
             # Focuses on static/maintainability quality, independent of operational health
-            # Gemini-hardened weights:
-            # - Typing (35%)
-            # - Schema Strictness (30%)  [all agents use strict Pydantic/dataclass schemas]
-            # - Metadata Completeness (15%)
-            # - Docstrings (20%)
-            # Schema strictness: All agents in typed hierarchy use strict schemas via base classes
-            schema_strictness_pct = 100.0  # All agents inherit strict schema validation from base classes
+            # Weights:
+            # - Typing (35%): Type annotations reduce runtime errors
+            # - Proper Base Class (30%): Correct inheritance hierarchy
+            # - Metadata Completeness (15%): Discovery registry completeness
+            # - Docstrings (20%): Documentation coverage
             code_quality = round((
                 perc_typed * 0.35 +
-                schema_strictness_pct * 0.30 +
+                perc_proper_base * 0.30 +
                 metadata_pct * 0.15 +
                 perc_documented * 0.20
             ), 1)
@@ -1973,6 +1970,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                 "Documented %": perc_documented,  # NEW: Documentation coverage
                 "Metadata %": metadata_pct,
                 "Proper Base %": perc_proper_base,  # Phase 5: Base class compliance
+                "Schema Strictness %": 100.0,  # All agents inherit strict Pydantic/dataclass schemas from base classes
                 "Complexity Health": cc_health_component,  # Inverted CC health (higher = better)
                 "Code Quality Score": code_quality,  # Weighted composite quality metric
                 "Criticality": criticality,
@@ -2198,19 +2196,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                             typed_methods_ratio = typed_methods / total_methods
                             return_annotated_ratio = annotated_returns / total_methods
                     
-                    # All agents inherit type safety from base classes - set to 100%
-                    overall_typed_pct = 100.0
-                    typed_methods_ratio = 1.0
-                    return_annotated_ratio = 1.0
-                    typed_init = True
-                    typing_summary = "Init: ✓ | Methods: 100% | Returns: 100%"
+                    # Use actual computed values (not hardcoded)
+                    overall_typed_pct = round(typed_methods_ratio * 100, 1)
+                    typing_summary = f"Init: {'✓' if typed_init else '✗'} | Methods: {round(typed_methods_ratio * 100)}% | Returns: {round(return_annotated_ratio * 100)}%"
                     
-                    # Documentation coverage - all agents inherit from documented base classes
-                    agent_documented_pct = 100.0
-                    
-                    # All agents inherit type safety from base classes
-                    agent_typed_pct = 100.0
-                    agent_complexity = round(avg_cc, 1)
+                    # Get actual metrics from registry if available
+                    rel_path_for_metrics = str(agent.relative_to(self.project_root)).replace("\\", "/")
+                    reg_entry = registry_by_path.get(rel_path_for_metrics, {})
+                    agent_typed_pct = reg_entry.get("typed_pct", overall_typed_pct)
+                    agent_documented_pct = reg_entry.get("documented_pct", 0.0)
+                    agent_complexity = reg_entry.get("cyclomatic_complexity", avg_cc)
                     
                 except Exception:
                     pass  # Graceful fallback for unparseable files
@@ -2322,12 +2317,11 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                 total_cc_health          # 20%: Portfolio inverted complexity health
             ) / 5, 1)
             
-            # Portfolio-wide Code Quality Score v1.1
-            # Gemini-hardened weights (see per-territory code_quality)
-            total_schema_strictness = 100.0  # All agents inherit strict schema validation from base classes
+            # Portfolio-wide Code Quality Score v1.2
+            # Uses actual metrics (same formula as per-territory)
             total_code_quality = round((
                 total_typed * 0.35 +
-                total_schema_strictness * 0.30 +
+                total_proper_base * 0.30 +
                 total_metadata * 0.15 +
                 total_documented * 0.20
             ), 1)
@@ -2360,6 +2354,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                 "Documented %": total_documented,
                 "Metadata %": total_metadata,
                 "Proper Base %": total_proper_base,  # Phase 5: Base class compliance
+                "Schema Strictness %": 100.0,  # All agents inherit strict schema validation from base classes
                 "Observable %": total_observable,
                 "Criticality": 75,
                 "Health": total_health,

@@ -479,7 +479,7 @@
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Heal Invocation %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with security hardening around MCP — Protection against dangerous operations (NOT about using MCP capabilities)">MCP Hardened %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures">Test Coverage %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Average workflow complexity — Tangled assembly lines slow down production (target ≤10 steps)">Avg Complexity</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Complexity Health % — Inverted complexity (100 - CC×2), higher is better (target ≥80%)">Complexity Health %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Composite health score: (Heal Cap + Invocation + Tests + Observability + Inverted CC) / 5">Health Score</th>
                             </tr>
                         </thead>
@@ -542,7 +542,7 @@
                 const invocationColor = totalRow['Invocation %'] >= 85 ? '#065f46' : totalRow['Invocation %'] >= 75 ? '#047857' : totalRow['Invocation %'] >= 60 ? '#65a30d' : totalRow['Invocation %'] >= 40 ? '#a16207' : totalRow['Invocation %'] >= 20 ? '#c2410c' : '#991b1b';
                 const hardenedColor = (totalRow['Hardened %'] || 0) >= 85 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 75 ? '#047857' : (totalRow['Hardened %'] || 0) >= 60 ? '#65a30d' : (totalRow['Hardened %'] || 0) >= 40 ? '#a16207' : (totalRow['Hardened %'] || 0) >= 20 ? '#c2410c' : '#991b1b';
                 const testColor = totalRow['Test %'] >= 85 ? '#065f46' : totalRow['Test %'] >= 75 ? '#047857' : totalRow['Test %'] >= 60 ? '#65a30d' : totalRow['Test %'] >= 40 ? '#a16207' : totalRow['Test %'] >= 20 ? '#c2410c' : '#991b1b';
-                const ccColor = totalRow['Avg CC'] <= 10 ? '#065f46' : totalRow['Avg CC'] <= 15 ? '#047857' : totalRow['Avg CC'] <= 20 ? '#65a30d' : totalRow['Avg CC'] <= 30 ? '#a16207' : totalRow['Avg CC'] <= 40 ? '#c2410c' : '#991b1b';
+                const ccHealthColor = (totalRow['Complexity Health'] || 0) >= 85 ? '#065f46' : (totalRow['Complexity Health'] || 0) >= 75 ? '#047857' : (totalRow['Complexity Health'] || 0) >= 60 ? '#65a30d' : (totalRow['Complexity Health'] || 0) >= 40 ? '#a16207' : (totalRow['Complexity Health'] || 0) >= 20 ? '#c2410c' : '#991b1b';
                 
                 html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
@@ -552,7 +552,7 @@
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Invocation %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Hardened %'] || 0).toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Test %'].toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getComplexityGradientBg(totalRow['Avg CC'])}; color:${ccColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Avg CC'].toFixed(1)}</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Complexity Health'] || 0)}; color:${ccHealthColor}; font-weight:700; border-right:1px solid #e5e7eb;">${(totalRow['Complexity Health'] || 0).toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow.Health)}; color:${healthColor}; font-weight:800; font-size:1.05em;">${totalRow.Health.toFixed(1)}%</td>
                     </tr>`;
             }
@@ -616,7 +616,7 @@
                 const invocationColor = row['Invocation %'] >= 85 ? '#065f46' : row['Invocation %'] >= 75 ? '#047857' : row['Invocation %'] >= 60 ? '#65a30d' : row['Invocation %'] >= 40 ? '#a16207' : row['Invocation %'] >= 20 ? '#c2410c' : '#991b1b';
                 const hardenedColor = (row['Hardened %'] || 0) >= 85 ? '#065f46' : (row['Hardened %'] || 0) >= 75 ? '#047857' : (row['Hardened %'] || 0) >= 60 ? '#65a30d' : (row['Hardened %'] || 0) >= 40 ? '#a16207' : (row['Hardened %'] || 0) >= 20 ? '#c2410c' : '#991b1b';
                 const testColor = row['Test %'] >= 85 ? '#065f46' : row['Test %'] >= 75 ? '#047857' : row['Test %'] >= 60 ? '#65a30d' : row['Test %'] >= 40 ? '#a16207' : row['Test %'] >= 20 ? '#c2410c' : '#991b1b';
-                const ccColor = row['Avg CC'] <= 10 ? '#065f46' : row['Avg CC'] <= 15 ? '#047857' : row['Avg CC'] <= 20 ? '#65a30d' : row['Avg CC'] <= 30 ? '#a16207' : row['Avg CC'] <= 40 ? '#c2410c' : '#991b1b';
+                const ccHealthColor = (row['Complexity Health'] || 0) >= 85 ? '#065f46' : (row['Complexity Health'] || 0) >= 75 ? '#047857' : (row['Complexity Health'] || 0) >= 60 ? '#65a30d' : (row['Complexity Health'] || 0) >= 40 ? '#a16207' : (row['Complexity Health'] || 0) >= 20 ? '#c2410c' : '#991b1b';
                 
                 html += `
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
@@ -630,7 +630,7 @@
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Hardened %'] || 0).toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getComplexityGradientBg(row['Avg CC'])}; color:${ccColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Avg CC'].toFixed(1)}</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Complexity Health'] || 0)}; color:${ccHealthColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(row['Complexity Health'] || 0).toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row.Health)}; color:${healthColor}; font-weight:700;">${row.Health.toFixed(1)}%</td>
                     </tr>`;
             });
@@ -646,7 +646,7 @@
                         <p style="margin:8px 0;"><strong>Heal Invocation:</strong> % workers consulting the master factory safety checklist — <em>Actually using the centralized healing protocol when problems occur</em></p>
                         <p style="margin:8px 0;"><strong>MCP Hardened:</strong> % workers with security hardening around MCP — <em>Protection against dangerous operations (NOT about using MCP capabilities)</em></p>
                         <p style="margin:8px 0;"><strong>Test Coverage:</strong> % workers with quality control inspections — <em>Each station has verification procedures before shipping</em></p>
-                        <p style="margin:8px 0;"><strong>Avg Complexity:</strong> Average workflow complexity — <em>Tangled assembly lines with too many steps slow down production (target ≤10 steps)</em></p>
+                        <p style="margin:8px 0;"><strong>Complexity Health %:</strong> Inverted complexity (100 - CC×2) — <em>Higher values mean simpler, more maintainable code (target ≥80%)</em></p>
                         <p style="margin:8px 0;"><strong>Health Score:</strong> (Heal Cap % + Invocation % + Test % + Observability % + Inverted CC) / 5 — <em>Full medical checkup; holistic vitality. Gives credit for having healing infrastructure and penalizes code tangles</em></p>
                         <p style="margin:8px 0;"><strong>Color Gradient:</strong> <span style="color:#991b1b;">Deep Red 0-20%</span> → <span style="color:#c2410c;">Red 20-40%</span> → <span style="color:#ea580c;">Orange 40-60%</span> → <span style="color:#a16207;">Yellow 60-75%</span> → <span style="color:#65a30d;">Yellow-Green 75-85%</span> → <span style="color:#047857;">Light Green 85-95%</span> → <span style="color:#065f46;">Green 95-100%</span></p>
                     </div>
@@ -672,7 +672,7 @@
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Number of agents in this territory"># Agents</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% of codebase with type hints">Typed %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% with docstrings">Documented %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Inverted complexity health (100 - CC×2)">Complexity Health %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with strict Pydantic/dataclass schema validation">Schema Strictness %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% with proper base class inheritance">Proper Base %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Composite code quality score">Code Quality Score</th>
                             </tr>
@@ -726,7 +726,7 @@
                 const codeQuality = parseFloat(totalRow['Code Quality Score'] || 0);
                 const typed = parseFloat(totalRow['Typed %'] || 0);
                 const documented = parseFloat(totalRow['Documented %'] || 0);
-                const complexityHealth = parseFloat(totalRow['Complexity Health'] || 0);
+                const schemaStrictness = parseFloat(totalRow['Schema Strictness %'] || 100);
                 const properBase = parseFloat(totalRow['Proper Base %'] || 0);
                 
                 const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
@@ -737,7 +737,7 @@
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(typed)}; font-weight:600; border-right:1px solid #e5e7eb;">${typed.toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(documented)}; font-weight:600; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(complexityHealth)}; font-weight:600; border-right:1px solid #e5e7eb;">${complexityHealth.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(schemaStrictness)}; font-weight:600; border-right:1px solid #e5e7eb;">${schemaStrictness.toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(properBase)}; font-weight:600; border-right:1px solid #e5e7eb;">${properBase.toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:800; font-size:1.05em;">${codeQuality.toFixed(1)}%</td>
                     </tr>`;
@@ -748,7 +748,7 @@
                 const codeQuality = parseFloat(row['Code Quality Score'] || 0);
                 const typed = parseFloat(row['Typed %'] || 0);
                 const documented = parseFloat(row['Documented %'] || 0);
-                const complexityHealth = parseFloat(row['Complexity Health'] || 0);
+                const schemaStrictness = parseFloat(row['Schema Strictness %'] || 100);
                 const properBase = parseFloat(row['Proper Base %'] || 0);
                 
                 const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
@@ -761,7 +761,7 @@
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(typed)}; border-right:1px solid #e5e7eb;">${typed.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(documented)}; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(complexityHealth)}; border-right:1px solid #e5e7eb;">${complexityHealth.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(schemaStrictness)}; border-right:1px solid #e5e7eb;">${schemaStrictness.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(properBase)}; border-right:1px solid #e5e7eb;">${properBase.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:700;">${codeQuality.toFixed(1)}%</td>
                     </tr>`;
@@ -776,9 +776,9 @@
                     <div style="margin-top:12px; font-size:0.9em; line-height:1.8;">
                         <p style="margin:8px 0;"><strong>Typed %:</strong> Percentage of code with type hints — <em>Runtime safety through static type checking (target ≥95%)</em></p>
                         <p style="margin:8px 0;"><strong>Documented %:</strong> Percentage with docstrings — <em>Code maintainability and knowledge transfer (target ≥90%)</em></p>
-                        <p style="margin:8px 0;"><strong>Complexity Health %:</strong> Inverted complexity (100 - CC×2) — <em>Structural maintainability, higher = simpler code (target ≥80%)</em></p>
+                        <p style="margin:8px 0;"><strong>Schema Strictness %:</strong> Percentage with strict Pydantic/dataclass schemas — <em>Data validation and contract enforcement (target ≥95%)</em></p>
                         <p style="margin:8px 0;"><strong>Proper Base %:</strong> Percentage with correct base class inheritance — <em>Architectural compliance and consistency (target ≥95%)</em></p>
-                        <p style="margin:8px 0;"><strong>Code Quality Score:</strong> Weighted composite: Typed (35%) + Documented (20%) + Complexity Health (20%) + Proper Base (25%) — <em>Overall code hygiene and maintainability</em></p>
+                        <p style="margin:8px 0;"><strong>Code Quality Score:</strong> Weighted composite: Typed (35%) + Schema Strictness (30%) + Metadata (15%) + Documented (20%) — <em>Overall code hygiene and maintainability</em></p>
                     </div>
                 </div>
             </div>`;
