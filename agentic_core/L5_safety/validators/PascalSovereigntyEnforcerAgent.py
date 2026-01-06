@@ -9,6 +9,8 @@ Eternal PascalCase SSOT Enforcer.
 - Optional strict_mode: Delegate advanced to TestSovereigntyAgent
 - AST-precise audit, layer-incremental purge
 """
+# CANONICAL: True - Eternal PascalCase enforcer for classes/enums/dataclasses (2026-01-06)
+
 from __future__ import annotations
 
 import ast
@@ -20,6 +22,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from enum import Enum
 
 from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
 from agentic_core.L5_safety.utils.ASTEnforcementMixin import ASTEnforcementMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -59,6 +62,8 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
         self.branch_name = "refactor/eternal-pascal-sovereignty-2026"
         self.dry_run = dry_run
         self.strict_mode = strict_mode  # False = basic fast, True = specialist deep
+        # Prefer agent suffix for sovereign discovery
+        self.prefer_agent_suffix = True
         # Sovereign scope
         self.target_prefixes = ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]
         # Incremental layer order (from audit priority — schemas first)
@@ -118,6 +123,15 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
             if purged_content == original_content:
                 layer_results.append({"file": str(file_path), "status": "no_change"})
                 continue
+
+            # Additional validation: primary class should end with Agent
+            try:
+                tree = ast.parse(purged_content)
+                primary_class = next((node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)), None)
+                if primary_class and not primary_class.endswith("Agent"):
+                    print(f"   [WARNING] Primary class {primary_class} in {file_path} lacks Agent suffix - consider rename")
+            except SyntaxError:
+                pass
 
             if not self.dry_run:
                 Path(file_path).write_text(purged_content, encoding='utf-8')
