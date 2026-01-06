@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-06T15:09:50.909102Z",
-  "scan_duration_seconds": 13.59,
+  "generated_at": "2026-01-06T15:21:57.100420Z",
+  "scan_duration_seconds": 15.48,
   "agent_count": 301,
-  "content_hash": "sha256:b496f615da3dfda19fd327e62c0ed82fd523dfcb5ea59d79efc98c8381184c65",
+  "content_hash": "sha256:5896502ecdfc783b156a3b6345a0297b01287e94b3dc8450760faffc03731ddf",
   "layer_breakdown": {
     "L0": 9,
     "L1": 26,
@@ -859,7 +859,7 @@
     "agentic_core/L5_safety/red_teaming/RedTeamAgent.py": "1b8a16cafd4e67030100bbb6a265a151",
     "agentic_core/L5_safety/red_teaming/test_red_teaming_agents.py": "0bbdf01fcb575cb9b0b052ce7944ce73",
     "agentic_core/L5_safety/validators/agent_categorizer.py": "de90af95d35dc1412bcadf74b54179df",
-    "agentic_core/L5_safety/validators/AutonomyGuardianAgent.py": "7821d2acabacab13c14799bbbf1e7c03",
+    "agentic_core/L5_safety/validators/AutonomyGuardianAgent.py": "3cb66c0c79b46d9f67c6a080acb4660a",
     "agentic_core/L5_safety/validators/BaseClassEnforcerAgent.py": "be5291d44117039e527c1a6acc2d9d9a",
     "agentic_core/L5_safety/validators/bias_auditor.py": "0c0110a54a063b35d6c29beac81e5d67",
     "agentic_core/L5_safety/validators/CodeSSOTEnforcerAgent.py": "a652206afa3f8d95be72995129a6fe2a",
