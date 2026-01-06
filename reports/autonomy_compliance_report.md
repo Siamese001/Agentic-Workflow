@@ -2,18 +2,18 @@
 
 **Generated:** January 06, 2026  
 **Source:** `agent_discovery_full.json` (canonical AST scan)  
-**Discovery:** Last Discovery: FULL mode (13.6s, 0m ago) → 301 agents
+**Discovery:** Last Discovery: FULL mode (15.5s, 0m ago) → 301 agents
 
 ## 🎯 Executive Summary
 
 **System Health:** 99.8/100 | **Risk Level:** MED | **Criticality:** 100/100
 
 ### Key Metrics
-- **Total Agents:** 302
-- **Compliant:** 273 (90.4%) ✅
-- **Healing Capabilities:** 273 (90.4%) ✅
-- **Healing Invocation:** 300 (99.3%) ✅
-- **With Tests:** 302 (100.0%) ✅
+- **Total Agents:** 301
+- **Compliant:** 272 (90.4%) ✅
+- **Healing Capabilities:** 272 (90.4%) ✅
+- **Healing Invocation:** 299 (99.3%) ✅
+- **With Tests:** 301 (100.0%) ✅
 - **Avg Complexity:** 35.7 ❌
 
 ## 📊 Territory Analysis
@@ -24,7 +24,7 @@
 
 ### Medium Priority Territories
 
-- ⚠️ **L5 Safety/Guardrails**: 29/30 compliant | Health: 97.8% | Risk: MED
+- ⚠️ **L5 Safety/Guardrails**: 28/29 compliant | Health: 97.7% | Risk: MED
 - ⚠️ **L5 Safety/Validators**: 14/17 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **L5 Safety/Red Teaming**: 6/6 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 100.0% | Risk: MED
