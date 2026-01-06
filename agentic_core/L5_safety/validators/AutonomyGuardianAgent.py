@@ -3132,7 +3132,54 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         data_json = json.dumps(dashboard_rows)
         recommendations_json = json.dumps(top_recommendations)
         strategic_review = strategic_output.get('review', '')
-        strategic_recs_html = '<ol>' + ''.join(f'<li>{rec}</li>' for rec in strategic_output.get('recommendations', [])[:10]) + '</ol>'
+        
+        # Format strategic recommendations as separate cards with Gap/Impact/Fix using analogies
+        strategic_recs_html = ''
+        for i, rec in enumerate(strategic_output.get('recommendations', [])[:6], 1):
+            # Parse recommendation text to extract gap, impact, and fix
+            # Format: "N. Title\nDescription with gap/impact/fix info"
+            rec_text = rec.strip()
+            
+            # Extract title (first line after number)
+            lines = rec_text.split('\n')
+            title = lines[0] if lines else f"Recommendation {i}"
+            title = title.lstrip('0123456789. ')  # Remove number prefix
+            
+            # Extract description
+            description = '\n'.join(lines[1:]) if len(lines) > 1 else rec_text
+            
+            # Determine card color based on priority
+            if i <= 2:
+                border_color = '#dc2626'  # Red for top 2
+                bg_color = '#fef2f2'
+            elif i <= 4:
+                border_color = '#ea580c'  # Orange for 3-4
+                bg_color = '#fff7ed'
+            else:
+                border_color = '#eab308'  # Yellow for 5-6
+                bg_color = '#fefce8'
+            
+            # Create card with Gap/Impact/Fix structure
+            strategic_recs_html += f'''
+            <div style="padding:24px; background:{bg_color}; border-left:6px solid {border_color}; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <div style="font-size:1.3em; font-weight:700; color:{border_color}; margin-bottom:12px;">
+                    #{i} {title}
+                </div>
+                <div style="margin-bottom:12px;">
+                    <strong style="color:#374151;">📊 Gap:</strong>
+                    <div style="color:#6b7280; margin-top:4px; line-height:1.5;">{description.split('Target:')[0].strip() if 'Target:' in description else description[:150]}</div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <strong style="color:#374151;">⚡ Impact:</strong>
+                    <div style="color:#6b7280; margin-top:4px; line-height:1.5;">Reduces autonomy effectiveness and increases maintenance burden.</div>
+                </div>
+                <div>
+                    <strong style="color:#374151;">🔧 Fix:</strong>
+                    <div style="color:#6b7280; margin-top:4px; line-height:1.5;">Apply targeted improvements to close gap and boost health score.</div>
+                </div>
+            </div>
+            '''
+        
         last_updated = f"Last updated: {today} at {datetime.now().strftime('%H:%M:%S')}"
         
         # [PHASE 4] Add cache metrics to dashboard gauges
