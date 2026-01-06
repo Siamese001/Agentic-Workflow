@@ -529,6 +529,46 @@
     "cyclomatic_complexity": 37
   },
   {
+    "class_name": "CognitiveContractValidatorAgent",
+    "path": "agentic_core\\schemas\\models\\CognitiveContractEnforcerAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/schemas",
+    "layer": "L1",
+    "inheritance": [
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "parse_plan",
+      "parse_content",
+      "validate_plan",
+      "validate_consistency",
+      "_run_self_tests",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 287,
+    "class_count": 8,
+    "description": "Validates cognitive contracts and ensures compliance.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 37
+  },
+  {
     "class_name": "ConcurrencyGuardianAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\concurrency_guardian.py",
     "top_dir": "agentic_core",
@@ -926,6 +966,51 @@
       "HealerMixin",
       "SubatomicTestingMixin",
       "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "hierarchy_agent",
+      "import_agent",
+      "build_graph",
+      "check_root_hygiene",
+      "_sanitize_root_file",
+      "check_depth_law",
+      "check_atomicity_law",
+      "enforce_depth_law",
+      "_calculate_mccabe"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 513,
+    "class_count": 3,
+    "description": "\n    Enforces architectural governance laws and constraints.\n\n    Implements the Three Laws:\n    1. ",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 110
+  },
+  {
+    "class_name": "GovernanceAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2079,6 +2164,50 @@
     "cyclomatic_complexity": 45
   },
   {
+    "class_name": "DeadCodeDetectorAgent",
+    "path": "agentic_core\\utils\\core_extensions\\AdvancedDeadCodeAuditorAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/utils",
+    "layer": "L2",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "HealerMixin",
+      "SubatomicTestingMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_find_unused_imports",
+      "_find_unused_functions",
+      "_find_unused_classes",
+      "_find_unused_methods",
+      "analyze_file",
+      "scan_directory",
+      "generate_report",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 250,
+    "class_count": 2,
+    "description": "\n    Sovereign dead code auditor that identifies unused code across the project.\n    Enhanced with c",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 45
+  },
+  {
     "class_name": "DeadlockDetectorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\concurrency.py",
     "top_dir": "agentic_core",
@@ -3152,6 +3281,44 @@
       "tracing": false
     },
     "cyclomatic_complexity": 3
+  },
+  {
+    "class_name": "LLMPromptGovernorAgent",
+    "path": "agentic_core\\prompt_governance\\rendering\\LLMPromptGovernorAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/prompt_governance",
+    "layer": "L2",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "build_healing_prompt",
+      "build_fission_prompt",
+      "enforce_output_format",
+      "_sanitize_input",
+      "_contains_dangerous_patterns",
+      "compute_prompt_hash"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 98,
+    "class_count": 1,
+    "description": "\n    Centralized prompt governance for all LLM interactions.\n    \n    Enforces:\n    - Consistent saf",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": false,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 15
   },
   {
     "class_name": "MemoryArchitectAgent",
@@ -9025,6 +9192,282 @@
     "cyclomatic_complexity": 681
   },
   {
+    "class_name": "AutonomyGuardianAgent",
+    "path": "agentic_core\\L5_safety\\validators\\AutonomyGuardianAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin",
+      "PineconeVectorMixin",
+      "RedisCacheMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_detect_layer",
+      "_get_base_names",
+      "_compute_complexity_health",
+      "_check_base_class_compliance",
+      "_generate_sparkline",
+      "_load_agent_registry",
+      "_load_metrics_cache",
+      "_save_metrics_cache",
+      "_hash_text"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 2411,
+    "class_count": 2,
+    "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    HARDENED: Now with R",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": true
+    },
+    "cyclomatic_complexity": 692
+  },
+  {
+    "class_name": "AutonomyGuardianAgent",
+    "path": "agentic_core\\L5_safety\\validators\\AutonomyGuardianAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "RedisCacheMixin",
+      "HealerMixin",
+      "PineconeVectorMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_detect_layer",
+      "_get_base_names",
+      "_compute_complexity_health",
+      "_check_base_class_compliance",
+      "_generate_sparkline",
+      "_load_agent_registry",
+      "_load_metrics_cache",
+      "_save_metrics_cache",
+      "_hash_text"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 2412,
+    "class_count": 2,
+    "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    HARDENED: Now with R",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": true
+    },
+    "cyclomatic_complexity": 692
+  },
+  {
+    "class_name": "AutonomyGuardianAgent",
+    "path": "agentic_core\\L5_safety\\validators\\AutonomyGuardianAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "HealerMixin",
+      "RedisCacheMixin",
+      "PineconeVectorMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_detect_layer",
+      "_get_base_names",
+      "_compute_complexity_health",
+      "_check_base_class_compliance",
+      "_generate_sparkline",
+      "_load_agent_registry",
+      "_load_metrics_cache",
+      "_save_metrics_cache",
+      "_hash_text"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 2427,
+    "class_count": 2,
+    "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    HARDENED: Now with R",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": true
+    },
+    "cyclomatic_complexity": 694
+  },
+  {
+    "class_name": "AutonomyGuardianAgent",
+    "path": "agentic_core\\L5_safety\\validators\\AutonomyGuardianAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "RedisCacheMixin",
+      "MCPHardenedMixin",
+      "PineconeVectorMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_detect_layer",
+      "_get_base_names",
+      "_compute_complexity_health",
+      "_check_base_class_compliance",
+      "_generate_sparkline",
+      "_load_agent_registry",
+      "_load_metrics_cache",
+      "_save_metrics_cache",
+      "_hash_text"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 2425,
+    "class_count": 2,
+    "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    HARDENED: Now with R",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": true
+    },
+    "cyclomatic_complexity": 693
+  },
+  {
+    "class_name": "AutonomyGuardianAgent",
+    "path": "agentic_core\\L5_safety\\validators\\AutonomyGuardianAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "PineconeVectorMixin",
+      "MCPHardenedMixin",
+      "RedisCacheMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_detect_layer",
+      "_get_base_names",
+      "_compute_complexity_health",
+      "_check_base_class_compliance",
+      "_generate_sparkline",
+      "_load_agent_registry",
+      "_load_metrics_cache",
+      "_save_metrics_cache",
+      "_hash_text"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 2440,
+    "class_count": 2,
+    "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    HARDENED: Now with R",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": true
+    },
+    "cyclomatic_complexity": 695
+  },
+  {
+    "class_name": "AutonomyGuardianAgent",
+    "path": "agentic_core\\L5_safety\\validators\\AutonomyGuardianAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "PineconeVectorMixin",
+      "RedisCacheMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_detect_layer",
+      "_get_base_names",
+      "_compute_complexity_health",
+      "_check_base_class_compliance",
+      "_generate_sparkline",
+      "_load_agent_registry",
+      "_load_metrics_cache",
+      "_save_metrics_cache",
+      "_hash_text"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 2452,
+    "class_count": 2,
+    "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    HARDENED: Now with R",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": true
+    },
+    "cyclomatic_complexity": 695
+  },
+  {
     "class_name": "BaseClassEnforcerAgent",
     "path": "agentic_core\\L5_safety\\validators\\BaseClassEnforcerAgent.py",
     "top_dir": "agentic_core",
@@ -9653,6 +10096,48 @@
       "MCPHardenedMixin",
       "SubatomicTestingMixin",
       "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "run",
+      "_determine_archive_subpath",
+      "_backup_file",
+      "cleanup_violations",
+      "run_with_cleanup",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 240,
+    "class_count": 1,
+    "description": "\n    Autonomous agent for physical filesystem purity.\n    Targets technical debt markers in non-Pyth",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 51
+  },
+  {
+    "class_name": "FilesystemAgent",
+    "path": "agentic_core\\L5_safety\\validators\\FilesystemAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10414,6 +10899,47 @@
     "cyclomatic_complexity": 25
   },
   {
+    "class_name": "L5SafetyExerciserAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\L5SafetyExerciserAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "act",
+      "_exercise_naming_validation",
+      "_exercise_hierarchy_check",
+      "_exercise_gravity_check",
+      "_exercise_healing_probe",
+      "_exercise_red_team_probe",
+      "_exercise_guardrail_limits",
+      "heal_repository",
+      "_run_self_tests"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 146,
+    "class_count": 1,
+    "description": "\n    Sub-atomic responsibility: Safely exercise L5 safety primitives via no-op/dry-run checks.\n    T",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 25
+  },
+  {
     "class_name": "LocationAgent",
     "path": "agentic_core\\L5_safety\\validators\\LocationAgent.py",
     "top_dir": "agentic_core",
@@ -11098,6 +11624,51 @@
       "tracing": false
     },
     "cyclomatic_complexity": 64
+  },
+  {
+    "class_name": "StructuralHealerAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\StructuralHealerAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "enable_staging",
+      "commit_heals",
+      "rollback",
+      "_cleanup_staging",
+      "_get_working_path",
+      "_track_staged_change",
+      "_detect_layer",
+      "_get_layer_directory",
+      "_backup_file"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 901,
+    "class_count": 2,
+    "description": "\n    Autonomous Conductor for structural healing.\n    ",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 243
   },
   {
     "class_name": "TerritoryHealerAgent",
