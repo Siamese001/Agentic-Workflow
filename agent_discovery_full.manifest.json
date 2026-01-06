@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-06T00:50:04.198470Z",
-  "scan_duration_seconds": 15.41,
+  "generated_at": "2026-01-06T01:18:42.685945Z",
+  "scan_duration_seconds": 22.27,
   "agent_count": 316,
-  "content_hash": "sha256:3affbc166476e5b196a640df98bf2617ae3daa1c34cd596b298ebf58c5b48475",
+  "content_hash": "sha256:c4aa2280cf315f14b9d693cf9d32f3777c029ff5e8f99f425a403cfbb3cc7732",
   "layer_breakdown": {
     "L0": 9,
     "L1": 26,

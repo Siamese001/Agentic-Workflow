@@ -706,13 +706,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             terr_total = len(agents)
             terr_compliant = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
             # Use SSOT from agent_discovery_full.json for invocation detection
-            # Count as having invocation if registry shows "Yes" or "Inherited"
+            # Only count explicit invocation ("Yes"), not "Inherited"
             terr_healing_invoke = 0
             for a in agents:
                 rel_path = str(a.relative_to(self.project_root)).replace("\\", "/")
                 entry = registry_by_path.get(rel_path, {})
                 inv_status = entry.get("invocation", "Inherited")
-                if inv_status in ("Yes", "Inherited"):
+                if inv_status == "Yes":
                     terr_healing_invoke += 1
             terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             # Healing capabilities: ONLY count agents that inherit HealerMixin or have heal_repository method
@@ -815,12 +815,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             terr_total = len(unclassified)
             terr_compliant = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
             # Use SSOT from agent_discovery_full.json for invocation detection
+            # Only count explicit invocation ("Yes"), not "Inherited"
             terr_healing_invoke = 0
             for a in unclassified:
                 rel_path = str(a.relative_to(self.project_root)).replace("\\", "/")
                 entry = registry_by_path.get(rel_path, {})
                 inv_status = entry.get("invocation", "Inherited")
-                if inv_status in ("Yes", "Inherited"):
+                if inv_status == "Yes":
                     terr_healing_invoke += 1
             terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             # Healing capabilities: ONLY count agents that inherit HealerMixin or have heal_repository method
@@ -1229,14 +1230,53 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             "documented": 0, "observable": 0, "used": 0
         }
 
+    def _analyze_single_agent_from_ssot(
+        self, rel_path: str, registry_entry: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        SSOT-based agent analysis — pure JSON aggregation, ZERO file I/O.
+        
+        This is the optimized path that reads all metrics directly from
+        agent_discovery_full.json instead of re-parsing files.
+        """
+        # Extract metrics directly from registry (computed once by full_agent_discovery.py)
+        invocation = registry_entry.get("invocation", "Inherited")
+        observability = registry_entry.get("observability", {})
+        
+        return {
+            "loc": registry_entry.get("loc", 0),
+            "compliant": 1 if registry_entry.get("has_healing", False) else 0,
+            "hardened": 1 if registry_entry.get("mcp_hardened", False) else 0,
+            "mcp_capable": 1 if registry_entry.get("has_tools", False) else 0,
+            "healing_cap": 1 if registry_entry.get("has_healing", False) else 0,
+            # CORRECTED: Only count explicit invocation ("Yes"), not "Inherited"
+            # "Inherited" means agent doesn't define heal_repository, so no invocation to count
+            "healing_invoke": 1 if invocation == "Yes" else 0,
+            "tests": 1 if registry_entry.get("has_tests", False) or registry_entry.get("testing", "None") != "None" else 0,
+            "cc_sum": registry_entry.get("cyclomatic_complexity", 0),
+            "max_cc": registry_entry.get("cyclomatic_complexity", 0),
+            "typed": registry_entry.get("typed_pct", 0),
+            "documented": registry_entry.get("documented_pct", 0),
+            "observable": 1 if (isinstance(observability, dict) and any(observability.values())) else 0,
+        }
+
     def _analyze_single_agent(
         self, agent: Path, atomic_threshold: int, global_violations: List[Tuple[int, str, str]],
         registry_by_path: Dict[str, Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """Per-agent analysis — isolated AST + checks."""
+        """Per-agent analysis — uses SSOT when available, falls back to file I/O."""
         if registry_by_path is None:
             registry_by_path = {}
+        
+        rel_path = str(agent.relative_to(self.project_root)).replace("\\", "/")
+        
+        # SSOT FAST PATH: Use pre-computed metrics from agent_discovery_full.json
+        registry_entry = registry_by_path.get(rel_path)
+        if registry_entry and registry_entry.get("cyclomatic_complexity") is not None:
+            # Registry has all SSOT metrics - use fast path (no file I/O)
+            return self._analyze_single_agent_from_ssot(rel_path, registry_entry)
             
+        # FALLBACK PATH: File I/O for agents not in registry or missing new metrics
         file_metrics = {
             "loc": 0, "compliant": 0, "hardened": 0, "mcp_capable": 0, "healing_cap": 0, "healing_invoke": 0,
             "tests": 0, "cc_sum": 0, "max_cc": 0, "typed": 0, "documented": 0, "observable": 0
@@ -1246,7 +1286,6 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             content = agent.read_text(errors="ignore")
 
             # Cache check: skip expensive AST parsing if content unchanged
-            rel_path = str(agent.relative_to(self.project_root)).replace("\\", "/")
             content_hash = self._hash_text(content)
             cached = self.metrics_cache.get(rel_path)
             if (
@@ -1266,9 +1305,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     except Exception:
                         pass
                 # SSOT override: Always use registry for healing_invoke (cache may have stale values)
-                registry_entry = registry_by_path.get(rel_path, {})
-                invocation_status = registry_entry.get("invocation", "Inherited")
-                file_metrics["healing_invoke"] = 1 if invocation_status in ("Yes", "Inherited") else 0
+                if registry_entry:
+                    invocation_status = registry_entry.get("invocation", "Inherited")
+                    # Only count explicit invocation ("Yes"), not "Inherited"
+                    file_metrics["healing_invoke"] = 1 if invocation_status == "Yes" else 0
                 return file_metrics
 
             lines = content.splitlines()
@@ -1288,8 +1328,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 # This ensures consistency between discovery and dashboard
                 registry_entry = registry_by_path.get(rel_path, {})
                 invocation_status = registry_entry.get("invocation", "Inherited")
-                # Count as having invocation if Yes or Inherited (both are compliant)
-                file_metrics["healing_invoke"] = 1 if invocation_status in ("Yes", "Inherited") else 0
+                # Only count explicit invocation ("Yes"), not "Inherited"
+                # "Inherited" means agent doesn't define heal_repository, so no invocation to count
+                file_metrics["healing_invoke"] = 1 if invocation_status == "Yes" else 0
                 
                 # Healing capability detection
                 file_metrics["healing_cap"] = self._detect_healing_capability(tree, content)
