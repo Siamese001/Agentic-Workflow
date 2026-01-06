@@ -1,0 +1,70 @@
+diff --git "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py" "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\PascalSovereigntyEnforcerAgent.py"
+index 723905e..62c663a 100644
+--- "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py"
++++ "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\PascalSovereigntyEnforcerAgent.py"
+@@ -33,13 +33,13 @@ class SovereignSeverity(Enum):
+     CRITICAL = "CRITICAL"
+ 
+ 
+-class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTEnforcementMixin, MCPHardenedMixin):
++class PascalSovereigntyEnforcerAgent(CanonBaseAgent, ASTEnforcementMixin, MCPHardenedMixin):
+     """L5 Safety agent â€” enforces PascalCase as eternal sole SSOT.
+     
+     Uses ASTEnforcementMixin for ultra-precise AST analysis.
+     """
+ 
+-    def __init__(self, ctx: Any, dry_run: bool = False, strict_mode: bool = False, _allow_mock: bool = False) -> None:
++    def __init__(self, ctx: Any, dry_run: bool = False, strict_mode: bool = False, _allow_mock: bool = False):
+         """Ultra init â€” ctx mandatory, strict_mode configurable.
+         
+         Args:
+@@ -216,7 +216,7 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
+                 continue  # Remove alias
+             cleaned_lines.append(line)
+ 
+-        content = '\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n'.join(cleaned_lines)
++        content = '\n'.join(cleaned_lines)
+ 
+         # Rename definitions
+         for snake, pascal in mapping.items():
+@@ -236,6 +236,18 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
+ 
+         # Test 1: Basic purge + alias removal
+         input_content = """
++    def _run_self_tests(self) -> dict:
++    """Run internal self-tests."""
++    results = {"passed": 0, "failed": 0, "tests": []}
++    try:
++    assert self is not None
++    results["passed"] += 1
++    results["tests"].append({"name": "test_instantiation", "status": "passed"})
++    except AssertionError as e:
++    results["failed"] += 1
++    results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
++    return results
++
+ class sovereign_severity(str, Enum):
+     CRITICAL = "CRITICAL"
+ SovereignSeverity = sovereign_severity
+@@ -295,8 +307,8 @@ class SovereignEvent(BaseModel):
+         }
+ 
+     def _emit_event(self, Severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+-        """Telemetry for observability."""
+-        print(f"[SOVEREIGN EVENT] {Severity.value} | {event_type}")
++        """Emit sovereign event for observability."""
++        print(f"[{self.__class__.__name__}] {Severity.value}: {event_type}")
+         if payload:
+             print(f"  Payload: {payload}")
+ 
+@@ -312,9 +324,7 @@ class SovereignEvent(BaseModel):
+             return {"errors": 1, "depth_limited": True}
+         _call_path.add(agent_name)
+         try:
+-            # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+-            super().heal_repository()
+-            
++            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+             result = self.run(dry_run=not execute)
+             print(f"[{agent_name} HEAL @ depth {depth}] Found {result['total_violations']} violations")
+             return {"violations_found": result['total_violations'], "purged": result['purged']}

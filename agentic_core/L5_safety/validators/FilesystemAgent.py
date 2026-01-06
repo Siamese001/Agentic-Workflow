@@ -17,9 +17,9 @@ DEPRECATED operations (use HealerAgent instead):
 - run_with_cleanup() -> Use FilesystemAgent.run() + HealerAgent
 
 For file operations, use:
-    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
+    from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
     violations = FilesystemAgent(project_root).run()  # Detection only
-    healer = HealerAgent(project_root)
+    healer = StructuralHealerAgent(project_root)
     healer.heal_file_moves(violations)  # Execution
 
 Placed in L5_safety/validators per SSOT extension:

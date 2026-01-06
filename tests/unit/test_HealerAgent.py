@@ -8,7 +8,7 @@ import tempfile
 import shutil
 from pathlib import Path
 
-from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
+from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
 
 
 class TestHealerAgentASTDiff(unittest.TestCase):

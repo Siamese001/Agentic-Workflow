@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""Cognitive Contracts - Plan-before-Act enforcement with validation.
+"""Cognitive Contract Enforcer - Plan-before-Act enforcement with validation.
 
 This module implements Strategy 1: Cognitive Contracts, forcing agents to
 explicitly plan their approach before generating content, with validation
@@ -264,7 +264,7 @@ class CognitiveContractValidatorAgent(MCPHardenedMixin):
             return super().heal_repository()
 
 
-class CognitiveContractManager:
+class CognitiveContractEnforcer:
     """Manages cognitive contracts for agent executions."""
     
     def __init__(self) -> None:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-HealerAgent: Sovereign Structural Convergence Conductor
+StructuralHealerAgent: Sovereign Structural Convergence Conductor
 
 RESPONSIBILITIES:
 - File relocation based on LocationAgent signal.
@@ -12,7 +12,7 @@ DELEGATION: Dead code pruning moved to specialized DeadCodeAgent.
 Placed in L5_safety/guardrails per SSOT semantic registry:
   "Hard safety limits, mutation controls, deletion guards"
 
-Depth: agentic_core/L5_safety/guardrails/HealerAgent.py -> 4 parts -> compliant
+Depth: agentic_core/L5_safety/guardrails/StructuralHealerAgent.py -> 4 parts -> compliant
 
 GOLD STANDARD UPGRADE (2026-01-02):
 - Structured Violation dataclass with severity levels
@@ -119,7 +119,7 @@ class ImportUpdater(ast.NodeVisitor):
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class HealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Autonomous Conductor for structural healing.
     """

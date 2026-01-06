@@ -44,8 +44,8 @@ def _get_red_team_agent():
 
 def _get_healer_agent():
     try:
-        from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
-        return HealerAgent
+        from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
+        return StructuralHealerAgent
     except Exception:
         return None
 

@@ -1,6 +1,9 @@
 from __future__ import annotations
 """
-Prompt Governance Module - Centralized LLM Interaction Hardening
+LLMPromptGovernorAgent - Hardened Prompt Governor for LLM Safety
+
+Provides anti-injection sanitization, dangerous pattern blocking,
+and fenced output enforcement for all LLM prompts.
 
 RESPONSIBILITIES:
 - Enforce consistent system prompts with anti-injection guards
@@ -20,7 +23,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger = logging.getLogger(__name__)
 
 
-class PromptGovernor:
+class LLMPromptGovernorAgent:
     """
     Centralized prompt governance for all LLM interactions.
     

@@ -12,14 +12,14 @@ Features:
 - Blast radius visualization
 
 [P4 CONSOLIDATION] 2025-12-31:
-File move operations have been centralized into HealerAgent.
+File move operations have been centralized into StructuralHealerAgent.
 GovernanceAgent now provides DECISION-ONLY functions:
 - check_depth_law() -> Returns Violation info, does NOT move files
 - check_atomicity_law() -> Returns Violation info, does NOT split files
 
 For file operations, use:
-    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
-    healer = HealerAgent(project_root)
+    from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
+    healer = StructuralHealerAgent(project_root)
     healer.heal_file_moves(violations)  # For depth violations
     healer.heal_fission(large_files)    # For atomicity violations
 
