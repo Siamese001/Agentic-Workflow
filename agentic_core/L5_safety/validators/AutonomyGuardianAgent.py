@@ -9,10 +9,16 @@ from pathlib import Path
 from typing import List, Dict, Any, Set, Optional, Tuple
 import ast
 import hashlib
+import importlib.util
 import json
+import os
 import re
 import subprocess
-import webbrowser
+import sys
+from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -71,6 +77,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         self.forbidden_dirs = ["scripts/healing", "scripts/tools", "scripts/runners"]
         self.forbidden_patterns = ["heal", "runner", "launcher", "driver"]
         self.exclude_patterns = ["test_", "example_", "mock_", "stub_", "legacy", "deprecated"]
+        
+        # Dynamically import smart_discovery (robust path resolution)
+        smart_module_path = self.project_root / "scripts" / "smart_discovery.py"
+        if not smart_module_path.exists():
+            raise FileNotFoundError(f"smart_discovery.py not found at {smart_module_path}")
+        spec = importlib.util.spec_from_file_location("smart_discovery", smart_module_path)
+        self.smart_discovery = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.smart_discovery)
         
         # Load agents from authoritative JSON (agent_discovery_full.json)
         self._agent_registry_cache = None
@@ -583,6 +597,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         if markdown:
             self._print_markdown_header()
 
+        # Ensure fresh discovery BEFORE loading JSON (guarantees SSOT is current)
+        print("[GUARDIAN] Ensuring fresh agent discovery...")
+        self.smart_discovery.ensure_fresh_discovery()
+        
         # Initialize data structures
         totals = self._initialize_totals()
         registry = self._load_agent_registry()

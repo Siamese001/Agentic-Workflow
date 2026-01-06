@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-01-05T20:22:16.520391",
-  "discovery_hash": "92831931a7cac7f2",
+  "generated_at": "2026-01-05T20:30:51.468633",
+  "discovery_hash": "fb62d1e76af68de2",
   "template_hash": "fa35b08ef3c5b11f",
-  "git_sha": "a9b7ffda902ccbec857d19a36a3d760d7d0915aa",
+  "git_sha": "60f88da2afca14a0d851a7ff2166971139d28c21",
   "output_path": "reports\\autonomy_dashboard.html"
 }

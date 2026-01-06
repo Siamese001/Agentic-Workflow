@@ -13,6 +13,8 @@ Usage:
 """
 import hashlib
 import json
+import logging
+import subprocess
 import sys
 import time
 from datetime import datetime, timedelta
@@ -24,30 +26,52 @@ DISCOVERY_JSON = PROJECT_ROOT / "agent_discovery_full.json"
 MANIFEST_JSON = PROJECT_ROOT / "agent_discovery_full.manifest.json"
 
 # Configuration
-STALENESS_THRESHOLD_HOURS = 1  # Max age before auto-refresh
-INCREMENTAL_THRESHOLD = 50    # Files changed threshold for incremental vs full
+STALENESS_THRESHOLD = timedelta(hours=1)
+
+# Shared exclude logic with discovery
+EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv'}
+
+def should_exclude_path(path: Path) -> bool:
+    """Return True if path should be excluded from scanning/hashing."""
+    return any(excluded in path.parts for excluded in EXCLUDED_DIRS)
+
+# Proper logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(levelname)s: %(message)s",
+    datefmt="%H:%M:%S",
+)
+log = logging.getLogger("smart_discovery")
+
+
+def _scan_python_files() -> List[Path]:
+    """Return list of all non-excluded .py files."""
+    return [p for p in PROJECT_ROOT.rglob("*.py") if not should_exclude_path(p)]
 
 
 def get_json_mtime() -> Optional[datetime]:
     """Get modification time of discovery JSON."""
     if not DISCOVERY_JSON.exists():
         return None
-    return datetime.fromtimestamp(DISCOVERY_JSON.stat().st_mtime)
+    try:
+        return datetime.fromtimestamp(DISCOVERY_JSON.stat().st_mtime)
+    except OSError as e:
+        log.error(f"Failed to read JSON mtime: {e}")
+        return None
 
 
 def get_latest_source_mtime() -> datetime:
-    """Get the most recent modification time of any source file."""
+    """Get the most recent mtime of scanned Python files."""
+    files = _scan_python_files()
     latest = datetime.min
-    for folder in ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared']:
-        folder_path = PROJECT_ROOT / folder
-        if folder_path.exists():
-            for py_file in folder_path.rglob("*.py"):
-                if '__pycache__' in str(py_file):
-                    continue
-                mtime = datetime.fromtimestamp(py_file.stat().st_mtime)
-                if mtime > latest:
-                    latest = mtime
-    return latest
+    for py_file in files:
+        try:
+            mtime = datetime.fromtimestamp(py_file.stat().st_mtime)
+            if mtime > latest:
+                latest = mtime
+        except OSError:
+            return datetime.now()  # Unreadable → assume changed
+    return latest if latest != datetime.min else datetime.now()
 
 
 def is_discovery_stale() -> Tuple[bool, str]:
@@ -61,11 +85,13 @@ def is_discovery_stale() -> Tuple[bool, str]:
         return True, "JSON file does not exist"
     
     json_mtime = get_json_mtime()
+    if json_mtime is None:
+        return True, "JSON mtime unreadable"
     
     # Check JSON age
     age = datetime.now() - json_mtime
-    if age > timedelta(hours=STALENESS_THRESHOLD_HOURS):
-        return True, f"JSON is {age.total_seconds()/3600:.1f}h old (threshold: {STALENESS_THRESHOLD_HOURS}h)"
+    if age > STALENESS_THRESHOLD:
+        return True, f"JSON too old ({age.total_seconds()/3600:.1f}h > 1h)"
     
     # Check if any source files are newer than JSON
     latest_source = get_latest_source_mtime()
@@ -76,31 +102,27 @@ def is_discovery_stale() -> Tuple[bool, str]:
 
 
 def get_changed_files() -> List[Path]:
-    """Get files changed since last discovery based on manifest hashes."""
+    """Return list of changed files since last manifest (for logging only)."""
     if not MANIFEST_JSON.exists():
-        return []  # No manifest = can't determine changes
+        return _scan_python_files()  # Force full if no manifest
     
     try:
-        manifest = json.loads(MANIFEST_JSON.read_text(encoding='utf-8'))
-        file_hashes = manifest.get("file_hashes", {})
-    except Exception:
-        return []
+        manifest = json.loads(MANIFEST_JSON.read_text(encoding="utf-8"))
+        file_hashes: dict = manifest.get("file_hashes", {})
+    except Exception as e:
+        log.warning(f"Manifest invalid ({e}) → assuming all changed")
+        return _scan_python_files()
     
+    files = _scan_python_files()
     changed = []
-    for folder in ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared']:
-        folder_path = PROJECT_ROOT / folder
-        if folder_path.exists():
-            for py_file in folder_path.rglob("*.py"):
-                if '__pycache__' in str(py_file):
-                    continue
-                rel_path = str(py_file.relative_to(PROJECT_ROOT)).replace("\\", "/")
-                try:
-                    current_hash = hashlib.md5(py_file.read_bytes()).hexdigest()
-                    if file_hashes.get(rel_path) != current_hash:
-                        changed.append(py_file)
-                except Exception:
-                    changed.append(py_file)  # Can't read = assume changed
-    
+    for py_file in files:
+        rel_path = str(py_file.relative_to(PROJECT_ROOT)).replace("\\", "/")
+        try:
+            current_hash = hashlib.md5(py_file.read_bytes()).hexdigest()
+            if file_hashes.get(rel_path) != current_hash:
+                changed.append(py_file)
+        except Exception:
+            changed.append(py_file)
     return changed
 
 
@@ -115,28 +137,47 @@ def run_discovery(force: bool = False) -> int:
     is_stale, reason = is_discovery_stale()
     
     if not force and not is_stale:
-        print(f"[SMART_DISCOVERY] JSON is fresh, skipping scan")
-        print(f"  Reason: {reason}")
+        log.info("JSON is fresh, skipping scan")
+        log.info(f"Reason: {reason}")
         return 0
     
-    print(f"[SMART_DISCOVERY] Running discovery...")
-    print(f"  Reason: {reason}")
+    log.info("Discovery needed")
+    log.info(f"Reason: {reason}")
     
     changed = get_changed_files()
-    if changed:
-        print(f"  Changed files: {len(changed)}")
+    log.info(f"Detected {len(changed)} changed files (informational)")
     
     # Always run full scan for now (incremental not yet implemented)
     cmd = [sys.executable, str(PROJECT_ROOT / "scripts" / "full_agent_discovery.py")]
     if force:
         cmd.append("--force")
     
+    # Robust subprocess with timeout, output capture, logging
+    log.info("Launching full_agent_discovery.py...")
     start = time.time()
-    result = subprocess.run(cmd, cwd=str(PROJECT_ROOT))
-    elapsed = time.time() - start
-    
-    print(f"[SMART_DISCOVERY] Completed in {elapsed:.1f}s")
-    return result.returncode
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=str(PROJECT_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=300,  # 5 min max
+        )
+        elapsed = time.time() - start
+        if result.returncode == 0:
+            log.info(f"Discovery succeeded in {elapsed:.1f}s")
+            return 0
+        else:
+            log.error(f"Discovery failed (code {result.returncode})")
+            log.error(f"STDOUT: {result.stdout}")
+            log.error(f"STDERR: {result.stderr}")
+            return result.returncode
+    except subprocess.TimeoutExpired:
+        log.error("Discovery timed out after 300s")
+        return 1
+    except Exception as e:
+        log.error(f"Failed to launch discovery: {e}")
+        return 1
 
 
 def ensure_fresh_discovery() -> None:
@@ -146,10 +187,10 @@ def ensure_fresh_discovery() -> None:
     """
     is_stale, reason = is_discovery_stale()
     if is_stale:
-        print(f"[DISCOVERY] JSON is stale ({reason}), refreshing...")
+        log.info(f"JSON stale ({reason}) → triggering discovery")
         run_discovery()
     else:
-        print(f"[DISCOVERY] JSON is fresh, skipping scan")
+        log.info("JSON fresh → skipping discovery")
 
 
 def main():
