@@ -65,14 +65,16 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
+# CANONICAL: True - Consolidated 2026-01-06 (L4 connectivity variant merged)
 # NAMING FIXED: CanonValidatorAgent → CanonValidatorAgent
 class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     The L5 Meta-Learner that validates code against the Canon.
+    CANONICAL: True - Full implementation with hybrid cache (Redis + Qdrant/Pinecone)
 
     This class implements the core logic for:
     1. Querying L1 (Redis) for similar patterns
-    2. Falling back to L2 (Qdrant) if needed
+    2. Falling back to L2 (Qdrant/Pinecone) if needed
     3. Comparing AST structures for validation
     4. Updating learning based on outcomes
     """
