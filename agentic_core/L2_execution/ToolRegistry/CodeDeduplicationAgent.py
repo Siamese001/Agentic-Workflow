@@ -64,11 +64,16 @@ except ImportError:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.cache_decorator import cached
 
-class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
+class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
     Now with conservative fuzzy structural matching (default threshold=0.98).
+    
+    HARDENED: Redis caching + Pinecone vector support for semantic fingerprinting.
     
     Responsibilities:
     - Computes perceptual hashes of normalized AST nodes.
@@ -81,6 +86,10 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
     
     Consolidates functionality from deprecated FilenameUniquenessGuardianAgent (2025-12-31).
     """
+    
+    # [PHASE 5] Redis/Pinecone integration
+    _cache_prefix: str = "code_dedup"
+    _namespace: str = "l2_fingerprints"
 
     def __init__(self, similarity_threshold: float=0.98, min_lines: int=8) -> None:
         self.threshold = similarity_threshold

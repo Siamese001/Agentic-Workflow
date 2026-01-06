@@ -14,13 +14,17 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # NEW: Root inheritance
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
 logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO').upper())
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class L1CognitionBaseAgent(SovereignBaseAgent):
+class L1CognitionBaseAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMixin):
     """L1 Cognition base class - unified under SovereignBaseAgent.
+    
+    HARDENED: Now with Redis caching + Pinecone vector support.
     
     Provides:
     - Real logging (log_info/warning/error)
@@ -28,9 +32,15 @@ class L1CognitionBaseAgent(SovereignBaseAgent):
     - can_run() signal gating
     - Protected healing
     - Abstract execute() enforcement
+    - Redis caching (RedisCacheMixin) - with graceful degradation
+    - Pinecone vectors (PineconeVectorMixin) - with graceful degradation
     
     Renamed to avoid naming collision with deprecated CanonBaseAgent.
     """
+    
+    # [PHASE 2] Redis/Pinecone integration
+    _cache_prefix: str = "l1_cognition"
+    _namespace: str = "l1_patterns"
     VERIFICATION_REGISTRY: dict = {}
     _registry_built: bool = False
 

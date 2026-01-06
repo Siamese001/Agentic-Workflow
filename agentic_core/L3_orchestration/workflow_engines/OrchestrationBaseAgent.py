@@ -22,6 +22,8 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # NEW: Root
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
 
 class L3SovereignSeverity(Enum):
@@ -330,8 +332,10 @@ def test_artifact_exists():
 
 
 @dataclass
-class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin):
+class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
     """Base class for L3 Orchestration agents with subatomic testing.
+    
+    HARDENED: Now with Redis caching + Pinecone vector support.
     
     L3 Table Decision:
     - Basic Self-Testing: YES (plan validation)
@@ -339,7 +343,13 @@ class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin):
     
     Inherits from SovereignBaseAgent for core capabilities.
     Includes L3SubatomicTestingMixin for CRITIQUE hop testing.
+    - Redis caching (RedisCacheMixin) - with graceful degradation
+    - Pinecone vectors (PineconeVectorMixin) - with graceful degradation
     """
+    
+    # [PHASE 2] Redis/Pinecone integration
+    _cache_prefix: str = "l3_orchestration"
+    _namespace: str = "l3_workflows"
 
     # =========================================================================
     # L3-SPECIFIC LAYER METHODS: Multi-Agent Orchestration

@@ -46,6 +46,8 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 # NEW: Root inheritance
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
 # Gemini optional import
 try:
@@ -67,8 +69,10 @@ def get_subatomic_engine(gemini_client: Any) -> Any:
 
 # Unified Base Class
 @dataclass
-class L2ExecutionBaseAgent(SovereignBaseAgent, SubatomicTestingMixin):
+class L2ExecutionBaseAgent(SovereignBaseAgent, SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
     """Unified L2 base class - replaces CanonBaseAgent + SubAtomicAgent.
+    
+    HARDENED: Now with Redis caching + Pinecone vector support.
     
     Features:
     - Async execution (mandatory)
@@ -78,9 +82,15 @@ class L2ExecutionBaseAgent(SovereignBaseAgent, SubatomicTestingMixin):
     - Real logging (from SovereignBaseAgent)
     - Standardized self-tests & heal_repository (from SovereignBaseAgent)
     - ValidationContext (mandatory)
+    - Redis caching (RedisCacheMixin) - with graceful degradation
+    - Pinecone vectors (PineconeVectorMixin) - with graceful degradation
     """
     ctx: ValidationContext
     enable_gemini: bool = True  # Feature flag - True for former Canon agents, False for lightweight
+    
+    # [PHASE 2] Redis/Pinecone integration
+    _cache_prefix: str = "l2_execution"
+    _namespace: str = "l2_tools"
     
     name: str = field(init=False)
     role: str = field(init=False)

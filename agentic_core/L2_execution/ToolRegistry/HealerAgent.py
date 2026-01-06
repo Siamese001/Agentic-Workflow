@@ -22,15 +22,34 @@ from agentic_core.L2_execution.ToolRegistry.tools.code_transform import (
     rename_symbol,
     quick_rename,
 )
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.config.flags import CACHE_METRICS_ENABLED
+import hashlib
+import json
+import logging
+
+log = logging.getLogger(__name__)
 
 
-class HealerAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
+class HealerAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Healer Agent provides autonomous code repair for any canon Violation.
     
+    HARDENED: Now with Redis caching + Pinecone vector support for pattern learning.
+    
     This is the general-purpose healing agent that can fix violations
     across all canon keys (0-50) using Gemini 2.5 Flash with thinking_budget.
+    
+    Features:
+    - Redis caching for known fix patterns
+    - Pinecone vector storage for semantic pattern matching
+    - Pattern learning from successful fixes
     """
+    
+    # [PHASE 2] Redis/Pinecone integration
+    _cache_prefix: str = "healer_patterns"
+    _namespace: str = "l2_healing"
     
     def get_validation_keys(self) -> List[int]:
         """Return canon keys validated by this agent (all keys)."""
