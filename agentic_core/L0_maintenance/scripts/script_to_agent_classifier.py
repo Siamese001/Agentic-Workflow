@@ -279,6 +279,10 @@ class ScriptToAgentClassifierAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
             return self.classify_module(file_path)
         return {"error": "no_file_provided"}
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class _ModuleAnalyzer(ast.NodeVisitor):
     """

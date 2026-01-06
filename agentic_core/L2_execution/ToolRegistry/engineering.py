@@ -215,6 +215,10 @@ class StructuralEngineerAgent(SubAtomicAgent):
                 continue
         return (len(violations) == 0, violations)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class PatternEnforcerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
@@ -354,3 +358,6 @@ class PatternEnforcerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, M
             except Exception:
                 continue
         return (len(violations) == 0, violations)
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

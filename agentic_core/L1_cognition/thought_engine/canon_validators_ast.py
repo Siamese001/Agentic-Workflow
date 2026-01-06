@@ -24,6 +24,10 @@ class PrintStatementValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTV
                 self.report('Forbidden print() statement detected', node)
         self.generic_visit(node)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 class EvalExecValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 6: Detects eval() and exec() calls using AST.
@@ -35,6 +39,10 @@ class EvalExecValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidat
             if not self.in_type_checking:
                 self.report(f'Forbidden {node.func.id}() call detected', node)
         self.generic_visit(node)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 class DebuggerValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
@@ -52,6 +60,10 @@ class DebuggerValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidat
                     self.report('Debugger pdb.set_trace() detected', node)
         self.generic_visit(node)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 class EmptyExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 4: Detects empty except blocks (except: pass).
@@ -64,6 +76,10 @@ class EmptyExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTVali
             self.report('Empty except block detected (except: pass)', node)
         self.generic_visit(node)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 class BareExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 5: Detects bare except: statements (catching all exceptions).
@@ -74,6 +90,10 @@ class BareExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
         if node.type is None and (not self.in_type_checking):
             self.report('Bare except: statement detected (should specify exception type)', node)
         self.generic_visit(node)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 class ExternalHttpValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
@@ -98,6 +118,10 @@ class ExternalHttpValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTVal
             if module_root in self.FORBIDDEN_MODULES:
                 self.report(f'Forbidden HTTP library import: from {node.module} (use MCP fetch_client_sovereign instead)', node)
         self.generic_visit(node)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 class AsyncBlockingValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator, MCPHardenedMixin):
     """
@@ -125,6 +149,10 @@ class AsyncBlockingValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTVa
                     self.report(f'Blocking requests.{node.func.attr}() in async function (use httpx.AsyncClient or asyncio.to_thread())', node)
         self.generic_visit(node)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 class DangerousBuiltinsValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 42: Detects dangerous builtin functions (compile, __import__, globals, locals).
@@ -137,6 +165,10 @@ class DangerousBuiltinsValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonA
             if not self.in_type_checking:
                 self.report(f'Dangerous builtin {node.func.id}() detected (potential security risk)', node)
         self.generic_visit(node)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 def validate_print_statements(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 2: No print statements."""

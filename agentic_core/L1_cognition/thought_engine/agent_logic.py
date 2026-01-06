@@ -555,3 +555,6 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             formatted.append(self._format_search_result(result))
 
         return formatted
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

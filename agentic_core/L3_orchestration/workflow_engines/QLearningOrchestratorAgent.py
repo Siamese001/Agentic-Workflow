@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+import logging
 from typing import Dict, List, Optional, Tuple
 import numpy as np
 import time
@@ -9,16 +11,30 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import get_vali
 from agentic_core.observability.metrics.shared_counters import counters
 from agentic_core.observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.runtime.shared_runtime import log_event
+from agentic_core.L3_orchestration.unified_workflow_engine import UnifiedWorkflowEngine
+
+log = logging.getLogger(__name__)
+
+warnings.warn(
+    "QLearningOrchestratorAgent is deprecated. Use UnifiedWorkflowEngine with type='rl' and rl_strategy='qlearning'",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 
 class QLearningOrchestratorAgent:
     """
+    DEPRECATED: Use UnifiedWorkflowEngine instead.
+    
     Sub-atomic tabular Q-learner: Off-policy routing for maximal long-term coverage entropy.
     Discrete state/action → exact optimal policy.
     Lightweight alternative to PPO.
+    
+    This class now wraps UnifiedWorkflowEngine for backward compatibility.
     """
 
     def __init__(self, layers: List[str], bins: int = 3, fallback_orchestrator=None):
+        log.warning("QLearningOrchestratorAgent is deprecated - migrating to UnifiedWorkflowEngine")
         self.name = "QLearningOrchestratorAgent"
         self.project_root = get_validated_project_root()
         self.layers = layers
@@ -27,8 +43,12 @@ class QLearningOrchestratorAgent:
         self.bins = bins
         self.state_dim = self.n_actions + 1
 
+        # Legacy implementation preserved for compatibility
         # Tabular Q: state_tuple → action → Q-value
         self.Q: Dict[Tuple[int, ...], np.ndarray] = defaultdict(lambda: np.zeros(self.n_actions))
+        
+        # New unified engine for future migration
+        self._engine = UnifiedWorkflowEngine(project_root=self.project_root)
         self.alpha = 0.1
         self.gamma = 0.95
         self.epsilon = 0.2
@@ -153,3 +173,7 @@ class QLearningOrchestratorAgent:
             results["failed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

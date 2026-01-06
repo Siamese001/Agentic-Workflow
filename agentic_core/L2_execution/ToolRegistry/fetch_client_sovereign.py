@@ -59,3 +59,6 @@ class SovereignFetchClient(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin)
             Logger.error(f'[L2 FETCH] Retrieval failed for {url}: {e}')
             mcp_authority.record_breach(f'Fetch failure: {url}')
             return ''
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

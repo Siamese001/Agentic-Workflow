@@ -195,6 +195,10 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
         except Exception as e:
             Logger.error(f'[L4 PINECONE MCP] Health check failed: {e}')
             return {'status': 'unhealthy', 'error': str(e)}
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 _pinecone_mcp_client: Optional[SovereignPineconeMCPClient] = None
 
 def get_pinecone_mcp_client() -> SovereignPineconeMCPClient:

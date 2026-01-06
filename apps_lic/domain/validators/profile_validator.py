@@ -204,6 +204,10 @@ class ContentCleanlinessValidatorAgent:
         
         return True, ""
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 class PlaceholderDetectorAgent:
     """
     Comprehensive placeholder detection
@@ -245,6 +249,10 @@ class PlaceholderDetectorAgent:
             return False, f"CRITICAL: Found {len(placeholders)} placeholders: {', '.join(placeholders[:5])}"
         
         return True, ""
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 # ============================================================================
 # NEW v11.6: MESSAGE DIVERSITY VALIDATOR (FEATURE 1.3)
@@ -296,6 +304,10 @@ class MessageDiversityValidatorAgent:
         """Add message to history"""
         self.message_history.append(message)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 # ============================================================================
 # NEW v11.6: ASCII CHARACTER ENFORCER (GAP 1.10)
 # ============================================================================
@@ -335,6 +347,10 @@ class ASCIIEnforcerAgent(HealerMixin, MCPHardenedMixin):
         except UnicodeEncodeError as e:
             non_ascii_chars = [c for c in text if ord(c) > 127]
             return False, f"Non-ASCII characters: {set(non_ascii_chars[:5])}"
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 # ============================================================================
 # S6: VALIDATION AGENT
@@ -602,3 +618,7 @@ class ValidationAgent:
             previous_row = current_row
         
         return previous_row[-1]
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

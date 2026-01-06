@@ -176,6 +176,10 @@ def execute_hop_with_agent(hop_id: str, WorkflowContext: WorkflowContext, hop_fu
 class WorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """Workflow orchestrator with SDK integration."""
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def __init__(self: Any, workflow_id: str, Provider: Provider, model: Optional[str]) -> None:
     """Initialize workflow orchestrator.
 

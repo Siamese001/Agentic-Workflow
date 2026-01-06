@@ -117,6 +117,10 @@ class SovereignRedisMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingM
             Logger.error(f'[L4 REDIS] Cache KEYS failed: {e}')
             return []
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 _redis_client: Optional[SovereignRedisMCPClient] = None
 
 def get_redis_client() -> SovereignRedisMCPClient:

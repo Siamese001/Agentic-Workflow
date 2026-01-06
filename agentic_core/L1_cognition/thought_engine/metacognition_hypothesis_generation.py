@@ -21,6 +21,10 @@ class DummyAgentCard(HealerMixin):
         self.agent_id = agent_id
     'TODO: Add docstring.'
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def test_generate_initial_hypotheses_with_evidence(self: Any) -> None:
     """TODO: Add docstring."""
     RAG: Any = DummyRAG(evidence_count=3)

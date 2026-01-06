@@ -53,6 +53,10 @@ class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             if len(self.report['flattening_candidates']) > 10:
                 print(f"  ... and {len(self.report['flattening_candidates']) - 10} more")
         print('=' * 70)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 if __name__ == '__main__':
     inspector: Any = SprawlInspectorAgent('agentic_core')
     data: Any = inspector.inspect()

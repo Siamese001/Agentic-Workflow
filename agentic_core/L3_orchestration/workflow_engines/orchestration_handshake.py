@@ -89,3 +89,6 @@ class OrchestrationHandshake(CachedOrchestratorAgent):
                 break
             context: Any = {'previous_result': outcome['result']}
         return trail
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

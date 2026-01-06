@@ -131,6 +131,10 @@ class SafeSystemCommandExecutorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         # Always return a non-zero exit code for blocked destructive actions
         return 1, "", f"SECURITY BLOCKED: Destructive command '{command}' was prevented by policy."
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 # --- Repaired Functions ---
 
 

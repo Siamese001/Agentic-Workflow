@@ -127,6 +127,10 @@ class SafetyInspectorAgent(SubAtomicAgent):
     async def check_key_06_no_eval_exec(self): return True, []
                     
     async def check_async_blocking_issues(self): return True, []
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
                     
 
 
@@ -223,6 +227,10 @@ class ConcurrencyGuardianAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgen
         self.ctx.report(self.name, 63, True, ["No livelock patterns"])
         self.ctx.report(self.name, 64, True, ["No starvation risks"])
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class SecurityEnforcerAgent(SubAtomicAgent):
@@ -234,6 +242,10 @@ class SecurityEnforcerAgent(SubAtomicAgent):
         await asyncio.sleep(0)
         print("   [OK] Security policies enforced")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class RedSentinelAgent(SubAtomicAgent):
@@ -244,3 +256,7 @@ class RedSentinelAgent(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Running Red Team Analysis...")
         await asyncio.sleep(0)
         print("   [OK] Red team analysis complete")
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

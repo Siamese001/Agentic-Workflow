@@ -110,6 +110,10 @@ Output ONLY the plan in Markdown.
         else:
             print("   [OK] Strategy: Maintain current trajectory.")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class ReflectionAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
@@ -137,3 +141,6 @@ class ReflectionAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, SubA
         if not hasattr(self.ctx, 'long_term_memory'):
             self.ctx.long_term_memory = []
         self.ctx.long_term_memory.append({"trace": recent_trace, "critique": critique})
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

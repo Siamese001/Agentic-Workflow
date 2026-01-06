@@ -77,6 +77,10 @@ class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             print(f"{v['file']:<60} {v['source_layer']} → {v['illegal_import']}")
         return False
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 if __name__ == "__main__":
     PROJECT_ROOT = Path(__file__).parent.parent  # Assumes script in /scripts/
     validator = GravityComplianceValidatorAgent(PROJECT_ROOT)

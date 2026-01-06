@@ -213,3 +213,7 @@ Output strict JSON:
         plan = self.plan(dashboard_data)
         result = self.act(plan, dashboard_data)
         return result
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

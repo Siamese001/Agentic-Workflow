@@ -1055,3 +1055,7 @@ class Phase4OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
             "ImportPatcher": self.ImportPatcher.get_stats(),
             "conversational": self.conversational.get_stats(),
         }
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

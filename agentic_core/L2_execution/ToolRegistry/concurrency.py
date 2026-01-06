@@ -360,6 +360,10 @@ class MemoryLeakDetectorAgent(HealerMixin):
 
         self.ctx.write_compliant_file(report_path, report_content)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING FIXED: DeadlockAnalyzer → DeadlockAnalyzer
 class DeadlockAnalyzer(ast.NodeVisitor):
@@ -714,6 +718,10 @@ class DeadlockDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                 report_content += f"- [OK] {file_path}\n"
 
         self.ctx.write_compliant_file(report_path, report_content)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 # NAMING FIXED: RaceAnalyzer → RaceAnalyzer

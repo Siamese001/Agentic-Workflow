@@ -173,6 +173,10 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             recommendations.append('CRITICAL: Consider taking agent offline for maintenance')
         return recommendations
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_threshold: float=0.2) -> AutonomicMonitorAgent:
     """Factory function to create autonomic monitor.
 

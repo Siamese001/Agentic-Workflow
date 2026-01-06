@@ -81,3 +81,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     def delete_namespace(self, namespace: str) -> None:
                     
         self.index.delete(delete_all=True, namespace=namespace)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

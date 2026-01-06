@@ -59,6 +59,10 @@ class BiasAuditorAgent(HealerMixin, MCPHardenedMixin):
         """Check for specific bias type."""
         return []
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def audit_bias(text: str) -> BiasResult:
     """Convenience function to audit bias."""
     auditor: Any = BiasAuditorAgent()

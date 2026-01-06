@@ -60,6 +60,10 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
             # Specific error handling for file access and encoding
             pass
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class OmniContextAgent(SubAtomicAgent):
@@ -71,6 +75,10 @@ class OmniContextAgent(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Initializing semantic wisdom...")
         await asyncio.sleep(0)
         self.ctx.OmniContext = self
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
@@ -93,6 +101,10 @@ class StrategistAgent(SubAtomicAgent):
         if getattr(self.ctx, "intelligence_enabled", False):
             pass
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class NamingEnforcerAgent(SubAtomicAgent):
@@ -101,6 +113,10 @@ class NamingEnforcerAgent(SubAtomicAgent):
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Semantic Naming...")
         await asyncio.sleep(0)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
@@ -111,6 +127,10 @@ class DocEnforcerAgent(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Documentation Standards...")
         await asyncio.sleep(0)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class TypeEnforcerAgent(SubAtomicAgent):
@@ -119,3 +139,6 @@ class TypeEnforcerAgent(SubAtomicAgent):
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Contracts...")
         await asyncio.sleep(0)
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

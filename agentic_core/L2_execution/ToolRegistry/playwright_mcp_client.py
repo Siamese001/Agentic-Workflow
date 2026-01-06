@@ -214,6 +214,10 @@ class SovereignPlaywrightMcpClient(MCPHardenedMixin, HealerMixin, SubatomicTesti
         except Exception as e:
             Logger.error(f'[L2 PLAYWRIGHT] Health check failed: {e}')
             return {'status': 'unhealthy', 'error': str(e)}
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 _playwright_client: Optional[SovereignPlaywrightMCPClient] = None
 
 def get_playwright_client() -> SovereignPlaywrightMCPClient:

@@ -204,3 +204,7 @@ class MetaLearningAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
         """Standard mode - full strategy evolution."""
         agent_name = context.get("agent_name", "HealingOrchestratorAgent")
         return await self.evolve_agent_strategy(agent_name)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

@@ -859,3 +859,7 @@ class ResumeLearningAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "instructions": self.instruction_injector.get_stats(),
             "memory": self.memory.get_stats(),
         }
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

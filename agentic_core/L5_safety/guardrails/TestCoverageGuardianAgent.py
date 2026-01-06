@@ -410,6 +410,10 @@ class TestCoverageGuardianAgent(HealerMixin, MCPHardenedMixin):
             "passed_sovereignty": passed,
         }
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 @timeout(300)
 def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path = None) -> Dict[str, int]:
     """L5 safety/guardrails - operational only."""

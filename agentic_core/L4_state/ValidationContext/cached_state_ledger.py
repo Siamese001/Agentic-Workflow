@@ -189,3 +189,6 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             return True
         
         return False
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

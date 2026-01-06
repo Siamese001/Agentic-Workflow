@@ -200,6 +200,10 @@ class MemoryLeakDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMix
         freed_mb: Any = before.get('allocated_mb', 0) - after.get('allocated_mb', 0)
         LOGGER.info(f'Garbage collection: collected {collected} objects, freed {freed_mb:.1f}MB')
         return {'objects_collected': collected, 'memory_freed_mb': freed_mb}
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 _memory_detector: Optional[MemoryLeakDetectorAgent] = None
 
 def get_memory_detector() -> MemoryLeakDetectorAgent:

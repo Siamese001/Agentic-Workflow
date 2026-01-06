@@ -28,6 +28,10 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class ResumeOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Orchestrate the multi-hop resume generation workflow."""
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 def __init__(self: Any, master_resume: Dict, test_mode: bool) -> None:
     """Initialize the orchestrator."""

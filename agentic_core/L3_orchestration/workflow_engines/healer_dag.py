@@ -29,6 +29,10 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class DagExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Executes Directed Acyclic Graphs of operations."""
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def __init__(self: Any, config: Optional[Dict[str, Any]]) -> None:
     """Initialize DAG executor.
 

@@ -412,6 +412,10 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             
             return len(keys_to_remove)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # Global config manager instance
 _default_manager: Optional[SecureConfigManagerAgent] = None

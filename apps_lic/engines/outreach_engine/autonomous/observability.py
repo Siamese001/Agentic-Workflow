@@ -336,3 +336,7 @@ class OutreachPhase5OrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             "metrics": self.metrics.get_summary(),
             "reports": len(self.reporter.get_reports()),
         }
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

@@ -47,6 +47,10 @@ class GapClosureArchitectAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     - VG_K8_PLAUSIBILITY_CHECK (≥2 authentic)
     """
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def __init__(self: Any, config: ReasoningConfig, competency_count: int, word_count_min: int, word_count_max: int, gap_coverage_minimum: float) -> None:
     """Initialize Gap Closure Architect.
 

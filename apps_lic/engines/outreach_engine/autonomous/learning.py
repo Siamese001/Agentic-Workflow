@@ -339,3 +339,7 @@ class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
     ):
         """Record a failed pattern."""
         await self.learning_loop.record_failure(TaskType, input_context, error)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

@@ -322,3 +322,6 @@ Return ONLY the full code with the new header injected."""
                 return
         
         print(f"      [X] Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

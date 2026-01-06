@@ -147,10 +147,18 @@ def run_discovery(force: bool = False) -> int:
     changed = get_changed_files()
     log.info(f"Detected {len(changed)} changed files (informational)")
     
-    # Always run full scan for now (incremental not yet implemented)
+    # INCREMENTAL TRIGGER: Use incremental mode for small change sets
+    use_incremental = 0 < len(changed) <= 30
+    if use_incremental:
+        log.info(f"Small change set ({len(changed)} files) → using --incremental mode")
+    elif len(changed) > 30:
+        log.info(f"Large change set ({len(changed)} files) → full scan")
+    
     cmd = [sys.executable, str(PROJECT_ROOT / "scripts" / "full_agent_discovery.py")]
     if force:
         cmd.append("--force")
+    if use_incremental:
+        cmd.append("--incremental")
     
     # Robust subprocess with timeout, output capture, logging
     log.info("Launching full_agent_discovery.py...")

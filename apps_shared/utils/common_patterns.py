@@ -138,6 +138,10 @@ class BaseTaskExecutor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         """Override in subclass to implement actual execution."""
         raise NotImplementedError("Subclass must implement _do_execute")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class BaseDiagnoser:
     """

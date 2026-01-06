@@ -27,6 +27,10 @@ class HallucinationDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
         """
         return {"is_hallucination": False, "confidence": 0.95, "issues": []}
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def check(self: Any, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
     """
     Check text for potential hallucinations.

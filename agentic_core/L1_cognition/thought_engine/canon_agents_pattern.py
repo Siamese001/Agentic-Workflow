@@ -246,6 +246,10 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                                 violations.append(f"{fp}:{node.body[-1].lineno} in function '{node.name}'")
         return (len(violations) == 0, violations)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 # NOT_AN_AGENT — legacy L1 class, placeholder for Figma MCP — excluded from discovery
 class UiValidationAgent(SubAtomicAgent):
     """
@@ -268,6 +272,10 @@ class UiValidationAgent(SubAtomicAgent):
             return
         print('   ℹ UI validation placeholder - Figma MCP integration pending')
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
 class SemanticMapperAgent(HealerMixin):
     """
@@ -280,3 +288,6 @@ class SemanticMapperAgent(HealerMixin):
         """
         print(f'\n[>>>] {self.agent.name} ACTIVATED: Semantic Analysis...')
         print('   ℹ No refactoring opportunities identified.')
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

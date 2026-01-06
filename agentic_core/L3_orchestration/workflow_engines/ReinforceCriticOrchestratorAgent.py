@@ -157,3 +157,7 @@ class ReinforceCriticOrchestratorAgent:
             results["failed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

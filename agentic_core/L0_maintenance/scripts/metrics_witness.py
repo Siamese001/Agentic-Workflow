@@ -118,3 +118,7 @@ class MetricsWitnessAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, 
             "Structural SSOT": self.calculate_structural_ssot_score(),
             "Healing Resilience": self.calculate_healing_resilience_score(),
         }
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

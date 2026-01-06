@@ -286,6 +286,10 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
             lines.append(f'  {rec}')
         lines.extend(['', '=' * 80])
         return '\n'.join(lines)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 _cost_auditor = None
 
 def get_cost_auditor(ctx: Any) -> PredictiveCostAuditor:

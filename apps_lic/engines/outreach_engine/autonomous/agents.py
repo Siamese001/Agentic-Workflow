@@ -54,6 +54,10 @@ class LeadQualityAgent(OutreachAgent):
             self.record_result(True, "All leads validated")
             print(f"   [{self.name}] ✅ Lead quality validated")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class ContactValidatorAgent(OutreachAgent):
     """Validates contact information."""
@@ -87,6 +91,10 @@ class ContactValidatorAgent(OutreachAgent):
         else:
             self.record_result(True, "All contacts validated")
             print(f"   [{self.name}] ✅ Contacts validated")
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class MessageComplianceAgent(OutreachAgent):
@@ -134,6 +142,10 @@ class MessageComplianceAgent(OutreachAgent):
             self.record_result(True, "All messages compliant")
             print(f"   [{self.name}] ✅ Messages compliant")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class TemplateOptimizerAgent(OutreachAgent):
     """Optimizes message templates for engagement."""
@@ -177,6 +189,10 @@ class TemplateOptimizerAgent(OutreachAgent):
             self.record_result(True, "Templates optimized")
             print(f"   [{self.name}] ✅ Templates optimized")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class CampaignBalanceAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, OutreachAgent):
     """Ensures campaign elements are balanced."""
@@ -212,6 +228,10 @@ class CampaignBalanceAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         else:
             self.record_result(True, "Campaign balanced")
             print(f"   [{self.name}] ✅ Campaign balanced")
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class DeliverabilityAgent(OutreachAgent):
@@ -254,6 +274,10 @@ class DeliverabilityAgent(OutreachAgent):
         else:
             self.record_result(True, "Deliverability OK")
             print(f"   [{self.name}] ✅ Deliverability OK")
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class OutreachTestPilot(OutreachAgent):
@@ -306,6 +330,10 @@ class OutreachTestPilot(OutreachAgent):
             self.record_result(False, f"Failed: {failed_tests}")
             print(f"   [{self.name}] ❌ Failed tests: {failed_tests}")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class CampaignPlannerAgent(OutreachAgent):
     """Strategic campaign planning agent."""
@@ -353,6 +381,10 @@ Provide 3 specific recommendations to improve campaign effectiveness.
         self.record_result(True, f"Generated {len(recommendations)} recommendations")
         print(f"   [{self.name}] ✅ Strategy planned ({len(recommendations)} recommendations)")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class OutreachReflectionAgent(OutreachAgent):
     """Reflects on execution and suggests improvements."""
@@ -381,3 +413,7 @@ class OutreachReflectionAgent(OutreachAgent):
 
         self.record_result(True, f"Passed: {len(passed_agents)}, Failed: {len(failed_agents)}")
         print(f"   [{self.name}] ✅ Reflection complete")
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

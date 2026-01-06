@@ -479,3 +479,6 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             except:
                 pass
         return stats
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

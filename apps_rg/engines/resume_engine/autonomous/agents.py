@@ -103,6 +103,10 @@ class ContentQualityAgent(ResumeAgent):
             return json.dumps(content)
         return str(content)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class FactCheckAgent(ResumeAgent):
     """
@@ -184,6 +188,10 @@ class FactCheckAgent(ResumeAgent):
         """Normalize text for comparison."""
         return text.lower().strip()
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class BrandComplianceAgent(ResumeAgent):
     """
@@ -260,6 +268,10 @@ class BrandComplianceAgent(ResumeAgent):
             return json.dumps(content)
         return str(content)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class TemplateOptimizerAgent(ResumeAgent):
     """
@@ -316,6 +328,10 @@ class TemplateOptimizerAgent(ResumeAgent):
             return "entry_level"
 
         return "technical"  # Default
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class SectionBalanceAgent(ResumeAgent):
@@ -387,6 +403,10 @@ class SectionBalanceAgent(ResumeAgent):
         elif isinstance(content, dict):
             return json.dumps(content)
         return str(content)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ResumeAgent):
@@ -480,6 +500,10 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
         matches = sum(1 for word in job_words if word in resume_text)
 
         return matches / len(job_words)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class TestPilot(ResumeAgent):
@@ -628,6 +652,10 @@ class StrategicPlannerAgent(ResumeAgent):
 
         self.record_pass(f"Strategy: {plan['strategy']}", data=plan)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class ReflectionAgent(ResumeAgent):
     """
@@ -676,3 +704,7 @@ class ReflectionAgent(ResumeAgent):
 
         passed = sum(1 for r in self.ctx.results.values() if r.get("passed", False))
         return passed / total_agents
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

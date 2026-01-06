@@ -159,6 +159,10 @@ class ImportHealerAgent(HealerMixin, MCPHardenedMixin):
         
         return results
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 def get_sovereign_ignore_list() -> Set[str]:
     """

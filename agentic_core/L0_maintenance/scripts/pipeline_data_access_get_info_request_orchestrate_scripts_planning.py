@@ -140,6 +140,10 @@ class ScriptsPlanningOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, 
                 total += 60.0 * priority_multipliers.get(Task.priority, 1.0)
         return total
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def create_scripts_planning_orchestrator(max_concurrent_tasks: int=5, enable_dependency_check: bool=True, **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestratorAgent:
     """Create a configured scripts planning orchestrator."""
     config: Any = ScriptsPlanningConfig(max_concurrent_tasks=max_concurrent_tasks, enable_dependency_check=enable_dependency_check, **kwargs)

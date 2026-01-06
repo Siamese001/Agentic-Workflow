@@ -174,6 +174,10 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """
         return f''
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def create_model_router(cost_budget_per_request: Optional[float]=None) -> ModelRouterAgent:
     """Factory function to create model router.
 

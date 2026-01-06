@@ -19,6 +19,10 @@ class SafetyExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     processing workflows and job alignment.
     """
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def __init__(self: Any, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot]) -> None:
     self.routing_policy = routing_policy
     SELF.SANDBOX = sandbox

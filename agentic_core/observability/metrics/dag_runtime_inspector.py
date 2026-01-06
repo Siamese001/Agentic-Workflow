@@ -24,6 +24,10 @@ class DiagnosticReport:
 class DagRuntimeInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Diagnostics engine for inspection domain."""
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = config or {}
     Logger.info(f'Initialized {self.__class__.__name__}')

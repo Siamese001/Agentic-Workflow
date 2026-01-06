@@ -474,3 +474,7 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
 
         return len(intersection) / len(union)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+

@@ -39,6 +39,10 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
     def execute_industry_first_gate(self, HEADLINE: str, valid_industries: set, gate_id: str): pass
                     
     results = []
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 # NAMING FIXED: ValidationResult → ValidationResult
 class ValidationResult:
     '''Brief description of functionality and purpose.'''
