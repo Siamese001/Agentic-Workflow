@@ -533,16 +533,15 @@ class GenerativeGuard(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
             if self._is_runaway_file(normalized_file_path):
                 violations_in_dir.append(file_path)
         return violations_in_dir
-    def _run_self_tests(self) -> dict:
-    """Run internal self-tests."""
-        pass
-        pass
-    results = {"passed": 0, "failed": 0, "tests": []}
-    try:
-    assert self is not None
-    results["passed"] += 1
-    results["tests"].append({"name": "test_instantiation", "status": "passed"})
-    except AssertionError as e:
-    results["failed"] += 1
-    results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-    return results
+
+def _run_self_tests(self) -> dict:
+        """Run internal self-tests."""
+        results = {"passed": 0, "failed": 0, "tests": []}
+        try:
+            assert self is not None
+            results["passed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "passed"})
+        except AssertionError as e:
+            results["failed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+        return results

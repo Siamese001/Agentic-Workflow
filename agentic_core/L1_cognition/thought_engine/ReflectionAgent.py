@@ -226,4 +226,5 @@ class ReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
-\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

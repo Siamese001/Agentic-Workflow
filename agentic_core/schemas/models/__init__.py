@@ -24,7 +24,7 @@ Future Curation Roadmap:
 """
 
 # Public API surface — expose only what's intended
-from .CognitiveContractEnforcerAgent import (
+from .CognitiveContractValidatorAgent import (
     CognitiveContract,
     CognitiveContractEnforcer,
     CognitiveContractValidatorAgent,

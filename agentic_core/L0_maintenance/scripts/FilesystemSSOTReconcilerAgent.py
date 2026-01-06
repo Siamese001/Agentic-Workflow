@@ -764,10 +764,10 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
 # Mixin Implementations
 # ===================================================================
     
-async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
-    """
-    Proactively detect when blueprint needs reconciliation.
-    
+    async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+        """Proactively detect when blueprint needs reconciliation."""
+        pass
+
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
         """Minimal mode - health check only."""
         return await self.self_diagnose()
