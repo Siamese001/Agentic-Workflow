@@ -2,19 +2,19 @@
 
 **Generated:** January 06, 2026  
 **Source:** `agent_discovery_full.json` (canonical AST scan)  
-**Discovery:** Last Discovery: FULL mode (13.5s, 0m ago) → 350 agents
+**Discovery:** Last Discovery: FULL mode (13.6s, 0m ago) → 301 agents
 
 ## 🎯 Executive Summary
 
 **System Health:** 99.8/100 | **Risk Level:** MED | **Criticality:** 100/100
 
 ### Key Metrics
-- **Total Agents:** 341
-- **Compliant:** 308 (90.3%) ✅
-- **Healing Capabilities:** 308 (90.3%) ✅
-- **Healing Invocation:** 339 (99.4%) ✅
-- **With Tests:** 341 (100.0%) ✅
-- **Avg Complexity:** 59.1 ❌
+- **Total Agents:** 302
+- **Compliant:** 273 (90.4%) ✅
+- **Healing Capabilities:** 273 (90.4%) ✅
+- **Healing Invocation:** 300 (99.3%) ✅
+- **With Tests:** 302 (100.0%) ✅
+- **Avg Complexity:** 35.7 ❌
 
 ## 📊 Territory Analysis
 
@@ -22,59 +22,48 @@
 
 ### High Priority Territories (Criticality > 70)
 
-### High Priority Territories
-
-- ⚠️ **L5 Safety/Validators**: 26/31 compliant | Health: 97.9% | Risk: MED
-- ⚠️ **L5 Safety/Guardrails**: 31/32 compliant | Health: 97.9% | Risk: MED
-
 ### Medium Priority Territories
 
+- ⚠️ **L5 Safety/Guardrails**: 29/30 compliant | Health: 97.8% | Risk: MED
+- ⚠️ **L5 Safety/Validators**: 14/17 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **L5 Safety/Red Teaming**: 6/6 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L2 Execution/Core**: 63/67 compliant | Health: 95.0% | Risk: MED
-- ⚠️ **L5 Safety/Base Class**: 3/3 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 100.0% | Risk: MED
+- ⚠️ **L2 Execution/Core**: 64/66 compliant | Health: 96.5% | Risk: MED
+- ⚠️ **L5 Safety/Base Class**: 1/1 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **Apps Lic**: 33/33 compliant | Health: 92.9% | Risk: MED
-- ⚠️ **L1 Cognition/Core**: 15/15 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L3 Orchestration/Core**: 46/46 compliant | Health: 96.4% | Risk: MED
+- ⚠️ **L0 Maintenance/Infrastructure**: 1/1 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **Apps Rg**: 24/24 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L1 Cognition/Base Class**: 2/2 compliant | Health: 100.0% | Risk: MED
-- 🔥 **L3 Orchestration/Specialized**: 4/6 compliant | Health: 77.8% | Risk: HIGH | Heal Gap: -33.3%
+- ⚠️ **L3 Orchestration/Core**: 41/41 compliant | Health: 96.7% | Risk: MED
+- ⚠️ **L1 Cognition/Base Class**: 1/1 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **L2 Execution/Specialized**: 4/4 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L2 Execution/Base Class**: 2/2 compliant | Health: 100.0% | Risk: MED
+- ⚠️ **L2 Execution/Base Class**: 1/1 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **Observability/Metrics**: 12/12 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L4 State/Core**: 11/12 compliant | Health: 94.4% | Risk: MED
-- ⚠️ **L3 Orchestration/Base Class**: 2/2 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L3 Orchestration/Infrastructure**: 2/2 compliant | Health: 100.0% | Risk: MED
+- ⚠️ **L3 Orchestration/Specialized**: 4/4 compliant | Health: 100.0% | Risk: MED
 - 🔥 **L4 State/Infrastructure**: 2/3 compliant | Health: 100.0% | Risk: HIGH
+- ⚠️ **L4 State/Core**: 9/10 compliant | Health: 100.0% | Risk: MED
+- ⚠️ **L3 Orchestration/Base Class**: 1/1 compliant | Health: 100.0% | Risk: MED
+- ⚠️ **L3 Orchestration/Infrastructure**: 1/1 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **Observability/Telemetry**: 1/1 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **Observability/Tracing**: 1/1 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **Observability/Compliance**: 1/1 compliant | Health: 100.0% | Risk: MED
 
 ### Low Priority Territories
 
+- ⚠️ **L1 Cognition/Core**: 22/22 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **L4 State/Specialized**: 5/5 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L4 State/Base Class**: 2/2 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L0 Maintenance/Infrastructure**: 3/3 compliant | Health: 100.0% | Risk: MED
+- ⚠️ **L4 State/Base Class**: 1/1 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **L1 Cognition/Specialized**: 3/3 compliant | Health: 100.0% | Risk: MED
-- 🔥 **Tests**: 0/3 compliant | Health: 100.0% | Risk: HIGH
 - ⚠️ **Apps Shared**: 2/2 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L0 Maintenance/Core**: 6/6 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L1 Cognition/Infrastructure**: 8/8 compliant | Health: 100.0% | Risk: MED
-- ⚠️ **L2 Execution/Infrastructure**: 2/2 compliant | Health: 83.3% | Risk: MED
-
-### Unclassified Agents
-
-- ❓ **Unclassified**: 1/1 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 100.0%
+- ⚠️ **L0 Maintenance/Core**: 8/8 compliant | Health: 100.0% | Risk: MED
 
 
 ## 📈 Recommendations
 
 ### Immediate Actions (High Risk)
-- **L4 State/Infrastructure**: Focus on complexity reduction (CC=23.0) and test coverage
-- **L3 Orchestration/Specialized**: Focus on complexity reduction (CC=23.0) and test coverage
+- **L4 State/Infrastructure**: Focus on complexity reduction (CC=47.5) and test coverage
 
 ### Healing Gap Closure
-- **L3 Orchestration/Specialized**: Remove unused HealerMixin inheritance (Gap: -33.3%)
+- Healing capabilities and invocation are well-aligned ✅
 
 
 ## 📊 Data Files
