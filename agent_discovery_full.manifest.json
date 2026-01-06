@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-05T17:14:32.035318Z",
-  "scan_duration_seconds": 18.52,
+  "generated_at": "2026-01-06T00:50:04.198470Z",
+  "scan_duration_seconds": 15.41,
   "agent_count": 316,
-  "content_hash": "sha256:3f749b064f70e4c0f6ab892e68db069c09cfd829fa902c617dfe24d9de011ed2",
+  "content_hash": "sha256:3affbc166476e5b196a640df98bf2617ae3daa1c34cd596b298ebf58c5b48475",
   "layer_breakdown": {
     "L0": 9,
     "L1": 26,
@@ -17,7 +17,7 @@
   },
   "parse_errors_count": 0,
   "minimum_agent_count": 300,
-  "expected_agent_count": 312,
+  "expected_agent_count": 316,
   "validation": {
     "passed": true,
     "threshold": 300

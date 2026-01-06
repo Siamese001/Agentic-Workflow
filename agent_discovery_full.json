@@ -6,14 +6,15 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 75,
@@ -30,15 +31,16 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "Agent"
+      "Agent",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 104,
@@ -55,9 +57,9 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -68,6 +70,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 53,
@@ -100,6 +103,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 154,
@@ -116,12 +120,12 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
+      "MCPHardenedMixin",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -135,6 +139,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 71,
@@ -151,9 +156,9 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -164,6 +169,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 141,
@@ -180,12 +186,12 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
+      "L0DelegationTestingMixin",
+      "MCPHardenedMixin",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "L0DelegationTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -200,6 +206,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Delegated",
     "has_subatomic": false,
     "loc": 246,
@@ -216,9 +223,9 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -231,6 +238,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 120,
@@ -247,14 +255,15 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 95,
@@ -271,10 +280,10 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
+      "MCPHardenedMixin",
       "CanonASTValidator",
-      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -284,6 +293,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 96,
@@ -301,8 +311,8 @@
     "layer": "L1",
     "inheritance": [
       "CanonASTValidator",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler"
@@ -310,6 +320,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 96,
@@ -326,9 +337,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -345,6 +356,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 313,
@@ -374,6 +386,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 285,
@@ -390,9 +403,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -403,6 +416,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 106,
@@ -419,9 +433,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -434,6 +448,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 382,
@@ -451,8 +466,8 @@
     "layer": "L1",
     "inheritance": [
       "CanonASTValidator",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -460,6 +475,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 96,
@@ -477,8 +493,8 @@
     "layer": "L1",
     "inheritance": [
       "CanonASTValidator",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -486,6 +502,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 96,
@@ -502,9 +519,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -521,9 +538,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 181,
+    "loc": 182,
     "class_count": 3,
     "description": "\n    Guards the codebase against illegal dependencies.\n\n    Rules enforced:\n    1. No circular impor",
     "pascal_compliant": true,
@@ -537,9 +555,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "execute",
@@ -550,6 +568,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 186,
@@ -574,6 +593,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 28,
@@ -591,8 +611,8 @@
     "layer": "L1",
     "inheritance": [
       "CanonASTValidator",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler"
@@ -600,6 +620,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 96,
@@ -617,8 +638,8 @@
     "layer": "L1",
     "inheritance": [
       "CanonASTValidator",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -626,6 +647,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 96,
@@ -643,8 +665,8 @@
     "layer": "L1",
     "inheritance": [
       "CanonASTValidator",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Import",
@@ -653,6 +675,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 96,
@@ -669,9 +692,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -688,9 +711,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 512,
+    "loc": 513,
     "class_count": 3,
     "description": "\n    Enforces architectural governance laws and constraints.\n\n    Implements the Three Laws:\n    1. ",
     "pascal_compliant": true,
@@ -721,9 +745,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 195,
+    "loc": 196,
     "class_count": 1,
     "description": "L1 Cognition base class - unified under SovereignBaseAgent.\n    \n    Provides:\n    - Real logging (l",
     "pascal_compliant": true,
@@ -751,6 +776,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 157,
@@ -782,6 +808,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 191,
@@ -810,6 +837,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 186,
@@ -834,6 +862,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 382,
@@ -850,9 +879,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -869,6 +898,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 162,
@@ -886,8 +916,8 @@
     "layer": "L1",
     "inheritance": [
       "CanonASTValidator",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -895,6 +925,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 96,
@@ -911,9 +942,9 @@
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -925,9 +956,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 138,
+    "loc": 139,
     "class_count": 2,
     "description": "Routes tasks to appropriate reasoning strategies.\n    \n    Implements a simple strategy selector tha",
     "pascal_compliant": true,
@@ -958,6 +990,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 186,
@@ -982,6 +1015,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 162,
@@ -1007,6 +1041,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 162,
@@ -1023,10 +1058,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -1041,6 +1076,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 259,
@@ -1052,13 +1088,13 @@
   },
   {
     "class_name": "AutonomyGuardianAgent",
-    "path": "agentic_core\\config\\blueprint_sovereign\\AutonomyGuardianAgent.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\AutonomyGuardianAgent_blueprint.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1075,9 +1111,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 1596,
+    "loc": 1597,
     "class_count": 2,
     "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    Responsibilities:\n  ",
     "pascal_compliant": true,
@@ -1091,10 +1128,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute"
@@ -1102,6 +1139,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 97,
@@ -1118,8 +1156,8 @@
     "sub_dir": "agentic_core/runtime",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1129,6 +1167,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 46,
@@ -1145,10 +1184,10 @@
     "sub_dir": "agentic_core/runtime",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "NodeVisitor"
+      "NodeVisitor",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1158,6 +1197,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 63,
@@ -1174,10 +1214,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "can_run",
@@ -1187,6 +1227,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 65,
@@ -1203,8 +1244,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1212,20 +1253,21 @@
       "_normalize_code",
       "_normalize_ast_tree",
       "_normalize_ts_tree",
+      "_block_similarity",
       "_hash_block",
       "_extract_functions_classes",
       "scan_for_duplicates",
-      "_create_shared_utility",
-      "auto_extract_duplicates"
+      "_create_shared_utility"
     ],
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 413,
+    "loc": 565,
     "class_count": 1,
-    "description": "\n    Batch agent for detecting and optionally refactoring duplicated code.\n    \n    Responsibilities",
+    "description": "\n    Batch agent for detecting and optionally refactoring duplicated code.\n    Now with conservative",
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true
@@ -1237,9 +1279,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
+      "MCPHardenedMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -1256,6 +1298,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 267,
@@ -1285,6 +1328,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 133,
@@ -1301,8 +1345,8 @@
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1319,9 +1363,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 533,
+    "loc": 534,
     "class_count": 1,
     "description": "\n    L5 Sovereign Compliance Orchestrator\n\n    Single responsibility:\n      - Discover all validator",
     "pascal_compliant": true,
@@ -1335,10 +1380,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "can_run",
@@ -1351,6 +1396,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 156,
@@ -1367,8 +1413,8 @@
     "sub_dir": "agentic_core/patterns",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1383,6 +1429,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 75,
@@ -1399,8 +1446,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -1417,9 +1464,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 214,
+    "loc": 215,
     "class_count": 3,
     "description": "\n    The Context Curator - Prompt Engineer Agent\n    \n    Runs between pipeline stages (post-converg",
     "pascal_compliant": true,
@@ -1433,9 +1481,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1450,6 +1498,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 248,
@@ -1466,9 +1515,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1480,6 +1529,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 645,
@@ -1496,8 +1546,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -1514,9 +1564,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 210,
+    "loc": 211,
     "class_count": 3,
     "description": "\n    The Dependency Diplomat - Graph Optimizer\n    \n    Maintains live DAG of imports in Redis.\n    ",
     "pascal_compliant": true,
@@ -1541,6 +1592,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 259,
@@ -1565,6 +1617,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 65,
@@ -1581,9 +1634,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1592,6 +1645,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 58,
@@ -1608,9 +1662,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1621,6 +1675,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 30,
@@ -1637,9 +1692,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1656,9 +1711,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 115,
+    "loc": 116,
     "class_count": 4,
     "description": "Manages automatic fallback chains for tool providers.\n\n    Features:\n    - Ordered Provider sequence",
     "pascal_compliant": true,
@@ -1672,9 +1728,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1691,9 +1747,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 246,
+    "loc": 248,
     "class_count": 1,
     "description": "\n    Agent for managing git operations and remote synchronization.\n\n    Features:\n    - Atomic commi",
     "pascal_compliant": true,
@@ -1717,6 +1774,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 97,
@@ -1733,9 +1791,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1745,6 +1803,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 31,
@@ -1761,9 +1820,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
+      "MCPHardenedMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -1780,9 +1839,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 321,
+    "loc": 336,
     "class_count": 1,
     "description": "\n    Healer Agent provides autonomous code repair for any canon Violation.\n    \n    This is the gene",
     "pascal_compliant": true,
@@ -1796,8 +1856,8 @@
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1806,6 +1866,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 28,
@@ -1832,6 +1893,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 97,
@@ -1848,8 +1910,8 @@
     "sub_dir": "agentic_core/runtime",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1863,6 +1925,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 102,
@@ -1879,9 +1942,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "execute_hygiene_scan",
@@ -1890,6 +1953,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 233,
@@ -1906,8 +1970,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1924,9 +1988,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 230,
+    "loc": 231,
     "class_count": 12,
     "description": "Executor for integrity gate validation.\n\n    Validates research outputs against quality criteria inc",
     "pascal_compliant": true,
@@ -1940,9 +2005,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__"
@@ -1950,6 +2015,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 112,
@@ -1966,9 +2032,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1977,6 +2043,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 207,
@@ -1993,9 +2060,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
+      "MCPHardenedMixin",
       "L0DelegationTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -2004,6 +2071,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 25,
@@ -2020,8 +2088,8 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -2030,9 +2098,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 14,
+    "loc": 15,
     "class_count": 1,
     "description": "\n    Consolidated base for L1 Cognition agents.\n    \n    Guaranteed Capabilities:\n    - heal_reposit",
     "pascal_compliant": true,
@@ -2046,9 +2115,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -2056,6 +2125,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 15,
@@ -2072,8 +2142,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "SovereignBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "__post_init__",
@@ -2090,6 +2160,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 165,
@@ -2106,8 +2177,8 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -2117,9 +2188,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 15,
+    "loc": 16,
     "class_count": 1,
     "description": "\n    Consolidated base for L3 Orchestration agents.\n    \n    Guaranteed Capabilities:\n    - heal_rep",
     "pascal_compliant": true,
@@ -2133,8 +2205,8 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -2144,9 +2216,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 15,
+    "loc": 16,
     "class_count": 1,
     "description": "\n    Consolidated base for L4 State agents.\n    \n    Guaranteed Capabilities:\n    - heal_repository(",
     "pascal_compliant": true,
@@ -2160,8 +2233,8 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -2171,9 +2244,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 16,
+    "loc": 17,
     "class_count": 1,
     "description": "\n    Consolidated base for L5 Safety agents.\n    \n    Guaranteed Capabilities:\n    - heal_repository",
     "pascal_compliant": true,
@@ -2187,9 +2261,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2206,9 +2280,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 373,
+    "loc": 374,
     "class_count": 5,
     "description": "\n    Autonomous Knowledge Distillation Agent\n    \n    Monitors healing successes and automatically d",
     "pascal_compliant": true,
@@ -2239,6 +2314,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 645,
@@ -2255,8 +2331,8 @@
     "sub_dir": "agentic_core/config",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2266,9 +2342,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 435,
+    "loc": 436,
     "class_count": 7,
     "description": "Detects method changes between two versions of a file.",
     "pascal_compliant": true,
@@ -2282,9 +2359,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2301,6 +2378,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 1134,
@@ -2325,6 +2403,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 65,
@@ -2341,9 +2420,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2360,6 +2439,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 159,
@@ -2376,9 +2456,9 @@
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2391,9 +2471,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 110,
+    "loc": 111,
     "class_count": 1,
     "description": "\n    Normalizes filenames and public symbols to snake_case.\n\n    Why ungated healing is safe:\n    - ",
     "pascal_compliant": true,
@@ -2415,6 +2496,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 65,
@@ -2431,10 +2513,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -2448,6 +2530,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 288,
@@ -2479,6 +2562,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 112,
@@ -2495,9 +2579,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2514,9 +2598,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 250,
+    "loc": 251,
     "class_count": 3,
     "description": "\n    Manages healing resources proactively to prevent exhaustion.\n    \n    Features:\n    - Real-time",
     "pascal_compliant": true,
@@ -2543,6 +2628,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 133,
@@ -2567,6 +2653,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 156,
@@ -2583,10 +2670,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2595,6 +2682,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 68,
@@ -2626,9 +2714,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 435,
+    "loc": 436,
     "class_count": 7,
     "description": "\n    The Regression Oracle - Automated Test Synthesizer\n    \n    Subscribes to AtomicBlackboard FILE",
     "pascal_compliant": true,
@@ -2659,6 +2748,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 156,
@@ -2683,6 +2773,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 156,
@@ -2699,10 +2790,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2716,6 +2807,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 145,
@@ -2733,8 +2825,8 @@
     "layer": "L2",
     "inheritance": [
       "IActionPlane",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2751,9 +2843,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 212,
+    "loc": 213,
     "class_count": 3,
     "description": "Sovereign action plane with Toolsmith and Sandbox.",
     "pascal_compliant": true,
@@ -2767,9 +2860,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2786,6 +2879,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 128,
@@ -2802,9 +2896,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2814,6 +2908,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 46,
@@ -2830,9 +2925,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2847,6 +2942,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 135,
@@ -2863,8 +2959,8 @@
     "sub_dir": "agentic_core/semantic_memory",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2876,6 +2972,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 61,
@@ -2892,9 +2989,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2911,6 +3008,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 132,
@@ -2927,9 +3025,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2944,6 +3042,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 88,
@@ -2960,9 +3059,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2978,9 +3077,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 102,
+    "loc": 103,
     "class_count": 1,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
@@ -2994,9 +3094,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3006,6 +3106,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 50,
@@ -3031,6 +3132,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 68,
@@ -3056,6 +3158,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 65,
@@ -3088,6 +3191,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 288,
@@ -3104,9 +3208,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
+      "MCPHardenedMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -3122,6 +3226,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 160,
@@ -3138,9 +3243,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
+      "MCPHardenedMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -3156,6 +3261,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 54,
@@ -3172,10 +3278,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -3190,6 +3296,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 60,
@@ -3217,6 +3324,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 145,
@@ -3243,6 +3351,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 145,
@@ -3276,9 +3385,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 221,
+    "loc": 222,
     "class_count": 4,
     "description": "\n    Creates and manages tools dynamically.\n    Features:\n    - Generates tools from specifications\n",
     "pascal_compliant": true,
@@ -3300,6 +3410,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 65,
@@ -3328,6 +3439,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 112,
@@ -3344,9 +3456,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3360,9 +3472,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 103,
+    "loc": 104,
     "class_count": 1,
     "description": "Manages agent permissions with Control Plane integration.\n\n    Provides:\n    - Identity-based Permis",
     "pascal_compliant": true,
@@ -3382,6 +3495,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 357,
@@ -3398,8 +3512,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3413,9 +3527,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 88,
+    "loc": 89,
     "class_count": 1,
     "description": "\n    L3 Orchestration: Agent Registry Validation\n    Ensures all agents defined in CANON_AGENT_REGIS",
     "pascal_compliant": true,
@@ -3429,9 +3544,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3443,9 +3558,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 50,
+    "loc": 51,
     "class_count": 1,
     "description": "\n    L3 Orchestration: Architecture Pattern Enforcement\n    Ensures code follows canonical architect",
     "pascal_compliant": true,
@@ -3459,9 +3575,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3476,6 +3592,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 94,
@@ -3492,9 +3609,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3510,9 +3627,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 74,
+    "loc": 75,
     "class_count": 1,
     "description": "\n    Sovereign L3 orchestration base \u2014 Redis cache for all decisions and state.\n    ",
     "pascal_compliant": true,
@@ -3526,9 +3644,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3538,6 +3656,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 73,
@@ -3568,6 +3687,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 138,
@@ -3584,9 +3704,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3603,9 +3723,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 444,
+    "loc": 446,
     "class_count": 9,
     "description": "Manages the dynamic DAG with mutation capabilities.",
     "pascal_compliant": true,
@@ -3619,9 +3740,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3638,9 +3759,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 444,
+    "loc": 446,
     "class_count": 9,
     "description": "Handles the actual graph mutations.",
     "pascal_compliant": true,
@@ -3654,8 +3776,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3672,6 +3794,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 234,
@@ -3688,14 +3811,15 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 42,
@@ -3712,9 +3836,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3725,6 +3849,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 357,
@@ -3741,14 +3866,15 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 31,
@@ -3765,9 +3891,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3784,6 +3910,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 220,
@@ -3810,6 +3937,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
     "loc": 33,
@@ -3826,8 +3954,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__"
@@ -3835,6 +3963,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 4,
@@ -3851,9 +3980,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3870,9 +3999,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 198,
+    "loc": 199,
     "class_count": 2,
     "description": "\n    L3 Orchestration Layer: Manages transition from healing to atomic fission.\n    \n    Triggers wh",
     "pascal_compliant": true,
@@ -3897,6 +4027,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 38,
@@ -3913,9 +4044,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3930,9 +4061,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 98,
+    "loc": 99,
     "class_count": 1,
     "description": "\n    L5 Safety Layer: Uses GitKraken MCP to manage rollback points\n    and hardened commits for Atom",
     "pascal_compliant": true,
@@ -3946,9 +4078,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3957,6 +4089,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 14,
@@ -3973,9 +4106,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3986,9 +4119,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 44,
+    "loc": 45,
     "class_count": 1,
     "description": "\n    Thin wrapper for Hardened Workflow Orchestrator.\n    Delegates to ConsolidatedOrchestratorAgent",
     "pascal_compliant": true,
@@ -4002,9 +4136,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4019,9 +4153,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 166,
+    "loc": 167,
     "class_count": 1,
     "description": "\n    Enforces the canonical L4 hierarchy across agentic_core.\n    Drills down from L2 -> L3 -> L4 to",
     "pascal_compliant": true,
@@ -4048,9 +4183,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 73,
+    "loc": 74,
     "class_count": 1,
     "description": "Sovereign MCP Connection Manager \u2014 single source of truth",
     "pascal_compliant": true,
@@ -4064,9 +4200,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4078,6 +4214,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 53,
@@ -4094,9 +4231,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4112,6 +4249,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 160,
@@ -4139,6 +4277,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 102,
@@ -4155,11 +4294,11 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4176,6 +4315,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 141,
@@ -4192,9 +4332,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4211,6 +4351,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 180,
@@ -4237,6 +4378,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 1145,
@@ -4253,9 +4395,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4271,6 +4413,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 87,
@@ -4287,9 +4430,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4306,6 +4449,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 1145,
@@ -4335,6 +4479,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 1145,
@@ -4366,6 +4511,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 243,
@@ -4393,6 +4539,7 @@
     "has_tools": false,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 67,
@@ -4421,6 +4568,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 111,
@@ -4437,9 +4585,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4456,6 +4604,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 229,
@@ -4485,6 +4634,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 113,
@@ -4514,6 +4664,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 121,
@@ -4542,6 +4693,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 110,
@@ -4558,9 +4710,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4573,6 +4725,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 91,
@@ -4589,17 +4742,18 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 56,
+    "loc": 57,
     "class_count": 1,
     "description": "Orchestrate the multi-hop resume generation workflow.",
     "pascal_compliant": true,
@@ -4613,9 +4767,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4632,9 +4786,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 299,
+    "loc": 300,
     "class_count": 4,
     "description": "\n    Orchestrator that automatically recovers from workflow failures.\n    \n    Features:\n    - Autom",
     "pascal_compliant": true,
@@ -4648,8 +4803,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4664,9 +4819,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 72,
+    "loc": 73,
     "class_count": 1,
     "description": "\n    Gatekeeper that controls agent execution with concurrency limits and timeouts.\n    ",
     "pascal_compliant": true,
@@ -4680,8 +4836,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4692,6 +4848,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 30,
@@ -4708,8 +4865,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4725,9 +4882,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 155,
+    "loc": 156,
     "class_count": 1,
     "description": "\n    The Intelligent Brain that maps files to semantic territories\n    using real Gemini embeddings ",
     "pascal_compliant": true,
@@ -4741,9 +4899,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4753,6 +4911,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 46,
@@ -4769,9 +4928,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4783,6 +4942,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 112,
@@ -4799,9 +4959,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4816,6 +4976,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 126,
@@ -4843,6 +5004,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 82,
@@ -4859,9 +5021,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__"
@@ -4869,6 +5031,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 357,
@@ -4885,8 +5048,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4903,6 +5066,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 158,
@@ -4919,9 +5083,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4938,6 +5102,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 357,
@@ -4965,6 +5130,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 220,
@@ -4981,9 +5147,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5000,6 +5166,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 156,
@@ -5016,10 +5183,10 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "FileSystemEventHandler"
+      "FileSystemEventHandler",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5029,9 +5196,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 97,
+    "loc": 98,
     "class_count": 2,
     "description": "L0-L3: Watch for territory healing/ingestion changes with debouncing",
     "pascal_compliant": true,
@@ -5045,8 +5213,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5057,6 +5225,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 30,
@@ -5073,8 +5242,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5090,9 +5259,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 214,
+    "loc": 215,
     "class_count": 1,
     "description": "\n    Enforces exhaustive territory compliance by detecting intra-territory strays.\n    ",
     "pascal_compliant": true,
@@ -5106,8 +5276,8 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5124,9 +5294,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 323,
+    "loc": 324,
     "class_count": 2,
     "description": "\n    TestPilot agent with property-based testing capabilities.\n\n    Uses Hypothesis to generate and ",
     "pascal_compliant": true,
@@ -5140,14 +5311,15 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 31,
@@ -5164,9 +5336,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5183,6 +5355,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 263,
@@ -5199,9 +5372,9 @@
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5211,6 +5384,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 44,
@@ -5235,6 +5409,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 357,
@@ -5251,9 +5426,9 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
+      "MCPHardenedMixin",
       "L4SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5270,6 +5445,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 288,
@@ -5286,8 +5462,8 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5304,9 +5480,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 224,
+    "loc": 225,
     "class_count": 3,
     "description": "\n    Manages state checkpoints with automatic recovery capabilities.\n    \n    Features:\n    - Automa",
     "pascal_compliant": true,
@@ -5320,8 +5497,8 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5338,9 +5515,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 177,
+    "loc": 178,
     "class_count": 1,
     "description": "\n    L4 State Guardian that autonomously monitors and repairs state corruption.\n    \n    Features:\n ",
     "pascal_compliant": true,
@@ -5354,9 +5532,9 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
+      "MCPHardenedMixin",
       "L4SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5371,6 +5549,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 138,
@@ -5387,9 +5566,9 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5406,6 +5585,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 204,
@@ -5435,6 +5615,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 134,
@@ -5463,6 +5644,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 122,
@@ -5491,6 +5673,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 135,
@@ -5507,9 +5690,9 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5526,9 +5709,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 183,
+    "loc": 184,
     "class_count": 1,
     "description": "\n    Manages JSON-based persistence for validation state.\n    \n    Features:\n    - Load/save convers",
     "pascal_compliant": true,
@@ -5542,8 +5726,8 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5560,6 +5744,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 278,
@@ -5576,8 +5761,8 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__"
@@ -5585,6 +5770,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 4,
@@ -5601,8 +5787,8 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__new__",
@@ -5617,6 +5803,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 88,
@@ -5633,8 +5820,8 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__"
@@ -5642,6 +5829,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 4,
@@ -5658,9 +5846,9 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5677,9 +5865,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 215,
+    "loc": 216,
     "class_count": 5,
     "description": "\n    The Structural Guard - Schema Evolution Agent\n    Monitors all Pydantic definitions and databas",
     "pascal_compliant": true,
@@ -5693,9 +5882,9 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
+      "MCPHardenedMixin",
       "L4SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5710,6 +5899,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 114,
@@ -5726,8 +5916,8 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5744,9 +5934,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 121,
+    "loc": 122,
     "class_count": 1,
     "description": "\n    ADAPTER: Legacy Interface -> New MCP Client.\n    Maintains backward compatibility for 'add_text",
     "pascal_compliant": true,
@@ -5760,9 +5951,9 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
+      "MCPHardenedMixin",
       "L4SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5774,6 +5965,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 96,
@@ -5790,9 +5982,9 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
+      "MCPHardenedMixin",
       "L4SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5805,6 +5997,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 86,
@@ -5821,8 +6014,8 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "SovereignBaseAgent",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "recall",
@@ -5839,6 +6032,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 371,
@@ -5855,8 +6049,8 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5872,6 +6066,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 130,
@@ -5888,9 +6083,9 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5905,9 +6100,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 191,
+    "loc": 192,
     "class_count": 2,
     "description": "\n    Manages ValidationContext persistence and history.\n    ",
     "pascal_compliant": true,
@@ -5938,6 +6134,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 143,
@@ -5954,9 +6151,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5973,9 +6170,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 206,
+    "loc": 207,
     "class_count": 3,
     "description": "\n    The Skeptic - Adversarial Red Team Agent\n\n    Acts as counter-agent to CodeJanitor and SystemAr",
     "pascal_compliant": true,
@@ -5989,9 +6187,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6008,9 +6206,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 97,
+    "loc": 98,
     "class_count": 1,
     "description": "L5: Self-healing security agent",
     "pascal_compliant": true,
@@ -6024,9 +6223,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6043,9 +6242,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 94,
+    "loc": 95,
     "class_count": 1,
     "description": "L5: Self-healing security agent",
     "pascal_compliant": true,
@@ -6059,8 +6259,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6077,9 +6277,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 2229,
+    "loc": 2238,
     "class_count": 2,
     "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    Responsibilities:\n  ",
     "pascal_compliant": true,
@@ -6106,6 +6307,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 201,
@@ -6122,9 +6324,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6136,6 +6338,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 149,
@@ -6169,6 +6372,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 166,
@@ -6202,6 +6406,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 142,
@@ -6218,9 +6423,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6230,6 +6435,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 55,
@@ -6246,9 +6452,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6265,6 +6471,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 90,
@@ -6281,8 +6488,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6299,9 +6506,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 533,
+    "loc": 534,
     "class_count": 1,
     "description": "\n    L5 Sovereign Compliance Orchestrator\n\n    Single responsibility:\n      - Discover all validator",
     "pascal_compliant": true,
@@ -6327,6 +6535,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 216,
@@ -6358,6 +6567,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 118,
@@ -6374,9 +6584,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6386,6 +6596,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 34,
@@ -6402,8 +6613,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6418,6 +6629,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 107,
@@ -6434,9 +6646,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6448,9 +6660,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 90,
+    "loc": 91,
     "class_count": 1,
     "description": "\n    Batch agent: Detects and removes unused Python dependencies from requirements.txt.\n    Uses 'de",
     "pascal_compliant": true,
@@ -6464,9 +6677,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6477,9 +6690,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 78,
+    "loc": 79,
     "class_count": 1,
     "description": "\n    Ensures public functions, classes, and modules have docstrings.\n\n    Rules:\n    - Module-level ",
     "pascal_compliant": true,
@@ -6493,9 +6707,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6512,6 +6726,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 234,
@@ -6528,9 +6743,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6545,9 +6760,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 147,
+    "loc": 148,
     "class_count": 1,
     "description": "\n    Batch agent: Identifies and removes files with repeated strings in filenames.\n    Detects patte",
     "pascal_compliant": true,
@@ -6561,9 +6777,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6577,6 +6793,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 240,
@@ -6593,9 +6810,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6609,6 +6826,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 114,
@@ -6625,11 +6843,11 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "MCPHardenedMixin",
       "AdaptiveExecutionMixin",
       "AutonomyMixin",
-      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6646,9 +6864,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 143,
+    "loc": 144,
     "class_count": 1,
     "description": "\n    Sovereign governance agent that makes constitutional decisions.\n    Now hardened with intellige",
     "pascal_compliant": true,
@@ -6662,10 +6881,10 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin",
+      "CachedSafetyShield",
       "MCPHardenedMixin",
-      "CachedSafetyShield"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6678,6 +6897,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 106,
@@ -6694,9 +6914,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6710,9 +6930,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 172,
+    "loc": 173,
     "class_count": 2,
     "description": "\n    Converts forbidden static imports from higher layers (L4/L5) into dynamic importlib calls.\n\n   ",
     "pascal_compliant": true,
@@ -6726,9 +6947,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6745,9 +6966,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 308,
+    "loc": 309,
     "class_count": 7,
     "description": "\n    The Hallucination Hunter - Ground Truth Verifier\n    \n    Runs in HOP inference stages (Phase 2",
     "pascal_compliant": true,
@@ -6761,9 +6983,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6778,6 +7000,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 233,
@@ -6794,9 +7017,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6813,6 +7036,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 901,
@@ -6829,9 +7053,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6848,6 +7072,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 794,
@@ -6864,9 +7089,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6879,6 +7104,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 234,
@@ -6895,9 +7121,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "MCPHardenedMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -6909,9 +7135,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 71,
+    "loc": 72,
     "class_count": 1,
     "description": "\n    Validates Canon Key 45: Shared Utils and Repository Hygiene.\n    Ensures that architectural shi",
     "pascal_compliant": true,
@@ -6925,9 +7152,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "MCPHardenedMixin",
       "L4SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6944,6 +7171,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 449,
@@ -6960,9 +7188,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6973,9 +7201,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 88,
+    "loc": 89,
     "class_count": 1,
     "description": "\n    Uses LLM inference to add accurate type hints to functions/methods.\n\n    Why gated (not ungated",
     "pascal_compliant": true,
@@ -7005,6 +7234,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 141,
@@ -7021,9 +7251,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7040,6 +7270,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 293,
@@ -7056,9 +7287,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7075,9 +7306,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 416,
+    "loc": 417,
     "class_count": 7,
     "description": "\n    L5+ Integrity Gate Executor with Two-Pass Validation.\n\n    Canon Validator Pattern:\n        # P",
     "pascal_compliant": true,
@@ -7106,6 +7338,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 146,
@@ -7139,6 +7372,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
     "loc": 1166,
@@ -7155,9 +7389,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7171,9 +7405,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 157,
+    "loc": 158,
     "class_count": 1,
     "description": "\n    L5 Safety Guardian for MCP integration compliance.\n    \n    Validates that all MCP integrations",
     "pascal_compliant": true,
@@ -7187,8 +7422,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7198,9 +7433,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 435,
+    "loc": 436,
     "class_count": 7,
     "description": "Detects method changes between two versions of a file.",
     "pascal_compliant": true,
@@ -7214,12 +7450,12 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "MCPHardenedMixin",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7236,6 +7472,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 212,
@@ -7252,9 +7489,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7264,6 +7501,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 31,
@@ -7280,10 +7518,10 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "MCPHardenedMixin",
       "ASTEnforcementMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7300,6 +7538,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 194,
@@ -7333,6 +7572,7 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 137,
@@ -7349,9 +7589,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7366,9 +7606,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 145,
+    "loc": 146,
     "class_count": 1,
     "description": "\n    Active defense system that generates hostile inputs for testing.\n\n    Creates edge cases and ma",
     "pascal_compliant": true,
@@ -7382,9 +7623,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -7395,9 +7636,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 101,
+    "loc": 102,
     "class_count": 1,
     "description": "\n    Sovereign red-teaming agent for guardrail penetration testing.\n\n    Safety model:\n    - Only ac",
     "pascal_compliant": true,
@@ -7426,9 +7668,10 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 435,
+    "loc": 436,
     "class_count": 7,
     "description": "\n    The Regression Oracle - Automated Test Synthesizer\n    \n    Subscribes to AtomicBlackboard FILE",
     "pascal_compliant": true,
@@ -7442,8 +7685,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "SovereignBaseAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -7460,6 +7703,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 156,
@@ -7476,9 +7720,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7490,6 +7734,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 169,
@@ -7506,9 +7751,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7525,6 +7770,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 171,
@@ -7541,9 +7787,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7560,6 +7806,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 241,
@@ -7576,9 +7823,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7595,9 +7842,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 238,
+    "loc": 239,
     "class_count": 6,
     "description": "\n    Safety engine that learns and adapts to new threats.\n    \n    Features:\n    - Automatic threat ",
     "pascal_compliant": true,
@@ -7611,9 +7859,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7628,6 +7876,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 186,
@@ -7644,8 +7893,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7662,6 +7911,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 324,
@@ -7678,9 +7928,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "MCPHardenedMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7697,9 +7947,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 183,
+    "loc": 184,
     "class_count": 2,
     "description": "L5 specialist \u2014 advanced sovereign testing.",
     "pascal_compliant": true,
@@ -7713,9 +7964,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7725,6 +7976,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 103,
@@ -7753,6 +8005,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 103,
@@ -7769,9 +8022,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7781,6 +8034,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 48,
@@ -7797,8 +8051,8 @@
     "sub_dir": "apps_lic/domain",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "enforce_ascii",
@@ -7807,6 +8061,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 412,
@@ -7823,10 +8078,10 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
+      "MCPHardenedMixin",
       "OutreachAgent",
-      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "execute"
@@ -7834,6 +8089,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 230,
@@ -7858,6 +8114,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 230,
@@ -7882,6 +8139,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 230,
@@ -7907,6 +8165,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 412,
@@ -7931,6 +8190,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 230,
@@ -7947,9 +8207,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7963,6 +8223,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 118,
@@ -7979,9 +8240,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7998,6 +8259,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 228,
@@ -8014,9 +8276,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8026,6 +8288,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 84,
@@ -8042,9 +8305,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8054,6 +8317,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 71,
@@ -8070,9 +8334,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8089,6 +8353,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 190,
@@ -8105,9 +8370,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8122,6 +8387,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 203,
@@ -8138,9 +8404,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8151,6 +8417,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 128,
@@ -8167,9 +8434,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8181,6 +8448,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 132,
@@ -8197,9 +8465,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8209,6 +8477,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 73,
@@ -8225,9 +8494,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8244,6 +8513,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 351,
@@ -8268,6 +8538,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 230,
@@ -8292,6 +8563,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 230,
@@ -8316,6 +8588,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 412,
@@ -8332,8 +8605,8 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "create_all_agents",
@@ -8344,6 +8617,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 297,
@@ -8360,8 +8634,8 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8374,6 +8648,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 349,
@@ -8390,9 +8665,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8401,6 +8676,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 297,
@@ -8417,10 +8693,10 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
+      "MCPHardenedMixin",
       "OutreachAgent",
-      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8432,6 +8708,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 216,
@@ -8448,9 +8725,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8464,6 +8741,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 228,
@@ -8489,6 +8767,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 349,
@@ -8513,6 +8792,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 230,
@@ -8529,8 +8809,8 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "get_agents_for_signals",
@@ -8540,6 +8820,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 297,
@@ -8564,6 +8845,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 230,
@@ -8581,9 +8863,9 @@
     "layer": "apps_lic",
     "inheritance": [
       "ValidationGateExecutor",
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8600,6 +8882,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 260,
@@ -8623,6 +8906,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 412,
@@ -8647,6 +8931,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 230,
@@ -8675,6 +8960,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 412,
@@ -8691,9 +8977,9 @@
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8703,9 +8989,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 149,
+    "loc": 150,
     "class_count": 1,
     "description": "\n    v13.0: HOP-based Workflow Orchestrator\n    \n    The Orchestrator is configuration-driven and ag",
     "pascal_compliant": true,
@@ -8719,10 +9006,10 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "MCPHardenedMixin",
       "ResumeAgent",
-      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -8731,6 +9018,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 419,
@@ -8747,8 +9035,8 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "create_all_agents",
@@ -8759,6 +9047,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 340,
@@ -8784,6 +9073,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 419,
@@ -8800,9 +9090,9 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8815,6 +9105,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 335,
@@ -8840,6 +9131,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 419,
@@ -8866,6 +9158,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 340,
@@ -8882,8 +9175,8 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8898,6 +9191,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 56,
@@ -8914,8 +9208,8 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8932,6 +9226,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
     "loc": 100,
@@ -8958,6 +9253,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 419,
@@ -8974,9 +9270,9 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8985,6 +9281,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 340,
@@ -9001,9 +9298,9 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9013,6 +9310,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 611,
@@ -9029,9 +9327,9 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9043,6 +9341,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 582,
@@ -9059,9 +9358,9 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9076,6 +9375,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 564,
@@ -9103,6 +9403,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 335,
@@ -9128,6 +9429,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 419,
@@ -9144,9 +9446,9 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9161,6 +9463,7 @@
     "has_tools": true,
     "has_memory": true,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 531,
@@ -9177,9 +9480,9 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9196,6 +9499,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 79,
@@ -9212,14 +9516,15 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 25,
@@ -9245,6 +9550,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 419,
@@ -9261,8 +9567,8 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "get_agents_for_signals",
@@ -9272,6 +9578,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 340,
@@ -9296,6 +9603,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 419,
@@ -9324,6 +9632,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 564,
@@ -9349,6 +9658,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
     "loc": 419,
@@ -9365,9 +9675,9 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9379,6 +9689,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 582,
@@ -9395,9 +9706,9 @@
     "sub_dir": "apps_shared/utils",
     "layer": "apps_shared",
     "inheritance": [
-      "HealerMixin",
+      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9407,6 +9718,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": true,
     "loc": 102,
@@ -9423,8 +9735,8 @@
     "sub_dir": "apps_shared/utils",
     "layer": "apps_shared",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "validate_state"
@@ -9432,6 +9744,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
+    "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": false,
     "loc": 305,
@@ -9457,9 +9770,10 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 241,
+    "loc": 242,
     "class_count": 6,
     "description": "Mock FileManagerAgent for testing.",
     "pascal_compliant": true,
@@ -9482,9 +9796,10 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 241,
+    "loc": 242,
     "class_count": 6,
     "description": "Mock NamingAgent for testing.",
     "pascal_compliant": true,
@@ -9507,9 +9822,10 @@
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 241,
+    "loc": 242,
     "class_count": 6,
     "description": "Mock TelemetryAgent for testing.",
     "pascal_compliant": true,

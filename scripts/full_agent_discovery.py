@@ -398,6 +398,44 @@ def has_method(class_node: ast.ClassDef, method_name: str) -> bool:
     return False
 
 
+def get_method(class_node: ast.ClassDef, method_name: str) -> Optional[ast.FunctionDef]:
+    """Get a specific method from a class, or None if not found."""
+    for item in class_node.body:
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if item.name == method_name:
+                return item
+    return None
+
+
+def detect_invocation_status(class_node: ast.ClassDef) -> str:
+    """
+    Detect heal_repository invocation status for a CLASS.
+    
+    Returns:
+        'Yes' - Class defines heal_repository with super().heal_repository() call
+        'No (missing super)' - Class defines heal_repository but no super() call
+        'Inherited' - Class does not define heal_repository (inherits from base)
+    
+    IMPORTANT: This checks the CLASS's heal_repository method specifically,
+    not standalone module-level functions. This is the SSOT for invocation.
+    """
+    heal_method = get_method(class_node, 'heal_repository')
+    
+    if heal_method is None:
+        return 'Inherited'
+    
+    # Check if super().heal_repository() is called within the method
+    for node in ast.walk(heal_method):
+        if isinstance(node, ast.Call):
+            # Look for super().heal_repository(...)
+            if isinstance(node.func, ast.Attribute) and node.func.attr == 'heal_repository':
+                if isinstance(node.func.value, ast.Call):
+                    if isinstance(node.func.value.func, ast.Name) and node.func.value.func.id == 'super':
+                        return 'Yes'
+    
+    return 'No (missing super)'
+
+
 def count_loc(source: str) -> int:
     """Count non-blank, non-comment lines."""
     count = 0
@@ -671,6 +709,9 @@ def main():
             external_touch = any(marker in source.lower() for marker in external_markers)
             mcp_hardened = 'mcphardenedmixin' in source.lower() or 'mcp_hardened_mixin' in source.lower()
             
+            # Detect invocation status (SSOT - checks CLASS method, not module functions)
+            invocation = detect_invocation_status(node)
+            
             agents.append({
                 'class_name': node.name,
                 'path': str(rel_path),
@@ -682,6 +723,7 @@ def main():
                 'has_tools': has_tools,
                 'has_memory': has_memory,
                 'has_healing': has_healing,
+                'invocation': invocation,  # SSOT for heal_repository invocation
                 'testing': testing,
                 'has_subatomic': 'SubAtomicAgent' in bases or 'subatomic' in source.lower(),
                 'loc': loc,

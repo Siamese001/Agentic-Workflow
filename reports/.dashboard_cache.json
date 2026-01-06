@@ -1,17 +1,17 @@
 {
   "agentic_core/L5_safety/validators/AutonomyGuardianAgent.py": {
-    "hash": "c77f81212433c16b",
+    "hash": "551c98b6a8047088",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 2370,
+      "loc": 2397,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 1,
       "healing_cap": 1,
       "healing_invoke": 1,
       "tests": 1,
-      "cc_sum": 676,
-      "max_cc": 265,
+      "cc_sum": 677,
+      "max_cc": 257,
       "typed": 88.13559322033898,
       "documented": 83.60655737704919,
       "observable": 100
@@ -5649,6 +5649,24 @@
       "typed": 100.0,
       "documented": 100.0,
       "observable": 0
+    }
+  },
+  "agentic_core/config/blueprint_sovereign/AutonomyGuardianAgent_blueprint.py": {
+    "hash": "46b9a3f8e43957e9",
+    "atomic_threshold": 10,
+    "metrics": {
+      "loc": 1705,
+      "compliant": 1,
+      "hardened": 1,
+      "mcp_capable": 0,
+      "healing_cap": 1,
+      "healing_invoke": 1,
+      "tests": 1,
+      "cc_sum": 527,
+      "max_cc": 181,
+      "typed": 82.22222222222221,
+      "documented": 80.85106382978722,
+      "observable": 100
     }
   }
 }
