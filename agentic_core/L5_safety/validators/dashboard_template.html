@@ -33,7 +33,7 @@
 
             window.__plotlyReady = loadScript('plotly.min.js')
                 .catch(function () {
-                    return loadScript('https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js');
+                    return loadScript('https://cdn.plot.ly/plotly-3.3.1.min.js');
                 })
                 .then(function () {
                     if (typeof window.Plotly === 'undefined') {
