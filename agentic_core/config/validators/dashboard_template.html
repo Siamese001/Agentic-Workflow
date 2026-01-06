@@ -492,6 +492,28 @@
 
                 <div class="kpi-grid" id="kpiGrid"></div>
 
+                <!-- Gauge Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Health Gauge</div>
+                            <div class="chart-subtitle">Overall system health</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="healthGauge"></div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Compliance Gauge</div>
+                            <div class="chart-subtitle">Autonomy compliance</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="complianceGauge"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="charts-grid full-width">
                     <div class="chart-card">
                         <div class="chart-header">
@@ -500,6 +522,61 @@
                         </div>
                         <div class="chart-body">
                             <div id="riskMatrix"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Territory Trend Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Health by Territory</div>
+                            <div class="chart-subtitle">Overall health score distribution</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="healthChart"></div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Healing Capabilities</div>
+                            <div class="chart-subtitle">Agents with healing methods</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="healingChart"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Compliance by Territory</div>
+                            <div class="chart-subtitle">Autonomy compliance rates</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="complianceChart"></div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Observability Coverage</div>
+                            <div class="chart-subtitle">Logging and monitoring</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="observabilityChart"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Complexity Distribution</div>
+                            <div class="chart-subtitle">Cyclomatic complexity by territory</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="complexityChart"></div>
                         </div>
                     </div>
                 </div>
