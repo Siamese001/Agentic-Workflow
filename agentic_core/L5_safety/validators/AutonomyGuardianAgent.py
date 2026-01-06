@@ -1875,9 +1875,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                     proper_base_count += 1
             perc_proper_base = round(proper_base_count / total * 100, 1) if total else 0
             
-            # Health Score v2.4 - All agents inherit full autonomy infrastructure
-            # All agents inherit healing, hardening, testing, observability, and typing from base classes
-            health = 100.0  # Full health - all agents inherit complete autonomy infrastructure
+            # Health Score v2.5 - Composite of actual metrics (NOT hardcoded)
+            # Formula: (Heal Cap + Invocation + Tests + Observable + Inverted CC) / 5
+            # Each component weighted equally to show true portfolio health
+            health = round((
+                perc_healing_cap +      # 20%: Agents with healing capability
+                perc_healing_invoke +   # 20%: Agents actually invoking healing
+                perc_tests +            # 20%: Test coverage
+                perc_observable +       # 20%: Observability (logging/metrics)
+                cc_health_component     # 20%: Inverted complexity (lower CC = higher health)
+            ) / 5, 1)
             
             risk_score = 0
             if avg_cc > 10: risk_score += 3
@@ -2289,9 +2296,15 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                 infra_territories = []
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
                 total_hardened = total_mcp_capable = total_tests = total_cc = total_loc = total_typed = total_documented = total_metadata = total_proper_base = total_observable = total_used = 0
-            # Calculate total health - v2.4: All agents inherit full autonomy infrastructure
+            # Calculate total health - v2.5: Composite of actual metrics (NOT hardcoded)
             total_cc_health = self._compute_complexity_health(total_cc)
-            total_health = 100.0  # Full health - all agents inherit complete autonomy infrastructure
+            total_health = round((
+                total_healing_cap +      # 20%: Portfolio healing capability
+                total_healing_invoke +   # 20%: Portfolio healing invocation
+                total_tests +            # 20%: Portfolio test coverage
+                total_observable +       # 20%: Portfolio observability
+                total_cc_health          # 20%: Portfolio inverted complexity health
+            ) / 5, 1)
             
             # Portfolio-wide Code Quality Score v1.1
             # Gemini-hardened weights (see per-territory code_quality)

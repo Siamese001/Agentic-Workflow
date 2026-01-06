@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Load Test</title>
+    <style>
+        body { font-family: system-ui; padding: 20px; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .info { color: blue; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Load Test</h1>
+    <div id="status">Testing...</div>
+    <div id="details"></div>
+    
+    <script>
+        async function testDashboard() {
+            const statusDiv = document.getElementById('status');
+            const detailsDiv = document.getElementById('details');
+            
+            try {
+                // Fetch the dashboard HTML
+                const response = await fetch('../reports/autonomy_dashboard.html');
+                const html = await response.text();
+                
+                const checks = [];
+                
+                // Check 1: File loaded
+                checks.push({
+                    name: 'Dashboard file loaded',
+                    pass: html.length > 0,
+                    detail: `Size: ${html.length} bytes`
+                });
+                
+                // Check 2: Has DOCTYPE
+                checks.push({
+                    name: 'Has DOCTYPE',
+                    pass: html.includes('<!DOCTYPE html>'),
+                    detail: 'Valid HTML5 document'
+                });
+                
+                // Check 3: Has Plotly loader
+                checks.push({
+                    name: 'Plotly loader present',
+                    pass: html.includes('__plotlyReady'),
+                    detail: 'Plotly initialization code found'
+                });
+                
+                // Check 4: Has data
+                checks.push({
+                    name: 'Dashboard data present',
+                    pass: html.includes('const dashboardData') && !html.includes('const dashboardData = [];'),
+                    detail: 'Data injection verified'
+                });
+                
+                // Check 5: Has loadData function
+                checks.push({
+                    name: 'loadData function present',
+                    pass: html.includes('function loadData()'),
+                    detail: 'Main initialization function found'
+                });
+                
+                // Check 6: Has Strategic Recommendations
+                checks.push({
+                    name: 'Strategic Recommendations section',
+                    pass: html.includes('Strategic Recommendations') && html.includes('Portfolio health at'),
+                    detail: 'Section present with content'
+                });
+                
+                // Check 7: Has DOM elements
+                const hasHealthBox = html.includes('id="healthScoreBox"');
+                const hasCodeQualityBox = html.includes('id="codeQualityBox"');
+                checks.push({
+                    name: 'Required DOM elements',
+                    pass: hasHealthBox && hasCodeQualityBox,
+                    detail: `healthScoreBox: ${hasHealthBox}, codeQualityBox: ${hasCodeQualityBox}`
+                });
+                
+                // Display results
+                const passCount = checks.filter(c => c.pass).length;
+                const totalCount = checks.length;
+                
+                if (passCount === totalCount) {
+                    statusDiv.innerHTML = `<span class="success">✓ All ${totalCount} checks passed!</span>`;
+                } else {
+                    statusDiv.innerHTML = `<span class="error">✗ ${totalCount - passCount} checks failed</span>`;
+                }
+                
+                let detailsHTML = '<h2>Check Details:</h2><ul>';
+                checks.forEach(check => {
+                    const icon = check.pass ? '✓' : '✗';
+                    const className = check.pass ? 'success' : 'error';
+                    detailsHTML += `<li><span class="${className}">${icon} ${check.name}</span>: ${check.detail}</li>`;
+                });
+                detailsHTML += '</ul>';
+                
+                // Add iframe to actually load the dashboard
+                detailsHTML += '<h2>Live Dashboard:</h2>';
+                detailsHTML += '<iframe src="../reports/autonomy_dashboard.html" style="width:100%; height:600px; border:1px solid #ccc; margin-top:10px;"></iframe>';
+                
+                detailsDiv.innerHTML = detailsHTML;
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+                detailsDiv.innerHTML = `<pre>${error.stack}</pre>`;
+            }
+        }
+        
+        testDashboard();
+    </script>
+</body>
+</html>
