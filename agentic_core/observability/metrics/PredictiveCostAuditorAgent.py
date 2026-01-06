@@ -296,8 +296,8 @@ def get_cost_auditor(ctx: Any) -> PredictiveCostAuditor:
     return _cost_auditor
 
 @timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """Observability metrics - operational only."""
+def _module_heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """Observability metrics - module-level operational stub."""
     if _call_path is None:
         _call_path = set()
     agent_name = "PredictiveCostAuditor"

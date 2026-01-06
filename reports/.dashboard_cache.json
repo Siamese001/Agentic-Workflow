@@ -1,9 +1,9 @@
 {
   "agentic_core/L5_safety/validators/AutonomyGuardianAgent.py": {
-    "hash": "42ba53485a8e68ca",
+    "hash": "c77f81212433c16b",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 2369,
+      "loc": 2370,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 1,
@@ -36,10 +36,10 @@
     }
   },
   "agentic_core/L5_safety/validators/ComplianceOrchestratorAgent.py": {
-    "hash": "9d203864d366a961",
+    "hash": "dcbd3d64633e4061",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 621,
+      "loc": 622,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -54,10 +54,10 @@
     }
   },
   "agentic_core/L5_safety/validators/DocstringComplianceAgent.py": {
-    "hash": "8327b4ee110b7669",
+    "hash": "2557130ec7214a43",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 99,
+      "loc": 100,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -144,10 +144,10 @@
     }
   },
   "agentic_core/L5_safety/validators/HygieneGuardianAgent.py": {
-    "hash": "804c03c981a94ad3",
+    "hash": "3886fe724f23ef27",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 87,
+      "loc": 88,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -162,10 +162,10 @@
     }
   },
   "agentic_core/L5_safety/validators/InferenceTypeHintAgent.py": {
-    "hash": "259ed538ba2400a9",
+    "hash": "7eeba8f47f7830dd",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 107,
+      "loc": 108,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -198,10 +198,10 @@
     }
   },
   "agentic_core/L5_safety/validators/RegressionOracleAgent.py": {
-    "hash": "1b5a24856890d1a3",
+    "hash": "d341430794b6543a",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 537,
+      "loc": 538,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -324,10 +324,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/DependencyPruningAgent.py": {
-    "hash": "cacace6fe3826545",
+    "hash": "913beca20fedcf3a",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 103,
+      "loc": 104,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -360,10 +360,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/FileCleanupAgent.py": {
-    "hash": "078e46d9e7f685fa",
+    "hash": "4b54dfcfa80f752b",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 184,
+      "loc": 185,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -396,10 +396,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/HallucinationHunterAgent.py": {
-    "hash": "a36c0b71bc7f59a1",
+    "hash": "3c3835482efacad7",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 391,
+      "loc": 392,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -504,10 +504,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/MCPGuardianAgent.py": {
-    "hash": "d017fd8a1d6e0878",
+    "hash": "dc38d8a7e17dd390",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 221,
+      "loc": 222,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -576,10 +576,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/RedSentinelAgent.py": {
-    "hash": "8f4e6742da664bbc",
+    "hash": "03756723e387e796",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 226,
+      "loc": 227,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 1,
@@ -666,10 +666,10 @@
     }
   },
   "agentic_core/L5_safety/gravity/GravityLeakRepairAgent.py": {
-    "hash": "b8aeca1a72b14a66",
+    "hash": "9f9af37d67bffa67",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 231,
+      "loc": 232,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -720,10 +720,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/AdversarialRedTeamerAgent.py": {
-    "hash": "d398b84270593478",
+    "hash": "e617f0b0c74379ff",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 263,
+      "loc": 264,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -810,10 +810,10 @@
     }
   },
   "agentic_core/L5_safety/red_teaming/RedTeamAgent.py": {
-    "hash": "1219d2c18bdc243c",
+    "hash": "cd936cbe71a37d9b",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 121,
+      "loc": 122,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -972,10 +972,10 @@
     }
   },
   "agentic_core/L4_state/ValidationContext/SchemaEvolverAgent.py": {
-    "hash": "5012d473f0d867ee",
+    "hash": "af44f1d53544f5f5",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 280,
+      "loc": 281,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1026,10 +1026,10 @@
     }
   },
   "agentic_core/L4_state/ValidationContext/SovereignPineconeStoreAgent.py": {
-    "hash": "8db81cef71330a80",
+    "hash": "a3d4de735ac849e8",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 178,
+      "loc": 179,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 1,
@@ -1224,10 +1224,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/DAGManagerAgent.py": {
-    "hash": "8c2a8137bd1108cb",
+    "hash": "f8e82ca4175cb855",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 560,
+      "loc": 562,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1260,10 +1260,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/WorkflowFissionManagerAgent.py": {
-    "hash": "9c190d93ac12ea06",
+    "hash": "8983a74a956dd8a4",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 298,
+      "loc": 299,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1296,10 +1296,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/HardenedWorkflowOrchestratorAgent.py": {
-    "hash": "bab4e94be8f1839d",
+    "hash": "fbcc569b7c8c7cab",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 73,
+      "loc": 74,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1314,10 +1314,10 @@
     }
   },
   "agentic_core/observability/metrics/HierarchyEnforcerAgent.py": {
-    "hash": "6b8449b163826fb3",
+    "hash": "1a1888775e85e403",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 193,
+      "loc": 194,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1404,14 +1404,14 @@
     }
   },
   "agentic_core/observability/metrics/PredictiveCostAuditorAgent.py": {
-    "hash": "2a85a1e6c7468808",
+    "hash": "7eebca0ded6bfff3",
     "atomic_threshold": 10,
     "metrics": {
       "loc": 282,
-      "compliant": 1,
+      "compliant": 0,
       "hardened": 1,
       "mcp_capable": 0,
-      "healing_cap": 1,
+      "healing_cap": 0,
       "healing_invoke": 0,
       "tests": 1,
       "cc_sum": 68,
@@ -1494,10 +1494,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/SemanticTerritoryMapperAgent.py": {
-    "hash": "2f03b552c0f0c960",
+    "hash": "785b4da1cf06569d",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 188,
+      "loc": 189,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1602,10 +1602,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/TerritoryHealerAgent.py": {
-    "hash": "816403b3d314ef92",
+    "hash": "befc961661b0699b",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 252,
+      "loc": 253,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1620,10 +1620,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/TestPilotAgent.py": {
-    "hash": "8272aa1efbf103a8",
+    "hash": "390c6a10a975d75a",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 423,
+      "loc": 424,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1746,21 +1746,21 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/CodeDeduplicationAgent.py": {
-    "hash": "ecf91d6eaf65e9f8",
+    "hash": "3a678e70f16aa249",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 463,
+      "loc": 617,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
       "healing_cap": 1,
       "healing_invoke": 1,
       "tests": 1,
-      "cc_sum": 144,
-      "max_cc": 15,
+      "cc_sum": 176,
+      "max_cc": 30,
       "typed": 100.0,
-      "documented": 95.65217391304348,
-      "observable": 100
+      "documented": 92.0,
+      "observable": 0
     }
   },
   "agentic_core/L2_execution/ToolRegistry/CodeJanitorAgent.py": {
@@ -1854,10 +1854,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/ContextCuratorAgent.py": {
-    "hash": "91006b220bb7168e",
+    "hash": "3e08ae4841cb77c9",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 274,
+      "loc": 275,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1908,10 +1908,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/DependencyDiplomatAgent.py": {
-    "hash": "ea8c6a0f4a2c7fb6",
+    "hash": "f83dafa5de22f12f",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 278,
+      "loc": 279,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -1980,10 +1980,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/GitAgent.py": {
-    "hash": "d7276c1c043e2429",
+    "hash": "3daf829105ac95b1",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 349,
+      "loc": 351,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -2034,17 +2034,17 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/HealerAgent.py": {
-    "hash": "0a5556e1086dd741",
+    "hash": "73dce5e1546836ae",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 422,
+      "loc": 438,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
       "healing_cap": 1,
-      "healing_invoke": 0,
+      "healing_invoke": 1,
       "tests": 1,
-      "cc_sum": 68,
+      "cc_sum": 72,
       "max_cc": 18,
       "typed": 100.0,
       "documented": 100.0,
@@ -2250,10 +2250,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/MemoryArchitectAgent.py": {
-    "hash": "2bc15078ba93705b",
+    "hash": "7020219379bbe867",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 502,
+      "loc": 503,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -2322,10 +2322,10 @@
     }
   },
   "agentic_core/utils/core_extensions/NamingNormalizationAgent.py": {
-    "hash": "a0627c956b3f31b6",
+    "hash": "055b8cb950c4054f",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 145,
+      "loc": 146,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -2430,10 +2430,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/SovereignActionPlaneAgent.py": {
-    "hash": "8857595c2a8a6efa",
+    "hash": "75288e236e12c9b6",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 261,
+      "loc": 262,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -2718,10 +2718,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/ToolsmithAgent.py": {
-    "hash": "1e6a4764f317fa01",
+    "hash": "9e06ff0845b27408",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 308,
+      "loc": 309,
       "compliant": 1,
       "hardened": 0,
       "mcp_capable": 0,
@@ -2808,14 +2808,14 @@
     }
   },
   "agentic_core/schemas/models/CognitiveContractManagerAgent.py": {
-    "hash": "8638316c5d45fb77",
+    "hash": "8acb1bca4554fc53",
     "atomic_threshold": 10,
     "metrics": {
       "loc": 398,
-      "compliant": 1,
+      "compliant": 0,
       "hardened": 1,
       "mcp_capable": 0,
-      "healing_cap": 1,
+      "healing_cap": 0,
       "healing_invoke": 0,
       "tests": 1,
       "cc_sum": 64,
@@ -2916,10 +2916,10 @@
     }
   },
   "agentic_core/L1_cognition/thought_engine/GovernanceAgent.py": {
-    "hash": "425c65a60576eec8",
+    "hash": "d011d5b292824f18",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 697,
+      "loc": 698,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -2934,15 +2934,15 @@
     }
   },
   "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py": {
-    "hash": "353bc9e289dd4cd0",
+    "hash": "32131fbab987efa8",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 248,
+      "loc": 249,
       "compliant": 1,
       "hardened": 0,
       "mcp_capable": 0,
       "healing_cap": 1,
-      "healing_invoke": 0,
+      "healing_invoke": 1,
       "tests": 1,
       "cc_sum": 49,
       "max_cc": 21,
@@ -3348,10 +3348,10 @@
     }
   },
   "apps_lic/engines/outreach_engine/WorkflowOrchestratorAgent.py": {
-    "hash": "f3ae904fe2a57926",
+    "hash": "c49829ad865a1dd2",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 159,
+      "loc": 160,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -3582,10 +3582,10 @@
     }
   },
   "tests/integration/test_healing_chain.py": {
-    "hash": "91ed55a95fd5333a",
+    "hash": "e1bf334899ee4a08",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 269,
+      "loc": 270,
       "compliant": 1,
       "hardened": 0,
       "mcp_capable": 0,
@@ -3708,10 +3708,10 @@
     }
   },
   "agentic_core/config/blueprint_sovereign/ComplianceOrchestratorAgent.py": {
-    "hash": "6ce3b2456bde3f0f",
+    "hash": "cb1802f491c1e7f1",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 621,
+      "loc": 622,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -3888,10 +3888,10 @@
     }
   },
   "agentic_core/utils/core_extensions/l1_agent.py": {
-    "hash": "947d941fc47d5ace",
+    "hash": "2117e39cac7faa00",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 33,
+      "loc": 34,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -3924,15 +3924,15 @@
     }
   },
   "agentic_core/utils/core_extensions/l3_agent.py": {
-    "hash": "a71642e1f7caba88",
+    "hash": "b1dd68b02623a863",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 36,
+      "loc": 37,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
       "healing_cap": 1,
-      "healing_invoke": 0,
+      "healing_invoke": 1,
       "tests": 1,
       "cc_sum": 3,
       "max_cc": 1,
@@ -3942,15 +3942,15 @@
     }
   },
   "agentic_core/utils/core_extensions/l4_agent.py": {
-    "hash": "04832b0f59d9268b",
+    "hash": "13858650597751c9",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 36,
+      "loc": 37,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
       "healing_cap": 1,
-      "healing_invoke": 0,
+      "healing_invoke": 1,
       "tests": 1,
       "cc_sum": 3,
       "max_cc": 1,
@@ -3960,10 +3960,10 @@
     }
   },
   "agentic_core/utils/core_extensions/l5_agent.py": {
-    "hash": "df6e74796bbce53c",
+    "hash": "54aa58a009c61606",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 37,
+      "loc": 38,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -3996,10 +3996,10 @@
     }
   },
   "agentic_core/config/blueprint_sovereign/RegressionOracleAgent.py": {
-    "hash": "3de0fd6136375f4d",
+    "hash": "580f25095c33200f",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 537,
+      "loc": 538,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4122,10 +4122,10 @@
     }
   },
   "agentic_core/L5_safety/validators/GovernanceAgent.py": {
-    "hash": "75b1297b381d3ac8",
+    "hash": "7f0a59c077e321ab",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 160,
+      "loc": 161,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4140,10 +4140,10 @@
     }
   },
   "agentic_core/L5_safety/validators/TestSovereigntyAgent.py": {
-    "hash": "e246568e63444627",
+    "hash": "088d6b3e8763eeff",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 210,
+      "loc": 211,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4158,10 +4158,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/AutonomousThreatEvolutionAgent.py": {
-    "hash": "7a68fd2f0f4e3c49",
+    "hash": "5c263c90c3be12b9",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 113,
+      "loc": 114,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4176,10 +4176,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/LegacyAutonomousThreatEvolutionAgent.py": {
-    "hash": "376d6f55f7da330a",
+    "hash": "fa0397dcf9e811d0",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 109,
+      "loc": 110,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4248,10 +4248,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/L5IntegrityGateExecutorAgent.py": {
-    "hash": "596ebef7b5dc5088",
+    "hash": "31c584217c8504cd",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 501,
+      "loc": 502,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4320,10 +4320,10 @@
     }
   },
   "agentic_core/L5_safety/guardrails/SelfUpdatingSafetyEngineAgent.py": {
-    "hash": "48fc20a09d965f81",
+    "hash": "856855b17e022f84",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 293,
+      "loc": 294,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4356,10 +4356,10 @@
     }
   },
   "agentic_core/L4_state/ValidationContext/AutonomousStateGuardianAgent.py": {
-    "hash": "85c5a07287efdb4b",
+    "hash": "80656b7c5591d7d0",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 202,
+      "loc": 203,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4392,10 +4392,10 @@
     }
   },
   "agentic_core/L4_state/ValidationContext/MemoryManagerAgent.py": {
-    "hash": "00c7a71161868fd4",
+    "hash": "dddd082263aac196",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 299,
+      "loc": 300,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4446,10 +4446,10 @@
     }
   },
   "agentic_core/L4_state/ValidationContext/ValidationContextManagerAgent.py": {
-    "hash": "acf6409cbfbf635d",
+    "hash": "86b8986139f12de9",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 240,
+      "loc": 241,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4464,10 +4464,10 @@
     }
   },
   "agentic_core/L4_state/ValidationContext/AutonomousCheckpointManagerAgent.py": {
-    "hash": "eede05978d8372e9",
+    "hash": "eb8e122c307bb536",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 296,
+      "loc": 297,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4500,10 +4500,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/AgentPermissionManagerAgent.py": {
-    "hash": "1ae879c184cea20a",
+    "hash": "4b967c2bc51c9931",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 157,
+      "loc": 158,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4518,10 +4518,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/ArchitectureGovernorAgent.py": {
-    "hash": "d03276cbedf73efe",
+    "hash": "2196b4e6ba647b90",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 87,
+      "loc": 88,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4626,10 +4626,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/GitSafetyHandlerAgent.py": {
-    "hash": "6bd93bdb81053e72",
+    "hash": "295c8c6761b92501",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 177,
+      "loc": 178,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4662,10 +4662,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/WorkflowMcpManagerAgent.py": {
-    "hash": "1a059b6c4e03ee3c",
+    "hash": "e9f17e102e3fb1f7",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 85,
+      "loc": 86,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4752,10 +4752,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/ResumeOrchestratorAgent.py": {
-    "hash": "5e68b86d84c00f6b",
+    "hash": "ddefa075ce7c0acc",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 65,
+      "loc": 66,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4770,10 +4770,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/SelfRecoveringOrchestratorAgent.py": {
-    "hash": "b8d8176762b5bfce",
+    "hash": "aad68318eaed09f8",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 370,
+      "loc": 371,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4788,10 +4788,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/SemanticGatekeeperAgent.py": {
-    "hash": "b4294fc93a695b17",
+    "hash": "8eea64aaed5782c1",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 116,
+      "loc": 117,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4842,10 +4842,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/TerritoryChangeHandlerAgent.py": {
-    "hash": "2121cabb1495cb6c",
+    "hash": "191e70a1e231f976",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 109,
+      "loc": 110,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4878,10 +4878,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/AgentRegistryValidatorAgent.py": {
-    "hash": "2a3b22ba6cc302c0",
+    "hash": "3e8c13bc7303b641",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 134,
+      "loc": 135,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4896,10 +4896,10 @@
     }
   },
   "agentic_core/L3_orchestration/workflow_engines/CachedOrchestratorAgent.py": {
-    "hash": "c2c63f29d2d090a1",
+    "hash": "64d29065b549934f",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 84,
+      "loc": 85,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -4986,10 +4986,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/FallbackManagerAgent.py": {
-    "hash": "98b61cd96e773793",
+    "hash": "c5bfe52a34d78d4f",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 179,
+      "loc": 180,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -5076,10 +5076,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/IntegrityGateExecutorAgent.py": {
-    "hash": "b6349fa3bbe7932d",
+    "hash": "f7ebc8a3d68cc8d6",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 255,
+      "loc": 256,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -5112,10 +5112,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/ProactiveResourceManagerAgent.py": {
-    "hash": "30c735035bbcb0b7",
+    "hash": "f67961fb221e5cee",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 312,
+      "loc": 313,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -5202,10 +5202,10 @@
     }
   },
   "agentic_core/L2_execution/ToolRegistry/SovereignRedisOrchestratorAgent.py": {
-    "hash": "1d092ed00c87f9e7",
+    "hash": "ca39fd416006e38c",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 114,
+      "loc": 115,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -5220,10 +5220,10 @@
     }
   },
   "agentic_core/L1_cognition/thought_engine/DependencySentinelAgent.py": {
-    "hash": "0b7c578ed1bbf10b",
+    "hash": "17514331ad355c0d",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 254,
+      "loc": 255,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,
@@ -5238,10 +5238,10 @@
     }
   },
   "agentic_core/L1_cognition/thought_engine/reasoning_router.py": {
-    "hash": "a5b3caadecbfe34d",
+    "hash": "59dc6ea540307343",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 181,
+      "loc": 182,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 0,

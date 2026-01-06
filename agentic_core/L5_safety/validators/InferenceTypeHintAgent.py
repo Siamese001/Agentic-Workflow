@@ -97,6 +97,7 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Operational validator - requires LLM context."""
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

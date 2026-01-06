@@ -856,6 +856,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Orchestrator agent - coordinates healing across all validators."""
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
             _call_path = set()
         if self.__class__.__name__ in _call_path:

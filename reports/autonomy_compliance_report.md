@@ -5,15 +5,15 @@
 
 ## 🎯 Executive Summary
 
-**System Health:** 71.1/100 | **Risk Level:** HIGH | **Criticality:** 100/100
+**System Health:** 71.3/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
 ### Key Metrics
-- **Total Agents:** 318
-- **Compliant:** 165 (51.9%) ❌
-- **Healing Capabilities:** 305 (95.9%) ✅
-- **Healing Invocation:** 160 (50.3%) ❌
-- **With Tests:** 299 (94.0%) ✅
-- **Avg Complexity:** 59.1 ❌
+- **Total Agents:** 317
+- **Compliant:** 162 (51.1%) ❌
+- **Healing Capabilities:** 302 (95.3%) ✅
+- **Healing Invocation:** 163 (51.4%) ❌
+- **With Tests:** 298 (94.0%) ✅
+- **Avg Complexity:** 57.7 ❌
 
 ## 📊 Territory Analysis
 
@@ -23,8 +23,8 @@
 
 ### High Priority Territories
 
-- 🔥 **L2 Execution/Core**: 26/69 compliant | Health: 76.3% | Risk: HIGH | Heal Gap: 58.0%
-- 🔥 **L1 Cognition/Core**: 3/14 compliant | Health: 73.8% | Risk: HIGH | Heal Gap: 78.6%
+- 🔥 **L2 Execution/Core**: 26/68 compliant | Health: 77.4% | Risk: HIGH | Heal Gap: 54.4%
+- 🔥 **L1 Cognition/Core**: 3/14 compliant | Health: 73.8% | Risk: HIGH | Heal Gap: 71.5%
 - 🔥 **Apps Rg**: 3/24 compliant | Health: 62.5% | Risk: HIGH | Heal Gap: 87.5%
 - ⚠️ **L5 Safety/Guardrails**: 27/31 compliant | Health: 94.6% | Risk: MED
 - 🔥 **Apps Lic**: 10/33 compliant | Health: 48.5% | Risk: HIGH | Heal Gap: 69.7%
@@ -35,7 +35,7 @@
 - 🔥 **L0 Maintenance/Infrastructure**: 0/3 compliant | Health: 55.6% | Risk: HIGH | Heal Gap: 66.7%
 - 🔥 **L3 Orchestration/Specialized**: 0/5 compliant | Health: 80.0% | Risk: HIGH
 - 🔥 **L1 Cognition/Specialized**: 0/3 compliant | Health: 55.6% | Risk: HIGH | Heal Gap: 33.3%
-- 🔥 **Observability/Metrics**: 2/12 compliant | Health: 80.6% | Risk: HIGH | Heal Gap: 33.3%
+- 🔥 **Observability/Metrics**: 2/12 compliant | Health: 80.6% | Risk: HIGH | Heal Gap: 25.0%
 - ⚠️ **L5 Safety/Red Teaming**: 6/6 compliant | Health: 100.0% | Risk: MED
 - ⚠️ **L5 Safety/Base Class**: 2/2 compliant | Health: 83.3% | Risk: MED
 - ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 100.0% | Risk: MED
@@ -43,7 +43,7 @@
 - 🔥 **L2 Execution/Specialized**: 2/4 compliant | Health: 83.3% | Risk: HIGH | Heal Gap: 50.0%
 - 🔥 **L4 State/Core**: 5/12 compliant | Health: 66.7% | Risk: HIGH | Heal Gap: 50.0%
 - 🔥 **L4 State/Infrastructure**: 1/3 compliant | Health: 77.8% | Risk: HIGH | Heal Gap: 33.3%
-- ⚠️ **L1 Cognition/Base Class**: 1/1 compliant | Health: 66.7% | Risk: MED | Heal Gap: 100.0%
+- ⚠️ **L1 Cognition/Base Class**: 1/1 compliant | Health: 100.0% | Risk: MED
 - 🔥 **Apps Shared**: 0/2 compliant | Health: 50.0% | Risk: HIGH | Heal Gap: 50.0%
 - ⚠️ **L2 Execution/Base Class**: 1/1 compliant | Health: 100.0% | Risk: MED
 - 🔥 **L0 Maintenance/Core**: 0/6 compliant | Health: 66.7% | Risk: HIGH | Heal Gap: 100.0%
@@ -83,20 +83,19 @@
 - **Apps Shared**: Focus on complexity reduction (CC=31.0) and test coverage
 
 ### Healing Gap Closure
-- **L1 Cognition/Base Class**: Add heal_repository() methods (Gap: 100.0%)
 - **L0 Maintenance/Core**: Add heal_repository() methods (Gap: 100.0%)
 - **Apps Rg**: Add heal_repository() methods (Gap: 87.5%)
-- **L1 Cognition/Core**: Add heal_repository() methods (Gap: 78.6%)
+- **L1 Cognition/Core**: Add heal_repository() methods (Gap: 71.5%)
 - **Apps Lic**: Add heal_repository() methods (Gap: 69.7%)
 - **L0 Maintenance/Infrastructure**: Add heal_repository() methods (Gap: 66.7%)
-- **L2 Execution/Core**: Add heal_repository() methods (Gap: 58.0%)
+- **L2 Execution/Core**: Add heal_repository() methods (Gap: 54.4%)
 - **L4 State/Core**: Add heal_repository() methods (Gap: 50.0%)
 - **L2 Execution/Specialized**: Add heal_repository() methods (Gap: 50.0%)
 - **Apps Shared**: Add heal_repository() methods (Gap: 50.0%)
 - **L3 Orchestration/Core**: Add heal_repository() methods (Gap: 34.2%)
 - **L4 State/Infrastructure**: Add heal_repository() methods (Gap: 33.3%)
 - **L1 Cognition/Specialized**: Add heal_repository() methods (Gap: 33.3%)
-- **Observability/Metrics**: Add heal_repository() methods (Gap: 33.3%)
+- **Observability/Metrics**: Add heal_repository() methods (Gap: 25.0%)
 - **L4 State/Specialized**: Add heal_repository() methods (Gap: 20.0%)
 
 

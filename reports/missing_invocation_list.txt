@@ -1,0 +1,7 @@
+C:\Git\Agentic-Workflow\agentic_core\schemas\models\CognitiveContractManagerAgent.py
+C:\Git\Agentic-Workflow\agentic_core\L1_cognition\thought_engine\L1CognitionBaseAgent.py
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\ToolRegistry\CodeDeduplicationAgent.py
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\ToolRegistry\HealerAgent.py
+C:\Git\Agentic-Workflow\agentic_core\utils\core_extensions\l3_agent.py
+C:\Git\Agentic-Workflow\agentic_core\utils\core_extensions\l4_agent.py
+C:\Git\Agentic-Workflow\agentic_core\observability\metrics\PredictiveCostAuditorAgent.py

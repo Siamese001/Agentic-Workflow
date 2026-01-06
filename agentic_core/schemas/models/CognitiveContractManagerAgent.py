@@ -526,8 +526,8 @@ def enforce_cognitive_contract(
     return manager.wrap_with_contract_requirement(prompt, constraints)
 
 @timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """Schemas/models - operational only."""
+def _module_heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """Schemas/models - module-level operational stub."""
     if _call_path is None:
         _call_path = set()
     agent_name = "CognitiveContractManager"
