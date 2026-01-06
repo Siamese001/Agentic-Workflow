@@ -3065,11 +3065,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             print(f"✓ Local Plotly.js already present ({plotly_local_path.stat().st_size / 1024 / 1024:.1f}MB)")
         
         # === Generate Self-Contained HTML ===
-        # Template lives in config/validators (single source of truth)
+        # Template lives in config/validators (single canonical source)
         template_path = self.project_root / "agentic_core" / "config" / "validators" / "dashboard_template.html"
-        # Fallback to local package if config version doesn't exist
-        if not template_path.exists():
-            template_path = Path(__file__).parent / "dashboard_template.html"
         output_path = self.project_root / "reports" / "autonomy_dashboard.html"
         
         if not template_path.exists():
