@@ -1,15 +1,104 @@
 [
   {
-    "class_name": "GapClosureArchitectAgent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_gap_closure_architect.py",
+    "class_name": "BootstrapAgent",
+    "path": "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
+      "L0DelegationTestingMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "verify_neural_link",
+      "run_bootstrap",
+      "seed_initial_territory",
+      "validate_sovereign_registry",
+      "run_full_bootstrap",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Delegated",
+    "has_subatomic": false,
+    "loc": 155,
+    "class_count": 2,
+    "description": "\n    Autonomous boot integrity agent.\n    Runs before any validation mission to anchor the environme",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 80.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 29
+  },
+  {
+    "class_name": "FilesystemSSOTReconcilerAgent",
+    "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L0_maintenance",
+    "layer": "L0",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "AdaptiveExecutionMixin",
+      "L0DelegationTestingMixin",
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "reconcile_blueprint",
+      "_scan_filesystem",
+      "_scan_agents",
+      "_load_current_blueprint",
+      "_detect_drift",
+      "_generate_proposals",
+      "_backup_blueprint",
+      "_apply_proposals",
+      "_apply_sovereign_registry_update"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "No (missing super)",
+    "testing": "Delegated",
+    "has_subatomic": false,
+    "loc": 523,
+    "class_count": 2,
+    "description": "Filesystem-level SSOT reconciler - updates blueprint when folders change.\n    \n    Ensures the SSOT ",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 93.8,
+    "documented_pct": 93.8,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 109
+  },
+  {
+    "class_name": "GapClosureArchitectAgent",
+    "path": "agentic_core\\L0_maintenance\\scripts\\GapClosureArchitectAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L0_maintenance",
+    "layer": "L0",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "Agent",
-      "SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -38,14 +127,14 @@
   },
   {
     "class_name": "GravityComplianceValidatorAgent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\gravity_compliance_validator.py",
+    "path": "agentic_core\\L0_maintenance\\scripts\\GravityComplianceValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -67,8 +156,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 80.0,
+    "documented_pct": 40.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -77,8 +166,104 @@
     "cyclomatic_complexity": 16
   },
   {
+    "class_name": "GuardianOrchestratorAgent",
+    "path": "agentic_core\\L0_maintenance\\scripts\\GuardianOrchestratorAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L0_maintenance",
+    "layer": "L0",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin",
+      "SubatomicTestingMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_load_guardians",
+      "_detect_action_opportunity",
+      "_execute_conservative",
+      "_execute_minimal",
+      "_execute_standard",
+      "execute_ddd_alignment",
+      "execute_observability_footprint",
+      "get_all_guardian_results",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 96,
+    "class_count": 1,
+    "description": "\n    Sovereign orchestrator for all available L0 guardians.\n    Returns standardized (score, issues)",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 80.0,
+    "documented_pct": 40.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 19
+  },
+  {
+    "class_name": "HealingOrchestratorAgent",
+    "path": "agentic_core\\L0_maintenance\\scripts\\HealingOrchestratorAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L0_maintenance",
+    "layer": "L0",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin",
+      "SubatomicTestingMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_load_healing_components",
+      "_detect_action_opportunity",
+      "_execute_conservative",
+      "_execute_minimal",
+      "_execute_standard",
+      "diagnose_and_propose_fixes",
+      "apply_fixes_transactionally",
+      "execute_self_correction",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 178,
+    "class_count": 1,
+    "description": "\n    Sovereign healing engine orchestrator.\n    Coordinates diagnosis, strategy selection, transacti",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 66.7,
+    "documented_pct": 66.7,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 39
+  },
+  {
     "class_name": "HygieneValidatorAgent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\hygiene_validator.py",
+    "path": "agentic_core\\L0_maintenance\\scripts\\HygieneValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
@@ -110,8 +295,8 @@
     "external_touch": true,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 70.0,
+    "documented_pct": 90.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -121,16 +306,16 @@
   },
   {
     "class_name": "MetricsWitnessAgent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
+    "path": "agentic_core\\L0_maintenance\\scripts\\MetricsWitnessAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
       "MCPHardenedMixin",
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "SubatomicTestingMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -167,14 +352,14 @@
   },
   {
     "class_name": "SafeSystemCommandExecutorAgent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\healer_utilities.py",
+    "path": "agentic_core\\L0_maintenance\\scripts\\SystemCommandExecutorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -197,7 +382,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 80.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -207,17 +392,17 @@
   },
   {
     "class_name": "ScriptToAgentClassifierAgent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
+    "path": "agentic_core\\L0_maintenance\\scripts\\ScriptToAgentClassifierAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
+      "HealerMixin",
       "MCPHardenedMixin",
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
       "L0DelegationTestingMixin",
       "AutonomyMixin",
-      "HealerMixin"
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -244,7 +429,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 80.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -254,14 +439,14 @@
   },
   {
     "class_name": "ScriptsPlanningOrchestratorAgent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\pipeline_data_access_get_info_request_orchestrate_scripts_planning.py",
+    "path": "agentic_core\\L0_maintenance\\scripts\\ScriptsPlanningOrchestratorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -286,7 +471,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -296,14 +481,14 @@
   },
   {
     "class_name": "WorkflowOrchestratorAgent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_workflow_integration.py",
+    "path": "agentic_core\\L0_maintenance\\scripts\\WorkflowOrchestratorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -332,15 +517,15 @@
   },
   {
     "class_name": "AsyncBlockingValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
       "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -362,7 +547,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -372,14 +557,14 @@
   },
   {
     "class_name": "BareExceptValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -409,14 +594,14 @@
   },
   {
     "class_name": "CanonValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\agent_logic.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\CanonValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -443,7 +628,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 95.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -454,7 +639,7 @@
   },
   {
     "class_name": "CognitiveContractValidatorAgent",
-    "path": "agentic_core\\schemas\\models\\CognitiveContractEnforcerAgent.py",
+    "path": "agentic_core\\schemas\\models\\CognitiveContractValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/schemas",
     "layer": "L1",
@@ -494,14 +679,14 @@
   },
   {
     "class_name": "ConsolidatedOrchestratorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\orchestration_main_handler.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\OrchestratorAgentAndScopeManagerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -525,7 +710,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 75.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -536,14 +721,14 @@
   },
   {
     "class_name": "DangerousBuiltinsValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call",
@@ -573,14 +758,14 @@
   },
   {
     "class_name": "DebuggerValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call",
@@ -607,6 +792,49 @@
       "tracing": false
     },
     "cyclomatic_complexity": 10
+  },
+  {
+    "class_name": "DependencySentinelAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\CanonDependencySentinelAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "__getattr__",
+      "execute",
+      "check_key_07_no_star_imports",
+      "check_key_08_no_relative_imports",
+      "check_key_09_no_unused_imports",
+      "check_key_14_no_duplicate_imports",
+      "check_key_44_no_circular_imports"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 394,
+    "class_count": 3,
+    "description": "\n    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (C",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 75.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 65
   },
   {
     "class_name": "DocumentationAgent",
@@ -649,50 +877,15 @@
     "cyclomatic_complexity": 11
   },
   {
-    "class_name": "DummyAgentCard",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\metacognition_hypothesis_generation.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L1_cognition",
-    "layer": "L1",
-    "inheritance": [
-      "HealerMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "heal_repository"
-    ],
-    "has_tools": false,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 30,
-    "class_count": 2,
-    "description": "TODO: Add docstring.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": false,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 2
-  },
-  {
     "class_name": "EmptyExceptValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -722,14 +915,14 @@
   },
   {
     "class_name": "EvalExecValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call",
@@ -759,14 +952,14 @@
   },
   {
     "class_name": "ExternalHttpValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Import",
@@ -796,6 +989,50 @@
     "cyclomatic_complexity": 9
   },
   {
+    "class_name": "GenerativeGuard",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "CanonBaseAgentInterface",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "get_capabilities",
+      "validate_state",
+      "_execute_guard",
+      "_purge_single_file",
+      "_process_found_violations",
+      "_is_runaway_file",
+      "_find_runaway_violations_in_dir"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 328,
+    "class_count": 4,
+    "description": "\n    KEYS: 45 (Dead Code/Runaway Generation)\n    ROLE: The Watchdog. Identifies and deletes recursiv",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 57.1,
+    "documented_pct": 57.1,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 19
+  },
+  {
     "class_name": "GovernanceAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py",
     "top_dir": "agentic_core",
@@ -803,8 +1040,8 @@
     "layer": "L1",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -831,7 +1068,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 90.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -841,6 +1078,84 @@
     "cyclomatic_complexity": 110
   },
   {
+    "class_name": "HealerAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "CanonBaseAgentInterface",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "get_capabilities",
+      "validate_state",
+      "_execute_healing"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 328,
+    "class_count": 4,
+    "description": "\n    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)\n    super().h",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 66.7,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 19
+  },
+  {
+    "class_name": "IntelligentOrchestratorAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\IntelligentOrchestratorAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "run_mission",
+      "print_mission_report",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 92,
+    "class_count": 1,
+    "description": "Orchestrates all validation agents in dependency order.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 19
+  },
+  {
     "class_name": "L1CognitionBaseAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py",
     "top_dir": "agentic_core",
@@ -848,8 +1163,8 @@
     "layer": "L1",
     "inheritance": [
       "SovereignBaseAgent",
-      "RedisCacheMixin",
-      "PineconeVectorMixin"
+      "PineconeVectorMixin",
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "_init_registry",
@@ -876,8 +1191,8 @@
     "external_touch": true,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 81.8,
+    "documented_pct": 90.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -917,8 +1232,8 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 90.0,
+    "documented_pct": 90.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -958,7 +1273,7 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 92.3,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -969,7 +1284,7 @@
   },
   {
     "class_name": "OrchestratorAgentAndScopeManagerAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\orchestration_main_handler.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\OrchestratorAgentAndScopeManagerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
@@ -992,9 +1307,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 66.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1010,8 +1325,8 @@
     "layer": "L1",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1038,7 +1353,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 94.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -1049,14 +1364,14 @@
   },
   {
     "class_name": "PrintStatementValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call",
@@ -1086,14 +1401,14 @@
   },
   {
     "class_name": "ReasoningRouterAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\reasoning_router.py",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\ReasoningRouterAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1115,7 +1430,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 80.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -1123,6 +1438,51 @@
       "tracing": false
     },
     "cyclomatic_complexity": 20
+  },
+  {
+    "class_name": "ReflectionAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\ReflectionAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_initialize_pinecone",
+      "execute",
+      "_analyze_success_pattern",
+      "_internalize_trace",
+      "_generate_recommendations",
+      "_self_critique",
+      "execute_structured_research",
+      "_synthesize_research",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 155,
+    "class_count": 1,
+    "description": "\n    Agent responsible for learning from successful execution traces\n    and consolidating them into",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 66.7,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 38
   },
   {
     "class_name": "SemanticMapperAgent",
@@ -1149,7 +1509,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1158,6 +1518,175 @@
       "tracing": false
     },
     "cyclomatic_complexity": 2
+  },
+  {
+    "class_name": "SovereignCognitivePlaneAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "ICognitivePlane",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_initialize_agents",
+      "get_capabilities",
+      "_discover_agents",
+      "plan",
+      "reason",
+      "__aenter__",
+      "__aexit__"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 63,
+    "class_count": 2,
+    "description": "Sovereign cognitive plane with in-memory agent registry and async compliance.",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 50.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 15
+  },
+  {
+    "class_name": "SovereignCognitivePlaneAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane_with_streamer.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "ICognitivePlane"
+    ],
+    "key_methods": [
+      "__init__",
+      "start_streaming",
+      "stop_streaming",
+      "_initialize_agents",
+      "get_capabilities",
+      "plan"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 65,
+    "class_count": 2,
+    "description": "Sovereign cognitive plane with in-memory agent registry and L5 streaming.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 33.3,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 15
+  },
+  {
+    "class_name": "StrategicPlannerAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\strategic_planner.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_load_agent_capabilities",
+      "generate_plan",
+      "_generate_plan_with_mcp",
+      "_extract_mission_plan_from_mcp",
+      "_parse_phases_from_thought",
+      "_generate_plan_legacy",
+      "_generate_phases",
+      "_assess_risks",
+      "update_phase_status"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 213,
+    "class_count": 5,
+    "description": "\n    Plans and coordinates mission execution.\n\n    Features:\n    - Generates mission plans based on ",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 49
+  },
+  {
+    "class_name": "SystemArchitect",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L1_cognition",
+    "layer": "L1",
+    "inheritance": [
+      "CanonBaseAgentInterface",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "get_capabilities",
+      "validate_state",
+      "_execute_validation",
+      "_parse_python_file",
+      "_has_metaclass_keyword",
+      "_check_tree_for_metaclasses",
+      "check_key_40_no_metaclasses",
+      "check_key_41_scoped_nesting"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "No (missing super)",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 328,
+    "class_count": 4,
+    "description": "\n    KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)\n    ROLE: The G",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 92.9,
+    "documented_pct": 78.6,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 47
   },
   {
     "class_name": "UiValidationAgent",
@@ -1185,7 +1714,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1197,7 +1726,7 @@
   },
   {
     "class_name": "AutonomyGuardianAgent",
-    "path": "agentic_core\\config\\blueprint_sovereign\\AutonomyGuardianAgent_blueprint.py",
+    "path": "agentic_core\\config\\blueprint_sovereign\\AutonomyGuardianAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/config",
     "layer": "L2",
@@ -1229,9 +1758,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 97.2,
+    "documented_pct": 97.2,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1241,15 +1770,15 @@
   },
   {
     "class_name": "BenchmarkingAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\infrastructure.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\HistorianAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubAtomicAgent",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -1279,15 +1808,15 @@
   },
   {
     "class_name": "CanonAstValidatorAgent",
-    "path": "agentic_core\\runtime\\shared_runtime\\ast_validator.py",
+    "path": "agentic_core\\runtime\\shared_runtime\\CanonAstValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/runtime",
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
+      "NodeVisitor",
       "SubatomicTestingMixin",
-      "NodeVisitor"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1309,7 +1838,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1319,15 +1848,15 @@
   },
   {
     "class_name": "CartographerAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\specialized.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubAtomicAgent",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "can_run",
@@ -1349,7 +1878,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1364,10 +1893,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
       "RedisCacheMixin",
-      "PineconeVectorMixin"
+      "MCPHardenedMixin",
+      "PineconeVectorMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1395,7 +1924,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 95.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1411,8 +1940,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -1439,7 +1968,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 84.6,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -1450,15 +1979,15 @@
   },
   {
     "class_name": "ConcurrencyGuardianAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\security.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\_LegacySafetyInspectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubAtomicAgent",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "can_run",
@@ -1482,8 +2011,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 80.0,
+    "documented_pct": 20.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1493,7 +2022,7 @@
   },
   {
     "class_name": "ContextAwareValidatorAgent",
-    "path": "agentic_core\\patterns\\agent_roles\\context_aware_validator.py",
+    "path": "agentic_core\\patterns\\agent_roles\\ContextAwareValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/patterns",
     "layer": "L2",
@@ -1524,9 +2053,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1568,8 +2097,8 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 66.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -1580,14 +2109,14 @@
   },
   {
     "class_name": "DeadCodeDetectorAgent",
-    "path": "agentic_core\\utils\\core_extensions\\AdvancedDeadCodeAuditorAgent.py",
+    "path": "agentic_core\\utils\\core_extensions\\DeadCodeDetectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1613,8 +2142,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 55.6,
+    "documented_pct": 88.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1629,8 +2158,8 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -1656,8 +2185,8 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 70.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -1668,7 +2197,7 @@
   },
   {
     "class_name": "DependencySentinelAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\governance.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\_LegacyArchitectureGovernorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -1694,7 +2223,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1706,7 +2235,7 @@
   },
   {
     "class_name": "DocEnforcerAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\specialized.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -1729,7 +2258,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1747,8 +2276,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1785,8 +2314,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1808,13 +2337,58 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
     "cyclomatic_complexity": 8
+  },
+  {
+    "class_name": "DynamicModelRouterAgent",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\DynamicModelRouterAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L2_execution",
+    "layer": "L2",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SubAtomicAgent",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "_analyze_file_complexity",
+      "_calculate_max_nesting",
+      "_extract_functions",
+      "_calculate_cyclomatic_complexity",
+      "_calculate_complexity_score",
+      "_route_to_model",
+      "_create_default_profile",
+      "get_routing_for_file"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "No (missing super)",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 272,
+    "class_count": 4,
+    "description": "\n    The Throttler - Dynamic Model Router\n    \n    Analyzes file complexity before healing and route",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 90.9,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 43
   },
   {
     "class_name": "FallbackManagerAgent",
@@ -1824,8 +2398,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1852,7 +2426,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 87.5,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -1869,8 +2443,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1914,8 +2488,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1936,7 +2510,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 66.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1945,8 +2519,50 @@
     "cyclomatic_complexity": 7
   },
   {
+    "class_name": "HealValidatorAgent",
+    "path": "agentic_core\\config\\blueprint_sovereign\\heal_validator.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/config",
+    "layer": "L2",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "validate_healed_code",
+      "_validate_syntax",
+      "_validate_dangerous_patterns",
+      "_validate_static_analysis",
+      "_validate_diff_sanity",
+      "compute_code_hash",
+      "_run_self_tests"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 240,
+    "class_count": 1,
+    "description": "\n    Multi-stage validator for LLM-healed code.\n    \n    Validation Pipeline:\n    1. Syntax check (A",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 87.5,
+    "documented_pct": 87.5,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 36
+  },
+  {
     "class_name": "HistorianAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\infrastructure.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\HistorianAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -1971,9 +2587,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 33.3,
+    "documented_pct": 33.3,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -1983,7 +2599,7 @@
   },
   {
     "class_name": "ImportHealerAgent",
-    "path": "agentic_core\\runtime\\shared_runtime\\import_healer.py",
+    "path": "agentic_core\\runtime\\shared_runtime\\ImportHealerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/runtime",
     "layer": "L2",
@@ -2013,9 +2629,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 87.5,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -2059,7 +2675,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 30.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -2069,14 +2685,14 @@
   },
   {
     "class_name": "L0Agent",
-    "path": "agentic_core\\utils\\core_extensions\\l0_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\L0Agent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L0DelegationTestingMixin"
+      "L0DelegationTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -2106,7 +2722,7 @@
   },
   {
     "class_name": "L1Agent",
-    "path": "agentic_core\\utils\\core_extensions\\l1_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\L1Agent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
@@ -2142,14 +2758,14 @@
   },
   {
     "class_name": "L2Agent",
-    "path": "agentic_core\\utils\\core_extensions\\l2_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\L2Agent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -2185,8 +2801,8 @@
     "inheritance": [
       "SovereignBaseAgent",
       "PineconeVectorMixin",
-      "RedisCacheMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -2224,7 +2840,7 @@
   },
   {
     "class_name": "L3Agent",
-    "path": "agentic_core\\utils\\core_extensions\\l3_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\L3Agent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
@@ -2261,7 +2877,7 @@
   },
   {
     "class_name": "L4Agent",
-    "path": "agentic_core\\utils\\core_extensions\\l4_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\L4Agent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
@@ -2298,7 +2914,7 @@
   },
   {
     "class_name": "L5Agent",
-    "path": "agentic_core\\utils\\core_extensions\\l5_agent.py",
+    "path": "agentic_core\\utils\\core_extensions\\L5Agent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/utils",
     "layer": "L2",
@@ -2361,8 +2977,8 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": false,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 85.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -2372,15 +2988,55 @@
     "cyclomatic_complexity": 15
   },
   {
+    "class_name": "McpConnectionManagerAgent",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\McpConnectionManagerAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L2_execution",
+    "layer": "L2",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "connect",
+      "call_tool",
+      "cleanup",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 35,
+    "class_count": 1,
+    "description": "\n    L2 Execution: The Tool Bridge.\n    Manages connections to Model Context Protocol (MCP) servers.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 50.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 7
+  },
+  {
     "class_name": "MemoryArchitectAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\MemoryArchitectAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2406,8 +3062,8 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 84.6,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -2418,7 +3074,7 @@
   },
   {
     "class_name": "MemoryLeakDetectorAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\concurrency.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\MemoryLeakDetectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -2449,9 +3105,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 12.5,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -2467,8 +3123,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2495,8 +3151,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 98.0,
+    "documented_pct": 86.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -2506,7 +3162,7 @@
   },
   {
     "class_name": "NamingEnforcerAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\specialized.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -2529,7 +3185,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2547,8 +3203,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2575,8 +3231,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 90.0,
+    "documented_pct": 90.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -2592,8 +3248,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2616,8 +3272,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 50.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -2627,7 +3283,7 @@
   },
   {
     "class_name": "OmniContextAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\specialized.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -2650,7 +3306,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2662,15 +3318,15 @@
   },
   {
     "class_name": "PatternEnforcerAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\engineering.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\_LegacyStructuralEngineerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubAtomicAgent",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -2706,7 +3362,7 @@
   },
   {
     "class_name": "PeerIntelligenceAuditorAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\peer_intelligence_auditor_impl.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\PeerIntelligenceAuditorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -2736,9 +3392,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 88.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -2754,8 +3410,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2782,7 +3438,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 88.2,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -2793,7 +3449,7 @@
   },
   {
     "class_name": "RedSentinelAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\security.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\_LegacySafetyInspectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -2816,7 +3472,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2828,15 +3484,15 @@
   },
   {
     "class_name": "ReflectionAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\planning.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\StrategicPlannerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2856,8 +3512,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 50.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -2867,7 +3523,7 @@
   },
   {
     "class_name": "SecurityEnforcerAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\security.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\_LegacySafetyInspectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -2890,7 +3546,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2902,15 +3558,15 @@
   },
   {
     "class_name": "SherlockAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\repair.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\SherlockAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "HealerMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubAtomicAgent",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2935,8 +3591,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 66.7,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -2951,9 +3607,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
+      "IActionPlane",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "IActionPlane"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2980,7 +3636,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 80.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -2990,136 +3646,8 @@
     "cyclomatic_complexity": 51
   },
   {
-    "class_name": "SovereignDeepWikiClient",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\deepwiki_client_sovereign.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L2_execution",
-    "layer": "L2",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "initialize",
-      "ask_question",
-      "get_structure",
-      "read_wiki_structure",
-      "read_wiki_contents",
-      "search_documentation",
-      "get_canon_guidance",
-      "verify_file_exists",
-      "health_check"
-    ],
-    "has_tools": true,
-    "has_memory": true,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 130,
-    "class_count": 1,
-    "description": "\n    DeepWiki MCP Client for L6 Observability.\n    \n    Provides access to repository documentation ",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 41
-  },
-  {
-    "class_name": "SovereignFetchClient",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\fetch_client_sovereign.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L2_execution",
-    "layer": "L2",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "_validate_url",
-      "fetch_once",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 48,
-    "class_count": 1,
-    "description": "Ultra-hardened Fetch MCP client \u2014 enforcing external knowledge purity.",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 14
-  },
-  {
-    "class_name": "SovereignFetchMcpClient",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\fetch_mcp_client.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L2_execution",
-    "layer": "L2",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "initialize",
-      "_ensure_initialized",
-      "get_clean_content",
-      "fetch_raw_html",
-      "fetch_youtube_transcript",
-      "fetch_multiple_urls",
-      "health_check",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 137,
-    "class_count": 1,
-    "description": "\n    Fetch MCP Client for sanitized content ingestion.\n    \n    Automatically converts HTML to clean",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 44
-  },
-  {
     "class_name": "SovereignPineconeStoreAgent",
-    "path": "agentic_core\\semantic_memory\\store\\pinecone_pinecone_store.py",
+    "path": "agentic_core\\semantic_memory\\store\\SovereignPineconeStoreAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/semantic_memory",
     "layer": "L2",
@@ -3147,60 +3675,15 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 83.3,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
     "cyclomatic_complexity": 10
-  },
-  {
-    "class_name": "SovereignPlaywrightMcpClient",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\playwright_mcp_client.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L2_execution",
-    "layer": "L2",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "initialize",
-      "_ensure_initialized",
-      "navigate_and_capture",
-      "click_element",
-      "type_text",
-      "take_screenshot",
-      "get_page_snapshot",
-      "close_browser",
-      "health_check"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 134,
-    "class_count": 1,
-    "description": "\n    Playwright MCP Client for visual and behavioral validation.\n    \n    This client doesn't just \"",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 32
   },
   {
     "class_name": "SovereignRedisOrchestratorAgent",
@@ -3210,8 +3693,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3237,8 +3720,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 77.8,
+    "documented_pct": 66.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -3248,14 +3731,14 @@
   },
   {
     "class_name": "SprawlInspectorAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\sprawl_inspector.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\SprawlInspectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3276,8 +3759,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 75.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -3287,7 +3770,7 @@
   },
   {
     "class_name": "StrategicPlannerAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\planning.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\StrategicPlannerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -3311,9 +3794,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 50.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -3323,7 +3806,7 @@
   },
   {
     "class_name": "StrategistAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\specialized.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -3347,9 +3830,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -3365,8 +3848,8 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -3409,9 +3892,9 @@
     "layer": "L2",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
+      "SubatomicTestingMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -3479,8 +3962,8 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 94.1,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -3491,7 +3974,7 @@
   },
   {
     "class_name": "TypeEnforcerAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\specialized.py",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
@@ -3514,7 +3997,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3554,8 +4037,8 @@
     "external_touch": true,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 87.5,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -3571,8 +4054,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3604,40 +4087,6 @@
       "tracing": false
     },
     "cyclomatic_complexity": 30
-  },
-  {
-    "class_name": "AgentRegistry",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L3_orchestration",
-    "layer": "L3",
-    "inheritance": [
-      "HealerMixin"
-    ],
-    "key_methods": [
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "None",
-    "has_subatomic": true,
-    "loc": 367,
-    "class_count": 9,
-    "description": "Mock AgentRegistry for type hinting.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 1
   },
   {
     "class_name": "AgentRegistryValidatorAgent",
@@ -3688,8 +4137,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3722,14 +4171,14 @@
   },
   {
     "class_name": "AutonomicMonitorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\autonomic_monitor_impl.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\AutonomicMonitorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3765,6 +4214,49 @@
     "cyclomatic_complexity": 39
   },
   {
+    "class_name": "BenchmarkingAgent",
+    "path": "agentic_core\\observability\\metrics\\BenchmarkingAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/observability",
+    "layer": "L3",
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "benchmark",
+      "benchmark_async",
+      "start_timer",
+      "end_timer",
+      "time_function",
+      "time_function_async",
+      "record_result",
+      "_alert_performance_degradation",
+      "get_benchmark_summary"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 231,
+    "class_count": 5,
+    "description": "\n    Measures and tracks performance metrics.\n\n    Features:\n    - Function timing with context mana",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 30.8,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 32
+  },
+  {
     "class_name": "CachedOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\CachedOrchestratorAgent.py",
     "top_dir": "agentic_core",
@@ -3772,8 +4264,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3799,8 +4291,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 66.7,
+    "documented_pct": 44.4,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -3816,8 +4308,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3839,7 +4331,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -3879,8 +4371,8 @@
     "external_touch": true,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 90.0,
+    "documented_pct": 70.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -3890,15 +4382,15 @@
   },
   {
     "class_name": "DAGManagerAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DAGManagerAgent.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DAGMutatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
       "PineconeVectorMixin",
       "RedisCacheMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -3925,7 +4417,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3937,14 +4429,14 @@
   },
   {
     "class_name": "DAGMutatorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DAGManagerAgent.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DAGMutatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3970,7 +4462,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4026,14 +4518,14 @@
   },
   {
     "class_name": "DagExecutorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\healer_dag.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DagExecutorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -4062,14 +4554,14 @@
   },
   {
     "class_name": "DagManagerAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DagManagerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4090,9 +4582,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 20.0,
+    "documented_pct": 20.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4102,14 +4594,14 @@
   },
   {
     "class_name": "DagRuntimeInspectorAgent",
-    "path": "agentic_core\\observability\\metrics\\dag_runtime_inspector.py",
+    "path": "agentic_core\\observability\\metrics\\DagRuntimeInspectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -4138,14 +4630,14 @@
   },
   {
     "class_name": "DeadlockDetectorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\deadlock_detector.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\TaskMonitorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4172,7 +4664,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 63.6,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -4189,8 +4681,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4255,8 +4747,8 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 85.7,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4272,8 +4764,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4298,7 +4790,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 50.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -4309,14 +4801,14 @@
   },
   {
     "class_name": "HallucinationDetectorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\check_hallucination.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\HallucinationDetectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4337,7 +4829,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 66.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4352,9 +4844,9 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4374,7 +4866,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4392,8 +4884,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4418,8 +4910,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 85.7,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4429,7 +4921,7 @@
   },
   {
     "class_name": "McpConnectionManagerAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\WorkflowMcpManagerAgent.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\McpConnectionManagerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
@@ -4456,9 +4948,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4468,14 +4960,14 @@
   },
   {
     "class_name": "McpRouterAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\mcp_router.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\McpRouterAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4498,7 +4990,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 66.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -4509,14 +5001,14 @@
   },
   {
     "class_name": "MemoryLeakDetectorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\memory_leak_detector.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\MemoryLeakDetectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4543,7 +5035,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 80.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -4581,8 +5073,8 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 85.7,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4598,8 +5090,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4637,7 +5129,7 @@
   },
   {
     "class_name": "MockAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemPhaseOrchestratorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
@@ -4663,8 +5155,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 66.7,
+    "documented_pct": 66.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4674,14 +5166,14 @@
   },
   {
     "class_name": "ModelRouterAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\model_router_impl.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\ModelRouterAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4719,15 +5211,15 @@
   },
   {
     "class_name": "NervousSystemAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemPhaseOrchestratorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
       "PineconeVectorMixin",
       "RedisCacheMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -4755,8 +5247,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 78.6,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4766,7 +5258,7 @@
   },
   {
     "class_name": "NervousSystemPhaseOrchestratorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemPhaseOrchestratorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
@@ -4794,9 +5286,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 25.0,
+    "documented_pct": 25.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4812,9 +5304,9 @@
     "layer": "L3",
     "inheritance": [
       "SovereignBaseAgent",
+      "PineconeVectorMixin",
       "L3SubatomicTestingMixin",
-      "RedisCacheMixin",
-      "PineconeVectorMixin"
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "route",
@@ -4837,7 +5329,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4875,9 +5367,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": false,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 80.0,
+    "documented_pct": 80.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4915,8 +5407,8 @@
     "external_touch": true,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 62.5,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -4960,7 +5452,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 66.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -5000,8 +5492,8 @@
     "external_touch": true,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 88.9,
+    "documented_pct": 88.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5040,8 +5532,8 @@
     "external_touch": true,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 66.7,
+    "documented_pct": 88.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5079,8 +5571,8 @@
     "external_touch": true,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 62.5,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5096,8 +5588,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5137,8 +5629,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -5173,8 +5665,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5201,7 +5693,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 75.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -5286,8 +5778,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 75.0,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5303,8 +5795,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5326,7 +5818,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5336,14 +5828,14 @@
   },
   {
     "class_name": "SovereignCanonAuditorAgent",
-    "path": "agentic_core\\observability\\metrics\\canon_audit.py",
+    "path": "agentic_core\\observability\\metrics\\SovereignCanonAuditorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5383,8 +5875,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5410,8 +5902,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 40.0,
+    "documented_pct": 80.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5447,8 +5939,8 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 85.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -5456,43 +5948,6 @@
       "tracing": false
     },
     "cyclomatic_complexity": 45
-  },
-  {
-    "class_name": "SubatomicHop",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L3_orchestration",
-    "layer": "L3",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 367,
-    "class_count": 9,
-    "description": "Mock SubatomicHop for type hinting.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 2
   },
   {
     "class_name": "SubatomicHopAgent",
@@ -5540,14 +5995,14 @@
   },
   {
     "class_name": "SubatomicOrchestratorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DagManagerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5573,8 +6028,8 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 90.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -5585,7 +6040,7 @@
   },
   {
     "class_name": "TaskMonitorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\deadlock_detector.py",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\TaskMonitorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
@@ -5611,9 +6066,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 80.0,
+    "documented_pct": 80.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5629,8 +6084,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5657,7 +6112,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 91.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -5674,9 +6129,9 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
+      "SubatomicTestingMixin",
       "FileSystemEventHandler",
-      "SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5696,8 +6151,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 33.3,
+    "documented_pct": 33.3,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5739,8 +6194,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 87.5,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5783,7 +6238,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 93.3,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -5794,14 +6249,14 @@
   },
   {
     "class_name": "TokenBudgetInspectorAgent",
-    "path": "agentic_core\\observability\\metrics\\token_budget_inspector.py",
+    "path": "agentic_core\\observability\\metrics\\TokenBudgetInspectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/observability",
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -5836,8 +6291,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5864,8 +6319,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 81.2,
+    "documented_pct": 81.2,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -5881,8 +6336,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5904,93 +6359,13 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
     "cyclomatic_complexity": 6
-  },
-  {
-    "class_name": "WorkflowBlueprint",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L3_orchestration",
-    "layer": "L3",
-    "inheritance": [
-      "HealerMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "None",
-    "has_subatomic": true,
-    "loc": 367,
-    "class_count": 9,
-    "description": "Mock WorkflowBlueprint for type hinting.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 4
-  },
-  {
-    "class_name": "AtomicBlackboard",
-    "path": "agentic_core\\L4_state\\ValidationContext\\blackboard.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L4_state",
-    "layer": "L4",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "L4SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "_run_self_tests",
-      "_perform_healing",
-      "_all_leases_valid",
-      "_reinitialize_redis_connection",
-      "acquire_lease_async",
-      "acquire_lease",
-      "release_lease",
-      "extend_lease",
-      "wait_for_lease"
-    ],
-    "has_tools": true,
-    "has_memory": true,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 290,
-    "class_count": 3,
-    "description": "\n    Thread-safe blackboard for managing validation state.\n    \n    Features:\n    - Lease-based file",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 81
   },
   {
     "class_name": "AutonomousCheckpointManagerAgent",
@@ -6027,7 +6402,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 70.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -6071,58 +6446,14 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 50.0,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
     "cyclomatic_complexity": 38
-  },
-  {
-    "class_name": "CachedStateLedger",
-    "path": "agentic_core\\L4_state\\ValidationContext\\cached_state_ledger.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L4_state",
-    "layer": "L4",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "L4SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "cache_validation_context",
-      "get_cached_validation_context",
-      "_record_successful_trace",
-      "get_successful_traces",
-      "append_audit_event",
-      "_run_self_tests",
-      "_perform_healing",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": true,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 140,
-    "class_count": 1,
-    "description": "\n    Sovereign L4 state base \u2014 Redis cache for context, audit, Historian.\n    All L4 components inhe",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 31
   },
   {
     "class_name": "CheckpointManagerAgent",
@@ -6154,7 +6485,7 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 87.5,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -6192,7 +6523,7 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 85.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -6231,8 +6562,8 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 87.5,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -6248,8 +6579,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6276,7 +6607,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 93.8,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -6320,14 +6651,50 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 71.4,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
     "cyclomatic_complexity": 63
+  },
+  {
+    "class_name": "PineconeSovereignAgent",
+    "path": "agentic_core\\L4_state\\validation_context\\PineconeSovereignAgent\\PineconeSovereignAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L4_state",
+    "layer": "L4",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 6,
+    "class_count": 1,
+    "description": "Stub for Pinecone Sovereign Agent.",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 50.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 2
   },
   {
     "class_name": "RedisSovereignAgent",
@@ -6362,14 +6729,50 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 42.9,
+    "documented_pct": 57.1,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
     "cyclomatic_complexity": 20
+  },
+  {
+    "class_name": "RedisSovereignAgent",
+    "path": "agentic_core\\L4_state\\validation_context\\redis_sovereign_agent\\RedisSovereignAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L4_state",
+    "layer": "L4",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 6,
+    "class_count": 1,
+    "description": "Stub for Redis Sovereign Agent.",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 50.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 2
   },
   {
     "class_name": "SchemaEvolverAgent",
@@ -6407,7 +6810,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 61.5,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -6415,50 +6818,6 @@
       "tracing": false
     },
     "cyclomatic_complexity": 62
-  },
-  {
-    "class_name": "SovereignPineconeMcpClient",
-    "path": "agentic_core\\L4_state\\ValidationContext\\pinecone_mcp_client.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L4_state",
-    "layer": "L4",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "L4SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "initialize",
-      "search",
-      "upsert",
-      "inference_embed",
-      "delete",
-      "describe_index_stats",
-      "health_check",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": true,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 116,
-    "class_count": 1,
-    "description": "\n    Official Pinecone MCP client \u2014 L3 routed, L5 shielded.\n    \n    All vector operations flow thro",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 25
   },
   {
     "class_name": "SovereignPineconeStoreAgent",
@@ -6505,99 +6864,16 @@
     "cyclomatic_complexity": 26
   },
   {
-    "class_name": "SovereignRedisMcpClient",
-    "path": "agentic_core\\L4_state\\ValidationContext\\caching_redis_mcp_client.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L4_state",
-    "layer": "L4",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "L4SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "get",
-      "set",
-      "delete",
-      "keys",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": true,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 98,
-    "class_count": 1,
-    "description": "Official Redis MCP client for sovereign caching operations.\n    \n    [HARDENING] Inherits MCPHardene",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 18
-  },
-  {
-    "class_name": "SovereignSemanticCache",
-    "path": "agentic_core\\L4_state\\ValidationContext\\semantic_cache_sovereign.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L4_state",
-    "layer": "L4",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "L4SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "_cache_key",
-      "_extract_ast_features",
-      "_calculate_depth",
-      "cache_file",
-      "invalidate",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": true,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 88,
-    "class_count": 1,
-    "description": "Ultra-hardened hybrid semantic cache \u2014 Redis local + Pinecone eternal.",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 22
-  },
-  {
     "class_name": "StateBaseAgent",
     "path": "agentic_core\\L4_state\\ValidationContext\\StateBaseAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "RedisCacheMixin",
       "SovereignBaseAgent",
-      "L4SubatomicTestingMixin",
-      "PineconeVectorMixin"
+      "RedisCacheMixin",
+      "PineconeVectorMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "recall",
@@ -6623,7 +6899,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -6667,8 +6943,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 75.0,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -6684,8 +6960,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6710,7 +6986,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 87.5,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -6753,8 +7029,8 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 90.0,
+    "documented_pct": 90.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -6769,8 +7045,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -6798,7 +7074,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 87.5,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -6815,8 +7091,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6843,8 +7119,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 55.6,
+    "documented_pct": 77.8,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -6860,8 +7136,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6888,8 +7164,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 55.6,
+    "documented_pct": 77.8,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -6904,10 +7180,10 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
       "RedisCacheMixin",
-      "PineconeVectorMixin"
+      "MCPHardenedMixin",
+      "PineconeVectorMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6927,15 +7203,15 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 2427,
+    "loc": 2426,
     "class_count": 2,
     "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    HARDENED: Now with R",
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 97.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -6973,8 +7249,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 83.3,
+    "documented_pct": 83.3,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -6984,14 +7260,14 @@
   },
   {
     "class_name": "BiasAuditorAgent",
-    "path": "agentic_core\\L5_safety\\validators\\bias_auditor.py",
+    "path": "agentic_core\\L5_safety\\validators\\BiasAuditorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7022,6 +7298,41 @@
       "tracing": false
     },
     "cyclomatic_complexity": 18
+  },
+  {
+    "class_name": "BiasDetectorAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\BiasDetectorAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "SafetyBaseAgent"
+    ],
+    "key_methods": [
+      "run",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 39,
+    "class_count": 1,
+    "description": "Runs local bias detection with dynamic constitution rules.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 3
   },
   {
     "class_name": "BoundaryTestingAgent",
@@ -7057,8 +7368,8 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 91.7,
+    "documented_pct": 91.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7100,8 +7411,8 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 90.0,
+    "documented_pct": 90.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7117,8 +7428,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7138,8 +7449,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 50.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7155,8 +7466,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7184,7 +7495,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 88.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7226,9 +7537,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 89.5,
+    "documented_pct": 94.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7238,7 +7549,7 @@
   },
   {
     "class_name": "CompositeGuardrailAgent",
-    "path": "agentic_core\\L5_safety\\guardrails\\UnifiedGuardrailAgent.py",
+    "path": "agentic_core\\L5_safety\\guardrails\\CompositeGuardrailAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
@@ -7265,7 +7576,7 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 85.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -7275,37 +7586,31 @@
     "cyclomatic_complexity": 18
   },
   {
-    "class_name": "ConfigurationSecurityGuardrail",
-    "path": "agentic_core\\L5_safety\\guardrails\\ConfigurationSecurityGuardrail.py",
+    "class_name": "ConstitutionalReviewerAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\ConstitutionalReviewerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin"
+      "SafetyBaseAgent"
     ],
     "key_methods": [
-      "__post_init__",
-      "validate_config",
-      "_apply_rule",
-      "_detect_secrets",
-      "_validate_config_structure",
-      "_enforce_policies",
-      "_run_self_tests",
+      "run_async",
       "heal_repository"
     ],
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
     "invocation": "Yes",
-    "testing": "Self",
+    "testing": "None",
     "has_subatomic": false,
-    "loc": 118,
-    "class_count": 1,
-    "description": "\n    Consolidated configuration security with composable rules.\n    Handles: Secret detection, confi",
+    "loc": 92,
+    "class_count": 2,
+    "description": "Performs final constitutional review of the output.",
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": false,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -7313,7 +7618,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 24
+    "cyclomatic_complexity": 8
   },
   {
     "class_name": "CostGovernorAgent",
@@ -7323,8 +7628,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7345,7 +7650,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 66.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7361,8 +7666,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7384,8 +7689,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 75.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7401,8 +7706,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7423,7 +7728,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 50.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -7440,8 +7745,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7468,8 +7773,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 81.8,
+    "documented_pct": 90.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7485,8 +7790,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7511,8 +7816,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 85.7,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7528,8 +7833,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7554,7 +7859,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7570,8 +7875,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7595,8 +7900,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 83.3,
+    "documented_pct": 83.3,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7612,9 +7917,9 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
+      "CachedSafetyShield",
       "SubatomicTestingMixin",
-      "CachedSafetyShield"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7637,8 +7942,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 80.0,
+    "documented_pct": 80.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7654,8 +7959,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7679,7 +7984,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 80.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -7724,7 +8029,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 16.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -7735,14 +8040,14 @@
   },
   {
     "class_name": "HealValidatorAgent",
-    "path": "agentic_core\\L5_safety\\validators\\heal_validator.py",
+    "path": "agentic_core\\L5_safety\\validators\\HealValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7768,7 +8073,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7784,8 +8089,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7812,8 +8117,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 92.9,
+    "documented_pct": 96.4,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7823,14 +8128,14 @@
   },
   {
     "class_name": "HierarchyHealerAgent",
-    "path": "agentic_core\\L5_safety\\guardrails\\hierarchy_healer.py",
+    "path": "agentic_core\\L5_safety\\guardrails\\HierarchyHealerAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7870,8 +8175,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7897,9 +8202,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 93.8,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -7915,8 +8220,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7937,7 +8242,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 50.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -7947,57 +8252,15 @@
     "cyclomatic_complexity": 29
   },
   {
-    "class_name": "InputValidationGuardrail",
-    "path": "agentic_core\\L5_safety\\guardrails\\InputValidationGuardrail.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L5_safety",
-    "layer": "L5",
-    "inheritance": [
-      "HealerMixin"
-    ],
-    "key_methods": [
-      "__post_init__",
-      "validate",
-      "_apply_rule",
-      "_detect_pii",
-      "_detect_prompt_injection",
-      "_detect_bias",
-      "_validate_format",
-      "_run_self_tests",
-      "heal_repository"
-    ],
-    "has_tools": false,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": false,
-    "loc": 141,
-    "class_count": 1,
-    "description": "\n    Consolidated input validation with composable rule sets.\n    Handles: PII detection, prompt inj",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": false,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 27
-  },
-  {
     "class_name": "InputValidatorAgent",
-    "path": "agentic_core\\L5_safety\\guardrails\\input_validator.py",
+    "path": "agentic_core\\L5_safety\\guardrails\\InputValidatorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8041,8 +8304,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8110,8 +8373,8 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 90.0,
+    "documented_pct": 90.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -8152,9 +8415,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": false,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 98.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -8170,8 +8433,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8206,7 +8469,7 @@
   },
   {
     "class_name": "MethodChangeDetectorAgent",
-    "path": "agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py",
+    "path": "agentic_core\\L5_safety\\validators\\MethodChangeDetectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
@@ -8232,9 +8495,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 75.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -8243,18 +8506,61 @@
     "cyclomatic_complexity": 17
   },
   {
+    "class_name": "MultiProviderRouterAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\multi_provider_router_agent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_default_config",
+      "_initialize_clients",
+      "chat_completion",
+      "structured_completion",
+      "batch_completion",
+      "_select_providers",
+      "_distribute_batch_requests",
+      "_call_provider",
+      "_is_provider_available"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 492,
+    "class_count": 4,
+    "description": "Production router with intelligent provider selection and failover.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 68.8,
+    "documented_pct": 93.8,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 98
+  },
+  {
     "class_name": "NeuralAutoImmuneAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "HealerMixin",
       "MCPHardenedMixin",
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
-      "SubatomicTestingMixin",
       "AutonomyMixin",
-      "HealerMixin"
+      "SubatomicTestingMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8282,13 +8588,49 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 66.7,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
     "cyclomatic_complexity": 49
+  },
+  {
+    "class_name": "PIISanitizerAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\PIISanitizerAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "SafetyBaseAgent"
+    ],
+    "key_methods": [
+      "run",
+      "_sanitize_text",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 51,
+    "class_count": 1,
+    "description": "Performs local PII detection using regex heuristics.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 66.7,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 9
   },
   {
     "class_name": "PascalSovereigntyEnforcerAgent",
@@ -8299,8 +8641,8 @@
     "inheritance": [
       "MCPHardenedMixin",
       "ASTEnforcementMixin",
-      "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -8320,7 +8662,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 194,
+    "loc": 206,
     "class_count": 2,
     "description": "L5 Safety agent \u2014 enforces PascalCase as eternal sole SSOT.\n    \n    Uses ASTEnforcementMixin for ul",
     "pascal_compliant": true,
@@ -8334,7 +8676,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 55
+    "cyclomatic_complexity": 60
   },
   {
     "class_name": "PolicyNeuralAutoImmuneAgent",
@@ -8362,9 +8704,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": false,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 66.7,
+    "documented_pct": 33.3,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -8406,6 +8748,41 @@
     "external_touch": false,
     "mcp_hardened": false,
     "has_tests": true,
+    "typed_pct": 90.0,
+    "documented_pct": 90.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 22
+  },
+  {
+    "class_name": "PromptInjectionDetectorAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\PromptInjectionDetectorAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "SafetyBaseAgent"
+    ],
+    "key_methods": [
+      "run_async",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 77,
+    "class_count": 3,
+    "description": "Detects prompt-injection attacks.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -8413,7 +8790,47 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 22
+    "cyclomatic_complexity": 6
+  },
+  {
+    "class_name": "PythonFileSovereigntyEnforcerAgent",
+    "path": "agentic_core\\L5_safety\\validators\\PythonFileSovereigntyEnforcerAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "run",
+      "_extract_primary_agent_class",
+      "_safe_git_mv",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 77,
+    "class_count": 1,
+    "description": "\n    L5 Safety agent - enforces dedicated ClassNameAgent.py file naming standard.\n    \n    Technical",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 80.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 20
   },
   {
     "class_name": "RedSentinelAgent",
@@ -8423,8 +8840,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8449,7 +8866,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 66.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -8466,8 +8883,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -8499,7 +8916,7 @@
   },
   {
     "class_name": "RegressionOracleAgent",
-    "path": "agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py",
+    "path": "agentic_core\\L5_safety\\validators\\MethodChangeDetectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
@@ -8528,8 +8945,8 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 66.7,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -8545,10 +8962,10 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "RedisCacheMixin",
       "SovereignBaseAgent",
       "MCPHardenedMixin",
-      "PineconeVectorMixin"
+      "PineconeVectorMixin",
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8575,8 +8992,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 90.0,
+    "documented_pct": 90.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -8586,14 +9003,14 @@
   },
   {
     "class_name": "SafetyInspectorAgent",
-    "path": "agentic_core\\L5_safety\\guardrails\\overseer.py",
+    "path": "agentic_core\\L5_safety\\guardrails\\SafetyInspectorAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8632,8 +9049,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8660,7 +9077,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 88.9,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -8677,8 +9094,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8705,7 +9122,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 95.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -8722,8 +9139,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8750,7 +9167,7 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 75.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -8767,8 +9184,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8795,8 +9212,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 97.1,
+    "documented_pct": 97.1,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -8838,9 +9255,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 80.0,
+    "documented_pct": 90.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -8856,8 +9273,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -8877,14 +9294,14 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 184,
+    "loc": 185,
     "class_count": 2,
     "description": "L5 specialist \u2014 advanced sovereign testing.",
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 90.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -8894,51 +9311,6 @@
     "cyclomatic_complexity": 33
   },
   {
-    "class_name": "ThreatDetectionGuardrail",
-    "path": "agentic_core\\L5_safety\\guardrails\\ThreatDetectionGuardrail.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L5_safety",
-    "layer": "L5",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "RedisCacheMixin",
-      "PineconeVectorMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "analyze",
-      "_detect_adversarial",
-      "_detect_evolved_threats",
-      "_calculate_threat_level",
-      "_determine_response",
-      "add_evolved_pattern",
-      "immune_response",
-      "get_statistics"
-    ],
-    "has_tools": true,
-    "has_memory": true,
-    "has_healing": true,
-    "invocation": "Inherited",
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 185,
-    "class_count": 5,
-    "description": "\n    Consolidated Threat Detection Guardrail.\n    \n    HARDENED: Redis caching + Pinecone vector sup",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 28
-  },
-  {
     "class_name": "TypeHintEnforcementAgent",
     "path": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
     "top_dir": "agentic_core",
@@ -8946,8 +9318,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8967,7 +9339,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 0.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -8983,8 +9355,8 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "NodeTransformer"
+      "NodeTransformer",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9005,9 +9377,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 20.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9023,8 +9395,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9044,8 +9416,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 50.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9055,7 +9427,7 @@
   },
   {
     "class_name": "ASCIIEnforcerAgent",
-    "path": "apps_lic\\domain\\validators\\profile_validator.py",
+    "path": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/domain",
     "layer": "apps_lic",
@@ -9080,7 +9452,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9091,16 +9463,52 @@
     "cyclomatic_complexity": 6
   },
   {
-    "class_name": "CampaignBalanceAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
+    "class_name": "BaseAgent",
+    "path": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "OutreachAgent",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "log_info"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 651,
+    "class_count": 11,
+    "description": "Stub for BaseAgent - TODO: Replace with sovereign equivalent",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 2
+  },
+  {
+    "class_name": "CampaignBalanceAgent",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
+    "top_dir": "apps_lic",
+    "sub_dir": "apps_lic/engines",
+    "layer": "apps_lic",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "OutreachAgent",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -9130,7 +9538,7 @@
   },
   {
     "class_name": "CampaignPlannerAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -9153,7 +9561,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9165,7 +9573,7 @@
   },
   {
     "class_name": "ContactValidatorAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -9188,7 +9596,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9200,7 +9608,7 @@
   },
   {
     "class_name": "ContentCleanlinessValidatorAgent",
-    "path": "apps_lic\\domain\\validators\\profile_validator.py",
+    "path": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/domain",
     "layer": "apps_lic",
@@ -9224,7 +9632,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9236,7 +9644,7 @@
   },
   {
     "class_name": "DeliverabilityAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -9259,7 +9667,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9277,8 +9685,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9295,7 +9703,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 118,
+    "loc": 117,
     "class_count": 1,
     "description": "\n    v13.1: HOP-1 - Profile Analysis with state-based I/O (MCP Hardened)\n    \n    Single Responsibil",
     "pascal_compliant": true,
@@ -9319,8 +9727,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9347,8 +9755,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 90.9,
+    "documented_pct": 90.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9364,8 +9772,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9402,8 +9810,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9440,8 +9848,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9469,7 +9877,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 90.9,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9485,8 +9893,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9512,7 +9920,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9528,8 +9936,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9567,8 +9975,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9591,7 +9999,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9607,8 +10015,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9639,14 +10047,14 @@
   },
   {
     "class_name": "IntelligenceLibrarianAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\intelligence_librarian.py",
+    "path": "apps_lic\\engines\\outreach_engine\\IntelligenceLibrarianAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9673,7 +10081,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 75.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -9683,8 +10091,46 @@
     "cyclomatic_complexity": 53
   },
   {
+    "class_name": "InternalAgent",
+    "path": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
+    "top_dir": "apps_lic",
+    "sub_dir": "apps_lic/engines",
+    "layer": "apps_lic",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "get_internal_context",
+      "_load_strategic_brief",
+      "_extract_entities_from_text",
+      "_load_resume_as_rag",
+      "_load_kb_as_rag",
+      "_search_job_tracker"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 651,
+    "class_count": 11,
+    "description": "\n    v12.0: UPGRADED to primary intelligence-gathering unit.\n    NOW LOADS: \n    - master_resume.jso",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 85.7,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 37
+  },
+  {
     "class_name": "LeadQualityAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -9707,7 +10153,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9719,7 +10165,7 @@
   },
   {
     "class_name": "MessageComplianceAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -9742,7 +10188,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9754,7 +10200,7 @@
   },
   {
     "class_name": "MessageDiversityValidatorAgent",
-    "path": "apps_lic\\domain\\validators\\profile_validator.py",
+    "path": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/domain",
     "layer": "apps_lic",
@@ -9777,9 +10223,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9788,47 +10234,44 @@
     "cyclomatic_complexity": 6
   },
   {
-    "class_name": "OutreachAgentFactory",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\healing.py",
+    "class_name": "OrganizationAgent",
+    "path": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
-    ],
+    "inheritance": [],
     "key_methods": [
-      "create_all_agents",
-      "create_quality_agents",
-      "create_compliance_agents",
-      "create_agents_by_name",
-      "heal_repository"
+      "__init__",
+      "validate_initiative",
+      "get_organization_context",
+      "run_refinement_task",
+      "_process_search_results"
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
+    "has_healing": false,
+    "invocation": "Inherited",
     "testing": "None",
-    "has_subatomic": true,
-    "loc": 303,
-    "class_count": 7,
-    "description": "Factory for creating outreach agents.",
+    "has_subatomic": false,
+    "loc": 651,
+    "class_count": 11,
+    "description": "\n    v12.0: DEMOTED to secondary fact-checker role.\n    Now performs validation searches based on st",
     "pascal_compliant": true,
-    "external_touch": false,
+    "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 7
+    "cyclomatic_complexity": 11
   },
   {
     "class_name": "OutreachCapabilityMonitorAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\proactive.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachCapabilityMonitorAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -9857,9 +10300,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 85.7,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9869,14 +10312,14 @@
   },
   {
     "class_name": "OutreachHealingOrchestratorAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\healing.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9895,9 +10338,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 50.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9907,15 +10350,15 @@
   },
   {
     "class_name": "OutreachLearningAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\learning.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachLearningAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
-      "OutreachAgent",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "OutreachAgent",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9938,8 +10381,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 66.7,
+    "documented_pct": 66.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9949,14 +10392,14 @@
   },
   {
     "class_name": "OutreachPhase5OrchestratorAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\observability.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachPhase5OrchestratorAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9981,8 +10424,8 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 87.5,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -9992,7 +10435,7 @@
   },
   {
     "class_name": "OutreachProactiveAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\proactive.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachCapabilityMonitorAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -10016,9 +10459,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10028,7 +10471,7 @@
   },
   {
     "class_name": "OutreachReflectionAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -10051,7 +10494,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10063,7 +10506,7 @@
   },
   {
     "class_name": "OutreachSignalRouterAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\healing.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -10089,8 +10532,8 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 25.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -10101,7 +10544,7 @@
   },
   {
     "class_name": "OutreachTestPilot",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -10124,7 +10567,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10136,15 +10579,15 @@
   },
   {
     "class_name": "OutreachValidationExecutorAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\outreach_validation_executor_engine.py",
+    "path": "apps_lic\\engines\\outreach_engine\\OutreachValidationExecutorAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
       "ValidationGateExecutor",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10171,7 +10614,7 @@
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
+    "typed_pct": 92.3,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -10182,7 +10625,7 @@
   },
   {
     "class_name": "PlaceholderDetectorAgent",
-    "path": "apps_lic\\domain\\validators\\profile_validator.py",
+    "path": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/domain",
     "layer": "apps_lic",
@@ -10204,7 +10647,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10215,8 +10658,82 @@
     "cyclomatic_complexity": 6
   },
   {
+    "class_name": "RecipientAgent",
+    "path": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
+    "top_dir": "apps_lic",
+    "sub_dir": "apps_lic/engines",
+    "layer": "apps_lic",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "validate_entity",
+      "get_profile",
+      "run_refinement_task",
+      "_process_search_results"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 651,
+    "class_count": 11,
+    "description": "\n    v12.0: DEMOTED to secondary fact-checker role.\n    Now performs validation searches based on st",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 50.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 9
+  },
+  {
+    "class_name": "S2_SupervisorAgent",
+    "path": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
+    "top_dir": "apps_lic",
+    "sub_dir": "apps_lic/engines",
+    "layer": "apps_lic",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "orchestrate_research",
+      "_run_adversarial_check",
+      "_extract_sender_grounding",
+      "_extract_names_from_text",
+      "_extract_capitalized_phrases",
+      "_critique_archetype_classification"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 651,
+    "class_count": 11,
+    "description": "\n    v12.0: Updated coordination logic for strategic alignment workflow.\n    Now manages entity extr",
+    "pascal_compliant": false,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 80.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 53
+  },
+  {
     "class_name": "TemplateOptimizerAgent",
-    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/engines",
     "layer": "apps_lic",
@@ -10239,7 +10756,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10251,7 +10768,7 @@
   },
   {
     "class_name": "ValidationAgent",
-    "path": "apps_lic\\domain\\validators\\profile_validator.py",
+    "path": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
     "top_dir": "apps_lic",
     "sub_dir": "apps_lic/domain",
     "layer": "apps_lic",
@@ -10278,9 +10795,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10296,8 +10813,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10328,15 +10845,15 @@
   },
   {
     "class_name": "ATSCompatibilityAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
+      "SubatomicTestingMixin",
       "ResumeAgent",
-      "SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -10366,47 +10883,8 @@
     "cyclomatic_complexity": 18
   },
   {
-    "class_name": "AgentFactory",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
-    "top_dir": "apps_rg",
-    "sub_dir": "apps_rg/engines",
-    "layer": "apps_rg",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
-    ],
-    "key_methods": [
-      "create_all_agents",
-      "create_agents_by_name",
-      "create_quality_agents",
-      "create_compliance_agents",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "None",
-    "has_subatomic": true,
-    "loc": 348,
-    "class_count": 9,
-    "description": "Factory for creating agent instances.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 7
-  },
-  {
     "class_name": "BrandComplianceAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -10430,9 +10908,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10442,14 +10920,14 @@
   },
   {
     "class_name": "CapabilityMonitorAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\CapabilityMonitorAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10473,8 +10951,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 85.7,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10484,7 +10962,7 @@
   },
   {
     "class_name": "ContentQualityAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -10508,7 +10986,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10520,7 +10998,7 @@
   },
   {
     "class_name": "ConvergenceDetectorAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\SignalRouterAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -10545,9 +11023,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 66.7,
+    "documented_pct": 83.3,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10589,7 +11067,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10633,7 +11111,7 @@
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 91.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10643,7 +11121,7 @@
   },
   {
     "class_name": "FactCheckAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -10668,7 +11146,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10680,14 +11158,14 @@
   },
   {
     "class_name": "HealingOrchestratorAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\SignalRouterAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10706,9 +11184,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 50.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10718,14 +11196,14 @@
   },
   {
     "class_name": "Phase4OrchestratorAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\Phase4OrchestratorAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10745,9 +11223,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 66.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10757,14 +11235,14 @@
   },
   {
     "class_name": "Phase6OrchestratorAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\UnifiedOrchestratorAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10786,9 +11264,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10798,14 +11276,14 @@
   },
   {
     "class_name": "Phase7OrchestratorAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\StrictDocEnforcerAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10830,9 +11308,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10842,7 +11320,7 @@
   },
   {
     "class_name": "ProactiveAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\CapabilityMonitorAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -10868,9 +11346,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 50.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10880,7 +11358,7 @@
   },
   {
     "class_name": "ReflectionAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -10904,7 +11382,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10916,14 +11394,14 @@
   },
   {
     "class_name": "ResumeLearningAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\learning.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\ResumeLearningAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10949,8 +11427,8 @@
     "external_touch": true,
     "mcp_hardened": true,
     "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "typed_pct": 85.7,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -10960,14 +11438,14 @@
   },
   {
     "class_name": "ResumeOrchestratorAgent",
-    "path": "apps_rg\\engines\\resume_engine\\AppsResumeOrchestratorAgent.py",
+    "path": "apps_rg\\engines\\resume_engine\\ResumeOrchestratorAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10993,7 +11471,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -11005,14 +11483,14 @@
   },
   {
     "class_name": "SafetyExecutorAgent",
-    "path": "apps_rg\\engines\\rg_contact_research_executor.py",
+    "path": "apps_rg\\engines\\SafetyExecutorAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -11041,7 +11519,7 @@
   },
   {
     "class_name": "SectionBalanceAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -11065,9 +11543,9 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 50.0,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -11077,7 +11555,7 @@
   },
   {
     "class_name": "SignalRouterAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\SignalRouterAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -11103,8 +11581,8 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 25.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,
@@ -11115,7 +11593,7 @@
   },
   {
     "class_name": "StrategicPlannerAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -11138,7 +11616,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -11150,7 +11628,7 @@
   },
   {
     "class_name": "StrictDocEnforcerAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\StrictDocEnforcerAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -11177,9 +11655,9 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 87.5,
     "observability": {
       "logging": true,
       "metrics": true,
@@ -11189,7 +11667,7 @@
   },
   {
     "class_name": "TemplateOptimizerAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
@@ -11213,7 +11691,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -11225,14 +11703,14 @@
   },
   {
     "class_name": "UnifiedOrchestratorAgent",
-    "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\UnifiedOrchestratorAgent.py",
     "top_dir": "apps_rg",
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
+      "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11254,54 +11732,15 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
-    "documented_pct": 100.0,
+    "documented_pct": 75.0,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
     "cyclomatic_complexity": 14
-  },
-  {
-    "class_name": "BaseTaskExecutor",
-    "path": "apps_shared\\utils\\common_patterns.py",
-    "top_dir": "apps_shared",
-    "sub_dir": "apps_shared/utils",
-    "layer": "apps_shared",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "execute",
-      "_do_execute",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 104,
-    "class_count": 5,
-    "description": "\n    Base class for task execution with error handling.\n    Previously duplicated 7+ times as execut",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 8
   },
   {
     "class_name": "StateValidator",
@@ -11329,8 +11768,8 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
+    "has_tests": false,
+    "typed_pct": 50.0,
     "documented_pct": 100.0,
     "observability": {
       "logging": true,

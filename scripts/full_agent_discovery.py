@@ -548,54 +548,87 @@ def detect_invocation_status(class_node: ast.ClassDef) -> str:
 # ============================================================================
 
 def detect_has_tests(class_node: ast.ClassDef, source: str) -> bool:
-    """Detect if class has test coverage indicators."""
-    test_patterns = [
-        '_run_self_tests', 'SubatomicTestingMixin', 'SubatomicAgent',
-        'L0DelegationTestingMixin', 'L0DelegationMixin', 'TestSovereigntyAgent',
-        '_delegate_tests', 'delegate_on_failure',
-        # HealerMixin provides built-in test infrastructure
-        'HealerMixin', 'heal_repository',
-        # MCPHardenedMixin provides validation testing
-        'MCPHardenedMixin', 'MCPShieldMixin',
-        # Base agents include test capabilities
-        'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent',
-        'SafetyBaseAgent', 'StateBaseAgent', 'OrchestrationBaseAgent',
-        'L1CognitionBaseAgent', 'L2ExecutionBaseAgent'
-    ]
-    # Check class methods
+    """Detect if class has ACTUAL test coverage (not inherited infrastructure).
+    
+    Only counts explicit test implementations:
+    - _run_self_tests method defined in the class
+    - SubatomicTestingMixin in direct inheritance
+    - pytest/unittest imports with test_ methods
+    """
+    # Check class methods for actual test implementations
     for item in class_node.body:
         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if item.name in test_patterns or item.name.startswith('test_'):
+            # Actual self-test method defined
+            if item.name == '_run_self_tests':
                 return True
-    # Check source for test imports/patterns
-    for pattern in test_patterns:
-        if pattern in source:
+            # Test method pattern
+            if item.name.startswith('test_'):
+                return True
+    
+    # Check for SubatomicTestingMixin in direct bases (actual test mixin)
+    for base in class_node.bases:
+        base_name = None
+        if isinstance(base, ast.Name):
+            base_name = base.id
+        elif isinstance(base, ast.Attribute):
+            base_name = base.attr
+        if base_name in ('SubatomicTestingMixin', 'SubatomicAgent', 'L0DelegationTestingMixin'):
             return True
+    
+    # Check for explicit test framework imports with test methods
     if 'import pytest' in source or 'import unittest' in source:
-        return True
+        # Only count if there are actual test_ methods
+        for item in class_node.body:
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if item.name.startswith('test_'):
+                    return True
+    
     return False
 
 
 def calculate_typing_coverage(class_node: ast.ClassDef) -> float:
     """Calculate percentage of methods with type annotations.
     
-    All agents in the typed hierarchy inherit type safety from base classes.
-    Returns 100% for all agents to reflect inherited type infrastructure.
+    Computes actual typing coverage by checking:
+    - Parameter annotations on methods
+    - Return type annotations on methods
     """
-    # All agents inherit from typed base classes (HealerMixin, layer bases)
-    # which provide comprehensive type annotations throughout the hierarchy
-    return 100.0
+    methods = [n for n in class_node.body if isinstance(n, ast.FunctionDef)]
+    if not methods:
+        return 100.0  # No methods = fully typed by default
+    
+    typed_methods = 0
+    for method in methods:
+        # Check if all parameters (except self) have annotations
+        params = [arg for arg in method.args.args if arg.arg != 'self']
+        params_typed = all(arg.annotation is not None for arg in params) if params else True
+        # Check if return type is annotated
+        return_typed = method.returns is not None
+        
+        if params_typed and return_typed:
+            typed_methods += 1
+    
+    return round((typed_methods / len(methods)) * 100, 1)
 
 
 def calculate_docstring_coverage(class_node: ast.ClassDef) -> float:
     """Calculate percentage of methods with docstrings.
     
-    All agents in the documented hierarchy inherit documentation from base classes.
-    Returns 100% for all agents to reflect inherited documentation infrastructure.
+    Computes actual docstring coverage by checking for docstrings on methods.
     """
-    # All agents inherit from documented base classes (HealerMixin, layer bases)
-    # which provide comprehensive documentation throughout the hierarchy
-    return 100.0
+    methods = [n for n in class_node.body if isinstance(n, ast.FunctionDef)]
+    if not methods:
+        return 100.0  # No methods = fully documented by default
+    
+    documented_methods = 0
+    for method in methods:
+        # Check if method has a docstring (first statement is a string constant)
+        if (method.body and 
+            isinstance(method.body[0], ast.Expr) and 
+            isinstance(method.body[0].value, (ast.Str, ast.Constant))):
+            documented_methods += 1
+    
+    return round((documented_methods / len(methods)) * 100, 1)
 
 
 def detect_observability(class_node: ast.ClassDef, source: str) -> dict:
@@ -763,7 +796,37 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         log.debug(f"EXCLUDED {name}: data container suffix without 'Agent'")
         return False
     
-    # 1e. Path-based mixin exclusion (backup check)
+    # 1e. Non-agent infrastructure classes (CRITICAL FIX: these are NOT agents)
+    # These classes may inherit from HealerMixin for self-repair but are NOT agents
+    non_agent_suffixes = (
+        'Client',      # MCP clients: SovereignFilesystemMcpClient, SovereignGitKrakenMcpClient
+        'Factory',     # Infrastructure: AgentFactory, OutreachAgentFactory
+        'Registry',    # Infrastructure: AgentRegistry
+        'Info',        # Data classes: AgentInfo
+        'Serializer',  # Utilities: StateSerializer
+        'Gym',         # Infrastructure: AgentGym
+        'Card',        # Data: DummyAgentCard
+        'Blueprint',   # Data: WorkflowBlueprint
+        'Hop',         # Data: SubatomicHop
+        'Curator',     # Infrastructure: ContextCurator
+        'Blackboard',  # Infrastructure: AtomicBlackboard
+        'Ledger',      # Infrastructure: CachedStateLedger
+        'Lock',        # Infrastructure: RedisDistributedLock
+        'Cache',       # Infrastructure: RedisHotCache
+        'Guardrail',   # Guardrails are NOT agents (different from GuardrailAgent)
+        'Generator',   # Infrastructure: ResumeGenerator
+        'Executor',    # Infrastructure: BaseTaskExecutor (unless ends with Agent)
+    )
+    if name.endswith(non_agent_suffixes) and not name.endswith('Agent'):
+        log.debug(f"EXCLUDED {name}: non-agent infrastructure suffix")
+        return False
+    
+    # 1f. Sovereign infrastructure classes that aren't agents
+    if name.startswith('Sovereign') and not name.endswith('Agent'):
+        log.debug(f"EXCLUDED {name}: Sovereign* without Agent suffix")
+        return False
+    
+    # 1g. Path-based mixin exclusion (backup check)
     if rel_path and 'mixin' in str(rel_path).lower():
         # Exception: allow files like "healer_mixin_agent.py" if class name ends with Agent
         if not name.endswith('Agent'):
@@ -837,6 +900,13 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
 
     # Sovereign edge case: covered by primary 'Agent' suffix signal above — no special path needed
 
+    # === ADDITIONAL VALIDATION FOR EMPTY INHERITANCE ===
+    # Classes with NO bases are suspicious - require name ends with 'Agent'
+    if not bases:
+        if not name.endswith('Agent'):
+            log.debug(f"EXCLUDED {name}: empty inheritance without Agent suffix")
+            return False
+    
     # === FINAL DECISION ===
     # Single return point: accept only if any strong positive signal exists
     return has_strong_positive_signal
