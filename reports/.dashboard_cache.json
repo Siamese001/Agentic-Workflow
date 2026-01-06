@@ -1,16 +1,16 @@
 {
   "agentic_core/L5_safety/validators/AutonomyGuardianAgent.py": {
-    "hash": "8217d8a5a7456816",
+    "hash": "0f0c712e17f1463a",
     "atomic_threshold": 10,
     "metrics": {
-      "loc": 2424,
+      "loc": 2438,
       "compliant": 1,
       "hardened": 1,
       "mcp_capable": 1,
       "healing_cap": 1,
       "healing_invoke": 0,
       "tests": 1,
-      "cc_sum": 683,
+      "cc_sum": 684,
       "max_cc": 257,
       "typed": 88.33333333333333,
       "documented": 83.87096774193549,

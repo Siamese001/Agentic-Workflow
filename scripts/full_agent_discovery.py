@@ -26,6 +26,7 @@
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 import ast
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -42,6 +43,12 @@ MISTAKE_JSON_2 = PROJECT_ROOT / 'agent_discovery_legacy.json'
 OUTPUT_JSON = CANONICAL_JSON
 
 EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv'}
+
+
+def should_exclude_path(path: Path) -> bool:
+    """Return True if path should be excluded from scanning/hashing (shared with smart_discovery)."""
+    return any(excluded in path.parts for excluded in EXCLUDED_DIRS)
+
 
 # ============================================================================
 # HARDENING: Agent Count Baseline Protection
@@ -747,13 +754,10 @@ def main():
     seen_agents: Set[Tuple[str, str]] = set()
     duplicates_skipped = 0
     
-    # Scan ALL Python files in project
-    all_py_files = list(PROJECT_ROOT.rglob('*.py'))
+    # Scan ALL Python files in project (collect once for hashing later)
+    all_py_files = [p for p in PROJECT_ROOT.rglob('*.py') if not should_exclude_path(p)]
     print(f"\nScanning {len(all_py_files)} Python files...")
-
-    # Diagnostic: Report on files explicitly skipped by EXCLUDED_DIRS
-    excluded_files = [f for f in all_py_files if should_exclude_file(f)]
-    print(f"   -> Excluding {len(excluded_files)} files in non-source dirs (archives, backups, etc.)")
+    print(f"   -> Excluded vendor/cache dirs via should_exclude_path()")
     
     # First pass: Build inheritance map for MRO-like detection
     print("[PASS 1] Building inheritance map...")
@@ -913,14 +917,43 @@ def main():
     # Calculate scan duration
     scan_duration = time.time() - start_time
     
-    # Save JSON
-    with open(OUTPUT_JSON, 'w', encoding='utf-8') as f:
-        json.dump(agents, f, indent=2)
+    # Compute file hashes for manifest (centralized here)
+    print(f"[MANIFEST] Computing hashes for {len(all_py_files)} scanned files...")
+    file_hashes: Dict[str, str] = {}
+    hash_errors = 0
+    for py_file in all_py_files:
+        rel_path = str(py_file.relative_to(PROJECT_ROOT)).replace("\\", "/")
+        try:
+            file_hashes[rel_path] = hashlib.md5(py_file.read_bytes()).hexdigest()
+        except Exception as e:
+            hash_errors += 1
+            print(f"   [HASH ERROR] {rel_path}: {e}")
+    print(f"[MANIFEST] Hashed {len(file_hashes)} files ({hash_errors} errors)")
     
-    # Generate and save manifest
+    # Save JSON with atomic write
+    try:
+        tmp_json = OUTPUT_JSON.with_suffix(".tmp")
+        tmp_json.write_text(json.dumps(agents, indent=2), encoding="utf-8")
+        tmp_json.replace(OUTPUT_JSON)
+        print(f"[SAVED] {OUTPUT_JSON}")
+    except Exception as e:
+        print(f"[ERROR] Failed to save discovery JSON: {e}")
+        sys.exit(1)
+    
+    # Generate and save manifest with file hashes
     manifest = generate_manifest(agents, scan_duration, parse_errors)
-    with open(MANIFEST_JSON, 'w', encoding='utf-8') as f:
-        json.dump(manifest, f, indent=2)
+    manifest["file_hashes"] = file_hashes
+    manifest["hashed_file_count"] = len(file_hashes)
+    manifest["hash_errors"] = hash_errors
+    
+    try:
+        tmp_manifest = MANIFEST_JSON.with_suffix(".tmp")
+        tmp_manifest.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        tmp_manifest.replace(MANIFEST_JSON)
+        print(f"[SAVED] {MANIFEST_JSON}")
+    except Exception as e:
+        print(f"[ERROR] Failed to save manifest: {e}")
+        # Non-fatal - JSON is primary
     
     # Statistics
     layers = defaultdict(int)
