@@ -20,6 +20,8 @@ from typing import Any, Dict, List, Optional
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
 # [PHASE 2] L0 Delegated Testing Mixin
 from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
@@ -155,8 +157,10 @@ class L0DelegationMixin(MCPHardenedMixin):
 
 
 @dataclass
-class MaintenanceBaseAgent(SovereignBaseAgent, L0DelegationMixin, L0DelegationTestingMixin):
+class MaintenanceBaseAgent(SovereignBaseAgent, L0DelegationMixin, L0DelegationTestingMixin, RedisCacheMixin, PineconeVectorMixin):
     """Base class for L0 Maintenance agents with delegation-only testing.
+    
+    HARDENED: Now with Redis caching + Pinecone vector support.
     
     NOTE: _healing_enabled = False for L0 boot isolation safety.
     
@@ -176,6 +180,10 @@ class MaintenanceBaseAgent(SovereignBaseAgent, L0DelegationMixin, L0DelegationTe
 
     # [PHASE 3] L0 boot isolation safety - healing disabled
     _healing_enabled: bool = False
+    
+    # [PHASE 2] Redis/Pinecone integration
+    _cache_prefix: str = "l0_maintenance"
+    _namespace: str = "l0_patterns"
 
     async def maintain(self, Task: Dict) -> Dict:
         """Execute maintenance logic. Override in subclasses."""

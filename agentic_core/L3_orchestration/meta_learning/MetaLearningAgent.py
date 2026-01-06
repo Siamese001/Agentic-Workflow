@@ -1,10 +1,15 @@
 from __future__ import annotations
 """
 MetaLearningAgent - Sovereign Strategy Evolution Engine (Phase C - Dec 30, 2025)
+
+HARDENED: Now with Redis caching + Pinecone vector support for pattern consolidation.
 """
 from typing import Dict, Any, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.cache_decorator import cached
 import logging
+import hashlib
+import json
 from pathlib import Path
 from datetime import datetime
 
@@ -14,6 +19,8 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
 
 def get_meta_learning_agent() -> MetaLearningAgent:
@@ -43,11 +50,17 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
 
 class MetaLearningAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,):
+    SelfDiagnosisMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Sovereign meta-learning agent that evolves system behavior over time.
     Now hardened with strategy evolution, proactive monitoring, and self-learning.
+    
+    HARDENED: Redis caching + Pinecone vector support for pattern consolidation.
     """
+    
+    # [PHASE 4] Redis/Pinecone integration
+    _cache_prefix: str = "meta_learning"
+    _namespace: str = "l3_patterns"
 
     def __init__(self) -> None:
         self.Logger = logging.getLogger(__name__)

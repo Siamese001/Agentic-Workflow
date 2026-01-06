@@ -23,6 +23,12 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.config.flags import CACHE_METRICS_ENABLED
+from agentic_core.L6_observability.metrics.cache_metrics import get_cache_metrics
+
+log = __import__('logging').getLogger(__name__)
 
 
 class _CCVisitor(ast.NodeVisitor):
@@ -59,17 +65,24 @@ class _CCVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
+class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Sovereign guardian for agent autonomy enforcement (Canon Key 51).
+    
+    HARDENED: Now with Redis caching + Pinecone vector support.
     
     Responsibilities:
     1. Detect agents missing heal_repository() method
     2. Detect forbidden external runner scripts
     3. Report violations for manual or auto-healing
+    4. Cache compliance results for faster subsequent runs
     
     This agent is itself autonomous — no external scripts needed.
     """
+    
+    # [PHASE 2] Redis/Pinecone integration
+    _cache_prefix: str = "guardian_compliance"
+    _namespace: str = "l5_compliance"
     
     def __init__(self, project_root: Path) -> None:
         self.project_root = project_root
@@ -3042,10 +3055,27 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         strategic_review = strategic_output.get('review', '')
         strategic_recs_html = '<ol>' + ''.join(f'<li>{rec}</li>' for rec in strategic_output.get('recommendations', [])[:10]) + '</ol>'
         last_updated = f"Last updated: {today} at {datetime.now().strftime('%H:%M:%S')}"
+        
+        # [PHASE 4] Add cache metrics to dashboard gauges
+        cache_hit_rate = 0.0
+        cache_operations = 0
+        try:
+            if CACHE_METRICS_ENABLED:
+                cache_stats = get_cache_metrics().get_stats()
+                if cache_stats:
+                    total_hits = sum(s.get("hits", 0) for s in cache_stats.values())
+                    total_ops = sum(s.get("total_operations", 0) for s in cache_stats.values())
+                    cache_hit_rate = round((total_hits / total_ops * 100) if total_ops else 0, 1)
+                    cache_operations = total_ops
+        except Exception as e:
+            log.debug(f"Cache metrics unavailable: {e}")
+        
         gauge_data = json.dumps({
             "healing_cap": gauge_healing_cap,
             "compliance": gauge_compliance,
-            "health": gauge_health
+            "health": gauge_health,
+            "cache_hit_rate": cache_hit_rate,
+            "cache_operations": cache_operations
         })
         
         # Inject data into template with validation

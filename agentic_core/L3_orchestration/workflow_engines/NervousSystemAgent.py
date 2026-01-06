@@ -30,6 +30,7 @@ import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.cache_decorator import cached
 from agentic_core.runtime.shared_runtime import subscribe_event
 from agentic_core.L3_orchestration.workflow_engines.RLOrchestratorAgent import RLOrchestratorAgent
 from agentic_core.L3_orchestration.workflow_engines.QLearningOrchestratorAgent import QLearningOrchestratorAgent
@@ -1077,8 +1078,10 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.bases.OrchestrationBaseAgent import L3SubatomicTestingMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
-class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
     """Core orchestrator that coordinates cognitive and action planes.
 
     Implements the 5-step agentic cycle:
