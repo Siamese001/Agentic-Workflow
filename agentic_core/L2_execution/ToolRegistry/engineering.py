@@ -18,8 +18,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class StructuralEngineerAgent(SubAtomicAgent):
+# Extracted to standalone StructuralEngineerAgent.py (2026-01-06)
+from agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent import StructuralEngineerAgent
+class _LegacyStructuralEngineerAgent(SubAtomicAgent):
     """
     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
     ROLE: Heavy Refactoring with Semantic Intelligence.

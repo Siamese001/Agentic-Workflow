@@ -7,6 +7,12 @@ All orchestration logic has been moved to agentic_core/core/orchestrator_main.py
 
 Legacy API preserved for backward compatibility.
 """
+
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: L3 hardened wrapper vs apps_lic/apps_rg implementations)
+# - Intentional variant for domain-specific behavior
+# - Consolidated 2026-01-06
+
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol

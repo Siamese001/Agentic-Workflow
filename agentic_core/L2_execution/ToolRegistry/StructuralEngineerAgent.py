@@ -1,11 +1,17 @@
 from __future__ import annotations
 """
-Structural Engineer Agent - Code Structure Validation (Keys 20-30)
+Structural Engineer Agent - Code Structure Validation (Keys 17-46)
+CANONICAL: True - Consolidated 2026-01-06 (merged from engineering.py)
 
 Responsible for:
+- Key 17: Large functions
+- Key 18: Many parameters
 - Key 20: No large classes (>20 methods or >500 lines)
 - Key 21-25: Complexity metrics, cyclomatic complexity
 - Key 26-30: Code organization, modularity, cohesion
+- Key 42: Large files
+- Key 43: Class density
+- Key 46: Duplicate code
 """
 import ast
 import os
