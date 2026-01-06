@@ -471,5 +471,5 @@ def get_model_router(ctx) -> DynamicModelRouterAgent:
         _model_router = DynamicModelRouterAgent(ctx)
     return _model_router
 
-def get_dynamic_model_routerAgent(ctx)
+def get_dynamic_model_routerAgent(ctx):
     return _model_router

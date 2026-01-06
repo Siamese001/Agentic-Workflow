@@ -309,16 +309,15 @@ def generate_mission_plan(objective: str, cycle_id: int, priority: MissionPriori
     """Generate a mission plan."""
     planner: Any = get_strategic_planner()
     return planner.generate_plan(objective, cycle_id, priority, context)
-    def _run_self_tests(self) -> dict:
-    """Run internal self-tests."""
-        pass
-        pass
-    results = {"passed": 0, "failed": 0, "tests": []}
-    try:
-    assert self is not None
-    results["passed"] += 1
-    results["tests"].append({"name": "test_instantiation", "status": "passed"})
-    except AssertionError as e:
-    results["failed"] += 1
-    results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-    return results
+
+def _run_self_tests(self) -> dict:
+        """Run internal self-tests."""
+        results = {"passed": 0, "failed": 0, "tests": []}
+        try:
+            assert self is not None
+            results["passed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "passed"})
+        except AssertionError as e:
+            results["failed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+        return results

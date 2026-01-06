@@ -249,26 +249,25 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
             source = r["source"]
             content = r["content"]
 
-return "\n".join(context_parts)
+        return "\n".join(context_parts)
 
-@timeout(300)
-def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-"""Knowledge agent - operational only."""
-    pass
-    pass
-if _call_path is None:
-_call_path = set()
-agent_name = self.__class__.__name__
-if agent_name in _call_path:
-return {"errors": 1, "cycle_detected": True}
-if depth > max_depth:
-return {"errors": 1, "depth_limited": True}
-_call_path.add(agent_name)
-try:
-print(f"[{agent_name}] Knowledge - operational only")
-return {"skipped": 1}
-finally:
-_call_path.discard(agent_name)
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Knowledge agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] Knowledge - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
 
 def get_rag_manager(project_root: Path) -> SovereignRAGManager:
-return SovereignRAGManager(project_root)
+    return SovereignRAGManager(project_root)

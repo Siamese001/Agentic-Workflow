@@ -185,16 +185,14 @@ if __name__ == '__main__':
     result: Any = asyncio.run(run_sovereignty_audit())
     exit(0 if result else 1)
 
-    def _run_self_tests(self) -> dict:
-    """Run internal self-tests."""
-        pass
-        pass
-    results = {"passed": 0, "failed": 0, "tests": []}
-    try:
-    assert self is not None
-    results["passed"] += 1
-    results["tests"].append({"name": "test_instantiation", "status": "passed"})
-    except AssertionError as e:
-    results["failed"] += 1
-    results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-    return results
+def _run_self_tests(self) -> dict:
+        """Run internal self-tests."""
+        results = {"passed": 0, "failed": 0, "tests": []}
+        try:
+            assert self is not None
+            results["passed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "passed"})
+        except AssertionError as e:
+            results["failed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+        return results
