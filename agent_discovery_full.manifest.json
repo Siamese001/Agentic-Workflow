@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-06T15:50:39.817394Z",
-  "scan_duration_seconds": 17.54,
+  "generated_at": "2026-01-06T15:53:21.005582Z",
+  "scan_duration_seconds": 18.72,
   "agent_count": 280,
-  "content_hash": "sha256:5fc54617a5db0f923a0a8b6f15c02a9e733443de4071481bf4b35dad0cbe69d4",
+  "content_hash": "sha256:49462ced5290cc87726f0adc2c60ae44bb7b7dc142ce81c96dc1014957cf20ff",
   "layer_breakdown": {
     "L0": 8,
     "L1": 22,
@@ -574,7 +574,7 @@
     "agentic_core/L2_execution/ToolRegistry/firecracker_manager_types.py": "aee08c7351cf4cd3fb2407deceee8660",
     "agentic_core/L2_execution/ToolRegistry/format_llm_prompt.py": "7733561e578fd4cb5e2e4d308e11d785",
     "agentic_core/L2_execution/ToolRegistry/format_personalization_prompt.py": "777f94f3dd3d79f137d87d64b5dfa340",
-    "agentic_core/L2_execution/ToolRegistry/GitAgent.py": "f48642a6550bbcc7a1e242387ddc78e9",
+    "agentic_core/L2_execution/ToolRegistry/GitAgent.py": "93420a16052d5dd5eab0fa0abe8a539c",
     "agentic_core/L2_execution/ToolRegistry/git_tools.py": "5f0294cdc378edf5f3a412234d153205",
     "agentic_core/L2_execution/ToolRegistry/governance.py": "a93243f438c01bd6518545974840900d",
     "agentic_core/L2_execution/ToolRegistry/HealerAgent.py": "d41d8cd98f00b204e9800998ecf8427e",
@@ -643,7 +643,7 @@
     "agentic_core/L3_orchestration/unified_workflow_engine.py": "b1662099752548a15aafe480414a2e6e",
     "agentic_core/L3_orchestration/coordinators/recovery_coordinator.py": "b2510f73ca76916fc6390bce07883bae",
     "agentic_core/L3_orchestration/coordinators/rl_coordinator.py": "e244251f1b07d4b35258fd1cc40b033a",
-    "agentic_core/L3_orchestration/fission_logic/FissionManagerAgent.py": "4f7b468d4890d858a3bb297fd84553c2",
+    "agentic_core/L3_orchestration/fission_logic/FissionManagerAgent.py": "11d94ebc34336f5ca3c2f470111aee08",
     "agentic_core/L3_orchestration/strategic_recommendation/StrategicRecommendationAgent.py": "f2f2eba2624af9111e16b582b4522b5a",
     "agentic_core/L3_orchestration/workflow_engines/ActorCriticOrchestratorAgent.py": "28b2dbe5f23fa0c256ee79e741c6a512",
     "agentic_core/L3_orchestration/workflow_engines/AgentPermissionManagerAgent.py": "93a1c87daba2387e3ad4e77693beb66c",
@@ -744,7 +744,6 @@
     "agentic_core/L3_orchestration/workflow_engines/UnifiedWorkflowEngine.py": "358e296141cf0b46a84ba60b22f3c3b3",
     "agentic_core/L3_orchestration/workflow_engines/unified_workflow_engine.py": "f94a27fca22f68ef7acd18397d94e70c",
     "agentic_core/L3_orchestration/workflow_engines/wf_types_models.py": "3feba5768fa1faf24430d0dfbef72cb1",
-    "agentic_core/L3_orchestration/workflow_engines/WorkflowFissionManagerAgent.py": "66c7c649740ae0914f42fad5079b3460",
     "agentic_core/L3_orchestration/workflow_engines/WorkflowMcpManagerAgent.py": "3a7ccc08ab0da10492fe74d96b434522",
     "agentic_core/L3_orchestration/workflow_engines/workflow_final.py": "5e746fd2e8d0a901ba1c50b6086ba0b3",
     "agentic_core/L3_orchestration/workflow_engines/workflow_loader.py": "fa36177191ed3f4a0c3de273b2950653",
@@ -830,7 +829,7 @@
     "agentic_core/L5_safety/guardrails/P1_core_pii_vault.py": "8b2f044f3dd0ac966faa3fba0e0e9b15",
     "agentic_core/L5_safety/guardrails/PIISanitizerAgent.py": "dfcbd941b09eaf8fec024210e411768b",
     "agentic_core/L5_safety/guardrails/pii_vault.py": "30f09e997e4c8581e1d1742903af7ef2",
-    "agentic_core/L5_safety/guardrails/PolicyNeuralAutoImmuneAgent.py": "9f94898492f681c9d7e1f3ec487e70e8",
+    "agentic_core/L5_safety/guardrails/PolicyNeuralAutoImmuneAgent.py": "2e9a7e90607f457a88805fd1bbc00262",
     "agentic_core/L5_safety/guardrails/PromptInjectionDetectorAgent.py": "7f4c72a3ee259cface4675d6b79bc3e2",
     "agentic_core/L5_safety/guardrails/rag_guardrail.py": "3fd596f7493c0b5d022a91cac4b53d99",
     "agentic_core/L5_safety/guardrails/RedSentinelAgent.py": "6f02875d6f558392d58a70d97f4b1265",
@@ -1449,6 +1448,6 @@
     "scripts/verify_intentional_variants.py": "c1242a4b5444d420a5125998d9662983",
     "scripts/windsurf_realtime_dashboard.py": "207badd4ba46d9256ed4b63ba9133828"
   },
-  "hashed_file_count": 1426,
+  "hashed_file_count": 1425,
   "hash_errors": 0
 }

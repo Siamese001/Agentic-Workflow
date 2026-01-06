@@ -2,8 +2,9 @@ from __future__ import annotations
 #!/usr/bin/env python3
 """
 PolicyNeuralAutoImmuneAgent - Policy-Specific Extension
+CANONICAL: True - Consolidated 2026-01-06 (inherits from base NeuralAutoImmuneAgent)
+
 Simplified policy-focused variant that extends the base NeuralAutoImmuneAgent.
-Consolidated 2026-01-06: Now inherits from canonical base implementation.
 """
 
 from pathlib import Path
