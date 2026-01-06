@@ -657,6 +657,11 @@ class StrategicPlannerAgent(ResumeAgent):
             return super().heal_repository()
 
 
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: apps_rg resume-specific vs core implementations)
+# - Intentional variant for domain-specific behavior
+# - Consolidated 2026-01-06
+
 class ReflectionAgent(ResumeAgent):
     """
     Learns from execution and records insights.

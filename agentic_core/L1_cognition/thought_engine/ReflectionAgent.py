@@ -11,6 +11,11 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: L1 cognition vs L2 planning vs apps_rg implementations)
+# - Intentional variants for domain-specific behavior
+# - Consolidated 2026-01-06
+
 class ReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Agent responsible for learning from successful execution traces

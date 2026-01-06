@@ -11,6 +11,12 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 _logger = logging.getLogger(__name__)
+
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: apps_rg resume-specific vs L3 core orchestration)
+# - Intentional variant for domain-specific behavior
+# - Consolidated 2026-01-06
+
 'Pure orchestration of resume generation using shared atoms.'
 Logger = logging.getLogger(__name__)
 
