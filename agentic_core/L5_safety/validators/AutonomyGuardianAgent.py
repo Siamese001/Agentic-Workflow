@@ -3062,8 +3062,32 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             with open(template_path, "r", encoding="utf-8") as f:
                 template = f.read()
         except Exception as e:
-            print(f"\n⚠️  Error reading dashboard template: {e}")
-            return
+            raise RuntimeError(f"Failed to read dashboard template: {e}")
+        
+        # PRE-GENERATION VALIDATION - Verify template has all required placeholders
+        required_placeholders = [
+            ('const dashboardData = [];', 'dashboardData placeholder'),
+            ('const recommendationsData = [];', 'recommendationsData placeholder'),
+            ('const lastUpdatedStr = "";', 'lastUpdatedStr placeholder'),
+            ('const gaugeData = {};', 'gaugeData placeholder'),
+            ('<!-- STRATEGIC_REVIEW_INSERT -->', 'strategic review placeholder'),
+            ('<!-- TOP_RECS_INSERT -->', 'top recommendations placeholder'),
+        ]
+        
+        missing_placeholders = []
+        for placeholder, name in required_placeholders:
+            if placeholder not in template:
+                missing_placeholders.append(f"{name}: '{placeholder}'")
+        
+        if missing_placeholders:
+            error_msg = "\n".join([f"  - {p}" for p in missing_placeholders])
+            raise RuntimeError(
+                f"❌ TEMPLATE VALIDATION FAILED - MISSING REQUIRED PLACEHOLDERS\n"
+                f"Template path: {template_path}\n"
+                f"Missing placeholders:\n{error_msg}\n\n"
+                f"Dashboard generation requires these placeholders for data injection.\n"
+                f"Update the template to include all required placeholders."
+            )
         
         # Calculate gauge metrics from non-cross-cutting rows
         cross_cutting_territories = {"Observability", "Knowledge"}
@@ -3131,7 +3155,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             "discovery_freshness": discovery_freshness
         })
         
-        # Inject data into template with validation
+        # MANDATORY DATA INJECTION - Dashboard generation MUST inject data atomically
+        # This is not optional - if injection fails, generation fails
+        
+        # Inject data into template
         html = template.replace('const dashboardData = [];', f'const dashboardData = {data_json};')
         html = html.replace('const recommendationsData = [];', f'const recommendationsData = {recommendations_json};')
         html = html.replace('const lastUpdatedStr = "";', f'const lastUpdatedStr = "{last_updated}";')
@@ -3141,10 +3168,30 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         html = html.replace('<!-- STRATEGIC_REVIEW_INSERT -->', strategic_review)
         html = html.replace('<!-- TOP_RECS_INSERT -->', strategic_recs_html)
         
-        # Validate injection succeeded
-        if 'const dashboardData = [];' in html or 'const recommendationsData = [];' in html:
-            print("\n⚠️  Warning: Data injection may have failed - template variables not found.")
-            print("   Dashboard may display with empty data.")
+        # MANDATORY VALIDATION - Fail hard if injection didn't work
+        injection_failures = []
+        if 'const dashboardData = [];' in html:
+            injection_failures.append("dashboardData not injected (placeholder still present)")
+        if 'const recommendationsData = [];' in html:
+            injection_failures.append("recommendationsData not injected (placeholder still present)")
+        if 'const lastUpdatedStr = "";' in html:
+            injection_failures.append("lastUpdatedStr not injected (placeholder still present)")
+        if 'const gaugeData = {};' in html:
+            injection_failures.append("gaugeData not injected (placeholder still present)")
+        if '<!-- STRATEGIC_REVIEW_INSERT -->' in html:
+            injection_failures.append("Strategic review not injected (placeholder still present)")
+        if '<!-- TOP_RECS_INSERT -->' in html:
+            injection_failures.append("Top recommendations not injected (placeholder still present)")
+        
+        if injection_failures:
+            error_msg = "\n".join([f"  - {failure}" for failure in injection_failures])
+            raise RuntimeError(
+                f"❌ DASHBOARD GENERATION FAILED - DATA INJECTION INCOMPLETE\n"
+                f"The following injections failed:\n{error_msg}\n\n"
+                f"This is a critical error. Dashboard generation and data injection are atomic.\n"
+                f"Template path: {template_path}\n"
+                f"Check that template contains all required placeholders."
+            )
         
         # Ensure output directory exists
         output_path.parent.mkdir(parents=True, exist_ok=True)
