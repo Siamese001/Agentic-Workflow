@@ -312,19 +312,6 @@
 
                 <div class="kpi-grid" id="kpiGrid"></div>
 
-                <!-- Top 3 Recommendations Section -->
-                <div class="charts-grid full-width" style="margin-top:30px;">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title" style="font-size:1.6em;">Top 3 Prioritized Actions</div>
-                            <div class="chart-subtitle">Highest urgency recommendations • Click Recommendations tab for full top 10 with file links</div>
-                        </div>
-                        <div class="chart-body">
-                            <div id="topRecommendations" style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));"></div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="charts-grid full-width">
                     <div class="chart-card">
                         <div class="chart-header">
@@ -1334,7 +1321,6 @@ ${rec.guidance.split('\n').map((line, i) =>
             }
 
             renderTerritorySummaryTable(territoryData);
-            renderTopRecommendations();
             renderRiskMatrix(territoryData);
             renderRecommendations();
             renderInterviewQuestions(totalRow);
