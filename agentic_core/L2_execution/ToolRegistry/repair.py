@@ -29,6 +29,7 @@ except ImportError:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.L3_orchestration.workflow_engines.TestPilotAgent import TestPilotAgent
 
 class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
