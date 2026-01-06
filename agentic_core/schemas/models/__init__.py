@@ -24,9 +24,9 @@ Future Curation Roadmap:
 """
 
 # Public API surface — expose only what's intended
-from .CognitiveContractManagerAgent import (
+from .CognitiveContractEnforcerAgent import (
     CognitiveContract,
-    CognitiveContractManager,
+    CognitiveContractEnforcer,
     CognitiveContractValidatorAgent,
     ContractStage,
     Constraint,
@@ -52,7 +52,7 @@ from .runtime_models import (
 __all__ = [
     # Cognitive contracts
     "CognitiveContract",
-    "CognitiveContractManager",
+    "CognitiveContractEnforcer",
     "CognitiveContractValidatorAgent",
     "ContractStage",
     "Constraint",
