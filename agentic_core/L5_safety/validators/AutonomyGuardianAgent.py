@@ -4,20 +4,20 @@ Autonomy Guardian Agent - Autonomy Meta-Enforcement
 Ensures all domain agents have heal_repository() and no external scripts.
 This is the sovereign guardian for agent autonomy across the repository.
 """
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import List, Dict, Any, Set, Optional, Tuple
 import ast
 import hashlib
 import importlib.util
 import json
+import logging
 import os
 import re
+import statistics
 import subprocess
 import sys
 from collections import defaultdict
-from datetime import datetime
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -28,7 +28,7 @@ from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVec
 from agentic_core.config.flags import CACHE_METRICS_ENABLED
 from agentic_core.L6_observability.metrics.cache_metrics import get_cache_metrics
 
-log = __import__('logging').getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class _CCVisitor(ast.NodeVisitor):
@@ -262,9 +262,19 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         return values[-10:]  # Last 10 runs max
     
     def _load_agent_registry(self) -> List[Dict[str, Any]]:
-        """Load agents from agent_discovery_full.json (authoritative AST scan)."""
+        """Load agents from agent_discovery_full.json (authoritative AST scan).
+        
+        HARDENED: Raises RuntimeError on discovery failure to prevent stale reports.
+        """
         if self._agent_registry_cache is not None:
             return self._agent_registry_cache
+        
+        log.info("[GUARDIAN] Ensuring fresh discovery JSON...")
+        try:
+            self.smart_discovery.ensure_fresh_discovery()
+        except Exception as e:
+            log.error(f"Discovery refresh failed: {e}")
+            raise RuntimeError("Cannot generate report with stale/broken discovery data") from e
         
         json_path = self.project_root / "agent_discovery_full.json"
         legacy_json_path = self.project_root / "agent_discovery_full.json"
@@ -289,6 +299,33 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                         raise ValueError(f"Entry[{i}] missing keys: {sorted(missing)}")
 
                 self._agent_registry_cache = data
+                
+                # OBSERVABILITY: Load discovery manifest for stats
+                self.discovery_stats = {
+                    "mode": "unknown",
+                    "duration_seconds": 0.0,
+                    "agent_count": len(data),
+                    "generated_at": "unknown",
+                    "freshness_minutes": 0
+                }
+                
+                manifest_path = self.project_root / "agent_discovery_full.manifest.json"
+                if manifest_path.exists():
+                    try:
+                        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                        self.discovery_stats.update({
+                            "mode": manifest.get("discovery_mode", "full").upper(),
+                            "duration_seconds": manifest.get("scan_duration_seconds", 0.0),
+                            "agent_count": manifest.get("agent_count", 0),
+                            "generated_at": manifest.get("generated_at", "unknown"),
+                        })
+                        # Calculate freshness
+                        if "generated_at" in manifest:
+                            gen_dt = datetime.fromisoformat(manifest["generated_at"].rstrip("Z")).replace(tzinfo=timezone.utc)
+                            self.discovery_stats["freshness_minutes"] = round((datetime.now(timezone.utc) - gen_dt).total_seconds() / 60)
+                    except Exception as e:
+                        log.warning(f"Failed to load discovery manifest for observability: {e}")
+                
                 return self._agent_registry_cache
             except Exception as e:
                 print(f"Error loading agent registry: {e}")
@@ -297,6 +334,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         
         # Fallback to empty list if JSON not found
         self._agent_registry_cache = []
+        self.discovery_stats = {"mode": "NONE", "duration_seconds": 0.0, "agent_count": 0, "generated_at": "unknown", "freshness_minutes": 999}
         return self._agent_registry_cache
 
     def _load_metrics_cache(self) -> Dict[str, Any]:
@@ -3059,6 +3097,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         # [PHASE 4] Add cache metrics to dashboard gauges
         cache_hit_rate = 0.0
         cache_operations = 0
+        pattern_reuse_rate = 0.0
         try:
             if CACHE_METRICS_ENABLED:
                 cache_stats = get_cache_metrics().get_stats()
@@ -3067,15 +3106,29 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                     total_ops = sum(s.get("total_operations", 0) for s in cache_stats.values())
                     cache_hit_rate = round((total_hits / total_ops * 100) if total_ops else 0, 1)
                     cache_operations = total_ops
+                    
+                    # [PHASE 5] Pattern reuse from vector/search operations
+                    vector_stats = {op: s for op, s in cache_stats.items() if "vector" in op.lower() or "search" in op.lower()}
+                    if vector_stats:
+                        vector_hits = sum(s.get("hits", 0) for s in vector_stats.values())
+                        vector_ops = sum(s.get("total_operations", 0) for s in vector_stats.values())
+                        pattern_reuse_rate = round((vector_hits / vector_ops * 100) if vector_ops else 0, 1)
         except Exception as e:
             log.debug(f"Cache metrics unavailable: {e}")
+        
+        # [PHASE 8] Add discovery and observability metrics to gauges
+        disc = getattr(self, 'discovery_stats', {"mode": "unknown", "duration_seconds": 0.0, "freshness_minutes": 0})
+        discovery_freshness = max(0, 100 - disc['freshness_minutes'] * 2)  # 100% if <50m old
         
         gauge_data = json.dumps({
             "healing_cap": gauge_healing_cap,
             "compliance": gauge_compliance,
             "health": gauge_health,
             "cache_hit_rate": cache_hit_rate,
-            "cache_operations": cache_operations
+            "cache_operations": cache_operations,
+            "pattern_reuse": pattern_reuse_rate,
+            "discovery_duration": round(disc['duration_seconds'], 1),
+            "discovery_freshness": discovery_freshness
         })
         
         # Inject data into template with validation
@@ -3193,10 +3246,20 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
     def _build_report_header(self, today: str, metrics: dict) -> str:
         """Phase 2: Build markdown header with global metrics — simple string formatting."""
         m = metrics
+        
+        # OBSERVABILITY: Enhanced header with discovery stats
+        disc = getattr(self, 'discovery_stats', {"mode": "unknown", "duration_seconds": 0.0, "agent_count": 0, "freshness_minutes": 0})
+        discovery_line = (
+            f"Last Discovery: {disc['mode']} mode "
+            f"({disc['duration_seconds']:.1f}s, {disc['freshness_minutes']}m ago) "
+            f"→ {disc['agent_count']} agents"
+        )
+        
         md = f"""# Autonomy Compliance Report
 
 **Generated:** {today}  
-**Source:** `agent_discovery_full.json` (canonical AST scan)
+**Source:** `agent_discovery_full.json` (canonical AST scan)  
+**Discovery:** {discovery_line}
 
 ## 🎯 Executive Summary
 
