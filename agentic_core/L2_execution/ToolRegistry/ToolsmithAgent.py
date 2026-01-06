@@ -2,27 +2,22 @@ from __future__ import annotations
 """
 ToolsmithAgent - L2 Tool Creation Agent
 
-Dynamically creates and manages tools for the agentic system.
-Generates specialized tools based on requirements.
 """
-import json
+import asyncio
 import logging
-import time
-from dataclasses import dataclass, field
-from datetime import datetime
+import os
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-Logger: Any = logging.getLogger(__name__)
+from typing import Any, Dict, List, Optional, Protocol
 
-@dataclass
-class ToolSpec:
-    """Specification for a tool."""
-    name: str
-    description: str
-    parameters: Dict[str, Dict]
-    function: Callable
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
     category: str = 'general'
     version: str = '1.0.0'
     created_at: datetime = field(default_factory=datetime.utcnow)

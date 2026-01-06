@@ -79,8 +79,9 @@ class HistorianAgent(SubAtomicAgent):
             return super().heal_repository()
 
 
-# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class GitAgent(SubAtomicAgent):
+# Extracted to standalone GitAgent.py (2026-01-06)
+from agentic_core.L2_execution.ToolRegistry.GitAgent import GitAgent
+class _LegacyGitAgent(SubAtomicAgent):
     """
     ROLE: Manages Version Control (Branching, Commits).
     """

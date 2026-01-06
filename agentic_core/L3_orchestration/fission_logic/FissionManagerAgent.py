@@ -1,10 +1,12 @@
 from __future__ import annotations
+"""
+FissionManagerAgent - Simple Task Decomposition (Legacy)
+Consolidated 2026-01-06: Use WorkflowFissionManagerAgent for full implementation.
+This is a simplified stub for backward compatibility.
+"""
 import logging
-'''Brief description of functionality and purpose.'''
-
-'''Brief description of functionality and purpose.'''
-
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -12,10 +14,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
+# Import canonical implementation
+from agentic_core.L3_orchestration.workflow_engines.WorkflowFissionManagerAgent import FissionManagerAgent as WorkflowFissionManagerAgent
 
-
-# NAMING FIXED: FissionManagerAgent → FissionManagerAgent
-class FissionManagerAgent(MCPHardenedMixin):
+# Legacy stub for backward compatibility
+class _LegacyFissionManagerAgent(MCPHardenedMixin):
     """
     L3 Orchestration: The Task Splitter.
     Determines if a mission needs to be broken down into sub-atomic hops.

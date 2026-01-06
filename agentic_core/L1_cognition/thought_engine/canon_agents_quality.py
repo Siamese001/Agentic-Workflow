@@ -253,8 +253,9 @@ class SubAtomicAgent:
     def __init__(self, *args, **kwargs) -> None:
         self.agent = type('Agent', (), {'name': 'QualityAgent', 'ctx': type('Ctx', (), {'python_files': [], 'report': lambda *a: None})()})()
 
-# NOT_AN_AGENT — legacy L1 class, true agent is NamingEnforcerAgent in L2 — excluded from discovery
-class NamingAgent(SubAtomicAgent):
+# NOT_AN_AGENT — legacy L1 class removed 2026-01-06, use utils canonical
+# from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
+class _LegacyNamingAgent(SubAtomicAgent):
     """
     KEYS: 47 (Naming Conventions)
     ROLE: Enforces Snake_Case/PascalCase.
