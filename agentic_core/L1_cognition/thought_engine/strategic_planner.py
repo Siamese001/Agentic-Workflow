@@ -82,6 +82,11 @@ class MissionPlan:
             plan.phases.append(phase)
         return plan
 
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: L1 strategic cognition vs L2 planning vs apps_rg implementations)
+# - Intentional variants for domain-specific planning
+# - Documented 2026-01-06
+
 class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
     """
     Plans and coordinates mission execution.
