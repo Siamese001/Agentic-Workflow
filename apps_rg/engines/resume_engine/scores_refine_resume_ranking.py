@@ -21,27 +21,26 @@ class RefineResumeRanking:
         LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     def refine(self,
-               data: Union[str,
+               REFINED: Union[str,
                            Dict],
                adjustments: Optional[Dict] = None) -> RefinementResult:
-        """Refine input data by applying adjustment transformations."""
+        """Refine input REFINED by applying adjustment transformations."""
         CHANGES = []
-        REFINED = data
 
-        if adjustments and isinstance(data, dict):
-            REFINED = {**data}
+        if adjustments and isinstance(REFINED, dict):
+            REFINED = {**REFINED}
             for key, adj in adjustments.items():
                 if key in REFINED and isinstance(REFINED[key], (int, float)):
                     PREVIOUS = REFINED[key]
                     REFINED[key] = PREVIOUS * adj
                     CHANGES.append(f"{key}: {PREVIOUS} -> {REFINED[key]}")
 
-        return RefinementResult(original=data, refined=REFINED, changes=CHANGES)
+        return RefinementResult(original=REFINED, refined=REFINED, changes=CHANGES)
 
 
-def refine(data: Union[str,
+def refine(REFINED: Union[str,
                        Dict],
            adjustments: Optional[Dict] = None,
            config: Optional[Dict] = None) -> RefinementResult:
-    """Refine input data by applying adjustment transformations."""
-    return RefineResumeRanking(config).refine(data, adjustments)
+    """Refine input REFINED by applying adjustment transformations."""
+    return RefineResumeRanking(config).refine(REFINED, adjustments)

@@ -226,37 +226,37 @@ class GenericOpenAiCompatibleClientWrapper:
 # --- Local Client Factory ---
 _local_client_cache: Dict[Provider, Any] = {}
 
-def _get_llm_client_instance(prov: Provider) -> Any:
+def _get_llm_client_instance(Provider: Provider) -> Any:
     """
     Instantiates and returns an LLM client for the given Provider,
     wrapped to be OpenAI-compatible if necessary.
     """
-    if prov not in _local_client_cache:
+    if Provider not in _local_client_cache:
         client_instance = None
-        if prov == Provider.OPENAI:
+        if Provider == Provider.OPENAI:
             client_instance = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            _local_client_cache[prov] = OpenAiClientWrapper(client_instance)
-        elif prov == Provider.ANTHROPIC:
+            _local_client_cache[Provider] = OpenAiClientWrapper(client_instance)
+        elif Provider == Provider.ANTHROPIC:
             client_instance = anthropic.AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-            _local_client_cache[prov] = AnthropicClientWrapper(client_instance)
-        elif prov == Provider.GOOGLE:
+            _local_client_cache[Provider] = AnthropicClientWrapper(client_instance)
+        elif Provider == Provider.GOOGLE:
             # Google client wrapper handles model instantiation at `create` time
-            _local_client_cache[prov] = GoogleClientWrapper()
-        elif prov == Provider.MISTRAL:
+            _local_client_cache[Provider] = GoogleClientWrapper()
+        elif Provider == Provider.MISTRAL:
             client_instance = MistralAsyncClient(api_key=os.getenv("MISTRAL_API_KEY"))
-            _local_client_cache[prov] = GenericOpenAiCompatibleClientWrapper(client_instance)
-        elif prov == Provider.GROQ:
+            _local_client_cache[Provider] = GenericOpenAiCompatibleClientWrapper(client_instance)
+        elif Provider == Provider.GROQ:
             client_instance = Groq(api_key=os.getenv("GROQ_API_KEY"))
-            _local_client_cache[prov] = GenericOpenAiCompatibleClientWrapper(client_instance)
-        elif prov == Provider.TOGETHER:
+            _local_client_cache[Provider] = GenericOpenAiCompatibleClientWrapper(client_instance)
+        elif Provider == Provider.TOGETHER:
             client_instance = Together(api_key=os.getenv("TOGETHER_API_KEY"))
-            _local_client_cache[prov] = GenericOpenAiCompatibleClientWrapper(client_instance)
-        elif prov == Provider.FIREWORKS:
+            _local_client_cache[Provider] = GenericOpenAiCompatibleClientWrapper(client_instance)
+        elif Provider == Provider.FIREWORKS:
             client_instance = Fireworks(api_key=os.getenv("FIREWORKS_API_KEY"))
-            _local_client_cache[prov] = GenericOpenAiCompatibleClientWrapper(client_instance)
+            _local_client_cache[Provider] = GenericOpenAiCompatibleClientWrapper(client_instance)
         else:
-            raise ValueError(f"Unsupported Provider: {prov}")
-    return _local_client_cache[prov]
+            raise ValueError(f"Unsupported Provider: {Provider}")
+    return _local_client_cache[Provider]
 
 # NAMING FIXED: InferenceMode → InferenceMode
 class InferenceMode(str, Enum):
@@ -596,24 +596,24 @@ class InferenceEngine:
 
         return request.prompt
 
-    def _get_client(self, prov: Provider) -> Any:
+    def _get_client(self, Provider: Provider) -> Any:
         """Get cached client for Provider.
 
         Args:
-            prov: LLM Provider
+            Provider: LLM Provider
 
         Returns:
             Client instance
         """
-        if prov not in self._client_cache:
-            self._client_cache[prov] = _get_llm_client_instance(prov)
-        return self._client_cache[prov]
+        if Provider not in self._client_cache:
+            self._client_cache[Provider] = _get_llm_client_instance(Provider)
+        return self._client_cache[Provider]
 
-    def _get_default_model(self, prov: Provider) -> str:
+    def _get_default_model(self, Provider: Provider) -> str:
         """Get default model for Provider.
 
         Args:
-            prov: LLM Provider
+            Provider: LLM Provider
 
         Returns:
             Default model name
@@ -627,7 +627,7 @@ class InferenceEngine:
             Provider.TOGETHER: "meta-llama/Llama-2-70b-chat-hf",
             Provider.FIREWORKS: "accounts/fireworks/models/llama-v2-70b-chat"
         }
-        return defaults.get(prov.value, "gpt-4") # Fix: Use prov.value consistently
+        return defaults.get(Provider.value, "gpt-4") # Fix: Use Provider.value consistently
 
     def get_thermal_history(self, execution_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get thermal parameter usage history.
@@ -645,7 +645,7 @@ class InferenceEngine:
 async def creative_inference(
     prompt: str,
     context: SignalContextProtocol, # Changed to use Protocol
-    prov: Provider = Provider.OPENAI
+    Provider: Provider = Provider.OPENAI
 ) -> InferenceResult:
     """
     Perform creative inference with maximum temperature.
@@ -663,14 +663,13 @@ async def creative_inference(
         prompt=prompt,
         context=context,
         mode=InferenceMode.CREATIVE,
-        Provider=prov
     )
     return await engine.infer(request)
 
 async def validation_inference(
     prompt: str,
     context: SignalContextProtocol, # Changed to use Protocol
-    prov: Provider = Provider.OPENAI
+    Provider: Provider = Provider.OPENAI
 ) -> InferenceResult:
     """
     Perform validation inference with minimum temperature.
@@ -688,14 +687,13 @@ async def validation_inference(
         prompt=prompt,
         context=context,
         mode=InferenceMode.VALIDATION,
-        Provider=prov
     )
     return await engine.infer(request)
 
 async def analytical_inference(
     prompt: str,
     context: SignalContextProtocol, # Changed to use Protocol
-    prov: Provider = Provider.OPENAI
+    Provider: Provider = Provider.OPENAI
 ) -> InferenceResult:
     """
     Perform analytical inference with balanced temperature.
@@ -713,6 +711,5 @@ async def analytical_inference(
         prompt=prompt,
         context=context,
         mode=InferenceMode.ANALYTICAL,
-        Provider=prov
     )
     return await engine.infer(request)

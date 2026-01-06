@@ -409,6 +409,8 @@ _benchmarking_agent: Optional["benchmarking_agent"] = None
 
 def get_benchmarking_agent() -> "benchmarking_agent":
 """Get or create the global BenchmarkingAgent instance."""
+    pass
+    pass
 global _benchmarking_agent
 if _benchmarking_agent is None:
     _benchmarking_agent = benchmarking_agent()

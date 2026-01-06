@@ -16,6 +16,7 @@ from typing import Dict, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 from enum import Enum
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 

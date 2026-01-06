@@ -34,7 +34,7 @@ def mock_tools():
 
 @pytest.fixture
 
-def mock_logger():
+def Logger():
 
     """Mock Logger for testing"""
 
@@ -82,7 +82,7 @@ class TestOutreachE3TC101:
 
                                       mock_add_obs, mock_log_action, mock_register_process,
 
-                                      mock_tools, mock_logger, sample_contact):
+                                      mock_tools, Logger, sample_contact):
 
         """Test ZSE succeeds on first attempt with P6 passing"""
 
@@ -120,7 +120,6 @@ class TestOutreachE3TC101:
 
                 tools=mock_tools,
 
-                Logger=mock_logger
 
             )
 
@@ -152,7 +151,7 @@ class TestOutreachE3TC102:
 
     def test_p8_egress_filter_block(self, mock_fetch, mock_log_action,
 
-                                    mock_register_process, mock_tools, mock_logger, sample_contact):
+                                    mock_register_process, mock_tools, Logger, sample_contact):
 
         """Test egress filter blocks unauthorized domains"""
 
@@ -172,7 +171,6 @@ class TestOutreachE3TC102:
 
             tools=mock_tools,
 
-            Logger=mock_logger
 
         )
 
@@ -208,7 +206,7 @@ class TestOutreachE3TC201:
 
                                                 mock_add_obs, mock_log_action, mock_register_process,
 
-                                                mock_tools, mock_logger, sample_contact):
+                                                mock_tools, Logger, sample_contact):
 
         """Test P6 compliance failure triggers P10 Shadow Mode"""
 
@@ -246,7 +244,6 @@ class TestOutreachE3TC201:
 
                 tools=mock_tools,
 
-                Logger=mock_logger
 
             )
 
@@ -290,7 +287,7 @@ class TestOutreachE3TC202:
 
                                     mock_add_obs, mock_log_action, mock_register_process,
 
-                                    mock_tools, mock_logger, sample_contact):
+                                    mock_tools, Logger, sample_contact):
 
         """Test P10 refinement leads to P6 success on second attempt"""
 
@@ -334,7 +331,6 @@ class TestOutreachE3TC202:
 
                 tools=mock_tools,
 
-                Logger=mock_logger
 
             )
 
@@ -378,7 +374,7 @@ class TestOutreachE3TC203:
 
                                       mock_add_obs, mock_log_action, mock_register_process,
 
-                                      mock_tools, mock_logger, sample_contact):
+                                      mock_tools, Logger, sample_contact):
 
         """Test ZSE fails after max refinement attempts"""
 
@@ -416,7 +412,6 @@ class TestOutreachE3TC203:
 
                 tools=mock_tools,
 
-                Logger=mock_logger
 
             )
 
@@ -498,7 +493,7 @@ class TestOutreachE3TC302:
 
                                 mock_log_action, mock_register_process,
 
-                                mock_tools, mock_logger, sample_contact):
+                                mock_tools, Logger, sample_contact):
 
         """Test L4 time conversion for different timezones"""
 
@@ -542,7 +537,6 @@ class TestOutreachE3TC302:
 
                     tools=mock_tools,
 
-                    Logger=mock_logger
 
                 )
 
@@ -780,7 +774,7 @@ class TestShadowModeExecution:
 
                                       mock_add_obs, mock_log_action, mock_register_process,
 
-                                      mock_tools, mock_logger, sample_contact):
+                                      mock_tools, Logger, sample_contact):
 
         """Test that shadow mode blocks email sending"""
 
@@ -818,7 +812,6 @@ class TestShadowModeExecution:
 
                 tools=mock_tools,
 
-                Logger=mock_logger
 
             )
 
@@ -848,4 +841,3 @@ class TestShadowModeExecution:
             # Verify send_email was NOT called
 
             mock_tools['send_email'].assert_not_called()
-

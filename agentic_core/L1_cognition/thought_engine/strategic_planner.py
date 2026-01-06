@@ -311,6 +311,8 @@ def generate_mission_plan(objective: str, cycle_id: int, priority: MissionPriori
     return planner.generate_plan(objective, cycle_id, priority, context)
     def _run_self_tests(self) -> dict:
     """Run internal self-tests."""
+        pass
+        pass
     results = {"passed": 0, "failed": 0, "tests": []}
     try:
     assert self is not None
