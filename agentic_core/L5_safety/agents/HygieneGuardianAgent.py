@@ -14,7 +14,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 
 # NAMING CANON COMPLIANCE — renamed to HygieneGuardianAgent for discovery and sovereignty — 2025-12-30
-class HygieneGuardianAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
+class HygieneGuardianAgent(CanonBaseAgent, MCPHardenedMixin):
     """
     Validates Canon Key 45: Shared Utils and Repository Hygiene.
     Ensures that architectural shifts do not leave behind structural debris.
@@ -24,9 +24,9 @@ class HygieneGuardianAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                     
         return [45]
 
-    async def execute(self) -> None:
+    async def execute(self):
         """Execute comprehensive repository sanitation pass."""
-        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Performing Sanitation Sweep...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Performing Sanitation Sweep...")
         
         project_root = Path(os.getcwd())
         
@@ -96,7 +96,6 @@ class HygieneGuardianAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L5 safety agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -114,6 +113,5 @@ class HygieneGuardianAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
 def create_hygiene_guardian(ctx=None) -> Any:
     """Brief description of functionality and purpose."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-    super().heal_repository()
 
     return HygieneGuardianAgent(ctx)

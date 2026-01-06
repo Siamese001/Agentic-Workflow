@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-01-06T11:03:03.470250Z",
-  "scan_duration_seconds": 16.45,
-  "agent_count": 336,
-  "content_hash": "sha256:4c217fc3eee5b1e515ed132c1e708118dbf24c15bc32b79981eb648f83ec7ddf",
+  "generated_at": "2026-01-06T11:10:19.835197Z",
+  "scan_duration_seconds": 15.33,
+  "agent_count": 337,
+  "content_hash": "sha256:871ce1fb6115735a6aa1cb5b6cb64ca7a24c769f7af659213c3cbb619726e752",
   "layer_breakdown": {
     "L0": 9,
     "L1": 27,
     "L2": 79,
     "L3": 71,
     "L4": 22,
-    "L5": 66,
+    "L5": 67,
     "apps_lic": 33,
     "apps_rg": 24,
     "apps_shared": 2,
@@ -47,7 +47,6 @@
     "agentic_core/config/blueprint_sovereign/heal_validator.py": "bb7ccb39b897c2d01ce05cc42cd54fde",
     "agentic_core/config/blueprint_sovereign/HierarchyAgent.py": "7036184fbac9115747876b5ab8911c9c",
     "agentic_core/config/blueprint_sovereign/hierarchy_healer.py": "120e6079878e931092b7424c0675c8f6",
-    "agentic_core/config/blueprint_sovereign/HygieneGuardianAgent.py": "c90d23fdaaa51bbd774ea8a72db10be4",
     "agentic_core/config/blueprint_sovereign/InferenceTypeHintAgent.py": "5551c6e4fc3e2737d67d2fdb61c83e5e",
     "agentic_core/config/blueprint_sovereign/init_final.py": "d79886ea53417f6bc426bc5dbb317f03",
     "agentic_core/config/blueprint_sovereign/l5_policy.py": "374efad0615cf6100b00c4b50d5d3bea",
@@ -898,6 +897,7 @@
     "agentic_core/L4_state/validation_context/RedisSovereignAgent/__init__.py": "b09d7ccf6505e4b64dbfeb9146e8aeab",
     "agentic_core/L4_state/validation_context/redis_sovereign_agent/__init__.py": "a3858693d40401f2faf8e44c0e9e75a4",
     "agentic_core/L5_safety/__init__.py": "69e258882fbd7e150b9f1221dec427c7",
+    "agentic_core/L5_safety/agents/HygieneGuardianAgent.py": "cf9a2a07ed1f17a6b288496ca90256ca",
     "agentic_core/L5_safety/gravity/GravityLeakRepairAgent.py": "b3f54fe71c2e6b67e64f3e8827cc1236",
     "agentic_core/L5_safety/gravity/ImportAgent.py": "c72b87c1c82b6708b754245d63fe8485",
     "agentic_core/L5_safety/guardrails/AdversarialRedTeamerAgent.py": "84b4437fa3fb5b7475141be2212ec01b",
@@ -995,7 +995,6 @@
     "agentic_core/L5_safety/validators/GovernanceAgent.py": "f687d9ced5e4de1688a2181e65190e74",
     "agentic_core/L5_safety/validators/heal_validator.py": "304697f4603aec8b604d4707c8a1aaf3",
     "agentic_core/L5_safety/validators/HierarchyAgent.py": "748531260c208b4d7d795396e3348df1",
-    "agentic_core/L5_safety/validators/HygieneGuardianAgent.py": "a86f5273a0112df64620eaad5ada8eb2",
     "agentic_core/L5_safety/validators/InferenceTypeHintAgent.py": "7bfbc27ef3c5e41cf833d6258b53fd9c",
     "agentic_core/L5_safety/validators/LocationAgent.py": "5ad18df71c4a013f0842027402c858c6",
     "agentic_core/L5_safety/validators/PascalSovereigntyEnforcerAgent.py": "b4c90c87f03984d9832a43ed9316252c",
@@ -2111,6 +2110,6 @@
     "tests/unit/utils/test_redis_client.py": "5c96d23d63bfc58720e0ccbb9ec4ca7e",
     "validation_gate_executor/__init__.py": "e9aedd14c29519f45239093b39ca1055"
   },
-  "hashed_file_count": 2087,
+  "hashed_file_count": 2086,
   "hash_errors": 0
 }

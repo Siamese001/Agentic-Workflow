@@ -10118,6 +10118,45 @@
     "cyclomatic_complexity": 22
   },
   {
+    "class_name": "HygieneGuardianAgent",
+    "path": "agentic_core\\L5_safety\\agents\\HygieneGuardianAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L5_safety",
+    "layer": "L5",
+    "inheritance": [
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "get_validation_keys",
+      "execute",
+      "_sweep_temp_artifacts",
+      "_prune_empty_folders",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "No (missing super)",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 70,
+    "class_count": 1,
+    "description": "\n    Validates Canon Key 45: Shared Utils and Repository Hygiene.\n    Ensures that architectural shi",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 22
+  },
+  {
     "class_name": "ImportAgent",
     "path": "agentic_core\\L5_safety\\gravity\\ImportAgent.py",
     "top_dir": "agentic_core",
