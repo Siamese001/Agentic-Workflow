@@ -11,17 +11,20 @@ import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
-# L4 Checkpoint Integration
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 try:
     from agentic_core.L4_state.validation_context.cached_state_ledger import CachedStateLedger
 except ImportError:

@@ -1,8 +1,9 @@
 from __future__ import annotations
 #!/usr/bin/env python3
 """
-NeuralAutoImmuneAgent - L5 Safety Lockdown System
-Detects repeated non-compliance and issues territory lockdowns.
+PolicyNeuralAutoImmuneAgent - Policy-Specific Extension
+Simplified policy-focused variant that extends the base NeuralAutoImmuneAgent.
+Consolidated 2026-01-06: Now inherits from canonical base implementation.
 """
 
 from pathlib import Path
@@ -12,11 +13,10 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.guardrails.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
 
 
-class NeuralAutoImmuneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent):
     def __init__(self, project_root: Path) -> None:
         self.redis = RedisSovereignAgent(project_root).get_client()
         self.threshold = 5

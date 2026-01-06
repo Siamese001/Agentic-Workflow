@@ -64,7 +64,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AST_PLACEMENT_SIGNALS, PLACEMENT_CONFIDENCE, L2_TO_L1_MAP
 )
 # Backward compatible aliases
-semantic_l2_registry = SEMANTIC_L2_REGISTRY
+semantic_l2_registry = SOVEREIGN_REGISTRY
 core_subfolder_map = CORE_SUBFOLDER_MAP
 sovereign_registry = SOVEREIGN_REGISTRY
 

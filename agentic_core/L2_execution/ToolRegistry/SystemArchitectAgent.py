@@ -1,6 +1,7 @@
 from __future__ import annotations
 """
 System Architect Agent - Core Architecture Validation (Keys 40-50)
+CANONICAL: True - Consolidated 2026-01-06 (removed system_architect.py duplicate)
 
 Responsible for:
 - Key 40: Core architecture integrity
@@ -13,10 +14,12 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class SystemArchitectAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
+class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
     """
     System Architect validates core architecture and import dependencies.
     

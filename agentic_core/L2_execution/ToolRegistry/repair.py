@@ -182,8 +182,9 @@ class TestPilotAgent(SubAtomicAgent):
             return super().heal_repository()
 
 
-# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class ToolsmithAgent(SubAtomicAgent):
+# Extracted to standalone ToolsmithAgent.py (2026-01-06)
+from agentic_core.L2_execution.ToolRegistry.ToolsmithAgent import ToolsmithAgent
+class _LegacyToolsmithAgent(SubAtomicAgent):
     """
     ROLE: Dynamic Tool Forger.
     Creates diagnostic tools on-the-fly based on detected issues.
