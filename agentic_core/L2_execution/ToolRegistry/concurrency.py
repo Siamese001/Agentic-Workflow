@@ -502,7 +502,8 @@ class DeadlockAnalyzer(ast.NodeVisitor):
 
 
 # NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
-class DeadlockDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+from agentic_core.L3_orchestration.workflow_engines.deadlock_detector import DeadlockDetectorAgent
+class _LegacyDeadlockDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis."""
 
     def __init__(self, ctx) -> None:

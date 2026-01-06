@@ -13,10 +13,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
-
+from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealerAgent
 
 # NOT_AN_AGENT — utility healer class, not a true agent — excluded from agent discovery
-class HierarchyHealerAgent(HealerMixin, MCPHardenedMixin):
+class _BlueprintHierarchyHealerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     [L3 AGENT] The Structural Surgeon.
     Directive: Physically relocate files to satisfy Depth-4 Canon.

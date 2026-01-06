@@ -27,8 +27,9 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 
 
-# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class ArchitectureGovernorAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
+# Legacy L2 version - use L3 canonical (architecture governance is orchestration-level)
+from agentic_core.L3_orchestration.workflow_engines.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+class _LegacyArchitectureGovernorAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     Unified Architecture Governor.
     Enforces: Depth (Key 49), Atomicity (Key 50), Complexity (Keys 17, 19), System (Keys 40, 41).
