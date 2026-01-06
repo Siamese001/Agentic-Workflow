@@ -1,56 +1,22 @@
 from __future__ import annotations
-"""Lightweight Bias Detection for Content Quality.
+"""Lightweight Bias Detection for Content Quality - Blueprint Reference.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
-Migrated from archives/engines/legacy_engines/safety_enhancements.py
+Consolidated 2026-01-06: Blueprint now imports from canonical L5 implementation
 """
 
-import re
-import logging
-from dataclasses import dataclass
-from enum import Enum
-from typing import List, Set
+from agentic_core.L5_safety.validators.bias_auditor import (
+    BiasAuditorAgent,
+    BiasResult,
+    BiasType,
+    BiasMatch,
+    audit_bias,
+)
 
-Logger = logging.getLogger(__name__)
+# Legacy class definition removed - use canonical L5 version above
+# Original implementation preserved in: L5_safety/validators/bias_auditor.py
 
-
-class BiasType(Enum):
-    """Types of bias to detect."""
-    GENDER = "gender"
-    AGE = "age"
-    RACE = "race"
-    DISABILITY = "disability"
-    AFFILIATION = "affiliation"
-    SOCIOECONOMIC = "socioeconomic"
-    APPEARANCE = "appearance"
-
-
-@dataclass
-class BiasMatch:
-    """Single bias detection match."""
-    BiasType: BiasType
-    phrase: str
-    context: str
-    Severity: float
-
-
-@dataclass
-class BiasResult:
-    """Bias detection result."""
-    has_bias: bool
-    bias_types: List[BiasType]
-    flagged_phrases: List[str]
-    matches: List[BiasMatch]
-    confidence_score: float
-    recommendations: List[str]
-    
-    def get_critical_biases(self) -> List[BiasMatch]:
-        """Get high-Severity bias matches."""
-        return [m for m in self.matches if m.Severity > 0.7]
-
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-
-class BiasAuditorAgent(HealerMixin):
+class _LegacyBiasAuditorAgent:
     """Lightweight Bias Detection for Content Quality.
     
     Simple pattern-based bias detection for risk mitigation
