@@ -964,12 +964,25 @@
 
         function renderRiskMatrix(territoryData) {
             if (!territoryData || territoryData.length === 0) return;
+            
+            // Calculate inverted complexity % for x-axis (100 - CC×2)
+            const invertedComplexity = territoryData.map(d => {
+                const cc = parseFloat(d['Avg CC']) || 0;
+                return Math.max(0, Math.min(100, 100 - (cc * 2)));
+            });
+            
             const trace = {
-                x: territoryData.map(d => parseFloat(d['Avg CC']) || 0),
+                x: invertedComplexity,
                 y: territoryData.map(d => parseFloat(d['Compliance %']) || 0),
                 mode: 'markers',
                 type: 'scatter',
                 text: territoryData.map(d => d.Territory),
+                customdata: territoryData.map(d => [
+                    parseFloat(d.Health) || 0,
+                    parseFloat(d['Invocation %']) || 0,
+                    parseFloat(d.Risk) || 'MED',
+                    parseFloat(d['Avg CC']) || 0
+                ]),
                 marker: {
                     size: territoryData.map(d => Math.sqrt(parseFloat(d.Total) || 1) * 3),
                     color: territoryData.map(d => parseFloat(d.Health) || 0),
@@ -977,15 +990,17 @@
                     showscale: true,
                     colorbar: { title: 'Health' }
                 },
-                customdata: territoryData.map(d => [parseFloat(d.Health) || 0, parseFloat(d['Invocation %']) || 0, parseFloat(d.Risk) || 'MED']),
                 hovertemplate: 
                     '<b>%{text}</b><br>' +
                     'Health: <b>%{customdata[0]:.1f}%</b><br>' +
-                    'Complexity: <b>%{x:.1f}</b> (target ≤10)<br>' +
+                    'Inverted Complexity: <b>%{x:.1f}%</b> (higher is better)<br>' +
+                    'Actual Avg CC: <b>%{customdata[3]:.1f}</b> (target ≤10)<br>' +
                     'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
                     'Healing Invocation: <b>%{customdata[1]:.1f}%</b><br>' +
-                    'Risk Level: <b>%{customdata[2]}</b><br>' +
-                    'Red zone = high risk (fix urgently)<extra></extra>'
+                    'Risk Level: <b>%{customdata[2]}</b><br><br>' +
+                    '<i>Analogy:</i> Like a risk dashboard for drivers — complexity = road hazards, compliance = safety features<br>' +
+                    'Green zone (top-right) = safe to extend<br>' +
+                    'Red zone (bottom-left) = high risk<extra></extra>'
             };
 
             const layout = {
@@ -993,23 +1008,20 @@
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
                 font: { color: '#1f2937' },
-                xaxis: { title: 'Avg Cyclomatic Complexity' },
-                yaxis: { title: 'Compliance %', range: [0, 100] },
+                xaxis: { 
+                    title: 'Inverted Complexity % (100 - CC×2, higher is better)',
+                    range: [0, 100]
+                },
+                yaxis: { 
+                    title: 'Compliance %',
+                    range: [0, 100]
+                },
                 shapes: [
-                    { type: 'line', x0: 10, x1: 10, y0: 0, y1: 100, line: { color: '#16a34a', width: 2, dash: 'dash' } },
-                    { type: 'line', x0: 20, x1: 20, y0: 0, y1: 100, line: { color: '#dc2626', width: 2, dash: 'dash' } },
+                    { type: 'line', x0: 80, x1: 80, y0: 0, y1: 100, line: { color: '#16a34a', width: 2, dash: 'dash' } },
+                    { type: 'line', x0: 60, x1: 60, y0: 0, y1: 100, line: { color: '#dc2626', width: 2, dash: 'dash' } },
                     { type: 'line', x0: 0, x1: 100, y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
                 ]
             };
-
-            trace.hovertemplate = 
-                '<b>%{text}</b><br>' +
-                'Health: <b>%{customdata[0]:.1f}%</b><br>' +
-                'Complexity: <b>%{x:.1f}</b> (target ≤10)<br>' +
-                'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
-                '<i>Analogy:</i> Like a risk dashboard for drivers — complexity = road hazards, compliance = safety features<br>' +
-                'Green zone (top-left) = safe to extend<br>' +
-                'Red zone (bottom-right) = high risk<extra></extra>';
 
             Plotly.newPlot('riskMatrix', [trace], layout, { responsive: true, displayModeBar: false });
         }
