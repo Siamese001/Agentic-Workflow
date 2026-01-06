@@ -52,7 +52,12 @@ def is_actual_agent_file(path: str) -> bool:
 def generate_table(json_file: Path, output_file: Path):
     """Generate Markdown table from JSON report."""
     with open(json_file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+        content = f.read()
+        # Skip log lines at the beginning
+        json_start = content.find('[')
+        if json_start > 0:
+            content = content[json_start:]
+        data = json.loads(content)
     
     # Filter to actual agent files
     agent_duplicates = []
