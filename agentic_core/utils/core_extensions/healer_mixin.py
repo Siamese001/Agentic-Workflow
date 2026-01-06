@@ -17,12 +17,15 @@ FILESYSTEM COMPLIANCE: All file operations use safe_path_join from structure_blu
 """
 from ast import parse, unparse
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING
 import logging
 import time
 import asyncio
 
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+# Lazy import to break circular dependency
+if TYPE_CHECKING:
+    from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     get_validated_project_root,
     safe_path_join,
