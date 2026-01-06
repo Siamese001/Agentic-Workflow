@@ -18,11 +18,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.guardrails.overseer import SafetyInspectorAgent
 
-
-
-# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class SafetyInspectorAgent(SubAtomicAgent):
+# Legacy L2 async version removed 2026-01-06 - use L5 canonical with MCP socratic judge
+# Original implementation preserved in: L5_safety/guardrails/overseer.py
+class _LegacySafetyInspectorAgent(SubAtomicAgent):
     """
     Enforces Security Protocols: Keys 0-6 (Secrets, TODO/FIXME, Print, Debugger,
     Empty Except, Bare Except, Eval/Exec).
