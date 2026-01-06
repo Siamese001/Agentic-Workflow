@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("disable_path_shield")
 # Module-level constants
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 DASHBOARD_PATH = PROJECT_ROOT / "reports" / "autonomy_dashboard.html"
-DISCOVERY_JSON_PATH = PROJECT_ROOT / "reports" / ".dashboard_cache.json"
+DISCOVERY_JSON_PATH = PROJECT_ROOT / "reports" / "agent_discovery_full.json"  # Primary source (cache eliminated)
 
 
 class TestBaseClassCounts:
