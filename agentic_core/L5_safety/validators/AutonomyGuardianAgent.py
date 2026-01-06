@@ -3172,23 +3172,25 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                 border_color = '#eab308'  # Yellow for 5-6
                 bg_color = '#fefce8'
             
-            # Create card with Gap/Impact/Fix structure
+            # Create compact card with Gap/Impact/Fix structure
             strategic_recs_html += f'''
-            <div style="padding:24px; background:{bg_color}; border-left:6px solid {border_color}; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-                <div style="font-size:1.3em; font-weight:700; color:{border_color}; margin-bottom:12px;">
+            <div style="padding:12px 16px; background:{bg_color}; border-left:4px solid {border_color}; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,0.08); margin-bottom:10px;">
+                <div style="font-size:1.1em; font-weight:700; color:{border_color}; margin-bottom:8px;">
                     #{i} {title}
                 </div>
-                <div style="margin-bottom:12px;">
-                    <strong style="color:#374151;">📊 Gap:</strong>
-                    <div style="color:#6b7280; margin-top:4px; line-height:1.5;">{description.split('Target:')[0].strip() if 'Target:' in description else description[:150]}</div>
-                </div>
-                <div style="margin-bottom:12px;">
-                    <strong style="color:#374151;">⚡ Impact:</strong>
-                    <div style="color:#6b7280; margin-top:4px; line-height:1.5;">Reduces autonomy effectiveness and increases maintenance burden.</div>
-                </div>
-                <div>
-                    <strong style="color:#374151;">🔧 Fix:</strong>
-                    <div style="color:#6b7280; margin-top:4px; line-height:1.5;">Apply targeted improvements to close gap and boost health score.</div>
+                <div style="display:flex; gap:12px; font-size:0.9em;">
+                    <div style="flex:1;">
+                        <strong style="color:#374151;">📊 Gap:</strong>
+                        <div style="color:#6b7280; margin-top:2px; line-height:1.4;">{description.split('Target:')[0].strip() if 'Target:' in description else description[:100]}</div>
+                    </div>
+                    <div style="flex:1;">
+                        <strong style="color:#374151;">⚡ Impact:</strong>
+                        <div style="color:#6b7280; margin-top:2px; line-height:1.4;">Reduces autonomy effectiveness and increases maintenance burden.</div>
+                    </div>
+                    <div style="flex:1;">
+                        <strong style="color:#374151;">🔧 Fix:</strong>
+                        <div style="color:#6b7280; margin-top:2px; line-height:1.4;">Apply targeted improvements to close gap and boost health score.</div>
+                    </div>
                 </div>
             </div>
             '''
