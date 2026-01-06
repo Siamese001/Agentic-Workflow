@@ -1272,11 +1272,15 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                     if path_to_layer.get(str(p)) == "L5"
                     and subterritory in str(p).replace("\\", "/")
                     and not is_red_team_agent_file(p)
+                    and self._classify_subterritory(p) != "base_class"  # SSOT: exclude base agents
                 ]
 
+            # validators, gravity - also exclude base_class agents
             return [
                 p for p in all_agents
-                if path_to_layer.get(str(p)) == "L5" and subterritory in str(p).replace("\\", "/")
+                if path_to_layer.get(str(p)) == "L5" 
+                and subterritory in str(p).replace("\\", "/")
+                and self._classify_subterritory(p) != "base_class"  # SSOT: exclude base agents
             ]
         
         # Handle sub-territory classification for L0-L4 (base_class, core, infrastructure, specialized)
@@ -1837,10 +1841,18 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             "pascal_compliant",
         ]
         
+        # SSOT ENFORCEMENT: Track assigned agents to prevent double-counting
+        # Each agent must appear in exactly ONE territory (most specific match)
+        assigned_agents: set = set()
+        
         for territory_key, (layer_filter, priority) in self.territories.items():
             agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
+            # Filter out already-assigned agents (SSOT: no double-counting)
+            agents = [a for a in agents if str(a) not in assigned_agents]
             if len(agents) == 0:
                 continue
+            # Mark these agents as assigned
+            assigned_agents.update(str(a) for a in agents)
             
             # Compute metrics for this territory
             metrics = self._compute_territory_metrics_with_violations(agents, used_stems, 10, [])
