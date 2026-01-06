@@ -1220,12 +1220,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         # Handle L5 base_class subterritory (added 2026-01-05 for uniform L1-L5 tracking)
         if layer_part == "L5_safety" and subterritory == "base_class":
             # Get all L5 agents, including those without a layer field (e.g., SafetyBaseAgent marked as NOT_AN_AGENT)
-            layer_agents = [
+            # Filter by L5_safety path first, then apply base_class classification
+            l5_safety_agents = [
                 p for p in all_agents
-                if path_to_layer.get(str(p)) == "L5" or "L5_safety" in str(p).replace("\\", "/")
+                if "L5_safety" in str(p).replace("\\", "/")
             ]
             return [
-                p for p in layer_agents
+                p for p in l5_safety_agents
                 if self._classify_subterritory(p) == "base_class"
             ]
         
