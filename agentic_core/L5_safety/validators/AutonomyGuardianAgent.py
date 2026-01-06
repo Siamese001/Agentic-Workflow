@@ -3046,6 +3046,24 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             holistic_sorted = sorted(holistic_recs, key=lambda r: r.get("score", 0), reverse=True)
             top_recommendations = holistic_sorted[:10]
         
+        # === Ensure Local Plotly.js for Offline Support ===
+        reports_dir = self.project_root / "reports"
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        plotly_local_path = reports_dir / "plotly.min.js"
+        plotly_url = "https://cdn.plot.ly/plotly-3.3.1.min.js"
+        
+        if not plotly_local_path.exists():
+            print("Downloading Plotly.js v3.3.1 for offline dashboard support...")
+            try:
+                import urllib.request
+                urllib.request.urlretrieve(plotly_url, str(plotly_local_path))
+                print(f"✓ Downloaded Plotly.js to {plotly_local_path} (~3.8MB)")
+            except Exception as e:
+                print(f"⚠️  Failed to download Plotly.js: {e}")
+                print("   Dashboard will fall back to CDN (requires internet)")
+        else:
+            print(f"✓ Local Plotly.js already present ({plotly_local_path.stat().st_size / 1024 / 1024:.1f}MB)")
+        
         # === Generate Self-Contained HTML ===
         # Template lives in config/validators (single source of truth)
         template_path = self.project_root / "agentic_core" / "config" / "validators" / "dashboard_template.html"
