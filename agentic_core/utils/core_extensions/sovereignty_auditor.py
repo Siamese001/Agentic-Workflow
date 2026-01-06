@@ -187,6 +187,8 @@ if __name__ == '__main__':
 
     def _run_self_tests(self) -> dict:
     """Run internal self-tests."""
+        pass
+        pass
     results = {"passed": 0, "failed": 0, "tests": []}
     try:
     assert self is not None

@@ -73,6 +73,8 @@ def get_llm_router_client() -> SovereignLlmRouterMcpClient:
     return _llm_router_client
     def _run_self_tests(self) -> dict:
     """Run internal self-tests."""
+        pass
+        pass
     results = {"passed": 0, "failed": 0, "tests": []}
     try:
     assert self is not None

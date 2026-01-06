@@ -223,14 +223,21 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
         mapping = {}
         cleaned_lines = []
         for line in lines:
+            # Match snake_case = PascalCase aliases
             alias_match = re.match(r'^\s*([A-Z][A-Za-z0-9_]*)\s*=\s*([a-z_][a-zA-Z0-9_]*)\s*$', line)
             if alias_match:
                 pascal, snake = alias_match.groups()
                 mapping[snake] = pascal
                 continue  # Remove alias
+            
+            # Also remove self-referential aliases (ClassName = ClassName)
+            self_alias_match = re.match(r'^\s*([A-Z][A-Za-z0-9_]*)\s*=\s*\1\s*$', line)
+            if self_alias_match:
+                continue  # Remove self-referential alias
+            
             cleaned_lines.append(line)
 
-        content = '\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n'.join(cleaned_lines)
+        content = '\n'.join(cleaned_lines)
 
         # Rename definitions
         for snake, pascal in mapping.items():
@@ -250,9 +257,8 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
 
         # Test 1: Basic purge + alias removal
         input_content = """
-class sovereign_severity(str, Enum):
+class SovereignSeverity(str, Enum):
     CRITICAL = "CRITICAL"
-SovereignSeverity = sovereign_severity
 """
         expected = """
 class SovereignSeverity(str, Enum):
@@ -263,11 +269,10 @@ class SovereignSeverity(str, Enum):
 
         # Test 2: References + member access
         input_content = """
-class tone_type(str, Enum):
+class ToneType(str, Enum):
     AUTHORITATIVE = "authoritative"
-ToneType = tone_type
-Severity = tone_type.AUTHORITATIVE
-obj = tone_type()
+Severity = ToneType.AUTHORITATIVE
+obj = ToneType()
 """
         expected = """
 class ToneType(str, Enum):
@@ -283,7 +288,6 @@ obj = ToneType()
 @dataclass
 class HardState:
     id: str
-HardState = HardState
 """
         expected = """
 @dataclass

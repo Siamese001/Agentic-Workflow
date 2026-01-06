@@ -108,11 +108,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
     SelfDiagnosisMixin,
     L0DelegationTestingMixin,
     MCPHardenedMixin):
-    """
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-    super().heal_repository()
-
-    Filesystem-level SSOT reconciler - updates blueprint when folders change.
+    """Filesystem-level SSOT reconciler - updates blueprint when folders change.
     
     Ensures the SSOT blueprint always reflects filesystem reality:
     - Folder structure (sovereign_registry, core_subfolder_map)

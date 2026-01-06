@@ -14,7 +14,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 Logger: Any = logging.getLogger(__name__)
 
-class mcp_sovereign_authority:
+class MCPSovereignAuthority:
     """Monitors the health and authorization of the MCP nervous system."""
 
     def __init__(self):

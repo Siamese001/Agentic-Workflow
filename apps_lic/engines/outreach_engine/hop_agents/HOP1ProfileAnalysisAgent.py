@@ -63,10 +63,9 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
         reasoning = ""
         key_indicators = []
         
-        for arch_name, arch_config in self.archetype_indicators.items():
+        for Archetype, arch_config in self.archetype_indicators.items():
             for keyword in arch_config["keywords"]:
                 if keyword in title:
-                    Archetype = arch_name
                     confidence = arch_config["confidence"]
                     reasoning = f"Title '{title}' contains '{keyword}' indicator"
                     key_indicators = [keyword]
@@ -126,9 +125,9 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
             if not isinstance(self.archetype_indicators, dict):
                 Logger.warning("Archetype indicators corrupted — resetting to defaults")
                 self.archetype_indicators = {"default": {"keywords": [], "confidence": 0.5}}
-            for arch_name, arch_config in self.archetype_indicators.items():
+            for Archetype, arch_config in self.archetype_indicators.items():
                 if not isinstance(arch_config, dict) or "keywords" not in arch_config:
-                    Logger.warning(f"Archetype {arch_name} config corrupted — fixing")
+                    Logger.warning(f"Archetype {Archetype} config corrupted — fixing")
                     arch_config["keywords"] = []
                 if "confidence" not in arch_config:
                     arch_config["confidence"] = 0.5
@@ -172,7 +171,7 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
                 return
             test_title = "Chief Executive Officer"
             found_match = False
-            for arch_name, arch_config in self.archetype_indicators.items():
+            for Archetype, arch_config in self.archetype_indicators.items():
                 for keyword in arch_config.get("keywords", []):
                     if keyword in test_title.lower():
                         found_match = True
