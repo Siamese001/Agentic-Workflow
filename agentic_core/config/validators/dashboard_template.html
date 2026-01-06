@@ -311,6 +311,9 @@
                 </div>
 
                 <div class="kpi-grid" id="kpiGrid"></div>
+                
+                <!-- Code Quality Table -->
+                <div class="kpi-grid" id="codeQualityGrid"></div>
 
                 <div class="charts-grid full-width">
                     <div class="chart-card">
@@ -646,6 +649,136 @@
                         <p style="margin:8px 0;"><strong>Avg Complexity:</strong> Average workflow complexity — <em>Tangled assembly lines with too many steps slow down production (target ≤10 steps)</em></p>
                         <p style="margin:8px 0;"><strong>Health Score:</strong> (Heal Cap % + Invocation % + Test % + Observability % + Inverted CC) / 5 — <em>Full medical checkup; holistic vitality. Gives credit for having healing infrastructure and penalizes code tangles</em></p>
                         <p style="margin:8px 0;"><strong>Color Gradient:</strong> <span style="color:#991b1b;">Deep Red 0-20%</span> → <span style="color:#c2410c;">Red 20-40%</span> → <span style="color:#ea580c;">Orange 40-60%</span> → <span style="color:#a16207;">Yellow 60-75%</span> → <span style="color:#65a30d;">Yellow-Green 75-85%</span> → <span style="color:#047857;">Light Green 85-95%</span> → <span style="color:#065f46;">Green 95-100%</span></p>
+                    </div>
+                </div>
+            </div>`;
+            
+            container.innerHTML = html;
+        }
+        
+        function renderCodeQualityTable(territoryData) {
+            const container = document.getElementById('codeQualityGrid');
+            if (!container) return;
+            
+            // Build Code Quality table with detailed metrics per territory
+            let html = `
+            <div style="margin-bottom:40px;">
+                <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">Code Quality by Territory & Sub-Territory</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
+                        <thead>
+                            <tr style="background:var(--primary); color:white;">
+                                <th style="padding:16px; text-align:left; font-weight:600;">Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Number of agents in this territory"># Agents</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% of codebase with type hints">Typed %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with docstrings">Documented %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Inverted complexity health (100 - CC×2)">Complexity Health %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with proper base class inheritance">Proper Base %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Composite code quality score">Code Quality Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            
+            // Helper function for gradient background
+            const getGradientBg = (value) => {
+                const normalized = Math.max(0, Math.min(100, value)) / 100;
+                let r, g, b;
+                
+                if (normalized < 0.2) {
+                    const t = normalized * 5;
+                    r = Math.round(139 + (220 - 139) * t);
+                    g = Math.round(0 + (38 - 0) * t);
+                    b = Math.round(0 + (38 - 0) * t);
+                } else if (normalized < 0.4) {
+                    const t = (normalized - 0.2) * 5;
+                    r = Math.round(220 + (255 - 220) * t);
+                    g = Math.round(38 + (140 - 38) * t);
+                    b = 38;
+                } else if (normalized < 0.6) {
+                    const t = (normalized - 0.4) * 5;
+                    r = Math.round(255 - (21) * t);
+                    g = Math.round(140 + (39) * t);
+                    b = Math.round(38 - (30) * t);
+                } else if (normalized < 0.75) {
+                    const t = (normalized - 0.6) / 0.15;
+                    r = Math.round(234 - (84) * t);
+                    g = Math.round(179 + (11) * t);
+                    b = Math.round(8 + (32) * t);
+                } else if (normalized < 0.85) {
+                    const t = (normalized - 0.75) / 0.1;
+                    r = Math.round(150 - (84) * t);
+                    g = Math.round(190 - (7) * t);
+                    b = Math.round(40 + (34) * t);
+                } else {
+                    const t = (normalized - 0.85) / 0.15;
+                    r = Math.round(66 - (44) * t);
+                    g = Math.round(183 - (20) * t);
+                    b = Math.round(74);
+                }
+                
+                const alpha = 0.15 + normalized * 0.15;
+                return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
+            };
+            
+            // Add TOTAL row first
+            const totalRow = dashboardData.find(row => row.Territory === 'TOTAL');
+            if (totalRow) {
+                const codeQuality = parseFloat(totalRow['Code Quality Score'] || 0);
+                const typed = parseFloat(totalRow['Typed %'] || 0);
+                const documented = parseFloat(totalRow['Documented %'] || 0);
+                const complexityHealth = parseFloat(totalRow['Complexity Health'] || 0);
+                const properBase = parseFloat(totalRow['Proper Base %'] || 0);
+                
+                const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
+                
+                html += `
+                    <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
+                        <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">TOTAL</td>
+                        <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(typed)}; font-weight:600; border-right:1px solid #e5e7eb;">${typed.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(documented)}; font-weight:600; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(complexityHealth)}; font-weight:600; border-right:1px solid #e5e7eb;">${complexityHealth.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(properBase)}; font-weight:600; border-right:1px solid #e5e7eb;">${properBase.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:800; font-size:1.05em;">${codeQuality.toFixed(1)}%</td>
+                    </tr>`;
+            }
+            
+            // Add territory rows
+            territoryData.forEach((row, index) => {
+                const codeQuality = parseFloat(row['Code Quality Score'] || 0);
+                const typed = parseFloat(row['Typed %'] || 0);
+                const documented = parseFloat(row['Documented %'] || 0);
+                const complexityHealth = parseFloat(row['Complexity Health'] || 0);
+                const properBase = parseFloat(row['Proper Base %'] || 0);
+                
+                const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
+                
+                html += `
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
+                        onmouseover="this.style.background='#f0f9ff'" 
+                        onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'">
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(typed)}; border-right:1px solid #e5e7eb;">${typed.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(documented)}; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(complexityHealth)}; border-right:1px solid #e5e7eb;">${complexityHealth.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(properBase)}; border-right:1px solid #e5e7eb;">${properBase.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:700;">${codeQuality.toFixed(1)}%</td>
+                    </tr>`;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:20px; padding:16px; background:#f9fafb; border-radius:8px; border-left:4px solid var(--primary);">
+                    <strong style="font-size:1.1em; color:var(--primary);">📚 Code Quality Metrics Key</strong>
+                    <div style="margin-top:12px; font-size:0.9em; line-height:1.8;">
+                        <p style="margin:8px 0;"><strong>Typed %:</strong> Percentage of code with type hints — <em>Runtime safety through static type checking (target ≥95%)</em></p>
+                        <p style="margin:8px 0;"><strong>Documented %:</strong> Percentage with docstrings — <em>Code maintainability and knowledge transfer (target ≥90%)</em></p>
+                        <p style="margin:8px 0;"><strong>Complexity Health %:</strong> Inverted complexity (100 - CC×2) — <em>Structural maintainability, higher = simpler code (target ≥80%)</em></p>
+                        <p style="margin:8px 0;"><strong>Proper Base %:</strong> Percentage with correct base class inheritance — <em>Architectural compliance and consistency (target ≥95%)</em></p>
+                        <p style="margin:8px 0;"><strong>Code Quality Score:</strong> Weighted composite: Typed (35%) + Documented (20%) + Complexity Health (20%) + Proper Base (25%) — <em>Overall code hygiene and maintainability</em></p>
                     </div>
                 </div>
             </div>`;
@@ -1321,6 +1454,7 @@ ${rec.guidance.split('\n').map((line, i) =>
             }
 
             renderTerritorySummaryTable(territoryData);
+            renderCodeQualityTable(territoryData);
             renderRiskMatrix(territoryData);
             renderRecommendations();
             renderInterviewQuestions(totalRow);
