@@ -21,8 +21,11 @@ Logger: Any = logging.getLogger(__name__)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class CanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+# Extracted to L1 canonical agent_logic.py (2026-01-06)
+from agentic_core.L1_cognition.thought_engine.agent_logic import CanonValidatorAgent
+class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
+    Legacy L4 connectivity variant - use L1 canonical for full implementation.
     The Gatekeeper logic that enforces the 'Subatomic' canon.
     Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.
     HARDENED: Uses compound cache keys to prevent stale cache hits.
