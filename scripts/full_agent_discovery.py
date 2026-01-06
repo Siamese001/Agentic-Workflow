@@ -66,7 +66,7 @@ MISTAKE_JSON = PROJECT_ROOT / 'agent_full.json'
 MISTAKE_JSON_2 = PROJECT_ROOT / 'agent_discovery_legacy.json'
 OUTPUT_JSON = CANONICAL_JSON
 
-EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv'}
+EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv', 'coverage_html'}
 
 
 def should_exclude_path(path: Path) -> bool:

@@ -33,7 +33,7 @@ _TEST_FILE = Path(__file__).resolve()
 PROJECT_ROOT = _TEST_FILE.parent.parent  # Go up from tests/ to project root
 REPORTS_DIR = PROJECT_ROOT / "reports"
 DASHBOARD_PATH = REPORTS_DIR / "autonomy_dashboard.html"
-DISCOVERY_JSON_PATH = REPORTS_DIR / ".dashboard_cache.json"
+DISCOVERY_JSON_PATH = REPORTS_DIR / "agent_discovery_full.json"  # Primary source of truth (cache eliminated)
 TEMPLATE_PATH = PROJECT_ROOT / "agentic_core" / "config" / "validators" / "dashboard_template.html"
 
 # Debug: Print paths when module loads (only in verbose mode)

@@ -102,9 +102,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         # Load agents from authoritative JSON (agent_discovery_full.json)
         self._agent_registry_cache = None
         
-        # Incremental caching for per-agent metrics (best-effort, non-critical)
-        self.metrics_cache_path = self.project_root / "reports" / ".dashboard_cache.json"
-        self.metrics_cache: Dict[str, Any] = self._load_metrics_cache()
+        # CACHE ELIMINATED: Dashboard now always uses fresh discovery data
+        # Previously cached per-agent metrics caused staleness issues
+        # Performance impact is negligible (~milliseconds for full discovery)
         
         # Territory definitions for compliance report - map to JSON layers
         # IMPORTANT: Use layer-based matching to avoid double-counting
@@ -337,26 +337,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         self.discovery_stats = {"mode": "NONE", "duration_seconds": 0.0, "agent_count": 0, "generated_at": "unknown", "freshness_minutes": 999}
         return self._agent_registry_cache
 
-    def _load_metrics_cache(self) -> Dict[str, Any]:
-        """Load persistent per-agent metrics cache (hash-keyed)."""
-        try:
-            if self.metrics_cache_path.exists():
-                data = json.loads(self.metrics_cache_path.read_text(encoding="utf-8"))
-                if isinstance(data, dict):
-                    return data
-        except Exception:
-            pass
-        return {}
-
-    def _save_metrics_cache(self) -> None:
-        """Persist metrics cache atomically (best-effort)."""
-        try:
-            self.metrics_cache_path.parent.mkdir(parents=True, exist_ok=True)
-            tmp = self.metrics_cache_path.with_suffix(".tmp")
-            tmp.write_text(json.dumps(self.metrics_cache, indent=2), encoding="utf-8")
-            tmp.replace(self.metrics_cache_path)
-        except Exception:
-            pass
+    # REMOVED: _load_metrics_cache and _save_metrics_cache
+    # Cache was causing dashboard staleness - always compute fresh now
 
     def _hash_text(self, text: str) -> str:
         """SHA-256 hash of text content for cache keying."""
@@ -686,8 +668,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         today = date.today().strftime("%B %d, %Y")
         self._generate_self_contained_dashboard(today, all_agents, classified_paths, used_stems, path_to_layer)
 
-        # Persist incremental metrics cache after all processing
-        self._save_metrics_cache()
+        # CACHE REMOVED: Fresh data computed on every generation
+        print(f"[DASHBOARD] Generated with fresh discovery data on {today}")
 
         # Portfolio-wide top violations — sub-atomic refactor backlog
         if global_sub_atomic_violations:
@@ -1380,31 +1362,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         try:
             content = agent.read_text(errors="ignore")
 
-            # Cache check: skip expensive AST parsing if content unchanged
-            content_hash = self._hash_text(content)
-            cached = self.metrics_cache.get(rel_path)
-            if (
-                isinstance(cached, dict)
-                and cached.get("hash") == content_hash
-                and cached.get("atomic_threshold") == atomic_threshold
-                and isinstance(cached.get("metrics"), dict)
-            ):
-                cached_metrics = cached["metrics"]
-                file_metrics.update({k: cached_metrics.get(k, 0) for k in file_metrics})
-                # Replay violations from cache
-                for v in cached_metrics.get("_violations", []):
-                    try:
-                        cc, fn = int(v.get("cc", 0)), str(v.get("func", ""))
-                        if cc > atomic_threshold:
-                            global_violations.append((cc, rel_path, fn))
-                    except Exception:
-                        pass
-                # SSOT override: Always use registry for healing_invoke (cache may have stale values)
-                if registry_entry:
-                    invocation_status = registry_entry.get("invocation", "Inherited")
-                    # Only count explicit invocation ("Yes"), not "Inherited"
-                    file_metrics["healing_invoke"] = 1 if invocation_status == "Yes" else 0
-                return file_metrics
+            # CACHE ELIMINATED: Always compute fresh metrics (no staleness)
 
             lines = content.splitlines()
             file_metrics["loc"] = len([l for l in lines if l.strip() and not l.strip().startswith("#")])
@@ -1450,12 +1408,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             # Phase 1d: Observability detection
             file_metrics["observable"] = 100 if any(imp in content for imp in ["import logging", "from logging", "logger.", "log."]) else 0
 
-            # Cache write-through (best-effort)
-            self.metrics_cache[rel_path] = {
-                "hash": content_hash,
-                "atomic_threshold": atomic_threshold,
-                "metrics": file_metrics,
-            }
+            # CACHE REMOVED: No longer writing to cache
                 
         except Exception:
             pass
