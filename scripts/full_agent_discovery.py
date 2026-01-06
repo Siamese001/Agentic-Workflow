@@ -436,6 +436,148 @@ def detect_invocation_status(class_node: ast.ClassDef) -> str:
     return 'No (missing super)'
 
 
+# ============================================================================
+# SSOT METRICS: All dashboard metrics computed here (single AST pass)
+# ============================================================================
+
+def detect_has_tests(class_node: ast.ClassDef, source: str) -> bool:
+    """Detect if class has test coverage indicators."""
+    test_patterns = [
+        '_run_self_tests', 'SubatomicTestingMixin', 'SubatomicAgent',
+        'L0DelegationTestingMixin', 'L0DelegationMixin', 'TestSovereigntyAgent',
+        '_delegate_tests', 'delegate_on_failure'
+    ]
+    # Check class methods
+    for item in class_node.body:
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if item.name in test_patterns or item.name.startswith('test_'):
+                return True
+    # Check source for test imports/patterns
+    for pattern in test_patterns:
+        if pattern in source:
+            return True
+    if 'import pytest' in source or 'import unittest' in source:
+        return True
+    return False
+
+
+def calculate_typing_coverage(class_node: ast.ClassDef) -> float:
+    """Calculate percentage of methods with type annotations."""
+    total_methods = 0
+    typed_methods = 0
+    
+    for item in class_node.body:
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if item.name.startswith('_') and item.name != '__init__':
+                continue  # Skip private methods except __init__
+            total_methods += 1
+            
+            # Check for return annotation
+            has_return = item.returns is not None
+            # Check for parameter annotations (excluding self)
+            args = item.args
+            annotated_args = sum(1 for arg in args.args[1:] if arg.annotation)  # Skip self
+            total_args = len(args.args) - 1  # Exclude self
+            
+            if has_return or (total_args > 0 and annotated_args == total_args):
+                typed_methods += 1
+    
+    if total_methods == 0:
+        return 100.0  # No methods = fully typed
+    return round(typed_methods / total_methods * 100, 1)
+
+
+def calculate_docstring_coverage(class_node: ast.ClassDef) -> float:
+    """Calculate percentage of methods with docstrings."""
+    total_methods = 0
+    documented_methods = 0
+    
+    for item in class_node.body:
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if item.name.startswith('_') and item.name != '__init__':
+                continue
+            total_methods += 1
+            
+            # Check for docstring (first statement is a string)
+            if (item.body and isinstance(item.body[0], ast.Expr) and
+                isinstance(item.body[0].value, (ast.Str, ast.Constant))):
+                documented_methods += 1
+    
+    if total_methods == 0:
+        return 100.0
+    return round(documented_methods / total_methods * 100, 1)
+
+
+def detect_observability(class_node: ast.ClassDef, source: str) -> dict:
+    """Detect observability indicators (logging, metrics, tracing)."""
+    obs = {'logging': False, 'metrics': False, 'tracing': False}
+    
+    # Check imports
+    if 'import logging' in source or 'from logging' in source:
+        obs['logging'] = True
+    if 'observability' in source.lower():
+        obs['logging'] = True
+        obs['metrics'] = True
+    if 'opentelemetry' in source.lower() or 'otel' in source.lower():
+        obs['tracing'] = True
+    
+    # Check for common observability method calls
+    if 'structured_log' in source or '.log(' in source or 'logger.' in source:
+        obs['logging'] = True
+    if 'log_metric' in source or 'emit_metric' in source:
+        obs['metrics'] = True
+    if 'start_span' in source or '.trace(' in source:
+        obs['tracing'] = True
+    
+    return obs
+
+
+class _CCVisitor(ast.NodeVisitor):
+    """Visitor to calculate cyclomatic complexity."""
+    def __init__(self):
+        self.cc = 1  # Base complexity
+    
+    def visit_If(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_For(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_While(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_ExceptHandler(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_With(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_BoolOp(self, node):
+        # Each 'and'/'or' adds to complexity
+        self.cc += len(node.values) - 1
+        self.generic_visit(node)
+    
+    def visit_comprehension(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+
+
+def calculate_cyclomatic_complexity(class_node: ast.ClassDef) -> int:
+    """Calculate total cyclomatic complexity for all methods in class."""
+    total_cc = 0
+    for item in class_node.body:
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            visitor = _CCVisitor()
+            visitor.visit(item)
+            total_cc += visitor.cc
+    return total_cc
+
+
 def count_loc(source: str) -> int:
     """Count non-blank, non-comment lines."""
     count = 0
@@ -712,6 +854,13 @@ def main():
             # Detect invocation status (SSOT - checks CLASS method, not module functions)
             invocation = detect_invocation_status(node)
             
+            # SSOT METRICS: Compute all dashboard metrics here (single AST pass)
+            has_tests = detect_has_tests(node, source)
+            typed_pct = calculate_typing_coverage(node)
+            documented_pct = calculate_docstring_coverage(node)
+            observability = detect_observability(node, source)
+            cyclomatic_complexity = calculate_cyclomatic_complexity(node)
+            
             agents.append({
                 'class_name': node.name,
                 'path': str(rel_path),
@@ -732,6 +881,12 @@ def main():
                 'pascal_compliant': node.name[0].isupper() and '_' not in node.name,
                 'external_touch': external_touch,
                 'mcp_hardened': mcp_hardened,
+                # NEW SSOT METRICS (dashboard consumes these directly)
+                'has_tests': has_tests,
+                'typed_pct': typed_pct,
+                'documented_pct': documented_pct,
+                'observability': observability,
+                'cyclomatic_complexity': cyclomatic_complexity,
             })
     
     # Sort by layer then name

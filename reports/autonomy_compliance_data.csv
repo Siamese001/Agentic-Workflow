@@ -1,33 +1,33 @@
 Territory,Total,Compliant,Heal_Cap_Pct,Heal_Inv_Pct,MCP_Pct,Test_Pct,Avg_CC,Typed_Pct,Obs_Pct,Criticality,Health,Risk,Used_Pct,Priority
 L5 Safety/Base Class,2,2,100.0,100.0,100.0,100.0,32.5,100.0,50.0,57.4,83.3,MED,100.0,Critical
-L5 Safety/Validators,19,15,100.0,100.0,94.7,100.0,115.9,100.0,89.5,69.8,96.5,HIGH,100.0,Critical
-L5 Safety/Guardrails,31,27,100.0,100.0,87.1,100.0,53.5,100.0,83.9,70.5,94.6,MED,87.1,Critical
+L5 Safety/Validators,19,15,100.0,84.2,94.7,100.0,116.3,100.0,89.5,69.8,91.2,HIGH,100.0,Critical
+L5 Safety/Guardrails,31,27,100.0,90.3,87.1,100.0,53.5,100.0,83.9,70.5,91.4,MED,87.1,Critical
 L5 Safety/Gravity,2,2,100.0,100.0,100.0,100.0,89.5,100.0,100.0,57.4,100.0,MED,100.0,High
 L5 Safety/Red Teaming,6,6,100.0,100.0,33.3,100.0,27.2,100.0,100.0,60.2,100.0,MED,100.0,High
 L4 State/Base Class,1,1,100.0,100.0,100.0,100.0,81.0,100.0,100.0,36.5,100.0,MED,100.0,High
-L4 State/Core,12,5,100.0,100.0,91.7,83.3,40.2,83.3,66.7,51.7,83.3,HIGH,100.0,High
-L4 State/Infrastructure,3,1,100.0,100.0,66.7,100.0,43.0,100.0,66.7,50.0,88.9,HIGH,100.0,High
-L4 State/Specialized,5,3,80.0,100.0,80.0,100.0,31.8,100.0,80.0,43.6,93.3,HIGH,100.0,Medium
+L4 State/Core,12,5,100.0,41.7,91.7,83.3,40.2,83.3,66.7,51.7,63.9,HIGH,100.0,High
+L4 State/Infrastructure,3,1,100.0,66.7,66.7,100.0,43.0,100.0,66.7,50.0,77.8,HIGH,100.0,High
+L4 State/Specialized,5,3,80.0,60.0,80.0,100.0,31.8,100.0,80.0,43.6,80.0,HIGH,100.0,Medium
 L3 Orchestration/Base Class,1,1,100.0,100.0,100.0,100.0,67.0,100.0,100.0,40.5,100.0,MED,100.0,High
-L3 Orchestration/Core,41,22,92.7,100.0,92.7,87.8,58.1,97.6,97.6,57.2,95.1,HIGH,73.2,High
+L3 Orchestration/Core,41,22,92.7,39.0,92.7,87.8,58.1,97.6,97.6,57.2,74.8,HIGH,73.2,High
 L3 Orchestration/Infrastructure,2,2,100.0,100.0,100.0,100.0,19.5,100.0,50.0,41.0,83.3,MED,100.0,High
-L3 Orchestration/Specialized,5,0,40.0,100.0,40.0,100.0,23.6,100.0,100.0,66.5,100.0,HIGH,100.0,Medium
+L3 Orchestration/Specialized,5,0,40.0,0.0,40.0,100.0,23.6,100.0,100.0,66.5,66.7,HIGH,100.0,Medium
 L2 Execution/Base Class,1,1,100.0,100.0,100.0,100.0,44.0,100.0,100.0,44.6,100.0,MED,100.0,High
-L2 Execution/Core,69,27,100.0,100.0,95.7,94.2,62.5,84.1,92.8,73.8,95.7,HIGH,87.0,High
-L2 Execution/Infrastructure,2,0,100.0,100.0,100.0,50.0,16.5,100.0,50.0,27.5,66.7,HIGH,0.0,High
-L2 Execution/Specialized,4,2,100.0,100.0,100.0,100.0,39.8,100.0,100.0,56.1,100.0,HIGH,100.0,Medium
+L2 Execution/Core,69,27,100.0,43.5,95.7,94.2,62.5,84.1,92.8,73.8,76.8,HIGH,87.0,High
+L2 Execution/Infrastructure,2,0,100.0,0.0,100.0,50.0,16.5,100.0,50.0,27.5,33.3,HIGH,0.0,High
+L2 Execution/Specialized,4,2,100.0,50.0,100.0,100.0,39.8,100.0,100.0,56.1,83.3,HIGH,100.0,Medium
 L1 Cognition/Base Class,1,1,100.0,100.0,0.0,100.0,49.0,100.0,100.0,48.6,100.0,MED,100.0,Medium
-L1 Cognition/Core,14,3,92.9,100.0,100.0,100.0,77.0,100.0,100.0,70.6,100.0,HIGH,85.7,Medium
-L1 Cognition/Infrastructure,8,0,100.0,100.0,100.0,100.0,56.0,100.0,0.0,33.6,66.7,HIGH,0.0,Medium
-L1 Cognition/Specialized,3,0,33.3,100.0,0.0,100.0,29.3,100.0,66.7,62.6,88.9,HIGH,66.7,Low
-L0 Maintenance/Core,6,0,100.0,100.0,100.0,100.0,34.8,100.0,100.0,43.8,100.0,HIGH,16.7,Medium
-L0 Maintenance/Infrastructure,3,0,66.7,100.0,66.7,100.0,27.0,66.7,66.7,67.8,88.9,HIGH,66.7,Medium
-Observability/Metrics,12,2,66.7,100.0,75.0,100.0,24.1,100.0,100.0,61.7,100.0,HIGH,91.7,High
+L1 Cognition/Core,14,3,92.9,21.4,100.0,100.0,77.0,100.0,100.0,70.6,73.8,HIGH,85.7,Medium
+L1 Cognition/Infrastructure,8,0,100.0,0.0,100.0,100.0,56.0,100.0,0.0,33.6,33.3,HIGH,0.0,Medium
+L1 Cognition/Specialized,3,0,33.3,0.0,0.0,100.0,29.3,100.0,66.7,62.6,55.6,HIGH,66.7,Low
+L0 Maintenance/Core,6,0,100.0,0.0,100.0,100.0,34.8,100.0,100.0,43.8,66.7,HIGH,16.7,Medium
+L0 Maintenance/Infrastructure,3,0,66.7,0.0,66.7,100.0,27.0,66.7,66.7,67.8,55.6,HIGH,66.7,Medium
+Observability/Metrics,12,2,66.7,16.7,75.0,100.0,24.1,100.0,100.0,61.7,72.2,HIGH,91.7,High
 Observability/Telemetry,1,1,100.0,100.0,100.0,100.0,36.0,100.0,100.0,40.5,100.0,MED,100.0,High
 Observability/Tracing,1,1,100.0,100.0,100.0,100.0,86.0,100.0,100.0,40.5,100.0,MED,100.0,Medium
 Observability/Compliance,1,1,100.0,100.0,100.0,100.0,27.0,100.0,100.0,40.5,100.0,MED,100.0,Medium
-Apps Lic,33,10,100.0,100.0,100.0,78.8,53.1,72.7,36.4,70.2,71.7,HIGH,97.0,High
-Apps Rg,24,3,100.0,100.0,100.0,100.0,92.8,100.0,75.0,70.6,91.7,HIGH,95.8,High
-Apps Shared,2,0,100.0,100.0,100.0,100.0,46.5,100.0,0.0,45.0,66.7,HIGH,50.0,Medium
+Apps Lic,33,10,100.0,30.3,100.0,78.8,53.1,72.7,36.4,70.2,48.5,HIGH,97.0,High
+Apps Rg,24,3,100.0,12.5,100.0,100.0,92.8,100.0,75.0,70.6,62.5,HIGH,95.8,High
+Apps Shared,2,0,100.0,0.0,100.0,100.0,46.5,100.0,0.0,45.0,33.3,HIGH,50.0,Medium
 Tests,3,0,100.0,100.0,0.0,100.0,31.0,100.0,0.0,25.5,66.7,HIGH,0.0,Medium
-TOTAL,318,163,95.3,100.0,89.9,94.0,59.2,92.0,68.6,100,87.5,HIGH,84.3,ALL
+TOTAL,318,285,89.6,44.7,89.9,93.1,35.1,94.7,0.8,100,46.2,MED,84.3,ALL
