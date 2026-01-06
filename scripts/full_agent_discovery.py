@@ -66,12 +66,60 @@ MISTAKE_JSON = PROJECT_ROOT / 'agent_full.json'
 MISTAKE_JSON_2 = PROJECT_ROOT / 'agent_discovery_legacy.json'
 OUTPUT_JSON = CANONICAL_JSON
 
-EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv', 'coverage_html'}
+# ============================================================================
+# HARDENED EXCLUSION LISTS (Multi-factor negative signals)
+# ============================================================================
+# These directories are NEVER scanned for agents (fast path exclusion)
+EXCLUDED_DIRS = {
+    # Build/cache artifacts
+    '__pycache__', '.pytest_cache', 'build', 'dist', '.eggs', '*.egg-info',
+    # Version control
+    '.git', '.svn', '.hg',
+    # Virtual environments
+    '.venv', 'venv', 'env', '.env', 'node_modules',
+    # Coverage/test artifacts (CRITICAL: prevents HTML files from being scanned)
+    'coverage_html', 'htmlcov', '.coverage',
+    # Project-specific exclusions
+    'archives', '.sovereign_healing_backup', 'reports',
+}
+
+# Filename patterns that indicate non-agent files (case-insensitive)
+EXCLUDED_FILENAME_PATTERNS = {
+    'mixin', '_mixin', 'utility', 'utils', 'helper', 'helpers',
+    'conftest', 'setup', '__init__', '__main__',
+}
+
+# Path substrings that indicate non-agent locations
+EXCLUDED_PATH_PATTERNS = {
+    '/tests/', '/test/', '/examples/', '/example/', '/docs/', '/doc/',
+    '/fixtures/', '/mocks/', '/stubs/', '/fakes/',
+}
 
 
 def should_exclude_path(path: Path) -> bool:
-    """Return True if path should be excluded from scanning/hashing (shared with smart_discovery)."""
-    return any(excluded in path.parts for excluded in EXCLUDED_DIRS)
+    """Return True if path should be excluded from scanning/hashing.
+    
+    Multi-factor exclusion (ANY match → exclude):
+    1. Directory name in EXCLUDED_DIRS
+    2. Filename matches EXCLUDED_FILENAME_PATTERNS
+    3. Path contains EXCLUDED_PATH_PATTERNS
+    """
+    path_str = str(path).replace('\\', '/').lower()
+    
+    # Factor 1: Directory exclusion
+    if any(excluded.lower() in path.parts for excluded in EXCLUDED_DIRS):
+        return True
+    
+    # Factor 2: Filename pattern exclusion
+    filename_lower = path.name.lower() if path.name else ''
+    if any(pattern in filename_lower for pattern in EXCLUDED_FILENAME_PATTERNS):
+        return True
+    
+    # Factor 3: Path pattern exclusion (for generated/test directories)
+    if any(pattern in path_str for pattern in EXCLUDED_PATH_PATTERNS):
+        return True
+    
+    return False
 
 
 # ============================================================================
@@ -97,13 +145,40 @@ EXPECTED_AGENT_COUNT = 200  # TEMPORARY: Expected during active consolidation ph
 
 def should_exclude_file(py_file: Path) -> bool:
     """Return True if file should not be scanned for agent discovery.
-
-    Baseline scan: do not exclude repo areas like tests/ or scripts/.
-    Only exclude obvious non-source/vendor dirs.
+    
+    HARDENED multi-factor exclusion for agent discovery:
+    1. Directory-based: file in excluded directory
+    2. Filename-based: filename contains mixin/utility patterns
+    3. Extension-based: must be .py file
+    4. Path-based: in test/example/generated directories
+    
+    Returns:
+        True if ANY exclusion factor matches (aggressive OR for safety)
     """
-    parts = {p.lower() for p in py_file.parts}
-    if parts & {d.lower() for d in EXCLUDED_DIRS}:
+    # Factor 0: Must be a .py file
+    if py_file.suffix.lower() != '.py':
         return True
+    
+    # Factor 1: Directory exclusion
+    parts_lower = {p.lower() for p in py_file.parts}
+    if parts_lower & {d.lower() for d in EXCLUDED_DIRS}:
+        return True
+    
+    # Factor 2: Filename pattern exclusion (case-insensitive)
+    filename_lower = py_file.stem.lower()  # Without extension
+    for pattern in EXCLUDED_FILENAME_PATTERNS:
+        if pattern in filename_lower:
+            # Exception: files like "mixin_agent.py" are allowed if they end with "agent"
+            if filename_lower.endswith('agent'):
+                continue
+            return True
+    
+    # Factor 3: Path pattern exclusion
+    path_str = str(py_file).replace('\\', '/').lower()
+    # Note: We allow tests/ for test agent discovery, but exclude specific patterns
+    if '/fixtures/' in path_str or '/mocks/' in path_str or '/stubs/' in path_str:
+        return True
+    
     return False
 
 
@@ -632,20 +707,45 @@ def count_loc(source: str) -> int:
 
 
 def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional[Path] = None) -> bool:
-    """Determine if a class is an agent - precise detection (240 core target)."""
+    """
+    HARDENED Multi-Factor Agent Classification (100% precision target).
+    
+    Uses layered checks: Path → Name → AST → Inheritance
+    
+    NEGATIVE SIGNALS (ANY one → immediate exclusion):
+    - Class name ends with 'Mixin'
+    - Class name contains 'Mixin' (e.g., HealerMixinHelper)
+    - Filename contains 'mixin' (handled by should_exclude_file)
+    - Inherits from Protocol/ABC/BaseModel/etc.
+    - Path in excluded directories
+    
+    POSITIVE SIGNALS (ALL required for base_class agents):
+    - Name ends with 'Agent' OR inherits from known agent base
+    - Has healing capability in MRO chain
+    - Defines required agent methods
+    
+    Returns:
+        True if class is a concrete agent, False otherwise
+    """
     name = class_node.name
-
-    # 1. IMMEDIATE HARD NEGATIVES (Maximal Precision)
-    # - Obvious mock/test prefixes without 'Agent'
-    # - Fundamental non-agent bases (Protocol/ABC/Data structures) — never concrete agents
+    path_str = str(rel_path).replace('\\', '/').lower() if rel_path else ''
+    
+    # =========================================================================
+    # LAYER 1: IMMEDIATE HARD NEGATIVES (Fast path exclusion)
+    # =========================================================================
+    
+    # 1a. Mixin exclusion - class name contains 'Mixin' anywhere
+    if 'Mixin' in name:
+        log.debug(f"EXCLUDED {name}: class name contains 'Mixin'")
+        return False
+    
+    # 1b. Test/mock prefixes without 'Agent'
     skip_patterns = ('Test', 'Mock', 'Stub', 'Fake', 'Dummy', 'Baseline', 'Sample', 'Example')
     if name.startswith(skip_patterns) and 'Agent' not in name:
+        log.debug(f"EXCLUDED {name}: test/mock prefix without 'Agent'")
         return False
-
-    # HARD NEGATIVE: Mixins are never concrete agents
-    if name.endswith('Mixin'):
-        return False
-
+    
+    # 1c. Non-agent base classes (Protocol, ABC, etc.)
     non_agent_bases = {
         'Protocol', 'ABC',
         'BaseModel', 'TypedDict',
@@ -654,32 +754,36 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         'TestCase',
     }
     if bases & non_agent_bases:
+        log.debug(f"EXCLUDED {name}: inherits from non-agent base {bases & non_agent_bases}")
         return False
-
-    # HARD NEGATIVE: Data/container patterns — pure configs/schemas/states are never agents
-    # Rationale: Zero FP from Pydantic/dataclass schemas misnamed without agent identity
-    # Exceptions forgiven later via strong positive override
+    
+    # 1d. Data container suffixes without 'Agent'
     data_container_suffixes = ('Config', 'Settings', 'Context', 'Options', 'Schema', 'State')
     if name.endswith(data_container_suffixes) and 'Agent' not in name:
+        log.debug(f"EXCLUDED {name}: data container suffix without 'Agent'")
         return False
+    
+    # 1e. Path-based mixin exclusion (backup check)
+    if rel_path and 'mixin' in str(rel_path).lower():
+        # Exception: allow files like "healer_mixin_agent.py" if class name ends with Agent
+        if not name.endswith('Agent'):
+            log.debug(f"EXCLUDED {name}: path contains 'mixin' and name doesn't end with 'Agent'")
+            return False
 
-    # Extract methods early — needed for harness detection and optional anchoring
+    # =========================================================================
+    # LAYER 2: POSITIVE SIGNAL DETECTION
+    # =========================================================================
+    
     method_names = extract_methods(class_node)
-
-    # Compute path once for reuse
-    path_str = str(rel_path).replace('\\', '/').lower() if rel_path else ''
     in_tests = path_str.startswith('tests/') or '/tests/' in path_str
-
-    # === ULTRA-HARDENED AGENT DETECTION (Single Source of Truth) ===
-    # Four high-confidence positive signals (prioritized in order of strength):
-    # 1. Strict naming: ends with 'Agent' (primary canonical pattern)
-    # 2. Direct inheritance from known agent base classes
+    
+    # Known agent base classes
     agent_bases = {
         'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
         'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
         'ExecutionCanonBaseAgent',
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
-        'BaseAgent',
+        'BaseAgent', 'SovereignBaseAgent',
     }
 
     # Base strong signal (signals 1-3)

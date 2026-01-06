@@ -1120,47 +1120,84 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         return classified_paths
 
     def _classify_subterritory(self, agent_path: Path, class_name: str = "") -> str:
-        """Classify agent into sub-territory based on patterns.
+        """
+        HARDENED Multi-Factor Sub-Territory Classification.
         
         Returns: 'base_class', 'infrastructure', 'specialized', or 'core' (default)
         
+        NEGATIVE SIGNALS for base_class (ANY one → exclude from base_class):
+        - Filename contains 'mixin' without 'agent'
+        - Class name contains 'Mixin'
+        - Name contains enforcer/validator/guardian/checker/auditor
+        - Path in excluded directories (coverage_html, reports, etc.)
+        
+        POSITIVE SIGNALS for base_class (ALL required):
+        - Filename/classname contains 'baseagent' (case-insensitive)
+        - NOT excluded by negative signals
+        
         Priority order (most specific first):
-        1. base_class - foundational mixins/bases
+        1. base_class - foundational layer bases (SafetyBaseAgent, StateBaseAgent, etc.)
         2. specialized - sovereign clients, RL agents, exercisers (high specificity)
         3. infrastructure - observability, caching, checkpointing (medium specificity)
         4. core - default business logic agents
         """
         path_str = str(agent_path).replace("\\", "/").lower()
-        name_lower = class_name.lower() if class_name else agent_path.stem.lower()
+        filename_lower = agent_path.stem.lower() if agent_path.stem else ""
+        name_lower = class_name.lower() if class_name else filename_lower
         
-        # 1. Base class detection (highest priority - foundational)
-        # EXCLUDE: *Enforcer, *Validator, *Guardian agents that happen to have "base" in their name
-        # These are business logic agents that enforce/validate base class usage, not base classes themselves
-        # ALSO EXCLUDE: Standalone mixin files (e.g., mcp_hardened_mixin.py, healer_mixin.py)
-        # These are utility mixins, not layer base classes
-        exclusion_patterns = ["enforcer", "validator", "guardian", "checker", "auditor"]
-        is_excluded = any(pattern in name_lower for pattern in exclusion_patterns)
+        # =========================================================================
+        # LAYER 1: IMMEDIATE EXCLUSIONS (Fast path - any match excludes from base_class)
+        # =========================================================================
         
-        # Exclude standalone mixin files (filename contains mixin but NOT agent or baseagent)
-        # Standalone mixins: mcp_hardened_mixin.py, healer_mixin.py, ASTEnforcementMixin.py
-        # Base agents with mixin: SafetyBaseAgent.py (inherits from mixins, but is a base agent)
-        is_standalone_mixin = "mixin" in name_lower and "agent" not in name_lower
+        # Excluded directories - never classify as base_class
+        excluded_dirs = {'coverage_html', 'htmlcov', 'reports', '__pycache__', '.pytest_cache'}
+        if any(d in path_str for d in excluded_dirs):
+            return "core"  # Fallback to core, not base_class
         
-        if not is_excluded and not is_standalone_mixin:
-            # Only classify as base_class if it's a BaseAgent (not just has "base" in name)
-            if "baseagent" in name_lower:
-                return "base_class"
+        # =========================================================================
+        # LAYER 2: BASE_CLASS DETECTION (Multi-factor positive + negative)
+        # =========================================================================
         
-        # 2. Specialized detection BEFORE infrastructure (sovereign clients, RL agents, meta-agents)
-        # These have very specific naming conventions that should take precedence
+        # NEGATIVE SIGNALS for base_class (aggressive OR - any match excludes)
+        negative_for_base_class = False
+        
+        # 2a. Business logic agents with "base" in name (not actual base classes)
+        business_logic_patterns = ["enforcer", "validator", "guardian", "checker", "auditor"]
+        if any(pattern in name_lower for pattern in business_logic_patterns):
+            negative_for_base_class = True
+        
+        # 2b. Standalone mixin files (utility mixins, not base classes)
+        # Files like: mcp_hardened_mixin.py, healer_mixin.py, ASTEnforcementMixin.py
+        is_mixin_file = "mixin" in filename_lower
+        is_mixin_class = "mixin" in name_lower
+        has_agent_in_name = "agent" in name_lower
+        
+        if (is_mixin_file or is_mixin_class) and not has_agent_in_name:
+            negative_for_base_class = True
+        
+        # 2c. Class name contains 'Mixin' (even if also has 'Agent')
+        if "Mixin" in class_name:  # Case-sensitive check for class names
+            negative_for_base_class = True
+        
+        # POSITIVE SIGNAL for base_class (required)
+        is_base_agent = "baseagent" in name_lower
+        
+        # Final base_class decision: positive signal AND no negative signals
+        if is_base_agent and not negative_for_base_class:
+            return "base_class"
+        
+        # =========================================================================
+        # LAYER 3: OTHER SUB-TERRITORIES
+        # =========================================================================
+        
+        # 3a. Specialized detection (sovereign clients, RL agents, meta-agents)
         specialized_patterns = ["sovereign", "mcpclient", "ppo", "qlearning", "reinforc", "meta", "exerciser"]
         if any(p in name_lower for p in specialized_patterns):
             return "specialized"
         
-        # 3. Infrastructure detection (observability, config, storage, caching)
-        # Note: Use specific path patterns to avoid false matches (e.g., "validation" would match "ValidationContext")
-        infra_name_patterns = ["metrics", "telemetry", "tracing", "checkpoint", "storage", "cache", "ledger", "validator"]
-        infra_path_patterns = ["/observability/", "/config/validators/"]  # More specific path patterns
+        # 3b. Infrastructure detection (observability, config, storage, caching)
+        infra_name_patterns = ["metrics", "telemetry", "tracing", "checkpoint", "storage", "cache", "ledger"]
+        infra_path_patterns = ["/observability/", "/config/validators/"]
         if any(p in name_lower for p in infra_name_patterns):
             return "infrastructure"
         if any(p in path_str for p in infra_path_patterns):
