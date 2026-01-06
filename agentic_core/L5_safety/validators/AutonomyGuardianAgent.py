@@ -27,6 +27,8 @@ from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.config.flags import CACHE_METRICS_ENABLED
 from agentic_core.L6_observability.metrics.cache_metrics import get_cache_metrics
+from agentic_core.L5_safety.validators.dashboard_data_generator import DashboardDataGenerator
+from agentic_core.L5_safety.validators.dashboard_renderer import DashboardRenderer
 
 log = logging.getLogger(__name__)
 
@@ -665,8 +667,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         
         # === Self-Contained Interactive Dashboard Generation ===
         # Always generate dashboard (independent of markdown flag)
+        # REFACTORED: Using v2 method with extracted modules for lower complexity
         today = date.today().strftime("%B %d, %Y")
-        self._generate_self_contained_dashboard(today, all_agents, classified_paths, used_stems, path_to_layer)
+        self._generate_dashboard_v2(today, all_agents, classified_paths, used_stems, path_to_layer)
 
         # CACHE REMOVED: Fresh data computed on every generation
         print(f"[DASHBOARD] Generated with fresh discovery data on {today}")
@@ -1813,11 +1816,122 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                 
         self._update_totals(totals, metrics)
 
-    def _generate_self_contained_dashboard(
+    def _generate_dashboard_v2(
+        self, today: str, all_agents: List[Path], classified_paths: set,
+        used_stems: set, path_to_layer: Dict[str, str]
+    ) -> None:
+        """
+        Generate dashboard using extracted modules (REFACTORED for lower complexity).
+        
+        This method replaces the 1530-line _generate_self_contained_dashboard with
+        a clean delegation to DashboardDataGenerator and DashboardRenderer.
+        """
+        from datetime import datetime
+        
+        # Initialize extracted modules
+        data_generator = DashboardDataGenerator(self.project_root, self.territories)
+        renderer = DashboardRenderer(self.project_root)
+        
+        # Load registry
+        registry = data_generator.load_registry()
+        registry_by_path = data_generator.registry_by_path
+        
+        # Build dashboard rows from territories
+        dashboard_rows = []
+        assigned_agents: set = set()
+        
+        for territory_key, (layer_filter, priority) in self.territories.items():
+            agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
+            agents = [a for a in agents if str(a) not in assigned_agents]
+            if not agents:
+                continue
+            assigned_agents.update(str(a) for a in agents)
+            
+            # Compute metrics using extracted generator
+            metrics = data_generator.compute_territory_metrics(agents, used_stems, registry_by_path)
+            
+            # Check base class compliance
+            proper_base_count = sum(1 for a in agents if self._check_base_class_compliance(str(a))[0])
+            perc_proper_base = round(proper_base_count / metrics["total"] * 100, 1) if metrics["total"] else 0
+            
+            # Determine if infrastructure territory
+            is_infrastructure = any(p in territory_key for p in self.infrastructure_path_patterns)
+            
+            # Build row
+            row = data_generator.build_territory_row(
+                territory_name=territory_key.replace("_", " ").replace("/", "/").title(),
+                metrics=metrics,
+                priority=priority if isinstance(priority, int) else {"Critical": 1, "High": 2, "Medium": 3, "Low": 4}.get(priority, 3),
+                is_infrastructure=is_infrastructure
+            )
+            
+            if row:
+                row["Proper Base %"] = perc_proper_base
+                # Compute code quality score
+                row["Code Quality Score"] = data_generator.compute_code_quality_score(
+                    row["Typed %"], perc_proper_base, row.get("Metadata %", 100), row["Documented %"]
+                )
+                dashboard_rows.append(row)
+        
+        # Build TOTAL row
+        total_row = data_generator.build_total_row(dashboard_rows)
+        if total_row:
+            # Compute total code quality
+            total_row["Code Quality Score"] = data_generator.compute_code_quality_score(
+                total_row["Typed %"],
+                total_row.get("Proper Base %", 100),
+                total_row.get("Metadata %", 100),
+                total_row["Documented %"]
+            )
+            dashboard_rows.insert(0, total_row)
+        
+        # Generate recommendations and interview questions
+        recommendations = renderer.generate_recommendations(total_row, dashboard_rows[1:])
+        interview_questions = renderer.generate_interview_questions(total_row, dashboard_rows[1:])
+        gauge_data = renderer.generate_gauge_data(total_row)
+        
+        # Render HTML
+        last_updated = datetime.now().strftime("%B %d, %Y at %H:%M:%S")
+        html = renderer.render(
+            dashboard_rows=dashboard_rows,
+            recommendations=recommendations,
+            interview_questions=interview_questions,
+            gauge_data=gauge_data,
+            last_updated=last_updated
+        )
+        
+        # Save dashboard
+        output_path = renderer.save(html)
+        
+        # Print summary
+        print(f"\n### ✅ Self-Contained Interactive Dashboard Generated (v2 - Refactored)")
+        print(f"→ File: {output_path}")
+        print(f"→ Total Agents: {total_row.get('Total', 0)}")
+        print(f"→ Health: {total_row.get('Health', 0):.1f}%")
+        print(f"→ Code Quality: {total_row.get('Code Quality Score', 0):.1f}%")
+        
+        # Write provenance manifest
+        try:
+            discovery_path = self.project_root / "agent_discovery_full.json"
+            manifest = {
+                "generated_at": datetime.now().isoformat(),
+                "version": "v2_refactored",
+                "agent_count": total_row.get("Total", 0),
+                "health": total_row.get("Health", 0),
+                "git_sha": self._get_git_head_sha(),
+                "output_path": str(output_path),
+            }
+            manifest_path = output_path.with_suffix(".manifest.json")
+            manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+            print(f"→ Provenance manifest: {manifest_path}")
+        except Exception:
+            pass
+
+    def _generate_self_contained_dashboard_legacy(
         self, today: str, all_agents: List[Path], classified_paths: set, 
         used_stems: set, path_to_layer: Dict[str, str]
     ) -> None:
-        """Generate self-contained interactive dashboard with embedded data and recommendations."""
+        """DEPRECATED: Original 1530-line method. Use _generate_dashboard_v2 instead."""
         # Build dashboard data rows from territories
         dashboard_rows = []
         territory_stats = []

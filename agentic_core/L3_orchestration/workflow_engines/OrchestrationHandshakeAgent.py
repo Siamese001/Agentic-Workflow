@@ -1,6 +1,7 @@
 from __future__ import annotations
 """
-OrchestrationHandshake - Multi-Hop Agent Collaboration
+OrchestrationHandshakeAgent - Multi-Hop Agent Collaboration
+Renamed from OrchestrationHandshake for consistent Agent suffix pattern (Jan 6, 2026)
 """
 import hashlib
 import json
@@ -17,9 +18,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class OrchestrationHandshake(CachedOrchestratorAgent):
+class OrchestrationHandshakeAgent(CachedOrchestratorAgent):
     """
     Sovereign handshake protocol — now with deep L3 caching.
+    Renamed from OrchestrationHandshake for consistent Agent suffix pattern.
     """
 
     def __init__(self, project_root: Path, requesting_agent: str):

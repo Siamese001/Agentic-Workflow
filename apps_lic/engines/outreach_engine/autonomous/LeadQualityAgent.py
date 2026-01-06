@@ -16,7 +16,10 @@ Provides domain-specific agents for outreach campaigns:
 
 import re
 
-from .outreach_base import OutreachAgent
+from .OutreachAgent import OutreachAgent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class LeadQualityAgent(OutreachAgent):
@@ -285,7 +288,12 @@ class DeliverabilityAgent(OutreachAgent):
             return super().heal_repository()
 
 
-class OutreachTestPilot(OutreachAgent):
+# DEPRECATED: Moved to OutreachTestPilotAgent.py (Jan 6, 2026)
+# Import for backward compatibility
+from .OutreachTestPilotAgent import OutreachTestPilotAgent as OutreachTestPilot
+
+# Legacy class removed - use OutreachTestPilotAgent instead
+class _OutreachTestPilot_Deprecated(OutreachAgent):
     """Runs validation tests on the campaign."""
 
     async def execute(self) -> None:

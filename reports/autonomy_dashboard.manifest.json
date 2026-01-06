@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-01-06T14:38:13.874004",
-  "discovery_hash": "12581a4ee8bf60bd",
-  "template_hash": "611acb7531ccbcd3",
-  "git_sha": "1e2b8a80d487442bdbf2fe7db7a7f8dc465f1a3d",
+  "generated_at": "2026-01-06T14:46:02.939495",
+  "version": "v2_refactored",
+  "agent_count": 289,
+  "health": 77.4,
+  "git_sha": "d8e4098cd8ffb4e7e89069199e25ccd88d6b9df0",
   "output_path": "reports\\autonomy_dashboard.html"
 }
