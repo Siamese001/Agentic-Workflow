@@ -31,9 +31,23 @@ import hashlib
 import json
 import logging
 import os
+import sys
+import platform
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Set, Tuple
 from collections import defaultdict
+
+# Fix Windows console UnicodeEncodeError when printing warnings/emojis
+if platform.system() == "Windows":
+    # Force stdout/stderr to UTF-8 (works in most modern Windows terminals)
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except AttributeError:
+        # Python < 3.7 fallback
+        import codecs
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.buffer, errors="replace")
+        sys.stderr = codecs.getwriter("utf-8")(sys.stderr.buffer, errors="replace")
 
 # Structured logging
 logging.basicConfig(
