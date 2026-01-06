@@ -680,9 +680,11 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         if markdown:
             today = date.today().strftime("%B %d, %Y")
             self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer)
-            
-            # === Self-Contained Interactive Dashboard Generation ===
-            self._generate_self_contained_dashboard(today, all_agents, classified_paths, used_stems, path_to_layer)
+        
+        # === Self-Contained Interactive Dashboard Generation ===
+        # Always generate dashboard (independent of markdown flag)
+        today = date.today().strftime("%B %d, %Y")
+        self._generate_self_contained_dashboard(today, all_agents, classified_paths, used_stems, path_to_layer)
 
         # Persist incremental metrics cache after all processing
         self._save_metrics_cache()
@@ -3199,14 +3201,27 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         # Atomic write: write to temp file, then rename
         temp_path = output_path.with_suffix('.tmp')
         try:
+            # Debug info before write
+            print(f"\n[DEBUG] Template loaded from: {template_path}")
+            print(f"[DEBUG] Final HTML length: {len(html):,} characters")
+            print(f"[DEBUG] Writing dashboard to: {output_path.resolve()}")
+            
             with open(temp_path, "w", encoding="utf-8") as f:
                 f.write(html)
             temp_path.replace(output_path)
+            
+            # Verify file was actually created
+            if output_path.exists():
+                file_size = output_path.stat().st_size
+                print(f"[DEBUG] Dashboard file created: {file_size:,} bytes")
+            else:
+                raise RuntimeError("Dashboard write reported success but file still missing")
+                
         except Exception as e:
-            print(f"\n⚠️  Error writing dashboard: {e}")
+            print(f"\n⚠️  Error writing dashboard: {type(e).__name__}: {e}")
             if temp_path.exists():
                 temp_path.unlink()
-            return
+            raise
         
         print(f"\n### ✅ Self-Contained Interactive Dashboard Generated")
         print(f"→ File: {output_path}")
