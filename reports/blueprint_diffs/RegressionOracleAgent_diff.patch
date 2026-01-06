@@ -1,0 +1,40 @@
+diff --git "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py" "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\RegressionOracleAgent.py"
+index 634b365..5478005 100644
+--- "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py"
++++ "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\RegressionOracleAgent.py"
+@@ -90,7 +90,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
+ class MethodChangeDetectorAgent(HealerMixin, MCPHardenedMixin):
+     """Detects method changes between two versions of a file."""
+ 
+-    def __init__(self, ctx) -> None:
++    def __init__(self, ctx):
+         self.ctx = ctx
+ 
+     def detect_method_changes(self, file_path: str) -> List[MethodChange]:
+@@ -143,7 +143,7 @@ class MethodChangeDetectorAgent(HealerMixin, MCPHardenedMixin):
+ class RegressionTestGenerator:
+     """Generates pytest code and creates test files."""
+ 
+-    def __init__(self, ctx, test_dir: Path, pinecone_available: bool, pinecone_index, genai_available: bool, genai_client) -> None:
++    def __init__(self, ctx, test_dir: Path, pinecone_available: bool, pinecone_index, genai_available: bool, genai_client):
+         self.ctx = ctx
+         self.test_dir = test_dir
+         self.pinecone_available = pinecone_available
+@@ -217,7 +217,7 @@ class RegressionTestGenerator:
+ class RegressionTestRunner:
+     """Runs generated tests, performs self-correction, and reports results."""
+ 
+-    def __init__(self, ctx, test_dir: Path, genai_available: bool, genai_client, emit_signal_callback: Callable[[str, str], None]) -> None:
++    def __init__(self, ctx, test_dir: Path, genai_available: bool, genai_client, emit_signal_callback: Callable[[str, str], None]):
+         self.ctx = ctx
+         self.test_dir = test_dir
+         self.genai_available = genai_available
+@@ -353,7 +353,7 @@ class RegressionOracleAgent(SubAtomicAgent):
+     6. Emit REGRESSION_CHECK_PASS signal
+     """
+ 
+-    def __init__(self, ctx) -> None:
++    def __init__(self, ctx):
+         """
+         Initialize Regression Oracle.
+         

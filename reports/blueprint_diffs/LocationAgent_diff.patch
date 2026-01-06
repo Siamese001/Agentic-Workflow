@@ -1,0 +1,76 @@
+diff --git "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\LocationAgent.py" "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\LocationAgent.py"
+index 7fd2f38..9560d09 100644
+--- "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\LocationAgent.py"
++++ "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\LocationAgent.py"
+@@ -89,14 +89,15 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
+     return False
+ 
+ 
+-from agentic_core.bases import L5Agent
++from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
++from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+ 
+ @registers_prompt(
+     template_name="file_placement.jinja",
+     purpose="Enforces territory/file placement rules",
+     territory="templates"
+ )
+-class LocationAgent(L5Agent):
++class LocationAgent(HealerMixin, MCPHardenedMixin):
+     """
+     Autonomous agent responsible for territorial integrity.
+     Run independently or as first stage in compliance orchestrator.
+@@ -174,7 +175,7 @@ class LocationAgent(L5Agent):
+         suggested_path: Optional[str] = None  # Full relative path for healing (e.g., 'apps_rg/engines')
+         severity: int = 5
+ 
+-    def __init__(self, project_root: Path) -> None:
++    def __init__(self, project_root: Path):
+         self.project_root = project_root.resolve()
+         # Validate project root is correct
+         self._validate_project_root()
+@@ -1234,7 +1235,7 @@ class LocationAgent(L5Agent):
+                                     pass
+ 
+                             new_lines = new_lines[:insert_idx] + todo_block + new_lines[insert_idx:]
+-                            new_content = "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n".join(new_lines)
++                            new_content = "\n".join(new_lines)
+ 
+                             # Backup + write
+                             backup_dir = self._init_backup_dir() / "gravity_auto_heal"
+@@ -2041,9 +2042,6 @@ class LocationAgent(L5Agent):
+         actual_execute = execute and not dry_run
+         
+         try:
+-            # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+-            super().heal_repository()
+-            
+             violations = self.run()
+             print(f"[LOCATION HEAL @ depth {depth}] Found {len(violations)} violations")
+             
+@@ -2073,6 +2071,9 @@ class LocationAgent(L5Agent):
+                   f"Skipped: {counts['skipped']} | "
+                   f"Errors: {counts['errors']}")
+             
++            # Invoke shared HealerMixin chain
++            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
++            
+             return counts
+             
+         finally:
+@@ -2080,3 +2081,15 @@ class LocationAgent(L5Agent):
+ 
+ 
+ # PascalCase is now the canonical name
++
++    def _run_self_tests(self) -> dict:
++    """Run internal self-tests."""
++    results = {"passed": 0, "failed": 0, "tests": []}
++    try:
++    assert self is not None
++    results["passed"] += 1
++    results["tests"].append({"name": "test_instantiation", "status": "passed"})
++    except AssertionError as e:
++    results["failed"] += 1
++    results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
++    return results

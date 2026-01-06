@@ -1,0 +1,13 @@
+diff --git "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\ComplianceOrchestratorAgent.py" "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\ComplianceOrchestratorAgent.py"
+index 2ff31c4..343f496 100644
+--- "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\ComplianceOrchestratorAgent.py"
++++ "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\ComplianceOrchestratorAgent.py"
+@@ -59,7 +59,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
+     This eliminates static imports in L6 and resolves the frequent discovery failures.
+     """
+ 
+-    def __init__(self, project_root: Path) -> None:
++    def __init__(self, project_root: Path):
+         self.project_root = project_root.resolve()
+         self.validators_path = self.project_root / "agentic_core" / "L5_safety" / "validators"
+ 

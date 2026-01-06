@@ -1,0 +1,120 @@
+diff --git "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py" "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\TypeHintEnforcementAgent.py"
+index 7f10e90..bee5158 100644
+--- "a/C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py"
++++ "b/C:\\Git\\Agentic-Workflow\\agentic_core\\config\\blueprint_sovereign\\TypeHintEnforcementAgent.py"
+@@ -20,7 +20,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+ 
+ 
+ # NAMING CANON COMPLIANCE â€” renamed to TypeHintEnforcementAgent for discovery and sovereignty â€” 2025-12-30
+-class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
++class TypeHintEnforcementAgent(HealerMixin):
+     """
+     Ensures public functions, methods, and module-level assignments have type hints.
+ 
+@@ -41,7 +41,7 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
+     FALLBACK_RETURN = "Any"
+     FALLBACK_VAR = "Any"
+ 
+-    def __init__(self, ctx, project_root=None) -> None:
++    def __init__(self, ctx, project_root=None):
+         """Initialize with mandatory ctx for sovereign operation."""
+         if ctx is None:
+             raise ValueError("ctx is mandatory for TypeHintEnforcementAgent (sovereign agent)")
+@@ -69,7 +69,7 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
+                 new_source = ast.unparse(new_tree)
+ 
+                 if new_source != source:
+-                    file_path.write_text(new_source + "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n", encoding="utf-8")
++                    file_path.write_text(new_source + "\n", encoding="utf-8")
+                     message = f"Added {fixer.added_count} Missing type hint(s)"
+                     print(f"      [HEALED] {file_path.name}: {message}")
+                     ctx.report(
+@@ -77,6 +77,7 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
+                         key_id=18,  # Core Laws / Safety category
+                         success=True,
+                     )
++                    print(f"   [âœ“] {self.ctx.agent_name} COMPLETE: Normalized {len(files)} files.")
+                     return {"healed": True, "details": message}
+ 
+             return {"healed": False}
+@@ -94,12 +95,24 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
+ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+ 
+ # NAMING FIXED: TypeHintFixerAgent â†’ TypeHintFixerAgent
++    def _run_self_tests(self) -> dict:
++    """Run internal self-tests."""
++    results = {"passed": 0, "failed": 0, "tests": []}
++    try:
++    assert self is not None
++    results["passed"] += 1
++    results["tests"].append({"name": "test_instantiation", "status": "passed"})
++    except AssertionError as e:
++    results["failed"] += 1
++    results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
++    return results
++
+ class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer):
+     """
+     AST transformer that adds Missing type hints to public symbols.
+     """
+ 
+-    def __init__(self, fallback_param: str, fallback_return: str, fallback_var: str) -> None:
++    def __init__(self, fallback_param: str, fallback_return: str, fallback_var: str):
+         self.added_count = 0
+         self.fallback_param = fallback_param
+         self.fallback_return = fallback_return
+@@ -144,36 +157,27 @@ class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer):
+                 return new_node
+         return node
+ 
+-    def heal_repository(self) -> dict:
+-            """Invoke healing chain via super()."""
+-            return super().heal_repository()
+-
+ 
+ # Factory for discovery
+ def get_type_hint_enforcement_agent(ctx, project_root=None) -> TypeHintEnforcementAgent:
+     """Factory function."""
+     return TypeHintEnforcementAgent(ctx, project_root)
+ 
+-
+-class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+-    # ... (rest of the class remains the same)
+-
+-    @timeout(300)
+-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+-        """L5 safety/validators - operational only."""
++@timeout(300)
++def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
++    """L5 safety/validators - operational only."""
++    if _call_path is None:
+         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+         super().heal_repository()
+-        
+-        if _call_path is None:
+-            _call_path = set()
+-        agent_name = self.__class__.__name__
+-        if agent_name in _call_path:
+-            return {"errors": 1, "cycle_detected": True}
+-        if depth > max_depth:
+-            return {"errors": 1, "depth_limited": True}
+-        _call_path.add(agent_name)
+-        try:
+-            print(f"[{agent_name}] L5 safety/validators - operational only")
+-            return {"skipped": 1}
+-        finally:
+-            _call_path.discard(agent_name)
+\ No newline at end of file
++
++    agent_name = "TypeHintEnforcement"
++    if agent_name in _call_path:
++        return {"errors": 1, "cycle_detected": True}
++    if depth > max_depth:
++        return {"errors": 1, "depth_limited": True}
++    _call_path.add(agent_name)
++    try:
++        print(f"[{agent_name}] L5 safety/validators - operational only")
++        return {"skipped": 1}
++    finally:
++        _call_path.discard(agent_name)
+\ No newline at end of file

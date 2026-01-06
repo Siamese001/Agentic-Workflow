@@ -1,7 +1,7 @@
 from __future__ import annotations
 #!/usr/bin/env python3
 """
-Dead Code Detector Agent - Sovereign Code Auditor
+AdvancedDeadCodeAuditorAgent - Sovereign Code Auditor V2.0
 Identifies unused imports, functions, classes, and methods across the codebase.
 VERSION 2.0 - Hardened with parent-node tracking and class-aware method analysis.
 """
