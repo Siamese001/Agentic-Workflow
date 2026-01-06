@@ -173,6 +173,7 @@ class WorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingM
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:
         """Operational agent - no repository healing required."""
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         print(f"[{self.__class__.__name__}] Operational agent - no healing required")
         return {"skipped": 1}
 

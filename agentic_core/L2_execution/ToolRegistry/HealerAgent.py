@@ -544,13 +544,30 @@ CURRENT CODE:
         except Exception as e:
             print(f"      [!] Failed to store pattern: {e}")
 
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L2 execution agent healing chain."""
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L2 execution healing - operational")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
 def get_healer_agent(ctx, project_root) -> HealerAgent:
     """Factory function to get a healer agent."""
     return HealerAgent(ctx=ctx, project_root=project_root)
 
 @timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """L2 execution/ToolRegistry - operational only."""
+def _module_heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """L2 execution/ToolRegistry - module-level operational stub."""
     if _call_path is None:
         _call_path = set()
     agent_name = "HealerAgent"

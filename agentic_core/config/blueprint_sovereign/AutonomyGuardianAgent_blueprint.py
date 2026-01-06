@@ -317,6 +317,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             Summary dict with counts
         """
         # Initialize call path on first call
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
             _call_path = set()
         

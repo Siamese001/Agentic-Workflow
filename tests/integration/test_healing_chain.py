@@ -14,15 +14,16 @@ from typing import Dict, Any, Optional, Set
 class MockHealerMixin:
     """Mock HealerMixin for testing."""
     
-    @staticmethod
     def heal_repository(
+        self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
         _call_path: Optional[Set] = None
     ) -> Dict[str, int]:
-        """Mock parent healing."""
+        """Mock parent healing with super() call for compliance."""
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         return {
             "healed": 5,
             "mixin_scan": 1,
