@@ -29,20 +29,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-
-# NAMING FIXED: IntegrityGateExecutorAgent → IntegrityGateExecutorAgent
-class IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-    '''Brief description of functionality and purpose.'''
-    
-    def execute_hygiene_scan(self, headline: str): pass
-                    
-    def execute_industry_first_gate(self, HEADLINE: str, valid_industries: set, gate_id: str): pass
-                    
-    results = []
-
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import IntegrityGateExecutorAgent
 # NAMING FIXED: ValidationResult → ValidationResult
 class ValidationResult:
     '''Brief description of functionality and purpose.'''

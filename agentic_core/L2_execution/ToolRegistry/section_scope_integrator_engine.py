@@ -47,20 +47,7 @@ class ValidationResult: # Placeholder for ValidationResult
         self.signature = SIGNATURE
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-
-# NAMING FIXED: IntegrityGateExecutorAgent → IntegrityGateExecutorAgent
-class IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin): # Placeholder for IntegrityGateExecutorAgent
-    '''Brief description of functionality and purpose.'''
-    
-    def __init__(self) -> None:
-        self.results = []
-    def execute_hygiene_scan(self, overview):
-                    
-        return ValidationResult('VG_HYGIENE', True, 'INFO', 'Hygiene scan passed')
-
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import IntegrityGateExecutorAgent
 
 # NAMING FIXED: AdaptiveRecoveryLoop → AdaptiveRecoveryLoop
 class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop

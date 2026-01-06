@@ -15,16 +15,7 @@ class PeerIntelligenceConfig:
         self.differentiator_threshold = 0.3
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-
-class IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-    """Brief description of functionality and purpose."""
-
-    def __init__(self) -> None:
-        self.results = []
-
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import IntegrityGateExecutorAgent
 
 class PeerIntelligenceResult:
     """Brief description of functionality and purpose."""
