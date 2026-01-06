@@ -1152,10 +1152,22 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         name_lower = class_name.lower() if class_name else agent_path.stem.lower()
         
         # 1. Base class detection (highest priority - foundational)
-        if any(pattern.lower() in name_lower for pattern in ["baseagent", "base"]) and "base" in name_lower:
-            return "base_class"
-        if "mixin" in name_lower:
-            return "base_class"
+        # EXCLUDE: *Enforcer, *Validator, *Guardian agents that happen to have "base" in their name
+        # These are business logic agents that enforce/validate base class usage, not base classes themselves
+        # ALSO EXCLUDE: Standalone mixin files (e.g., mcp_hardened_mixin.py, healer_mixin.py)
+        # These are utility mixins, not layer base classes
+        exclusion_patterns = ["enforcer", "validator", "guardian", "checker", "auditor"]
+        is_excluded = any(pattern in name_lower for pattern in exclusion_patterns)
+        
+        # Exclude standalone mixin files (filename contains mixin but NOT agent or baseagent)
+        # Standalone mixins: mcp_hardened_mixin.py, healer_mixin.py, ASTEnforcementMixin.py
+        # Base agents with mixin: SafetyBaseAgent.py (inherits from mixins, but is a base agent)
+        is_standalone_mixin = "mixin" in name_lower and "agent" not in name_lower
+        
+        if not is_excluded and not is_standalone_mixin:
+            # Only classify as base_class if it's a BaseAgent (not just has "base" in name)
+            if "baseagent" in name_lower:
+                return "base_class"
         
         # 2. Specialized detection BEFORE infrastructure (sovereign clients, RL agents, meta-agents)
         # These have very specific naming conventions that should take precedence
