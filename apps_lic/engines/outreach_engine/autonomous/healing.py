@@ -123,6 +123,10 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
 
         return OutreachHealingStrategy.QUALITY_FOCUS
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
     """Factory for creating outreach agents."""
@@ -180,6 +184,10 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
                 agents.append(agent_map[name](ctx))
 
         return agents
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class OutreachHealingCycle:
@@ -392,6 +400,10 @@ class OutreachHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3Subatomi
             total_duration_ms=total_duration_ms,
             final_campaign=self.ctx.current_campaign.copy(),
         )
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 async def run_outreach_healing_mission(

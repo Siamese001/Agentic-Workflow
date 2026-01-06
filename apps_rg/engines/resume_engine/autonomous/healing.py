@@ -124,6 +124,10 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
 
         return HealingStrategy.SURGICAL_STRIKE
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class AgentFactory(MCPHardenedMixin, HealerMixin):
     """Factory for creating agent instances."""
@@ -180,6 +184,10 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
             ATSCompatibilityAgent(ctx),
             TestPilot(ctx),
         ]
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class HealingCycle:
@@ -400,6 +408,10 @@ class HealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
             final_resume=self.ctx.current_resume.copy(),
         )
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 async def run_self_healing_mission(
     JobDescription: str,
@@ -476,6 +488,10 @@ class ConvergenceDetectorAgent:
             return set()
 
         return self.history[-1] & self.history[-2]
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class AutomaticRollback:

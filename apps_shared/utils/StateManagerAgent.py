@@ -486,6 +486,10 @@ class StateValidator(HealerMixin, MCPHardenedMixin):
         
         return is_valid, errors
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 def test_state_manager():
     """

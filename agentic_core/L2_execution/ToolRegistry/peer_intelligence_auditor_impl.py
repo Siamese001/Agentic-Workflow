@@ -22,6 +22,10 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
     def __init__(self) -> None:
         self.results = []
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 class PeerIntelligenceResult:
     """Brief description of functionality and purpose."""
 
@@ -178,6 +182,10 @@ class PeerIntelligenceAuditorAgent(HealerMixin):
         if total_searches >= self.config.total_searches and len(hops) == self.config.total_hops:
             return ValidationResult(gate_id='VG_RAG_INTENSITY', PASSED=True, SEVERITY='INFO', MESSAGE=f'RAG intensity satisfied: {total_searches} searches across {len(hops)} hops', SIGNATURE=f'RAG:OK:{total_searches}', DETAILS={'total_searches': total_searches, 'total_hops': len(hops), 'searches_per_hop': [len(hop.search_queries) for hop in hops]})
         return ValidationResult(gate_id='VG_RAG_INTENSITY', PASSED=False, SEVERITY='BLOCK', MESSAGE=f'BLOCKED: Insufficient RAG intensity - {total_searches} searches across {len(hops)} hops (expected {self.config.total_searches} searches across {self.config.total_hops} hops)', DETAILS={'total_searches': total_searches, 'expected_searches': self.config.total_searches, 'total_hops': len(hops), 'expected_hops': self.config.total_hops})
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 def create_peer_intelligence_auditor(config: Optional[PeerIntelligenceConfig]=None) -> PeerIntelligenceAuditorAgent:
     """Factory function to create PeerIntelligenceAuditorAgent instance"""

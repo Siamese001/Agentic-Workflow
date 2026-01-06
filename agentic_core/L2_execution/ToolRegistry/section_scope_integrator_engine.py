@@ -58,6 +58,10 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
                     
         return ValidationResult('VG_HYGIENE', True, 'INFO', 'Hygiene scan passed')
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 # NAMING FIXED: AdaptiveRecoveryLoop → AdaptiveRecoveryLoop
 class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop
     '''Brief description of functionality and purpose.'''

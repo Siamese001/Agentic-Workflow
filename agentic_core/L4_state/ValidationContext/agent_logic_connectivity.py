@@ -305,3 +305,7 @@ class CanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         status = 'duplicate' if source == 'l1_exact_match' else 'similar'
         content = match.get('content') or match.get('metadata', {}).get('code_snippet', 'Content not available')
         return {'status': status, 'is_valid': True, 'confidence': match.get('similarity', 1.0 if source == 'l1_exact_match' else 0.0), 'source': source, 'matched_pattern': match.get('id'), 'ast_match': source == 'l1_exact_match', 'Recommendation': 'Use existing pattern', 'metadata': match.get('metadata'), 'query_time_ms': (time.time() - start_time) * 1000, 'content': content}
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

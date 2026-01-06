@@ -297,6 +297,10 @@ class OrchestratorAgentAndScopeManagerAgent:
         impact_scope: Any = diplomat.calculate_impact_scope(modified_files, max_depth=self.config.smart_scope_depth)
         return impact_scope
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 class ConsolidatedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     [START] PHASE 5: THE HUB - Consolidated Command & Control Orchestrator
@@ -484,6 +488,10 @@ class ConsolidatedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
             Logger.error('Healing service not initialized. Cannot execute healing.')
             return False
         return await self.healing_service.execute_healing(file_path, violation_key, fix_prompt)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 def create_orchestrator(config: Optional[OrchestratorConfig]=None, context: Optional[ValidationContext]=None) -> ConsolidatedOrchestratorAgent:
     """

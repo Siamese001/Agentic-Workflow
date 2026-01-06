@@ -41,6 +41,10 @@ class SignatureVerifierAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         """Process data."""
         return data
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def execute(data: object, config: Optional[Dict]=None, **kwargs: Dict[str, object]) -> OperationResult:
     """Convenience function."""
     return SignatureVerifier(config).execute(data, **kwargs)

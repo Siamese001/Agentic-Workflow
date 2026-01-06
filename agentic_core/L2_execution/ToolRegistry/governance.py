@@ -255,6 +255,10 @@ Generate the blueprint now:"""
         with open(file_path, 'r', encoding='utf-8') as f:
             return f.read()
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class DependencySentinelAgent(SubAtomicAgent):
@@ -401,3 +405,6 @@ class DependencySentinelAgent(SubAtomicAgent):
                     violations.append(f"Circular import: {file_a} <-> {file_b}")
 
         return (len(violations) == 0, violations)
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

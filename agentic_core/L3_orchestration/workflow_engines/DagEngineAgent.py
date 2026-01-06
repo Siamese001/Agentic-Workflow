@@ -330,6 +330,10 @@ class DagEngineAgent(MCPHardenedMixin, HealerMixin):
         if self.enable_logging:
             LOGGER.info('dag_reset')
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def create_dag_from_config(config: Dict[str, Any]) -> DAGEngine:
     """Factory function to create a DAG from configuration."""
     dag: Any = DAGEngine()

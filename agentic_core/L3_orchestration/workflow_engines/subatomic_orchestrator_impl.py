@@ -58,12 +58,20 @@ class WorkflowBlueprint(HealerMixin):
         self.mutation_hooks = mutation_hooks or {}
         self.parallel_groups = parallel_groups or []
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: AgentRegistry → AgentRegistry
 class AgentRegistry(HealerMixin):
     """Mock AgentRegistry for type hinting."""
     pass
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 def get_agent_registry() -> AgentRegistry:
     """Mock function."""
@@ -95,6 +103,10 @@ class DagManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         else:
             return MockMutationResult(False)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING FIXED: SubatomicHop → SubatomicHop
 class SubatomicHop(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
@@ -105,6 +117,10 @@ class SubatomicHop(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         self.context = CONTEXT
         self.enable_prompt_injection = enable_prompt_injection
         self.DagManagerAgent = None
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 def create_functional_agent(role, hop_function, CONTEXT, enable_prompt_injection):
     '''Brief description of functionality and purpose.'''
@@ -492,6 +508,10 @@ class SubatomicOrchestratorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTesti
                 'success_rate': COMPLETED / TOTAL if TOTAL > 0 else 0,
                 'average_duration': avg_duration,
                 'active_graphs': len(self.active_graphs)}
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 def get_orchestrator() -> SubatomicOrchestratorAgent:

@@ -282,6 +282,10 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         """Get all schemas used by a file."""
         return self.registry.reverse_deps.get(file_path, set())
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def generate_drift_report(self) -> str:
     """Generate schema drift report."""
     lines: Any = ['🛡️  SCHEMA DRIFT REPORT', '=' * 80, f'Total Schemas: {len(self.registry.schemas)}', f'Total Dependencies: {sum((len(deps) for deps in self.registry.dependencies.values()))}', '', 'Schema Usage:']

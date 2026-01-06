@@ -431,6 +431,10 @@ class OutreachCapabilityMonitorAgent(HealerMixin, MCPHardenedMixin):
         """Get stats for all agents."""
         return self._agent_stats.copy()
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class OutreachProactiveAgent(OutreachAgent):
     """
@@ -477,3 +481,7 @@ class OutreachProactiveAgent(OutreachAgent):
 
         self.record_result(True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending")
         print(f"   [{self.name}] ✅ Proactive analysis complete")
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

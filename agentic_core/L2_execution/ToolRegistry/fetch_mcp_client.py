@@ -202,6 +202,10 @@ class SovereignFetchMcpClient(MCPHardenedMixin, HealerMixin, SubatomicTestingMix
         except Exception as e:
             Logger.error(f'[L2 FETCH] Health check failed: {e}')
             return {'status': 'unhealthy', 'error': str(e)}
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 _fetch_client: Optional[SovereignFetchMCPClient] = None
 
 def get_fetch_client() -> SovereignFetchMCPClient:

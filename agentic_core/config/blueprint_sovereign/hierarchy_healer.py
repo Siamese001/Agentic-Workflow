@@ -47,3 +47,7 @@ class HierarchyHealerAgent(HealerMixin, MCPHardenedMixin):
                 
                 return {"healed": True, "move_to": str(new_path), "reason": "Depth-4 Alignment"}
         return {"healed": False}
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

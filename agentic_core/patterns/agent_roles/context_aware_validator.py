@@ -139,3 +139,7 @@ class ContextAwareValidatorAgent(HealerMixin, MCPHardenedMixin):
     async def health_check(self) -> Dict[str, bool]:
         """Standard interface for SelfDiagnosisMixin."""
         return {"healthy": True}
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

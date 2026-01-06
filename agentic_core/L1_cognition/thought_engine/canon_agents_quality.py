@@ -198,6 +198,10 @@ class SafetyInspectorAgent(HealerMixin):
                 continue
         return (len(violations) == 0, violations)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 # NOT_AN_AGENT — legacy L1 class, true agent is DocEnforcerAgent in L2 — excluded from discovery
 class DocumentationAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """
@@ -238,6 +242,10 @@ class DocumentationAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
             except Exception:
                 continue
         return (len(violations) == 0, violations)
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 class SubAtomicAgent:
     """Stub base class for quality agents."""
@@ -291,3 +299,6 @@ class NamingAgent(SubAtomicAgent):
             except Exception:
                 continue
         return (len(violations) == 0, violations)
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

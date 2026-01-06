@@ -208,6 +208,10 @@ class HygieneValidatorAgent(L0Agent):
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 if __name__ == "__main__":
     import sys

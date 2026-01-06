@@ -144,6 +144,10 @@ class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer):
                 return new_node
         return node
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # Factory for discovery
 def get_type_hint_enforcement_agent(ctx, project_root=None) -> TypeHintEnforcementAgent:

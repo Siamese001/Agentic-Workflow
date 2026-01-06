@@ -467,6 +467,10 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
             return self.mutation_history[-limit:]
         return self.mutation_history
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):

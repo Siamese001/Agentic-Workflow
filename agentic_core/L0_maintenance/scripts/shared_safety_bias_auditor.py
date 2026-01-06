@@ -43,6 +43,10 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     and content quality assurance.
     """
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def __init__(self: Any, enable_logging: bool) -> None:
     """Initialize bias auditor.
 

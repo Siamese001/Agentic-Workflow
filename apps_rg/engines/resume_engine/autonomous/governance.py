@@ -423,6 +423,10 @@ class StrictDocEnforcerAgent:
             "incomplete_docstrings": sum(1 for v in self._violations if v.ViolationType == "incomplete_docstring"),
         }
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class DashboardGenerator:
     """
@@ -978,3 +982,6 @@ class Phase7OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
             "prompts": self.prompt_gov.get_stats(),
             "budget": self.budget.get_stats(),
         }
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

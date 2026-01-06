@@ -103,3 +103,6 @@ class SovereignSemanticCache(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMi
             Logger.info(f'[L4 PURGE] Purged semantic trail for {Path(file_path).name}')
         except Exception:
             pass
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

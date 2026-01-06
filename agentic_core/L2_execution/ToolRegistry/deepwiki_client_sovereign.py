@@ -229,6 +229,10 @@ class SovereignDeepWikiClient(MCPHardenedMixin, HealerMixin, SubatomicTestingMix
         except Exception as e:
             Logger.error(f'[L6 DEEPWIKI] Health check failed: {e}')
             return {'status': 'unhealthy', 'error': str(e)}
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 _deepwiki_client: Optional[SovereignDeepWikiClient] = None
 
 def get_deepwiki_client() -> SovereignDeepWikiClient:

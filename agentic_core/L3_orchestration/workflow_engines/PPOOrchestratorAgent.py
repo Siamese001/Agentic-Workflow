@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import warnings
+import logging
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.distributions import Categorical
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Any
 import numpy as np
 import time
 
@@ -13,6 +15,15 @@ from agentic_core.observability.metrics.shared_counters import counters
 from agentic_core.observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent import NervousSystemAgent
+from agentic_core.L3_orchestration.unified_workflow_engine import UnifiedWorkflowEngine
+
+log = logging.getLogger(__name__)
+
+warnings.warn(
+    "PPOOrchestratorAgent is deprecated. Use UnifiedWorkflowEngine with type='rl' and rl_strategy='ppo'",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 
 class PPOActorCritic(nn.Module):
@@ -35,19 +46,28 @@ class PPOActorCritic(nn.Module):
 
 class PPOOrchestratorAgent:
     """
+    DEPRECATED: Use UnifiedWorkflowEngine instead.
+    
     Sub-atomic PPO learner: Clipped proximal policy optimization for stable routing.
     Multiple epochs + advantage normalization → reliable improvement.
     Batch from trajectory buffer.
+    
+    This class now wraps UnifiedWorkflowEngine for backward compatibility.
     """
 
     def __init__(self, layers: List[str]):
+        log.warning("PPOOrchestratorAgent is deprecated - migrating to UnifiedWorkflowEngine")
         self.name = "PPOOrchestratorAgent"
         self.project_root = get_validated_project_root()
         self.layers = layers
         self.n_actions = len(layers)
         self.input_dim = self.n_actions + 1  # Proportions + entropy
 
+        # Legacy implementation preserved for compatibility
         self.model = PPOActorCritic(self.input_dim, self.n_actions)
+        
+        # New unified engine for future migration
+        self._engine = UnifiedWorkflowEngine(project_root=self.project_root)
         self.optimizer = optim.Adam(self.model.parameters(), lr=3e-4)
         self.clip_eps = 0.2
         self.gamma = 0.99
@@ -150,3 +170,7 @@ class PPOOrchestratorAgent:
             results["failed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

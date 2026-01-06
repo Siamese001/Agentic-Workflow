@@ -68,6 +68,10 @@ class TaskMonitorAgent(HealerMixin):
                     return "Unable to get stack trace"
         return "Task completed"
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING FIXED: DeadlockDetectorAgent → DeadlockDetectorAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -306,6 +310,10 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
             "is_done": monitor.Task.done(),
             "stack_traces": monitor.stack_traces
         }
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 # Global instance

@@ -161,3 +161,6 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     def get_config(self) -> Dict[str, Any]:
         """Get current configuration"""
         return {'faithfulness_threshold': self.faithfulness_threshold, 'max_hops': self.max_hops, 'base_top_k': self.base_top_k, 'threshold_adaptation_rate': self.threshold_adaptation_rate, 'performance_window': self.performance_window}
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

@@ -428,6 +428,10 @@ class NervousSystemPhaseExecution:
                         "details": f"Agent {self.name} executed successfully"
                     }
 
+                def heal_repository(self) -> dict:
+                        """Invoke healing chain via super()."""
+                        return super().heal_repository()
+
             mock_agent = MockAgent(AgentInfo.name, phase)
 
             if phase in phases:
@@ -1063,6 +1067,10 @@ class NervousSystemPhaseOrchestratorAgent(HealerMixin):
                     break
         
         return converged, errors
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 # NAMING CANON COMPLIANCE — renamed to NervousSystemAgent for discovery and sovereignty — 2025-12-30
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin

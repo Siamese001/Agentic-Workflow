@@ -468,14 +468,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Canonical Base Inheritance Score -->
-                                <div id="baseInheritanceBox" style="padding:30px; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow); border:3px solid #e5e7eb;">
-                                    <div style="font-size:1.2em; color:var(--text-light); margin-bottom:10px;">Canonical Base Inheritance</div>
-                                    <div id="baseInheritanceValue" style="font-size:5em; font-weight:800; line-height:1;">--%</div>
-                                    <div style="font-size:0.9em; color:var(--text-light); margin-top:10px; line-height:1.3;">
-                                        Target: ≥90% • Correct layer base classes
-                                    </div>
-                                </div>
                             </div>
 
 
@@ -989,7 +981,7 @@
                     return {
                         Total: 0,
                         'Heal Cap %': 0,
-                        'Invocation %': 0,
+                        'Heal Invocation %': 0,
                         'Hardened %': 0,
                         'Test %': 0,
                         'Observable %': 0,
@@ -1039,7 +1031,7 @@
                 return {
                     Total: total,
                     'Heal Cap %': healCapPct,
-                    'Invocation %': invocationPct,
+                    'Heal Invocation %': invocationPct,
                     'Hardened %': hardenedPct,
                     'Test %': testsPct,
                     'Observable %': observablePct,
@@ -1077,7 +1069,7 @@
                             ...row,
                             Total: infraMetrics.Total,
                             'Heal Cap %': infraMetrics['Heal Cap %'],
-                            'Invocation %': infraMetrics['Invocation %'],
+                            'Heal Invocation %': infraMetrics['Heal Invocation %'],
                             'Hardened %': infraMetrics['Hardened %'],
                             'Test %': infraMetrics['Test %'],
                             'Observable %': infraMetrics['Observable %'],
@@ -1106,7 +1098,7 @@
                                 ...row,
                                 Total: m.Total,
                                 'Heal Cap %': m['Heal Cap %'],
-                                'Invocation %': m['Invocation %'],
+                                'Heal Invocation %': m['Heal Invocation %'],
                                 'Hardened %': m['Hardened %'],
                                 'Test %': m['Test %'],
                                 'Observable %': m['Observable %'],
@@ -1199,7 +1191,7 @@
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: Teams within a department — Base Class (standard operating procedures), Infrastructure (utilities), or specialized units (Quality Control, Logistics, etc.)">Sub-Territory</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: Worker count (agents) / machinery they operate (tools). Like factory headcount and equipment inventory.">Agents / Tools</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % of workers trained in self-repair. Like workers who have their own toolbox and repair manual — they CAN fix small equipment problems themselves without calling maintenance.">Heal Cap %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % actually FOLLOWING the factory repair checklist. Having a toolbox is useless if workers never open it. This measures active use of the standardized repair protocol.">Invocation %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % actually FOLLOWING the factory repair checklist. Having a toolbox is useless if workers never open it. This measures active use of the standardized repair protocol.">Heal Invocation %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % with safety guards on machinery. Like emergency stop buttons and protective shields — prevents workers from getting hurt when operating dangerous equipment.">MCP Hardened %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % with quality control checkpoints. Like inspectors testing each product batch — catches defects before shipping to customers.">Test %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="FACTORY ANALOGY: % with monitoring cameras/sensors. Like security cameras and production line sensors — when something breaks, you can review the footage to see what went wrong.">Observable %</th>
@@ -1237,7 +1229,7 @@
                         return 0.0;
                     })();
                 const healthColor = totalRow.Health === 0 ? '#ff0000' : totalRow.Health >= 80 ? '#065f46' : totalRow.Health >= 60 ? '#ea580c' : '#dc2626';
-                const invocationColor = totalRow['Invocation %'] === 0 ? '#ff0000' : totalRow['Invocation %'] >= 80 ? '#065f46' : totalRow['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
+                const invocationColor = (totalRow['Heal Invocation %'] || totalRow['Invocation %'] || 0) === 0 ? '#ff0000' : (totalRow['Heal Invocation %'] || totalRow['Invocation %'] || 0) >= 80 ? '#065f46' : (totalRow['Heal Invocation %'] || totalRow['Invocation %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
                 const hardenedColor = (totalRow['Hardened %'] || 0) === 0 ? '#ff0000' : (totalRow['Hardened %'] || 0) >= 80 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 60 ? '#ea580c' : '#dc2626';
                 const testColor = totalRow['Test %'] === 0 ? '#ff0000' : totalRow['Test %'] >= 80 ? '#065f46' : totalRow['Test %'] >= 60 ? '#ea580c' : '#dc2626';
                 
@@ -1251,7 +1243,7 @@
                             ${totalRow.ToolCount !== undefined ? ` <span style="color:#64748b;">/</span> <span style="color:var(--primary); font-weight:600;">${totalRow.ToolCount}</span>` : ''}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Heal Cap %'].toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Invocation %'].toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Invocation %'] || totalRow['Invocation %'] || 0)}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">${(totalRow['Heal Invocation %'] || totalRow['Invocation %'] || 0).toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Hardened %'] || 0).toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Test %'].toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Observable %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Observable %'] || 0).toFixed(1)}%</td>
@@ -1287,7 +1279,7 @@
                 const healthColor = row.Health === 0 ? '#ff0000' : row.Health >= 80 ? '#065f46' : row.Health >= 60 ? '#ea580c' : '#dc2626';
                 
                 // Colors respect N/A targets (gray text if N/A)
-                const invVal = row['Invocation %'];
+                const invVal = row['Heal Invocation %'] || row['Invocation %'] || 0;
                 const invocationColor = tgtInv === 'N/A' ? '#6b7280' : (invVal === 0 ? '#ff0000' : invVal >= (tgtInv || 80) ? '#065f46' : invVal >= 60 ? '#ea580c' : '#dc2626');
                 
                 const hardVal = row['Hardened %'] || 0;
@@ -1311,8 +1303,8 @@
                     <td style="padding:12px; text-align:center; background:${bgColor}; border-right:1px solid #e5e7eb;">${agentsToolsDisplay}</td>
                     <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
                     
-                    <td style="padding:12px; text-align:center; background:${getContextualBg(row['Invocation %'], tgtInv)}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;" title="${getTargetTooltip('Invocation', row['Invocation %'], tgtInv)}">
-                        ${tgtInv === 'N/A' ? 'N/A' : row['Invocation %'].toFixed(1) + '%'}
+                    <td style="padding:12px; text-align:center; background:${getContextualBg(invVal, tgtInv)}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;" title="${getTargetTooltip('Heal Invocation', invVal, tgtInv)}">
+                        ${tgtInv === 'N/A' ? 'N/A' : invVal.toFixed(1) + '%'}
                     </td>
                     
                     <td style="padding:12px; text-align:center; background:${getContextualBg(row['Hardened %'] || 0, tgtMcp)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;" title="${getTargetTooltip('MCP Hardening', row['Hardened %'] || 0, tgtMcp)}">
@@ -1776,17 +1768,34 @@
                 margin: { l: 90, r: 90, t: 40, b: 90 },
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
-                font: { color: '#1f2937' },
+                font: { color: '#1f2937', size: 12 },
                 xaxis: (() => {
                     const maxCC = Math.max(...points.map(p => parseFloat(p.avgCC) || 0), 30);
                     // INVERTED: Lower CC (simpler) = higher x-value (right side = better, like Gartner quadrant)
                     return { 
-                        title: 'Code Simplicity (inverted CC: higher = simpler)', 
+                        title: {
+                            text: 'Cyclomatic Complexity (CC)<br><sub>← Lower CC (Simpler) | Higher CC (More Complex) →</sub>',
+                            font: { size: 13, color: '#1f2937' }
+                        },
                         range: [0, maxCC * 1.05],
-                        autorange: 'reversed'  // Invert axis so low CC is on right
+                        autorange: 'reversed',  // Invert axis so low CC is on right
+                        showgrid: true,
+                        gridcolor: '#e5e7eb',
+                        zeroline: true,
+                        zerolinecolor: '#9ca3af'
                     };
                 })(),
-                yaxis: { title: 'Compliance %', range: [0, 110] },
+                yaxis: { 
+                    title: {
+                        text: 'Compliance Score (%)<br><sub>↓ Lower | Higher ↑</sub>',
+                        font: { size: 13, color: '#1f2937' }
+                    },
+                    range: [0, 110],
+                    showgrid: true,
+                    gridcolor: '#e5e7eb',
+                    zeroline: true,
+                    zerolinecolor: '#9ca3af'
+                },
                 shapes: (() => {
                     const maxCC = Math.max(...points.map(p => parseFloat(p.avgCC) || 0), 30);
                     const maxX = maxCC * 1.05;
@@ -2125,7 +2134,7 @@ ${rec.guidance.split('\n').map((line, i) =>
 
             // Calculate current gap scores for prioritization
             const gaps = {
-                invocation_gap: 100 - (parseFloat(totalRow['Invocation %']) || 0),
+                invocation_gap: 100 - (parseFloat(totalRow['Heal Invocation %'] || totalRow['Invocation %']) || 0),
                 tests_gap: 100 - (parseFloat(totalRow['Test %']) || 0),
                 complexity: parseFloat(totalRow['Avg CC']) || 0,
                 obs_gap: 100 - (parseFloat(totalRow['Observable %']) || 0),
@@ -2755,77 +2764,114 @@ ${rec.guidance.split('\n').map((line, i) =>
                     }
                 }
 
-                // NEW: Intelligent Anomaly Detection Flags
+                // NEW: Dynamic Strategic Observations (per StrategicRecommendationAgent patterns)
                 const anomalyContainer = document.getElementById('anomalyFlags');
                 if (anomalyContainer && territoryData && totalRow) {
                     anomalyContainer.innerHTML = ''; // clear
-
-                    const totalAgents = totalRow.Total || 0;
-                    const layers = [
-                        {name: 'L5 Safety', prefix: 'L5 Safety', expectInfra: true},
-                        {name: 'L4 State', prefix: 'L4 State', expectInfra: false},
-                        {name: 'L3 Orchestration', prefix: 'L3 Orchestration', expectInfra: true},
-                        {name: 'L2 Execution', prefix: 'L2 Execution', expectInfra: false},
-                        {name: 'L1 Cognition', prefix: 'L1 Cognition', expectInfra: true},
-                        {name: 'L0 Maintenance', prefix: 'L0 Maintenance', expectInfra: false}
-                    ];
-
-                    const stats = {};
-                    layers.forEach(l => stats[l.name] = {agents: 0, hasInfra: false});
-
-                    territoryData.forEach(row => {
-                        const layer = layers.find(l => row.Territory?.startsWith(l.prefix));
-                        if (layer && row.Total > 0) {
-                            stats[layer.name].agents += row.Total;
-                            const sub = (row['Sub-Territory'] || '').toLowerCase();
-                            if (sub.includes('infrastructure') || sub.includes('infra')) {
-                                stats[layer.name].hasInfra = true;
-                            }
-                        }
-                    });
-
-                    const anomalies = [];
-
-                    // Missing infra in critical layers
-                    const missingInfra = layers.filter(l => l.expectInfra && !stats[l.name].hasInfra && stats[l.name].agents > 0);
-                    if (missingInfra.length > 0) {
-                        anomalies.push({
-                            color: '#dc2626',
-                            title: '🚨 Missing Infrastructure in Critical Layers',
-                            text: `Zero infra agents in: ${missingInfra.map(l => l.name).join(', ')}<br>
-                                   <strong>Impact:</strong> Risks scalability/reliability in safety, orchestration, cognition.<br>
-                                   <strong>Fix:</strong> Add dedicated infra agents (e.g., monitors, provisioners).`
+                    const observations = [];
+                    
+                    // Extract key metrics (mirrors StrategicRecommendationAgent logic)
+                    const health = totalRow.Health || 0;
+                    const invocation = totalRow['Heal Invocation %'] || totalRow['Invocation %'] || 0;
+                    const mcpHardened = totalRow['Hardened %'] || 0;
+                    const testCoverage = totalRow['Test %'] || 0;
+                    const healCap = totalRow['Heal Cap %'] || 0;
+                    const observable = totalRow['Observable %'] || 0;
+                    const avgCC = totalRow['Avg CC'] || 0;
+                    
+                    // Build strategic review (dynamic per current metrics)
+                    let reviewText = `Portfolio health at <strong>${health.toFixed(1)}%</strong> with <strong>${totalRow.Total || 0}</strong> agents. `;
+                    
+                    // Heal Invocation observation
+                    if (invocation < 60) {
+                        observations.push({
+                            color: invocation < 30 ? '#dc2626' : '#ea580c',
+                            icon: invocation < 30 ? '🚨' : '⚠️',
+                            title: `Heal Invocation Gap: ${invocation.toFixed(1)}%`,
+                            text: `Target: 100%. Healing protocols not actively used.<br>
+                                   <strong>Impact:</strong> Self-recovery disabled in ${(100-invocation).toFixed(0)}% of agents.<br>
+                                   <strong>Fix:</strong> Add super().heal_repository() calls in except blocks.`
+                        });
+                        reviewText += `Critical invocation gap at ${invocation.toFixed(1)}% (target 100%). `;
+                    }
+                    
+                    // MCP Hardening observation
+                    if (mcpHardened < 80) {
+                        observations.push({
+                            color: mcpHardened < 50 ? '#dc2626' : '#ea580c',
+                            icon: mcpHardened < 50 ? '🚨' : '⚠️',
+                            title: `MCP Hardening: ${mcpHardened.toFixed(1)}%`,
+                            text: `Target: 100%. External tool boundaries exposed.<br>
+                                   <strong>Impact:</strong> Injection risks in ${(100-mcpHardened).toFixed(0)}% of tool calls.<br>
+                                   <strong>Fix:</strong> Apply MCPHardenedMixin and @hardened decorators.`
+                        });
+                        reviewText += `MCP hardening at ${mcpHardened.toFixed(1)}% exposes tool boundaries. `;
+                    }
+                    
+                    // Test Coverage observation
+                    if (testCoverage < 90) {
+                        observations.push({
+                            color: testCoverage < 70 ? '#ea580c' : '#eab308',
+                            icon: testCoverage < 70 ? '⚠️' : '📋',
+                            title: `Test Coverage: ${testCoverage.toFixed(1)}%`,
+                            text: `Target: 95%. Regression risk elevated.<br>
+                                   <strong>Impact:</strong> ${(100-testCoverage).toFixed(0)}% of agents lack test validation.<br>
+                                   <strong>Fix:</strong> Add unit tests for core behaviors first.`
+                        });
+                        reviewText += `Test coverage at ${testCoverage.toFixed(1)}% increases regression risk. `;
+                    }
+                    
+                    // Complexity observation
+                    if (avgCC > 15) {
+                        observations.push({
+                            color: avgCC > 30 ? '#ea580c' : '#eab308',
+                            icon: avgCC > 30 ? '⚠️' : '📊',
+                            title: `Avg Complexity: ${avgCC.toFixed(1)} CC`,
+                            text: `Target: ≤10 CC. High complexity blocks safe changes.<br>
+                                   <strong>Impact:</strong> Maintenance cost and bug surface elevated.<br>
+                                   <strong>Fix:</strong> Refactor methods with CC>15 into smaller primitives.`
                         });
                     }
-
-                    // L2 disproportion
-                    const l2 = stats['L2 Execution'];
-                    const nonL2Max = Math.max(...layers.filter(l => l.name !== 'L2 Execution').map(l => stats[l.name].agents));
-                    const l2Pct = totalAgents ? (l2.agents / totalAgents * 100).toFixed(1) : 0;
-                    if (l2.agents > totalAgents * 0.30 || l2.agents > nonL2Max * 1.5) {
-                        anomalies.push({
-                            color: '#ea580c',
-                            title: '⚠️ L2 Execution Disproportionately Large',
-                            text: `${l2.agents} agents (${l2Pct}% of total)<br>
-                                   <strong>Impact:</strong> Risks brittleness and coordination overhead.<br>
-                                   <strong>Fix:</strong> Consolidate similar agents, promote patterns to L3, target <25% share.`
+                    
+                    // Observability observation
+                    if (observable < 90) {
+                        observations.push({
+                            color: observable < 70 ? '#ea580c' : '#eab308',
+                            icon: '👁️',
+                            title: `Observability: ${observable.toFixed(1)}%`,
+                            text: `Target: 100%. Production debugging limited.<br>
+                                   <strong>Impact:</strong> Silent failures in ${(100-observable).toFixed(0)}% of agents.<br>
+                                   <strong>Fix:</strong> Add structured logging, metrics, and tracing.`
                         });
                     }
-
-                    // Render cards (or positive if none)
-                    if (anomalies.length === 0) {
+                    
+                    // Positive observation if all metrics are good
+                    if (observations.length === 0) {
+                        observations.push({
+                            color: '#16a34a',
+                            icon: '✅',
+                            title: 'Portfolio Excellent',
+                            text: `All key metrics at target levels.<br>
+                                   Health: ${health.toFixed(1)}% | Invocation: ${invocation.toFixed(1)}% | Tests: ${testCoverage.toFixed(1)}%<br>
+                                   <strong>Status:</strong> Continue maintaining high autonomy standards.`
+                        });
+                        reviewText = `Portfolio health excellent at ${health.toFixed(1)}% with all key metrics at or above targets.`;
+                    }
+                    
+                    // Render strategic review header
+                    const reviewCard = document.createElement('div');
+                    reviewCard.style.cssText = 'grid-column: 1 / -1; padding:20px; background:#eff6ff; border-left:6px solid var(--primary); border-radius:8px; margin-bottom:10px;';
+                    reviewCard.innerHTML = `<strong style="color:var(--primary);">📊 Strategic Review</strong><br><span style="line-height:1.6;">${reviewText}</span>`;
+                    anomalyContainer.appendChild(reviewCard);
+                    
+                    // Render observation cards
+                    observations.forEach(obs => {
                         const card = document.createElement('div');
-                        card.style.cssText = 'padding:20px; background:#f0fdf4; border-left:6px solid #16a34a; border-radius:8px;';
-                        card.innerHTML = '<strong style="color:#16a34a;">✅ Portfolio Balanced</strong><br>No critical layer infra gaps or L2 disproportion detected.';
+                        const bgColor = obs.color === '#16a34a' ? '#f0fdf4' : obs.color === '#dc2626' ? '#fef2f2' : obs.color === '#ea580c' ? '#fff7ed' : '#fefce8';
+                        card.style.cssText = `padding:20px; background:${bgColor}; border-left:6px solid ${obs.color}; border-radius:8px;`;
+                        card.innerHTML = `<strong style="color:${obs.color};">${obs.icon} ${obs.title}</strong><br><small style="line-height:1.5;">${obs.text}</small>`;
                         anomalyContainer.appendChild(card);
-                    } else {
-                        anomalies.forEach(a => {
-                            const card = document.createElement('div');
-                            card.style.cssText = `padding:20px; background:#fef2f2; border-left:6px solid ${a.color}; border-radius:8px;`;
-                            card.innerHTML = `<strong style="color:${a.color};">${a.title}</strong><br><small>${a.text}</small>`;
-                            anomalyContainer.appendChild(card);
-                        });
-                    }
+                    });
                 }
 
                 renderStrategicObservations(totalRow, territoryData);

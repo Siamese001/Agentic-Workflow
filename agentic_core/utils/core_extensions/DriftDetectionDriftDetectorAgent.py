@@ -84,6 +84,10 @@ class DriftDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         
         return violations
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def get_drift_detector(project_root: Path) -> DriftDetectorAgent:
     """Factory function to get drift detector."""
     return DriftDetectorAgent(project_root)

@@ -69,6 +69,10 @@ class CoordinateObservabilityOperationsAgent(MCPHardenedMixin, SubatomicTestingM
                 break
         return OrchestrationResult(success=SUCCESS, steps=RESULTS, final_output=CONTEXT['outputs'].get(self.steps[-1]['name']) if self.steps else None)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def orchestrate(steps: List[Dict], initial_input: object=None, config: Optional[Dict]=None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     ORCH: Any = CoordinateObservabilityOperations(config)

@@ -134,6 +134,10 @@ Return ONLY the python code for {primary}.
             return match.group(1)
         return None
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class TestPilotAgent(SubAtomicAgent):
@@ -171,6 +175,10 @@ class TestPilotAgent(SubAtomicAgent):
         filename = os.path.basename(mod_file)
         test_path = os.path.join("tests", f"test_{filename}")
         return test_path if os.path.exists(test_path) else None
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
@@ -264,3 +272,7 @@ Return ONLY the Python code.
                     print(f"   [X] Failed to write tool (blocked by governor)")
         except Exception as e:
             print(f"   [X] Failed to forge {tool_name}: {e}")
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

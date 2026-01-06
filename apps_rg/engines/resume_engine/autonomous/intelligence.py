@@ -846,6 +846,10 @@ class UnifiedOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
             },
         }
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 class Phase6OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
@@ -955,3 +959,7 @@ class Phase6OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
             "omni": self.omni.get_stats(),
             "unified": self.unified.get_comprehensive_stats(),
         }
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

@@ -529,6 +529,10 @@ Output ONLY the JSON array, no explanation."""
         
         print(f"[Librarian] Storage complete")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 async def run_intelligence_service(target_list_file: str = "research_targets.json"):
     """

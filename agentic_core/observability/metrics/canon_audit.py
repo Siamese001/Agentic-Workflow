@@ -143,6 +143,10 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         print('=' * 60 + '\n')
         return {'status': overall_status, 'components': component_results, 'mcp_integration': mcp_results, 'insights': insights, 'timestamp': asyncio.get_event_loop().time()}
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 async def audit_core_components() -> Any:
     """
     Convenience function to run core component audit.

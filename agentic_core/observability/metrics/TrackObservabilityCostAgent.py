@@ -39,6 +39,10 @@ class TrackObservabilityCostAgent(MCPHardenedMixin, SubatomicTestingMixin, Heale
         """Process data."""
         return data
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def execute(data: object, config: Optional[Dict[str, object]]=None, **kwargs: Dict[str, object]) -> OperationResult:
     """Convenience function."""
     return TrackObservabilityCost(config).execute(data, **kwargs)

@@ -266,6 +266,10 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
             checkpoint_file.replace(quarantine_file)
             Logger.warning(f"Quarantined Checkpoint: {checkpoint_file.name}")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # Factory for managing Checkpoint managers
 class CheckpointManagerFactory:

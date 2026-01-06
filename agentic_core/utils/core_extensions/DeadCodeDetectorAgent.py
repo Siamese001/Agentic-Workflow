@@ -310,6 +310,10 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             
         return "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(report)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # CLI Entry Point
 def main():

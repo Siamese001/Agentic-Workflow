@@ -74,6 +74,10 @@ class HistorianAgent(SubAtomicAgent):
         except (IOError, OSError) as e:
             print(f"   [!] Historian failed to write: {e}")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class GitAgent(SubAtomicAgent):
@@ -112,6 +116,10 @@ class GitAgent(SubAtomicAgent):
         except Exception as e:
             print(f"   [!] Git operation failed: {e}")
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class BenchmarkingAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
@@ -122,6 +130,10 @@ class BenchmarkingAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
                     
         # Placeholder for Time Budget logic
         pass
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 if WATCHDOG_AVAILABLE:

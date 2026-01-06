@@ -193,3 +193,6 @@ class ConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             self.active_locks.pop(key, None)
             self.stats['timeouts'] += 1
             LOGGER.debug(f'Cleaned up expired lock record: {key}')
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

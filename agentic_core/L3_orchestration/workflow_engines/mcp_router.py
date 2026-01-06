@@ -122,6 +122,10 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     health[mcp] = False
         return health
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def get_mcp_router(tui_handle: Any=None) -> MCPRouter:
     """
     Factory function to create MCPRouter instance.

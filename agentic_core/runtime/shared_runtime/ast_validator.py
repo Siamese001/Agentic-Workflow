@@ -68,6 +68,10 @@ class CanonAstValidatorAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixi
         else:
             self.generic_visit(node)
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 def parse_and_validate(file_path: Path, content: str, key_id: int, validator_class: Any) -> List[Dict]:
     """Helper to run a validator against a file safely."""
     try:

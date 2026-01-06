@@ -120,6 +120,10 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
             "max_fallback_size": self.max_fallback_size
         }
 
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
+
 # Singleton instance for global use
 _orchestrator = None
 
