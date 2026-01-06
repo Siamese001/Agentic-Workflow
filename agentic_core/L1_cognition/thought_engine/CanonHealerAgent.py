@@ -1,9 +1,14 @@
 from __future__ import annotations
 """
-Canon Validator Core Agents
-SystemArchitect, HealerAgent, GenerativeGuard - Critical infrastructure agents.
-Phase 9A: DDD Remediation - Interface-based composition (Dec 26, 2025)
-[SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
+Canon Validator Core Agents - DEPRECATED FILE
+
+MIGRATION NOTICE (Jan 6, 2026):
+This file has been split into individual agent files following one-file-per-agent pattern:
+- GenerativeGuard → GenerativeGuardAgent.py
+- SystemArchitect → SystemArchitectAgent.py
+- HealerAgent → remains here temporarily for backward compatibility
+
+TODO: Remove this file after all imports are updated to use new locations.
 """
 import ast
 import logging
@@ -102,8 +107,12 @@ class NestVisitor(ast.NodeVisitor):
         self.depth -= 1
 
 
-# NOT_AN_AGENT — legacy L1 class, true agent is SystemArchitectAgent in L2 — excluded from discovery
-class SystemArchitect(HealerMixin, CanonBaseAgentInterface):
+# DEPRECATED: Moved to SystemArchitectAgent.py (Jan 6, 2026)
+# Import for backward compatibility
+from .SystemArchitectAgent import SystemArchitectAgent as SystemArchitect
+
+# Legacy class removed - use SystemArchitectAgent instead
+class _SystemArchitect_Deprecated(HealerMixin, CanonBaseAgentInterface):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)
     ROLE: The Gatekeeper. If this fails, the system is unstable.
@@ -442,8 +451,12 @@ class HealerAgent(HealerMixin, CanonBaseAgentInterface):
             self.ctx.signal_critical_failure()
 
 
-# NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class GenerativeGuard(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
+# DEPRECATED: Moved to GenerativeGuardAgent.py (Jan 6, 2026)
+# Import for backward compatibility
+from .GenerativeGuardAgent import GenerativeGuardAgent as GenerativeGuard
+
+# Legacy class removed - use GenerativeGuardAgent instead
+class _GenerativeGuard_Deprecated(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.

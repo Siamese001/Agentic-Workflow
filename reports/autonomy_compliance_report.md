@@ -2,7 +2,7 @@
 
 **Generated:** January 06, 2026  
 **Source:** `agent_discovery_full.json` (canonical AST scan)  
-**Discovery:** Last Discovery: FULL mode (19.7s, 1m ago) → 289 agents
+**Discovery:** Last Discovery: FULL mode (15.2s, 0m ago) → 289 agents
 
 ## 🎯 Executive Summary
 
