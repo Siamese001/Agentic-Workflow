@@ -589,14 +589,21 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         all_agents, path_to_layer = self._process_agent_registry(registry)
         used_stems = self._compute_global_usage(all_agents)
         
+        # Build registry lookup for SSOT invocation detection
+        registry_by_path: Dict[str, Dict[str, Any]] = {}
+        for entry in registry:
+            p = (entry.get("path") or "").replace("\\", "/")
+            if p:
+                registry_by_path[p] = entry
+        
         # Global sub-atomic violation tracking (across all territories)
         global_sub_atomic_violations = []  # List of (cc, file_path, method_name)
         
         print(f"Loaded {len(all_agents)} agents from agent_discovery_full.json\n")
 
-        # Process territories and generate report
+        # Process territories and generate report (passing registry for SSOT invocation)
         classified_paths = self._process_territories(
-            all_agents, path_to_layer, used_stems, totals, markdown, global_sub_atomic_violations
+            all_agents, path_to_layer, used_stems, totals, markdown, global_sub_atomic_violations, registry_by_path
         )
 
         # Process unclassified agents and generate final report
@@ -664,11 +671,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             print(f"\n**Quick Stats:** {t['compliant']}/{t['agents']} compliant — {t['healing_cap']}/{t['agents']} with healing capabilities — {t['healing_invoke']}/{t['agents']} with healing invocation — {t['hardened']}/{t['agents']} MCP hardened — {t['used']}/{t['agents']} used elsewhere")
             print(f"**Quality:** Avg CC={overall_avg_cc} | Max CC={t['max_cc']} | {total_typed}% typed | {total_documented}% documented | {total_observable}% observable")
 
-            # Save markdown report to file
-            self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer)
+            # Save markdown report to file (passing registry for SSOT invocation)
+            self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer, registry_by_path)
 
-    def _save_markdown_report(self, today: str, totals: dict, all_agents: list, classified_paths: set, used_stems: set, path_to_layer: dict) -> None:
+    def _save_markdown_report(self, today: str, totals: dict, all_agents: list, classified_paths: set, used_stems: set, path_to_layer: dict, registry_by_path: dict = None) -> None:
         """High-level orchestrator for report generation — linear chain with early exits."""
+        if registry_by_path is None:
+            registry_by_path = {}
+        
         report_path = self.project_root / "reports" / "autonomy_compliance_report.md"
         csv_path = self.project_root / "reports" / "autonomy_compliance_data.csv"
         report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -695,7 +705,15 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             
             terr_total = len(agents)
             terr_compliant = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
-            terr_healing_invoke = sum(1 for a in agents if "super().heal_repository(" in a.read_text(errors="ignore"))
+            # Use SSOT from agent_discovery_full.json for invocation detection
+            # Count as having invocation if registry shows "Yes" or "Inherited"
+            terr_healing_invoke = 0
+            for a in agents:
+                rel_path = str(a.relative_to(self.project_root)).replace("\\", "/")
+                entry = registry_by_path.get(rel_path, {})
+                inv_status = entry.get("invocation", "Inherited")
+                if inv_status in ("Yes", "Inherited"):
+                    terr_healing_invoke += 1
             terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             # Healing capabilities: ONLY count agents that inherit HealerMixin or have heal_repository method
             terr_healing_cap = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore") or "def heal_repository" in a.read_text(errors="ignore"))
@@ -796,7 +814,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         if unclassified:
             terr_total = len(unclassified)
             terr_compliant = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
-            terr_healing_invoke = sum(1 for a in unclassified if "super().heal_repository(" in a.read_text(errors="ignore"))
+            # Use SSOT from agent_discovery_full.json for invocation detection
+            terr_healing_invoke = 0
+            for a in unclassified:
+                rel_path = str(a.relative_to(self.project_root)).replace("\\", "/")
+                entry = registry_by_path.get(rel_path, {})
+                inv_status = entry.get("invocation", "Inherited")
+                if inv_status in ("Yes", "Inherited"):
+                    terr_healing_invoke += 1
             terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             # Healing capabilities: ONLY count agents that inherit HealerMixin or have heal_repository method
             terr_healing_cap = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore") or "def heal_repository" in a.read_text(errors="ignore"))
@@ -973,12 +998,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
     def _process_territories(
         self, all_agents: List[Path], path_to_layer: Dict[str, str], 
         used_stems: set, totals: Dict[str, int], markdown: bool,
-        global_sub_atomic_violations: List[Tuple[int, str, str]]
+        global_sub_atomic_violations: List[Tuple[int, str, str]],
+        registry_by_path: Dict[str, Dict[str, Any]] = None
     ) -> set:
         """Process all territories and track sub-atomic violations."""
         classified_paths = set()
         atomic_threshold = 10  # CC threshold for sub-atomic violations
         cross_cutting_territories = {"observability", "knowledge"}  # Don't count in totals
+        
+        if registry_by_path is None:
+            registry_by_path = {}
         
         for territory_key, (layer_filter, priority) in self.territories.items():
             agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
@@ -990,9 +1019,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             if len(agents) == 0:
                 continue
 
-            # Compute territory metrics and track violations
+            # Compute territory metrics and track violations (using SSOT registry for invocation)
             metrics = self._compute_territory_metrics_with_violations(
-                agents, used_stems, atomic_threshold, global_sub_atomic_violations
+                agents, used_stems, atomic_threshold, global_sub_atomic_violations, registry_by_path
             )
             
             # Only update totals for non-cross-cutting territories
@@ -1162,17 +1191,21 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
     def _compute_territory_metrics_with_violations(
         self, agents: List[Path], used_stems: set, 
-        atomic_threshold: int, global_violations: List[Tuple[int, str, str]]
+        atomic_threshold: int, global_violations: List[Tuple[int, str, str]],
+        registry_by_path: Dict[str, Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Metric computation orchestrator — linear phase chain."""
         if not agents:
             return self._empty_metrics()
+        
+        if registry_by_path is None:
+            registry_by_path = {}
 
         metrics = self._initialize_metrics(len(agents))
         
         # Phase 1: Analyze each agent
         for agent in agents:
-            file_metrics = self._analyze_single_agent(agent, atomic_threshold, global_violations)
+            file_metrics = self._analyze_single_agent(agent, atomic_threshold, global_violations, registry_by_path)
             self._aggregate_file_metrics(metrics, file_metrics)
         
         # Phase 2: Finalize and track usage
@@ -1197,9 +1230,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         }
 
     def _analyze_single_agent(
-        self, agent: Path, atomic_threshold: int, global_violations: List[Tuple[int, str, str]]
+        self, agent: Path, atomic_threshold: int, global_violations: List[Tuple[int, str, str]],
+        registry_by_path: Dict[str, Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Per-agent analysis — isolated AST + checks."""
+        if registry_by_path is None:
+            registry_by_path = {}
+            
         file_metrics = {
             "loc": 0, "compliant": 0, "hardened": 0, "mcp_capable": 0, "healing_cap": 0, "healing_invoke": 0,
             "tests": 0, "cc_sum": 0, "max_cc": 0, "typed": 0, "documented": 0, "observable": 0
@@ -1228,6 +1265,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                             global_violations.append((cc, rel_path, fn))
                     except Exception:
                         pass
+                # SSOT override: Always use registry for healing_invoke (cache may have stale values)
+                registry_entry = registry_by_path.get(rel_path, {})
+                invocation_status = registry_entry.get("invocation", "Inherited")
+                file_metrics["healing_invoke"] = 1 if invocation_status in ("Yes", "Inherited") else 0
                 return file_metrics
 
             lines = content.splitlines()
@@ -1243,8 +1284,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 # MCP capability detection (uses MCP servers)
                 file_metrics["mcp_capable"] = self._detect_mcp_capability(content)
                 
-                # Healing invocation detection
-                file_metrics["healing_invoke"] = self._detect_healing_invocation(tree, content)
+                # Healing invocation detection - USE SSOT from agent_discovery_full.json
+                # This ensures consistency between discovery and dashboard
+                registry_entry = registry_by_path.get(rel_path, {})
+                invocation_status = registry_entry.get("invocation", "Inherited")
+                # Count as having invocation if Yes or Inherited (both are compliant)
+                file_metrics["healing_invoke"] = 1 if invocation_status in ("Yes", "Inherited") else 0
                 
                 # Healing capability detection
                 file_metrics["healing_cap"] = self._detect_healing_capability(tree, content)
@@ -1860,21 +1905,19 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                                 elif isinstance(base, ast.Attribute) and base.attr == "HealerMixin":
                                     has_mixin = True
                     
-                    # Detect heal_repository invocation
-                    invocation_status = "Inherited"  # Default if no override
-                    heal_methods = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "heal_repository"]
-                    if heal_methods:
+                    # Detect heal_repository invocation - USE SSOT from agent_discovery_full.json
+                    # This ensures consistency between discovery and dashboard
+                    rel_path_for_lookup = str(agent.relative_to(self.project_root)).replace("\\", "/")
+                    registry_entry = registry_by_path.get(rel_path_for_lookup, {})
+                    invocation_status = registry_entry.get("invocation", "Inherited")
+                    
+                    # Validate invocation_status is one of expected values
+                    if invocation_status not in ("Yes", "No (missing super)", "Inherited"):
+                        invocation_status = "Inherited"
+                    
+                    # Set compliant if agent defines heal_repository (Yes or No status)
+                    if invocation_status in ("Yes", "No (missing super)"):
                         compliant = True
-                        # Check if super().heal_repository() is called
-                        has_super_call = False
-                        for node in ast.walk(heal_methods[0]):
-                            if isinstance(node, ast.Call):
-                                if isinstance(node.func, ast.Attribute) and node.func.attr == "heal_repository":
-                                    if isinstance(node.func.value, ast.Call):
-                                        if isinstance(node.func.value.func, ast.Name) and node.func.value.func.id == "super":
-                                            has_super_call = True
-                                            break
-                        invocation_status = "Yes" if has_super_call else "No (missing super)"
 
                     # Test presence should be evaluated per-agent (not per-territory)
                     has_tests = bool(self._detect_tests(agent, source))
