@@ -8,6 +8,12 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 _logger = logging.getLogger(__name__)
+
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: L3 core orchestration vs apps_rg resume-specific implementation)
+# - Intentional variants for domain-specific behavior
+# - Consolidated 2026-01-06
+
 # Ownership: apps_rg / L3_orchestration
 # -*- coding: utf-8 -*-
 """Pure orchestration of resume generation using shared atoms."""

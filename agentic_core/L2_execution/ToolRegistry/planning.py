@@ -115,6 +115,11 @@ Output ONLY the plan in Markdown.
             return super().heal_repository()
 
 
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: L1 cognition vs L2 planning vs apps_rg implementations)
+# - Intentional variants for domain-specific behavior
+# - Consolidated 2026-01-06
+
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class ReflectionAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """

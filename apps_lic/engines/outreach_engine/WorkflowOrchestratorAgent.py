@@ -3,6 +3,11 @@ from __future__ import annotations
 
 __version__ = "13.1"
 
+# DUPLICATE ACCEPTED: App-specific customization valid
+# (different contexts: apps_lic outreach-specific vs L3 core orchestration)
+# - Intentional variant for domain-specific behavior
+# - Consolidated 2026-01-06
+
 import asyncio
 import json
 from datetime import datetime
