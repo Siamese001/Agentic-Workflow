@@ -20,6 +20,12 @@ from enum import Enum
 import re
 import time
 
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.cache_decorator import cached
+
 
 class ThreatLevel(Enum):
     """Threat severity levels."""
@@ -61,9 +67,11 @@ class ThreatAnalysisResult:
     analysis_time_ms: float = 0.0
 
 
-class ThreatDetectionGuardrail:
+class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Consolidated Threat Detection Guardrail.
+    
+    HARDENED: Redis caching + Pinecone vector support for threat signature caching.
     
     Provides unified threat analysis with:
     - Adversarial input detection
@@ -71,6 +79,10 @@ class ThreatDetectionGuardrail:
     - Automated immune response
     - Red team attack simulation
     """
+    
+    # [PHASE 5] Redis/Pinecone integration
+    _cache_prefix: str = "threat_detection"
+    _namespace: str = "l5_threats"
     
     def __init__(self):
         """Initialize threat detection guardrail."""

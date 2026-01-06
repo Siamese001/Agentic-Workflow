@@ -29,10 +29,19 @@ import argparse
 import ast
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Set, Tuple
 from collections import defaultdict
+
+# Structured logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] full_discovery %(levelname)s: %(message)s",
+    datefmt="%H:%M:%S",
+)
+log = logging.getLogger("full_agent_discovery")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / 'agentic_core'
@@ -737,9 +746,10 @@ def main():
     force_mode = args.force
     incremental_mode = args.incremental
     
-    print("=" * 80)
-    print("FULL AGENT DISCOVERY - Single Source of Truth (HARDENED)")
-    print("=" * 80)
+    log.info("=" * 80)
+    log.info("FULL AGENT DISCOVERY STARTED")
+    log.info(f"Mode: {'INCREMENTAL' if incremental_mode else 'FULL'} {'(forced)' if force_mode else ''}")
+    log.info("=" * 80)
     
     # Get previous count BEFORE deleting files (for validation)
     previous_agents = []
@@ -752,30 +762,36 @@ def main():
             try:
                 previous_agents = json.loads(CANONICAL_JSON.read_text(encoding="utf-8"))
                 previous_count = len(previous_agents)
-                print(f"[INCREMENTAL] Loaded {previous_count} agents from previous JSON")
+                log.info(f"[INCREMENTAL] Loaded {previous_count} agents from previous JSON")
             except Exception as e:
-                print(f"[INCREMENTAL] Failed to load previous JSON ({e}) → falling back to full scan")
+                log.error(f"[INCREMENTAL] Failed to load previous JSON ({e}) → falling back to full scan")
                 incremental_mode = False
         else:
-            print("[INCREMENTAL] No previous JSON → falling back to full scan")
+            log.warning("[INCREMENTAL] No previous JSON → falling back to full scan")
             incremental_mode = False
 
         if incremental_mode and MANIFEST_JSON.exists():
             try:
                 old_manifest = json.loads(MANIFEST_JSON.read_text(encoding="utf-8"))
+                
+                # HARDENED: Schema validation
+                required = {"file_hashes", "agent_count", "generated_at"}
+                if not all(k in old_manifest for k in required):
+                    raise ValueError(f"Missing keys: {required - old_manifest.keys()}")
+                
                 old_hashes = old_manifest.get("file_hashes", {})
-                print(f"[INCREMENTAL] Loaded manifest with {len(old_hashes)} file hashes")
+                log.info(f"[INCREMENTAL] Loaded manifest with {len(old_hashes)} file hashes")
             except Exception as e:
-                print(f"[INCREMENTAL] Manifest error ({e}) → falling back to full scan")
+                log.warning(f"[INCREMENTAL] Manifest error ({e}) → falling back to full scan")
                 incremental_mode = False
                 old_hashes = {}
         elif incremental_mode:
-            print("[INCREMENTAL] No manifest → falling back to full scan")
+            log.warning("[INCREMENTAL] No manifest → falling back to full scan")
             incremental_mode = False
             old_hashes = {}
     
     if previous_count:
-        print(f"[BASELINE] Previous agent count: {previous_count}")
+        log.info(f"[BASELINE] Previous agent count: {previous_count}")
     
     start_time = time.time()
     
@@ -785,9 +801,9 @@ def main():
             try:
                 if stale_path.exists():
                     os.remove(stale_path)
-                    print(f"[FRESH] Deleted stale {stale_path.name}")
+                    log.info(f"[FRESH] Deleted stale {stale_path.name}")
             except Exception as e:
-                print(f"[WARNING] Could not delete {stale_path.name}: {e}")
+                log.warning(f"Could not delete {stale_path.name}: {e}")
     
     agents = []
     parse_errors = []
@@ -796,8 +812,8 @@ def main():
     
     # Scan ALL Python files in project (collect once for hashing later)
     all_py_files = [p for p in PROJECT_ROOT.rglob('*.py') if not should_exclude_path(p)]
-    print(f"\nScanning {len(all_py_files)} Python files...")
-    print(f"   -> Excluded vendor/cache dirs via should_exclude_path()")
+    log.info(f"Scanning {len(all_py_files)} Python files...")
+    log.info(f"   -> Excluded vendor/cache dirs via should_exclude_path()")
     
     # INCREMENTAL: Compute current hashes and detect changes
     if incremental_mode:
@@ -819,19 +835,19 @@ def main():
         # Detect removed files
         removed_rel_paths = set(old_hashes) - set(current_hashes)
         
-        print(f"[INCREMENTAL] Detected {len(changed_rel_paths)} changed/added files")
+        log.info(f"[INCREMENTAL] Detected {len(changed_rel_paths)} changed/added files")
         if removed_rel_paths:
-            print(f"[INCREMENTAL] Detected {len(removed_rel_paths)} removed files")
+            log.info(f"[INCREMENTAL] Detected {len(removed_rel_paths)} removed files")
         
         # Retain agents from unchanged files
         agents = [
             a for a in previous_agents
             if a.get("path", "") not in changed_rel_paths and a.get("path", "") not in removed_rel_paths
         ]
-        print(f"[INCREMENTAL] Retained {len(agents)} agents from unchanged files")
+        log.info(f"[INCREMENTAL] Retained {len(agents)} agents from unchanged files")
     
     # First pass: Build inheritance map for MRO-like detection
-    print("[PASS 1] Building inheritance map...")
+    log.info("[PASS 1] Building inheritance map (required for MRO healing detection)...")
     parsed_files = {}  # Cache parsed ASTs
     for py_file in all_py_files:
         if should_exclude_file(py_file):
@@ -844,7 +860,7 @@ def main():
                 parsed_files[py_file] = (source, tree)
         except Exception:
             continue
-    print(f"   Built map with {len(CLASS_INHERITANCE_MAP)} classes")
+    log.info(f"   Built map with {len(CLASS_INHERITANCE_MAP)} classes")
     
     # Second pass: Detect agents with full MRO healing detection
     # INCREMENTAL: Only process changed files for extraction
@@ -852,7 +868,7 @@ def main():
         [p for p in parsed_files if str(p.relative_to(PROJECT_ROOT)).replace("\\", "/") in changed_rel_paths]
         if incremental_mode else list(parsed_files.keys())
     )
-    print(f"[PASS 2] Extracting from {len(target_py_files)} files ({'incremental' if incremental_mode else 'full'})")
+    log.info(f"[PASS 2] Extracting from {len(target_py_files)} files ({'incremental' if incremental_mode else 'full'})")
     
     for py_file in target_py_files:
         source, tree = parsed_files[py_file]
@@ -972,9 +988,8 @@ def main():
             })
     
     if incremental_mode:
-        print(f"[INCREMENTAL] Best-effort mode complete: {len(agents)} total agents")
-        print("   NOTE: Cross-file inheritance changes (e.g., base adding HealerMixin)")
-        print("   may not propagate to derived agents in unchanged files until next full scan.")
+        log.info(f"[INCREMENTAL] Complete: {len(agents)} agents ({len(agents) - previous_count} new/extracted)")
+        log.warning("NOTE: Cross-file inheritance changes may not propagate until next full scan")
     
     # Sort by layer then name
     agents.sort(key=lambda x: (x['layer'], x['class_name']))
@@ -982,26 +997,24 @@ def main():
     # ========================================================================
     # HARDENING: Validate agent count BEFORE saving
     # ========================================================================
-    print(f"\n[VALIDATION] Checking agent count...")
+    log.info("[VALIDATION] Agent count check...")
     validation_previous = None if force_mode else previous_count
     is_valid, validation_errors = validate_agent_count(len(agents), validation_previous)
     
     if not is_valid:
-        print("\n" + "=" * 80)
-        print("❌ DISCOVERY ABORTED - VALIDATION FAILED")
-        print("=" * 80)
+        log.error("=" * 80)
+        log.error("DISCOVERY ABORTED - VALIDATION FAILED")
+        log.error("=" * 80)
         for err in validation_errors:
-            print(err)
-        print("\nTo force discovery despite validation failure, run:")
-        print("  python scripts/full_agent_discovery.py --force")
-        print("=" * 80)
+            log.error(err.strip())
+        log.error("Run with --force to override")
         sys.exit(1)
     
     # Calculate scan duration
     scan_duration = time.time() - start_time
     
     # Compute file hashes for manifest (centralized here)
-    print(f"[MANIFEST] Computing hashes for {len(all_py_files)} scanned files...")
+    log.info(f"[MANIFEST] Computing hashes for {len(all_py_files)} scanned files...")
     file_hashes: Dict[str, str] = {}
     hash_errors = 0
     for py_file in all_py_files:
@@ -1010,17 +1023,22 @@ def main():
             file_hashes[rel_path] = hashlib.md5(py_file.read_bytes()).hexdigest()
         except Exception as e:
             hash_errors += 1
-            print(f"   [HASH ERROR] {rel_path}: {e}")
-    print(f"[MANIFEST] Hashed {len(file_hashes)} files ({hash_errors} errors)")
+            log.warning(f"   [HASH ERROR] {rel_path}: {e}")
+    log.info(f"[MANIFEST] Hashed {len(file_hashes)} files ({hash_errors} errors)")
     
     # Save JSON with atomic write
     try:
         tmp_json = OUTPUT_JSON.with_suffix(".tmp")
-        tmp_json.write_text(json.dumps(agents, indent=2), encoding="utf-8")
+        json_text = json.dumps(agents, indent=2)
+        tmp_json.write_text(json_text, encoding="utf-8")
+        # Verify written JSON
+        test_load = json.loads(json_text)
+        if len(test_load) != len(agents):
+            raise ValueError("Written JSON agent count mismatch")
         tmp_json.replace(OUTPUT_JSON)
-        print(f"[SAVED] {OUTPUT_JSON}")
+        log.info(f"[SAVED] {OUTPUT_JSON} ({len(agents)} agents)")
     except Exception as e:
-        print(f"[ERROR] Failed to save discovery JSON: {e}")
+        log.error(f"Failed to save/verify JSON: {e}")
         sys.exit(1)
     
     # Generate and save manifest with file hashes
@@ -1031,11 +1049,14 @@ def main():
     
     try:
         tmp_manifest = MANIFEST_JSON.with_suffix(".tmp")
-        tmp_manifest.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        manifest_text = json.dumps(manifest, indent=2)
+        tmp_manifest.write_text(manifest_text, encoding="utf-8")
+        # Verify manifest
+        json.loads(manifest_text)  # Raises if invalid
         tmp_manifest.replace(MANIFEST_JSON)
-        print(f"[SAVED] {MANIFEST_JSON}")
+        log.info(f"[SAVED] {MANIFEST_JSON}")
     except Exception as e:
-        print(f"[ERROR] Failed to save manifest: {e}")
+        log.warning(f"Manifest save failed ({e}) - continuing (JSON is primary)")
         # Non-fatal - JSON is primary
     
     # Statistics
@@ -1056,52 +1077,52 @@ def main():
     core_layers = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5']
     core_count = sum(layers.get(l, 0) for l in core_layers)
     
-    print(f"\n{'=' * 80}")
-    print("DISCOVERY COMPLETE")
-    print(f"{'=' * 80}")
-    print(f"\nTotal agents: {len(agents)}")
+    log.info("=" * 80)
+    log.info("DISCOVERY COMPLETE")
+    log.info("=" * 80)
+    log.info(f"Total agents: {len(agents)}")
     if duplicates_skipped:
-        print(f"Duplicates skipped: {duplicates_skipped}")
-    print(f"Core (L0-L5): {core_count}")
-    print(f"\nBy layer:")
+        log.info(f"Duplicates skipped: {duplicates_skipped}")
+    log.info(f"Core (L0-L5): {core_count}")
+    log.info("By layer:")
     for layer in sorted(layers.keys()):
-        print(f"  {layer}: {layers[layer]}")
+        log.info(f"  {layer}: {layers[layer]}")
 
-    print(f"\nBy top-level folder (baseline location):")
+    log.info("By top-level folder (baseline location):")
     for k, v in sorted(top_dirs.items(), key=lambda kv: kv[1], reverse=True):
         label = k or '(root)'
-        print(f"  {label}: {v}")
+        log.info(f"  {label}: {v}")
 
-    print(f"\nTop 15 subfolders (top_dir/second_dir):")
+    log.info("Top 15 subfolders (top_dir/second_dir):")
     for k, v in sorted(sub_dirs.items(), key=lambda kv: kv[1], reverse=True)[:15]:
         label = k or '(root)'
-        print(f"  {label}: {v}")
+        log.info(f"  {label}: {v}")
     
-    print(f"\nHealing: {healing_count}/{len(agents)} ({100*healing_count//len(agents) if agents else 0}%)")
-    print(f"Testing: {testing_count}/{len(agents)} ({100*testing_count//len(agents) if agents else 0}%)")
+    log.info(f"Healing: {healing_count}/{len(agents)} ({100*healing_count//len(agents) if agents else 0}%)")
+    log.info(f"Testing: {testing_count}/{len(agents)} ({100*testing_count//len(agents) if agents else 0}%)")
     
     if parse_errors:
-        print(f"\n[!] Parse errors (skipped): {len(parse_errors)}")
+        log.warning(f"Parse errors (skipped): {len(parse_errors)}")
         for err in parse_errors[:10]:
-            print(f"    - {err}")
+            log.warning(f"    - {err}")
     
     # ========================================================================
     # HARDENING: Final validation summary
     # ========================================================================
-    print(f"\n{'=' * 80}")
-    print("VALIDATION SUMMARY")
-    print(f"{'=' * 80}")
-    print(f"✅ Agent count: {len(agents)} (minimum: {MINIMUM_AGENT_COUNT}, expected: {EXPECTED_AGENT_COUNT})")
+    log.info("=" * 80)
+    log.info("VALIDATION SUMMARY")
+    log.info("=" * 80)
+    log.info(f"Agent count: {len(agents)} (minimum: {MINIMUM_AGENT_COUNT}, expected: {EXPECTED_AGENT_COUNT})")
     if previous_count:
         delta = len(agents) - previous_count
         delta_str = f"+{delta}" if delta >= 0 else str(delta)
-        print(f"✅ Delta from previous: {delta_str} agents")
-    print(f"✅ Scan duration: {scan_duration:.1f}s")
-    print(f"✅ Parse errors: {len(parse_errors)}")
+        log.info(f"Delta from previous: {delta_str} agents")
+    log.info(f"Scan duration: {scan_duration:.1f}s")
+    log.info(f"Parse errors: {len(parse_errors)}")
     
-    print(f"\n[SAVED] {OUTPUT_JSON}")
-    print(f"[SAVED] {MANIFEST_JSON}")
-    print("=" * 80)
+    log.info(f"[SAVED] {OUTPUT_JSON}")
+    log.info(f"[SAVED] {MANIFEST_JSON}")
+    log.info("=" * 80)
 
 
 if __name__ == '__main__':

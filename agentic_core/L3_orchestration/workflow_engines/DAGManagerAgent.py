@@ -472,9 +472,19 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
             return super().heal_repository()
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.cache_decorator import cached
 
-class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
-    """Manages the dynamic DAG with mutation capabilities."""
+class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
+    """Manages the dynamic DAG with mutation capabilities.
+    
+    HARDENED: Redis caching + Pinecone vector support for DAG structure caching.
+    """
+    
+    # [PHASE 5] Redis/Pinecone integration
+    _cache_prefix: str = "dag_manager"
+    _namespace: str = "l3_dags"
     
     def __init__(self, config: Optional[DAGConfig] = None) -> None:
         """Initialize the DAG Manager.
