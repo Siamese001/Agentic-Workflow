@@ -91,7 +91,7 @@ class test_red_sentinel_migration:
     @pytest.mark.asyncio
     async def test_red_sentinel_uses_mcp(self) -> Any:
         """Verify RedSentinelAgent uses LLM Router MCP for hostile input generation."""
-        from agentic_core.L5_safety.guardrails.red_sentinel import RedSentinelAgent
+        from agentic_core.L5_safety.guardrails.RedSentinelAgent import RedSentinelAgent
         sentinel: Any = RedSentinelAgent()
         assert sentinel is not None, 'RedSentinelAgent should initialize'
 

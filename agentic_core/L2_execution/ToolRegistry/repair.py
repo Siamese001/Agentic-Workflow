@@ -140,8 +140,9 @@ Return ONLY the python code for {primary}.
             return super().heal_repository()
 
 
-# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class TestPilotAgent(SubAtomicAgent):
+# Extracted to standalone TestPilotAgent.py in L3 (2026-01-06)
+from agentic_core.L3_orchestration.workflow_engines.TestPilotAgent import TestPilotAgent
+class _LegacyTestPilotAgent(SubAtomicAgent):
     """
     ROLE: Integration Guardian. Runs pytest and triggers Sherlock on failure.
     """

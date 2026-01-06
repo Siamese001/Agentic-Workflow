@@ -18,6 +18,16 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+from dataclasses import dataclass, field
+from datetime import datetime
+
+@dataclass
+class ToolSpec:
+    """Specification for a tool."""
+    name: str
+    description: str
+    parameters: Dict[str, Dict]
+    function: Any
     category: str = 'general'
     version: str = '1.0.0'
     created_at: datetime = field(default_factory=datetime.utcnow)
