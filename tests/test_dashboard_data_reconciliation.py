@@ -13,7 +13,7 @@ def load_dashboard_data():
     """Load dashboard data from generated HTML."""
     import re
     
-    dashboard_path = Path("reports/autonomy_dashboard.html")
+    dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
     if not dashboard_path.exists():
         pytest.skip("Dashboard HTML not found - generate dashboard first")
     
