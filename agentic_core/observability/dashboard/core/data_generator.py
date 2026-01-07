@@ -1,11 +1,15 @@
 """
-Dashboard Data Generator - Extracts dashboard data computation from AutonomyGuardianAgent.
+Dashboard Data Generator
+
+ARCHITECTURAL ROLE: L6 Observability Layer
+RELOCATED FROM: agentic_core/L5_safety/validators/dashboard_data_generator.py
+PHASE 1 CONSOLIDATION: Moved to observability/dashboard/core/ for SSOT enforcement
 
 This module handles all metric calculations, territory analysis, and data preparation
 for the autonomy dashboard. Extracted to reduce complexity of AutonomyGuardianAgent.
 """
 from __future__ import annotations
-
+import ast
 from pathlib import Path
 from typing import Dict, Any, List, Set, Optional, Tuple
 import json
@@ -114,10 +118,53 @@ class DashboardDataGenerator:
         
         # Fast path: Use registry data if available (SSOT)
         if rel_path in registry_by_path:
-            return self._analyze_from_registry(rel_path, registry_by_path[rel_path])
+            file_metrics = self._analyze_from_registry(rel_path, registry_by_path[rel_path])
+            # ARCHITECTURAL HARDENING: Trigger AST detection if registry is missing Phase 4 data
+            if "strict_schema" not in file_metrics or file_metrics["strict_schema"] == 0:
+                file_metrics["strict_schema"] = self._detect_strict_schema(agent)
+            return file_metrics
         
         # Slow path: Parse file directly
         return self._analyze_from_file(agent)
+    
+    def _detect_strict_schema(self, agent_path: Path) -> float:
+        """
+        HARDENED: AST-based detection of verified schema enforcement.
+        Denominator balanced to include classes and decorated functions.
+        """
+        try:
+            tree = ast.parse(agent_path.read_text(encoding="utf-8"))
+            strict_indicators = 0.0
+            total_targets = 0
+            
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef):
+                    total_targets += 1
+                    # Signal 1: Pydantic BaseModel inheritance
+                    for base in node.bases:
+                        if hasattr(base, "id") and base.id == "BaseModel":
+                            strict_indicators += 1.0
+                    # Signal 2: Standard @dataclass usage
+                    for decorator in node.decorator_list:
+                        if (hasattr(decorator, "id") and decorator.id == "dataclass") or \
+                           (hasattr(decorator, "attr") and decorator.attr == "dataclass"):
+                            strict_indicators += 1.0
+                
+                if isinstance(node, ast.FunctionDef):
+                    # Signal 3: Runtime validation decorators
+                    is_decorated = False
+                    for decorator in node.decorator_list:
+                        if hasattr(decorator, "id") and decorator.id in ["validate_call", "typechecked"]:
+                            strict_indicators += 0.5
+                            is_decorated = True
+                    if is_decorated:
+                        total_targets += 1  # Only count function as a target if it's attempting strictness
+            
+            if total_targets == 0:
+                return 0.0
+            return min(100.0, (strict_indicators / total_targets) * 100)
+        except Exception:
+            return 0.0
     
     def _analyze_from_registry(
         self,
@@ -140,6 +187,7 @@ class DashboardDataGenerator:
             "max_cc": entry.get("cyclomatic_complexity", 0),
             "typed": entry.get("typed_pct", 0),
             "documented": entry.get("documented_pct", 0),
+            "strict_schema": entry.get("strict_schema_pct", 0),  # Added for Phase 4
             "observable": 100 if (isinstance(observability, dict) and any(observability.values())) else 0,
         }
     
@@ -318,9 +366,8 @@ class DashboardDataGenerator:
             "Documented %": perc_documented,
             "Metadata %": 100.0,  # TODO: Compute from agent metadata presence
             "Proper Base %": 100.0,  # TODO: Compute from inheritance analysis
-            # Schema Strictness: Computed from typed % + proper base inheritance
-            # Higher typing = stricter schema validation (proxy metric until AST detection added)
-            "Schema Strictness %": round(min(100, perc_typed * 1.1), 1),  # Dynamic, not hardcoded
+            # PHASE 4 HARDENING: Verified signal via AST detection
+            "Schema Strictness %": metrics.get("strict_schema", 0.0),
             "Complexity Health": cc_health,
             "Code Quality Score": 0.0,  # Will be computed later
             "Criticality": 75,
