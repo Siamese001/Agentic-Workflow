@@ -9,7 +9,8 @@ import re
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
-from agentic_core.canon_agents_pattern import PatternEnforcerAgent, SemanticMapperAgent, UIValidationAgent
+from agentic_core.L1_cognition.thought_engine.PatternEnforcerAgent import PatternEnforcerAgent
+from agentic_core.canon_agents_pattern import SemanticMapperAgent, UIValidationAgent
 from agentic_core.L1_cognition.thought_engine.DocumentationAgent import DocumentationAgent
 from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
 from agentic_core.L1_cognition.thought_engine.BudgetAgent import BudgetAgent
