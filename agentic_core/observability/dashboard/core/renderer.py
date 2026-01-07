@@ -353,6 +353,5 @@ class DashboardRenderer:
             "test_coverage": total_row.get("Test %", 0),
             "code_quality": total_row.get("Code Quality Score", 0),
             "typing": total_row.get("Typed %", 0),
-            "complexity_health": total_row.get("Complexity Health", 0),
-        }
+            "complexity_health": total_row.get("Complexity Health", 0)
         }
