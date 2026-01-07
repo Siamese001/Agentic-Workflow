@@ -71,17 +71,21 @@ from agentic_core.utils.core_extensions.cache_decorator import cached
 class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
-    Now with conservative fuzzy structural matching (default threshold=0.98).
+    
+    HARDENED CONFIGURATION (2026-01-07):
+    - Default threshold: 1.0 (100% structural identity required)
+    - Aggressive purge mode: Filename duplicates consolidated to SSOT regardless of content divergence
+    - Prevents Logic Bleed by enforcing absolute identity
     
     HARDENED: Redis caching + Pinecone vector support for semantic fingerprinting.
     
     Responsibilities:
-    - Computes perceptual hashes of normalized AST nodes.
-    - Groups duplicates with similarity > 95%.
-    - Reports redundancy to the L4 Ledger for audit tracking.
+    - Computes perceptual hashes of normalized AST nodes
+    - Groups duplicates with 100% structural identity (threshold=1.0)
+    - Reports redundancy to the L4 Ledger for audit tracking
     - [SURGERY] When RUN_SPRAWL_SURGERY=True: Extracts duplicates to shared utils
-    - Whole-file duplicate detection and safe consolidation
-    - Filename uniqueness enforcement (identical content → consolidate; divergent → rename only)
+    - Whole-file duplicate detection and aggressive consolidation
+    - Filename uniqueness enforcement (AGGRESSIVE: all duplicates → SSOT, no rename fallback)
     - Dead-code pruning with empty-file auto-deletion
     
     Consolidates functionality from deprecated FilenameUniquenessGuardianAgent (2025-12-31).
@@ -91,33 +95,29 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
     _cache_prefix: str = "code_dedup"
     _namespace: str = "l2_fingerprints"
 
-    def __init__(self, similarity_threshold: float=0.98, min_lines: int=8) -> None:
-        self.threshold = similarity_threshold
+    def __init__(self, similarity_threshold: float=1.0, min_lines: int=8) -> None:
+        """
+        HARDENED: 100% identity by default to prevent Logic Bleed.
+        Enforces absolute structural identity for SSOT compliance.
+        
+        Args:
+            similarity_threshold: Default 1.0 (100% identity required)
+            min_lines: Minimum lines for duplicate detection
+        """
+        self.threshold = 1.0  # HARDENED: Absolute structural identity required
         self.min_lines = min_lines
-        self.duplicate_groups: Dict[str, List[Tuple[Path, str, int, str]]] = defaultdict(list)  # key synthetic, value [(path, name, line, code), ...]
-        self.file_duplicate_groups: Dict[str, List[Path]] = defaultdict(list)  # hash → paths (identical whole files)
-        self.filename_duplicates: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)  # basename → [(path, file_hash)]
+        self.duplicate_groups: Dict[str, List[Tuple[Path, str, int, str]]] = defaultdict(list)
+        self.file_duplicate_groups: Dict[str, List[Path]] = defaultdict(list)
+        self.filename_duplicates: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)
         self.extracted_count = 0
-        self.renamed_count = 0
         self.consolidated_count = 0
         self.errors: List[str] = []
-        
-        # Initialize tree-sitter parser if available
-        self.ts_parser: Optional[Parser] = None
-        if TREE_SITTER_AVAILABLE:
-            try:
-                PY_LANGUAGE = Language(tspython.language())
-                self.ts_parser = Parser()
-                self.ts_parser.language = PY_LANGUAGE
-            except Exception as e:
-                self.errors.append(f"Tree-sitter initialization failed: {e}")
-                self.ts_parser = None
     
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L2 compliance."""
         assert hasattr(self, 'threshold'), "Missing threshold"
         assert hasattr(self, 'duplicate_groups'), "Missing duplicate_groups"
-        assert 0 < self.threshold <= 1, "threshold must be 0-1"
+        assert self.threshold == 1.0, "HARDENED: threshold must be 1.0 for SSOT"
         return True
 
     @staticmethod
@@ -266,52 +266,6 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
                 key = f"exact_group_{group_id}_{struct_hash[:8]}"
                 self.duplicate_groups[key] = members
                 group_id += 1
-
-        # === FUZZY CLUSTERING ONLY ON REMAINING SINGLETONS (with length pruning) ===
-        singles = [mems[0] for mems in exact_groups.values() if len(mems) == 1]
-
-        groups: List[List[Tuple[Path, str, int, str, str, int, float]]] = []
-        for cand in singles:
-            path, name, line, code, norm_str, len_norm = cand
-            best_group = None
-            best_sim = 0.0
-            for group in groups:
-                rep_len = group[0][5]
-                # Prune: for ≥0.98 similarity, lengths must be within ~5%
-                if abs(len_norm - rep_len) > 0.05 * max(len_norm, rep_len):
-                    continue
-                rep_norm = group[0][4]
-                sim = self._block_similarity(rep_norm, norm_str)
-                if sim > best_sim:
-                    best_sim = sim
-                    best_group = group
-            if best_group and best_sim >= self.threshold:
-                best_group.append((path, name, line, code, norm_str, len_norm, best_sim))
-            else:
-                groups.append([(path, name, line, code, norm_str, len_norm, 1.0)])
-
-        # Store only high-confidence groups (min similarity to primary >= threshold)
-        for group in groups:
-            if len(group) < 2:
-                continue
-            primary_norm = group[0][4]
-            sims_to_primary = [t[6] if len(t) > 6 else self._block_similarity(primary_norm, t[4]) for t in group]
-            min_sim = min(sims_to_primary)
-            if min_sim < self.threshold:
-                continue  # Extra conservative filter – drop if any member diverges too much
-
-            print(f"   [!] FUZZY SIMILAR BLOCK GROUP ({len(group)} copies, min similarity {min_sim:.1%} to primary):")
-            for t in group[:3]:
-                sim = t[6] if len(t) > 6 else 1.0
-                print(f"      -> {t[0].name}:{t[2]} ({t[1]}) similarity {sim:.1%}")
-            if len(group) > 3:
-                print(f"      ... and {len(group) - 3} more")
-
-            # Store in compatible format for existing extraction logic
-            members = [(t[0], t[1], t[2], t[3]) for t in group]  # (path, name, line, code)
-            key = f"fuzzy_group_{group_id}_{min_sim:.2f}"
-            self.duplicate_groups[key] = members
-            group_id += 1
 
         if not self.duplicate_groups:
             print('   [OK] No significant code duplicates detected.')
@@ -525,35 +479,31 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
                         else:
                             print(f'      [DRY-RUN] Would delete: {p}')
         
-        # Second: filename conflicts
+        # Second: filename conflicts (AGGRESSIVE PURGE MODE)
         for basename, entries in self.filename_duplicates.items():
             paths = [p for p, _ in entries]
             hashes = {h for _, h in entries}
-            if len(hashes) == 1:
-                # Identical content → consolidate
-                primary = min(paths, key=lambda p: ('archives' in str(p), str(p)))
+            
+            # CASE-COLLISION AWARE PURGE: 
+            # Prioritizes snake_case 'tool_registry' as the canonical SSOT location.
+            if len(paths) > 1:
+                primary = min(paths, key=lambda p: (
+                    'archives' in str(p), 
+                    'ToolRegistry' in str(p),
+                    str(p)
+                ))
                 for p in paths:
                     if p != primary:
                         if not dry_run:
-                            backup = p.with_suffix('.bak_nameident')
+                            # Mandatory backup with unique hash suffix to prevent purge collisions
+                            content_hash = hashlib.md5(str(p).encode()).hexdigest()[:6]
+                            backup = p.with_suffix(f'.bak_purge_{content_hash}')
                             shutil.copy(p, backup)
                             p.unlink()
-                            print(f'      [✓] DELETED identical-by-name: {p}')
+                            print(f'      [✓] AGGRESSIVE PURGE: Deleted {p} (Backup: {backup.name})')
                             self.consolidated_count += 1
                         else:
                             print(f'      [DRY-RUN] Would delete: {p}')
-            else:
-                # Divergent content → rename all but primary (NEVER DELETE)
-                primary = paths[0]
-                for p in paths[1:]:
-                    if not dry_run:
-                        new_path = self._suggest_unique_name(p, project_root)
-                        shutil.move(str(p), str(new_path))
-                        print(f'      [✓] RENAMED divergent duplicate: {p} → {new_path.relative_to(project_root)}')
-                        self.renamed_count += 1
-                    else:
-                        new_path = self._suggest_unique_name(p, project_root)
-                        print(f'      [DRY-RUN] Would rename: {p} → {new_path.relative_to(project_root)}')
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
@@ -617,7 +567,6 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
         print(f'    Whole-file duplicates: {len(self.file_duplicate_groups)} groups')
         print(f'    Filename duplicates: {len(self.filename_duplicates)} groups')
         print(f'    Files consolidated: {self.consolidated_count}')
-        print(f'    Files renamed: {self.renamed_count}')
         print(f'    Errors: {len(self.errors)}')
 
     # SUPPLEMENTED FROM DeadCodeDetectorAgent + DeadCodePrunerAgent — enhances dead code detection — merged 2025-12-30
