@@ -14,9 +14,13 @@ from agentic_core.canon_agents_pattern import SemanticMapperAgent, UIValidationA
 from agentic_core.L1_cognition.thought_engine.DocumentationAgent import DocumentationAgent
 from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
 from agentic_core.L1_cognition.thought_engine.BudgetAgent import BudgetAgent
-from agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent import StructuralEngineerAgent
 from agentic_core.L1_cognition.thought_engine.TypeMechanicAgent import TypeMechanicAgent
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
+
+# GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
+import importlib
+_struct_mod = importlib.import_module('agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent')
+StructuralEngineerAgent = getattr(_struct_mod, 'StructuralEngineerAgent')
 from agentic_core.runtime.shared.canon_validation_context import ValidationContext
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
