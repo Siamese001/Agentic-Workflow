@@ -40,11 +40,13 @@ class DashboardDataGenerator:
         self.project_root = project_root
         self.territories = territories
         self.registry_by_path: Dict[str, Dict[str, Any]] = {}
+        # Consolidated L6 Infrastructure patterns
+        self.infra_path_patterns = {"observability", "config/validators", "metrics", "telemetry", "tracing"}
     
     def generate_full_report_data(self) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         """
-        SSOT entry point for data generation.
-        Moves classification logic from L5 to L6 for complete separation of concerns.
+        Sovereign entry point for generating report data.
+        Orchestrates discovery, classification, and metric aggregation.
         """
         registry = self.load_registry()
         all_agents, path_to_layer = self._process_agent_registry(registry)
@@ -52,6 +54,7 @@ class DashboardDataGenerator:
         
         dashboard_rows = []
         assigned_agents = set()
+        
         for territory_key, (layer_filter, priority) in self.territories.items():
             agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
             agents = [a for a in agents if str(a) not in assigned_agents]
@@ -60,51 +63,67 @@ class DashboardDataGenerator:
             assigned_agents.update(str(a) for a in agents)
             
             metrics = self.compute_territory_metrics(agents, used_stems, self.registry_by_path)
-            row = self.build_territory_row(territory_key, metrics, priority)
+            # Determine if infrastructure territory via L6 patterns
+            is_infra = any(p in territory_key for p in self.infra_path_patterns)
+            row = self.build_territory_row(territory_key, metrics, priority, is_infrastructure=is_infra)
             if row:
                 dashboard_rows.append(row)
         
         return dashboard_rows, self.build_total_row(dashboard_rows)
     
     def _process_agent_registry(self, registry: List[Dict]) -> Tuple[List[Path], Dict[str, str]]:
-        """Process agent registry to extract paths and layer mappings (MOVED FROM L5)."""
+        """Moves registry processing to L6 metrics layer."""
         all_agents = []
         path_to_layer = {}
-        
-        for entry in registry:
-            path_str = entry.get("path", "")
-            if not path_str:
-                continue
-            agent_path = self.project_root / path_str.replace("\\", "/")
-            if agent_path.exists():
-                all_agents.append(agent_path)
-                layer = entry.get("layer", "unknown")
-                path_to_layer[str(agent_path)] = layer
-        
+        for agent in registry:
+            path_str = agent.get("path", "")
+            if path_str:
+                full_path = self.project_root / path_str
+                if full_path.exists():
+                    all_agents.append(full_path)
+                    path_to_layer[str(full_path)] = agent.get("layer", "unknown")
+                    path_to_layer[str(full_path).replace("\\", "/")] = agent.get("layer", "unknown")
         return all_agents, path_to_layer
     
     def _compute_global_usage(self, all_agents: List[Path]) -> Set[str]:
-        """Compute which agents are used/imported elsewhere (MOVED FROM L5)."""
+        """Moves global usage analysis (I/O heavy) to L6 metrics engine."""
         used_stems = set()
         for py_file in self.project_root.rglob("*.py"):
+            if py_file in all_agents:
+                continue
             try:
-                content = py_file.read_text(encoding="utf-8")
+                content = py_file.read_text(errors="ignore")
                 for agent in all_agents:
-                    if agent.stem in content and str(agent) != str(py_file):
+                    if agent.stem in content:
                         used_stems.add(agent.stem)
-            except Exception:
+            except:
                 pass
         return used_stems
     
-    def _get_territory_agents(
-        self, territory_key: str, layer_filter: str,
-        all_agents: List[Path], path_to_layer: Dict[str, str]
-    ) -> List[Path]:
-        """Get agents for a specific territory (MOVED FROM L5)."""
-        return [
-            a for a in all_agents
-            if path_to_layer.get(str(a), "").startswith(layer_filter)
-        ]
+    def _get_territory_agents(self, territory_key: str, layer_filter: str, all_agents: List[Path], path_to_layer: Dict[str, str]) -> List[Path]:
+        """Moves territory discovery logic to L6."""
+        parts = territory_key.split("/")
+        layer_part = parts[0]
+        sub_t = parts[1] if len(parts) > 1 else None
+        
+        if layer_part == "observability":
+            return [p for p in all_agents if "observability" in str(p).replace("\\", "/").lower()]
+            
+        if sub_t in ["base_class", "core", "infrastructure", "specialized"]:
+            layer_agents = [p for p in all_agents if path_to_layer.get(str(p)) == layer_filter and "/observability/" not in str(p).lower()]
+            return [p for p in layer_agents if self._classify_subterritory(p) == sub_t]
+            
+        return [p for p in all_agents if path_to_layer.get(str(p)) == layer_filter]
+    
+    def _classify_subterritory(self, agent_path: Path) -> str:
+        """Moves multi-factor classification logic to L6."""
+        path_str = str(agent_path).replace("\\", "/").lower()
+        filename = agent_path.stem.lower()
+        if "baseagent" in filename:
+            return "base_class"
+        if any(p in path_str for p in ["/observability/", "/config/validators/"]):
+            return "infrastructure"
+        return "core"
         
     def load_registry(self) -> List[Dict[str, Any]]:
         """Load agent registry from JSON file."""

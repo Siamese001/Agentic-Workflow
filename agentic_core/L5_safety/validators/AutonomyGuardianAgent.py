@@ -613,25 +613,23 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
 
     def generate_compliance_report(self, markdown: bool = True, context: dict = None) -> None:
         """
-        Streamlined Compliance Report — delegates all computation to L6 engine (SSOT).
-        Purged of manual AST loops and redundant logic.
+        Sovereign Compliance Orchestrator — Pure L5/L6 Separation.
+        Delegates all discovery and classification to the L6 Modular Engine.
         """
         self.context = context or {}
         today = date.today().strftime("%B %d, %Y")
-        print(f"[GUARDIAN] Generating Streamlined SSOT Report — {today}")
-
         self.smart_discovery.ensure_fresh_discovery()
-        data_generator = DashboardDataGenerator(self.project_root, self.territories)
         
-        # SOVEREIGN LOGIC: Generator now handles full processing from registry to rows.
-        # Eliminates discovery and classification logic from the L5 Safety Agent.
+        # INITIALIZE L6 MODULAR ENGINE
+        data_generator = DashboardDataGenerator(self.project_root, self.territories)
+
+        # SOVEREIGN LOGIC: L6 Generator now owns the full processing pipeline.
         dashboard_rows, total_row = data_generator.generate_full_report_data()
         
         if markdown:
             self._save_modular_markdown_report(today, total_row, dashboard_rows)
         
         self._generate_dashboard_v2_with_rows(today, dashboard_rows, total_row)
-        print(f"[DASHBOARD] Unified report generated via L6 Engine on {today}")
 
     def _initialize_totals(self) -> Dict[str, int]:
         """Initialize totals accumulator for compliance metrics."""
