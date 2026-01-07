@@ -44,7 +44,7 @@ except ImportError:
     SafetyInspectorAgent = None
 
 try:
-    from agentic_core.L1_cognition.thought_engine.canon_agents_pattern import PatternEnforcerAgent as PatternEnforcerAgent
+    from agentic_core.L1_cognition.thought_engine.PatternEnforcerAgent import PatternEnforcerAgent
 except ImportError:
     PatternEnforcerAgent = None
 
