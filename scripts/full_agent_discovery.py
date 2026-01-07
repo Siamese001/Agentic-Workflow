@@ -146,10 +146,10 @@ LAYER_BASE_MAP = {
 #   - 2026-01-05: 312 agents (after string error caused 60+ agent loss - UNACCEPTABLE)
 #
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
-MINIMUM_AGENT_COUNT = 276  # baseline locked after Phase 4 signal restoration
+MINIMUM_AGENT_COUNT = 273  # Updated after Phase 2 gravity relocation (10 agents moved, 3 duplicates consolidated)
 MAX_AGENT_DROP_PERCENT = 0   # Zero tolerance for agent loss - strict enforcement
-EXPECTED_AGENT_COUNT = 276  # Permanent baseline for clean L0-L5 structure
-# 2026-01-06: Finalized at 283 after surgical deduplication (removed 7 duplicates)
+EXPECTED_AGENT_COUNT = 273  # Updated baseline after L1/L2 Gospel enforcement (2026-01-07)
+# 2026-01-07: Reduced from 276 to 273 after Phase 2 relocation (legitimate consolidation)
 # and bulk extraction (47 agents to 1:1 files). Net -2 from duplicate consolidation.
 # 2026-01-05: CONSOLIDATION MIGRATION - Relaxed thresholds to allow safe agent consolidation
 
