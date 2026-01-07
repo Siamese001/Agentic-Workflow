@@ -22,6 +22,8 @@ INTEGRATION:
 """
 import json
 import logging
+import hashlib
+import re
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
@@ -96,6 +98,16 @@ class GravityStateAgent:
         except Exception as e:
             self.logger.error(f"Failed to save state: {e}")
     
+    def _normalize_and_hash(self, import_line: str) -> str:
+        """
+        Normalizes an import statement by removing whitespace and comments
+        to create a stable hash for comparison.
+        """
+        # Remove comments and collapse whitespace
+        normalized = re.sub(r'#.*$', '', import_line).strip()
+        normalized = re.sub(r'\s+', ' ', normalized)
+        return hashlib.sha256(normalized.encode('utf-8')).hexdigest()
+    
     def record_healing(self, record: HealingRecord) -> None:
         """
         Record a successful healing operation.
@@ -104,15 +116,20 @@ class GravityStateAgent:
             record: HealingRecord with details of the healing
         """
         file_key = str(Path(record.file_path).relative_to(self.root))
+        import_hash = self._normalize_and_hash(record.original_import)
+        
+        # Append hash to record for robust lookup
+        record_data = asdict(record)
+        record_data["import_hash"] = import_hash
         
         # Add to healed files registry
         if file_key not in self.state["healed_files"]:
             self.state["healed_files"][file_key] = []
         
-        self.state["healed_files"][file_key].append(asdict(record))
+        self.state["healed_files"][file_key].append(record_data)
         
         # Add to healing history
-        self.state["healing_history"].append(asdict(record))
+        self.state["healing_history"].append(record_data)
         
         # Update metadata
         self.state["metadata"]["total_healings"] += 1
@@ -142,9 +159,10 @@ class GravityStateAgent:
         if file_key not in self.state["healed_files"]:
             return False
         
-        # Check if this specific import has been healed
+        current_hash = self._normalize_and_hash(import_line)
+        
         for healing in self.state["healed_files"][file_key]:
-            if healing["original_import"].strip() == import_line.strip():
+            if healing.get("import_hash") == current_hash:
                 return True
         
         return False

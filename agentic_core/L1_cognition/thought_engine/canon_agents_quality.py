@@ -6,7 +6,7 @@ import ast
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+# GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 try:
     from agentic_core.L1_cognition.thought_engine.canon_validators_ast import validate_print_statements, validate_debugger, validate_empty_except, validate_bare_except, validate_eval_exec
 except ImportError:

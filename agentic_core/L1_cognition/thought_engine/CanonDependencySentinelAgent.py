@@ -1,4 +1,5 @@
 from __future__ import annotations
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 """
 Canon Validator Syntax Agents
 CodeJanitor, DependencySentinelAgent - Code hygiene and import management.
@@ -12,7 +13,7 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # DDD Compliance Phase 9A: L1 depends on interface only (SharedContracts, rank=-1)
-from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+# GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -297,7 +298,9 @@ class CodeJanitor:
             print("      [X] Fix script 'scripts/fix_trailing_whitespace.py' not found.")
         except Exception as e:  # Catch other potential errors during subprocess execution
             print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery
 class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
