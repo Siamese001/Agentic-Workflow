@@ -13,7 +13,7 @@ import ast
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+# GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 from agentic_core.L1_cognition.thought_engine.SubAtomicAgent import SubAtomicAgent
 
 

@@ -147,6 +147,31 @@ class BatchGravityOrchestrator:
         
         return results
     
+    async def verify_batch_integrity(self, batch: List[GravityViolation]) -> bool:
+        """
+        Post-healing verification: Scans modified files to ensure 
+        the specific violations are no longer detected.
+        """
+        files_to_check = {v.file_path for v in batch}
+        all_clear = True
+        
+        for file_path in files_to_check:
+            remaining_violations = await self.validator.detect_violations(file_path)
+            # ARCHITECTURAL HARDENING: Skip verification for RELOCATE_FILE actions 
+            # since those require manual architectural intervention.
+            healed_lines = {
+                v.line_number for v in batch 
+                if v.file_path == file_path 
+                and v.suggested_action != "RELOCATE_FILE"
+            }
+            lingering = [v for v in remaining_violations if v.line_number in healed_lines]
+            
+            if lingering:
+                print(f"   ⚠️  Verification Failed for {file_path.name}: {len(lingering)} violations persist.")
+                all_clear = False
+        
+        return all_clear
+    
     async def run(self, dry_run: bool = True) -> Dict[str, Any]:
         """
         Run batch healing orchestration.
@@ -214,10 +239,14 @@ class BatchGravityOrchestrator:
             total_healed += result['statistics']['healed']
             total_failed += result['statistics']['failed']
             
-            # Pause between batches for stability
+            # Active verification instead of blind sleep
             if batch_num < len(batches):
-                print(f"\n⏸️  Pausing 2 seconds before next batch...")
-                await asyncio.sleep(2)
+                verified = await self.verify_batch_integrity(batch)
+                if not verified:
+                    print("   🛑 Batch verification failed. Stopping pipeline for investigation.")
+                    break
+                print(f"   ✅ Batch {batch_num} verified. Proceeding...")
+                await asyncio.sleep(0.5)  # Minimal breather
         
         # Final summary
         print("\n" + "=" * 80)

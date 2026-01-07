@@ -1,4 +1,5 @@
 from __future__ import annotations
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 import ast
 '''Brief description of functionality and purpose.'''
 
@@ -61,7 +62,9 @@ class CanonEntry:
 Logger = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
