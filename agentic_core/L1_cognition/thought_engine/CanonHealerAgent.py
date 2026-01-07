@@ -456,11 +456,12 @@ class HealerAgent(HealerMixin, CanonBaseAgentInterface):
 from .GenerativeGuardAgent import GenerativeGuardAgent as GenerativeGuard
 
 # Legacy class removed - use GenerativeGuardAgent instead
-class _GenerativeGuard_Deprecated(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
+class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.
     Phase 9A: DDD Remediation - Composition over inheritance
+    Name updated to PascalCase with 'Agent' suffix for registry visibility.
     """
 
     def __init__(self, ctx: Any = None):
