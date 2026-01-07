@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 try:
-    from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+    from agentic_core.L1_cognition.thought_engine.CanonBaseAgent import CanonBaseAgent
 except ImportError:
     CanonBaseAgent = None
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY

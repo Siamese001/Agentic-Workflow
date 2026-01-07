@@ -16,7 +16,7 @@ Phase 11: Configurable Implementation Factory
 from typing import Optional, Any
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 try:
-    from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+    from agentic_core.L1_cognition.thought_engine.CanonBaseAgent import CanonBaseAgent
 except ImportError:
     CanonBaseAgent = None
 MockCanonBaseAgent = None  # Stub

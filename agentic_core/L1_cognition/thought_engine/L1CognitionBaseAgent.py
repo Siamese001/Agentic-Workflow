@@ -54,7 +54,7 @@ class L1CognitionBaseAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMi
         from agentic_core.L1_cognition.thought_engine.DocumentationAgent import DocumentationAgent
         from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
         from agentic_core.L1_cognition.thought_engine.BudgetAgent import BudgetAgent
-        from agentic_core.L1_cognition.thought_engine.StructuralEngineerAgent import StructuralEngineerAgent
+        from agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent import StructuralEngineerAgent
         from agentic_core.L1_cognition.thought_engine.TypeMechanicAgent import TypeMechanicAgent
         from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
         arch = SystemArchitect(ctx)
