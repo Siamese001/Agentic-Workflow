@@ -1,8 +1,6 @@
 """
-Dashboard Renderer - Handles HTML template rendering for the autonomy dashboard.
-
-This module handles loading templates, injecting data, and saving the final HTML.
-Extracted from AutonomyGuardianAgent to reduce complexity.
+Dashboard Renderer - Sovereign UI Engine (L6 Observability)
+Moved from L5_safety/validators as part of Phase 1 Consolidation.
 """
 from __future__ import annotations
 
@@ -35,19 +33,23 @@ class DashboardRenderer:
             project_root: Root path of the project
         """
         self.project_root = project_root
-        self.template_paths = [
-            project_root / "agentic_core" / "config" / "validators" / "dashboard_template.html",
-            project_root / "agentic_core" / "L5_safety" / "validators" / "dashboard_template.html",
-        ]
+        # PHASE 2: Synchronize with consolidated L6 template location
+        self.template_dir = self.project_root / "agentic_core" / "observability" / "dashboard" / "templates"
+        self.template_path = self.template_dir / "dashboard.html"
+        
+        self.output_path = self.project_root / "reports" / "autonomy_dashboard.html"
     
     def load_template(self) -> str:
-        """Load the dashboard HTML template."""
-        for template_path in self.template_paths:
-            if template_path.exists():
-                log.debug(f"Template loaded from: {template_path}")
-                return template_path.read_text(encoding="utf-8")
-        
-        raise FileNotFoundError(f"Dashboard template not found in {self.template_paths}")
+        """Load the canonical SSOT HTML template."""
+        if not self.template_path.exists():
+            error_msg = (
+                f"Critical SSOT Violation: Dashboard template missing at {self.template_path}. "
+                "Ensure Phase 2 Migration (template move) has been executed."
+            )
+            log.error(error_msg)
+            raise FileNotFoundError(error_msg)
+            
+        return self.template_path.read_text(encoding="utf-8")
     
     def render(
         self,
@@ -352,4 +354,5 @@ class DashboardRenderer:
             "code_quality": total_row.get("Code Quality Score", 0),
             "typing": total_row.get("Typed %", 0),
             "complexity_health": total_row.get("Complexity Health", 0),
+        }
         }
