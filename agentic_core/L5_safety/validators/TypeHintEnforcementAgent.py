@@ -69,7 +69,7 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
                 new_source = ast.unparse(new_tree)
 
                 if new_source != source:
-                    file_path.write_text(new_source + "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n", encoding="utf-8")
+                    file_path.write_text(new_source + "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n", encoding="utf-8")
                     message = f"Added {fixer.added_count} Missing type hint(s)"
                     print(f"      [HEALED] {file_path.name}: {message}")
                     ctx.report(

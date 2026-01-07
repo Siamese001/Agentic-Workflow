@@ -72,10 +72,11 @@ class BatchGravityOrchestrator:
             files_scanned += 1
             violations = await self.validator.detect_violations(py_file)
             
-            # Filter out already-healed violations
+            # Filter out already-healed violations AND architectural violations requiring manual intervention
             unhealed = [
                 v for v in violations
                 if not self.state_tracker.is_healed(v.file_path, v.import_line)
+                and v.suggested_action != "RELOCATE_FILE"
             ]
             
             all_violations.extend(unhealed)

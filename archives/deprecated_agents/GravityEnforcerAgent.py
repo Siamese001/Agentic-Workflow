@@ -62,7 +62,7 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
         Execute the gravity enforcement pass.
         Scans agentic_core files and comments out any forbidden downstream imports.
         """
-        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] GravityEnforcerAgent: Scanning for neural leaks...")
+        print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] GravityEnforcerAgent: Scanning for neural leaks...")
         self.healed_count = 0
         self.healed_files = []
         

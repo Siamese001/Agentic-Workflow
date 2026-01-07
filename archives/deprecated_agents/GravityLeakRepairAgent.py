@@ -94,7 +94,7 @@ class GravityLeakRepairAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
                         original_import: Any = line.strip()
                         if original_import.startswith('import '):
                             module: Any = original_import[7:].strip()
-                            replacement: Any = f"{indent}import importlib\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n{indent}{module.split('.')[-1]} = importlib.import_module('{module}')"
+                            replacement: Any = f"{indent}import importlib\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n{indent}{module.split('.')[-1]} = importlib.import_module('{module}')"
                         else:
                             parts: Any = original_import.split(' import ')
                             module_path: Any = parts[0][5:].strip()

@@ -19,7 +19,7 @@ DISCOVERY_JSON = PROJECT_ROOT / "agent_discovery_full.json"
 
 LOGGING_IMPORT = "import logging"
 LOGGER_INIT = "logger = logging.getLogger(__name__)"
-TESTING_IMPORT = "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin"
+TESTING_IMPORT = "from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin"
 
 
 def load_agents() -> List[Dict]:

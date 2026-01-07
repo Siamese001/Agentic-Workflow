@@ -137,7 +137,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 for match in matches:
                     file_violations.append({
                         "file": str(py_file.relative_to(self.project_root)),
-                        "line": content[:match.start()].count("\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n") + 1,
+                        "line": content[:match.start()].count("\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n") + 1,
                         "type": ViolationType,
                         "Severity": "CRITICAL",
                         "match": match.group(0)

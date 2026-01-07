@@ -1,635 +1,129 @@
 {
   "healed_files": {
-    "agentic_core\\L1_cognition\\thought_engine\\HealerAgent.py": [
+    "agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py": [
       {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\HealerAgent.py",
-        "original_import": "COMMENT_OUT",
-        "healed_import": "dynamic_import",
-        "violation_type": "upstream_downstream",
-        "healing_strategy": "comment_out",
-        "timestamp": "2026-01-07T09:41:20.626244",
-        "agent_version": "1.0.0",
-        "line_number": null,
-        "import_hash": "6687fe78167c4512175578ee2a27e47ea7d98c7640c9f0d9ffb983d4c3617065"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\HealerAgent.py",
-        "original_import": "DYNAMIC_IMPORT",
+        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py",
+        "original_import": "from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent",
         "healed_import": "dynamic_import",
         "violation_type": "upward_leak",
         "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:41:20.627265",
+        "timestamp": "2026-01-07T09:54:08.923112",
         "agent_version": "1.0.0",
-        "line_number": null,
-        "import_hash": "d40e67acfa7e853525403f0bc6291e756f04386b6611679cead47eb9c75c4997"
+        "line_number": 308,
+        "import_hash": "da3feea16495c9c8e9a0b6d2575a3d23ea6f9c77f6e9ebfd114010563dfe8e78"
       }
     ],
-    "agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py": [
+    "agentic_core\\L1_cognition\\thought_engine\\llm_engine.py": [
       {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
+        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\llm_engine.py",
+        "original_import": "from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngineImpl",
         "healed_import": "dynamic_import",
         "violation_type": "upward_leak",
         "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:45:41.552380",
+        "timestamp": "2026-01-07T09:54:08.925797",
         "agent_version": "1.0.0",
-        "line_number": 14,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:45:41.553957",
-        "agent_version": "1.0.0",
-        "line_number": 14,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py",
-        "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "intra_core",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:48:34.863443",
-        "agent_version": "1.0.0",
-        "line_number": 19,
-        "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
+        "line_number": 94,
+        "import_hash": "aec50f8e18838f428421ad0fd2bffa277ff3df055bd4f016de4c351be1890395"
       }
     ],
-    "agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py": [
+    "agentic_core\\L1_cognition\\thought_engine\\OrchestratorAgentAndScopeManagerAgent.py": [
       {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py",
+        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\OrchestratorAgentAndScopeManagerAgent.py",
         "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
         "healed_import": "dynamic_import",
         "violation_type": "upward_leak",
         "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:45:41.554522",
+        "timestamp": "2026-01-07T09:54:08.925797",
         "agent_version": "1.0.0",
-        "line_number": 14,
+        "line_number": 28,
         "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:45:41.555082",
-        "agent_version": "1.0.0",
-        "line_number": 14,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py",
-        "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "intra_core",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:48:34.865499",
-        "agent_version": "1.0.0",
-        "line_number": 19,
-        "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
       }
     ],
-    "agentic_core\\L1_cognition\\thought_engine\\CanonBaseAgent.py": [
+    "agentic_core\\L1_cognition\\thought_engine\\PatternEnforcerAgent.py": [
       {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonBaseAgent.py",
-        "original_import": "from agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent import StructuralEngineerAgent",
-        "healed_import": "dynamic_import",
-        "violation_type": "intra_core",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:45:41.555082",
-        "agent_version": "1.0.0",
-        "line_number": 38,
-        "import_hash": "18250118b0aa602f4a978f8c75993b4a74725f252acd05e2a69e74ae0108c3b6"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\CanonDependencySentinelAgent.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonDependencySentinelAgent.py",
+        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\PatternEnforcerAgent.py",
         "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
         "healed_import": "dynamic_import",
         "violation_type": "upstream_downstream",
         "healing_strategy": "comment_out",
-        "timestamp": "2026-01-07T09:48:34.867166",
-        "agent_version": "1.0.0",
-        "line_number": 15,
-        "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonDependencySentinelAgent.py",
-        "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
-        "healed_import": "dynamic_import",
-        "violation_type": "upstream_downstream",
-        "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:48:34.868391",
-        "agent_version": "1.0.0",
-        "line_number": 15,
-        "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py",
-        "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
-        "healed_import": "dynamic_import",
-        "violation_type": "upstream_downstream",
-        "healing_strategy": "comment_out",
-        "timestamp": "2026-01-07T09:48:34.869453",
-        "agent_version": "1.0.0",
-        "line_number": 21,
-        "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:48:35.420504",
-        "agent_version": "1.0.0",
-        "line_number": 27,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\CanonValidatorAgent.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:48:35.422169",
-        "agent_version": "1.0.0",
-        "line_number": 64,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:48:35.423830",
-        "agent_version": "1.0.0",
-        "line_number": 64,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py",
-        "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
-        "healed_import": "dynamic_import",
-        "violation_type": "upstream_downstream",
-        "healing_strategy": "comment_out",
-        "timestamp": "2026-01-07T09:48:35.425421",
-        "agent_version": "1.0.0",
-        "line_number": 16,
-        "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\canon_agents_quality.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\canon_agents_quality.py",
-        "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
-        "healed_import": "dynamic_import",
-        "violation_type": "upstream_downstream",
-        "healing_strategy": "comment_out",
-        "timestamp": "2026-01-07T09:48:35.427012",
-        "agent_version": "1.0.0",
-        "line_number": 9,
-        "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\check_outreach_rules_types.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\check_outreach_rules_types.py",
-        "original_import": "from apps_shared.utils.common_patterns import ExecutionContext",
-        "healed_import": "dynamic_import",
-        "violation_type": "upstream_downstream",
-        "healing_strategy": "comment_out",
-        "timestamp": "2026-01-07T09:48:36.004925",
+        "timestamp": "2026-01-07T09:54:08.928328",
         "agent_version": "1.0.0",
         "line_number": 10,
-        "import_hash": "cdbe63d2ebd609d1be0f04a015691d77024fcbb0963b3934124eff41814e5322"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\check_resume_rules_types.py": [
+        "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
+      },
       {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\check_resume_rules_types.py",
-        "original_import": "from apps_shared.utils.common_patterns import ExecutionContext",
+        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\PatternEnforcerAgent.py",
+        "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
         "healed_import": "dynamic_import",
         "violation_type": "upstream_downstream",
-        "healing_strategy": "comment_out",
-        "timestamp": "2026-01-07T09:48:36.006478",
-        "agent_version": "1.0.0",
-        "line_number": 9,
-        "import_hash": "cdbe63d2ebd609d1be0f04a015691d77024fcbb0963b3934124eff41814e5322"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\DangerousBuiltinsValidatorAgent.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DangerousBuiltinsValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
         "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:48:36.008570",
-        "agent_version": "1.0.0",
-        "line_number": 14,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DangerousBuiltinsValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:48:36.009169",
-        "agent_version": "1.0.0",
-        "line_number": 14,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\DebuggerValidatorAgent.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DebuggerValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:48:36.012221",
-        "agent_version": "1.0.0",
-        "line_number": 14,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DebuggerValidatorAgent.py",
-        "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "intra_core",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:48:36.569847",
-        "agent_version": "1.0.0",
-        "line_number": 16,
-        "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\DocumentationAgent.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DocumentationAgent.py",
-        "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "intra_core",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:48:36.572373",
+        "timestamp": "2026-01-07T09:54:08.928328",
         "agent_version": "1.0.0",
         "line_number": 10,
-        "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DocumentationAgent.py",
-        "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "intra_core",
-        "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:48:36.574249",
-        "agent_version": "1.0.0",
-        "line_number": 10,
-        "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
-      }
-    ],
-    "agentic_core\\L1_cognition\\thought_engine\\EmptyExceptValidatorAgent.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\EmptyExceptValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T09:48:36.576255",
-        "agent_version": "1.0.0",
-        "line_number": 14,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      },
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\EmptyExceptValidatorAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "relocation_suggested",
-        "timestamp": "2026-01-07T09:48:36.576255",
-        "agent_version": "1.0.0",
-        "line_number": 14,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
+        "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
       }
     ]
   },
   "healing_history": [
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\HealerAgent.py",
-      "original_import": "COMMENT_OUT",
-      "healed_import": "dynamic_import",
-      "violation_type": "upstream_downstream",
-      "healing_strategy": "comment_out",
-      "timestamp": "2026-01-07T09:41:20.626244",
-      "agent_version": "1.0.0",
-      "line_number": null,
-      "import_hash": "6687fe78167c4512175578ee2a27e47ea7d98c7640c9f0d9ffb983d4c3617065"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\HealerAgent.py",
-      "original_import": "DYNAMIC_IMPORT",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py",
+      "original_import": "from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent",
       "healed_import": "dynamic_import",
       "violation_type": "upward_leak",
       "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:41:20.627265",
+      "timestamp": "2026-01-07T09:54:08.923112",
       "agent_version": "1.0.0",
-      "line_number": null,
-      "import_hash": "d40e67acfa7e853525403f0bc6291e756f04386b6611679cead47eb9c75c4997"
+      "line_number": 308,
+      "import_hash": "da3feea16495c9c8e9a0b6d2575a3d23ea6f9c77f6e9ebfd114010563dfe8e78"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\llm_engine.py",
+      "original_import": "from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngineImpl",
       "healed_import": "dynamic_import",
       "violation_type": "upward_leak",
       "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:45:41.552380",
+      "timestamp": "2026-01-07T09:54:08.925797",
       "agent_version": "1.0.0",
-      "line_number": 14,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
+      "line_number": 94,
+      "import_hash": "aec50f8e18838f428421ad0fd2bffa277ff3df055bd4f016de4c351be1890395"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:45:41.553957",
-      "agent_version": "1.0.0",
-      "line_number": 14,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\OrchestratorAgentAndScopeManagerAgent.py",
       "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
       "healed_import": "dynamic_import",
       "violation_type": "upward_leak",
       "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:45:41.554522",
+      "timestamp": "2026-01-07T09:54:08.925797",
       "agent_version": "1.0.0",
-      "line_number": 14,
+      "line_number": 28,
       "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:45:41.555082",
-      "agent_version": "1.0.0",
-      "line_number": 14,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonBaseAgent.py",
-      "original_import": "from agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent import StructuralEngineerAgent",
-      "healed_import": "dynamic_import",
-      "violation_type": "intra_core",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:45:41.555082",
-      "agent_version": "1.0.0",
-      "line_number": 38,
-      "import_hash": "18250118b0aa602f4a978f8c75993b4a74725f252acd05e2a69e74ae0108c3b6"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py",
-      "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "intra_core",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:48:34.863443",
-      "agent_version": "1.0.0",
-      "line_number": 19,
-      "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py",
-      "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "intra_core",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:48:34.865499",
-      "agent_version": "1.0.0",
-      "line_number": 19,
-      "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonDependencySentinelAgent.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\PatternEnforcerAgent.py",
       "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
       "healed_import": "dynamic_import",
       "violation_type": "upstream_downstream",
       "healing_strategy": "comment_out",
-      "timestamp": "2026-01-07T09:48:34.867166",
-      "agent_version": "1.0.0",
-      "line_number": 15,
-      "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonDependencySentinelAgent.py",
-      "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
-      "healed_import": "dynamic_import",
-      "violation_type": "upstream_downstream",
-      "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:48:34.868391",
-      "agent_version": "1.0.0",
-      "line_number": 15,
-      "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py",
-      "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
-      "healed_import": "dynamic_import",
-      "violation_type": "upstream_downstream",
-      "healing_strategy": "comment_out",
-      "timestamp": "2026-01-07T09:48:34.869453",
-      "agent_version": "1.0.0",
-      "line_number": 21,
-      "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:48:35.420504",
-      "agent_version": "1.0.0",
-      "line_number": 27,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:48:35.422169",
-      "agent_version": "1.0.0",
-      "line_number": 64,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CanonValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:48:35.423830",
-      "agent_version": "1.0.0",
-      "line_number": 64,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py",
-      "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
-      "healed_import": "dynamic_import",
-      "violation_type": "upstream_downstream",
-      "healing_strategy": "comment_out",
-      "timestamp": "2026-01-07T09:48:35.425421",
-      "agent_version": "1.0.0",
-      "line_number": 16,
-      "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\canon_agents_quality.py",
-      "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
-      "healed_import": "dynamic_import",
-      "violation_type": "upstream_downstream",
-      "healing_strategy": "comment_out",
-      "timestamp": "2026-01-07T09:48:35.427012",
-      "agent_version": "1.0.0",
-      "line_number": 9,
-      "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\check_outreach_rules_types.py",
-      "original_import": "from apps_shared.utils.common_patterns import ExecutionContext",
-      "healed_import": "dynamic_import",
-      "violation_type": "upstream_downstream",
-      "healing_strategy": "comment_out",
-      "timestamp": "2026-01-07T09:48:36.004925",
+      "timestamp": "2026-01-07T09:54:08.928328",
       "agent_version": "1.0.0",
       "line_number": 10,
-      "import_hash": "cdbe63d2ebd609d1be0f04a015691d77024fcbb0963b3934124eff41814e5322"
+      "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\check_resume_rules_types.py",
-      "original_import": "from apps_shared.utils.common_patterns import ExecutionContext",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\PatternEnforcerAgent.py",
+      "original_import": "from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface",
       "healed_import": "dynamic_import",
       "violation_type": "upstream_downstream",
-      "healing_strategy": "comment_out",
-      "timestamp": "2026-01-07T09:48:36.006478",
-      "agent_version": "1.0.0",
-      "line_number": 9,
-      "import_hash": "cdbe63d2ebd609d1be0f04a015691d77024fcbb0963b3934124eff41814e5322"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DangerousBuiltinsValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
       "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:48:36.008570",
-      "agent_version": "1.0.0",
-      "line_number": 14,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DangerousBuiltinsValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:48:36.009169",
-      "agent_version": "1.0.0",
-      "line_number": 14,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DebuggerValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:48:36.012221",
-      "agent_version": "1.0.0",
-      "line_number": 14,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DebuggerValidatorAgent.py",
-      "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "intra_core",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:48:36.569847",
-      "agent_version": "1.0.0",
-      "line_number": 16,
-      "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DocumentationAgent.py",
-      "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "intra_core",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:48:36.572373",
+      "timestamp": "2026-01-07T09:54:08.928328",
       "agent_version": "1.0.0",
       "line_number": 10,
-      "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DocumentationAgent.py",
-      "original_import": "from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "intra_core",
-      "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:48:36.574249",
-      "agent_version": "1.0.0",
-      "line_number": 10,
-      "import_hash": "0264ae092d6b3585abae0950d50294da1db6775cba3a6b0af972e9777219e5cf"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\EmptyExceptValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T09:48:36.576255",
-      "agent_version": "1.0.0",
-      "line_number": 14,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\EmptyExceptValidatorAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "relocation_suggested",
-      "timestamp": "2026-01-07T09:48:36.576255",
-      "agent_version": "1.0.0",
-      "line_number": 14,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
+      "import_hash": "0d77b717f7a2a098b42a759397b668ac9546cdf7bd7825fae0f676ace463cbe4"
     }
   ],
   "metadata": {
-    "created_at": "2026-01-07T09:41:09.641697",
-    "last_updated": "2026-01-07T09:48:36.576255",
-    "total_healings": 27
+    "created_at": "2026-01-07T09:54:08.816859",
+    "last_updated": "2026-01-07T09:54:08.928328",
+    "total_healings": 5
   }
 }

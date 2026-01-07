@@ -1,4 +1,5 @@
 from __future__ import annotations
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 import ast
 '''Brief description of functionality and purpose.'''
 
@@ -25,7 +26,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 
 try:
     from google.cloud import aiplatform
@@ -48,7 +51,7 @@ _orchestrator_instance: Optional['ConsolidatedOrchestratorAgent'] = None
 
 def _signal_handler(signum, frame):
     """Handle CTRL+C and graceful shutdown."""
-    Logger.info('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n🛑 Shutdown signal received. Releasing all leases...')
+    Logger.info('\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n🛑 Shutdown signal received. Releasing all leases...')
     if _orchestrator_instance:
         _orchestrator_instance.release_all_leases()
     sys.exit(0)

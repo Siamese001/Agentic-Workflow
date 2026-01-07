@@ -8,7 +8,7 @@ import ast
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')

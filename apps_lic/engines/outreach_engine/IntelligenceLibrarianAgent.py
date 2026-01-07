@@ -89,7 +89,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         Returns:
             Dictionary with research findings and metadata
         """
-        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[Librarian] Starting deep research on: {company_name}")
+        print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[Librarian] Starting deep research on: {company_name}")
         
         findings = {
             "company_name": company_name,
