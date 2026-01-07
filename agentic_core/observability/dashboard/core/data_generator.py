@@ -517,8 +517,8 @@ class DashboardDataGenerator:
             "Documented %": total_documented,
             "Metadata %": 100.0,  # TODO: Compute from agent metadata presence
             "Proper Base %": weighted_avg("Proper Base %"),
-            # Schema Strictness: Computed from typed % (proxy metric)
-            "Schema Strictness %": round(min(100, total_typed * 1.1), 1),  # Dynamic, not hardcoded
+            # PHASE 4 HARDENING: Weighted average of verified AST signals
+            "Schema Strictness %": weighted_avg("Schema Strictness %"),
             "Complexity Health": cc_health,
             "Code Quality Score": 0.0,  # Will be computed
             "Criticality": 75,

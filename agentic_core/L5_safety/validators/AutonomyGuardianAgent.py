@@ -620,10 +620,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         today = date.today().strftime("%B %d, %Y")
         self.smart_discovery.ensure_fresh_discovery()
         
-        # INITIALIZE L6 MODULAR ENGINE
+        # ARCHITECTURAL HARDENING: Shared L6 Logic for SSOT
         data_generator = DashboardDataGenerator(self.project_root, self.territories)
 
-        # SOVEREIGN LOGIC: L6 Generator now owns the full processing pipeline.
+        # SOVEREIGN LOGIC: Generator now handles full processing from registry to rows.
         dashboard_rows, total_row = data_generator.generate_full_report_data()
         
         if markdown:
@@ -631,17 +631,29 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         
         self._generate_dashboard_v2_with_rows(today, dashboard_rows, total_row)
 
-    def _initialize_totals(self) -> Dict[str, int]:
-        """Initialize totals accumulator for compliance metrics."""
-        return {
-            "agents": 0, "compliant": 0, "hardened": 0,
-            "healing_cap": 0, "healing_invoke": 0, "tests": 0,
-            "loc": 0, "cc_sum": 0, "max_cc": 0,
-            "typed": 0, "documented": 0, "observable": 0, "used": 0
-        }
+    def _save_modular_markdown_report(self, today: str, total_row: Dict[str, Any], dashboard_rows: List[Dict[str, Any]]) -> None:
+        """Passive Markdown renderer consuming pre-computed L6 rows (No Logic Drift)."""
+        report_path = self.project_root / "reports" / "autonomy_compliance_report.md"
+        md = f"# Autonomy Compliance SSOT Report — {today}\n\n"
+        md += "System Health: {Health:.1f}% | Risk: {Risk}\n\n".format(**total_row)
+        md += "| Territory | Total | % Heal Cap | % Heal Inv | % Test | CC | Health |\n"
+        md += "|---|---|---|---|---|---|---|\n"
+        for row in dashboard_rows:
+            md += "| {Territory} | {Total} | {Heal Cap %} | {Heal Invocation %} | {Test %} | {Avg CC} | {Health} |\n".format(**row)
+        md += "| **TOTAL** | **{Total}** | **{Heal Cap %}** | **{Heal Invocation %}** | **{Test %}** | **{Avg CC}** | **{Health}** |\n".format(**total_row)
+        report_path.write_text(md, encoding="utf-8")
 
-    def _legacy_initialize_totals_placeholder(self) -> dict:
-        """DEPRECATED: Placeholder for old code removal."""
+    def _generate_dashboard_v2_with_rows(self, today: str, dashboard_rows: List[Dict[str, Any]], total_row: Dict[str, Any]) -> None:
+        """L6 Interactive Dashboard generation consuming pre-computed unified rows."""
+        renderer = DashboardRenderer(self.project_root)
+        recs = renderer.generate_recommendations(total_row, dashboard_rows)
+        questions = renderer.generate_interview_questions(total_row, dashboard_rows)
+        gauge_data = renderer.generate_gauge_data(total_row)
+        html = renderer.render(dashboard_rows, recs, questions, gauge_data, today)
+        renderer.save(html)
+
+    def _generate_self_contained_dashboard_legacy(self) -> dict:
+        """DEPRECATED: Legacy method bridged to L6. All logic moved to observability layer."""
         if registry_by_path is None:
             registry_by_path = {}
         
