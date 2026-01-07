@@ -968,6 +968,15 @@ def main():
     force_mode = args.force
     incremental_mode = args.incremental
     
+    # DEPRECATED: This tool is now LEGACY and should not be used for SSOT enforcement.
+    #
+    # Use `agentic_core.utils.core_extensions.ssot_scanner.SSOTScanner` instead for:
+    # - Direct filesystem scanning (no registry needed)
+    # - Always-current data (no refresh needed)
+    # - 95% faster performance (<1s vs 15-18s)
+    #
+    # This tool is kept only for historical tracking and comparison purposes.
+    #
     log.info("=" * 80)
     log.info("FULL AGENT DISCOVERY STARTED")
     log.info(f"Mode: {'INCREMENTAL' if incremental_mode else 'FULL'} {'(forced)' if force_mode else ''}")
