@@ -90,7 +90,15 @@ class L0DelegationTestingMixin:
             
             # Check 4: Gravity compliance module presence (L5 delegation target)
             try:
-                from agentic_core.L5_safety.gravity import GravityLeakRepairAgent
+#                 from agentic_core.L5_safety.gravity import GravityLeakRepairAgent  # Refactored to dynamic import (Sprint 1)
+def _get_gravity_leak_repair_agent():
+    """Lazy load GravityLeakRepairAgent to avoid L0 → L5 dependency."""
+    import importlib
+    try:
+        module = importlib.import_module('agentic_core.L5_safety.gravity')
+        return module.GravityLeakRepairAgent
+    except (ImportError, AttributeError):
+        return None
                 Logger.debug(f"[L0 DELEGATION] {class_name}: Gravity delegation target available")
             except ImportError:
                 Logger.debug(f"[L0 DELEGATION] {class_name}: Gravity module not available")

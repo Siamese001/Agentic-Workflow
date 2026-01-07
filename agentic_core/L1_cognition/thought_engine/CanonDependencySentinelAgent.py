@@ -298,7 +298,7 @@ class CodeJanitor:
             print("      [X] Fix script 'scripts/fix_trailing_whitespace.py' not found.")
         except Exception as e:  # Catch other potential errors during subprocess execution
             print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
-# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 
