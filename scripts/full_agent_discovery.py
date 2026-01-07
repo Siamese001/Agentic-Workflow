@@ -948,19 +948,41 @@ def main():
     changed_rel_paths: Set[str] = set()
 
     if incremental_mode:
-        # INCREMENTAL SETUP
+        # ====================================================================
+        # ROBUST INCREMENTAL DISCOVERY - Hash-based Change Detection
+        # ====================================================================
+        # VIOLATION JUSTIFICATION: Subprocess/File fallback is necessary to
+        # maintain the 283 baseline if the cache is corrupted.
+        # ====================================================================
+        
+        # Step 1: Load previous agent registry
         if CANONICAL_JSON.exists():
             try:
                 previous_agents = json.loads(CANONICAL_JSON.read_text(encoding="utf-8"))
                 previous_count = len(previous_agents)
                 log.info(f"[INCREMENTAL] Loaded {previous_count} agents from previous JSON")
+                
+                # Validate agent count against baseline
+                if previous_count != EXPECTED_AGENT_COUNT:
+                    log.warning(
+                        f"[INCREMENTAL] Previous count ({previous_count}) != expected ({EXPECTED_AGENT_COUNT}). "
+                        f"Registry may be stale → falling back to full scan for integrity"
+                    )
+                    incremental_mode = False
+            except json.JSONDecodeError as e:
+                log.error(f"[INCREMENTAL] JSON corrupted ({e}) → falling back to full scan")
+                incremental_mode = False
+            except IOError as e:
+                log.error(f"[INCREMENTAL] Failed to read JSON ({e}) → falling back to full scan")
+                incremental_mode = False
             except Exception as e:
-                log.error(f"[INCREMENTAL] Failed to load previous JSON ({e}) → falling back to full scan")
+                log.error(f"[INCREMENTAL] Unexpected error loading JSON ({e}) → falling back to full scan")
                 incremental_mode = False
         else:
-            log.warning("[INCREMENTAL] No previous JSON → falling back to full scan")
+            log.warning("[INCREMENTAL] No previous JSON found → falling back to full scan")
             incremental_mode = False
 
+        # Step 2: Load file hash manifest for change detection
         if incremental_mode and MANIFEST_JSON.exists():
             try:
                 old_manifest = json.loads(MANIFEST_JSON.read_text(encoding="utf-8"))
@@ -968,18 +990,43 @@ def main():
                 # HARDENED: Schema validation
                 required = {"file_hashes", "agent_count", "generated_at"}
                 if not all(k in old_manifest for k in required):
-                    raise ValueError(f"Missing keys: {required - old_manifest.keys()}")
+                    missing = required - old_manifest.keys()
+                    raise ValueError(f"Manifest missing required keys: {missing}")
+                
+                # Validate manifest agent count matches JSON
+                manifest_count = old_manifest.get("agent_count", 0)
+                if manifest_count != previous_count:
+                    raise ValueError(
+                        f"Manifest count ({manifest_count}) != JSON count ({previous_count}). "
+                        f"Data integrity compromised."
+                    )
                 
                 old_hashes = old_manifest.get("file_hashes", {})
                 log.info(f"[INCREMENTAL] Loaded manifest with {len(old_hashes)} file hashes")
+                log.info(f"[INCREMENTAL] Manifest generated: {old_manifest.get('generated_at', 'unknown')}")
+                
+            except json.JSONDecodeError as e:
+                log.warning(f"[INCREMENTAL] Manifest JSON corrupted ({e}) → falling back to full scan")
+                incremental_mode = False
+                old_hashes = {}
+            except ValueError as e:
+                log.warning(f"[INCREMENTAL] Manifest validation failed ({e}) → falling back to full scan")
+                incremental_mode = False
+                old_hashes = {}
             except Exception as e:
                 log.warning(f"[INCREMENTAL] Manifest error ({e}) → falling back to full scan")
                 incremental_mode = False
                 old_hashes = {}
         elif incremental_mode:
-            log.warning("[INCREMENTAL] No manifest → falling back to full scan")
+            log.warning("[INCREMENTAL] No manifest found → falling back to full scan")
             incremental_mode = False
             old_hashes = {}
+        
+        # Log final incremental mode status
+        if incremental_mode:
+            log.info("[INCREMENTAL] ✓ Prerequisites validated - proceeding with hash-based change detection")
+        else:
+            log.info("[FULL SCAN] Incremental mode disabled - performing complete repository scan")
     
     if previous_count:
         log.info(f"[BASELINE] Previous agent count: {previous_count}")
@@ -1006,36 +1053,75 @@ def main():
     log.info(f"Scanning {len(all_py_files)} Python files...")
     log.info(f"   -> Excluded vendor/cache dirs via should_exclude_path()")
     
-    # INCREMENTAL: Compute current hashes and detect changes
+    # ====================================================================
+    # INCREMENTAL: Hash-based Change Detection
+    # ====================================================================
     if incremental_mode:
+        log.info("[INCREMENTAL] Computing MD5 hashes for change detection...")
         current_hashes: Dict[str, str] = {}
+        hash_compute_errors = 0
+        
         for py_file in all_py_files:
             rel_path = str(py_file.relative_to(PROJECT_ROOT)).replace("\\", "/")
             try:
-                current_hashes[rel_path] = hashlib.md5(py_file.read_bytes()).hexdigest()
-            except Exception:
+                file_hash = hashlib.md5(py_file.read_bytes()).hexdigest()
+                current_hashes[rel_path] = file_hash
+            except IOError as e:
+                # File read error - mark as changed to force re-parse
+                log.debug(f"[HASH ERROR] {rel_path}: {e}")
                 changed_rel_paths.add(rel_path)
+                hash_compute_errors += 1
+            except Exception as e:
+                # Unexpected error - mark as changed for safety
+                log.debug(f"[HASH ERROR] {rel_path}: {e}")
+                changed_rel_paths.add(rel_path)
+                hash_compute_errors += 1
         
-        # Detect changed/added files
-        changed_rel_paths = {
-            rel for rel, new_h in current_hashes.items()
-            if old_hashes.get(rel) != new_h
+        if hash_compute_errors > 0:
+            log.warning(f"[INCREMENTAL] {hash_compute_errors} files had hash errors → marked as changed")
+        
+        # Detect changed files (hash mismatch)
+        changed_files = {
+            rel for rel, new_hash in current_hashes.items()
+            if old_hashes.get(rel) != new_hash
         }
-        changed_rel_paths.update(set(current_hashes) - set(old_hashes))  # New files
         
-        # Detect removed files
-        removed_rel_paths = set(old_hashes) - set(current_hashes)
+        # Detect new files (not in old manifest)
+        new_files = set(current_hashes.keys()) - set(old_hashes.keys())
         
-        log.info(f"[INCREMENTAL] Detected {len(changed_rel_paths)} changed/added files")
-        if removed_rel_paths:
-            log.info(f"[INCREMENTAL] Detected {len(removed_rel_paths)} removed files")
+        # Detect removed files (in old manifest but not current)
+        removed_rel_paths = set(old_hashes.keys()) - set(current_hashes.keys())
+        
+        # Combine all changed/new files
+        changed_rel_paths.update(changed_files)
+        changed_rel_paths.update(new_files)
+        
+        # Log change detection results
+        log.info(f"[INCREMENTAL] Change detection results:")
+        log.info(f"  - Changed files: {len(changed_files)}")
+        log.info(f"  - New files: {len(new_files)}")
+        log.info(f"  - Removed files: {len(removed_rel_paths)}")
+        log.info(f"  - Total files to reparse: {len(changed_rel_paths)}")
         
         # Retain agents from unchanged files
-        agents = [
+        # Filter out agents from changed/removed files
+        retained_agents = [
             a for a in previous_agents
-            if a.get("path", "") not in changed_rel_paths and a.get("path", "") not in removed_rel_paths
+            if a.get("path", "") not in changed_rel_paths 
+            and a.get("path", "") not in removed_rel_paths
         ]
-        log.info(f"[INCREMENTAL] Retained {len(agents)} agents from unchanged files")
+        
+        agents = retained_agents
+        log.info(f"[INCREMENTAL] Retained {len(agents)} agents from {len(previous_agents) - len(agents)} unchanged files")
+        
+        # Validate retained agent integrity
+        if len(agents) > EXPECTED_AGENT_COUNT:
+            log.error(
+                f"[INCREMENTAL] INTEGRITY ERROR: Retained {len(agents)} agents > baseline {EXPECTED_AGENT_COUNT}. "
+                f"This should never happen. Falling back to full scan."
+            )
+            incremental_mode = False
+            agents = []
     
     # First pass: Build inheritance map for MRO-like detection
     log.info("[PASS 1] Building inheritance map (required for MRO healing detection)...")
