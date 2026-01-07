@@ -186,7 +186,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         
         # HierarchyAgent for structure validation after heals
         try:
-            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
             self.hierarchy_agent = HierarchyAgent(self.project_root)
         except ImportError:
             self.hierarchy_agent = None

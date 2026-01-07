@@ -222,7 +222,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def _get_hierarchy_agent(self):
         """Lazy load HierarchyAgent for semantic territory context"""
         if self._hierarchy_agent is None:
-            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
             self._hierarchy_agent = HierarchyAgent(self.project_root)
         return self._hierarchy_agent
 

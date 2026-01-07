@@ -20,7 +20,7 @@ class TestHierarchyAgent:
     @pytest.fixture
     def agent(self, mock_ctx):
         """Create HierarchyAgent instance."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
         return HierarchyAgent(ctx=mock_ctx, project_root=Path('.'))
     
     def test_agent_initialization(self, agent):
@@ -72,7 +72,7 @@ class TestHierarchyAgentValidation:
     @pytest.fixture
     def agent(self, mock_ctx):
         """Create HierarchyAgent instance."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
         return HierarchyAgent(ctx=mock_ctx, project_root=Path('.'))
     
     def test_run_returns_violations_list(self, agent):

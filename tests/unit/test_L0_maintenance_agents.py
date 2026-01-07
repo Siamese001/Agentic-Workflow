@@ -53,7 +53,7 @@ class TestSubAtomicAgent:
     @pytest.fixture
     def agent(self, mock_ctx):
         """Create SubAtomicAgent instance."""
-        from agentic_core.L0_maintenance.scripts.SubAtomicAgent import SubAtomicAgent
+        from agentic_core.L2_execution.tool_registry.SubAtomicAgent import SubAtomicAgent
         return SubAtomicAgent(context=mock_ctx)
     
     def test_agent_initialization(self, agent):

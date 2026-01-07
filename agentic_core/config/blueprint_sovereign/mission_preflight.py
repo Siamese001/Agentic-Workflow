@@ -55,7 +55,7 @@ class MissionPreflight:
         """Lazy load HierarchyAgent."""
         if self._hierarchy_agent is None:
             try:
-                from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+                from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
             except ImportError:
                 pass

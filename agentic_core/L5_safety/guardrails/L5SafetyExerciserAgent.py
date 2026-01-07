@@ -16,7 +16,7 @@ from agentic_core.observability.metrics.layer_decorator import layer_entry
 # Agents loaded on-demand to avoid circular dependencies
 def _get_hierarchy_agent():
     try:
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
         return HierarchyAgent
     except Exception:
         return None
