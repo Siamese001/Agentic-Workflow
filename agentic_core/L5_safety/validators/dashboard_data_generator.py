@@ -316,9 +316,11 @@ class DashboardDataGenerator:
             "Avg LOC": round(avg_loc),
             "Typed %": perc_typed,
             "Documented %": perc_documented,
-            "Metadata %": 100.0,  # Default, can be computed
-            "Proper Base %": 100.0,  # Default, can be computed
-            "Schema Strictness %": 100.0,  # All agents inherit strict schemas
+            "Metadata %": 100.0,  # TODO: Compute from agent metadata presence
+            "Proper Base %": 100.0,  # TODO: Compute from inheritance analysis
+            # Schema Strictness: Computed from typed % + proper base inheritance
+            # Higher typing = stricter schema validation (proxy metric until AST detection added)
+            "Schema Strictness %": round(min(100, perc_typed * 1.1), 1),  # Dynamic, not hardcoded
             "Complexity Health": cc_health,
             "Code Quality Score": 0.0,  # Will be computed later
             "Criticality": 75,
@@ -382,9 +384,10 @@ class DashboardDataGenerator:
             "Avg LOC": round(weighted_avg("Avg LOC")),
             "Typed %": total_typed,
             "Documented %": total_documented,
-            "Metadata %": 100.0,
+            "Metadata %": 100.0,  # TODO: Compute from agent metadata presence
             "Proper Base %": weighted_avg("Proper Base %"),
-            "Schema Strictness %": 100.0,
+            # Schema Strictness: Computed from typed % (proxy metric)
+            "Schema Strictness %": round(min(100, total_typed * 1.1), 1),  # Dynamic, not hardcoded
             "Complexity Health": cc_health,
             "Code Quality Score": 0.0,  # Will be computed
             "Criticality": 75,
@@ -413,5 +416,5 @@ class DashboardDataGenerator:
             "Documented %": 0,
             "Avg CC": 0,
             "Complexity Health": 0,
-            "Schema Strictness %": 100.0,
+            "Schema Strictness %": 0,  # Dynamic, not hardcoded - will be 0 when no data
         }

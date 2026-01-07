@@ -971,9 +971,16 @@
                 return Math.max(0, Math.min(100, 100 - (cc * 2)));
             });
             
+            // SSOT FIX: Compute compliance % from Compliant/Total (same data source as tables)
+            const complianceValues = territoryData.map(d => {
+                const compliant = parseFloat(d.Compliant) || 0;
+                const total = parseFloat(d.Total) || 1;
+                return (compliant / total) * 100;
+            });
+            
             const trace = {
                 x: invertedComplexity,
-                y: territoryData.map(d => parseFloat(d['Compliance %']) || 0),
+                y: complianceValues,
                 mode: 'markers',
                 type: 'scatter',
                 text: territoryData.map(d => d.Territory),
@@ -1028,9 +1035,10 @@
 
         function renderComplianceChart(territoryData) {
             const territories = territoryData.map(d => d.Territory);
-            const compliance = territoryData.map(d => parseFloat(d['Compliance %']) || 0);
+            // SSOT FIX: Compute compliance % from Compliant/Total (same data source as tables)
             const compliant = territoryData.map(d => parseFloat(d.Compliant) || 0);
-            const total = territoryData.map(d => parseFloat(d.Total) || 0);
+            const total = territoryData.map(d => parseFloat(d.Total) || 1);
+            const compliance = compliant.map((c, i) => (c / total[i]) * 100);
 
             const trace = {
                 x: territories,
