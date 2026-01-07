@@ -1,4 +1,5 @@
 from __future__ import annotations
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 """
 SubatomicTestingMixin - Phase 1 Canonical Self-Testing for L2 Agents
 
@@ -10,7 +11,9 @@ Purpose: Shared testing infrastructure for SubAtomicAgent-derived classes
 """
 from typing import Any, Dict, Optional
 import logging
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
 Logger = logging.getLogger(__name__)

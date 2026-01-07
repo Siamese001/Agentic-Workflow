@@ -127,45 +127,6 @@
         "line_number": 17,
         "import_hash": "4fe2d113acdea36e2e292a7dca1521203a29379714156267453f652417caf06c"
       }
-    ],
-    "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T10:11:12.243325",
-        "agent_version": "1.0.0",
-        "line_number": 73,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      }
-    ],
-    "agentic_core\\L0_maintenance\\scripts\\filesystem_mcp_client.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\filesystem_mcp_client.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T10:11:12.243325",
-        "agent_version": "1.0.0",
-        "line_number": 18,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      }
-    ],
-    "agentic_core\\L0_maintenance\\scripts\\gitkraken_mcp_client.py": [
-      {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\gitkraken_mcp_client.py",
-        "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-        "healed_import": "dynamic_import",
-        "violation_type": "upward_leak",
-        "healing_strategy": "dynamic_import",
-        "timestamp": "2026-01-07T10:11:12.243325",
-        "agent_version": "1.0.0",
-        "line_number": 16,
-        "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-      }
     ]
   },
   "healing_history": [
@@ -278,44 +239,11 @@
       "agent_version": "1.0.0",
       "line_number": 17,
       "import_hash": "4fe2d113acdea36e2e292a7dca1521203a29379714156267453f652417caf06c"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T10:11:12.243325",
-      "agent_version": "1.0.0",
-      "line_number": 73,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\filesystem_mcp_client.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T10:11:12.243325",
-      "agent_version": "1.0.0",
-      "line_number": 18,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
-    },
-    {
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\gitkraken_mcp_client.py",
-      "original_import": "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin",
-      "healed_import": "dynamic_import",
-      "violation_type": "upward_leak",
-      "healing_strategy": "dynamic_import",
-      "timestamp": "2026-01-07T10:11:12.243325",
-      "agent_version": "1.0.0",
-      "line_number": 16,
-      "import_hash": "da06217e3257b21db3c53df83a7c22c1825a247348e865a5e2acc0b5ce2e309d"
     }
   ],
   "metadata": {
     "created_at": "2026-01-07T09:54:08.816859",
-    "last_updated": "2026-01-07T10:11:12.243325",
-    "total_healings": 13
+    "last_updated": "2026-01-07T10:11:11.646454",
+    "total_healings": 10
   }
 }
