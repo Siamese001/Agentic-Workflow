@@ -79,47 +79,8 @@ class HistorianAgent(SubAtomicAgent):
             return super().heal_repository()
 
 
-# Extracted to standalone GitAgent.py (2026-01-06)
-from agentic_core.L2_execution.ToolRegistry.GitAgent import GitAgent
-class _LegacyGitAgent(SubAtomicAgent):
-    """
-    ROLE: Manages Version Control (Branching, Commits).
-    """
-    def __init__(self, ctx) -> None:
-        super().__init__(ctx)
-        self.repo = None
-        if GITPYTHON_AVAILABLE:
-            try:
-                # Use environment variable for repository path to avoid hardcoded relative paths
-                repo_path = os.getenv("GIT_REPO_PATH", ".")
-                self.repo = Repo(repo_path)
-            except Exception:
-                pass
-
-    async def execute(self) -> None:
-                    
-        if not GITPYTHON_AVAILABLE or not self.repo:
-            return
-
-        # Simple auto-commit logic if requested
-        if "COMMIT_CHANGES" in self.ctx.signals:
-            await self._commit_changes()
-
-    async def _commit_changes(self):
-        try:
-            # git operations are blocking calls; use to_thread to keep the event loop responsive
-            is_dirty = await asyncio.to_thread(self.repo.is_dirty, untracked_files=True)
-            if is_dirty:
-                await asyncio.to_thread(self.repo.git.add, A=True)
-                commit_msg = f"Auto-fix by {self.ctx._current_agent}"
-                await asyncio.to_thread(self.repo.index.commit, commit_msg)
-                print("   [SAVE] Changes committed to git.")
-        except Exception as e:
-            print(f"   [!] Git operation failed: {e}")
-
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+# Legacy class removed 2026-01-06 - use standalone GitAgent.py
+# from agentic_core.L2_execution.ToolRegistry.GitAgent import GitAgent
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30

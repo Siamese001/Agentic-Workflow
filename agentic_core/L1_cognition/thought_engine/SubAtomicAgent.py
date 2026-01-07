@@ -107,8 +107,8 @@ class nesting_depth_visitor(ast.NodeVisitor):
         self._generic_visit_with_depth(node)
 
 
-# NOT_AN_AGENT — legacy L1 class, true agent is TypeEnforcerAgent in L2 — excluded from discovery
-class type_mechanic(SubAtomicAgent):
+# Sovereign Agent for type enforcement and precision engineering
+class TypeMechanicAgent(SubAtomicAgent):
     """
     KEYS: 22 (Missing Types), 23 (Unreachable Code), 24 (Unused Vars)
     ROLE: Precision Engineering. Requires AST_VALID signal.
@@ -277,8 +277,8 @@ class type_mechanic(SubAtomicAgent):
             violations.extend(self._process_file_for_unused_variables(fp))
         return len(violations) == 0, violations
 
-# NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class budget_agent(SubAtomicAgent):
+# Sovereign Agent for token budget tracking and complexity management
+class BudgetAgent(SubAtomicAgent):
     """
     KEYS: 17 (Large Functions), 19 (Complex Functions)
     ROLE: The Comptroller. Proactively marks functions exceeding size/complexity limits.
@@ -364,8 +364,8 @@ class budget_agent(SubAtomicAgent):
                     complexity += len(child.ifs)
         return complexity
 
-# NOT_AN_AGENT — legacy L1 class, true agent is StructuralEngineerAgent in L2 — excluded from discovery
-class structural_engineer(SubAtomicAgent):
+# Sovereign Agent for AST structure validation and architectural enforcement
+class StructuralEngineerAgent(SubAtomicAgent):
     """
     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 41 (Excessive Nesting),
           42 (Large Files), 43 (Class Density), 46 (Duplicate Code)

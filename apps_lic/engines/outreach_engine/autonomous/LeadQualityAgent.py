@@ -72,8 +72,8 @@ class LeadQualityAgent(OutreachAgent):
 # Import for backward compatibility
 from .OutreachTestPilotAgent import OutreachTestPilotAgent as OutreachTestPilot
 
-# Legacy class removed - use OutreachTestPilotAgent instead
-class _OutreachTestPilot_Deprecated(OutreachAgent):
+# Legacy class - use OutreachTestPilotAgent instead
+class OutreachTestPilotDeprecatedAgent(OutreachAgent):
     """Runs validation tests on the campaign."""
 
     async def execute(self) -> None:
