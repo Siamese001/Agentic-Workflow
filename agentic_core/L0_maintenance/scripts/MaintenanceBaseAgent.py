@@ -115,7 +115,12 @@ class L0DelegationMixin(MCPHardenedMixin):
     async def _delegate_to_specialist(self, operation: str, error: str, context: Dict) -> Dict:
         """Delegate failure analysis to TestSovereigntyAgent."""
         try:
-            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+#             from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
+def _get_test_sovereignty_agent():
+    """Lazy load TestSovereigntyAgent to avoid L0 → L5 dependency."""
+    import importlib
+    module = importlib.import_module('agentic_core.L5_safety.validators.TestSovereigntyAgent')
+    return module.TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
             result = await specialist.execute({
@@ -135,7 +140,7 @@ class L0DelegationMixin(MCPHardenedMixin):
     async def _delegate_healing_to_specialist(self, healed_code: str, context: Dict) -> Dict:
         """Delegate healed code validation to TestSovereigntyAgent."""
         try:
-            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+#             from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
             
             specialist = TestSovereigntyAgent()
             result = await specialist.execute({

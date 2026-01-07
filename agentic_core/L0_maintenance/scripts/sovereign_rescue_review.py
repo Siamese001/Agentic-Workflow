@@ -8,9 +8,19 @@ import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from agentic_core.L4_state.vector.PineconeSovereignAgent import PineconeSovereignAgent
-from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
-from agentic_core.L4_state.vector.PineconeSovereignAgent import PineconeSovereignAgent
+# from agentic_core.L4_state.vector.PineconeSovereignAgent import PineconeSovereignAgent  # Refactored to dynamic import (Sprint 1)
+def _get_pinecone_sovereign_agent():
+    """Lazy load PineconeSovereignAgent to avoid L0 → L4 dependency."""
+    import importlib
+    module = importlib.import_module('agentic_core.L4_state.vector.PineconeSovereignAgent')
+    return module
+# from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent  # Refactored to dynamic import (Sprint 1)
+def _get_redis_sovereign_agent():
+    """Lazy load redis_sovereign_agent to avoid L0 → L4 dependency."""
+    import importlib
+    module = importlib.import_module('agentic_core.L4_state.cache.redis_sovereign_agent')
+    return module
+# from agentic_core.L4_state.vector.PineconeSovereignAgent import PineconeSovereignAgent  # Refactored to dynamic import (Sprint 1)
 
 
 class RescueReviewer:
