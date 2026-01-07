@@ -11,7 +11,9 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
 from agentic_core.canon_agents_pattern import PatternEnforcerAgent, SemanticMapperAgent, UIValidationAgent
 from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspectorAgent
-from agentic_core.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
+from agentic_core.L1_cognition.thought_engine.BudgetAgent import BudgetAgent
+from agentic_core.L1_cognition.thought_engine.StructuralEngineerAgent import StructuralEngineerAgent
+from agentic_core.L1_cognition.thought_engine.TypeMechanicAgent import TypeMechanicAgent
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
 from agentic_core.runtime.shared.canon_validation_context import ValidationContext
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -29,7 +31,7 @@ class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                                     Defaults to the current directory ".".
         """
         self.ctx: ValidationContext = ValidationContext(target_scope=target or '.')
-        self.swarm = [HealerAgent(self.ctx), SystemArchitect(self.ctx), GenerativeGuard(self.ctx), CodeJanitor(self.ctx), DependencySentinelAgent(self.ctx), SafetyInspectorAgent(self.ctx), PatternEnforcerAgent(self.ctx), DocumentationAgent(self.ctx), NamingAgent(self.ctx), BudgetAgent(self.ctx), TypeMechanic(self.ctx), UIValidationAgent(self.ctx), SemanticMapperAgent(self.ctx), StructuralEngineer(self.ctx)]
+        self.swarm = [HealerAgent(self.ctx), SystemArchitect(self.ctx), GenerativeGuard(self.ctx), CodeJanitor(self.ctx), DependencySentinelAgent(self.ctx), SafetyInspectorAgent(self.ctx), PatternEnforcerAgent(self.ctx), DocumentationAgent(self.ctx), NamingAgent(self.ctx), BudgetAgent(self.ctx), TypeMechanicAgent(self.ctx), UIValidationAgent(self.ctx), SemanticMapperAgent(self.ctx), StructuralEngineerAgent(self.ctx)]
 
     async def run_mission(self) -> None:
         """
