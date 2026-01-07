@@ -1,0 +1,3347 @@
+{
+  "baseline_metadata": {
+    "phase": "Phase A Complete",
+    "date": "2026-01-06T19:38:07.259629",
+    "agent_count": 273,
+    "expected_count": 273,
+    "status": "LOCKED",
+    "strict_enforcement": true,
+    "validation": "PASSING"
+  },
+  "thresholds": {
+    "expected_agent_count": 273,
+    "minimum_agent_count": 265,
+    "max_agent_drop_percent": 5
+  },
+  "layer_distribution": {
+    "L0": 11,
+    "L1": 25,
+    "L2": 53,
+    "L3": 54,
+    "L4": 13,
+    "L5": 57,
+    "apps_lic": 36,
+    "apps_rg": 23,
+    "apps_shared": 1
+  },
+  "agents_by_layer": {
+    "L0": [
+      "BootstrapAgent",
+      "FilesystemSSOTReconcilerAgent",
+      "GapClosureArchitectAgent",
+      "GravityComplianceValidatorAgent",
+      "GuardianOrchestratorAgent",
+      "HealingOrchestratorAgent",
+      "HygieneValidatorAgent",
+      "MetricsWitnessAgent",
+      "ScriptToAgentClassifierAgent",
+      "ScriptsPlanningOrchestratorAgent",
+      "WorkflowOrchestratorAgent"
+    ],
+    "L1": [
+      "AsyncBlockingValidatorAgent",
+      "BareExceptValidatorAgent",
+      "CanonValidatorAgent",
+      "CognitiveContractValidatorAgent",
+      "ConsolidatedOrchestratorAgent",
+      "DangerousBuiltinsValidatorAgent",
+      "DebuggerValidatorAgent",
+      "EmptyExceptValidatorAgent",
+      "EvalExecValidatorAgent",
+      "ExternalHttpValidatorAgent",
+      "GenerativeGuardAgent",
+      "GovernanceAgent",
+      "IntelligentOrchestratorAgent",
+      "L1CognitionBaseAgent",
+      "L1CognitionExerciserAgent",
+      "MetaLearningAgent",
+      "OrchestratorAgentAndScopeManagerAgent",
+      "PrintStatementValidatorAgent",
+      "ReasoningRouterAgent",
+      "ReflectionAgent",
+      "SemanticMapperAgent",
+      "SovereignCognitivePlaneAgent",
+      "StrategicPlannerAgent",
+      "SystemArchitectAgent",
+      "UiValidationAgent"
+    ],
+    "L2": [
+      "AutonomyGuardianAgent",
+      "BenchmarkingAgent",
+      "CanonAstValidatorAgent",
+      "CartographerAgent",
+      "CodeDeduplicationAgent",
+      "CodeJanitorAgent",
+      "ContextAwareValidatorAgent",
+      "ContextCuratorAgent",
+      "DeadCodeDetectorAgent",
+      "DependencyDiplomatAgent",
+      "DocEnforcerAgent",
+      "DriftDetectorAgent",
+      "DynamicModelRouterAgent",
+      "FallbackManagerAgent",
+      "GitAgent",
+      "GlobalComplianceAggregatorAgent",
+      "HistorianAgent",
+      "ImportHealerAgent",
+      "IntegrityGateExecutorAgent",
+      "InternalAgent",
+      "L0Agent",
+      "L1Agent",
+      "L2Agent",
+      "L2ExecutionBaseAgent",
+      "L3Agent",
+      "L4Agent",
+      "L5Agent",
+      "LLMPromptGovernorAgent",
+      "McpConnectionManagerAgent",
+      "MemoryArchitectAgent",
+      "MemoryLeakDetectorAgent",
+      "NamingAgent",
+      "NamingEnforcerAgent",
+      "NamingLawHealerAgent",
+      "NamingNormalizationAgent",
+      "OmniContextAgent",
+      "OrganizationAgent",
+      "PeerIntelligenceAuditorAgent",
+      "ProactiveResourceManagerAgent",
+      "RecipientAgent",
+      "ReflectionAgent",
+      "S2_SupervisorAgent",
+      "SherlockAgent",
+      "SovereignActionPlaneAgent",
+      "SovereignPineconeStoreAgent",
+      "SovereignRedisOrchestratorAgent",
+      "SprawlInspectorAgent",
+      "StrategicPlannerAgent",
+      "StrategistAgent",
+      "StructuralEngineerAgent",
+      "SystemArchitectAgent",
+      "ToolsmithAgent",
+      "TypeEnforcerAgent"
+    ],
+    "L3": [
+      "ActorCriticOrchestratorAgent",
+      "AgentPermissionManagerAgent",
+      "AgentRegistryValidatorAgent",
+      "ArchitectureGovernorAgent",
+      "AutonomicMonitorAgent",
+      "BenchmarkingAgent",
+      "CachedOrchestratorAgent",
+      "CoordinateObservabilityOperationsAgent",
+      "CoverageAgent",
+      "DAGManagerAgent",
+      "DAGMutatorAgent",
+      "DagEngineAgent",
+      "DagExecutorAgent",
+      "DagRuntimeInspectorAgent",
+      "DeadlockDetectorAgent",
+      "FissionManagerAgent",
+      "GeneralExerciserAgent",
+      "GitSafetyHandlerAgent",
+      "HallucinationDetectorAgent",
+      "HardenedWorkflowOrchestratorAgent",
+      "HierarchyEnforcerAgent",
+      "McpConnectionManagerAgent",
+      "McpRouterAgent",
+      "MemoryLeakDetectorAgent",
+      "MetaCoverageOptimizerAgent",
+      "MetricsAgent",
+      "ModelRouterAgent",
+      "NervousSystemAgent",
+      "NervousSystemPhaseOrchestratorAgent",
+      "OrchestrationBaseAgent",
+      "OrchestrationHandshakeAgent",
+      "PPOOrchestratorAgent",
+      "PredictiveCostAuditorAgent",
+      "QLearningOrchestratorAgent",
+      "RLOrchestratorAgent",
+      "ReinforceCriticOrchestratorAgent",
+      "ReportingAgent",
+      "ResumeOrchestratorAgent",
+      "SelfRecoveringOrchestratorAgent",
+      "SemanticGatekeeperAgent",
+      "SemanticTerritoryMapperAgent",
+      "SignatureVerifierAgent",
+      "SovereignCanonAuditorAgent",
+      "SovereignRagOrchestratorAgent",
+      "StrategicRecommendationAgent",
+      "SubatomicHopAgent",
+      "TaskMonitorAgent",
+      "TelemetryAgent",
+      "TerritoryChangeHandlerAgent",
+      "TerritoryHealerAgent",
+      "TestPilotAgent",
+      "TokenBudgetInspectorAgent",
+      "TracingAgent",
+      "TrackObservabilityCostAgent"
+    ],
+    "L4": [
+      "AutonomousCheckpointManagerAgent",
+      "AutonomousStateGuardianAgent",
+      "CheckpointManagerAgent",
+      "FileManagerAgent",
+      "L4StateExerciserAgent",
+      "MemoryManagerAgent",
+      "PineconeSovereignAgent",
+      "RedisSovereignAgent",
+      "SchemaEvolverAgent",
+      "SovereignPineconeStoreAgent",
+      "StateBaseAgent",
+      "SubAtomicRegistryAgent",
+      "ValidationContextManagerAgent"
+    ],
+    "L5": [
+      "AdversarialProbeAgent",
+      "AdversarialRedTeamerAgent",
+      "AutonomousThreatEvolutionAgent",
+      "AutonomyGuardianAgent",
+      "BaseClassEnforcerAgent",
+      "BiasAuditorAgent",
+      "BiasDetectorAgent",
+      "BoundaryTestingAgent",
+      "ChaosEngineeringAgent",
+      "CodeFormatterAgent",
+      "CodeSSOTEnforcerAgent",
+      "ComplianceOrchestratorAgent",
+      "CompositeGuardrailAgent",
+      "ConstitutionalReviewerAgent",
+      "CostGovernorAgent",
+      "DependencyPruningAgent",
+      "DocstringComplianceAgent",
+      "DuplicateCodeDetectorAgent",
+      "FileCleanupAgent",
+      "FilesystemAgent",
+      "GitHygieneAgent",
+      "GravityEnforcerAgent",
+      "GravityLeakRepairAgent",
+      "HallucinationHunterAgent",
+      "HealValidatorAgent",
+      "HierarchyAgent",
+      "HierarchyHealerAgent",
+      "ImportAgent",
+      "InferenceTypeHintAgent",
+      "InputValidatorAgent",
+      "L5IntegrityGateExecutorAgent",
+      "L5SafetyExerciserAgent",
+      "LocationAgent",
+      "MCPGuardianAgent",
+      "MethodChangeDetectorAgent",
+      "MultiProviderRouterAgent",
+      "NeuralAutoImmuneAgent",
+      "PIISanitizerAgent",
+      "PascalSovereigntyEnforcerAgent",
+      "PolicyNeuralAutoImmuneAgent",
+      "PromptInjectionAgent",
+      "PromptInjectionDetectorAgent",
+      "PythonFileSovereigntyEnforcerAgent",
+      "RedSentinelAgent",
+      "RedTeamAgent",
+      "RegressionOracleAgent",
+      "SafetyBaseAgent",
+      "SafetyInspectorAgent",
+      "SecureCheckpointManagerAgent",
+      "SecureConfigManagerAgent",
+      "SelfUpdatingSafetyEngineAgent",
+      "StructuralHealerAgent",
+      "TestCoverageGuardianAgent",
+      "TestSovereigntyAgent",
+      "TypeHintEnforcementAgent",
+      "TypeHintFixerAgent",
+      "UnusedCleanupAgent"
+    ],
+    "apps_lic": [
+      "ASCIIEnforcerAgent",
+      "CampaignBalanceAgent",
+      "CampaignPlannerAgent",
+      "ContactValidatorAgent",
+      "ContentCleanlinessValidatorAgent",
+      "DeliverabilityAgent",
+      "HOP1ProfileAnalysisAgent",
+      "HOP2ResearchAgent",
+      "HOP3SenderGroundingAgent",
+      "HOP4RoutingAgent",
+      "HOP5GenerationAgent",
+      "HOP6ValidationAgent",
+      "HOP7GateDecisionAgent",
+      "HOP8QAReportAgent",
+      "HOPOrchestratorAgent",
+      "IntelligenceLibrarianAgent",
+      "InternalAgent",
+      "LeadQualityAgent",
+      "MessageComplianceAgent",
+      "MessageDiversityValidatorAgent",
+      "OrganizationAgent",
+      "OutreachCapabilityMonitorAgent",
+      "OutreachHealingOrchestratorAgent",
+      "OutreachLearningAgent",
+      "OutreachPhase5OrchestratorAgent",
+      "OutreachProactiveAgent",
+      "OutreachReflectionAgent",
+      "OutreachSignalRouterAgent",
+      "OutreachTestPilotAgent",
+      "OutreachValidationExecutorAgent",
+      "PlaceholderDetectorAgent",
+      "RecipientAgent",
+      "S2_SupervisorAgent",
+      "TemplateOptimizerAgent",
+      "ValidationAgent",
+      "WorkflowOrchestratorAgent"
+    ],
+    "apps_rg": [
+      "ATSCompatibilityAgent",
+      "BrandComplianceAgent",
+      "CapabilityMonitorAgent",
+      "ContentQualityAgent",
+      "ConvergenceDetectorAgent",
+      "DispatchOutreachToolsAgent",
+      "DispatchResumeToolsAgent",
+      "FactCheckAgent",
+      "HealingOrchestratorAgent",
+      "Phase4OrchestratorAgent",
+      "Phase6OrchestratorAgent",
+      "Phase7OrchestratorAgent",
+      "ProactiveAgent",
+      "ReflectionAgent",
+      "ResumeLearningAgent",
+      "ResumeOrchestratorAgent",
+      "SafetyExecutorAgent",
+      "SectionBalanceAgent",
+      "SignalRouterAgent",
+      "StrategicPlannerAgent",
+      "StrictDocEnforcerAgent",
+      "TemplateOptimizerAgent",
+      "UnifiedOrchestratorAgent"
+    ],
+    "apps_shared": [
+      "StateValidatorAgent"
+    ]
+  },
+  "agents_by_file": {
+    "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py": [
+      "BootstrapAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py": [
+      "FilesystemSSOTReconcilerAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\GapClosureArchitectAgent.py": [
+      "GapClosureArchitectAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\GravityComplianceValidatorAgent.py": [
+      "GravityComplianceValidatorAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\GuardianOrchestratorAgent.py": [
+      "GuardianOrchestratorAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\HealingOrchestratorAgent.py": [
+      "HealingOrchestratorAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\HygieneValidatorAgent.py": [
+      "HygieneValidatorAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\MetricsWitnessAgent.py": [
+      "MetricsWitnessAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\ScriptToAgentClassifierAgent.py": [
+      "ScriptToAgentClassifierAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\ScriptsPlanningOrchestratorAgent.py": [
+      "ScriptsPlanningOrchestratorAgent"
+    ],
+    "agentic_core\\L0_maintenance\\scripts\\WorkflowOrchestratorAgent.py": [
+      "WorkflowOrchestratorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py": [
+      "AsyncBlockingValidatorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py": [
+      "BareExceptValidatorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\CanonValidatorAgent.py": [
+      "CanonValidatorAgent"
+    ],
+    "agentic_core\\schemas\\models\\CognitiveContractValidatorAgent.py": [
+      "CognitiveContractValidatorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\ConsolidatedOrchestratorAgent.py": [
+      "ConsolidatedOrchestratorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\DangerousBuiltinsValidatorAgent.py": [
+      "DangerousBuiltinsValidatorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\DebuggerValidatorAgent.py": [
+      "DebuggerValidatorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\EmptyExceptValidatorAgent.py": [
+      "EmptyExceptValidatorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\EvalExecValidatorAgent.py": [
+      "EvalExecValidatorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\ExternalHttpValidatorAgent.py": [
+      "ExternalHttpValidatorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\GenerativeGuardAgent.py": [
+      "GenerativeGuardAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py": [
+      "GovernanceAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\IntelligentOrchestratorAgent.py": [
+      "IntelligentOrchestratorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py": [
+      "L1CognitionBaseAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\L1CognitionExerciserAgent.py": [
+      "L1CognitionExerciserAgent"
+    ],
+    "agentic_core\\L1_cognition\\learning\\MetaLearningAgent.py": [
+      "MetaLearningAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\OrchestratorAgentAndScopeManagerAgent.py": [
+      "OrchestratorAgentAndScopeManagerAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py": [
+      "PrintStatementValidatorAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\ReasoningRouterAgent.py": [
+      "ReasoningRouterAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\ReflectionAgent.py": [
+      "ReflectionAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\SemanticMapperAgent.py": [
+      "SemanticMapperAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\SovereignCognitivePlaneAgent.py": [
+      "SovereignCognitivePlaneAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\StrategicPlannerAgent.py": [
+      "StrategicPlannerAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\SystemArchitectAgent.py": [
+      "SystemArchitectAgent"
+    ],
+    "agentic_core\\L1_cognition\\thought_engine\\UiValidationAgent.py": [
+      "UiValidationAgent"
+    ],
+    "agentic_core\\config\\blueprint_sovereign\\AutonomyGuardianAgent.py": [
+      "AutonomyGuardianAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\BenchmarkingAgent.py": [
+      "BenchmarkingAgent"
+    ],
+    "agentic_core\\runtime\\shared_runtime\\CanonAstValidatorAgent.py": [
+      "CanonAstValidatorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py": [
+      "CartographerAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\CodeDeduplicationAgent.py": [
+      "CodeDeduplicationAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\CodeJanitorAgent.py": [
+      "CodeJanitorAgent"
+    ],
+    "agentic_core\\patterns\\agent_roles\\ContextAwareValidatorAgent.py": [
+      "ContextAwareValidatorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\ContextCuratorAgent.py": [
+      "ContextCuratorAgent"
+    ],
+    "agentic_core\\utils\\core_extensions\\DeadCodeDetectorAgent.py": [
+      "DeadCodeDetectorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\DependencyDiplomatAgent.py": [
+      "DependencyDiplomatAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\DocEnforcerAgent.py": [
+      "DocEnforcerAgent"
+    ],
+    "agentic_core\\utils\\core_extensions\\DriftDetectorAgent.py": [
+      "DriftDetectorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\DynamicModelRouterAgent.py": [
+      "DynamicModelRouterAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\FallbackManagerAgent.py": [
+      "FallbackManagerAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\GitAgent.py": [
+      "GitAgent"
+    ],
+    "agentic_core\\utils\\core_extensions\\GlobalComplianceAggregatorAgent.py": [
+      "GlobalComplianceAggregatorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\HistorianAgent.py": [
+      "HistorianAgent"
+    ],
+    "agentic_core\\runtime\\shared_runtime\\ImportHealerAgent.py": [
+      "ImportHealerAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\IntegrityGateExecutorAgent.py": [
+      "IntegrityGateExecutorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\InternalAgent.py": [
+      "InternalAgent"
+    ],
+    "agentic_core\\utils\\core_extensions\\L0Agent.py": [
+      "L0Agent"
+    ],
+    "agentic_core\\utils\\core_extensions\\L1Agent.py": [
+      "L1Agent"
+    ],
+    "agentic_core\\utils\\core_extensions\\L2Agent.py": [
+      "L2Agent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\L2ExecutionBaseAgent.py": [
+      "L2ExecutionBaseAgent"
+    ],
+    "agentic_core\\utils\\core_extensions\\L3Agent.py": [
+      "L3Agent"
+    ],
+    "agentic_core\\utils\\core_extensions\\L4Agent.py": [
+      "L4Agent"
+    ],
+    "agentic_core\\utils\\core_extensions\\L5Agent.py": [
+      "L5Agent"
+    ],
+    "agentic_core\\prompt_governance\\rendering\\LLMPromptGovernorAgent.py": [
+      "LLMPromptGovernorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\McpConnectionManagerAgent.py": [
+      "McpConnectionManagerAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\MemoryArchitectAgent.py": [
+      "MemoryArchitectAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\MemoryLeakDetectorAgent.py": [
+      "MemoryLeakDetectorAgent"
+    ],
+    "agentic_core\\utils\\core_extensions\\NamingAgent.py": [
+      "NamingAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\NamingEnforcerAgent.py": [
+      "NamingEnforcerAgent"
+    ],
+    "agentic_core\\utils\\core_extensions\\NamingLawHealerAgent.py": [
+      "NamingLawHealerAgent"
+    ],
+    "agentic_core\\utils\\core_extensions\\NamingNormalizationAgent.py": [
+      "NamingNormalizationAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\OmniContextAgent.py": [
+      "OmniContextAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\OrganizationAgent.py": [
+      "OrganizationAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\PeerIntelligenceAuditorAgent.py": [
+      "PeerIntelligenceAuditorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\ProactiveResourceManagerAgent.py": [
+      "ProactiveResourceManagerAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\RecipientAgent.py": [
+      "RecipientAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\ReflectionAgent.py": [
+      "ReflectionAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\S2_SupervisorAgent.py": [
+      "S2_SupervisorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\SherlockAgent.py": [
+      "SherlockAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\SovereignActionPlaneAgent.py": [
+      "SovereignActionPlaneAgent"
+    ],
+    "agentic_core\\semantic_memory\\store\\SovereignPineconeStoreAgent.py": [
+      "SovereignPineconeStoreAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\SovereignRedisOrchestratorAgent.py": [
+      "SovereignRedisOrchestratorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\SprawlInspectorAgent.py": [
+      "SprawlInspectorAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\StrategicPlannerAgent.py": [
+      "StrategicPlannerAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\StrategistAgent.py": [
+      "StrategistAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\StructuralEngineerAgent.py": [
+      "StructuralEngineerAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\SystemArchitectAgent.py": [
+      "SystemArchitectAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\ToolsmithAgent.py": [
+      "ToolsmithAgent"
+    ],
+    "agentic_core\\L2_execution\\ToolRegistry\\TypeEnforcerAgent.py": [
+      "TypeEnforcerAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\ActorCriticOrchestratorAgent.py": [
+      "ActorCriticOrchestratorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\AgentPermissionManagerAgent.py": [
+      "AgentPermissionManagerAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\AgentRegistryValidatorAgent.py": [
+      "AgentRegistryValidatorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\ArchitectureGovernorAgent.py": [
+      "ArchitectureGovernorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\AutonomicMonitorAgent.py": [
+      "AutonomicMonitorAgent"
+    ],
+    "agentic_core\\observability\\metrics\\BenchmarkingAgent.py": [
+      "BenchmarkingAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\CachedOrchestratorAgent.py": [
+      "CachedOrchestratorAgent"
+    ],
+    "agentic_core\\observability\\metrics\\CoordinateObservabilityOperationsAgent.py": [
+      "CoordinateObservabilityOperationsAgent"
+    ],
+    "agentic_core\\observability\\metrics\\CoverageAgent.py": [
+      "CoverageAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\DAGManagerAgent.py": [
+      "DAGManagerAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\DAGMutatorAgent.py": [
+      "DAGMutatorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\DagEngineAgent.py": [
+      "DagEngineAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\DagExecutorAgent.py": [
+      "DagExecutorAgent"
+    ],
+    "agentic_core\\observability\\metrics\\DagRuntimeInspectorAgent.py": [
+      "DagRuntimeInspectorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\DeadlockDetectorAgent.py": [
+      "DeadlockDetectorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\fission_logic\\FissionManagerAgent.py": [
+      "FissionManagerAgent"
+    ],
+    "agentic_core\\observability\\metrics\\GeneralExerciserAgent.py": [
+      "GeneralExerciserAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\GitSafetyHandlerAgent.py": [
+      "GitSafetyHandlerAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\HallucinationDetectorAgent.py": [
+      "HallucinationDetectorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\HardenedWorkflowOrchestratorAgent.py": [
+      "HardenedWorkflowOrchestratorAgent"
+    ],
+    "agentic_core\\observability\\metrics\\HierarchyEnforcerAgent.py": [
+      "HierarchyEnforcerAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\McpConnectionManagerAgent.py": [
+      "McpConnectionManagerAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\McpRouterAgent.py": [
+      "McpRouterAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\MemoryLeakDetectorAgent.py": [
+      "MemoryLeakDetectorAgent"
+    ],
+    "agentic_core\\observability\\metrics\\MetaCoverageOptimizerAgent.py": [
+      "MetaCoverageOptimizerAgent"
+    ],
+    "agentic_core\\observability\\metrics\\MetricsAgent.py": [
+      "MetricsAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\ModelRouterAgent.py": [
+      "ModelRouterAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py": [
+      "NervousSystemAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemPhaseOrchestratorAgent.py": [
+      "NervousSystemPhaseOrchestratorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationBaseAgent.py": [
+      "OrchestrationBaseAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationHandshakeAgent.py": [
+      "OrchestrationHandshakeAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\PPOOrchestratorAgent.py": [
+      "PPOOrchestratorAgent"
+    ],
+    "agentic_core\\observability\\metrics\\PredictiveCostAuditorAgent.py": [
+      "PredictiveCostAuditorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\QLearningOrchestratorAgent.py": [
+      "QLearningOrchestratorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\RLOrchestratorAgent.py": [
+      "RLOrchestratorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\ReinforceCriticOrchestratorAgent.py": [
+      "ReinforceCriticOrchestratorAgent"
+    ],
+    "agentic_core\\observability\\compliance\\ReportingAgent.py": [
+      "ReportingAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\ResumeOrchestratorAgent.py": [
+      "ResumeOrchestratorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\SelfRecoveringOrchestratorAgent.py": [
+      "SelfRecoveringOrchestratorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\SemanticGatekeeperAgent.py": [
+      "SemanticGatekeeperAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\SemanticTerritoryMapperAgent.py": [
+      "SemanticTerritoryMapperAgent"
+    ],
+    "agentic_core\\observability\\metrics\\SignatureVerifierAgent.py": [
+      "SignatureVerifierAgent"
+    ],
+    "agentic_core\\observability\\metrics\\SovereignCanonAuditorAgent.py": [
+      "SovereignCanonAuditorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\SovereignRagOrchestratorAgent.py": [
+      "SovereignRagOrchestratorAgent"
+    ],
+    "agentic_core\\L3_orchestration\\strategic_recommendation\\StrategicRecommendationAgent.py": [
+      "StrategicRecommendationAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\SubatomicHopAgent.py": [
+      "SubatomicHopAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\TaskMonitorAgent.py": [
+      "TaskMonitorAgent"
+    ],
+    "agentic_core\\observability\\telemetry\\TelemetryAgent.py": [
+      "TelemetryAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryChangeHandlerAgent.py": [
+      "TerritoryChangeHandlerAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py": [
+      "TerritoryHealerAgent"
+    ],
+    "agentic_core\\L3_orchestration\\workflow_engines\\TestPilotAgent.py": [
+      "TestPilotAgent"
+    ],
+    "agentic_core\\observability\\metrics\\TokenBudgetInspectorAgent.py": [
+      "TokenBudgetInspectorAgent"
+    ],
+    "agentic_core\\observability\\tracing\\TracingAgent.py": [
+      "TracingAgent"
+    ],
+    "agentic_core\\observability\\metrics\\TrackObservabilityCostAgent.py": [
+      "TrackObservabilityCostAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\AutonomousCheckpointManagerAgent.py": [
+      "AutonomousCheckpointManagerAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\AutonomousStateGuardianAgent.py": [
+      "AutonomousStateGuardianAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\CheckpointManagerAgent.py": [
+      "CheckpointManagerAgent"
+    ],
+    "agentic_core\\L4_state\\filesystem\\FileManagerAgent.py": [
+      "FileManagerAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\L4StateExerciserAgent.py": [
+      "L4StateExerciserAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\MemoryManagerAgent.py": [
+      "MemoryManagerAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\PineconeSovereignAgent.py": [
+      "PineconeSovereignAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\RedisSovereignAgent.py": [
+      "RedisSovereignAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\SchemaEvolverAgent.py": [
+      "SchemaEvolverAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\SovereignPineconeStoreAgent.py": [
+      "SovereignPineconeStoreAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\StateBaseAgent.py": [
+      "StateBaseAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\SubAtomicRegistryAgent.py": [
+      "SubAtomicRegistryAgent"
+    ],
+    "agentic_core\\L4_state\\ValidationContext\\ValidationContextManagerAgent.py": [
+      "ValidationContextManagerAgent"
+    ],
+    "agentic_core\\L5_safety\\red_teaming\\AdversarialProbeAgent.py": [
+      "AdversarialProbeAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\AdversarialRedTeamerAgent.py": [
+      "AdversarialRedTeamerAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\AutonomousThreatEvolutionAgent.py": [
+      "AutonomousThreatEvolutionAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\AutonomyGuardianAgent.py": [
+      "AutonomyGuardianAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\BaseClassEnforcerAgent.py": [
+      "BaseClassEnforcerAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\BiasAuditorAgent.py": [
+      "BiasAuditorAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\BiasDetectorAgent.py": [
+      "BiasDetectorAgent"
+    ],
+    "agentic_core\\L5_safety\\red_teaming\\BoundaryTestingAgent.py": [
+      "BoundaryTestingAgent"
+    ],
+    "agentic_core\\L5_safety\\red_teaming\\ChaosEngineeringAgent.py": [
+      "ChaosEngineeringAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\CodeFormatterAgent.py": [
+      "CodeFormatterAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\CodeSSOTEnforcerAgent.py": [
+      "CodeSSOTEnforcerAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\ComplianceOrchestratorAgent.py": [
+      "ComplianceOrchestratorAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\CompositeGuardrailAgent.py": [
+      "CompositeGuardrailAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\ConstitutionalReviewerAgent.py": [
+      "ConstitutionalReviewerAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\CostGovernorAgent.py": [
+      "CostGovernorAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\DependencyPruningAgent.py": [
+      "DependencyPruningAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\DocstringComplianceAgent.py": [
+      "DocstringComplianceAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\DuplicateCodeDetectorAgent.py": [
+      "DuplicateCodeDetectorAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\FileCleanupAgent.py": [
+      "FileCleanupAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\FilesystemAgent.py": [
+      "FilesystemAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\GitHygieneAgent.py": [
+      "GitHygieneAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\GravityEnforcerAgent.py": [
+      "GravityEnforcerAgent"
+    ],
+    "agentic_core\\L5_safety\\gravity\\GravityLeakRepairAgent.py": [
+      "GravityLeakRepairAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\HallucinationHunterAgent.py": [
+      "HallucinationHunterAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\HealValidatorAgent.py": [
+      "HealValidatorAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\HierarchyAgent.py": [
+      "HierarchyAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\HierarchyHealerAgent.py": [
+      "HierarchyHealerAgent"
+    ],
+    "agentic_core\\L5_safety\\gravity\\ImportAgent.py": [
+      "ImportAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\InferenceTypeHintAgent.py": [
+      "InferenceTypeHintAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\InputValidatorAgent.py": [
+      "InputValidatorAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\L5IntegrityGateExecutorAgent.py": [
+      "L5IntegrityGateExecutorAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\L5SafetyExerciserAgent.py": [
+      "L5SafetyExerciserAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\LocationAgent.py": [
+      "LocationAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\MCPGuardianAgent.py": [
+      "MCPGuardianAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\MethodChangeDetectorAgent.py": [
+      "MethodChangeDetectorAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\MultiProviderRouterAgent.py": [
+      "MultiProviderRouterAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py": [
+      "NeuralAutoImmuneAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\PIISanitizerAgent.py": [
+      "PIISanitizerAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py": [
+      "PascalSovereigntyEnforcerAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\PolicyNeuralAutoImmuneAgent.py": [
+      "PolicyNeuralAutoImmuneAgent"
+    ],
+    "agentic_core\\L5_safety\\red_teaming\\PromptInjectionAgent.py": [
+      "PromptInjectionAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\PromptInjectionDetectorAgent.py": [
+      "PromptInjectionDetectorAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\PythonFileSovereigntyEnforcerAgent.py": [
+      "PythonFileSovereigntyEnforcerAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\RedSentinelAgent.py": [
+      "RedSentinelAgent"
+    ],
+    "agentic_core\\L5_safety\\red_teaming\\RedTeamAgent.py": [
+      "RedTeamAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py": [
+      "RegressionOracleAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\SafetyBaseAgent.py": [
+      "SafetyBaseAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\SafetyInspectorAgent.py": [
+      "SafetyInspectorAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\SecureCheckpointManagerAgent.py": [
+      "SecureCheckpointManagerAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\SecureConfigManagerAgent.py": [
+      "SecureConfigManagerAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\SelfUpdatingSafetyEngineAgent.py": [
+      "SelfUpdatingSafetyEngineAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\StructuralHealerAgent.py": [
+      "StructuralHealerAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\TestCoverageGuardianAgent.py": [
+      "TestCoverageGuardianAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\TestSovereigntyAgent.py": [
+      "TestSovereigntyAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py": [
+      "TypeHintEnforcementAgent"
+    ],
+    "agentic_core\\L5_safety\\validators\\TypeHintFixerAgent.py": [
+      "TypeHintFixerAgent"
+    ],
+    "agentic_core\\L5_safety\\guardrails\\UnusedCleanupAgent.py": [
+      "UnusedCleanupAgent"
+    ],
+    "apps_lic\\domain\\validators\\ASCIIEnforcerAgent.py": [
+      "ASCIIEnforcerAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\CampaignBalanceAgent.py": [
+      "CampaignBalanceAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\CampaignPlannerAgent.py": [
+      "CampaignPlannerAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\ContactValidatorAgent.py": [
+      "ContactValidatorAgent"
+    ],
+    "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py": [
+      "ContentCleanlinessValidatorAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\DeliverabilityAgent.py": [
+      "DeliverabilityAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\hop_agents\\HOP1ProfileAnalysisAgent.py": [
+      "HOP1ProfileAnalysisAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\HOP2ResearchAgent.py": [
+      "HOP2ResearchAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\hop_agents\\HOP3SenderGroundingAgent.py": [
+      "HOP3SenderGroundingAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\hop_agents\\HOP4RoutingAgent.py": [
+      "HOP4RoutingAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\HOP5GenerationAgent.py": [
+      "HOP5GenerationAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\HOP6ValidationAgent.py": [
+      "HOP6ValidationAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\hop_agents\\HOP7GateDecisionAgent.py": [
+      "HOP7GateDecisionAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\HOP8QAReportAgent.py": [
+      "HOP8QAReportAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\hop_agents\\HOPOrchestratorAgent.py": [
+      "HOPOrchestratorAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\IntelligenceLibrarianAgent.py": [
+      "IntelligenceLibrarianAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\rag\\InternalAgent.py": [
+      "InternalAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py": [
+      "LeadQualityAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\MessageComplianceAgent.py": [
+      "MessageComplianceAgent"
+    ],
+    "apps_lic\\domain\\validators\\MessageDiversityValidatorAgent.py": [
+      "MessageDiversityValidatorAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\rag\\OrganizationAgent.py": [
+      "OrganizationAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachCapabilityMonitorAgent.py": [
+      "OutreachCapabilityMonitorAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachHealingOrchestratorAgent.py": [
+      "OutreachHealingOrchestratorAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachLearningAgent.py": [
+      "OutreachLearningAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachPhase5OrchestratorAgent.py": [
+      "OutreachPhase5OrchestratorAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachProactiveAgent.py": [
+      "OutreachProactiveAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachReflectionAgent.py": [
+      "OutreachReflectionAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py": [
+      "OutreachSignalRouterAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachTestPilotAgent.py": [
+      "OutreachTestPilotAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\OutreachValidationExecutorAgent.py": [
+      "OutreachValidationExecutorAgent"
+    ],
+    "apps_lic\\domain\\validators\\PlaceholderDetectorAgent.py": [
+      "PlaceholderDetectorAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\rag\\RecipientAgent.py": [
+      "RecipientAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\rag\\S2_SupervisorAgent.py": [
+      "S2_SupervisorAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\autonomous\\TemplateOptimizerAgent.py": [
+      "TemplateOptimizerAgent"
+    ],
+    "apps_lic\\domain\\validators\\ValidationAgent.py": [
+      "ValidationAgent"
+    ],
+    "apps_lic\\engines\\outreach_engine\\WorkflowOrchestratorAgent.py": [
+      "WorkflowOrchestratorAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\ATSCompatibilityAgent.py": [
+      "ATSCompatibilityAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\BrandComplianceAgent.py": [
+      "BrandComplianceAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\CapabilityMonitorAgent.py": [
+      "CapabilityMonitorAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py": [
+      "ContentQualityAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\ConvergenceDetectorAgent.py": [
+      "ConvergenceDetectorAgent"
+    ],
+    "apps_rg\\engines\\DispatchOutreachToolsAgent.py": [
+      "DispatchOutreachToolsAgent"
+    ],
+    "apps_rg\\engines\\DispatchResumeToolsAgent.py": [
+      "DispatchResumeToolsAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\FactCheckAgent.py": [
+      "FactCheckAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\HealingOrchestratorAgent.py": [
+      "HealingOrchestratorAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\Phase4OrchestratorAgent.py": [
+      "Phase4OrchestratorAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\Phase6OrchestratorAgent.py": [
+      "Phase6OrchestratorAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\Phase7OrchestratorAgent.py": [
+      "Phase7OrchestratorAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\ProactiveAgent.py": [
+      "ProactiveAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\ReflectionAgent.py": [
+      "ReflectionAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\ResumeLearningAgent.py": [
+      "ResumeLearningAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\ResumeOrchestratorAgent.py": [
+      "ResumeOrchestratorAgent"
+    ],
+    "apps_rg\\engines\\SafetyExecutorAgent.py": [
+      "SafetyExecutorAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\SectionBalanceAgent.py": [
+      "SectionBalanceAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\SignalRouterAgent.py": [
+      "SignalRouterAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\StrategicPlannerAgent.py": [
+      "StrategicPlannerAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\StrictDocEnforcerAgent.py": [
+      "StrictDocEnforcerAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\TemplateOptimizerAgent.py": [
+      "TemplateOptimizerAgent"
+    ],
+    "apps_rg\\engines\\resume_engine\\autonomous\\UnifiedOrchestratorAgent.py": [
+      "UnifiedOrchestratorAgent"
+    ],
+    "apps_shared\\utils\\StateValidatorAgent.py": [
+      "StateValidatorAgent"
+    ]
+  },
+  "phase_a_accomplishments": {
+    "files_renamed": 3,
+    "deprecated_classes_renamed": 2,
+    "legacy_classes_deleted": 3,
+    "subatomic_agents_refactored": 3,
+    "drift_file_renamed": 1,
+    "total_fixes": 12
+  },
+  "phase_b_violations": {
+    "count": 10,
+    "categories": {
+      "multi_class_files": 7,
+      "filename_mismatches": 2,
+      "nested_classes": 1
+    }
+  },
+  "agents": [
+    {
+      "class_name": "BootstrapAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "FilesystemSSOTReconcilerAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
+      "layer": "L0",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GapClosureArchitectAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\GapClosureArchitectAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GravityComplianceValidatorAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\GravityComplianceValidatorAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GuardianOrchestratorAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\GuardianOrchestratorAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HealingOrchestratorAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\HealingOrchestratorAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HygieneValidatorAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\HygieneValidatorAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MetricsWitnessAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\MetricsWitnessAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ScriptToAgentClassifierAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\ScriptToAgentClassifierAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ScriptsPlanningOrchestratorAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\ScriptsPlanningOrchestratorAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "WorkflowOrchestratorAgent",
+      "file_path": "agentic_core\\L0_maintenance\\scripts\\WorkflowOrchestratorAgent.py",
+      "layer": "L0",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AsyncBlockingValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "BareExceptValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CanonValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\CanonValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CognitiveContractValidatorAgent",
+      "file_path": "agentic_core\\schemas\\models\\CognitiveContractValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ConsolidatedOrchestratorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\ConsolidatedOrchestratorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DangerousBuiltinsValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\DangerousBuiltinsValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DebuggerValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\DebuggerValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "EmptyExceptValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\EmptyExceptValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "EvalExecValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\EvalExecValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ExternalHttpValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\ExternalHttpValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GenerativeGuardAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\GenerativeGuardAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GovernanceAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "IntelligentOrchestratorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\IntelligentOrchestratorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L1CognitionBaseAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L1CognitionExerciserAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionExerciserAgent.py",
+      "layer": "L1",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MetaLearningAgent",
+      "file_path": "agentic_core\\L1_cognition\\learning\\MetaLearningAgent.py",
+      "layer": "L1",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OrchestratorAgentAndScopeManagerAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\OrchestratorAgentAndScopeManagerAgent.py",
+      "layer": "L1",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PrintStatementValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ReasoningRouterAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\ReasoningRouterAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ReflectionAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\ReflectionAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SemanticMapperAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\SemanticMapperAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SovereignCognitivePlaneAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\SovereignCognitivePlaneAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StrategicPlannerAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\StrategicPlannerAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SystemArchitectAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\SystemArchitectAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "UiValidationAgent",
+      "file_path": "agentic_core\\L1_cognition\\thought_engine\\UiValidationAgent.py",
+      "layer": "L1",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AutonomyGuardianAgent",
+      "file_path": "agentic_core\\config\\blueprint_sovereign\\AutonomyGuardianAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "BenchmarkingAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\BenchmarkingAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CanonAstValidatorAgent",
+      "file_path": "agentic_core\\runtime\\shared_runtime\\CanonAstValidatorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CartographerAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CodeDeduplicationAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\CodeDeduplicationAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CodeJanitorAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\CodeJanitorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ContextAwareValidatorAgent",
+      "file_path": "agentic_core\\patterns\\agent_roles\\ContextAwareValidatorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ContextCuratorAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\ContextCuratorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DeadCodeDetectorAgent",
+      "file_path": "agentic_core\\utils\\core_extensions\\DeadCodeDetectorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DependencyDiplomatAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\DependencyDiplomatAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DocEnforcerAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\DocEnforcerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DriftDetectorAgent",
+      "file_path": "agentic_core\\utils\\core_extensions\\DriftDetectorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DynamicModelRouterAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\DynamicModelRouterAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "FallbackManagerAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\FallbackManagerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GitAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\GitAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GlobalComplianceAggregatorAgent",
+      "file_path": "agentic_core\\utils\\core_extensions\\GlobalComplianceAggregatorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HistorianAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\HistorianAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ImportHealerAgent",
+      "file_path": "agentic_core\\runtime\\shared_runtime\\ImportHealerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "IntegrityGateExecutorAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\IntegrityGateExecutorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "InternalAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\InternalAgent.py",
+      "layer": "L2",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L0Agent",
+      "file_path": "agentic_core\\utils\\core_extensions\\L0Agent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L1Agent",
+      "file_path": "agentic_core\\utils\\core_extensions\\L1Agent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L2Agent",
+      "file_path": "agentic_core\\utils\\core_extensions\\L2Agent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L2ExecutionBaseAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\L2ExecutionBaseAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L3Agent",
+      "file_path": "agentic_core\\utils\\core_extensions\\L3Agent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L4Agent",
+      "file_path": "agentic_core\\utils\\core_extensions\\L4Agent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L5Agent",
+      "file_path": "agentic_core\\utils\\core_extensions\\L5Agent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "LLMPromptGovernorAgent",
+      "file_path": "agentic_core\\prompt_governance\\rendering\\LLMPromptGovernorAgent.py",
+      "layer": "L2",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "McpConnectionManagerAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\McpConnectionManagerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MemoryArchitectAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\MemoryArchitectAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MemoryLeakDetectorAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\MemoryLeakDetectorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "NamingAgent",
+      "file_path": "agentic_core\\utils\\core_extensions\\NamingAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "NamingEnforcerAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\NamingEnforcerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "NamingLawHealerAgent",
+      "file_path": "agentic_core\\utils\\core_extensions\\NamingLawHealerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "NamingNormalizationAgent",
+      "file_path": "agentic_core\\utils\\core_extensions\\NamingNormalizationAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OmniContextAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\OmniContextAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OrganizationAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\OrganizationAgent.py",
+      "layer": "L2",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PeerIntelligenceAuditorAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\PeerIntelligenceAuditorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ProactiveResourceManagerAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\ProactiveResourceManagerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "RecipientAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\RecipientAgent.py",
+      "layer": "L2",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ReflectionAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\ReflectionAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "S2_SupervisorAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\S2_SupervisorAgent.py",
+      "layer": "L2",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SherlockAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\SherlockAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SovereignActionPlaneAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\SovereignActionPlaneAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SovereignPineconeStoreAgent",
+      "file_path": "agentic_core\\semantic_memory\\store\\SovereignPineconeStoreAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SovereignRedisOrchestratorAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\SovereignRedisOrchestratorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SprawlInspectorAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\SprawlInspectorAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StrategicPlannerAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\StrategicPlannerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StrategistAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\StrategistAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StructuralEngineerAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\StructuralEngineerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SystemArchitectAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\SystemArchitectAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ToolsmithAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\ToolsmithAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TypeEnforcerAgent",
+      "file_path": "agentic_core\\L2_execution\\ToolRegistry\\TypeEnforcerAgent.py",
+      "layer": "L2",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ActorCriticOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\ActorCriticOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AgentPermissionManagerAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\AgentPermissionManagerAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AgentRegistryValidatorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\AgentRegistryValidatorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ArchitectureGovernorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\ArchitectureGovernorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AutonomicMonitorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\AutonomicMonitorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "BenchmarkingAgent",
+      "file_path": "agentic_core\\observability\\metrics\\BenchmarkingAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CachedOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\CachedOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CoordinateObservabilityOperationsAgent",
+      "file_path": "agentic_core\\observability\\metrics\\CoordinateObservabilityOperationsAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CoverageAgent",
+      "file_path": "agentic_core\\observability\\metrics\\CoverageAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DAGManagerAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\DAGManagerAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DAGMutatorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\DAGMutatorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DagEngineAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\DagEngineAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DagExecutorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\DagExecutorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DagRuntimeInspectorAgent",
+      "file_path": "agentic_core\\observability\\metrics\\DagRuntimeInspectorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DeadlockDetectorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\DeadlockDetectorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "FissionManagerAgent",
+      "file_path": "agentic_core\\L3_orchestration\\fission_logic\\FissionManagerAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GeneralExerciserAgent",
+      "file_path": "agentic_core\\observability\\metrics\\GeneralExerciserAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GitSafetyHandlerAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\GitSafetyHandlerAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HallucinationDetectorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\HallucinationDetectorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HardenedWorkflowOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\HardenedWorkflowOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HierarchyEnforcerAgent",
+      "file_path": "agentic_core\\observability\\metrics\\HierarchyEnforcerAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "McpConnectionManagerAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\McpConnectionManagerAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "McpRouterAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\McpRouterAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MemoryLeakDetectorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\MemoryLeakDetectorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MetaCoverageOptimizerAgent",
+      "file_path": "agentic_core\\observability\\metrics\\MetaCoverageOptimizerAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MetricsAgent",
+      "file_path": "agentic_core\\observability\\metrics\\MetricsAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ModelRouterAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\ModelRouterAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "NervousSystemAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "NervousSystemPhaseOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemPhaseOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OrchestrationBaseAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationBaseAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OrchestrationHandshakeAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationHandshakeAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PPOOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\PPOOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PredictiveCostAuditorAgent",
+      "file_path": "agentic_core\\observability\\metrics\\PredictiveCostAuditorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "QLearningOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\QLearningOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "RLOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\RLOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ReinforceCriticOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\ReinforceCriticOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ReportingAgent",
+      "file_path": "agentic_core\\observability\\compliance\\ReportingAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ResumeOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\ResumeOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SelfRecoveringOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\SelfRecoveringOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SemanticGatekeeperAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\SemanticGatekeeperAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SemanticTerritoryMapperAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\SemanticTerritoryMapperAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SignatureVerifierAgent",
+      "file_path": "agentic_core\\observability\\metrics\\SignatureVerifierAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SovereignCanonAuditorAgent",
+      "file_path": "agentic_core\\observability\\metrics\\SovereignCanonAuditorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SovereignRagOrchestratorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\SovereignRagOrchestratorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StrategicRecommendationAgent",
+      "file_path": "agentic_core\\L3_orchestration\\strategic_recommendation\\StrategicRecommendationAgent.py",
+      "layer": "L3",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SubatomicHopAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\SubatomicHopAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TaskMonitorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\TaskMonitorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TelemetryAgent",
+      "file_path": "agentic_core\\observability\\telemetry\\TelemetryAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TerritoryChangeHandlerAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryChangeHandlerAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TerritoryHealerAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TestPilotAgent",
+      "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\TestPilotAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TokenBudgetInspectorAgent",
+      "file_path": "agentic_core\\observability\\metrics\\TokenBudgetInspectorAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TracingAgent",
+      "file_path": "agentic_core\\observability\\tracing\\TracingAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TrackObservabilityCostAgent",
+      "file_path": "agentic_core\\observability\\metrics\\TrackObservabilityCostAgent.py",
+      "layer": "L3",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AutonomousCheckpointManagerAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\AutonomousCheckpointManagerAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AutonomousStateGuardianAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\AutonomousStateGuardianAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CheckpointManagerAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\CheckpointManagerAgent.py",
+      "layer": "L4",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "FileManagerAgent",
+      "file_path": "agentic_core\\L4_state\\filesystem\\FileManagerAgent.py",
+      "layer": "L4",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L4StateExerciserAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\L4StateExerciserAgent.py",
+      "layer": "L4",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MemoryManagerAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\MemoryManagerAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PineconeSovereignAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\PineconeSovereignAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "RedisSovereignAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\RedisSovereignAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SchemaEvolverAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\SchemaEvolverAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SovereignPineconeStoreAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\SovereignPineconeStoreAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StateBaseAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\StateBaseAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SubAtomicRegistryAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\SubAtomicRegistryAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ValidationContextManagerAgent",
+      "file_path": "agentic_core\\L4_state\\ValidationContext\\ValidationContextManagerAgent.py",
+      "layer": "L4",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AdversarialProbeAgent",
+      "file_path": "agentic_core\\L5_safety\\red_teaming\\AdversarialProbeAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AdversarialRedTeamerAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\AdversarialRedTeamerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AutonomousThreatEvolutionAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\AutonomousThreatEvolutionAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "AutonomyGuardianAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\AutonomyGuardianAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "BaseClassEnforcerAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\BaseClassEnforcerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "BiasAuditorAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\BiasAuditorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "BiasDetectorAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\BiasDetectorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "BoundaryTestingAgent",
+      "file_path": "agentic_core\\L5_safety\\red_teaming\\BoundaryTestingAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ChaosEngineeringAgent",
+      "file_path": "agentic_core\\L5_safety\\red_teaming\\ChaosEngineeringAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CodeFormatterAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\CodeFormatterAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CodeSSOTEnforcerAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\CodeSSOTEnforcerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ComplianceOrchestratorAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\ComplianceOrchestratorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CompositeGuardrailAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\CompositeGuardrailAgent.py",
+      "layer": "L5",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ConstitutionalReviewerAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\ConstitutionalReviewerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CostGovernorAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\CostGovernorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DependencyPruningAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\DependencyPruningAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DocstringComplianceAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\DocstringComplianceAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DuplicateCodeDetectorAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\DuplicateCodeDetectorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "FileCleanupAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\FileCleanupAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "FilesystemAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\FilesystemAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GitHygieneAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\GitHygieneAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GravityEnforcerAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\GravityEnforcerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "GravityLeakRepairAgent",
+      "file_path": "agentic_core\\L5_safety\\gravity\\GravityLeakRepairAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HallucinationHunterAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\HallucinationHunterAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HealValidatorAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\HealValidatorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HierarchyAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\HierarchyAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HierarchyHealerAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\HierarchyHealerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ImportAgent",
+      "file_path": "agentic_core\\L5_safety\\gravity\\ImportAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "InferenceTypeHintAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\InferenceTypeHintAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "InputValidatorAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\InputValidatorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L5IntegrityGateExecutorAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\L5IntegrityGateExecutorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "L5SafetyExerciserAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\L5SafetyExerciserAgent.py",
+      "layer": "L5",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "LocationAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\LocationAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MCPGuardianAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\MCPGuardianAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MethodChangeDetectorAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\MethodChangeDetectorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MultiProviderRouterAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\MultiProviderRouterAgent.py",
+      "layer": "L5",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "NeuralAutoImmuneAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PIISanitizerAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\PIISanitizerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PascalSovereigntyEnforcerAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PolicyNeuralAutoImmuneAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\PolicyNeuralAutoImmuneAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PromptInjectionAgent",
+      "file_path": "agentic_core\\L5_safety\\red_teaming\\PromptInjectionAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PromptInjectionDetectorAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\PromptInjectionDetectorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PythonFileSovereigntyEnforcerAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\PythonFileSovereigntyEnforcerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "RedSentinelAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\RedSentinelAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "RedTeamAgent",
+      "file_path": "agentic_core\\L5_safety\\red_teaming\\RedTeamAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "RegressionOracleAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SafetyBaseAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\SafetyBaseAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SafetyInspectorAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\SafetyInspectorAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SecureCheckpointManagerAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\SecureCheckpointManagerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SecureConfigManagerAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\SecureConfigManagerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SelfUpdatingSafetyEngineAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\SelfUpdatingSafetyEngineAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StructuralHealerAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\StructuralHealerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TestCoverageGuardianAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\TestCoverageGuardianAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TestSovereigntyAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\TestSovereigntyAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TypeHintEnforcementAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TypeHintFixerAgent",
+      "file_path": "agentic_core\\L5_safety\\validators\\TypeHintFixerAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "UnusedCleanupAgent",
+      "file_path": "agentic_core\\L5_safety\\guardrails\\UnusedCleanupAgent.py",
+      "layer": "L5",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ASCIIEnforcerAgent",
+      "file_path": "apps_lic\\domain\\validators\\ASCIIEnforcerAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CampaignBalanceAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\CampaignBalanceAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CampaignPlannerAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\CampaignPlannerAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ContactValidatorAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\ContactValidatorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ContentCleanlinessValidatorAgent",
+      "file_path": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DeliverabilityAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\DeliverabilityAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HOP1ProfileAnalysisAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\hop_agents\\HOP1ProfileAnalysisAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HOP2ResearchAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\HOP2ResearchAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HOP3SenderGroundingAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\hop_agents\\HOP3SenderGroundingAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HOP4RoutingAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\hop_agents\\HOP4RoutingAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HOP5GenerationAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\HOP5GenerationAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HOP6ValidationAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\HOP6ValidationAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HOP7GateDecisionAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\hop_agents\\HOP7GateDecisionAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HOP8QAReportAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\HOP8QAReportAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HOPOrchestratorAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\hop_agents\\HOPOrchestratorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "IntelligenceLibrarianAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\IntelligenceLibrarianAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "InternalAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\rag\\InternalAgent.py",
+      "layer": "apps_lic",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "LeadQualityAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MessageComplianceAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\MessageComplianceAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "MessageDiversityValidatorAgent",
+      "file_path": "apps_lic\\domain\\validators\\MessageDiversityValidatorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OrganizationAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\rag\\OrganizationAgent.py",
+      "layer": "apps_lic",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OutreachCapabilityMonitorAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachCapabilityMonitorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OutreachHealingOrchestratorAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachHealingOrchestratorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OutreachLearningAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachLearningAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OutreachPhase5OrchestratorAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachPhase5OrchestratorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OutreachProactiveAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachProactiveAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OutreachReflectionAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachReflectionAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OutreachSignalRouterAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OutreachTestPilotAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachTestPilotAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "OutreachValidationExecutorAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\OutreachValidationExecutorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "PlaceholderDetectorAgent",
+      "file_path": "apps_lic\\domain\\validators\\PlaceholderDetectorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "RecipientAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\rag\\RecipientAgent.py",
+      "layer": "apps_lic",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "S2_SupervisorAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\rag\\S2_SupervisorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TemplateOptimizerAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\autonomous\\TemplateOptimizerAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ValidationAgent",
+      "file_path": "apps_lic\\domain\\validators\\ValidationAgent.py",
+      "layer": "apps_lic",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "WorkflowOrchestratorAgent",
+      "file_path": "apps_lic\\engines\\outreach_engine\\WorkflowOrchestratorAgent.py",
+      "layer": "apps_lic",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ATSCompatibilityAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\ATSCompatibilityAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "BrandComplianceAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\BrandComplianceAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "CapabilityMonitorAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\CapabilityMonitorAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ContentQualityAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ConvergenceDetectorAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\ConvergenceDetectorAgent.py",
+      "layer": "apps_rg",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DispatchOutreachToolsAgent",
+      "file_path": "apps_rg\\engines\\DispatchOutreachToolsAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "DispatchResumeToolsAgent",
+      "file_path": "apps_rg\\engines\\DispatchResumeToolsAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "FactCheckAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\FactCheckAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "HealingOrchestratorAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\HealingOrchestratorAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "Phase4OrchestratorAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\Phase4OrchestratorAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "Phase6OrchestratorAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\Phase6OrchestratorAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "Phase7OrchestratorAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\Phase7OrchestratorAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ProactiveAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\ProactiveAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ReflectionAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\ReflectionAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ResumeLearningAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\ResumeLearningAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "ResumeOrchestratorAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\ResumeOrchestratorAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SafetyExecutorAgent",
+      "file_path": "apps_rg\\engines\\SafetyExecutorAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SectionBalanceAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\SectionBalanceAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "SignalRouterAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\SignalRouterAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StrategicPlannerAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\StrategicPlannerAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StrictDocEnforcerAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\StrictDocEnforcerAgent.py",
+      "layer": "apps_rg",
+      "has_healing": false,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "TemplateOptimizerAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\TemplateOptimizerAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "UnifiedOrchestratorAgent",
+      "file_path": "apps_rg\\engines\\resume_engine\\autonomous\\UnifiedOrchestratorAgent.py",
+      "layer": "apps_rg",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    },
+    {
+      "class_name": "StateValidatorAgent",
+      "file_path": "apps_shared\\utils\\StateValidatorAgent.py",
+      "layer": "apps_shared",
+      "has_healing": true,
+      "has_testing": false,
+      "line_number": 0
+    }
+  ],
+  "multi_class_files": {
+    "count": 0,
+    "files": {}
+  }
+}
