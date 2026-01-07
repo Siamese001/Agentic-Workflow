@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-01-07T01:59:59.575235Z",
-  "scan_duration_seconds": 17.93,
+  "generated_at": "2026-01-07T02:15:06.040931Z",
+  "scan_duration_seconds": 16.23,
   "agent_count": 283,
   "content_hash": "sha256:a008d9a85eb97c5dce5cbd1b2ca5bbde3d915a9f54446c4f727493210e57424c",
   "layer_breakdown": {
@@ -933,7 +933,8 @@
     "agentic_core/L6_observability/metrics/cache_metrics.py": "8009bde4ab2bb23a75cb3c71da178826",
     "agentic_core/observability/compliance/ReportingAgent.py": "c5dad2b6988230af9e2d8a82311c8c8a",
     "agentic_core/observability/dashboard/dashboard_api.py": "e9bbe580b011ed53aa32f101516888fb",
-    "agentic_core/observability/dashboard/dashboard_server.py": "bcc2c8e55d0d40c3d920ea6d8619ba7f",
+    "agentic_core/observability/dashboard/dashboard_loader.py": "559727c2f1b6849d39b7cfcf9804a1d8",
+    "agentic_core/observability/dashboard/dashboard_server.py": "d95a1e420d74f7a880213d5423aac447",
     "agentic_core/observability/logging/structured_logger.py": "d5d634be2c89659fbf200572153b7c52",
     "agentic_core/observability/metrics/activation_hooks.py": "25d5cfebfc0ddb65d0ceb9e8a85398e7",
     "agentic_core/observability/metrics/audit_logger.py": "c5c7d407c4b180888c44fd4a7ddcdcaa",
@@ -1493,7 +1494,7 @@
     "scripts/fix_inherited_invocation.py": "5342126f426355ef40217501cbf20b6f",
     "scripts/fix_missing_invocation.py": "1e84f9e638bc9428ff60e1e8842372ff",
     "scripts/fix_testing_observability.py": "8b84a07521edd6921fecbbefbd8d3e9e",
-    "scripts/full_agent_discovery.py": "ddb3dd7ab9a67fd43680d59cadfbc83a",
+    "scripts/full_agent_discovery.py": "403b3fe7399ce3973923dd27b9e6da7c",
     "scripts/generate_agent_duplicates_table.py": "65c2a540b0406b9dd07a20ae7ade4558",
     "scripts/generate_agent_report.py": "b93e4378eb5ac74df820b36ecfc8d205",
     "scripts/generate_agent_table_simple.py": "e05c78eb25c09907223885dd300326a1",
@@ -1556,6 +1557,6 @@
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63",
     "scripts/refactor/verify_integrity.py": "8abdef8ddfcff519caacc70f7a684e41"
   },
-  "hashed_file_count": 1533,
+  "hashed_file_count": 1534,
   "hash_errors": 0
 }
