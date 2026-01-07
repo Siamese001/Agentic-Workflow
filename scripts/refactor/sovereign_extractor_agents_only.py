@@ -278,7 +278,7 @@ class AgentOnlyExtractor:
     def __init__(self, root_dir: str, dry_run: bool = True):
         self.root_dir = Path(root_dir)
         self.dry_run = dry_run
-        self.TARGET_BASELINE = 283  # Accepted Jan 06, 2026 – post-bulk extraction (deduplicated duplicates)
+        self.TARGET_BASELINE = 273  # SOVEREIGN LOCKED BASELINE - Phase A Genesis State (Jan 06, 2026)
         self.agent_registry = self._load_agent_registry()
         self.agents = self.agent_registry  # Alias for compatibility
         self.multi_agent_files = self._identify_multi_agent_files()
