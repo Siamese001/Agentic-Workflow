@@ -115,51 +115,60 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin):
 
     def _apply_dynamic_import_fix(self, file_path: Path, import_line: str) -> Dict[str, Any]:
         """
-        Convert static import to dynamic importlib call.
+        Convert static import to dynamic importlib call without destructive overwrites.
         
-        Strategy from GravityLeakRepairAgent:
-        - Preserve functionality by using importlib
-        - Add comment marking the fix
+        Hardening:
+        - Preserves all original file content
+        - Uses exact line matching to avoid partial matches
+        - Correctly places importlib after __future__ imports
         """
         try:
             content = file_path.read_text(encoding="utf-8")
+            lines = content.splitlines()
             
-            # Parse the import statement
-            if import_line.startswith("import "):
-                # Simple import: import agentic_core.L5_safety
-                module_name = import_line.replace("import ", "").strip()
-                var_name = module_name.split(".")[-1]
-                replacement = (
-                    f"# GRAVITY FIXED: {import_line}\n"
-                    f"import importlib\n"
-                    f"{var_name} = importlib.import_module('{module_name}')"
-                )
-            elif import_line.startswith("from "):
-                # From import: from agentic_core.L5_safety import something
-                match = re.match(r"from\s+([\w.]+)\s+import\s+([\w,\s]+)", import_line)
-                if match:
-                    module_path = match.group(1)
-                    imported_items = match.group(2).strip()
-                    replacement = (
-                        f"# GRAVITY FIXED: {import_line}\n"
-                        f"import importlib\n"
-                        f"_mod = importlib.import_module('{module_path}')\n"
-                        f"{imported_items} = getattr(_mod, '{imported_items.split(',')[0].strip()}')"
-                    )
+            # CANONICAL HEADER INJECTION: Check if importlib is needed
+            header_needed = "import importlib" not in content
+            new_lines = []
+            import_replaced = False
+            header_injected = False
+            
+            for line in lines:
+                clean_line = line.strip()
+                # EXACT MATCHING: Avoid destructive partial replacement
+                if clean_line == import_line.strip() and not clean_line.startswith("#"):
+                    if header_needed and not header_injected:
+                        # Identify injection point for importlib
+                        future_imports = [i for i, l in enumerate(new_lines) if "from __future__" in l]
+                        insertion_point = max(future_imports) + 1 if future_imports else 0
+                        new_lines.insert(insertion_point, "import importlib  # AUTO-INJECTED BY GRAVITY HEALER")
+                        header_injected = True
+                    
+                    if clean_line.startswith("import "):
+                        module_name = clean_line.replace("import ", "").strip()
+                        var_name = module_name.split(".")[-1]
+                        new_lines.append(f"# GRAVITY FIXED (Upward Leak): {clean_line}")
+                        new_lines.append(f"{var_name} = importlib.import_module('{module_name}')")
+                        import_replaced = True
+                    elif clean_line.startswith("from "):
+                        match = re.match(r"from\s+([\w.]+)\s+import\s+([\w\s,]+)", clean_line)
+                        if match:
+                            module_path = match.group(1)
+                            first_item = match.group(2).strip().split(',')[0].strip()
+                            new_lines.append(f"# GRAVITY FIXED (Upward Leak): {clean_line}")
+                            new_lines.append(f"_mod = importlib.import_module('{module_path}')")
+                            new_lines.append(f"{first_item} = getattr(_mod, '{first_item}')")
+                            import_replaced = True
                 else:
-                    return {"success": False, "error": "Could not parse from import"}
-            else:
-                return {"success": False, "error": "Unknown import format"}
+                    # PRESERVE: Keep all non-matching content as-is
+                    new_lines.append(line)
             
-            # Replace the import line
-            new_content = content.replace(import_line, replacement)
+            if not import_replaced:
+                return {"success": False, "error": "Target import line not found or already commented"}
             
-            if new_content != content:
-                file_path.write_text(new_content, encoding="utf-8")
-                self.logger.info(f"Applied dynamic import fix to {file_path.name}")
-                return {"success": True, "strategy": "dynamic_import"}
-            else:
-                return {"success": False, "error": "Import line not found in file"}
+            # Write the modified content
+            file_path.write_text("\n".join(new_lines), encoding="utf-8")
+            self.logger.info(f"Applied non-destructive dynamic import fix to {file_path.name}")
+            return {"success": True, "strategy": "dynamic_import"}
                 
         except Exception as e:
             return {"success": False, "error": str(e)}
