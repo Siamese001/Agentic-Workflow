@@ -8,7 +8,14 @@ import logging
 import hashlib
 from datetime import datetime
 from typing import List, Dict, Any
-from agentic_core.L4_state.semantic_memory.pinecone_mcp_client import get_pinecone_mcp_client
+# from agentic_core.L4_state.semantic_memory.pinecone  # Refactored to dynamic import to avoid upward dependency
+
+def _get_pinecone_client():
+    """Lazy load Pinecone client to avoid L0 → L4 dependency."""
+    import importlib
+    module = importlib.import_module('agentic_core.L4_state.semantic_memory.pinecone')
+    return module
+_mcp_client import get_pinecone_mcp_client
 from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
 

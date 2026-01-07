@@ -15,7 +15,14 @@ from typing import List, Dict, Any
 
 sys.path.insert(0, 'c:/Git/Agentic-Workflow')
 
-from agentic_core.L1_cognition.cognitive_node.CognitiveNode import CognitiveNode
+# from agentic_core.L1_cognition.cognitive_node.CognitiveNode  # Refactored to dynamic import to avoid upward dependency
+
+def _get_cognitive_node():
+    """Lazy load CognitiveNode to avoid L0 → L1 dependency."""
+    import importlib
+    module = importlib.import_module('agentic_core.L1_cognition.cognitive_node.CognitiveNode')
+    return module.CognitiveNode
+ import CognitiveNode
 
 
 class L1HealthBenchmark:
