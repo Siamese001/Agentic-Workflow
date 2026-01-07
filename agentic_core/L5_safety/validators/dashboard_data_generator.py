@@ -410,6 +410,7 @@ class DashboardDataGenerator:
             "Heal Cap %": 0,
             "Observable %": 0,
             "Typed %": 0,
+            "Documented %": 0,
             "Avg CC": 0,
             "Complexity Health": 0,
             "Schema Strictness %": 100.0,

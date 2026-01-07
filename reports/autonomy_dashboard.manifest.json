@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-06T14:46:02.939495",
+  "generated_at": "2026-01-07T05:45:52.886104",
   "version": "v2_refactored",
-  "agent_count": 289,
-  "health": 77.4,
-  "git_sha": "d8e4098cd8ffb4e7e89069199e25ccd88d6b9df0",
-  "output_path": "reports\\autonomy_dashboard.html"
+  "agent_count": 276,
+  "health": 76.9,
+  "git_sha": "6bda58282f586ef71b5c9bd7e8a5eb903812bf08",
+  "output_path": "C:\\Git\\Agentic-Workflow\\reports\\autonomy_dashboard.html"
 }
