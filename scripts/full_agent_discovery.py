@@ -134,9 +134,9 @@ def should_exclude_path(path: Path) -> bool:
 #   - 2026-01-05: 312 agents (after string error caused 60+ agent loss - UNACCEPTABLE)
 #
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
-MINIMUM_AGENT_COUNT = 273  # SOVEREIGN LOCKED BASELINE - Phase A complete (Jan 06, 2026)
+MINIMUM_AGENT_COUNT = 279  # Phase B Task 3 complete - Quality extraction & filename alignment (Jan 06, 2026)
 MAX_AGENT_DROP_PERCENT = 0   # Zero tolerance for agent loss - strict enforcement
-EXPECTED_AGENT_COUNT = 273  # SOVEREIGN LOCKED - Phase A complete, Phase B architectural fixes pending
+EXPECTED_AGENT_COUNT = 279  # Phase B Task 3 complete - Multi-class resolution
 # 2026-01-06: Finalized at 283 after surgical deduplication (removed 7 duplicates)
 # and bulk extraction (47 agents to 1:1 files). Net -2 from duplicate consolidation.
 # 2026-01-05: CONSOLIDATION MIGRATION - Relaxed thresholds to allow safe agent consolidation

@@ -31,8 +31,9 @@ class CanonBaseAgent(HealerMixin):
         if cls._registry_built:
             return
         from agentic_core.canon_agents_core import SystemArchitect
-        from agentic_core.canon_agents_pattern import PatternEnforcerAgent
-        from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspectorAgent
+        from agentic_core.L1_cognition.thought_engine.PatternEnforcerAgent import PatternEnforcerAgent
+        from agentic_core.L1_cognition.thought_engine.DocumentationAgent import DocumentationAgent
+        from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
         from agentic_core.L1_cognition.thought_engine.BudgetAgent import BudgetAgent
         from agentic_core.L1_cognition.thought_engine.StructuralEngineerAgent import StructuralEngineerAgent
         from agentic_core.L1_cognition.thought_engine.TypeMechanicAgent import TypeMechanicAgent

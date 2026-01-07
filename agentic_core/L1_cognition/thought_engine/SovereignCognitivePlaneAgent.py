@@ -6,7 +6,6 @@ import asyncio
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
-import httpx
 from agentic_core.L1_cognition.P1_interfaces import ICognitivePlane, PlanningRequest, PlanningResult
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -14,14 +13,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-
-class AgentInfo(HealerMixin, MCPHardenedMixin):
-    """Simple agent information container with explicit initialization."""
+class AgentInfo(HealerMixin):
+    """Simple agent information container."""
 
     def __init__(self, name: str, phase: str, capabilities: List[str]):
         self.name = name
@@ -42,14 +39,43 @@ def _run_self_tests() -> dict:
         results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results
 
-class SovereignCognitivePlaneAgent(HealerMixin, ICognitivePlane):
-    """Sovereign cognitive plane with in-memory agent registry and async compliance."""
+class SovereignCognitivePlaneAgent(ICognitivePlane):
+    """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
-    def __init__(self):
-        """Initialize with sovereign agents and async-ready client."""
+    def __init__(self, enable_streaming: bool=True, streamer_factory: Optional[callable]=None):
+        """
+        Initialize with sovereign agents.
+
+        Args:
+            enable_streaming: Whether to enable L5 reasoning broadcast
+            streamer_factory: An optional callable that returns an L5 streamer instance.
+                              If provided and enable_streaming is True, it will be used
+                              to obtain the streamer. This breaks the direct dependency
+                              on L5_safety.streamer, allowing for dependency injection.
+        """
         self._agents: Dict[str, AgentInfo] = {}
         self._initialize_agents()
-        self._client: Optional[httpx.AsyncClient] = None
+        self.enable_streaming = enable_streaming
+        self._streamer = None
+        if enable_streaming:
+            if streamer_factory:
+                try:
+                    self._streamer = streamer_factory()
+                    LOGGER.info('L5 Streamer integrated with SovereignCognitivePlaneAgent via factory')
+                except Exception as e:
+                    LOGGER.warning(f'Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled')
+            else:
+                LOGGER.warning('L5 Streamer not provided via factory - reasoning broadcast disabled')
+
+    async def start_streaming(self) -> Any:
+        """Start the L5 streamer if enabled."""
+        if self._streamer:
+            await self._streamer.start_streamer()
+
+    async def stop_streaming(self) -> Any:
+        """Stop the L5 streamer."""
+        if self._streamer:
+            await self._streamer.stop_streamer()
 
     def _initialize_agents(self):
         """Initialize agents in memory."""
@@ -59,33 +85,15 @@ class SovereignCognitivePlaneAgent(HealerMixin, ICognitivePlane):
 
     def get_capabilities(self) -> List[Any]:
         """Get available cognitive capabilities."""
-        return ['reasoning', 'planning', 'reflection', 'tool_creation']
-
-    def _discover_agents(self, request: PlanningRequest) -> List[AgentInfo]:
-        """Internal helper to identify agents based on request context."""
-        if not request:
-            return []
-        return list(self._agents.values())
+        capabilities: Any = set()
+        for agent in self._agents.values():
+            for cap in agent.capabilities:
+                capabilities.add(cap)
+        return list(capabilities)
 
     async def plan(self, request: PlanningRequest) -> PlanningResult:
-        """Create a plan using sovereign agents via async execution."""
-        relevant_agents: Any = self._discover_agents(request)
+        """Async plan implementation replacing blocking logic."""
+        if self._streamer:
+            await self._streamer.broadcast_reasoning(f'Processing planning request: {request.task_id}')
         await asyncio.sleep(0)
-        plan: Any = {'phases': sorted(list(set((a.phase for a in relevant_agents)))), 'agents': [a.name for a in relevant_agents], 'estimated_steps': len(relevant_agents) * 2, 'confidence': 0.9 if relevant_agents else 0.0}
-        return PlanningResult(success=bool(relevant_agents), plan=plan, reasoning_trace=[f'Discovered {len(relevant_agents)} agents'], confidence=plan['confidence'], errors=[] if relevant_agents else ['No agents discovered'])
-
-    async def reason(self, query: str, context: Dict[str, Any], mode: str='react') -> Dict[str, Any]:
-        """Perform reasoning using async patterns."""
-        if not query:
-            return {'error': 'Empty query', 'status': 'failed'}
-        await asyncio.sleep(0)
-        results: Any = {'query': query, 'mode': mode, 'analysis': 'Sovereign reasoning completed via async pipeline.', 'agents_consulted': [a.name for a in self._agents.values() if 'reasoning' in a.capabilities]}
-        return results
-
-    async def __aenter__(self):
-        self._client = httpx.AsyncClient()
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self._client:
-            await self._client.aclose()
+        return PlanningResult(plan_id=f'sovereign_{request.task_id}', steps=['analyze_context', 'select_agents', 'generate_strategy'])
