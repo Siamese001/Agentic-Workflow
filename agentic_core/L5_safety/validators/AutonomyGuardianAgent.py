@@ -27,8 +27,8 @@ from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.config.flags import CACHE_METRICS_ENABLED
 from agentic_core.L6_observability.metrics.cache_metrics import get_cache_metrics
-from agentic_core.L5_safety.validators.dashboard_data_generator import DashboardDataGenerator
-from agentic_core.L5_safety.validators.dashboard_renderer import DashboardRenderer
+from agentic_core.observability.dashboard.core.data_generator import DashboardDataGenerator
+from agentic_core.observability.dashboard.core.renderer import DashboardRenderer
 
 log = logging.getLogger(__name__)
 

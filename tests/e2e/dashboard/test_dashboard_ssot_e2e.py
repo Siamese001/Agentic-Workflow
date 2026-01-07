@@ -298,8 +298,8 @@ class TestDashboardGeneration:
     def test_dashboard_generator_imports_work(self):
         """Verify dashboard generator can be imported."""
         try:
-            from agentic_core.L5_safety.validators.dashboard_data_generator import DashboardDataGenerator
-            from agentic_core.L5_safety.validators.dashboard_renderer import DashboardRenderer
+            from agentic_core.observability.dashboard.core.data_generator import DashboardDataGenerator
+            from agentic_core.observability.dashboard.core.renderer import DashboardRenderer
         except ImportError as e:
             pytest.fail(f"Cannot import dashboard components: {e}")
     
@@ -320,7 +320,7 @@ class TestDashboardGeneration:
     
     def test_schema_strictness_computation_dynamic(self):
         """Verify Schema Strictness is computed dynamically in generator."""
-        from agentic_core.L5_safety.validators.dashboard_data_generator import DashboardDataGenerator
+        from agentic_core.observability.dashboard.core.data_generator import DashboardDataGenerator
         
         generator = DashboardDataGenerator(PROJECT_ROOT, {})
         
