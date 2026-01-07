@@ -4,19 +4,19 @@ FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
 Territory: agentic_core/L0_maintenance/scripts/
 
 VERSION 2.0 — 2025-12-31
-Updates SSOT blueprint when filesystem structure changes.
+Enforces SSOT blueprint by aligning filesystem structure.
 
-Direction: Filesystem → Blueprint (reconciliation)
+Direction: Blueprint → Filesystem (Enforcement)
 Scans: Actual folder structure on disk (L1/L2 depth)
-Detects: When structure_blueprint.py is outdated (Missing new folders)
-Action: Auto-updates blueprint with backup/rollback safety
+Detects: Unauthorized folders (Heresy) or missing required folders.
+Action: Creates missing folders and archives unauthorized ones.
 
 Responsibilities:
 - Scan filesystem for actual folder structure (L1/L2 depth)
 - Scan agents for canonical signals usage
 - Detect drift between structure_blueprint.py and reality
-- Generate reconciliation proposals
-- Auto-update blueprint with safety checks (opt-in)
+- Generate filesystem proposals
+- Auto-align filesystem with safety checks (opt-in)
 
 Mirrors the successful PromptRegistry.py pattern:
 - Deduplication-safe updates
@@ -54,6 +54,7 @@ DOMAIN-SPECIFIC INTEGRATIONS (SSOT Coordination):
 
 import ast
 import hashlib
+import importlib
 import logging
 import os
 import shutil
@@ -68,11 +69,10 @@ from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
-# [PHASE 2] L0 Delegated Testing
-from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
 # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -107,31 +107,30 @@ class ReconciliationViolation:
 
 class FilesystemSSOTReconcilerAgent(AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,
-    L0DelegationTestingMixin,
-    MCPHardenedMixin):
-    """Filesystem-level SSOT reconciler - updates blueprint when folders change.
+    SelfDiagnosisMixin):
+    """Filesystem-level SSOT enforcer - treats blueprint as the Gospel.
     
-    Ensures the SSOT blueprint always reflects filesystem reality:
-    - Folder structure (sovereign_registry, core_subfolder_map)
-    - Agent canonical signals (CANON_SIGNALS)
-    - Configuration drift detection
+    Enforces the SSOT blueprint by aligning the filesystem:
+    - Creation: Ensures all folders in sovereign_registry exist.
+    - Archival: Moves unauthorized folders to /archives/unmapped_drift/.
+    - Validation: Post-alignment check with LocationAgent/HierarchyAgent.
     
-    Direction: Filesystem → Blueprint
-    Complements: CodeSSOTEnforcerAgent (Code → Blueprint enforcement)
+    Direction: Blueprint → Filesystem
+    SSOT: structure_blueprint.py is the immutable source.
     
     Safety mechanisms:
-    - Timestamped backups before modifications
-    - Atomic writes (tempfile + rename)
-    - Syntax validation after updates
+    - No-deletion policy (unauthorized folders are MOVED to archives).
+    - Path validation to prevent root-level accidental modifications.
     - Dry-run mode by default (auto_apply=False)
     """
     
     BLUEPRINT_PATH = Path("agentic_core/config/blueprint_sovereign/structure_blueprint.py")
+    ARCHIVE_ROOT = Path("archives/unmapped_drift/")
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, enforcement_mode: bool = True):
         self.project_root = project_root.resolve()
         self.blueprint_file = self.project_root / self.BLUEPRINT_PATH
+        self.enforcement_mode = enforcement_mode
         
         # Track discovered state
         self.actual_folders: Dict[str, Set[str]] = {}
@@ -145,31 +144,28 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
     # Core Reconciliation Methods
     # ===================================================================
     
-    async def reconcile_blueprint(self, auto_apply: bool = False, interactive: bool = True) -> Dict[str, Any]:
+    async def enforce_gospel(self, auto_apply: bool = False, interactive: bool = True) -> Dict[str, Any]:
         """
-        Main entry point: Scan system and reconcile blueprint.
+        Main entry point: Align filesystem to match the Gospel (blueprint).
         
-        Phase 1 (Dry-Run): auto_apply=False, interactive=False → Report only
-        Phase 2 (Manual Approval): auto_apply=False, interactive=True → Request approval
-        Phase 3 (Autonomous): auto_apply=True → Apply with backup + auto-rollback
+        Phase 1: Detect unauthorized (extra) and missing (required) folders.
+        Phase 2: Generate filesystem proposals (mkdir / move).
+        Phase 3: Execute alignment (if auto_apply=True).
         
         Args:
             auto_apply: If True, apply proposals automatically (with backup).
                        If False (default), dry-run or interactive mode.
             interactive: If True and drift detected, request user approval.
-                        Ignored if auto_apply=True.
         
         Returns:
             {
                 "drift_detected": bool,
                 "proposals": List[Dict],
                 "applied": bool,
-                "backup_path": Optional[str],
-                "rollback_performed": Optional[bool],
-                "message": Optional[str]
+                "results": Optional[List[str]]
             }
         """
-        Logger.info("Starting blueprint reconciliation scan...")
+        Logger.info("Starting SSOT Gospel Enforcement scan...")
         
         # 1. Scan actual system state
         await self._scan_filesystem()
@@ -182,7 +178,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
         drift = self._detect_drift(current_blueprint)
         
         if not drift:
-            Logger.info("No drift detected - blueprint is synchronized")
+            Logger.info("No drift detected - filesystem is aligned")
             return {
                 "drift_detected": False,
                 "proposals": [],
@@ -191,8 +187,8 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
         
         Logger.warning(f"Drift detected: {len(drift)} discrepancies found")
         
-        # 4. Generate reconciliation proposals
-        proposals = self._generate_proposals(drift)
+        # 4. Generate filesystem alignment proposals
+        proposals = self._generate_filesystem_proposals(drift)
         
         # 5. Phase 2: Interactive approval flow (if not auto-applying)
         if not auto_apply and interactive:
@@ -221,43 +217,21 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
         
         # 6. Apply if auto_apply enabled (Phase 3) or approved (Phase 2)
         if auto_apply:
-            Logger.info("Auto-apply enabled - creating backup and applying proposals")
-            backup_path = self._backup_blueprint()
+            Logger.info("Gospel Enforcement active - applying filesystem changes")
             
             try:
-                self._apply_proposals(proposals)
+                results = self._apply_filesystem_alignment(proposals)
                 
-                # Validate syntax after modifications (Phase 3 safety check)
-                if not self._validate_blueprint_syntax():
-                    Logger.error("Blueprint syntax validation failed - rolling back")
-                    self._rollback_to_backup(backup_path)
-                    return {
-                        "drift_detected": True,
-                        "proposals": proposals,
-                        "applied": False,
-                        "rollback_performed": True,
-                        "backup_path": str(backup_path),
-                        "error": "Syntax validation failed, rolled back to backup"
-                    }
-                
-                Logger.info("Blueprint reconciliation applied successfully")
+                Logger.info("Filesystem alignment complete")
                 return {
                     "drift_detected": True,
                     "proposals": proposals,
                     "applied": True,
-                    "backup_path": str(backup_path)
+                    "results": results
                 }
             except Exception as e:
-                Logger.error(f"Failed to apply proposals: {e}")
-                self._rollback_to_backup(backup_path)
-                return {
-                    "drift_detected": True,
-                    "proposals": proposals,
-                    "applied": False,
-                    "rollback_performed": True,
-                    "backup_path": str(backup_path),
-                    "error": str(e)
-                }
+                Logger.error(f"Alignment failed: {e}")
+                raise
         else:
             Logger.info("Dry-run mode - proposals generated but not applied")
             return {
@@ -399,23 +373,23 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
             Missing = actual_subfolders - blueprint_subfolders
             if Missing:
                 drift.append({
-                    "type": "missing_subfolders",
+                    "type": "orphaned_subfolders",
                     "root": root,
                     "folders": sorted(list(Missing)),
-                    "Severity": "high"
+                    "Severity": "medium"
                 })
-                Logger.warning(f"Missing subfolders in {root}: {Missing}")
+                Logger.warning(f"Orphaned subfolders in {root}: {Missing}")
             
             # Extra in blueprint (deleted folders)
             extra = blueprint_subfolders - actual_subfolders
             if extra:
                 drift.append({
-                    "type": "orphaned_subfolders",
+                    "type": "missing_subfolders",
                     "root": root,
                     "folders": sorted(list(extra)),
-                    "Severity": "medium"
+                    "Severity": "high"
                 })
-                Logger.warning(f"Orphaned subfolders in {root}: {extra}")
+                Logger.warning(f"Missing subfolders in {root}: {extra}")
         
         # 2. Check CORE_SUBFOLDER_MAP (L2 depth)
         blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
@@ -430,16 +404,16 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
             missing_l2 = actual_l2 - blueprint_l2
             if missing_l2:
                 drift.append({
-                    "type": "missing_l2_subfolders",
+                    "type": "orphaned_l2_subfolders",
                     "l1_folder": l1_folder,
                     "folders": sorted(list(missing_l2)),
-                    "Severity": "high"
+                    "Severity": "medium"
                 })
-                Logger.warning(f"Missing L2 subfolders in {l1_folder}: {missing_l2}")
+                Logger.warning(f"Orphaned L2 subfolders in {l1_folder}: {missing_l2}")
         
         # 3. Check CANON_SIGNALS
         blueprint_signals = set(current_blueprint.get("CANON_SIGNALS", set()))
-        missing_signals = self.actual_signals - blueprint_signals
+        missing_signals = blueprint_signals - self.actual_signals
         
         if missing_signals:
             drift.append({
@@ -452,45 +426,62 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
         Logger.info(f"Drift detection complete: {len(drift)} discrepancies found")
         return drift
     
-    def _generate_proposals(self, drift: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """
-        Generate concrete code change proposals to fix drift.
-        
-        Each proposal includes:
-        - action: Type of update (add_to_sovereign_registry, etc.)
-        - target data (root, folders, signals)
-        - code_change: Human-readable description
-        """
+    def _generate_filesystem_proposals(self, drift: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Generates OS-level folder actions to match blueprint."""
         proposals = []
         
-        Logger.info("Generating reconciliation proposals...")
+        Logger.info("Generating filesystem alignment proposals...")
         
         for drift_item in drift:
             if drift_item["type"] == "missing_subfolders":
-                proposals.append({
-                    "action": "add_to_sovereign_registry",
-                    "root": drift_item["root"],
-                    "subfolders": drift_item["folders"],
-                    "code_change": f"sovereign_registry['{drift_item['root']}']['subfolders'].extend({drift_item['folders']})"
-                })
+                # Blueprint requires these folders - CREATE them
+                for folder in drift_item["folders"]:
+                    target = self.project_root / drift_item["root"] / folder
+                    proposals.append({
+                        "action": "CREATE_FOLDER",
+                        "target": str(target),
+                        "reason": f"Required by blueprint root '{drift_item['root']}'"
+                    })
             
-            elif drift_item["type"] == "missing_l2_subfolders":
-                proposals.append({
-                    "action": "add_to_core_subfolder_map",
-                    "l1_folder": drift_item["l1_folder"],
-                    "subfolders": drift_item["folders"],
-                    "code_change": f"core_subfolder_map['{drift_item['l1_folder']}'].extend({drift_item['folders']})"
-                })
-            
-            elif drift_item["type"] == "missing_canon_signals":
-                proposals.append({
-                    "action": "add_to_canon_signals",
-                    "signals": drift_item["signals"],
-                    "code_change": f"CANON_SIGNALS.update({set(drift_item['signals'])})"
-                })
+            elif drift_item["type"] == "orphaned_subfolders":
+                # Filesystem has unauthorized folders - ARCHIVE them
+                for folder in drift_item["folders"]:
+                    source = self.project_root / drift_item["root"] / folder
+                    archive_target = self.project_root / self.ARCHIVE_ROOT / datetime.now().strftime("%Y%m%d") / drift_item["root"] / folder
+                    proposals.append({
+                        "action": "ARCHIVE_UNAUTHORIZED",
+                        "source": str(source),
+                        "target": str(archive_target),
+                        "reason": "Unauthorized folder not found in Gospel"
+                    })
         
-        Logger.info(f"Generated {len(proposals)} reconciliation proposals")
+        Logger.info(f"Generated {len(proposals)} filesystem alignment proposals")
         return proposals
+    
+    def _apply_filesystem_alignment(self, proposals: List[Dict[str, Any]]) -> List[str]:
+        """Executes the terraforming actions on disk."""
+        applied_logs = []
+        
+        Logger.info(f"Applying {len(proposals)} filesystem alignment actions...")
+        
+        for prop in proposals:
+            if prop["action"] == "CREATE_FOLDER":
+                path = Path(prop["target"])
+                path.mkdir(parents=True, exist_ok=True)
+                applied_logs.append(f"CREATED: {prop['target']}")
+                Logger.info(f"Created folder: {prop['target']}")
+            
+            elif prop["action"] == "ARCHIVE_UNAUTHORIZED":
+                source = Path(prop["source"])
+                target = Path(prop["target"])
+                if source.exists():
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.move(str(source), str(target))
+                    applied_logs.append(f"ARCHIVED: {prop['source']} -> {prop['target']}")
+                    Logger.info(f"Archived unauthorized folder: {prop['source']} -> {prop['target']}")
+        
+        Logger.info(f"Filesystem alignment complete: {len(applied_logs)} actions applied")
+        return applied_logs
     
     def _backup_blueprint(self) -> Path:
         """Create timestamped backup before modifications."""

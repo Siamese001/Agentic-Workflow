@@ -4,9 +4,14 @@ AutonomyMixin – Sovereign Agent Role Mixin (Phase 28 – Dec 30, 2025)
 Enables proactive, unprompted execution with constitutional safeguards.
 """
 
+import importlib
 import time
 import logging
 from typing import Dict, Any, Optional
+
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 
 
 class AutonomyMixin(MCPHardenedMixin):
