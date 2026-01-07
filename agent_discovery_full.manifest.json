@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-07T01:58:01.182623Z",
-  "scan_duration_seconds": 17.96,
+  "generated_at": "2026-01-07T01:59:59.575235Z",
+  "scan_duration_seconds": 17.93,
   "agent_count": 283,
-  "content_hash": "sha256:2cc1f08a49d080cfe9ce0ecda72dbd3076a2de8a9288bdad8771ad4d1f397617",
+  "content_hash": "sha256:a008d9a85eb97c5dce5cbd1b2ca5bbde3d915a9f54446c4f727493210e57424c",
   "layer_breakdown": {
     "L0": 11,
     "L1": 33,
@@ -15,11 +15,11 @@
     "apps_shared": 2
   },
   "parse_errors_count": 0,
-  "minimum_agent_count": 280,
-  "expected_agent_count": 280,
+  "minimum_agent_count": 283,
+  "expected_agent_count": 283,
   "validation": {
     "passed": true,
-    "threshold": 280
+    "threshold": 283
   },
   "file_hashes": {
     "analyze_multi_class_files.py": "3cd2b760a5ae52e536ce986ba28eae45",
@@ -1493,7 +1493,7 @@
     "scripts/fix_inherited_invocation.py": "5342126f426355ef40217501cbf20b6f",
     "scripts/fix_missing_invocation.py": "1e84f9e638bc9428ff60e1e8842372ff",
     "scripts/fix_testing_observability.py": "8b84a07521edd6921fecbbefbd8d3e9e",
-    "scripts/full_agent_discovery.py": "1213a1a90319abc4de8913a86c621d42",
+    "scripts/full_agent_discovery.py": "ddb3dd7ab9a67fd43680d59cadfbc83a",
     "scripts/generate_agent_duplicates_table.py": "65c2a540b0406b9dd07a20ae7ade4558",
     "scripts/generate_agent_report.py": "b93e4378eb5ac74df820b36ecfc8d205",
     "scripts/generate_agent_table_simple.py": "e05c78eb25c09907223885dd300326a1",
