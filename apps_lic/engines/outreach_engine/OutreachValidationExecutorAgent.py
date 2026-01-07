@@ -401,7 +401,7 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
             RuleFailure if signature format violated
         """
         # Extract signature block (last 4 lines before fence end)
-        lines = content.split("\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n")
+        lines = content.split("\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n")
 
         # Find signature (look for "Regards,")
         regards_index = -1

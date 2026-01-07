@@ -104,7 +104,7 @@ Current date: December 24, 2025
             return await self._execute_per_file(file_path)
         
         # Batch mode (legacy)
-        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] NamingLawHealerAgent: Scanning for naming violations...")
+        print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] NamingLawHealerAgent: Scanning for naming violations...")
         self.healed_count = 0
         self.healed_files = []
         

@@ -3,12 +3,15 @@ GenerativeGuardDeprecatedAgent - Extracted from CanonHealerAgent.py
 Deprecated guard logic preserved for backward compatibility.
 """
 from __future__ import annotations
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 import logging
 import os
 from typing import Any, Dict, List
-from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 EXCLUDED_DIRS = {'__pycache__', '.git', 'node_modules', 'venv', '.venv'}

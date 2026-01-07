@@ -74,7 +74,7 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
 
     async def execute(self) -> None:
                     
-        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
+        print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
         # Replaced blocking calls with async sleep
         await asyncio.sleep(0)
 

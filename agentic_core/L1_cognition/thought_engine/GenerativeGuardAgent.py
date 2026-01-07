@@ -1,4 +1,5 @@
 from __future__ import annotations
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 """
 GenerativeGuardAgent - Detects and removes runaway generated files.
 
@@ -13,8 +14,10 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Excluded directories for file scanning

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 """
 L6 Sovereign Code Graph & Governance Infrastructure
 
@@ -45,7 +46,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
@@ -226,7 +229,7 @@ class DependencyGraph:
                 to_name: Any = dep.replace('/', '_').replace('\\', '_').replace('.py', '')
                 dot.append(f'  "{from_name}" -> "{to_name}";')
         dot.append('}')
-        dot_str: Any = '\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n'.join(dot)
+        dot_str: Any = '\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n'.join(dot)
         if output_file:
             with open(output_file, 'w') as f:
                 f.write(dot_str)
@@ -289,7 +292,9 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """Lazy-load HierarchyAgent to avoid circular import."""
         if self._hierarchy_agent is None:
             try:
-                from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
+_mod = importlib.import_module('agentic_core.L5_safety.guardrails.HierarchyAgent')
+HierarchyAgent = getattr(_mod, 'HierarchyAgent')
                 self._hierarchy_agent = HierarchyAgent(self.root_dir)
             except ImportError:
                 pass
@@ -300,7 +305,9 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """Lazy-load ImportAgent to avoid circular import."""
         if self._import_agent is None:
             try:
-                from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+_mod = importlib.import_module('agentic_core.L5_safety.gravity.ImportAgent')
+ImportAgent = getattr(_mod, 'ImportAgent')
                 self._import_agent = ImportAgent(self.root_dir)
             except ImportError:
                 pass

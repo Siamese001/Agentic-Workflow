@@ -47,7 +47,7 @@ class CodeJanitor:
         """
         Executes the CodeJanitor agent's checks and auto-fixes for syntax and style violations.
         """
-        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Sanitizing Codebase...")
+        print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Sanitizing Codebase...")
 
         # Check and fix trailing whitespace (Key 11)
         passed, details = self.check_key_11_no_trailing_whitespace()

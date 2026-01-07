@@ -46,7 +46,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,

@@ -144,7 +144,7 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     _walk_directory(item, prefix + extension, depth + 1)
 
         _walk_directory(start_path, depth=1)
-        return "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(tree_lines)
+        return "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(tree_lines)
 
     def _get_compliance_metrics(self) -> Dict[str, Any]:
         """

@@ -22,7 +22,7 @@ from agentic_core.utils.general_helpers.mission_utils import (
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -60,7 +60,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
             print("   [INFO] Hierarchy healing disabled (healing_enabled=False)")
             return results
         
-        print("\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
+        print("\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
         
         # Get approved L1 folders for agentic_core from SSOT
         approved_l1 = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])

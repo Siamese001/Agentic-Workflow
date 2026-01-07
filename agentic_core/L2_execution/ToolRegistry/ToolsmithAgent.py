@@ -17,7 +17,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -51,7 +51,7 @@ class GeneratedTool:
 
 class tool_template:
     """Template for generating tools."""
-    FUNCTION_TEMPLATE: Any = '\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nasync def {name}({params}) -> {return_type}:\n    """\n    {description}\n\n    Args:\n{param_docs}\n    Returns:\n        {return_description}\n    """\n    # Implementation\n    {implementation}\n'
+    FUNCTION_TEMPLATE: Any = '\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nasync def {name}({params}) -> {return_type}:\n    """\n    {description}\n\n    Args:\n{param_docs}\n    Returns:\n        {return_description}\n    """\n    # Implementation\n    {implementation}\n'
     CLASS_TEMPLATE: Any = '\nclass {name}:\n    """\n    {description}\n    """\n\n    def __init__(self{init_params}) -> None:\n        """Initialize the {name} tool."""\n{init_body}\n    async def execute{method_params} -> {return_type}:\n        """\n        Execute the tool.\n\n        Args:\n{method_param_docs}\n        Returns:\n            {return_description}\n        """\n        # Implementation\n        {method_implementation}\n'
 
 from agentic_core.bases import L2Agent

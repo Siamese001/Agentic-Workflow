@@ -246,7 +246,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                 if not self.timestamped_exports:
                     # Append with comma separation for JSON array
                     if filepath.exists() and filepath.stat().st_size > 0:
-                        f.write(",\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n")
+                        f.write(",\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n")
                     else:
                         f.write("[\n")
                 json.dump(export_data[0] if trace_id else export_data, f, indent=2)

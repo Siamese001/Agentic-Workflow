@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-'Gap Closure Architect - Leadership Competencies with Gap Filling (K.9).\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nThis agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,\nenforcing Industry-First ranking and 24-30 word descriptions.\n\nSub-Atomic Agent Name: GapClosureArchitect\nLegacy K-Node: K.9 (K.8 in some versions)\n'
+'Gap Closure Architect - Leadership Competencies with Gap Filling (K.9).\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nThis agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,\nenforcing Industry-First ranking and 24-30 word descriptions.\n\nSub-Atomic Agent Name: GapClosureArchitect\nLegacy K-Node: K.9 (K.8 in some versions)\n'
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin

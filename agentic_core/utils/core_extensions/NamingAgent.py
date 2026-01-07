@@ -86,7 +86,7 @@ class PlacementResult:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
@@ -1263,7 +1263,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             # AUTONOMY LAW ENFORCEMENT (Canon Key 51)
             script_violations = self._detect_runner_script_violations()
             if script_violations:
-                print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[!] AUTONOMY LAW VIOLATION: Found {len(script_violations)} forbidden runner scripts")
+                print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[!] AUTONOMY LAW VIOLATION: Found {len(script_violations)} forbidden runner scripts")
                 for script in script_violations:
                     print(f"    → {script.relative_to(self.project_root)} — DELETE THIS FILE")
                     if actual_execute:

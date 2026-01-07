@@ -1234,7 +1234,7 @@ class LocationAgent(L5Agent):
                                     pass
 
                             new_lines = new_lines[:insert_idx] + todo_block + new_lines[insert_idx:]
-                            new_content = "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n".join(new_lines)
+                            new_content = "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n".join(new_lines)
 
                             # Backup + write
                             backup_dir = self._init_backup_dir() / "gravity_auto_heal"

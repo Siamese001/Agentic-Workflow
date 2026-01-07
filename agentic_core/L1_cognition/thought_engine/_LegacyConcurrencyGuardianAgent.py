@@ -75,7 +75,7 @@ async def release_lock(key: str) -> bool:
 default_lock_timeout: Any = int(os.getenv('DEFAULT_LOCK_TIMEOUT', '30'))
 max_retry_attempts: Any = int(os.getenv('MAX_RETRY_ATTEMPTS', '3'))
 retry_delay: Any = float(os.getenv('RETRY_DELAY', '0.5'))
-few_shot_concurrency: Any = '\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nYou are the ConcurrencyGuardianAgent, an expert in managing concurrent operations.\n\nYour role is to:\n1. Prevent race conditions in multi-agent execution\n2. Manage resource locks efficiently\n3. Detect and resolve deadlocks\n4. Ensure thread-safe operations\n\nRules:\n- Always acquire locks before accessing shared resources\n- Release locks promptly after use\n- Use timeouts to prevent deadlocks\n- Prefer async operations when possible\n'
+few_shot_concurrency: Any = '\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nYou are the ConcurrencyGuardianAgent, an expert in managing concurrent operations.\n\nYour role is to:\n1. Prevent race conditions in multi-agent execution\n2. Manage resource locks efficiently\n3. Detect and resolve deadlocks\n4. Ensure thread-safe operations\n\nRules:\n- Always acquire locks before accessing shared resources\n- Release locks promptly after use\n- Use timeouts to prevent deadlocks\n- Prefer async operations when possible\n'
 
 class LockInfo:
     """Information about an active lock."""

@@ -136,7 +136,7 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
                     if self.CAMEL_OR_PASCAL.match(old_name):
                         new_name: Any = self._to_snake_case(old_name)
                         new_line: Any = line.replace(old_name, new_name, 1)
-                        new_lines.append(f'# NAMING FIXED: {old_name} → {new_name}\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n')
+                        new_lines.append(f'# NAMING FIXED: {old_name} → {new_name}\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n')
                         new_lines.append(new_line)
                         symbol_changes += 1
                         continue

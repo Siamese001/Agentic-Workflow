@@ -79,7 +79,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
 
         if removed > 0 and not self.dry_run:
             self.requirements_path.write_text(
-                "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(new_lines) + "\n", encoding="utf-8"
+                "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(new_lines) + "\n", encoding="utf-8"
             )
 
         return {"removed": removed, "file": "requirements.txt"}
