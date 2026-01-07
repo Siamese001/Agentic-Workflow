@@ -19,6 +19,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
+# [SSOT IMPORT] Master Constitution is the absolute source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
@@ -35,6 +36,8 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
+# [MISSION AUDIT] Standardized logging for L4 Ledger consumption
+logging.basicConfig(level=logging.INFO)
 Logger = logging.getLogger(__name__)
 
 
@@ -45,8 +48,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     Combines capabilities from HierarchyEnforcerAgent and HierarchyHealerAgent:
     
     1. Structure Creation:
-       - Creates missing L2 (Layer) and L3 (Sub-territory) directories per 
-         CORE_SUBFOLDER_MAP to maintain Depth-3 compliance.
+       - Creates missing L2 (Layer) and L3 (Sub-territory) directories per SSOT Maps.
        
     2. File Relocation (from Healer):
        - Moves files from non-approved folders to approved locations
@@ -74,7 +76,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.healing_enabled = healing_enabled
         self.ctx = ctx
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
-        # Fallback to hardcoded 'archives' per SOVEREIGN_EXCLUDED_FOLDERS
+        # [SSOT] 'archives' is a protected folder in SOVEREIGN_EXCLUDED_FOLDERS
         self.archive_root = project_root / "archives" / "hierarchy_violations"
         
         if healing_enabled:
@@ -97,32 +99,33 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         results = {"created": [], "errors": []}
         
         if not self.healing_enabled:
-            print("   [DRY-RUN] Structure creation disabled")
+            Logger.info("HierarchyAgent: [DRY-RUN] Structure creation disabled")
             return results
         
-        print("\n[*] HIERARCHY: Enforcing L3 sub-territory subatomic structure...")
+        Logger.info("HierarchyAgent: Enforcing L3 sub-territory subatomic structure per SSOT...")
         
-        l2_layers = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
+        # agentic_core is L1; subfolders are L2 layers (L1_cognition, etc.)
+        approved_layers_l2 = SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", [])
         
-        for l2_name in l2_layers:
-            l2_path = self.project_root / "agentic_core" / l2_name
-            if not l2_path.exists():
+        for layer_l2_name in approved_layers_l2:
+            layer_l2_path = self.project_root / "agentic_core" / layer_l2_name
+            if not layer_l2_path.exists():
                 continue
             
-            # Drill down to L3 sub-territories
-            expected_l3 = set(CORE_SUBFOLDER_MAP.get(l2_name, []))
-            if not expected_l3:
+            # L3 Sub-territories (thought_engine, guardrails, etc.)
+            expected_territories_l3 = set(CORE_SUBFOLDER_MAP.get(layer_l2_name, []))
+            if not expected_territories_l3:
                 continue
             
-            actual_l3 = {p.name for p in l2_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
-            missing_l3 = expected_l3 - actual_l3
+            actual_l3 = {p.name for p in layer_l2_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+            missing_l3 = expected_territories_l3 - actual_l3
             
-            for l3_name in missing_l3:
-                l3_path = l2_path / l3_name
-                self._create_dir_with_init(l3_path, results, f"agentic_core/{l2_name}/{l3_name}")
+            for territory_l3_name in missing_l3:
+                l3_path = layer_l2_path / territory_l3_name
+                self._create_dir_with_init(l3_path, results, f"agentic_core/{layer_l2_name}/{territory_l3_name}")
         
         if results["created"]:
-            print(f"   [STRUCTURE] Created {len(results['created'])} missing directories")
+            Logger.info(f"HierarchyAgent: [STRUCTURE] Created {len(results['created'])} missing directories")
         
         return results
 
@@ -132,8 +135,9 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             path.mkdir(parents=True, exist_ok=True)
             (path / "__init__.py").touch()
             results["created"].append(rel_label)
-            print(f"      [✓] CREATED: {rel_label}/")
+            Logger.info(f"   [✓] CREATED: {rel_label}/")
         except Exception as e:
+            Logger.error(f"   [!] FAILED: {rel_label}: {e}")
             results["errors"].append(f"Failed to create {rel_label}: {e}")
 
     # ========================================================================
@@ -150,49 +154,49 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         results = {"files_relocated": 0, "folders_removed": 0, "errors": []}
         
         if not self.healing_enabled:
-            print("   [DRY-RUN] File relocation disabled")
+            Logger.info("HierarchyAgent: [DRY-RUN] File relocation disabled")
             return results
         
-        print("\n[*] HIERARCHY: Relocating files from non-approved folders...")
+        Logger.info("HierarchyAgent: Relocating files from non-approved sub-territories...")
         
-        # Get approved L1 folders for agentic_core from SSOT
-        approved_l1 = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])
+        # Approved L2 Layers (e.g., L5_safety)
+        approved_layers_l2 = set(SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", []))
         
         agentic_core_path = self.project_root / "agentic_core"
         if not agentic_core_path.exists():
             return results
         
-        # Phase 1: Find all non-approved L1 folders
-        actual_l1 = {
+        # Phase 1: Find all non-approved Layer (L2) folders
+        actual_layers_l2 = {
             p.name for p in agentic_core_path.iterdir() 
             if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
         }
-        non_approved_l1 = actual_l1 - approved_l1
+        non_approved_l2 = actual_layers_l2 - approved_layers_l2
         
-        for bad_l1 in non_approved_l1:
-            bad_path = agentic_core_path / bad_l1
-            print(f"   [!] Non-approved L1 folder: {bad_l1}")
+        for bad_layer_l2 in non_approved_l2:
+            bad_path = agentic_core_path / bad_layer_l2
+            Logger.warning(f"   [!] Non-approved L2 layer: {bad_layer_l2}")
             
             # Find best target based on folder name heuristics
-            target_l1 = get_best_target_l1(bad_l1, approved_l1)
-            target_path = agentic_core_path / target_l1
+            target_layer_l2 = get_best_target_l1(bad_layer_l2, approved_layers_l2)
+            target_path = agentic_core_path / target_layer_l2
             
             # Relocate all files from non-approved folder
             for py_file in bad_path.rglob("*.py"):
                 if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                     continue
                 try:
-                    target_l2 = get_best_target_l2(target_l1, py_file.name)
-                    final_target = target_path / target_l2
+                    target_territory_l3 = get_best_target_l2(target_layer_l2, py_file.name)
+                    final_target = target_path / target_territory_l3
                     final_target.mkdir(parents=True, exist_ok=True)
                     
                     dest = final_target / py_file.name
                     if not dest.exists():
                         shutil.move(str(py_file), str(dest))
-                        print(f"      [✓] RELOCATED: {py_file.name} -> {target_l1}/{target_l2}/")
+                        Logger.info(f"      [✓] RELOCATED: {py_file.name} -> {target_layer_l2}/{target_territory_l3}/")
                         results["files_relocated"] += 1
                     else:
-                        print(f"      [!] SKIP (exists): {py_file.name}")
+                        Logger.info(f"      [!] SKIP (exists): {py_file.name}")
                 except Exception as e:
                     results["errors"].append(f"{py_file.name}: {e}")
             
@@ -200,33 +204,33 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             try:
                 self._remove_empty_dirs(bad_path)
                 if not bad_path.exists():
-                    print(f"      [✓] REMOVED empty folder: {bad_l1}")
+                    Logger.info(f"      [✓] REMOVED empty folder: {bad_layer_l2}")
                     results["folders_removed"] += 1
             except Exception as e:
-                results["errors"].append(f"Remove {bad_l1}: {e}")
+                results["errors"].append(f"Remove {bad_layer_l2}: {e}")
         
-        # Phase 2: Check L2 subfolders within approved L1 folders
-        for l1_name in approved_l1:
-            l1_path = agentic_core_path / l1_name
-            if not l1_path.exists():
+        # Phase 2: Check L3 sub-territories within approved L2 Layers
+        for layer_l2_name in approved_layers_l2:
+            layer_l2_path = agentic_core_path / layer_l2_name
+            if not layer_l2_path.exists():
                 continue
             
-            approved_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
-            if not approved_l2:
+            approved_territories_l3 = set(CORE_SUBFOLDER_MAP.get(layer_l2_name, []))
+            if not approved_territories_l3:
                 continue
             
-            actual_l2 = {
-                p.name for p in l1_path.iterdir() 
+            actual_territories_l3 = {
+                p.name for p in layer_l2_path.iterdir() 
                 if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
             }
-            non_approved_l2 = actual_l2 - approved_l2
+            non_approved_l3 = actual_territories_l3 - approved_territories_l3
             
-            for bad_l2 in non_approved_l2:
-                bad_path = l1_path / bad_l2
-                print(f"   [!] Non-approved L2 folder: {l1_name}/{bad_l2}")
+            for bad_territory_l3 in non_approved_l3:
+                bad_path = layer_l2_path / bad_territory_l3
+                Logger.warning(f"   [!] Non-approved L3 territory: {layer_l2_name}/{bad_territory_l3}")
                 
-                target_l2 = get_best_target_l2(l1_name, bad_l2)
-                target_path = l1_path / target_l2
+                target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
+                target_path = layer_l2_path / target_territory_l3
                 target_path.mkdir(parents=True, exist_ok=True)
                 
                 for py_file in bad_path.rglob("*.py"):
@@ -236,23 +240,23 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                         dest = target_path / py_file.name
                         if not dest.exists():
                             shutil.move(str(py_file), str(dest))
-                            print(f"      [✓] RELOCATED: {py_file.name} -> {l1_name}/{target_l2}/")
+                            Logger.info(f"      [✓] RELOCATED: {py_file.name} -> {layer_l2_name}/{target_territory_l3}/")
                             results["files_relocated"] += 1
                         else:
-                            print(f"      [!] SKIP (exists): {py_file.name}")
+                            Logger.info(f"      [!] SKIP (exists): {py_file.name}")
                     except Exception as e:
                         results["errors"].append(f"{py_file.name}: {e}")
                 
                 try:
                     self._remove_empty_dirs(bad_path)
                     if not bad_path.exists():
-                        print(f"      [✓] REMOVED empty folder: {l1_name}/{bad_l2}")
+                        Logger.info(f"      [✓] REMOVED empty folder: {layer_l2_name}/{bad_territory_l3}")
                         results["folders_removed"] += 1
                 except Exception as e:
-                    results["errors"].append(f"Remove {l1_name}/{bad_l2}: {e}")
+                    results["errors"].append(f"Remove {layer_l2_name}/{bad_territory_l3}: {e}")
         
         if results["files_relocated"] or results["folders_removed"]:
-            print(f"   [RELOCATION] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed")
+            Logger.info(f"HierarchyAgent: [RELOCATION] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed")
         
         return results
 
@@ -275,10 +279,10 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         }
         
         if not self.healing_enabled:
-            print("   [DRY-RUN] Depth enforcement disabled")
+            Logger.info("HierarchyAgent: [DRY-RUN] Depth enforcement disabled")
             return results
         
-        print("\n[*] HIERARCHY: Enforcing depth rules...")
+        Logger.info("HierarchyAgent: Enforcing depth rules per SSOT...")
         
         # Enforce apps_* depth
         apps_count = self._enforce_apps_depth()
@@ -294,7 +298,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         total = apps_count + tests_count + universal_count
         if total > 0:
-            print(f"   [DEPTH] Archived {total} files (apps: {apps_count}, tests: {tests_count}, universal: {universal_count})")
+            Logger.info(f"HierarchyAgent: [DEPTH] Archived {total} files (apps: {apps_count}, tests: {tests_count}, universal: {universal_count})")
         
         return results
     
@@ -452,7 +456,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         import os
         
         if not self.healing_enabled:
-            print("   [DRY-RUN] Orphan purging disabled")
+            Logger.info("HierarchyAgent: [DRY-RUN] Orphan purging disabled")
             return {"purged": 0, "errors": []}
         
         # Ensure purge artifacts are ignored
@@ -461,12 +465,14 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         purged_count = 0
         errors = []
         
-        allowed_roots = {"agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"}
+        # [SSOT] Dynamically pull roots from registry
+        allowed_roots = set(SOVEREIGN_REGISTRY.keys())
         
-        print("\n[*] HIERARCHY: Scanning for orphaned files...")
+        Logger.info("HierarchyAgent: Scanning for orphaned files outside sovereign territory...")
         
         orphaned_files = []
-        MAX_PURGE_SCAN = 500
+        # [SCALABILITY] Increased budget for mature repositories
+        MAX_PURGE_SCAN = 5000
         scan_count = 0
         
         for root, dirs, files in os.walk(self.project_root):
