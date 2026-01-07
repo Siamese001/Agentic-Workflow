@@ -1,0 +1,264 @@
+from __future__ import annotations
+"""
+GravityStateAgent - Gravity Healing State Tracker
+Territory: agentic_core/L4_state/
+
+RESPONSIBILITIES:
+- Track which files have been healed by GravityHealerAgent
+- Prevent re-flagging of converted dynamic imports
+- Maintain healing history and rollback capability
+- Provide state persistence across healing sessions
+
+STATE TRACKING:
+- Healed files registry (file_path → healing_metadata)
+- Violation history (original_import → dynamic_import)
+- Healing timestamps and agent versions
+- Rollback checkpoints
+
+INTEGRATION:
+- Used by GravityValidatorAgent to skip already-healed imports
+- Used by GravityHealerAgent to record healing operations
+- Provides audit trail for compliance verification
+"""
+import json
+import logging
+from pathlib import Path
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass, asdict
+from datetime import datetime
+
+Logger = logging.getLogger(__name__)
+
+
+@dataclass
+class HealingRecord:
+    """Record of a single healing operation."""
+    file_path: str
+    original_import: str
+    healed_import: str
+    violation_type: str
+    healing_strategy: str
+    timestamp: str
+    agent_version: str = "1.0.0"
+    line_number: Optional[int] = None
+
+
+class GravityStateAgent:
+    """
+    [L4 STATE] Tracks gravity healing operations and prevents re-flagging.
+    
+    Maintains persistent state of healed files to ensure:
+    - Converted dynamic imports are not re-flagged as violations
+    - Healing history is preserved for audit and rollback
+    - Multiple healing sessions can be coordinated
+    """
+    
+    STATE_FILE = "gravity_healing_state.json"
+    
+    def __init__(self, project_root: Path) -> None:
+        self.root = project_root.resolve()
+        self.state_dir = self.root / ".gravity_state"
+        self.state_file = self.state_dir / self.STATE_FILE
+        self.logger = Logger
+        
+        # Ensure state directory exists
+        self.state_dir.mkdir(exist_ok=True)
+        
+        # Load existing state
+        self.state = self._load_state()
+    
+    def _load_state(self) -> Dict[str, Any]:
+        """Load healing state from disk."""
+        if not self.state_file.exists():
+            return {
+                "healed_files": {},
+                "healing_history": [],
+                "metadata": {
+                    "created_at": datetime.now().isoformat(),
+                    "last_updated": datetime.now().isoformat(),
+                    "total_healings": 0,
+                }
+            }
+        
+        try:
+            with open(self.state_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            self.logger.error(f"Failed to load state: {e}")
+            return self._load_state()  # Return fresh state on error
+    
+    def _save_state(self) -> None:
+        """Persist healing state to disk."""
+        try:
+            self.state["metadata"]["last_updated"] = datetime.now().isoformat()
+            with open(self.state_file, "w", encoding="utf-8") as f:
+                json.dump(self.state, f, indent=2)
+        except Exception as e:
+            self.logger.error(f"Failed to save state: {e}")
+    
+    def record_healing(self, record: HealingRecord) -> None:
+        """
+        Record a successful healing operation.
+        
+        Args:
+            record: HealingRecord with details of the healing
+        """
+        file_key = str(Path(record.file_path).relative_to(self.root))
+        
+        # Add to healed files registry
+        if file_key not in self.state["healed_files"]:
+            self.state["healed_files"][file_key] = []
+        
+        self.state["healed_files"][file_key].append(asdict(record))
+        
+        # Add to healing history
+        self.state["healing_history"].append(asdict(record))
+        
+        # Update metadata
+        self.state["metadata"]["total_healings"] += 1
+        
+        # Persist to disk
+        self._save_state()
+        
+        self.logger.info(f"Recorded healing: {file_key} - {record.original_import}")
+    
+    def is_healed(self, file_path: Path, import_line: str) -> bool:
+        """
+        Check if a specific import has already been healed.
+        
+        Args:
+            file_path: Path to the file
+            import_line: The import statement to check
+            
+        Returns:
+            True if this import has been healed, False otherwise
+        """
+        try:
+            file_key = str(file_path.relative_to(self.root))
+        except ValueError:
+            # File not in project root
+            return False
+        
+        if file_key not in self.state["healed_files"]:
+            return False
+        
+        # Check if this specific import has been healed
+        for healing in self.state["healed_files"][file_key]:
+            if healing["original_import"].strip() == import_line.strip():
+                return True
+        
+        return False
+    
+    def get_file_healings(self, file_path: Path) -> List[HealingRecord]:
+        """
+        Get all healing records for a specific file.
+        
+        Args:
+            file_path: Path to the file
+            
+        Returns:
+            List of HealingRecord objects for this file
+        """
+        try:
+            file_key = str(file_path.relative_to(self.root))
+        except ValueError:
+            return []
+        
+        if file_key not in self.state["healed_files"]:
+            return []
+        
+        return [
+            HealingRecord(**healing)
+            for healing in self.state["healed_files"][file_key]
+        ]
+    
+    def get_healing_summary(self) -> Dict[str, Any]:
+        """
+        Get summary of all healing operations.
+        
+        Returns:
+            Dict with healing statistics and summary
+        """
+        total_files = len(self.state["healed_files"])
+        total_healings = self.state["metadata"]["total_healings"]
+        
+        # Group by violation type
+        by_type = {}
+        for healing in self.state["healing_history"]:
+            vtype = healing["violation_type"]
+            by_type[vtype] = by_type.get(vtype, 0) + 1
+        
+        # Group by strategy
+        by_strategy = {}
+        for healing in self.state["healing_history"]:
+            strategy = healing["healing_strategy"]
+            by_strategy[strategy] = by_strategy.get(strategy, 0) + 1
+        
+        return {
+            "total_files_healed": total_files,
+            "total_healings": total_healings,
+            "by_violation_type": by_type,
+            "by_strategy": by_strategy,
+            "created_at": self.state["metadata"]["created_at"],
+            "last_updated": self.state["metadata"]["last_updated"],
+        }
+    
+    def create_checkpoint(self, name: str) -> str:
+        """
+        Create a checkpoint of current healing state for rollback.
+        
+        Args:
+            name: Name for this checkpoint
+            
+        Returns:
+            Path to the checkpoint file
+        """
+        checkpoint_file = self.state_dir / f"checkpoint_{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        
+        try:
+            with open(checkpoint_file, "w", encoding="utf-8") as f:
+                json.dump(self.state, f, indent=2)
+            
+            self.logger.info(f"Created checkpoint: {checkpoint_file.name}")
+            return str(checkpoint_file)
+        except Exception as e:
+            self.logger.error(f"Failed to create checkpoint: {e}")
+            return ""
+    
+    def rollback_to_checkpoint(self, checkpoint_file: str) -> bool:
+        """
+        Rollback state to a previous checkpoint.
+        
+        Args:
+            checkpoint_file: Path to the checkpoint file
+            
+        Returns:
+            True if rollback successful, False otherwise
+        """
+        try:
+            with open(checkpoint_file, "r", encoding="utf-8") as f:
+                self.state = json.load(f)
+            
+            self._save_state()
+            self.logger.info(f"Rolled back to checkpoint: {checkpoint_file}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to rollback: {e}")
+            return False
+    
+    def clear_state(self) -> None:
+        """Clear all healing state (use with caution)."""
+        self.state = {
+            "healed_files": {},
+            "healing_history": [],
+            "metadata": {
+                "created_at": datetime.now().isoformat(),
+                "last_updated": datetime.now().isoformat(),
+                "total_healings": 0,
+            }
+        }
+        self._save_state()
+        self.logger.warning("Cleared all healing state")
+
+
+__all__ = ["GravityStateAgent", "HealingRecord"]
