@@ -1,12 +1,19 @@
 from __future__ import annotations
 #!/usr/bin/env python3
 """
+DEPRECATED (2026-01-07): Use GravityValidatorAgent in L5_safety/validators/ instead.
+
+This agent has been consolidated into the unified Gravity system:
+- Detection: GravityValidatorAgent (L5_safety/validators/)
+- Healing: GravityHealerAgent (L2_execution/ToolRegistry/)
+
 Sovereign Gravity Compliance Validator (Key 18)
 Detects intra-core import waterfall violations per strict layer authority order.
 SSOT-aligned with structure_blueprint.py layer ordering.
 """
 
 import re
+import warnings
 from pathlib import Path
 
 # [SSOT IMPORT] Layer authority from structure_blueprint.py
@@ -22,6 +29,12 @@ class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, project_root: Path) -> None:
+        warnings.warn(
+            "GravityComplianceValidatorAgent is deprecated. Use GravityValidatorAgent from "
+            "agentic_core.L5_safety.validators.GravityValidatorAgent instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         self.root = project_root.resolve()
         self.violations = []
 

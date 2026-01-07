@@ -1,6 +1,13 @@
 from __future__ import annotations
 import re
+import warnings
 '''
+DEPRECATED (2026-01-07): Use GravityHealerAgent in L2_execution/ToolRegistry/ instead.
+
+This agent has been consolidated into the unified Gravity system:
+- Detection: GravityValidatorAgent (L5_safety/validators/)
+- Healing: GravityHealerAgent (L2_execution/ToolRegistry/)
+
 GravityLeakRepairAgent - Dynamic Import Converter for Gravity Compliance
 
 Converts forbidden static imports from higher layers (L4/L5) into dynamic
@@ -52,6 +59,12 @@ class GravityLeakRepairAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
     def __init__(self, ctx, project_root=None) -> None:
         """Initialize with mandatory ctx for sovereign operation."""
+        warnings.warn(
+            "GravityLeakRepairAgent is deprecated. Use GravityHealerAgent from "
+            "agentic_core.L2_execution.ToolRegistry.GravityHealerAgent instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         if ctx is None:
             raise ValueError("ctx is mandatory for GravityLeakRepairAgent (sovereign agent)")
         self.patterns = [re.compile(p) for p in self.UPWARD_IMPORT_PATTERNS]
