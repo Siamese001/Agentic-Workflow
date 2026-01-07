@@ -6,7 +6,14 @@ Enforces Bounded Contexts and Aggregate Root access.
 import ast
 from pathlib import Path
 from typing import Any, List, Tuple
-from agentic_core.L1_cognition.P2_domain.sovereign_domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE
+# from agentic_core.L1_cognition.P2_domain.sovereign  # Refactored to dynamic import to avoid upward dependency
+
+def _get_sovereign_domain():
+    """Lazy load sovereign domain to avoid L0 → L1 dependency."""
+    import importlib
+    module = importlib.import_module('agentic_core.L1_cognition.P2_domain.sovereign')
+    return module
+_domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

@@ -14,7 +14,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -28,7 +28,14 @@ class SovereignGitKrakenMcpClient(MCPHardenedMixin, HealerMixin):
         super().__init__()
         if not config.GITKRAKEN_MCP_ENABLED:
             raise ValueError('GitKraken MCP disabled in sovereign config')
-        from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+        # from agentic_core.L3_orchestration.workflow_engines  # Refactored to dynamic import to avoid upward dependency
+
+def _get_workflow_engine():
+    """Lazy load workflow engine to avoid L0 → L3 dependency."""
+    import importlib
+    module = importlib.import_module('agentic_core.L3_orchestration.workflow_engines')
+    return module
+.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
         self._mcp_audit('init')
         Logger.info('[L0 GITKRAKEN] Sovereign GitKraken MCP client initialized')

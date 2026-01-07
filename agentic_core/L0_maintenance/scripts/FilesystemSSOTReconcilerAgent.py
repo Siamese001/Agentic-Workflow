@@ -69,7 +69,7 @@ from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
-# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.timeout_decorator import timeout

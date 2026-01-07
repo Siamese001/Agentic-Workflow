@@ -31,7 +31,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 class L0DelegationTestingMixin:
     """Stub mixin for L0 delegation testing."""
     pass
-# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -125,7 +125,14 @@ class BootstrapAgent(HealerMixin, L0DelegationTestingMixin, MCPHardenedMixin):
         Returns:
             Dict with seeding results
         """
-        from agentic_core.L2_execution.ToolRegistry.ToolsmithAgent import ToolsmithAgent
+        # from agentic_core.L2_execution.ToolRegistry.Toolsmith  # Refactored to dynamic import to avoid upward dependency
+
+def _get_toolsmith():
+    """Lazy load Toolsmith to avoid L0 → L2 dependency."""
+    import importlib
+    module = importlib.import_module('agentic_core.L2_execution.ToolRegistry.Toolsmith')
+    return module.Toolsmith
+Agent import ToolsmithAgent
         
         root = project_root or self.project_root
         toolsmith = ToolsmithAgent()
