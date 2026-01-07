@@ -622,23 +622,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
 
         self.smart_discovery.ensure_fresh_discovery()
         data_generator = DashboardDataGenerator(self.project_root, self.territories)
-        registry = data_generator.load_registry()
-        all_agents, path_to_layer = self._process_agent_registry(registry)
-        used_stems = self._compute_global_usage(all_agents)
         
-        dashboard_rows = []
-        assigned_agents = set()
-        for territory_key, (layer_filter, priority) in self.territories.items():
-            agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
-            agents = [a for a in agents if str(a) not in assigned_agents]
-            if not agents: continue
-            assigned_agents.update(str(a) for a in agents)
-            
-            metrics = data_generator.compute_territory_metrics(agents, used_stems, data_generator.registry_by_path)
-            row = data_generator.build_territory_row(territory_key, metrics, priority)
-            if row: dashboard_rows.append(row)
-
-        total_row = data_generator.build_total_row(dashboard_rows)
+        # SOVEREIGN LOGIC: Generator now handles full processing from registry to rows.
+        # Eliminates discovery and classification logic from the L5 Safety Agent.
+        dashboard_rows, total_row = data_generator.generate_full_report_data()
         
         if markdown:
             self._save_modular_markdown_report(today, total_row, dashboard_rows)
