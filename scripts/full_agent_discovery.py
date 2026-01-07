@@ -123,6 +123,18 @@ def should_exclude_path(path: Path) -> bool:
 
 
 # ============================================================================
+# PHASE 4: CANONICAL LAYER BASE CLASSES (Gravity Enforcement)
+# ============================================================================
+LAYER_BASE_MAP = {
+    "L1": "L1CognitionBaseAgent",
+    "L2": "L2ExecutionBaseAgent",
+    "L3": "OrchestrationBaseAgent",
+    "L4": "StateBaseAgent",
+    "L5": "SafetyBaseAgent",
+}
+
+
+# ============================================================================
 # HARDENING: Agent Count Baseline Protection
 # ============================================================================
 # CRITICAL: These thresholds prevent catastrophic agent loss from bugs.
@@ -134,9 +146,9 @@ def should_exclude_path(path: Path) -> bool:
 #   - 2026-01-05: 312 agents (after string error caused 60+ agent loss - UNACCEPTABLE)
 #
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
-MINIMUM_AGENT_COUNT = 276  # Updated Jan 07, 2026 - Current agent count after recent changes
+MINIMUM_AGENT_COUNT = 276  # baseline locked after Phase 4 signal restoration
 MAX_AGENT_DROP_PERCENT = 0   # Zero tolerance for agent loss - strict enforcement
-EXPECTED_AGENT_COUNT = 276  # Updated to match current discovered agent count
+EXPECTED_AGENT_COUNT = 276  # Permanent baseline for clean L0-L5 structure
 # 2026-01-06: Finalized at 283 after surgical deduplication (removed 7 duplicates)
 # and bulk extraction (47 agents to 1:1 files). Net -2 from duplicate consolidation.
 # 2026-01-05: CONSOLIDATION MIGRATION - Relaxed thresholds to allow safe agent consolidation
@@ -352,7 +364,7 @@ def infer_layer(file_path: Path) -> str:
         if 'common' in path_str: return 'L2'  # Common utilities are execution-tier
         if 'sovereign_clients' in path_str: return 'L2'  # Clients are execution-tier
         if 'observability' in path_str: return 'L3'  # Observability is orchestration-tier
-        if 'utils' in path_str: return 'L2'  # Utils are execution-tier
+        if 'utils/core_extensions' in path_str: return 'L2'  # Relocated utils
         return 'L2'  # Default agentic_core to L2
     # Apps
     if 'apps_rg' in path_str: return 'apps_rg'
@@ -628,6 +640,25 @@ def calculate_docstring_coverage(class_node: ast.ClassDef) -> float:
             documented_methods += 1
     
     return round((documented_methods / len(methods)) * 100, 1)
+
+
+def check_proper_base(class_node: ast.ClassDef, layer: str) -> bool:
+    """Phase 4: Verify agent inherits from correct layer base class."""
+    expected = LAYER_BASE_MAP.get(layer)
+    if not expected:
+        return True  # Non-agent layers or unknown pass by default
+    bases = extract_bases(class_node)
+    return expected in bases
+
+
+def calculate_schema_strictness(class_node: ast.ClassDef) -> float:
+    """Phase 4: Hardened signal based on full type hint enforcement.
+    
+    Logic: Currently mirrors typing coverage but can be hardened to 
+    penalize missing 'Any' specifications or non-Sovereign types.
+    """
+    # Initial implementation leverages current typing coverage logic
+    return calculate_typing_coverage(class_node)
 
 
 def detect_observability(class_node: ast.ClassDef, source: str) -> dict:
@@ -1235,6 +1266,9 @@ def main():
             documented_pct = calculate_docstring_coverage(node)
             observability = detect_observability(node, source)
             cyclomatic_complexity = calculate_cyclomatic_complexity(node)
+            # NEW PHASE 4 SIGNALS
+            proper_base_class = check_proper_base(node, layer)
+            schema_strictness = calculate_schema_strictness(node)
             
             agents.append({
                 'class_name': node.name,
@@ -1262,6 +1296,8 @@ def main():
                 'documented_pct': documented_pct,
                 'observability': observability,
                 'cyclomatic_complexity': cyclomatic_complexity,
+                'proper_base_class': proper_base_class,  # Gravity signal
+                'schema_strictness': schema_strictness,  # Hardened signal
             })
     
     if incremental_mode:
