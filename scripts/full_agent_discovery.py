@@ -134,12 +134,11 @@ def should_exclude_path(path: Path) -> bool:
 #   - 2026-01-05: 312 agents (after string error caused 60+ agent loss - UNACCEPTABLE)
 #
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
-MINIMUM_AGENT_COUNT = 150  # TEMPORARY MIGRATION: Lowered for consolidation (restore to ~250 after Phase 8)
-MAX_AGENT_DROP_PERCENT = 30  # TEMPORARY: Allow larger drops during refactor
-EXPECTED_AGENT_COUNT = 200  # TEMPORARY: Expected during active consolidation phases
-# 2026-01-05: Updated from 312 to 316 after enabling discovery of L3-L5 BaseAgent classes
-# (+3 base agents: OrchestrationBaseAgent, StateBaseAgent, SafetyBaseAgent)
-# (+1 additional agent discovered during scan)
+MINIMUM_AGENT_COUNT = 260  # Temporarily lowered during strict enforcement rollout (Jan 06, 2026)
+MAX_AGENT_DROP_PERCENT = 10  # Temporarily relaxed during strict enforcement rollout
+EXPECTED_AGENT_COUNT = 283  # Accepted Jan 06, 2026 – post-bulk extraction (deduplicated duplicates)
+# 2026-01-06: Finalized at 283 after surgical deduplication (removed 7 duplicates)
+# and bulk extraction (47 agents to 1:1 files). Net -2 from duplicate consolidation.
 # 2026-01-05: CONSOLIDATION MIGRATION - Relaxed thresholds to allow safe agent consolidation
 
 
@@ -741,24 +740,23 @@ def count_loc(source: str) -> int:
 
 def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional[Path] = None) -> bool:
     """
-    HARDENED Multi-Factor Agent Classification (100% precision target).
+    STRICT Agent Classification (Post-Bulk Extraction Enforcement – Jan 06, 2026)
     
-    Uses layered checks: Path → Name → AST → Inheritance
+    Enforces canonical naming and 1:1 file structure after bulk extraction completion.
+    
+    STRICT REQUIREMENTS (ALL must pass):
+    1. Class name MUST end with 'Agent'
+    2. Class name MUST exactly match filename stem (1:1 enforcement)
+    3. Must have strong inheritance signal (agent base or healing chain)
     
     NEGATIVE SIGNALS (ANY one → immediate exclusion):
-    - Class name ends with 'Mixin'
-    - Class name contains 'Mixin' (e.g., HealerMixinHelper)
-    - Filename contains 'mixin' (handled by should_exclude_file)
+    - Class name contains 'Mixin'
     - Inherits from Protocol/ABC/BaseModel/etc.
+    - Non-agent infrastructure suffixes without 'Agent'
     - Path in excluded directories
     
-    POSITIVE SIGNALS (ALL required for base_class agents):
-    - Name ends with 'Agent' OR inherits from known agent base
-    - Has healing capability in MRO chain
-    - Defines required agent methods
-    
     Returns:
-        True if class is a concrete agent, False otherwise
+        True if class passes strict validation, False otherwise
     """
     name = class_node.name
     path_str = str(rel_path).replace('\\', '/').lower() if rel_path else ''
@@ -834,8 +832,9 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
             return False
 
     # =========================================================================
-    # LAYER 2: POSITIVE SIGNAL DETECTION
+    # LAYER 2: AGENT CANDIDATE DETECTION
     # =========================================================================
+    # First determine if this is even an agent candidate before applying strict rules
     
     method_names = extract_methods(class_node)
     in_tests = path_str.startswith('tests/') or '/tests/' in path_str
@@ -849,43 +848,47 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         'BaseAgent', 'SovereignBaseAgent',
     }
 
-    # Base strong signal (signals 1-3)
+    # Determine if this is an agent candidate
     has_strong_positive_signal = (
         name.endswith('Agent')
         or bool(bases & agent_bases)
-        or has_healing_in_chain(name, bases)  # MRO-aware healing is the gold standard for agent hierarchy
+        or has_healing_in_chain(name, bases)  # MRO-aware healing is the gold standard
     )
-
-    # Signal 4: Anchored role suffixes (historical recovery with precision)
-    # Only accept curated suffixes if structurally anchored (prevents false positives)
-    agent_role_suffixes = (
-        'Executor', 'Validator', 'Enforcer', 'Guardian', 'Sentinel',
-        'Inspector', 'Architect', 'Healer', 'Oracle',
-        'Curator', 'Router', 'Orchestrator', 'Conductor',
-        'Guard', 'Detector', 'Hunter', 'Fixer', 'Reconciler',
-        'Mapper', 'Classifier', 'Auditor', 'Monitor', 'Witness',
-    )
-    if name.endswith(agent_role_suffixes):
-        anchored = (
-            bool(bases & agent_bases)
-            or has_healing_in_chain(name, bases)
-        )
-        if anchored:
-            has_strong_positive_signal = True
-    # Rationale: This recovers ~150-200 legitimate hierarchical agents (e.g., Validators,
-    # Orchestrators) that contributed to the historical ~407 count, without admitting junk.
+    
+    # If not an agent candidate, exclude early
+    if not has_strong_positive_signal:
+        log.debug(f"EXCLUDED {name}: not an agent candidate (no Agent suffix, base class, or healing)")
+        return False
+    
+    # =========================================================================
+    # LAYER 3: STRICT ENFORCEMENT (Only for agent candidates)
+    # =========================================================================
+    
+    # STRICT REQUIREMENT 1: Must end with 'Agent' (for confirmed agent candidates)
+    if not name.endswith('Agent'):
+        log.info(f"VIOLATION {name} in {rel_path}: agent candidate lacks 'Agent' suffix. "
+                 f"Fix: Rename class to {name}Agent")
+        return False
+    
+    # STRICT REQUIREMENT 2: Class name MUST exactly match filename stem (1:1 enforcement)
+    if rel_path:
+        filename_stem = rel_path.stem
+        if name != filename_stem:
+            log.info(f"VIOLATION {name} in {rel_path}: "
+                     f"class name '{name}' does not match filename stem '{filename_stem}'. "
+                     "Enforced: one canonical agent per file. "
+                     f"Fix: Move to {name}.py or rename class to {filename_stem}")
+            return False
+    
+    # REMOVED: Legacy role-suffix recovery block (Signal 4)
+    # Post-bulk extraction, all agents must have explicit 'Agent' suffix.
 
     decorators = extract_decorators(class_node)
     # Conditional negative: dataclass/attrs only disqualifies absent strong positive
     if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators) and not has_strong_positive_signal:
         return False
 
-    # Remaining conditional negatives (low-risk name patterns)
-    if not has_strong_positive_signal:
-        if name.endswith(('Protocol', 'Error', 'Exception')):
-            return False
-        if name.startswith('I') and len(name) > 1 and name[1].isupper():
-            return False
+    # Remaining conditional negatives removed - strict enforcement already applied above
 
     # TEST HARNESS REJECTION (Strongest in tests/, weaker elsewhere)
     # - In tests/: unconditionally reject obvious harness patterns (Test* name or test_* methods)

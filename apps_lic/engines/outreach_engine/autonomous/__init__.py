@@ -10,37 +10,19 @@ Ported from Resume Engine autonomous module with outreach-specific adaptations.
 """
 
 from .agents import (
-    CampaignBalanceAgent,
-    CampaignPlannerAgent,
-    ContactValidatorAgent,
-    DeliverabilityAgent,
     LeadQualityAgent,
-    MessageComplianceAgent,
-    OutreachReflectionAgent,
     OutreachTestPilot,
-    TemplateOptimizerAgent,
 )
-from .outreach_base import OutreachAgent
 from .context import OutreachBudgetManager, OutreachEngineContext
-from .healing import (
+from .OutreachSignalRouterAgent import (
     OutreachAgentFactory,
     OutreachCycleResult,
     OutreachHealingCycle,
-    OutreachHealingOrchestratorAgent,
     OutreachHealingResult,
     OutreachHealingStrategy,
     OutreachSignalRouterAgent,
     run_outreach_healing_mission,
 )
-from .learning import (
-    OutreachConfidenceScorer,
-    OutreachLearningAgent,
-    OutreachLearningLoop,
-    OutreachMemoryPersistence,
-)
-from .observability import (
-    OutreachAuditReporter,
-    OutreachExecutionTracer,
     OutreachMetricsCollector,
     OutreachPhase5OrchestratorAgent,
 )
@@ -50,20 +32,11 @@ from .proactive import (
     OutreachHandoffReason,
     OutreachHandoffRequest,
     OutreachPredictiveHandoff,
-    OutreachProactiveAgent,
     OutreachProactiveScheduler,
     OutreachProactiveTask,
     OutreachTaskPriority,
 )
-
-__all__ = [
-    # Context
-    "OutreachEngineContext",
-    "OutreachBudgetManager",
-    # Base
-    "OutreachAgent",
-    # Agents
-    "LeadQualityAgent",
+from .OutreachProactiveAgent import OutreachProactiveAgent
     "ContactValidatorAgent",
     "MessageComplianceAgent",
     "TemplateOptimizerAgent",

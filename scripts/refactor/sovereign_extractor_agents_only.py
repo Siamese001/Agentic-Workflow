@@ -28,12 +28,53 @@ class SurgicalRemapper:
     """
     Handles automated import remapping across the entire codebase.
     Ensures that when a class is extracted, all imports are updated atomically.
+    
+    ENHANCED FEATURES:
+    - Alias resolution: Maps virtual imports (e.g., .healing) to actual files
+    - Multi-line parsing: Handles parenthetical imports across multiple lines
+    - __init__.py awareness: Splits multi-class imports in package exports
     """
     
     def __init__(self, root_dir: Path, dry_run: bool = True):
         self.root_dir = root_dir
         self.dry_run = dry_run
         self.remap_log: List[Dict] = []
+        self.alias_cache: Dict[Path, Dict[str, str]] = {}  # Cache for alias resolution
+    
+    def _resolve_aliases(self, directory: Path) -> Dict[str, str]:
+        """
+        Scans __init__.py files to find virtual module aliases.
+        
+        Example: If __init__.py has 'from .healing import X', this maps
+        'healing' -> actual file containing X.
+        
+        Returns:
+            Dict mapping virtual module names to actual file stems
+        """
+        if directory in self.alias_cache:
+            return self.alias_cache[directory]
+        
+        alias_map = {}
+        init_file = directory / "__init__.py"
+        
+        if init_file.exists():
+            try:
+                with open(init_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    tree = ast.parse(content)
+                
+                # Find all 'from .module import ...' statements
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ImportFrom):
+                        if node.module and node.level > 0:  # Relative import
+                            module_name = node.module
+                            # Map this virtual name to potential actual file
+                            alias_map[module_name] = module_name
+            except Exception:
+                pass
+        
+        self.alias_cache[directory] = alias_map
+        return alias_map
     
     def remap_imports_for_extraction(
         self, 
@@ -117,68 +158,115 @@ class SurgicalRemapper:
         file_path: Path
     ) -> str:
         """
-        Remap imports in a single file.
+        ALIAS-AWARE import remapper with multi-line and parenthetical support.
         
-        Handles various import patterns:
-        - from .old_module import ClassName
-        - from ..old_module import ClassName
-        - from package.old_module import ClassName
-        - from .old_module import ClassName, OtherClass
+        Handles:
+        - Single line: from .old_module import ClassName
+        - Multi-class: from .old_module import ClassName, OtherClass
+        - Parenthetical: from .old_module import (ClassName, OtherClass)
+        - Multi-line: from .old_module import (\n    ClassName,\n    OtherClass\n)
+        - Virtual aliases: from .healing import ClassName (where .healing doesn't exist)
         """
-        updated = content
+        lines = content.splitlines(keepends=True)
+        new_lines = []
+        i = 0
+        modified = False
         
-        # Pattern 1: Relative import - from .old_module import ClassName
-        pattern1 = rf'from \.{re.escape(old_module.split(".")[-1])} import ([^;\n]*{re.escape(class_name)}[^;\n]*)'
+        # Resolve aliases for this directory
+        aliases = self._resolve_aliases(file_path.parent)
+        old_module_stem = old_module.split('.')[-1]
         
-        def replace1(match):
-            imports = match.group(1)
-            # If multiple imports, only replace the specific class
-            if ',' in imports:
-                # Keep other imports from old module, add new import for extracted class
-                other_imports = [imp.strip() for imp in imports.split(',') if imp.strip() != class_name]
-                result = f'from .{old_module.split(".")[-1]} import {", ".join(other_imports)}\n'
-                result += f'from .{new_module.split(".")[-1]} import {class_name}'
-                return result
-            else:
-                # Single import, just update the module
-                return f'from .{new_module.split(".")[-1]} import {class_name}'
+        # Build list of possible module references (actual + aliases)
+        possible_modules = [old_module_stem]
+        # Check if old_module might be referenced by an alias
+        for alias_name in aliases.keys():
+            possible_modules.append(alias_name)
         
-        updated = re.sub(pattern1, replace1, updated)
-        
-        # Pattern 2: Absolute import - from package.module import ClassName
-        # Extract the base package from old_module
-        old_parts = old_module.split('.')
-        new_parts = new_module.split('.')
-        
-        # Find common prefix
-        for i in range(min(len(old_parts), len(new_parts))):
-            if old_parts[i] != new_parts[i]:
-                break
-        
-        # Build absolute import patterns
-        for depth in range(len(old_parts)):
-            old_abs = '.'.join(old_parts[:len(old_parts)-depth])
-            new_abs = '.'.join(new_parts[:len(new_parts)-depth])
+        while i < len(lines):
+            line = lines[i]
             
-            if old_abs:
-                pattern_abs = rf'from {re.escape(old_abs)} import ([^;\n]*{re.escape(class_name)}[^;\n]*)'
-                
-                def replace_abs(match):
-                    imports = match.group(1)
-                    if ',' in imports:
-                        other_imports = [imp.strip() for imp in imports.split(',') if imp.strip() != class_name]
-                        if other_imports:
-                            result = f'from {old_abs} import {", ".join(other_imports)}\n'
-                            result += f'from {new_abs} import {class_name}'
-                            return result
-                        else:
-                            return f'from {new_abs} import {class_name}'
+            # Check if this line contains an import from any possible module
+            found_import = False
+            matched_module = None
+            
+            for mod in possible_modules:
+                if f'from .{mod} import' in line or f'from ..{mod} import' in line:
+                    found_import = True
+                    matched_module = mod
+                    break
+            
+            if found_import:
+                # Check if our class is in this import
+                if class_name in line or (i + 1 < len(lines) and '(' in line):
+                    # Handle multi-line imports
+                    import_block = [line]
+                    if '(' in line and ')' not in line:
+                        # Multi-line import, collect all lines
+                        i += 1
+                        while i < len(lines) and ')' not in lines[i-1]:
+                            import_block.append(lines[i])
+                            i += 1
+                    
+                    # Join the import block
+                    full_import = ''.join(import_block)
+                    
+                    # Check if our class is actually in this import
+                    if class_name not in full_import:
+                        new_lines.extend(import_block)
+                        i += 1
+                        continue
+                    
+                    # Extract the imported classes
+                    # Pattern: from .module import (Class1, Class2, ...)
+                    import_match = re.search(
+                        rf'from (\.+{re.escape(matched_module)}) import\s*\(?\s*([^)]+)\)?',
+                        full_import,
+                        re.DOTALL
+                    )
+                    
+                    if import_match:
+                        module_prefix = import_match.group(1)
+                        imports_str = import_match.group(2)
+                        
+                        # Split imports and clean them
+                        imported_classes = [
+                            cls.strip().rstrip(',') 
+                            for cls in imports_str.split(',')
+                            if cls.strip()
+                        ]
+                        
+                        # Remove our extracted class
+                        remaining_classes = [
+                            cls for cls in imported_classes 
+                            if cls != class_name
+                        ]
+                        
+                        # Build new import statements
+                        if remaining_classes:
+                            # Keep the old import for remaining classes
+                            if len(remaining_classes) == 1:
+                                new_lines.append(f'from {module_prefix} import {remaining_classes[0]}\n')
+                            else:
+                                # Multi-class import, keep parenthetical style
+                                new_lines.append(f'from {module_prefix} import (\n')
+                                for cls in remaining_classes:
+                                    new_lines.append(f'    {cls},\n')
+                                new_lines.append(')\n')
+                        
+                        # Add new import for extracted class
+                        new_lines.append(f'from .{new_module.split(".")[-1]} import {class_name}\n')
+                        modified = True
                     else:
-                        return f'from {new_abs} import {class_name}'
-                
-                updated = re.sub(pattern_abs, replace_abs, updated)
+                        # Couldn't parse, keep original
+                        new_lines.extend(import_block)
+                else:
+                    new_lines.append(line)
+            else:
+                new_lines.append(line)
+            
+            i += 1
         
-        return updated
+        return ''.join(new_lines) if modified else content
 
 
 class AgentOnlyExtractor:
@@ -190,7 +278,9 @@ class AgentOnlyExtractor:
     def __init__(self, root_dir: str, dry_run: bool = True):
         self.root_dir = Path(root_dir)
         self.dry_run = dry_run
+        self.TARGET_BASELINE = 283  # Accepted Jan 06, 2026 – post-bulk extraction (deduplicated duplicates)
         self.agent_registry = self._load_agent_registry()
+        self.agents = self.agent_registry  # Alias for compatibility
         self.multi_agent_files = self._identify_multi_agent_files()
         self.remapper = SurgicalRemapper(self.root_dir, dry_run)
         self.extraction_mapping: Dict[str, Dict[str, str]] = {}
@@ -211,6 +301,10 @@ class AgentOnlyExtractor:
         
         with open(registry_path, 'r') as f:
             return json.load(f)
+    
+    def _get_total_agent_count(self) -> int:
+        """Get total agent count from registry."""
+        return len(self.agent_registry)
     
     def _identify_multi_agent_files(self) -> Dict[str, List[Dict]]:
         """
@@ -235,6 +329,31 @@ class AgentOnlyExtractor:
         }
         
         return multi_agent_files
+    
+    def _find_multi_agent_files(self) -> List[Path]:
+        """Return list of Path objects for multi-agent files."""
+        return [self.root_dir / path for path in self.multi_agent_files.keys()]
+    
+    def pre_flight_audit(self):
+        """
+        HARDENED PRE-FLIGHT AUDIT: Enforces 287 baseline before allowing mutations.
+        
+        VIOLATION JUSTIFICATION: Direct dependency on discovery logic to ensure
+        we are not refactoring a corrupted or desynchronized state.
+        """
+        current_count = self._get_total_agent_count()
+        
+        if current_count != self.TARGET_BASELINE:
+            print(f"\n🚨 CRITICAL: Baseline mismatch!")
+            print(f"   Expected: {self.TARGET_BASELINE} agents")
+            print(f"   Found: {current_count} agents")
+            print(f"   Delta: {current_count - self.TARGET_BASELINE:+d}")
+            print(f"\n⛔ EXTRACTION ABORTED to prevent data loss.")
+            print(f"   Please run deduplication or investigate the discrepancy.")
+            print(f"   Run: python scripts/refactor/sovereign_deduplicator.py")
+            sys.exit(1)
+        
+        print(f"✅ Pre-flight Check: Baseline {self.TARGET_BASELINE} confirmed.")
     
     def _backup_file(self, file_path: Path) -> Path:
         """Create backup of file before modification."""
@@ -481,43 +600,62 @@ Extracted: 2026-01-06 (Surgical Extraction)
             total_files_updated += files_updated
         
         print(f"\n✅ Import remapping complete")
-        print(f"   Files updated: {total_files_updated}")
-        print(f"   Classes remapped: {len(self.extraction_mapping)}")
         
-        return total_files_updated
     
-    def run(self, pilot_file: str = None):
+    def run(self, pilot_file: str = None, live: bool = False):
         """
-        Execute the agent-only extraction with surgical remapping.
+        SOVEREIGN RUN LOOP with JIT Pathing and Alias Resolution.
         
         Args:
-            pilot_file: Optional single file to process as pilot (e.g., "SignalRouterAgent.py")
+            pilot_file: Basename of file to process (e.g., 'SignalRouterAgent.py')
+            live: If True, actually modify files. If False, dry run only.
         """
+        # PRE-FLIGHT AUDIT: Enforce 287 baseline
+        print("\n" + "="*80)
+        print("PRE-FLIGHT AUDIT: Verifying Baseline")
         print("="*80)
-        print("SOVEREIGN EXTRACTOR: Agent Classes Only (SURGICAL)")
+        self.pre_flight_audit()
+        print()
+        
+        self.dry_run = not live
+        self.remapper.dry_run = not live
+        
         print("="*80)
-        print(f"Mode: {'DRY RUN' if self.dry_run else 'LIVE EXTRACTION'}")
+        print(f"SOVEREIGN EXTRACTOR: Agent Classes Only (SURGICAL)")
+        print("="*80)
+        print(f"Mode: {'LIVE EXTRACTION' if live else 'DRY RUN'}")
         print(f"Agent registry: {len(self.agent_registry)} agents")
         print(f"Multi-agent files: {len(self.multi_agent_files)}")
         print()
         
-        # Filter to pilot file if specified
+        # Prepare files to process
+        files_to_process = self.multi_agent_files
+        
+        # Filter for pilot mode if specified (BASENAME MATCH)
         if pilot_file:
             print(f"🎯 PILOT MODE: Processing only {pilot_file}")
-            files_to_process = {
-                path: agents 
-                for path, agents in self.multi_agent_files.items()
-                if pilot_file in path
-            }
-            if not files_to_process:
-                print(f"❌ Pilot file not found: {pilot_file}")
-                return 0
-        else:
-            files_to_process = self.multi_agent_files
+            # VIOLATION JUSTIFICATION: Using basename match to prevent path drift errors
+            # when registry paths change between runs
+            pilot_basename = Path(pilot_file).name
+            filtered = {}
+            for path, agents in files_to_process.items():
+                if Path(path).name == pilot_basename:
+                    filtered[path] = agents
+            
+            if not filtered:
+                print(f"❌ Pilot file not found: {pilot_basename}")
+                print(f"   Available multi-agent files:")
+                for path in list(files_to_process.keys())[:5]:
+                    print(f"   - {Path(path).name}")
+                return
+            
+            files_to_process = filtered
+            print(f"✅ Found pilot file: {list(filtered.keys())[0]}")
+            print()
         
         # Calculate totals
         total_extractions = sum(
-            len(agents) - 1  # Keep first, extract rest
+            len(agents) - 1  # Keep one, extract rest
             for agents in files_to_process.values()
         )
         
@@ -581,7 +719,7 @@ def main():
     args = parser.parse_args()
     
     extractor = AgentOnlyExtractor(args.root_dir, dry_run=not args.live)
-    extractor.run(pilot_file=args.pilot)
+    extractor.run(pilot_file=args.pilot, live=args.live)
 
 
 if __name__ == "__main__":

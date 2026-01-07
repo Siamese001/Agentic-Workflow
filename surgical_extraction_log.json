@@ -1,0 +1,398 @@
+{
+  "dry_run": false,
+  "pilot_file": null,
+  "extractions": {
+    "ConsolidatedOrchestratorAgent": {
+      "old_module": "OrchestratorAgentAndScopeManagerAgent",
+      "new_module": "ConsolidatedOrchestratorAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\OrchestratorAgentAndScopeManagerAgent.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\ConsolidatedOrchestratorAgent.py"
+    },
+    "AsyncBlockingValidatorAgent": {
+      "old_module": "PrintStatementValidatorAgent",
+      "new_module": "AsyncBlockingValidatorAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\AsyncBlockingValidatorAgent.py"
+    },
+    "BareExceptValidatorAgent": {
+      "old_module": "PrintStatementValidatorAgent",
+      "new_module": "BareExceptValidatorAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py"
+    },
+    "DangerousBuiltinsValidatorAgent": {
+      "old_module": "PrintStatementValidatorAgent",
+      "new_module": "DangerousBuiltinsValidatorAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\DangerousBuiltinsValidatorAgent.py"
+    },
+    "DebuggerValidatorAgent": {
+      "old_module": "PrintStatementValidatorAgent",
+      "new_module": "DebuggerValidatorAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\DebuggerValidatorAgent.py"
+    },
+    "EmptyExceptValidatorAgent": {
+      "old_module": "PrintStatementValidatorAgent",
+      "new_module": "EmptyExceptValidatorAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\EmptyExceptValidatorAgent.py"
+    },
+    "EvalExecValidatorAgent": {
+      "old_module": "PrintStatementValidatorAgent",
+      "new_module": "EvalExecValidatorAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\EvalExecValidatorAgent.py"
+    },
+    "ExternalHttpValidatorAgent": {
+      "old_module": "PrintStatementValidatorAgent",
+      "new_module": "ExternalHttpValidatorAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\PrintStatementValidatorAgent.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\ExternalHttpValidatorAgent.py"
+    },
+    "SemanticMapperAgent": {
+      "old_module": "canon_agents_pattern",
+      "new_module": "SemanticMapperAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\SemanticMapperAgent.py"
+    },
+    "UiValidationAgent": {
+      "old_module": "canon_agents_pattern",
+      "new_module": "UiValidationAgent",
+      "old_file": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py",
+      "new_file": "agentic_core\\L1_cognition\\thought_engine\\UiValidationAgent.py"
+    },
+    "DocEnforcerAgent": {
+      "old_module": "CartographerAgent",
+      "new_module": "DocEnforcerAgent",
+      "old_file": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
+      "new_file": "agentic_core\\L2_execution\\ToolRegistry\\DocEnforcerAgent.py"
+    },
+    "NamingEnforcerAgent": {
+      "old_module": "CartographerAgent",
+      "new_module": "NamingEnforcerAgent",
+      "old_file": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
+      "new_file": "agentic_core\\L2_execution\\ToolRegistry\\NamingEnforcerAgent.py"
+    },
+    "OmniContextAgent": {
+      "old_module": "CartographerAgent",
+      "new_module": "OmniContextAgent",
+      "old_file": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
+      "new_file": "agentic_core\\L2_execution\\ToolRegistry\\OmniContextAgent.py"
+    },
+    "StrategistAgent": {
+      "old_module": "CartographerAgent",
+      "new_module": "StrategistAgent",
+      "old_file": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
+      "new_file": "agentic_core\\L2_execution\\ToolRegistry\\StrategistAgent.py"
+    },
+    "TypeEnforcerAgent": {
+      "old_module": "CartographerAgent",
+      "new_module": "TypeEnforcerAgent",
+      "old_file": "agentic_core\\L2_execution\\ToolRegistry\\CartographerAgent.py",
+      "new_file": "agentic_core\\L2_execution\\ToolRegistry\\TypeEnforcerAgent.py"
+    },
+    "BenchmarkingAgent": {
+      "old_module": "HistorianAgent",
+      "new_module": "BenchmarkingAgent",
+      "old_file": "agentic_core\\L2_execution\\ToolRegistry\\HistorianAgent.py",
+      "new_file": "agentic_core\\L2_execution\\ToolRegistry\\BenchmarkingAgent.py"
+    },
+    "ReflectionAgent": {
+      "old_module": "ContentQualityAgent",
+      "new_module": "ReflectionAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\ReflectionAgent.py"
+    },
+    "InternalAgent": {
+      "old_module": "campaign_rag",
+      "new_module": "InternalAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\rag\\InternalAgent.py"
+    },
+    "OrganizationAgent": {
+      "old_module": "campaign_rag",
+      "new_module": "OrganizationAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\rag\\OrganizationAgent.py"
+    },
+    "RecipientAgent": {
+      "old_module": "campaign_rag",
+      "new_module": "RecipientAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\rag\\RecipientAgent.py"
+    },
+    "S2_SupervisorAgent": {
+      "old_module": "campaign_rag",
+      "new_module": "S2_SupervisorAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\rag\\S2_SupervisorAgent.py"
+    },
+    "DAGManagerAgent": {
+      "old_module": "DAGMutatorAgent",
+      "new_module": "DAGManagerAgent",
+      "old_file": "agentic_core\\L3_orchestration\\workflow_engines\\DAGMutatorAgent.py",
+      "new_file": "agentic_core\\L3_orchestration\\workflow_engines\\DAGManagerAgent.py"
+    },
+    "NervousSystemAgent": {
+      "old_module": "NervousSystemPhaseOrchestratorAgent",
+      "new_module": "NervousSystemAgent",
+      "old_file": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemPhaseOrchestratorAgent.py",
+      "new_file": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py"
+    },
+    "DeadlockDetectorAgent": {
+      "old_module": "TaskMonitorAgent",
+      "new_module": "DeadlockDetectorAgent",
+      "old_file": "agentic_core\\L3_orchestration\\workflow_engines\\TaskMonitorAgent.py",
+      "new_file": "agentic_core\\L3_orchestration\\workflow_engines\\DeadlockDetectorAgent.py"
+    },
+    "RegressionOracleAgent": {
+      "old_module": "MethodChangeDetectorAgent",
+      "new_module": "RegressionOracleAgent",
+      "old_file": "agentic_core\\L5_safety\\validators\\MethodChangeDetectorAgent.py",
+      "new_file": "agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py"
+    },
+    "TypeHintFixerAgent": {
+      "old_module": "TypeHintEnforcementAgent",
+      "new_module": "TypeHintFixerAgent",
+      "old_file": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
+      "new_file": "agentic_core\\L5_safety\\validators\\TypeHintFixerAgent.py"
+    },
+    "ASCIIEnforcerAgent": {
+      "old_module": "ContentCleanlinessValidatorAgent",
+      "new_module": "ASCIIEnforcerAgent",
+      "old_file": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
+      "new_file": "apps_lic\\domain\\validators\\ASCIIEnforcerAgent.py"
+    },
+    "MessageDiversityValidatorAgent": {
+      "old_module": "ContentCleanlinessValidatorAgent",
+      "new_module": "MessageDiversityValidatorAgent",
+      "old_file": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
+      "new_file": "apps_lic\\domain\\validators\\MessageDiversityValidatorAgent.py"
+    },
+    "PlaceholderDetectorAgent": {
+      "old_module": "ContentCleanlinessValidatorAgent",
+      "new_module": "PlaceholderDetectorAgent",
+      "old_file": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
+      "new_file": "apps_lic\\domain\\validators\\PlaceholderDetectorAgent.py"
+    },
+    "ValidationAgent": {
+      "old_module": "ContentCleanlinessValidatorAgent",
+      "new_module": "ValidationAgent",
+      "old_file": "apps_lic\\domain\\validators\\ContentCleanlinessValidatorAgent.py",
+      "new_file": "apps_lic\\domain\\validators\\ValidationAgent.py"
+    },
+    "CampaignBalanceAgent": {
+      "old_module": "LeadQualityAgent",
+      "new_module": "CampaignBalanceAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\autonomous\\CampaignBalanceAgent.py"
+    },
+    "CampaignPlannerAgent": {
+      "old_module": "LeadQualityAgent",
+      "new_module": "CampaignPlannerAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\autonomous\\CampaignPlannerAgent.py"
+    },
+    "ContactValidatorAgent": {
+      "old_module": "LeadQualityAgent",
+      "new_module": "ContactValidatorAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\autonomous\\ContactValidatorAgent.py"
+    },
+    "DeliverabilityAgent": {
+      "old_module": "LeadQualityAgent",
+      "new_module": "DeliverabilityAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\autonomous\\DeliverabilityAgent.py"
+    },
+    "MessageComplianceAgent": {
+      "old_module": "LeadQualityAgent",
+      "new_module": "MessageComplianceAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\autonomous\\MessageComplianceAgent.py"
+    },
+    "OutreachReflectionAgent": {
+      "old_module": "LeadQualityAgent",
+      "new_module": "OutreachReflectionAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\autonomous\\LeadQualityAgent.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachReflectionAgent.py"
+    },
+    "TemplateOptimizerAgent": {
+      "old_module": "ContentQualityAgent",
+      "new_module": "TemplateOptimizerAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\TemplateOptimizerAgent.py"
+    },
+    "OutreachProactiveAgent": {
+      "old_module": "OutreachCapabilityMonitorAgent",
+      "new_module": "OutreachProactiveAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachCapabilityMonitorAgent.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachProactiveAgent.py"
+    },
+    "OutreachHealingOrchestratorAgent": {
+      "old_module": "OutreachSignalRouterAgent",
+      "new_module": "OutreachHealingOrchestratorAgent",
+      "old_file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "new_file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachHealingOrchestratorAgent.py"
+    },
+    "ProactiveAgent": {
+      "old_module": "CapabilityMonitorAgent",
+      "new_module": "ProactiveAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\CapabilityMonitorAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\ProactiveAgent.py"
+    },
+    "ATSCompatibilityAgent": {
+      "old_module": "ContentQualityAgent",
+      "new_module": "ATSCompatibilityAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\ATSCompatibilityAgent.py"
+    },
+    "BrandComplianceAgent": {
+      "old_module": "ContentQualityAgent",
+      "new_module": "BrandComplianceAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\BrandComplianceAgent.py"
+    },
+    "FactCheckAgent": {
+      "old_module": "ContentQualityAgent",
+      "new_module": "FactCheckAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\FactCheckAgent.py"
+    },
+    "SectionBalanceAgent": {
+      "old_module": "ContentQualityAgent",
+      "new_module": "SectionBalanceAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\SectionBalanceAgent.py"
+    },
+    "StrategicPlannerAgent": {
+      "old_module": "ContentQualityAgent",
+      "new_module": "StrategicPlannerAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\ContentQualityAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\StrategicPlannerAgent.py"
+    },
+    "Phase7OrchestratorAgent": {
+      "old_module": "StrictDocEnforcerAgent",
+      "new_module": "Phase7OrchestratorAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\StrictDocEnforcerAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\Phase7OrchestratorAgent.py"
+    },
+    "Phase6OrchestratorAgent": {
+      "old_module": "UnifiedOrchestratorAgent",
+      "new_module": "Phase6OrchestratorAgent",
+      "old_file": "apps_rg\\engines\\resume_engine\\autonomous\\UnifiedOrchestratorAgent.py",
+      "new_file": "apps_rg\\engines\\resume_engine\\autonomous\\Phase6OrchestratorAgent.py"
+    }
+  },
+  "import_remaps": [
+    {
+      "file": "archives\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\__init__.py",
+      "class": "StrategistAgent",
+      "old_module": "CartographerAgent",
+      "new_module": "StrategistAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "class": "ReflectionAgent",
+      "old_module": "ContentQualityAgent",
+      "new_module": "ReflectionAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\__init__.py",
+      "class": "ReflectionAgent",
+      "old_module": "ContentQualityAgent",
+      "new_module": "ReflectionAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "class": "CampaignBalanceAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "CampaignBalanceAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\__init__.py",
+      "class": "CampaignBalanceAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "CampaignBalanceAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "class": "CampaignPlannerAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "CampaignPlannerAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\__init__.py",
+      "class": "CampaignPlannerAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "CampaignPlannerAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "class": "ContactValidatorAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "ContactValidatorAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\__init__.py",
+      "class": "ContactValidatorAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "ContactValidatorAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "class": "DeliverabilityAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "DeliverabilityAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\__init__.py",
+      "class": "DeliverabilityAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "DeliverabilityAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "class": "MessageComplianceAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "MessageComplianceAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\__init__.py",
+      "class": "MessageComplianceAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "MessageComplianceAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "class": "OutreachReflectionAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "OutreachReflectionAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\__init__.py",
+      "class": "OutreachReflectionAgent",
+      "old_module": "LeadQualityAgent",
+      "new_module": "OutreachReflectionAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\OutreachSignalRouterAgent.py",
+      "class": "TemplateOptimizerAgent",
+      "old_module": "ContentQualityAgent",
+      "new_module": "TemplateOptimizerAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\__init__.py",
+      "class": "TemplateOptimizerAgent",
+      "old_module": "ContentQualityAgent",
+      "new_module": "TemplateOptimizerAgent"
+    },
+    {
+      "file": "apps_lic\\engines\\outreach_engine\\autonomous\\__init__.py",
+      "class": "OutreachProactiveAgent",
+      "old_module": "OutreachCapabilityMonitorAgent",
+      "new_module": "OutreachProactiveAgent"
+    }
+  ]
+}
