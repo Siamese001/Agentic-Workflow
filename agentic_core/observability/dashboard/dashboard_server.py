@@ -12,7 +12,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pathlib import Path
 import logging
-from agentic_core.observability.metrics.shared_counters import get_layer_counts
+# VIOLATION JUSTIFICATION: Exclusive reliance on the 283-agent SSOT Loader
+# prevents metric drift between the filesystem and the UI.
+from .dashboard_loader import load_agents, validate_sovereign_integrity, get_metrics_summary
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     get_validated_project_root,
     safe_path_join,
@@ -64,20 +66,31 @@ async def root():
 
 @app.get("/api/metrics")
 async def get_metrics():
-    """Get layer activation counts for CoverageAgent and dashboard visualization"""
+    """
+    Get canonical metrics from the 283-agent Sovereign Registry.
+    All data sourced from agent_discovery_full.json SSOT.
+    """
     try:
-        layer_counts = get_layer_counts()
+        agents = load_agents(refresh_if_stale=True)
+        metrics = get_metrics_summary(agents)
+        
         return {
             "status": "success",
-            "layer_counts": layer_counts,
-            "total_activations": sum(layer_counts.values())
+            "total_agents": metrics["total_agents"],
+            "healing_percentage": metrics["healing_percentage"],
+            "testing_percentage": metrics["testing_percentage"],
+            "layer_distribution": metrics["layer_distribution"],
+            "top_folders": metrics["top_folders"],
+            "baseline_status": metrics["baseline_status"],
+            "expected_count": 283
         }
     except Exception as e:
         logger.error(f"Error fetching metrics: {e}")
         return {
             "status": "error",
             "message": str(e),
-            "layer_counts": {}
+            "total_agents": 0,
+            "layer_distribution": {}
         }
 
 @app.get("/api/health")
@@ -106,6 +119,17 @@ async def get_config():
 
 if __name__ == "__main__":
     import uvicorn
+    
+    # Sovereign baseline integrity check on startup
+    logger.info("Performing sovereign baseline integrity check...")
+    if not validate_sovereign_integrity():
+        logger.error(
+            "FATAL: Sovereign baseline integrity check FAILED. "
+            "Expected 283 agents. Run scripts/full_agent_discovery.py to verify."
+        )
+        raise RuntimeError("Dashboard startup aborted: Agent registry integrity violation")
+    
+    logger.info("✓ Sovereign baseline integrity verified (283 agents)")
     logger.info(f"Starting dashboard server from {DASHBOARD_DIR}")
-    logger.info(f"Static files directory: {STATIC_DIR}")
+    logger.info(f"Reports directory: {REPORTS_DIR}")
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
