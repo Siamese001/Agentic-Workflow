@@ -21,6 +21,7 @@ VIOLATION TYPES:
 """
 import re
 import logging
+from collections import defaultdict
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
@@ -79,17 +80,33 @@ class GravityValidatorAgent(SubatomicTestingMixin):
         Returns:
             List of GravityViolation objects with severity and suggested healing
         """
-        violations = []
+        raw_violations = []
         
         try:
             content = file_path.read_text(encoding="utf-8")
             lines = content.splitlines()
             current_rank = self._get_layer_rank(str(file_path))
+            in_docstring = False
             
-            # Pattern 1: Intra-core and Upward Leak Detection
-            # Matches: 'import agentic_core.LX_name' or 'from agentic_core.LX_name'
             for line_num, line in enumerate(lines, 1):
-                # Find all agentic_core layer imports
+                clean_line = line.strip()
+
+                # MULTI-LINE DOCSTRING TRACKING
+                if clean_line.count('"""') % 2 != 0 or clean_line.count("'''") % 2 != 0:
+                    in_docstring = not in_docstring
+                    continue
+                
+                # SKIPS: Ignore comments, empty lines, and docstring interiors
+                if not clean_line or clean_line.startswith("#") or in_docstring:
+                    continue
+                
+                # HARDENING: Ensure we are looking at an actual import statement, not a string
+                if not (clean_line.startswith("import ") or clean_line.startswith("from ")):
+                    # Exception: check if it's an inline import (rare but possible)
+                    if "import agentic_core" not in clean_line:
+                        continue
+
+                # Pattern 1: Intra-core and Upward Leak Detection
                 imports = re.findall(r"(?:from|import)\s+agentic_core\.(L\d+_\w+)", line)
                 
                 for imp_layer in imports:
@@ -99,7 +116,7 @@ class GravityValidatorAgent(SubatomicTestingMixin):
 
                     # 1. Intra-core violation (importing from lower-authority layer)
                     if current_rank != -1 and imp_rank > current_rank:
-                        violations.append(GravityViolation(
+                        raw_violations.append(GravityViolation(
                             file_path=file_path,
                             import_line=line.strip(),
                             violation_type="intra_core",
@@ -112,7 +129,7 @@ class GravityValidatorAgent(SubatomicTestingMixin):
                     
                     # 2. Upward Leak (Low-layer importing L4/L5)
                     if imp_layer in ["L4_state", "L5_safety"] and current_rank < 3:
-                        violations.append(GravityViolation(
+                        raw_violations.append(GravityViolation(
                             file_path=file_path,
                             import_line=line.strip(),
                             violation_type="upward_leak",
@@ -125,9 +142,9 @@ class GravityValidatorAgent(SubatomicTestingMixin):
 
                 # 3. Upstream → Downstream (Core → Apps/Tests)
                 if "agentic_core" in file_path.parts:
-                    downstream_match = re.search(r"^(?:import|from)\s+(apps_\w+|tests)", line)
+                    downstream_match = re.search(r"^(?:import|from)\s+(apps_\w+|tests)", clean_line)
                     if downstream_match:
-                        violations.append(GravityViolation(
+                        raw_violations.append(GravityViolation(
                             file_path=file_path,
                             import_line=line.strip(),
                             violation_type="upstream_downstream",
@@ -140,8 +157,15 @@ class GravityValidatorAgent(SubatomicTestingMixin):
                         
         except Exception as e:
             self.logger.error(f"Failed to scan {file_path}: {e}")
+
+        # DEDUPLICATION: If multiple violations on one line, keep only the highest severity
+        deduped = {}
+        for v in raw_violations:
+            key = (v.line_number, v.import_line)
+            if key not in deduped or v.severity > deduped[key].severity:
+                deduped[key] = v
             
-        return violations
+        return list(deduped.values())
 
     async def validate_file(self, file_path: Path) -> Dict[str, Any]:
         """
