@@ -413,8 +413,8 @@ class StateManager:
 # Import for backward compatibility
 from .StateValidatorAgent import StateValidatorAgent as StateValidator
 
-# Legacy class removed - use StateValidatorAgent instead
-class _StateValidator_Deprecated(HealerMixin, MCPHardenedMixin):
+# Legacy class - use StateValidatorAgent instead
+class StateValidatorDeprecatedAgent(HealerMixin, MCPHardenedMixin):
     """
     Validates state files against expected schemas
     """

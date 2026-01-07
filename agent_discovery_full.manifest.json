@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-01-07T00:28:14.646534Z",
-  "scan_duration_seconds": 16.86,
-  "agent_count": 272,
-  "content_hash": "sha256:0b8ee85978a9c65074b2e9a1213a46fe76b3df657b228a0be1d935d459068ffa",
+  "generated_at": "2026-01-07T00:39:56.166452Z",
+  "scan_duration_seconds": 17.88,
+  "agent_count": 273,
+  "content_hash": "sha256:44504a960ec1f4b9d8b5d1256fa944493b8c4537e6f27326116517bdd20e9ab6",
   "layer_breakdown": {
     "L0": 11,
     "L1": 25,
-    "L2": 52,
+    "L2": 53,
     "L3": 54,
     "L4": 13,
     "L5": 57,
@@ -15,11 +15,11 @@
     "apps_shared": 1
   },
   "parse_errors_count": 0,
-  "minimum_agent_count": 260,
-  "expected_agent_count": 283,
+  "minimum_agent_count": 265,
+  "expected_agent_count": 273,
   "validation": {
     "passed": true,
-    "threshold": 260
+    "threshold": 265
   },
   "file_hashes": {
     "analyze_multi_class_files.py": "3cd2b760a5ae52e536ce986ba28eae45",
@@ -621,7 +621,7 @@
     "agentic_core/L2_execution/ToolRegistry/McpConnectionManagerAgent.py": "ddd1461c818bed5e92d56f3d9016bb93",
     "agentic_core/L2_execution/ToolRegistry/mcp_stubs.py": "65f21b9e1b62c8968f024dd8f0b9b273",
     "agentic_core/L2_execution/ToolRegistry/MemoryArchitectAgent.py": "c7f8686b8ac2986816e78f8dcd747f36",
-    "agentic_core/L2_execution/ToolRegistry/MemoryLeakDetectorAgent.py": "994280634dfb8088aeb3991b20511c00",
+    "agentic_core/L2_execution/ToolRegistry/MemoryLeakDetectorAgent.py": "c1261e270d993106d88a5634a749ab59",
     "agentic_core/L2_execution/ToolRegistry/message_assembler.py": "969ac5a0bf7f3f4d05412aa50779104c",
     "agentic_core/L2_execution/ToolRegistry/message_assembler_types.py": "04616be7d35e8ad414e918d4ae837779",
     "agentic_core/L2_execution/ToolRegistry/message_body_composer.py": "17a68ed2d20eac87409576a2d384053b",
@@ -657,7 +657,7 @@
     "agentic_core/L2_execution/ToolRegistry/section_scope_integrator_engine.py": "9607c542165dc4ccd3bc37e4efb9aac6",
     "agentic_core/L2_execution/ToolRegistry/secure_tools.py": "9f103e219c6c74d8694ada44e0e3b7f9",
     "agentic_core/L2_execution/ToolRegistry/serialize_data.py": "68529ba5c14626b065e0c5e187c75068",
-    "agentic_core/L2_execution/ToolRegistry/SherlockAgent.py": "d9e3b32af201291c64e7170cc2bbe97e",
+    "agentic_core/L2_execution/ToolRegistry/SherlockAgent.py": "682c18db41fe957eb113d04b7f0f8252",
     "agentic_core/L2_execution/ToolRegistry/SovereignActionPlaneAgent.py": "39bb7ea2644e36141a1d5b5f65019cbc",
     "agentic_core/L2_execution/ToolRegistry/SovereignRedisOrchestratorAgent.py": "a7c64c57e27434335b7232279387490c",
     "agentic_core/L2_execution/ToolRegistry/specificity_prose_engine.py": "1567ebd9c240be5961bef7be0ed197b4",
@@ -1123,7 +1123,7 @@
     "agentic_core/utils/core_extensions/collapse_tunnels.py": "ba2f8959dffea860ce1fe6e9c446322a",
     "agentic_core/utils/core_extensions/DeadCodeDetectorAgent.py": "85bcdb6365a8899b1b46e3752a2adc45",
     "agentic_core/utils/core_extensions/diagnose_neural_link.py": "f8c6ecc4f3009f349d6e71aa6782c3cd",
-    "agentic_core/utils/core_extensions/DriftDetectionDriftDetectorAgent.py": "ed767b94b35895e8e3949e1fb59653c7",
+    "agentic_core/utils/core_extensions/DriftDetectorAgent.py": "ed767b94b35895e8e3949e1fb59653c7",
     "agentic_core/utils/core_extensions/error_handling.py": "0bc7ecb2c2d5599866cffb5d31d75c68",
     "agentic_core/utils/core_extensions/fix_all_tunnels.py": "2a2a8efb6cc6f6e27e45002e8bb99059",
     "agentic_core/utils/core_extensions/fix_all_type_imports.py": "bdf02de25b2a14fdc47599496392343d",
@@ -1265,7 +1265,7 @@
     "apps_lic/engines/outreach_engine/autonomous/ContactValidatorAgent.py": "4db17447473589d90b33a4b39d7078d8",
     "apps_lic/engines/outreach_engine/autonomous/context.py": "58094b5630f3464c851c116ac174e280",
     "apps_lic/engines/outreach_engine/autonomous/DeliverabilityAgent.py": "4ce6f8f076068bf95ffafd3da9b47d01",
-    "apps_lic/engines/outreach_engine/autonomous/LeadQualityAgent.py": "37a7440a09619d1b853f2899c86e36e6",
+    "apps_lic/engines/outreach_engine/autonomous/LeadQualityAgent.py": "2e5d5c26d7421d45f6ff9ddf71c1e78b",
     "apps_lic/engines/outreach_engine/autonomous/MessageComplianceAgent.py": "8db893922d76181e993f852cbc366e29",
     "apps_lic/engines/outreach_engine/autonomous/OutreachAgent.py": "754b77bff0b09b9f91ea3e2de7b9f7e5",
     "apps_lic/engines/outreach_engine/autonomous/OutreachCapabilityMonitorAgent.py": "13586fe6874fdd87c0725fc7e748893e",
@@ -1399,7 +1399,7 @@
     "apps_shared/utils/circuit_breaker.py": "9ce1befa72a61dc4578b4b5946013a0c",
     "apps_shared/utils/common_patterns.py": "b193d693b5747e399eb0d2e58ea5a0ea",
     "apps_shared/utils/file_io.py": "96028f8a9705a16a437485b091061e7f",
-    "apps_shared/utils/StateManagerAgent.py": "3080cd5e8d6fb406d3242edab63f4e53",
+    "apps_shared/utils/StateManagerAgent.py": "6797aa5b5f3947b1acd697942699f585",
     "apps_shared/utils/StateValidatorAgent.py": "bab6f4b1b1a10c5c415cff37d302a0a1",
     "apps_shared/utils/text_processing.py": "0c5919ca044c843f70d004f43935528c",
     "apps_shared/utils/vector_memory.py": "1c82ea3d63204853d5fbcfedc2b52722",
@@ -1484,7 +1484,7 @@
     "scripts/fix_inherited_invocation.py": "5342126f426355ef40217501cbf20b6f",
     "scripts/fix_missing_invocation.py": "1e84f9e638bc9428ff60e1e8842372ff",
     "scripts/fix_testing_observability.py": "8b84a07521edd6921fecbbefbd8d3e9e",
-    "scripts/full_agent_discovery.py": "8a46fa21629c4254dfdc51d955f980f8",
+    "scripts/full_agent_discovery.py": "df007818a5a780ab72ac63b7a9f6b8b2",
     "scripts/generate_agent_duplicates_table.py": "65c2a540b0406b9dd07a20ae7ade4558",
     "scripts/generate_agent_report.py": "b93e4378eb5ac74df820b36ecfc8d205",
     "scripts/generate_agent_table_simple.py": "e05c78eb25c09907223885dd300326a1",
@@ -1530,6 +1530,7 @@
     "scripts/refactor/delete_extracted.py": "4923e857909a471d2f93f1c2795b1ae6",
     "scripts/refactor/final_audit.py": "5c21260888b5718554d48625dc5ecac3",
     "scripts/refactor/find_lost_agents.py": "6e10bfd8c3f641a588291e3635be0086",
+    "scripts/refactor/generate_sovereign_state.py": "12ec338bde10c0d43aea54e149f4a9e1",
     "scripts/refactor/identify_duplicates.py": "dedee0c5afe8c6b32eca4ad62c31dafe",
     "scripts/refactor/recovery_debugger.py": "2bfeceeb89c35816c74f942a5c92a4f3",
     "scripts/refactor/sovereign_audit.py": "f5f7da5ddbb557539c636602b4ca7054",
@@ -1538,6 +1539,6 @@
     "scripts/refactor/sovereign_extractor_agents_only.py": "98f215363f3f0b4958cd73bebef4b7d6",
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63"
   },
-  "hashed_file_count": 1515,
+  "hashed_file_count": 1516,
   "hash_errors": 0
 }
