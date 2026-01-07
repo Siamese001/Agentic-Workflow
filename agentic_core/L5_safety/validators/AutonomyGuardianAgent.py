@@ -613,122 +613,50 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
 
     def generate_compliance_report(self, markdown: bool = True, context: dict = None) -> None:
         """
-        Final high-signal autonomy compliance dashboard — exhaustive, on-demand.
-        All territories + unclassified, full prioritization columns.
-        
-        Args:
-            markdown: Whether to output markdown format
-            context: Optional context dict with 'target_resolver' function for metric exceptions
+        Streamlined Compliance Report — delegates all computation to L6 engine (SSOT).
+        Purged of manual AST loops and redundant logic.
         """
-        # Store context for dashboard generation
         self.context = context or {}
-        
         today = date.today().strftime("%B %d, %Y")
-        print(f"### Autonomy Compliance Report — {today}\n")
+        print(f"[GUARDIAN] Generating Streamlined SSOT Report — {today}")
 
-        if markdown:
-            self._print_markdown_header()
-
-        # Ensure fresh discovery BEFORE loading JSON (guarantees SSOT is current)
-        print("[GUARDIAN] Ensuring fresh agent discovery...")
         self.smart_discovery.ensure_fresh_discovery()
-        
-        # Initialize data structures
-        totals = self._initialize_totals()
-        registry = self._load_agent_registry()
+        data_generator = DashboardDataGenerator(self.project_root, self.territories)
+        registry = data_generator.load_registry()
         all_agents, path_to_layer = self._process_agent_registry(registry)
         used_stems = self._compute_global_usage(all_agents)
         
-        # Build registry lookup for SSOT invocation detection
-        registry_by_path: Dict[str, Dict[str, Any]] = {}
-        for entry in registry:
-            p = (entry.get("path") or "").replace("\\", "/")
-            if p:
-                registry_by_path[p] = entry
-        
-        # Global sub-atomic violation tracking (across all territories)
-        global_sub_atomic_violations = []  # List of (cc, file_path, method_name)
-        
-        print(f"Loaded {len(all_agents)} agents from agent_discovery_full.json\n")
-
-        # Process territories and generate report (passing registry for SSOT invocation)
-        classified_paths = self._process_territories(
-            all_agents, path_to_layer, used_stems, totals, markdown, global_sub_atomic_violations, registry_by_path
-        )
-
-        # Process unclassified agents and generate final report
-        unclassified_agents = [a for a in all_agents if a not in classified_paths]
-        if unclassified_agents and markdown:
-            self._process_unclassified_agents(unclassified_agents, used_stems, totals)
+        dashboard_rows = []
+        assigned_agents = set()
+        for territory_key, (layer_filter, priority) in self.territories.items():
+            agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
+            agents = [a for a in agents if str(a) not in assigned_agents]
+            if not agents: continue
+            assigned_agents.update(str(a) for a in agents)
             
+            metrics = data_generator.compute_territory_metrics(agents, used_stems, data_generator.registry_by_path)
+            row = data_generator.build_territory_row(territory_key, metrics, priority)
+            if row: dashboard_rows.append(row)
+
+        total_row = data_generator.build_total_row(dashboard_rows)
+        
         if markdown:
-            today = date.today().strftime("%B %d, %Y")
-            self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer)
+            self._save_modular_markdown_report(today, total_row, dashboard_rows)
         
-        # === Self-Contained Interactive Dashboard Generation ===
-        # Always generate dashboard (independent of markdown flag)
-        # REFACTORED: Using v2 method with extracted modules for lower complexity
-        today = date.today().strftime("%B %d, %Y")
-        self._generate_dashboard_v2(today, all_agents, classified_paths, used_stems, path_to_layer)
+        self._generate_dashboard_v2_with_rows(today, dashboard_rows, total_row)
+        print(f"[DASHBOARD] Unified report generated via L6 Engine on {today}")
 
-        # CACHE REMOVED: Fresh data computed on every generation
-        print(f"[DASHBOARD] Generated with fresh discovery data on {today}")
+    def _initialize_totals(self) -> Dict[str, int]:
+        """Initialize totals accumulator for compliance metrics."""
+        return {
+            "agents": 0, "compliant": 0, "hardened": 0,
+            "healing_cap": 0, "healing_invoke": 0, "tests": 0,
+            "loc": 0, "cc_sum": 0, "max_cc": 0,
+            "typed": 0, "documented": 0, "observable": 0, "used": 0
+        }
 
-        # Portfolio-wide top violations — sub-atomic refactor backlog
-        if global_sub_atomic_violations:
-            print("\n**Portfolio Top 10 Sub-Atomic Violations (CC >10 — prioritize for decomposition):**")
-            top_violations = sorted(global_sub_atomic_violations, reverse=True)[:10]
-            for cc, path, method in top_violations:
-                print(f"  - {cc:3} | {path}:{method}() → Extract to primitives")
-            if len(global_sub_atomic_violations) > 10:
-                print(f"  ... and {len(global_sub_atomic_violations) - 10} more — full list per territory above")
-            print("  → Impact: Enables true sub-atomic reuse/orchestration across agents\n")
-
-        # Grand total
-        if totals["agents"] > 0:
-            t = totals
-            total_perc = round(t["compliant"] / t["agents"] * 100, 1)
-            total_hardened = round(t["hardened"] / t["agents"] * 100, 1)
-            total_healing_cap = round(t["healing_cap"] / t["agents"] * 100, 1)
-            total_healing_invoke = round(t["healing_invoke"] / t["agents"] * 100, 1)
-            total_tests = round(t["tests"] / t["agents"] * 100, 1)
-            overall_avg_loc = round(t["loc"] / t["agents"], 1)
-            overall_avg_cc = round(t["cc_sum"] / t["agents"], 1)
-            total_typed = round(t["typed"] / t["agents"], 1)
-            total_documented = round(t["documented"] / t["agents"], 1)
-            total_observable = round(t["observable"] / t["agents"], 1)
-            total_used = round(t["used"] / t["agents"] * 100, 1)
-
-            # Calculate total metrics with improved distribution
-            total_health = round((total_tests + total_healing_invoke + total_observable) / 3, 1)
-            
-            # Total criticality: weighted average of usage, compliance gap, and system size
-            total_usage_factor = min(40, total_used * 0.4)
-            total_compliance_gap = max(0, 80 - total_perc) * 0.3
-            total_size_factor = min(20, t['agents'] * 0.05)  # Scale down for total agents
-            total_criticality = round((total_usage_factor + total_compliance_gap + total_size_factor) * 1.2, 1)
-            
-            total_risk_score = 0
-            if overall_avg_cc > 10: total_risk_score += 3
-            if total_tests < 50: total_risk_score += 3
-            if total_perc < 80: total_risk_score += 4
-            total_risk = "HIGH" if total_risk_score >= 6 else "MED" if total_risk_score >= 3 else "LOW"
-
-            total_row = (
-                f"| **TOTAL**                                  | **{t['agents']}** | **{t['compliant']}** "
-                f"| **{total_healing_cap}%** | **{total_healing_invoke}%** | **{total_hardened}%** | **{total_tests}%** "
-                f"| **{overall_avg_cc}** | **{total_typed}%** | **{total_observable}%** | **{total_criticality:.0f}** | **{total_health:.1f}** | **{total_risk}** | **{total_used}%** | **ALL** |"
-            )
-            print(total_row)
-
-            print(f"\n**Quick Stats:** {t['compliant']}/{t['agents']} compliant — {t['healing_cap']}/{t['agents']} with healing capabilities — {t['healing_invoke']}/{t['agents']} with healing invocation — {t['hardened']}/{t['agents']} MCP hardened — {t['used']}/{t['agents']} used elsewhere")
-            print(f"**Quality:** Avg CC={overall_avg_cc} | Max CC={t['max_cc']} | {total_typed}% typed | {total_documented}% documented | {total_observable}% observable")
-
-            # Save markdown report to file (passing registry for SSOT invocation)
-            self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer, registry_by_path)
-
-    def _save_markdown_report(self, today: str, totals: dict, all_agents: list, classified_paths: set, used_stems: set, path_to_layer: dict, registry_by_path: dict = None) -> None:
-        """High-level orchestrator for report generation — linear chain with early exits."""
+    def _legacy_initialize_totals_placeholder(self) -> dict:
+        """DEPRECATED: Placeholder for old code removal."""
         if registry_by_path is None:
             registry_by_path = {}
         
@@ -1926,6 +1854,27 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             print(f"→ Provenance manifest: {manifest_path}")
         except Exception:
             pass
+
+    def _save_modular_markdown_report(self, today: str, total_row: Dict[str, Any], dashboard_rows: List[Dict[str, Any]]) -> None:
+        """Passive Markdown renderer consuming pre-computed L6 rows (No Logic Drift)."""
+        report_path = self.project_root / "reports" / "autonomy_compliance_report.md"
+        md = f"# Autonomy Compliance SSOT Report — {today}\n\n"
+        md += "System Health: {Health:.1f}% | Risk: {Risk}\n\n".format(**total_row)
+        md += "| Territory | Total | % Heal Cap | % Heal Inv | % Test | CC | Health |\n"
+        md += "|---|---|---|---|---|---|---|\n"
+        for row in dashboard_rows:
+            md += "| {Territory} | {Total} | {Heal Cap %} | {Heal Invocation %} | {Test %} | {Avg CC} | {Health} |\n".format(**row)
+        md += "| **TOTAL** | **{Total}** | **{Heal Cap %}** | **{Heal Invocation %}** | **{Test %}** | **{Avg CC}** | **{Health}** |\n".format(**total_row)
+        report_path.write_text(md, encoding="utf-8")
+
+    def _generate_dashboard_v2_with_rows(self, today: str, dashboard_rows: List[Dict[str, Any]], total_row: Dict[str, Any]) -> None:
+        """L6 Interactive Dashboard generation consuming pre-computed unified rows."""
+        renderer = DashboardRenderer(self.project_root)
+        recs = renderer.generate_recommendations(total_row, dashboard_rows)
+        questions = renderer.generate_interview_questions(total_row, dashboard_rows)
+        gauge_data = renderer.generate_gauge_data(total_row)
+        html = renderer.render(dashboard_rows, recs, questions, gauge_data, today)
+        renderer.save(html)
 
     def _generate_self_contained_dashboard_legacy(
         self, today: str, all_agents: List[Path], classified_paths: set, 
