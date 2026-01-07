@@ -18,8 +18,6 @@ from .agents import (
     TemplateOptimizerAgent,
     TestPilot,
 )
-from .resume_base import ResumeAgent
-from .context import BudgetManager, ResumeEngineContext, SectionDependencyGraph
 from .gitops import (
     ConversationalRepair,
     FileBackup,
@@ -31,8 +29,6 @@ from .gitops import (
     RepairProposal,
     ResilientMutator,
 )
-from .governance import (
-    CostPrediction,
     DashboardGenerator,
     DependencyArbiter,
     DependencyIssue,
@@ -49,16 +45,14 @@ from .governance import (
 from .healing import (
     AgentFactory,
     AutomaticRollback,
-    ConvergenceDetectorAgent,
     CycleResult,
     HealingCycle,
-    HealingOrchestratorAgent,
     HealingResult,
     HealingStrategy,
     SignalRouterAgent,
     run_self_healing_mission,
 )
-from .intelligence import (
+from .HealingOrchestratorAgent import HealingOrchestratorAgent
     AnalysisType,
     OmniContext,
     Phase6OrchestratorAgent,
@@ -86,8 +80,6 @@ from .learning import (
     MemoryState,
     ResumeLearningAgent,
 )
-from .observability import (
-    AuditReport,
     AuditReporter,
     ExecutionTrace,
     ExecutionTracer,
@@ -114,8 +106,6 @@ from .proactive import (
     ProactiveTask,
     TaskPriority,
 )
-
-__all__ = [
     # Context
     "ResumeEngineContext",
     "BudgetManager",
