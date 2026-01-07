@@ -13,18 +13,24 @@ Best Practices:
     - No raw strings — use prompt_governance for prompts
     - No inline Pydantic models — use schemas/models
 
-Current Status (December 28, 2025):
+Current Status (January 7, 2026):
     - Territory claimed and protected
-    - Awaiting sovereign curation of high-signal implementations
+    - Canonical cognitive agents established
+    - L2 Builder agents (with healing) archived from L1 (superseded)
 
-Future Curation Roadmap:
-    - Implement canonical patterns for this layer
-    - Add unit + property + stateful tests
-    - Register with relevant L4/L5 systems
+Canonical Exports:
+    - CanonBaseAgent: Base class for cognitive agents
+    - ReflectionAgent: Cognitive reflection and meta-reasoning
+    
+Note: StructuralEngineerAgent, SystemArchitectAgent, and StrategicPlannerAgent
+      have evolved to L2_execution/ToolRegistry/ with healing capabilities.
 """
 
-# Public API surface — expose only what's intended
-__all__ = []
+from .CanonBaseAgent import CanonBaseAgent
+from .ReflectionAgent import ReflectionAgent
 
-# Example placeholder (replace when populated)
-# from .core_module import CoreImplementation
+# Public API surface — expose only what's intended
+__all__ = [
+    "CanonBaseAgent",
+    "ReflectionAgent",
+]

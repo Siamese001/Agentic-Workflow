@@ -90,7 +90,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         violations: Any = []
         from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         # [PHASE 20] DEPRECATION: void_compliance.py removed - using HierarchyAgent
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
         def validate_canonical_hierarchy(proj_root):
             return HierarchyAgent(proj_root).validate_hierarchy()
         project_root: Any = Path(self.ctx.project_root or os.getcwd()).resolve()
