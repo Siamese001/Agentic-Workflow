@@ -1,12 +1,21 @@
-"""
-DEPRECATED: This test file has fixture errors or malformed structure.
-Marked as skipped to allow test suite to pass.
-"""
+"""Unit tests for AutonomyGuardianAgent - L5 Safety Validator."""
+from __future__ import annotations
 import pytest
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+import json
 
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test has fixture errors or malformed structure")
 
-
-def test_placeholder():
-    """Placeholder test to ensure file is valid."""
-    pytest.skip("This test file is deprecated")
+class TestAutonomyGuardianAgentImport:
+    """Test suite for AutonomyGuardianAgent import and basic structure."""
+    
+    def test_agent_can_be_imported(self):
+        """Test AutonomyGuardianAgent can be imported."""
+        from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
+        assert AutonomyGuardianAgent is not None
+    
+    def test_agent_has_required_methods(self):
+        """Test agent class has required methods defined."""
+        from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
+        assert hasattr(AutonomyGuardianAgent, 'generate_compliance_report')
+        assert hasattr(AutonomyGuardianAgent, 'heal_repository')

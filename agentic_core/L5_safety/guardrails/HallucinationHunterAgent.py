@@ -15,6 +15,8 @@ try:
 except ImportError:
     NUMPY_AVAILABLE: Any = False
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
