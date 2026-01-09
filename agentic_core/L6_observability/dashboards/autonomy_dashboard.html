@@ -1538,6 +1538,39 @@
         // Store agent data globally for use in rendering
         let globalAgentData = {};
 
+        // ============================================
+        // PHASE 2: Outlier Counting & Badges
+        // ============================================
+        
+        // Count outliers based on threshold
+        function countOutliers(values, threshold, comparison = 'below') {
+            if (!values || values.length === 0) return 0;
+            if (comparison === 'below') return values.filter(v => v < threshold).length;
+            if (comparison === 'above') return values.filter(v => v > threshold).length;
+            if (comparison === 'equals') return values.filter(v => v === threshold).length;
+            return 0;
+        }
+        
+        // Format outlier badge with count and label
+        function formatOutlierBadge(countAtZero, countBelowThreshold, threshold = 50) {
+            let badges = '';
+            if (countAtZero > 0) {
+                badges += `<span style="background:#dc2626; color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:4px; white-space:nowrap;" title="${countAtZero} agent(s) at 0%">${countAtZero} @0%</span>`;
+            }
+            if (countBelowThreshold > countAtZero) {
+                const belowOnly = countBelowThreshold - countAtZero;
+                badges += `<span style="background:#f59e0b; color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:4px; white-space:nowrap;" title="${belowOnly} agent(s) below ${threshold}%">${belowOnly} <${threshold}%</span>`;
+            }
+            return badges;
+        }
+        
+        // Get outlier summary for a metric across all values
+        function getOutlierSummary(values, criticalThreshold = 50) {
+            const atZero = countOutliers(values, 0.1, 'below'); // Effectively 0%
+            const belowThreshold = countOutliers(values, criticalThreshold, 'below');
+            return { atZero, belowThreshold, hasCritical: atZero > 0, hasWarning: belowThreshold > atZero };
+        }
+
         // Sparkline generator function
         function generateSparkline(values, color = '#2563eb', highGood = true) {
             if (!values || values.length < 2) return '';
@@ -1604,7 +1637,7 @@
                 <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
                     Territory Summary 
                     <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
-                        📊 Phase 1: Distribution Statistics Enabled
+                        📊 Phase 1+2: Distribution Stats & Outlier Flagging
                     </span>
                 </h3>
                 <div style="overflow-x:auto;">
@@ -1690,6 +1723,27 @@
                 const complexityMinColor = getWorstCaseColor(complexityStats.min);
                 const healthMinColor = getWorstCaseColor(healthStats.min);
                 
+                // PHASE 2: Compute outlier counts across all agent data
+                const allHealCapValues = [], allInvocValues = [], allHardenedVals = [], allTestVals = [], allComplexVals = [], allHealthVals = [];
+                territoryData.forEach(row => {
+                    const territory = row.Territory;
+                    if (globalAgentData[territory]) {
+                        allHealCapValues.push(...globalAgentData[territory].healCap);
+                        allInvocValues.push(...globalAgentData[territory].invocation);
+                        allHardenedVals.push(...globalAgentData[territory].hardened);
+                        allTestVals.push(...globalAgentData[territory].test);
+                        allComplexVals.push(...globalAgentData[territory].complexityHealth);
+                        allHealthVals.push(...globalAgentData[territory].health);
+                    }
+                });
+                
+                const healCapOutliers = getOutlierSummary(allHealCapValues, 50);
+                const invocationOutliers = getOutlierSummary(allInvocValues, 50);
+                const hardenedOutliers = getOutlierSummary(allHardenedVals, 50);
+                const testOutliers = getOutlierSummary(allTestVals, 50);
+                const complexityOutliers = getOutlierSummary(allComplexVals, 30); // Lower threshold for complexity
+                const healthOutliers = getOutlierSummary(allHealthVals, 60);
+                
                 html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
                         <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">
@@ -1698,27 +1752,27 @@
                         </td>
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(healCapStats.min)}; border-right:1px solid #e5e7eb; font-weight:600;">
-                            <div style="color:${healCapMinColor};">${formatDistributionCell(totalRow['Heal Cap %'], healCapStats)}</div>
+                            <div style="color:${healCapMinColor};">${formatDistributionCell(totalRow['Heal Cap %'], healCapStats)}${formatOutlierBadge(healCapOutliers.atZero, healCapOutliers.belowThreshold, 50)}</div>
                             ${generateSparkline([82, 84, 85, 86, totalRow['Heal Cap %']], '#16a34a', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(invocationStats.min)}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            <div style="color:${invocationMinColor};">${formatDistributionCell(totalRow['Invocation %'], invocationStats)}</div>
+                            <div style="color:${invocationMinColor};">${formatDistributionCell(totalRow['Invocation %'], invocationStats)}${formatOutlierBadge(invocationOutliers.atZero, invocationOutliers.belowThreshold, 50)}</div>
                             ${generateSparkline([88, 89, 90, 91, totalRow['Invocation %']], '#2563eb', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(hardenedStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <div style="color:${hardenedMinColor};">${formatDistributionCell(totalRow['Hardened %'] || 0, hardenedStats)}</div>
+                            <div style="color:${hardenedMinColor};">${formatDistributionCell(totalRow['Hardened %'] || 0, hardenedStats)}${formatOutlierBadge(hardenedOutliers.atZero, hardenedOutliers.belowThreshold, 50)}</div>
                             ${generateSparkline([68, 70, 72, 73, totalRow['Hardened %'] || 0], '#8b5cf6', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(testStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <div style="color:${testMinColor};">${formatDistributionCell(totalRow['Test %'], testStats)}</div>
+                            <div style="color:${testMinColor};">${formatDistributionCell(totalRow['Test %'], testStats)}${formatOutlierBadge(testOutliers.atZero, testOutliers.belowThreshold, 50)}</div>
                             ${generateSparkline([70, 72, 73, 74, totalRow['Test %']], '#ea580c', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(complexityStats.min)}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            <div style="color:${complexityMinColor};">${formatDistributionCell(totalRow['Complexity Health'] || 0, complexityStats)}</div>
+                            <div style="color:${complexityMinColor};">${formatDistributionCell(totalRow['Complexity Health'] || 0, complexityStats)}${formatOutlierBadge(complexityOutliers.atZero, complexityOutliers.belowThreshold, 30)}</div>
                             ${generateSparkline([30, 32, 33, 34, totalRow['Complexity Health'] || 0], '#dc2626', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(healthStats.min)}; font-weight:800; font-size:1.05em;">
-                            <div style="color:${healthMinColor};">${formatDistributionCell(totalRow.Health, healthStats)}</div>
+                            <div style="color:${healthMinColor};">${formatDistributionCell(totalRow.Health, healthStats)}${formatOutlierBadge(healthOutliers.atZero, healthOutliers.belowThreshold, 60)}</div>
                             ${generateSparkline([72, 74, 75, 76, totalRow.Health], '#16a34a', true)}
                         </td>
                     </tr>`;
@@ -1789,6 +1843,14 @@
                 const testColor = getWorstCaseColor(testMin);
                 const ccHealthColor = getWorstCaseColor(complexityMin);
                 
+                // PHASE 2: Compute outlier counts for this territory
+                const healCapTerritoryOutliers = getOutlierSummary(territoryAgents.healCap || [], 50);
+                const invocationTerritoryOutliers = getOutlierSummary(territoryAgents.invocation || [], 50);
+                const hardenedTerritoryOutliers = getOutlierSummary(territoryAgents.hardened || [], 50);
+                const testTerritoryOutliers = getOutlierSummary(territoryAgents.test || [], 50);
+                const complexityTerritoryOutliers = getOutlierSummary(territoryAgents.complexityHealth || [], 30);
+                const healthTerritoryOutliers = getOutlierSummary(territoryAgents.health || [], 60);
+                
                 html += `
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
                         onmouseover="this.style.background='#f0f9ff'" 
@@ -1798,22 +1860,22 @@
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(healCapMin)}; border-right:1px solid #e5e7eb;">
-                            <span style="color:${getWorstCaseColor(healCapMin)};">${formatDistributionCell(row['Heal Cap %'], healCapTerritoryStats, false)}</span>
+                            <span style="color:${getWorstCaseColor(healCapMin)};">${formatDistributionCell(row['Heal Cap %'], healCapTerritoryStats, false)}${formatOutlierBadge(healCapTerritoryOutliers.atZero, healCapTerritoryOutliers.belowThreshold, 50)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(invocationMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <span style="color:${invocationColor};">${formatDistributionCell(row['Invocation %'], invocationTerritoryStats, false)}</span>
+                            <span style="color:${invocationColor};">${formatDistributionCell(row['Invocation %'], invocationTerritoryStats, false)}${formatOutlierBadge(invocationTerritoryOutliers.atZero, invocationTerritoryOutliers.belowThreshold, 50)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(hardenedMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <span style="color:${hardenedColor};">${formatDistributionCell(row['Hardened %'] || 0, hardenedTerritoryStats, false)}</span>
+                            <span style="color:${hardenedColor};">${formatDistributionCell(row['Hardened %'] || 0, hardenedTerritoryStats, false)}${formatOutlierBadge(hardenedTerritoryOutliers.atZero, hardenedTerritoryOutliers.belowThreshold, 50)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(testMin)}; border-right:1px solid #e5e7eb;">
-                            <span style="color:${testColor};">${formatDistributionCell(row['Test %'], testTerritoryStats, false)}</span>
+                            <span style="color:${testColor};">${formatDistributionCell(row['Test %'], testTerritoryStats, false)}${formatOutlierBadge(testTerritoryOutliers.atZero, testTerritoryOutliers.belowThreshold, 50)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(complexityMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <span style="color:${ccHealthColor};">${formatDistributionCell(row['Complexity Health'] || 0, complexityTerritoryStats, false)}</span>
+                            <span style="color:${ccHealthColor};">${formatDistributionCell(row['Complexity Health'] || 0, complexityTerritoryStats, false)}${formatOutlierBadge(complexityTerritoryOutliers.atZero, complexityTerritoryOutliers.belowThreshold, 30)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(healthMin)}; font-weight:700;">
-                            <span style="color:${healthColor};">${formatDistributionCell(row.Health, healthTerritoryStats, false)}</span>
+                            <span style="color:${healthColor};">${formatDistributionCell(row.Health, healthTerritoryStats, false)}${formatOutlierBadge(healthTerritoryOutliers.atZero, healthTerritoryOutliers.belowThreshold, 60)}</span>
                         </td>
                     </tr>`;
             });
@@ -1855,7 +1917,12 @@
             // Build Code Quality table with detailed metrics per territory
             let html = `
             <div style="margin-bottom:40px;">
-                <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">Code Quality by Territory & Sub-Territory</h3>
+                <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
+                    Code Quality by Territory & Sub-Territory
+                    <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
+                        📊 Phase 1+2: Distribution Stats & Outlier Flagging
+                    </span>
+                </h3>
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
                         <thead>
@@ -1940,6 +2007,13 @@
                 const baseStats = computeDistributionStats(allBase);
                 const qualityStats = computeDistributionStats(allQuality);
                 
+                // PHASE 2: Compute outlier counts for Table 2 TOTAL row
+                const typedOutliers = getOutlierSummary(allTyped, 50);
+                const documentedOutliers = getOutlierSummary(allDocumented, 50);
+                const schemaOutliers = getOutlierSummary(allSchema, 80); // Higher threshold for schema
+                const baseOutliers = getOutlierSummary(allBase, 50);
+                const qualityOutliers = getOutlierSummary(allQuality, 60);
+                
                 const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
                 
                 html += `
@@ -1949,23 +2023,23 @@
                         </td>
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(typedStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(typed, typedStats)}
+                            ${formatDistributionCell(typed, typedStats)}${formatOutlierBadge(typedOutliers.atZero, typedOutliers.belowThreshold, 50)}
                             ${generateSparkline(allTyped.slice(-10), '#2563eb', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(documentedStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(documented, documentedStats)}
+                            ${formatDistributionCell(documented, documentedStats)}${formatOutlierBadge(documentedOutliers.atZero, documentedOutliers.belowThreshold, 50)}
                             ${generateSparkline(allDocumented.slice(-10), '#2563eb', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(schemaStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(schemaStrictness, schemaStats)}
+                            ${formatDistributionCell(schemaStrictness, schemaStats)}${formatOutlierBadge(schemaOutliers.atZero, schemaOutliers.belowThreshold, 80)}
                             ${generateSparkline(allSchema.slice(-10), '#2563eb', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(baseStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(properBase, baseStats)}
+                            ${formatDistributionCell(properBase, baseStats)}${formatOutlierBadge(baseOutliers.atZero, baseOutliers.belowThreshold, 50)}
                             ${generateSparkline(allBase.slice(-10), '#2563eb', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:${getGradientBg(qualityStats.min)}; color:${qualityColor}; font-weight:800; font-size:1.05em;">
-                            ${formatDistributionCell(codeQuality, qualityStats)}
+                            ${formatDistributionCell(codeQuality, qualityStats)}${formatOutlierBadge(qualityOutliers.atZero, qualityOutliers.belowThreshold, 60)}
                             ${generateSparkline(allQuality.slice(-10), '#2563eb', true)}
                         </td>
                     </tr>`;
@@ -1997,6 +2071,13 @@
                 const baseColorVal = baseStats.min !== undefined ? baseStats.min : properBase;
                 const qualityColorVal = qualityStats.min !== undefined ? qualityStats.min : codeQuality;
                 
+                // PHASE 2: Compute outlier counts for this territory
+                const typedTerritoryOutliers = getOutlierSummary(agentData.typed || [], 50);
+                const documentedTerritoryOutliers = getOutlierSummary(agentData.documented || [], 50);
+                const schemaTerritoryOutliers = getOutlierSummary(agentData.schemaStrictness || [], 80);
+                const baseTerritoryOutliers = getOutlierSummary(agentData.properBase || [], 50);
+                const qualityTerritoryOutliers = getOutlierSummary(agentData.codeQuality || [], 60);
+                
                 html += `
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
                         onmouseover="this.style.background='#f0f9ff'" 
@@ -2004,19 +2085,19 @@
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(typedColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(typed, typedStats, false)}
+                            ${formatDistributionCell(typed, typedStats, false)}${formatOutlierBadge(typedTerritoryOutliers.atZero, typedTerritoryOutliers.belowThreshold, 50)}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(documentedColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(documented, documentedStats, false)}
+                            ${formatDistributionCell(documented, documentedStats, false)}${formatOutlierBadge(documentedTerritoryOutliers.atZero, documentedTerritoryOutliers.belowThreshold, 50)}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(schemaColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(schemaStrictness, schemaStats, false)}
+                            ${formatDistributionCell(schemaStrictness, schemaStats, false)}${formatOutlierBadge(schemaTerritoryOutliers.atZero, schemaTerritoryOutliers.belowThreshold, 80)}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(baseColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(properBase, baseStats, false)}
+                            ${formatDistributionCell(properBase, baseStats, false)}${formatOutlierBadge(baseTerritoryOutliers.atZero, baseTerritoryOutliers.belowThreshold, 50)}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(qualityColorVal)}; color:${qualityColor}; font-weight:700;">
-                            ${formatDistributionCell(codeQuality, qualityStats, false)}
+                            ${formatDistributionCell(codeQuality, qualityStats, false)}${formatOutlierBadge(qualityTerritoryOutliers.atZero, qualityTerritoryOutliers.belowThreshold, 60)}
                         </td>
                     </tr>`;
             });

@@ -407,9 +407,183 @@ function aggregateOutlierAlerts(territoryData, table = 'both') {
 
 ---
 
+### Phase 6: Architectural Integrity & Remediation (HARDENED)
+**Goal**: Move beyond simple statistical outliers to incorporate **Architectural Toxicity** weighting
+
+> ⚠️ **Key Insight**: A 0% test coverage on a utility function is a minor gap; a 0% test coverage on a **Toxic Hub** (high fan-in) is a systemic risk.
+
+#### 6.1 Toxicity-Weighted Outlier Severity
+
+**Core Formula**:
+```
+OUTLIER_SEVERITY = (100 - MetricValue) × (1 + ln(FanInCount))
+```
+
+**Example Calculations**:
+| Agent | Fan-In | Test % | Deviation | Severity Score | Priority |
+|-------|--------|--------|-----------|----------------|----------|
+| UtilityHelper.py | 2 | 0% | 100 | 100 × 1.69 = **169** | Low |
+| ToxicHub.py | 259 | 0% | 100 | 100 × 6.55 = **655** | **CRITICAL** |
+| CoreValidator.py | 50 | 25% | 75 | 75 × 4.91 = **368** | High |
+
+#### 6.2 New Metrics & Columns
+
+| Metric | Source | Display | Icon |
+|--------|--------|---------|------|
+| **Impact Score** | `(100 - value) × (1 + ln(fan_in))` | Numeric with severity color | — |
+| **Toxicity Score** | Sum of Impact Scores per territory | Aggregate in header | ☢️ if > 500 |
+| **Systemic Risk** | Categorical based on hub outliers | HIGH/MEDIUM/LOW badge | 🔴🟡🟢 |
+| **Drift Age** | Consecutive audits as outlier | "3 cycles" with zombie icon | 🧟 if ≥ 3 |
+
+#### 6.3 Toxicity Filter Toggle
+
+**UI Element**: Toggle button above both tables
+```html
+<button onclick="toggleToxicityFilter()">
+    ☢️ Show Only Toxic Hubs (Fan-in > 20)
+</button>
+```
+
+**Behavior**:
+- When enabled: Filter both tables to show only rows containing agents with Fan-in > 20
+- Highlight rows with Fan-in > 100 as "Critical Hubs"
+- Add ☢️ icon next to territory names with toxic agents
+
+#### 6.4 Zombie Indicator (Temporal Persistence)
+
+**Purpose**: Flag outliers that persist across multiple audits (failed healing loop)
+
+**Logic**:
+```javascript
+function calculateDriftAge(agentName, currentAuditId) {
+    // Query audit history for this agent
+    const history = getAuditHistory(agentName);
+    let consecutiveOutlierCount = 0;
+    
+    for (let i = history.length - 1; i >= 0; i--) {
+        if (history[i].isOutlier) {
+            consecutiveOutlierCount++;
+        } else {
+            break;
+        }
+    }
+    
+    return {
+        driftAge: consecutiveOutlierCount,
+        isZombie: consecutiveOutlierCount >= 3,
+        stalledRecovery: consecutiveOutlierCount >= 5
+    };
+}
+```
+
+**Display**:
+- `driftAge < 3`: Normal outlier badge
+- `driftAge >= 3`: 🧟 Zombie icon + "Stalled Recovery" alert
+- `driftAge >= 5`: Triggers `ConvergenceEngine` escalation
+
+#### 6.5 Direct Remediation Circuit
+
+**"Trigger Heal" Button** in drill-down modal:
+```html
+<button onclick="triggerHeal('${agent.path}', '${metric}')" class="heal-button">
+    🔧 Trigger Heal
+</button>
+```
+
+**Backend Integration**:
+```javascript
+async function triggerHeal(agentPath, metric) {
+    const response = await fetch('/api/convergence/heal', {
+        method: 'POST',
+        body: JSON.stringify({
+            target: agentPath,
+            metric: metric,
+            priority: 'high',
+            source: 'dashboard_manual'
+        })
+    });
+    
+    if (response.ok) {
+        showNotification(`Healing initiated for ${agentPath}`);
+        // Refresh dashboard after 30 seconds
+        setTimeout(() => location.reload(), 30000);
+    }
+}
+```
+
+#### 6.6 Payload Hardening (Sidecar JSON)
+
+**Problem**: 300+ agents embedded in HTML causes lag
+
+**Solution**: Lazy-load detailed data
+```javascript
+// Main dashboard loads lightweight summary
+const summaryData = await fetch('/reports/data/territory_summary.json');
+
+// On drill-down click, load detailed data
+async function loadTerritoryDetails(territory) {
+    const slug = territory.replace(/[^a-z0-9]/gi, '_');
+    const details = await fetch(`/reports/data/${slug}_details.json`);
+    return details.json();
+}
+```
+
+**File Structure**:
+```
+agentic_core/L6_observability/
+├── dashboards/
+│   └── autonomy_dashboard.html
+└── reports/
+    └── data/
+        ├── territory_summary.json      # Lightweight (~50KB)
+        ├── L5_Safety_Validators.json   # Per-territory details
+        ├── L3_Orchestration_Core.json
+        └── ...
+```
+
+#### 6.7 History Sparkline (5-Audit Trend)
+
+**Purpose**: Differentiate new regressions from old debt
+
+**Display**: Small inline graph showing metric trend over last 5 audits
+```javascript
+function renderHistorySparkline(agentName, metric) {
+    const history = getMetricHistory(agentName, metric, 5);
+    // Returns array like [75, 72, 68, 45, 30] (declining = regression)
+    
+    const trend = history[4] - history[0];
+    const color = trend > 0 ? '#16a34a' : trend < 0 ? '#dc2626' : '#6b7280';
+    
+    return generateSparkline(history, color);
+}
+```
+
+#### Completion Criteria - Phase 6
+- [ ] `calculateImpactScore()` function using fan-in data
+- [ ] `ToxicDependencyAuditor` integration for fan-in counts
+- [ ] Toxicity Filter toggle functional
+- [ ] Zombie indicator with drift age tracking
+- [ ] "Trigger Heal" button with ConvergenceEngine webhook
+- [ ] Sidecar JSON lazy-loading implemented
+- [ ] History sparklines showing 5-audit trend
+- [ ] ☢️ icons on toxic hubs (Fan-in > 50)
+- [ ] SYSTEMIC RISK alert for critical hub outliers
+
+#### Test Cases - Phase 6
+| Test | Scenario | Expected |
+|------|----------|----------|
+| TC6.1 | Agent with Fan-in=259, Test=0% | Impact Score = 655, ☢️ icon |
+| TC6.2 | Agent with Fan-in=2, Test=0% | Impact Score = 169, no icon |
+| TC6.3 | Agent outlier for 3 cycles | 🧟 Zombie badge |
+| TC6.4 | Click "Trigger Heal" | POST to /api/convergence/heal |
+| TC6.5 | Toggle Toxicity Filter | Only Fan-in > 20 agents shown |
+| TC6.6 | Critical Hub (Fan-in > 100) at 50% test | SYSTEMIC RISK alert |
+
+---
+
 ## Data Model Changes
 
-### Current Data Structure
+### Current Data Structure (Phases 1-5)
 ```javascript
 {
     "Territory": "L5 Safety/Validators",
@@ -475,18 +649,25 @@ function aggregateOutlierAlerts(territoryData, table = 'both') {
 | Phase 3 | Worst Performer (Table 1 + Table 2) | 3-4 hours | Phase 2 | P1 |
 | Phase 4 | Visual Enhancements (Both Tables) | 3-4 hours | Phase 3 | P1 |
 | Phase 5 | Interactive Drill-down (Both Tables) | 4-5 hours | Phase 4 | P2 |
+| **Phase 6** | **Architectural Integrity & Remediation** | 6-8 hours | Phase 5, ToxicDependencyAuditor | **P0** |
 
-**Total Estimated Effort**: 16-21 hours
+**Total Estimated Effort**: 22-29 hours
 
 ---
 
 ## Success Metrics
 
+### Basic Metrics (Phases 1-5)
 1. **Outlier Visibility**: 100% of agents at 0% for any metric are flagged in both tables
 2. **False Confidence Reduction**: No territory shows "green" if any agent is critical
 3. **Actionability**: Every outlier has a direct VS Code link
 4. **Consistency**: Both tables use identical formatting and interaction patterns
 5. **Performance**: Dashboard load time < 2 seconds with enhanced data
+
+### Hardened Metrics (Phase 6)
+6. **Critical Hub Coverage**: 100% of "Critical Hubs" (Fan-in > 100) must have > 90% test coverage or trigger `SYSTEMIC RISK` alert
+7. **Remediation Speed**: 80% of outliers identified in an audit are corrected or improved in the next cycle
+8. **Zombie Elimination**: No agent should remain an outlier for > 3 consecutive audit cycles
 
 ---
 
@@ -505,12 +686,15 @@ If issues arise:
 | Phase | Table 1 | Table 2 | Status |
 |-------|---------|---------|--------|
 | Phase 1 | ✅ Complete | ✅ Complete | **Done** |
-| Phase 2 | ❌ Pending | ❌ Pending | Not Started |
+| Phase 2 | ✅ Complete | ✅ Complete | **Done** |
 | Phase 3 | ❌ Pending | ❌ Pending | Not Started |
 | Phase 4 | ❌ Pending | ❌ Pending | Not Started |
 | Phase 5 | ❌ Pending | ❌ Pending | Not Started |
+| **Phase 6** | ❌ Pending | ❌ Pending | **Spec Complete** |
 
-**Next Action**: Phase 2 - Add outlier flagging (# at 0%, # below threshold) to both tables
+**Next Action**: Phase 3 - Add Worst Performer column with VS Code links to both tables
+
+**Phase 6 Dependencies**: Requires `ToxicDependencyAuditor` integration for fan-in data
 
 ---
 
@@ -635,3 +819,4 @@ function aggregateOutlierAlerts(territoryData) {
 |------|--------|---------|
 | 2026-01-09 | Cascade | Initial implementation plan |
 | 2026-01-09 | Cascade | **REVISED**: Incorporated Table 2 into all 5 phases (was previously Phase 4 only) |
+| 2026-01-09 | Cascade | **HARDENED**: Added Phase 6 (Architectural Integrity & Remediation) with toxicity weighting, zombie indicators, remediation circuit, and payload optimization |
