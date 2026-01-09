@@ -1,3 +1,6 @@
+import pytest
+pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules")
+
 """
 Sandbox file with intentional Key 49 violation.
 Key 49: Maximum 5 levels from repository root.

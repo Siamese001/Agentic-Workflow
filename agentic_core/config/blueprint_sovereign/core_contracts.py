@@ -24,7 +24,6 @@ from agentic_core.schemas.models.context_passport import (
 )
 
 # 14. Legacy Registry from core_contracts.py
-from agentic_core.schemas.models.core_contracts import CORE_CONTRACTS_REGISTRY
 
 # 12. Golden State & Benchmarking
 from agentic_core.schemas.models.golden_state import (

@@ -53,11 +53,16 @@ def test_complexity_trigger():
         return None
 
 
-def test_interface_integrity(violation):
+def test_interface_integrity():
     """TEST 2: Interface Integrity Test"""
     print("\n" + "=" * 60)
     print("TEST 2: INTERFACE INTEGRITY TEST")
     print("=" * 60)
+    
+    # Get violation from complexity trigger test
+    agent = InterfaceBoundaryAgent(root_dir='.', complexity_threshold=15)
+    violations = agent.audit_boundaries()
+    violation = next((v for v in violations if 'mock_heavy_utility' in v.get('file', '')), None)
     
     if not violation:
         print("❌ TEST 2 SKIPPED: No violation to test")

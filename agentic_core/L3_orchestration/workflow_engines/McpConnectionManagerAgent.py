@@ -9,6 +9,7 @@ import asyncio
 from pathlib import Path
 from typing import Any, Dict, Optional
 import yaml
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 Logger: Any = logging.getLogger(__name__)
 
 class McpConnectionManagerAgent(MCPHardenedMixin):

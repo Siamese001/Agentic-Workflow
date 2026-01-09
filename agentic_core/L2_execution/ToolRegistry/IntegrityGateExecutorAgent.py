@@ -118,6 +118,7 @@ class DeepResearchOutput:
 
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):

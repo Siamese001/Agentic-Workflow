@@ -1862,7 +1862,6 @@ def get_naming_agent(project_root: Path = None) -> NamingAgent:
     Get singleton NamingAgent instance for centralized naming validation.
     
     Usage by other agents:
-        from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
         naming = get_naming_agent(self.project_root)
         is_valid, reason = naming.validate_proposed_name("MyNewAgent.py")
     """

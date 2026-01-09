@@ -31,10 +31,25 @@ pytestmark = pytest.mark.usefixtures("disable_path_shield")
 # When pytest runs, __file__ gives us the absolute path to this test file
 _TEST_FILE = Path(__file__).resolve()
 PROJECT_ROOT = _TEST_FILE.parent.parent  # Go up from tests/ to project root
+
+# NEW ARCHITECTURE: Dashboard now lives in L6_observability/dashboards
+L6_DASHBOARD_DIR = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards"
+DASHBOARD_PATH = L6_DASHBOARD_DIR / "autonomy_dashboard.html"
+
+# Legacy paths (deprecated)
 REPORTS_DIR = PROJECT_ROOT / "reports"
-DASHBOARD_PATH = REPORTS_DIR / "autonomy_dashboard.html"
+LEGACY_DASHBOARD_PATH = REPORTS_DIR / "autonomy_dashboard.html"
 DISCOVERY_JSON_PATH = REPORTS_DIR / "agent_discovery_full.json"  # Primary source of truth (cache eliminated)
 TEMPLATE_PATH = PROJECT_ROOT / "agentic_core" / "config" / "validators" / "dashboard_template.html"
+
+
+def get_dashboard_path():
+    """Get dashboard path, preferring L6_observability location."""
+    if DASHBOARD_PATH.exists():
+        return DASHBOARD_PATH
+    elif LEGACY_DASHBOARD_PATH.exists():
+        return LEGACY_DASHBOARD_PATH
+    return None
 
 # Debug: Print paths when module loads (only in verbose mode)
 if os.getenv('PYTEST_CURRENT_TEST'):
@@ -127,8 +142,7 @@ class TestDataInjection:
     
     def test_recommendations_data_injected(self):
         """Test that recommendationsData is injected."""
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
-        if not dashboard_path.exists():
+        if not DASHBOARD_PATH.exists():
             pytest.skip("Dashboard not generated")
         
         html = DASHBOARD_PATH.read_text(encoding='utf-8')
@@ -142,8 +156,7 @@ class TestDataInjection:
     
     def test_strategic_review_injected(self):
         """Test that strategic review is injected."""
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
-        if not dashboard_path.exists():
+        if not DASHBOARD_PATH.exists():
             pytest.skip("Dashboard not generated")
         
         html = DASHBOARD_PATH.read_text(encoding='utf-8')
@@ -154,8 +167,7 @@ class TestDataInjection:
     
     def test_top_recs_injected(self):
         """Test that top recommendations are injected."""
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
-        if not dashboard_path.exists():
+        if not DASHBOARD_PATH.exists():
             pytest.skip("Dashboard not generated")
         
         html = DASHBOARD_PATH.read_text(encoding='utf-8')
@@ -166,8 +178,7 @@ class TestDataInjection:
     
     def test_gauge_data_injected(self):
         """Test that gauge data is injected."""
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
-        if not dashboard_path.exists():
+        if not DASHBOARD_PATH.exists():
             pytest.skip("Dashboard not generated")
         
         html = DASHBOARD_PATH.read_text(encoding='utf-8')
@@ -181,8 +192,7 @@ class TestDataInjection:
     
     def test_last_updated_injected(self):
         """Test that last updated timestamp is injected."""
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
-        if not dashboard_path.exists():
+        if not DASHBOARD_PATH.exists():
             pytest.skip("Dashboard not generated")
         
         html = DASHBOARD_PATH.read_text(encoding='utf-8')
@@ -196,8 +206,7 @@ class TestDataInjection:
     
     def test_injected_data_valid_json(self):
         """Test that injected data is valid JSON."""
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
-        if not dashboard_path.exists():
+        if not DASHBOARD_PATH.exists():
             pytest.skip("Dashboard not generated")
         
         html = DASHBOARD_PATH.read_text(encoding='utf-8')
@@ -215,8 +224,7 @@ class TestDataInjection:
     
     def test_injected_data_has_total_row(self):
         """Test that injected data contains TOTAL row."""
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
-        if not dashboard_path.exists():
+        if not DASHBOARD_PATH.exists():
             pytest.skip("Dashboard not generated")
         
         html = DASHBOARD_PATH.read_text(encoding='utf-8')
@@ -240,8 +248,12 @@ class TestDataInjection:
 
 
 class TestJSONFileSourceing:
-    """Test JSON file sourcing from discovery pipeline."""
+    """Test JSON file sourcing from discovery pipeline.
     
+    NOTE: These tests are DEPRECATED - new architecture uses embedded data in L6 dashboard.
+    """
+    
+    @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses embedded data, not separate JSON")
     def test_discovery_json_exists(self):
         """Test that discovery JSON file exists."""
         # Dashboard uses .dashboard_cache.json as the source
@@ -252,6 +264,7 @@ class TestJSONFileSourceing:
             f"Expected: .dashboard_cache.json (dashboard's data source)"
         )
     
+    @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses embedded data")
     def test_discovery_json_not_empty(self):
         """Test that discovery JSON is not empty."""
         json_path = (Path(__file__).parent.parent / "reports" / ".dashboard_cache.json").resolve()
@@ -264,6 +277,7 @@ class TestJSONFileSourceing:
             f"Discovery may have failed or returned no results."
         )
     
+    @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses embedded data")
     def test_discovery_json_valid(self):
         """Test that discovery JSON is valid JSON."""
         json_path = (Path(__file__).parent.parent / "reports" / ".dashboard_cache.json").resolve()
@@ -279,6 +293,7 @@ class TestJSONFileSourceing:
         except UnicodeDecodeError as e:
             pytest.fail(f"Discovery JSON contains invalid UTF-8: {e}")
     
+    @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses embedded data")
     def test_discovery_json_has_agents(self):
         """Test that discovery JSON contains agent data."""
         json_path = (Path(__file__).parent.parent / "reports" / ".dashboard_cache.json").resolve()
@@ -299,6 +314,7 @@ class TestJSONFileSourceing:
         first_entry = data[first_key]
         assert isinstance(first_entry, dict), "Agent entry is not a dict"
     
+    @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses embedded data")
     def test_discovery_json_freshness(self):
         """Test that discovery JSON is reasonably fresh."""
         import time
@@ -319,8 +335,12 @@ class TestJSONFileSourceing:
 
 
 class TestTemplatePlaceholders:
-    """Test template placeholder handling."""
+    """Test template placeholder handling.
     
+    NOTE: These tests are DEPRECATED - new L6 architecture uses self-contained dashboard.
+    """
+    
+    @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses self-contained dashboard")
     def test_template_file_exists(self):
         """Test that dashboard template exists."""
         template_path = Path(__file__).parent.parent / "agentic_core" / "config" / "validators" / "dashboard_template.html"
@@ -329,6 +349,7 @@ class TestTemplatePlaceholders:
             f"Template file is missing."
         )
     
+    @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses self-contained dashboard")
     def test_template_has_required_placeholders(self):
         """Test that template contains all required placeholders."""
         template_path = Path(__file__).parent.parent / "agentic_core" / "config" / "validators" / "dashboard_template.html"
@@ -352,6 +373,7 @@ class TestTemplatePlaceholders:
             f"Template must contain all placeholders for data injection."
         )
     
+    @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses self-contained dashboard")
     def test_template_has_chart_containers(self):
         """Test that template has all chart container divs."""
         template_path = Path(__file__).parent.parent / "agentic_core" / "config" / "validators" / "dashboard_template.html"
@@ -377,16 +399,14 @@ class TestAtomicWriteOperations:
     
     def test_dashboard_write_creates_file(self):
         """Test that dashboard write actually creates the file."""
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
-        assert dashboard_path.exists(), (
-            "Dashboard file was not created\n"
+        assert DASHBOARD_PATH.exists(), (
+            f"Dashboard file was not created at {DASHBOARD_PATH}\n"
             "Atomic write operation failed."
         )
     
     def test_dashboard_write_complete(self):
         """Test that dashboard write completed (no truncation)."""
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
-        if not dashboard_path.exists():
+        if not DASHBOARD_PATH.exists():
             pytest.skip("Dashboard not generated")
         
         html = DASHBOARD_PATH.read_text(encoding='utf-8')

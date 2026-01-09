@@ -31,6 +31,7 @@ Logger: Any = logging.getLogger('L4.PineconeStore')
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):

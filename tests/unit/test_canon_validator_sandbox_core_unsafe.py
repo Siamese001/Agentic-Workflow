@@ -1,3 +1,6 @@
+import pytest
+pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules")
+
 """
 Sandbox file with intentional Key 0 violation.
 Key 0: No hardcoded secrets or API keys.

@@ -13,9 +13,17 @@ def load_dashboard_data():
     """Load dashboard data from generated HTML."""
     import re
     
-    dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
+    # NEW ARCHITECTURE: Dashboard now lives in L6_observability/dashboards
+    # __file__ is tests/test_dashboard_data_reconciliation.py, so parent.parent is project root
+    test_file = Path(__file__).resolve()
+    project_root = test_file.parent.parent  # tests/ -> project_root
+    
+    l6_path = project_root / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+    legacy_path = project_root / "reports" / "autonomy_dashboard.html"
+    
+    dashboard_path = l6_path if l6_path.exists() else legacy_path
     if not dashboard_path.exists():
-        pytest.skip("Dashboard HTML not found - generate dashboard first")
+        pytest.skip(f"Dashboard HTML not found at {l6_path} or {legacy_path}")
     
     html = dashboard_path.read_text(encoding='utf-8')
     
