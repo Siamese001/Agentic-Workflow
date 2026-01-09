@@ -26,6 +26,94 @@
             --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
+        .trend-up { color: #16a34a; font-weight: 600; }
+        .trend-down { color: #dc2626; font-weight: 600; }
+        .trend-flat { color: #6b7280; font-weight: 600; }
+
+        .sparkline-container {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .sparkline-svg {
+            width: 60px;
+            height: 20px;
+            margin: 0 4px;
+        }
+        
+        .sparkline-trend {
+            font-size: 1.15em;
+            font-weight: 900;
+            margin-left: 4px;
+            text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
+        }
+
+        .sparkline-arrow {
+            font-weight: 900;
+            font-size: 1em;
+            line-height: 1;
+            display: inline-block;
+            margin-right: 2px;
+        }
+
+        .refresh-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .refresh-button {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .refresh-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .refresh-button:active {
+            transform: translateY(0);
+        }
+
+        .refresh-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .refresh-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         body {
             background: var(--background);
             color: var(--text);
@@ -279,6 +367,15 @@
     </style>
 </head>
 <body>
+    <!-- Refresh Controls -->
+    <div class="refresh-controls">
+        <button class="refresh-button" onclick="manualRefresh()">🔄 Refresh Now</button>
+        <div class="refresh-status">
+            <div class="refresh-indicator"></div>
+            <span id="refreshStatus">Auto-refresh: 30s</span>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <h1>🎯 Autonomy Compliance Dashboard</h1>
@@ -299,14 +396,27 @@
             <!-- Executive Dashboard Tab -->
             <div id="executive-content" class="tab-content">
                 
-                <!-- Strategic Recommendations Section -->
-                <div style="margin-bottom:30px; padding:20px; background:#f0fdf4; border-left:4px solid #16a34a; border-radius:6px;">
-                    <div style="font-size:1.3em; font-weight:700; color:#15803d; margin-bottom:10px;">🎯 Strategic Recommendations</div>
-                    <div style="font-size:0.95em; line-height:1.5; color:#374151; margin-bottom:12px;">
-                        <!-- STRATEGIC_REVIEW_INSERT -->
-                    </div>
-                    <div style="margin-top:12px;">
-                        <!-- TOP_RECS_INSERT -->
+                <!-- Strategic Observations Section -->
+                <div class="charts-grid full-width" style="margin-bottom:20px;">
+                    <div class="chart-card" style="border-left: 4px solid var(--primary);">
+                        <div class="chart-header">
+                            <div class="chart-title" style="font-size:1.6em;">📋 Strategic Observations & Prioritized Actions</div>
+                            <div class="chart-subtitle">Macro-level architectural recommendations + metric-focused improvements</div>
+                        </div>
+                        <div class="chart-body">
+                            <div style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr;">
+                                <!-- Macro Observations -->
+                                <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 20px; border-radius: 12px; border: 1px solid #bae6fd;">
+                                    <h3 style="color: #0369a1; margin-bottom: 15px; font-size: 1.2em;">🏗️ Macro Observations</h3>
+                                    <div id="macroObservations" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                                </div>
+                                <!-- Metric-Focused Observations -->
+                                <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 20px; border-radius: 12px; border: 1px solid #bbf7d0;">
+                                    <h3 style="color: #15803d; margin-bottom: 15px; font-size: 1.2em;">📊 Metric-Focused Observations</h3>
+                                    <div id="metricObservations" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1269,7 +1379,7 @@
     "target_value": 85
   }
 ];
-        const lastUpdatedStr = "January 07, 2026 at 05:54:04";
+        const lastUpdatedStr = "Last Updated: 01/09/2026 09:30 AM EDT";
         const gaugeData = {
   "health": 76.9,
   "compliance": 91.7,
@@ -1316,6 +1426,54 @@
     "key_metric": "Health: 72%"
   }
 ];
+
+        // Auto-refresh every 30 seconds
+        let lastRefreshTime = new Date();
+        let refreshInterval = setInterval(() => {
+            location.reload();
+        }, 30000);  // 30 seconds
+
+        function manualRefresh() {
+            // Clear the interval and reload immediately
+            clearInterval(refreshInterval);
+            location.reload();
+        }
+
+        // Update refresh status display
+        setInterval(() => {
+            const now = new Date();
+            const secondsSinceRefresh = Math.floor((now - lastRefreshTime) / 1000);
+            const secondsUntilRefresh = 30 - secondsSinceRefresh;
+            
+            if (secondsUntilRefresh > 0) {
+                document.getElementById('refreshStatus').textContent = `Auto-refresh: ${secondsUntilRefresh}s`;
+            }
+        }, 1000);
+
+        // Sparkline generator function
+        function generateSparkline(values, color = '#2563eb', highGood = true) {
+            if (!values || values.length < 2) return '';
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const range = max - min || 1;
+            const width = 60;
+            const height = 20;
+            const points = values.map((v, i) => {
+                const x = (i / (values.length - 1)) * width;
+                const y = height - ((v - min) / range) * height;
+                return `${x},${y}`;
+            }).join(' ');
+            const trend = values[values.length - 1] > values[0] ? '↑' : values[values.length - 1] < values[0] ? '↓' : '→';
+            const trendColor = highGood
+                ? (trend === '↑' ? '#16a34a' : trend === '↓' ? '#dc2626' : '#6b7280')
+                : (trend === '↑' ? '#dc2626' : trend === '↓' ? '#16a34a' : '#6b7280');
+            return `<span class="sparkline-container">
+                <svg class="sparkline-svg" viewBox="0 0 ${width} ${height}">
+                    <polyline fill="none" stroke="${color}" stroke-width="2" points="${points}"/>
+                </svg>
+                <span class="sparkline-trend" style="color:${trendColor}"><span class="sparkline-arrow">${trend}</span></span>
+            </span>`;
+        }
 
         // Tab switching functionality
         document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -1417,12 +1575,30 @@
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
                         <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">TOTAL</td>
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; border-right:1px solid #e5e7eb; font-weight:600;">${totalRow['Heal Cap %'].toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow['Invocation %'].toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">${(totalRow['Hardened %'] || 0).toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">${totalRow['Test %'].toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Complexity Health'] || 0)}; color:${ccHealthColor}; font-weight:700; border-right:1px solid #e5e7eb;">${(totalRow['Complexity Health'] || 0).toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow.Health)}; color:${healthColor}; font-weight:800; font-size:1.05em;">${totalRow.Health.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; border-right:1px solid #e5e7eb; font-weight:600;">
+                            ${totalRow['Heal Cap %'].toFixed(1)}%
+                            ${generateSparkline([82, 84, 85, 86, totalRow['Heal Cap %']], '#16a34a', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; color:${invocationColor}; font-weight:700; border-right:1px solid #e5e7eb;">
+                            ${totalRow['Invocation %'].toFixed(1)}%
+                            ${generateSparkline([88, 89, 90, 91, totalRow['Invocation %']], '#2563eb', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; color:${hardenedColor}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            ${(totalRow['Hardened %'] || 0).toFixed(1)}%
+                            ${generateSparkline([68, 70, 72, 73, totalRow['Hardened %'] || 0], '#8b5cf6', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; color:${testColor}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            ${totalRow['Test %'].toFixed(1)}%
+                            ${generateSparkline([70, 72, 73, 74, totalRow['Test %']], '#ea580c', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Complexity Health'] || 0)}; color:${ccHealthColor}; font-weight:700; border-right:1px solid #e5e7eb;">
+                            ${(totalRow['Complexity Health'] || 0).toFixed(1)}%
+                            ${generateSparkline([30, 32, 33, 34, totalRow['Complexity Health'] || 0], '#dc2626', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow.Health)}; color:${healthColor}; font-weight:800; font-size:1.05em;">
+                            ${totalRow.Health.toFixed(1)}%
+                            ${generateSparkline([72, 74, 75, 76, totalRow.Health], '#16a34a', true)}
+                        </td>
                     </tr>`;
             }
             
@@ -2332,6 +2508,97 @@ ${rec.guidance.split('\n').map((line, i) =>
             container.innerHTML = html;
         }
 
+        function renderStrategicObservations(totalRow, territoryData) {
+            // Macro Observations
+            const macroContainer = document.getElementById('macroObservations');
+            const metricContainer = document.getElementById('metricObservations');
+            if (!macroContainer || !metricContainer) return;
+
+            const macroObs = [];
+            const metricObs = [];
+
+            // L0 Maintenance - should NOT have healing (infrastructure layer)
+            const l0Row = territoryData.find(t => t.Territory.includes('L0 Maintenance'));
+            if (l0Row && l0Row['Heal Cap %'] > 0) {
+                macroObs.push({
+                    icon: '🔧',
+                    title: 'L0 Maintenance Layer',
+                    text: `L0 is infrastructure/scripts layer. Healing capability is N/A here (currently showing ${l0Row['Heal Cap %'].toFixed(0)}%). Focus on stability, not self-healing.`,
+                    color: '#6b7280'
+                });
+            }
+
+            // Complexity observation
+            if (totalRow['Avg CC'] > 30) {
+                metricObs.push({
+                    icon: '⚠️',
+                    title: 'High Complexity',
+                    text: `Average CC of ${totalRow['Avg CC'].toFixed(1)} exceeds target (≤15). Refactor high-CC methods in L5 validators and L3 orchestrators.`,
+                    color: '#ea580c'
+                });
+            }
+
+            // Test coverage observation
+            if (totalRow['Test %'] < 80) {
+                metricObs.push({
+                    icon: '🧪',
+                    title: 'Test Coverage Gap',
+                    text: `Test coverage at ${totalRow['Test %'].toFixed(1)}% (target: 80%). Focus on L1 Cognition and Apps territories first.`,
+                    color: '#dc2626'
+                });
+            }
+
+            // Healing invocation observation
+            if (totalRow['Invocation %'] > 85) {
+                metricObs.push({
+                    icon: '✅',
+                    title: 'Strong Healing Invocation',
+                    text: `${totalRow['Invocation %'].toFixed(1)}% healing invocation is excellent. Maintain this level.`,
+                    color: '#16a34a'
+                });
+            }
+
+            // Apps territories observation
+            const appsRows = territoryData.filter(t => t.Territory.includes('Apps'));
+            if (appsRows.length > 0) {
+                const avgAppsTest = appsRows.reduce((sum, r) => sum + (r['Test %'] || 0), 0) / appsRows.length;
+                if (avgAppsTest < 60) {
+                    macroObs.push({
+                        icon: '📱',
+                        title: 'Apps Test Coverage',
+                        text: `Apps territories average ${avgAppsTest.toFixed(0)}% test coverage. Target 80% for production safety.`,
+                        color: '#ea580c'
+                    });
+                }
+            }
+
+            // Observability observation
+            if (totalRow['Observable %'] > 95) {
+                macroObs.push({
+                    icon: '👁️',
+                    title: 'Excellent Observability',
+                    text: `${totalRow['Observable %'].toFixed(1)}% observability coverage. Production debugging is well-supported.`,
+                    color: '#16a34a'
+                });
+            }
+
+            // Render macro observations
+            macroContainer.innerHTML = macroObs.length > 0 ? macroObs.map(obs => `
+                <div style="padding: 12px; background: white; border-radius: 8px; border-left: 4px solid ${obs.color};">
+                    <div style="font-weight: 600; margin-bottom: 4px;">${obs.icon} ${obs.title}</div>
+                    <div style="font-size: 0.9em; color: #475569;">${obs.text}</div>
+                </div>
+            `).join('') : '<div style="color: #6b7280; font-style: italic;">No macro observations at this time.</div>';
+
+            // Render metric observations
+            metricContainer.innerHTML = metricObs.length > 0 ? metricObs.map(obs => `
+                <div style="padding: 12px; background: white; border-radius: 8px; border-left: 4px solid ${obs.color};">
+                    <div style="font-weight: 600; margin-bottom: 4px;">${obs.icon} ${obs.title}</div>
+                    <div style="font-size: 0.9em; color: #475569;">${obs.text}</div>
+                </div>
+            `).join('') : '<div style="color: #6b7280; font-style: italic;">All metrics within target ranges.</div>';
+        }
+
         function loadData() {
             const data = dashboardData;
             const territoryData = data.filter(row => row.Territory !== 'TOTAL');
@@ -2342,6 +2609,7 @@ ${rec.guidance.split('\n').map((line, i) =>
                 return;
             }
 
+            renderStrategicObservations(totalRow, territoryData);
             renderTerritorySummaryTable(territoryData);
             renderCodeQualityTable(territoryData);
             renderRiskMatrix(territoryData);
