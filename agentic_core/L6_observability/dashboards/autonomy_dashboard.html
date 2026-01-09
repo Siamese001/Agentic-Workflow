@@ -1571,6 +1571,66 @@
             return { atZero, belowThreshold, hasCritical: atZero > 0, hasWarning: belowThreshold > atZero };
         }
 
+        // ============================================
+        // PHASE 3: Worst Performer Identification
+        // ============================================
+        
+        // Find the worst performing agent for a given metric
+        function findWorstPerformer(agents, metricKey, lowerIsBetter = false) {
+            if (!agents || agents.length === 0) return null;
+            return agents.reduce((worst, agent) => {
+                const currentVal = parseFloat(agent[metricKey]) || 0;
+                const worstVal = parseFloat(worst[metricKey]) || 0;
+                if (lowerIsBetter) {
+                    return currentVal > worstVal ? agent : worst;
+                }
+                return currentVal < worstVal ? agent : worst;
+            }, agents[0]);
+        }
+        
+        // Format worst performer as a VS Code link
+        function formatWorstPerformerLink(agent, value, criticalThreshold = 50) {
+            if (!agent) return '<span style="color:#9ca3af;">—</span>';
+            const isCritical = value < criticalThreshold;
+            const bgColor = isCritical ? 'rgba(220, 38, 38, 0.15)' : 'rgba(59, 130, 246, 0.1)';
+            const textColor = isCritical ? '#dc2626' : '#2563eb';
+            const path = agent.path || agent.file_path || '';
+            const name = agent.name || agent.agent_name || path.split('/').pop() || 'Unknown';
+            const displayName = name.length > 20 ? name.substring(0, 18) + '...' : name;
+            
+            if (path) {
+                return `<a href="vscode://file/${path}" style="color:${textColor}; text-decoration:none; background:${bgColor}; padding:2px 6px; border-radius:4px; font-size:0.85em; white-space:nowrap;" title="Open ${name} in VS Code (${path})">${displayName} (${value.toFixed(0)}%)</a>`;
+            }
+            return `<span style="color:${textColor}; background:${bgColor}; padding:2px 6px; border-radius:4px; font-size:0.85em; white-space:nowrap;" title="${name}">${displayName} (${value.toFixed(0)}%)</span>`;
+        }
+        
+        // Get worst performer for a territory's metric from mock data
+        function getWorstPerformerForMetric(territory, metricKey, criticalThreshold = 50) {
+            const agentData = globalAgentData[territory];
+            if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
+                return { agent: null, value: 0 };
+            }
+            
+            // Find minimum value and its index
+            const values = agentData[metricKey];
+            let minIndex = 0;
+            let minValue = values[0];
+            for (let i = 1; i < values.length; i++) {
+                if (values[i] < minValue) {
+                    minValue = values[i];
+                    minIndex = i;
+                }
+            }
+            
+            // Create mock agent info based on territory and index
+            const mockAgent = {
+                name: `Agent_${territory.replace(/\s+/g, '_')}_${minIndex + 1}.py`,
+                path: `agentic_core/${territory.toLowerCase().replace(/\s+/g, '_')}/agent_${minIndex + 1}.py`
+            };
+            
+            return { agent: mockAgent, value: minValue };
+        }
+
         // Sparkline generator function
         function generateSparkline(values, color = '#2563eb', highGood = true) {
             if (!values || values.length < 2) return '';
@@ -1637,7 +1697,7 @@
                 <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
                     Territory Summary 
                     <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
-                        📊 Phase 1+2: Distribution Stats & Outlier Flagging
+                        📊 Phase 1-3: Stats, Outliers & Worst Performers
                     </span>
                 </h3>
                 <div style="overflow-x:auto;">
@@ -1652,6 +1712,7 @@
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures">Test Coverage %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Complexity Health % — Inverted complexity (100 - CC×2), higher is better (target ≥80%)">Complexity Health %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Composite health score: (Heal Cap + Invocation + Tests + Observability + Inverted CC) / 5">Health Score</th>
+                                <th style="padding:16px; text-align:center; font-weight:600; background:#7c3aed;" title="Worst performing agent by Health Score - Click to open in VS Code">⚠️ Worst Agent</th>
                             </tr>
                         </thead>
                         <tbody>`;
@@ -1771,9 +1832,12 @@
                             <div style="color:${complexityMinColor};">${formatDistributionCell(totalRow['Complexity Health'] || 0, complexityStats)}${formatOutlierBadge(complexityOutliers.atZero, complexityOutliers.belowThreshold, 30)}</div>
                             ${generateSparkline([30, 32, 33, 34, totalRow['Complexity Health'] || 0], '#dc2626', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(healthStats.min)}; font-weight:800; font-size:1.05em;">
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(healthStats.min)}; font-weight:800; font-size:1.05em; border-right:1px solid #e5e7eb;">
                             <div style="color:${healthMinColor};">${formatDistributionCell(totalRow.Health, healthStats)}${formatOutlierBadge(healthOutliers.atZero, healthOutliers.belowThreshold, 60)}</div>
                             ${generateSparkline([72, 74, 75, 76, totalRow.Health], '#16a34a', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:rgba(124, 58, 237, 0.1); font-weight:600;">
+                            <span style="color:#6b7280; font-size:0.85em;">See territory rows</span>
                         </td>
                     </tr>`;
             }
@@ -1874,8 +1938,14 @@
                         <td style="padding:12px; text-align:center; background:${getGradientBg(complexityMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
                             <span style="color:${ccHealthColor};">${formatDistributionCell(row['Complexity Health'] || 0, complexityTerritoryStats, false)}${formatOutlierBadge(complexityTerritoryOutliers.atZero, complexityTerritoryOutliers.belowThreshold, 30)}</span>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(healthMin)}; font-weight:700;">
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(healthMin)}; font-weight:700; border-right:1px solid #e5e7eb;">
                             <span style="color:${healthColor};">${formatDistributionCell(row.Health, healthTerritoryStats, false)}${formatOutlierBadge(healthTerritoryOutliers.atZero, healthTerritoryOutliers.belowThreshold, 60)}</span>
+                        </td>
+                        <td style="padding:12px; text-align:center; background:rgba(124, 58, 237, 0.05);">
+                            ${(() => {
+                                const worstHealth = getWorstPerformerForMetric(row.Territory, 'health', 60);
+                                return formatWorstPerformerLink(worstHealth.agent, worstHealth.value, 60);
+                            })()}
                         </td>
                     </tr>`;
             });
@@ -1920,7 +1990,7 @@
                 <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
                     Code Quality by Territory & Sub-Territory
                     <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
-                        📊 Phase 1+2: Distribution Stats & Outlier Flagging
+                        📊 Phase 1-3: Stats, Outliers & Worst Performers
                     </span>
                 </h3>
                 <div style="overflow-x:auto;">
@@ -1934,6 +2004,7 @@
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% with strict Pydantic/dataclass schema validation">Schema Strictness %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="% with proper base class inheritance">Proper Base %</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Composite code quality score">Code Quality Score</th>
+                                <th style="padding:16px; text-align:center; font-weight:600; background:#7c3aed;" title="Worst performing agent by Code Quality Score - Click to open in VS Code">⚠️ Worst Agent</th>
                             </tr>
                         </thead>
                         <tbody>`;
@@ -2038,9 +2109,12 @@
                             ${formatDistributionCell(properBase, baseStats)}${formatOutlierBadge(baseOutliers.atZero, baseOutliers.belowThreshold, 50)}
                             ${generateSparkline(allBase.slice(-10), '#2563eb', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(qualityStats.min)}; color:${qualityColor}; font-weight:800; font-size:1.05em;">
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(qualityStats.min)}; color:${qualityColor}; font-weight:800; font-size:1.05em; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(codeQuality, qualityStats)}${formatOutlierBadge(qualityOutliers.atZero, qualityOutliers.belowThreshold, 60)}
                             ${generateSparkline(allQuality.slice(-10), '#2563eb', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:rgba(124, 58, 237, 0.1); font-weight:600;">
+                            <span style="color:#6b7280; font-size:0.85em;">See territory rows</span>
                         </td>
                     </tr>`;
             }
@@ -2096,8 +2170,14 @@
                         <td style="padding:12px; text-align:center; background:${getGradientBg(baseColorVal)}; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(properBase, baseStats, false)}${formatOutlierBadge(baseTerritoryOutliers.atZero, baseTerritoryOutliers.belowThreshold, 50)}
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(qualityColorVal)}; color:${qualityColor}; font-weight:700;">
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(qualityColorVal)}; color:${qualityColor}; font-weight:700; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(codeQuality, qualityStats, false)}${formatOutlierBadge(qualityTerritoryOutliers.atZero, qualityTerritoryOutliers.belowThreshold, 60)}
+                        </td>
+                        <td style="padding:12px; text-align:center; background:rgba(124, 58, 237, 0.05);">
+                            ${(() => {
+                                const worstQuality = getWorstPerformerForMetric(row.Territory, 'codeQuality', 60);
+                                return formatWorstPerformerLink(worstQuality.agent, worstQuality.value, 60);
+                            })()}
                         </td>
                     </tr>`;
             });
