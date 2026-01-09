@@ -88,19 +88,24 @@ class MissionController:
 
     async def run_mission(self, target_scope: str = "agentic_core", mode: str = "heal") -> Dict[str, Any]:
         """
-        [HARDENING 10] Execute the Agentic Validation Mission with explicit phases.
+        [L4 CONVERGENCE] Execute the Agentic Validation Mission with recursive convergence.
         
-        Phases:
+        Implements skeptical validation loop that refuses to stop until:
+        - total_violations == 0 (CONVERGENCE ACHIEVED), OR
+        - MAX_CONVERGENCE_ROUNDS reached (requires manual intervention)
+        
+        Phases per round:
         1. Detection (read-only validation)
-        2. Healing (optional, requires mode='heal')
-        3. Re-validation (post-healing verification)
+        2. Healing (tandem Validator → Healer spawning)
+        3. Re-validation (SSOT verification)
+        4. State Snapshotting (hash comparison for fission detection)
         
         Args:
             target_scope: Target folder for validation
             mode: Mission mode - 'validate_only' or 'heal'
             
         Returns:
-            Dict with mission results and statistics
+            Dict with mission results and convergence statistics
         """
         # [HARDENING 10] Validate mode parameter
         valid_modes = ["validate_only", "heal"]
@@ -108,7 +113,7 @@ class MissionController:
             raise ValueError(f"Invalid mode '{mode}'; choose from {valid_modes}")
         
         print(f"\n[*] MISSION START: Validating {target_scope} (mode={mode})")
-        print(f"DEBUG: VERSION 3.0 - SOVEREIGN HARDENING + PHASE SEPARATION")
+        print(f"DEBUG: VERSION 4.0 - L4 RECURSIVE CONVERGENCE LOOP")
         print(f"   [OK] Mission Root Anchored: {self.project_root}")
         
         # Initialize context
@@ -135,14 +140,17 @@ class MissionController:
         # Run Sovereign Dashboard (ReportingAgent diagnostic)
         await self._run_sovereign_dashboard(ctx)
         
-        # [HARDENING 10] PHASE 1: Detection (read-only validation)
-        print(f"\n[PHASE 1] DETECTION - Read-only validation (no mutations)")
-        detection_results = await self._run_detection_phase(ctx)
+        # [L4 CONVERGENCE] Initialize convergence tracking
+        MAX_CONVERGENCE_ROUNDS = int(os.getenv("MAX_CONVERGENCE_ROUNDS", "5"))
+        ctx.convergence_history = []  # List of (round, violations, file_hashes)
+        ctx.fission_events = []  # List of files requiring decomposition
         
-        self._print_detection_report(detection_results, ctx)
-        
-        # If validate-only mode, stop here
+        # If validate-only mode, run single detection and stop
         if mode == "validate_only":
+            print(f"\n[PHASE 1] DETECTION - Read-only validation (no mutations)")
+            detection_results = await self._run_detection_phase(ctx)
+            self._print_detection_report(detection_results, ctx)
+            
             print(f"\n[VALIDATE_ONLY] Mission complete - no healing performed")
             return {
                 "phase": "validation_complete",
@@ -152,24 +160,89 @@ class MissionController:
                 "results": detection_results
             }
         
-        # [HARDENING 10] PHASE 2: Healing (explicit approval required)
-        print(f"\n[PHASE 2] HEALING - Applying mutations (all changes backed up)")
-        healing_results = await self._run_healing_phase(ctx, detection_results)
+        # [L4 CONVERGENCE LOOP] Iterate until convergence or max rounds
+        convergence_round = 0
+        converged = False
         
-        # [HARDENING 10] PHASE 3: Re-validation
-        print(f"\n[PHASE 3] RE-VALIDATION - Verifying healing results")
-        post_detection = await self._run_detection_phase(ctx)
+        print(f"\n{'='*80}")
+        print(f"[L4 CONVERGENCE] Starting recursive healing loop (max {MAX_CONVERGENCE_ROUNDS} rounds)")
+        print(f"{'='*80}")
         
-        # Check if healing introduced new violations
-        if post_detection.get("total_violations", 0) > 0:
-            remaining = post_detection.get("total_violations", 0)
-            print(f"\n[!] [POST-HEALING] {remaining} violations remain after healing")
+        while convergence_round < MAX_CONVERGENCE_ROUNDS and not converged:
+            convergence_round += 1
+            
+            print(f"\n{'='*80}")
+            print(f"[CONVERGENCE ROUND {convergence_round}/{MAX_CONVERGENCE_ROUNDS}]")
+            print(f"{'='*80}")
+            
+            # PHASE 1: Detection
+            print(f"\n[PHASE 1] DETECTION - Scanning for violations")
+            detection_results = await self._run_detection_phase(ctx)
+            total_violations = detection_results.get("total_violations", 0)
+            
+            self._print_detection_report(detection_results, ctx)
+            
+            # [L4 STATE] Snapshot current file hashes
+            current_hashes = await self._snapshot_file_hashes(ctx)
+            
+            # Check convergence condition
+            if total_violations == 0:
+                converged = True
+                print(f"\n{'='*80}")
+                print(f"[CONVERGENCE ACHIEVED] Zero violations detected!")
+                print(f"   Rounds required: {convergence_round}")
+                print(f"   Status: PURE")
+                print(f"{'='*80}")
+                break
+            
+            print(f"\n[CONVERGENCE STATUS] {total_violations} violations remaining")
+            
+            # PHASE 2: Tandem Enforcement (Validator → Healer spawning)
+            print(f"\n[PHASE 2] TANDEM ENFORCEMENT - Spawning healers for detected violations")
+            healing_results = await self._run_tandem_healing(ctx, detection_results)
+            
+            # PHASE 3: SSOT Re-validation
+            print(f"\n[PHASE 3] SSOT RE-VALIDATION - Verifying healing integrity")
+            post_healing_detection = await self._run_ssot_revalidation(ctx)
+            post_violations = post_healing_detection.get("total_violations", 0)
+            
+            # [L4 STATE] Snapshot post-healing hashes
+            post_hashes = await self._snapshot_file_hashes(ctx)
+            
+            # PHASE 4: Fission Event Detection
+            fission_detected = await self._detect_fission_events(
+                ctx, 
+                current_hashes, 
+                post_hashes, 
+                total_violations, 
+                post_violations
+            )
+            
+            # Record convergence history
+            ctx.convergence_history.append({
+                "round": convergence_round,
+                "pre_violations": total_violations,
+                "post_violations": post_violations,
+                "heals_applied": healing_results.get("heals_applied", 0),
+                "fission_events": len(ctx.fission_events),
+                "progress": total_violations - post_violations
+            })
+            
+            # Check if we're making progress
+            if post_violations >= total_violations and convergence_round > 1:
+                print(f"\n[!] WARNING: No progress in round {convergence_round}")
+                print(f"   Pre-healing: {total_violations} violations")
+                print(f"   Post-healing: {post_violations} violations")
+                
+                if fission_detected:
+                    print(f"   [FISSION] {len(ctx.fission_events)} files require decomposition")
+                    await self._execute_fission_events(ctx)
         
         # [HARDENING 5] Post-healing invariant enforcement
         await self._run_postflight_validation(ctx, preflight, target_scope)
         
-        # Print final report
-        self._print_mission_report(ctx)
+        # Print convergence report
+        self._print_convergence_report(ctx, converged, convergence_round, MAX_CONVERGENCE_ROUNDS)
         
         # [OPTION A] Post-mission sovereign audit hook
         await self._run_sovereign_audit_hook(ctx)
@@ -178,12 +251,15 @@ class MissionController:
         await self._run_blueprint_reconciliation_hook(ctx)
         
         return {
-            "phase": "full_mission_complete",
+            "phase": "convergence_complete" if converged else "max_rounds_reached",
             "mode": mode,
+            "converged": converged,
+            "rounds": convergence_round,
+            "max_rounds": MAX_CONVERGENCE_ROUNDS,
             "files_processed": len(ctx.python_files),
-            "violations": len([r for r in ctx.report if r.get('status') == 'FAIL']),
-            "healed": len([r for r in ctx.report if r.get('status') == 'PASS']),
-            "healing_results": healing_results if mode == "heal" else None
+            "final_violations": ctx.convergence_history[-1]["post_violations"] if ctx.convergence_history else 0,
+            "convergence_history": ctx.convergence_history,
+            "fission_events": len(ctx.fission_events)
         }
 
     async def _initialize_context(self, target_scope: str) -> Any:
@@ -881,6 +957,133 @@ class MissionController:
         except Exception as e:
             Logger.error(f"[POSTFLIGHT] Validation failed: {e}")
             print(f"   [!] Postflight validation error: {e}")
+
+    async def _snapshot_file_hashes(self, ctx: Any) -> Dict[str, str]:
+        """[L4 STATE] Snapshot current file hashes for convergence tracking."""
+        file_hashes = {}
+        for file_path in ctx.python_files:
+            try:
+                file_path_obj = Path(file_path)
+                if file_path_obj.exists():
+                    content = file_path_obj.read_text(encoding='utf-8', errors='ignore')
+                    file_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
+                    file_hashes[file_path] = file_hash
+            except Exception as e:
+                Logger.warning(f"Failed to hash {file_path}: {e}")
+                file_hashes[file_path] = "ERROR"
+        return file_hashes
+
+    async def _run_tandem_healing(self, ctx: Any, detection_results: Dict[str, Any]) -> Dict[str, Any]:
+        """[TANDEM ENFORCEMENT] Spawn healers for detected violations."""
+        healing_results = {
+            "files_attempted": 0,
+            "files_healed": 0,
+            "heals_applied": 0,
+            "heals_rejected": 0
+        }
+        
+        atomic_validators = []
+        if self._orchestrator:
+            atomic_validators = self._orchestrator.get_atomic_validators()
+        
+        violations_by_file = detection_results.get("violations_by_file", {})
+        
+        for file_path, violations in violations_by_file.items():
+            file_name = Path(file_path).name
+            healing_results["files_attempted"] += 1
+            
+            if ctx.heal_attempts.get(file_path, 0) >= ctx.max_heals_per_file:
+                continue
+            
+            file_healed = False
+            for agent in atomic_validators:
+                if not hasattr(agent, 'heal_violation'):
+                    continue
+                
+                try:
+                    result = await self._heal_with_guards(agent, file_path, file_name)
+                    if result and result.get("healed"):
+                        file_healed = True
+                        healing_results["heals_applied"] += 1
+                        ctx.heal_attempts[file_path] = ctx.heal_attempts.get(file_path, 0) + 1
+                    elif result and result.get("error"):
+                        healing_results["heals_rejected"] += 1
+                except Exception as e:
+                    Logger.error(f"Tandem healing failed: {e}")
+                    healing_results["heals_rejected"] += 1
+            
+            if file_healed:
+                healing_results["files_healed"] += 1
+        
+        return healing_results
+
+    async def _run_ssot_revalidation(self, ctx: Any) -> Dict[str, Any]:
+        """[SSOT VERIFICATION] Re-run validation after healing."""
+        return await self._run_detection_phase(ctx)
+
+    async def _detect_fission_events(self, ctx: Any, pre_hashes: Dict[str, str], post_hashes: Dict[str, str], pre_violations: int, post_violations: int) -> bool:
+        """[FISSION DETECTION] Detect files requiring decomposition."""
+        if post_violations == 0:
+            return False
+        
+        fission_detected = False
+        for file_path in ctx.python_files:
+            pre_hash = pre_hashes.get(file_path)
+            post_hash = post_hashes.get(file_path)
+            
+            if pre_hash and post_hash and pre_hash == post_hash:
+                file_size = Path(file_path).stat().st_size if Path(file_path).exists() else 0
+                if file_size > 10000 and file_path not in [e["file"] for e in ctx.fission_events]:
+                    ctx.fission_events.append({
+                        "file": file_path,
+                        "size": file_size,
+                        "reason": "Unchanged after healing with remaining violations"
+                    })
+                    fission_detected = True
+        
+        return fission_detected
+
+    async def _execute_fission_events(self, ctx: Any) -> None:
+        """[FISSION EXECUTION] Execute file decomposition."""
+        if not ctx.fission_events or not self._fission_manager:
+            return
+        
+        for event in ctx.fission_events:
+            try:
+                result = await self._fission_manager.split_file(event["file"], reason=event["reason"])
+                if result.get("success"):
+                    print(f"      [OK] Split {Path(event['file']).name}")
+            except Exception as e:
+                Logger.error(f"Fission failed: {e}")
+
+    def _print_convergence_report(self, ctx: Any, converged: bool, rounds: int, max_rounds: int) -> None:
+        """Print convergence report."""
+        print("\n" + "="*80)
+        print("CONVERGENCE REPORT")
+        print("="*80)
+        
+        if converged:
+            print(f"✅ CONVERGENCE ACHIEVED in {rounds} round(s)")
+            print(f"   Status: PURE (zero violations)")
+        else:
+            print(f"⚠️  MAX ROUNDS REACHED ({rounds}/{max_rounds})")
+            final_violations = ctx.convergence_history[-1]["post_violations"] if ctx.convergence_history else 0
+            print(f"   Remaining violations: {final_violations}")
+        
+        print(f"\n[CONVERGENCE HISTORY]")
+        for entry in ctx.convergence_history:
+            r = entry["round"]
+            pre = entry["pre_violations"]
+            post = entry["post_violations"]
+            heals = entry["heals_applied"]
+            progress = entry["progress"]
+            status = "✓" if progress > 0 else "⚠" if progress == 0 else "✗"
+            print(f"   Round {r}: {pre} → {post} violations ({status} {heals} heals, {progress:+d} progress)")
+        
+        if ctx.fission_events:
+            print(f"\n[FISSION EVENTS]: {len(ctx.fission_events)} files require decomposition")
+        
+        print("="*80)
 
     def _print_mission_report(self, ctx: Any) -> None:
         """Print the final mission report."""

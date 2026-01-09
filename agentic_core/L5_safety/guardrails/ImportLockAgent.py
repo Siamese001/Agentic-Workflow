@@ -296,21 +296,31 @@ _global_lock: Optional[ImportLockAgent] = None
 
 
 def engage_global_lock() -> ImportLockAgent:
+    """ 
+    Sovereign Entry Point: Activates the global ImportLockAgent.
+    Ensures that once activated, the Law of Gravity is enforced for all 
+    subsequent imports in the process lifecycle.
     """
-    Engage the global import lock.
-    
-    This is a convenience function for activating the import lock
-    at application startup.
-    
-    Returns:
-        The global ImportLockAgent instance
-    """
+    import logging
+
+    logger = logging.getLogger("SovereignGuard")
+
     global _global_lock
-    
     if _global_lock is None:
         _global_lock = ImportLockAgent()
-    
-    _global_lock.engage_lock()
+
+    # Idempotent install: if anything toggled meta_path out of band, restore it.
+    if not _global_lock.enabled or _global_lock not in sys.meta_path:
+        if _global_lock in sys.meta_path:
+            try:
+                sys.meta_path.remove(_global_lock)
+            except ValueError:
+                pass
+
+        sys.meta_path.insert(0, _global_lock)
+        _global_lock.enabled = True
+        logger.info("🔒 Sovereign Runtime Security: ACTIVATED")
+
     return _global_lock
 
 
