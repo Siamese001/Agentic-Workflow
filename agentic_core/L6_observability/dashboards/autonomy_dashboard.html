@@ -1480,44 +1480,153 @@
             return '#991b1b';  // Dark red
         }
 
-        // Generate mock per-agent data for distribution calculations
+        // Generate mock per-agent data for distribution calculations AND drill-down display
         // In production, this would come from the backend data
         function generateMockAgentData(territoryData) {
             // Create simulated per-agent values based on territory averages
             // This demonstrates the distribution concept - real data would replace this
             const agentData = {};
+            
+            // Agent name templates by territory type
+            const agentNameTemplates = {
+                'L6': ['MetricsCollector', 'TelemetryAggregator', 'ComplianceChecker', 'DashboardRenderer', 'AlertManager', 'TraceExporter', 'LogAnalyzer', 'HealthMonitor', 'AuditLogger', 'ReportGenerator'],
+                'L5': ['SafetyValidator', 'InputSanitizer', 'OutputValidator', 'SchemaEnforcer', 'BoundaryChecker', 'PermissionGuard', 'RateLimiter', 'CircuitBreaker', 'FaultDetector', 'RecoveryHandler'],
+                'L4': ['StateManager', 'SessionHandler', 'CacheController', 'PersistenceLayer', 'TransactionManager', 'SnapshotHandler', 'SyncManager', 'ConflictResolver', 'VersionController', 'MigrationHandler'],
+                'L3': ['WorkflowOrchestrator', 'TaskScheduler', 'PipelineManager', 'EventDispatcher', 'QueueProcessor', 'BatchCoordinator', 'DependencyResolver', 'ExecutionPlanner', 'ResourceAllocator', 'LoadBalancer'],
+                'L2': ['ExecutionAgent', 'ToolInvoker', 'APIConnector', 'FileProcessor', 'DataTransformer', 'QueryExecutor', 'CommandRunner', 'IntegrationBridge', 'ProtocolHandler', 'StreamProcessor'],
+                'L1': ['ReasoningEngine', 'ContextAnalyzer', 'DecisionMaker', 'PatternMatcher', 'InferenceEngine', 'KnowledgeRetriever', 'PromptBuilder', 'ResponseParser', 'IntentClassifier', 'EntityExtractor'],
+                'default': ['GenericAgent', 'UtilityHelper', 'ServiceHandler', 'ProcessManager', 'DataHandler', 'ConfigLoader', 'PluginManager', 'ExtensionHost', 'AdapterLayer', 'WrapperClass']
+            };
+            
             territoryData.forEach(row => {
                 const territory = row.Territory;
                 const numAgents = row.Total || 5;
                 
+                // Determine which template to use based on territory name
+                let templateKey = 'default';
+                if (territory.includes('L6')) templateKey = 'L6';
+                else if (territory.includes('L5')) templateKey = 'L5';
+                else if (territory.includes('L4')) templateKey = 'L4';
+                else if (territory.includes('L3')) templateKey = 'L3';
+                else if (territory.includes('L2')) templateKey = 'L2';
+                else if (territory.includes('L1')) templateKey = 'L1';
+                
+                const templates = agentNameTemplates[templateKey];
+                
                 // Generate values with realistic variance around the average
-                const generateValues = (avg, variance = 15) => {
-                    const values = [];
-                    for (let i = 0; i < numAgents; i++) {
-                        // Add some outliers (10% chance of being very low)
-                        if (Math.random() < 0.1) {
-                            values.push(Math.max(0, avg - 40 - Math.random() * 20));
-                        } else {
-                            values.push(Math.max(0, Math.min(100, avg + (Math.random() - 0.5) * variance * 2)));
-                        }
+                const generateValue = (avg, variance = 15, forceOutlier = false) => {
+                    if (forceOutlier) {
+                        return Math.max(0, avg - 40 - Math.random() * 20);
                     }
-                    return values;
+                    return Math.max(0, Math.min(100, avg + (Math.random() - 0.5) * variance * 2));
                 };
                 
+                // Generate individual agent objects
+                const agents = [];
+                const healCapValues = [];
+                const invocationValues = [];
+                const hardenedValues = [];
+                const testValues = [];
+                const complexityHealthValues = [];
+                const healthValues = [];
+                const typedValues = [];
+                const documentedValues = [];
+                const schemaValues = [];
+                const baseValues = [];
+                const qualityValues = [];
+                
+                for (let i = 0; i < numAgents; i++) {
+                    const isOutlier = Math.random() < 0.1; // 10% chance of being an outlier
+                    const agentName = templates[i % templates.length] + (i >= templates.length ? `_${Math.floor(i / templates.length) + 1}` : '');
+                    const territoryPath = territory.replace(/\s+/g, '_').replace(/\//g, '/');
+                    
+                    // Generate metric values
+                    const healCap = generateValue(row['Heal Cap %'] || 0, 15, isOutlier);
+                    const invocation = generateValue(row['Invocation %'] || 0, 15, isOutlier);
+                    const hardened = generateValue(row['Hardened %'] || 0, 15, isOutlier);
+                    const test = generateValue(row['Test %'] || 0, 15, isOutlier);
+                    const complexityHealth = generateValue(row['Complexity Health'] || 0, 15, isOutlier);
+                    const health = generateValue(row.Health || 0, 15, isOutlier);
+                    const typed = generateValue(row['Typed %'] || 0, 15, isOutlier);
+                    const documented = generateValue(row['Documented %'] || 0, 15, isOutlier);
+                    const schema = generateValue(row['Schema Strictness %'] || 100, 10, false);
+                    const base = generateValue(row['Proper Base %'] || 0, 15, isOutlier);
+                    const quality = generateValue(row['Code Quality Score'] || 0, 10, isOutlier);
+                    const complexity = Math.max(1, Math.round(50 - complexityHealth / 2 + (Math.random() - 0.5) * 10));
+                    
+                    // Store values for distribution stats
+                    healCapValues.push(healCap);
+                    invocationValues.push(invocation);
+                    hardenedValues.push(hardened);
+                    testValues.push(test);
+                    complexityHealthValues.push(complexityHealth);
+                    healthValues.push(health);
+                    typedValues.push(typed);
+                    documentedValues.push(documented);
+                    schemaValues.push(schema);
+                    baseValues.push(base);
+                    qualityValues.push(quality);
+                    
+                    // Create agent object for drill-down modal
+                    agents.push({
+                        name: agentName,
+                        rel: `agentic_core/${territoryPath}/${agentName}.py`,
+                        abs_file: `C:/Git/Agentic-Workflow/agentic_core/${territoryPath}/${agentName}.py`,
+                        abs_class: `C:/Git/Agentic-Workflow/agentic_core/${territoryPath}/${agentName}.py`,
+                        class_line: Math.floor(Math.random() * 200) + 10,
+                        path: `agentic_core/${territoryPath}/${agentName}.py`,
+                        // Table 1 metrics
+                        healCap: healCap,
+                        has_mixin: healCap > 50,
+                        invocation: invocation > 70 ? 'Yes' : (invocation > 30 ? 'Inherited' : 'No'),
+                        invocation_pct: invocation,
+                        hardened_pct: hardened,
+                        has_tests: test > 50,
+                        test_pct: test,
+                        complexity: complexity,
+                        complexity_health: complexityHealth,
+                        health: health,
+                        // Table 2 metrics
+                        typed_pct: typed,
+                        documented_pct: documented,
+                        schema_pct: schema,
+                        proper_base_pct: base,
+                        code_quality: quality,
+                        overall_typed_pct: typed,
+                        // Observability flags
+                        obs_summary: `Logging: ${Math.random() > 0.3 ? '✓' : '✗'} | Metrics: ${Math.random() > 0.5 ? '✓' : '✗'} | Tracing: ${Math.random() > 0.6 ? '✓' : '✗'}`,
+                        // MCP Hardening flags
+                        mcp_summary: `Shield: ${hardened > 60 ? '✓' : '✗'} | @hardened: ${hardened > 40 ? '✓' : '✗'} | Safe: ${hardened > 20 ? '✓' : '✗'}`,
+                        // Typing flags
+                        typing_summary: `Init: ${typed > 70 ? '✓' : '✗'} | Methods: ${Math.round(typed)}% | Returns: ${typed > 50 ? '✓' : '✗'}`,
+                        // Outlier status
+                        isOutlier: isOutlier,
+                        outlierMetrics: []
+                    });
+                    
+                    // Track which metrics are outliers for this agent
+                    if (healCap < 50) agents[agents.length-1].outlierMetrics.push('Heal Cap');
+                    if (invocation < 50) agents[agents.length-1].outlierMetrics.push('Invocation');
+                    if (hardened < 50) agents[agents.length-1].outlierMetrics.push('Hardened');
+                    if (test < 50) agents[agents.length-1].outlierMetrics.push('Test');
+                    if (health < 60) agents[agents.length-1].outlierMetrics.push('Health');
+                }
+                
                 agentData[territory] = {
-                    // Table 1 metrics
-                    healCap: generateValues(row['Heal Cap %'] || 0),
-                    invocation: generateValues(row['Invocation %'] || 0),
-                    hardened: generateValues(row['Hardened %'] || 0),
-                    test: generateValues(row['Test %'] || 0),
-                    complexityHealth: generateValues(row['Complexity Health'] || 0),
-                    health: generateValues(row.Health || 0),
-                    // Table 2 metrics (Code Quality)
-                    typed: generateValues(row['Typed %'] || 0),
-                    documented: generateValues(row['Documented %'] || 0),
-                    schemaStrictness: generateValues(row['Schema Strictness %'] || 100),
-                    properBase: generateValues(row['Proper Base %'] || 0),
-                    codeQuality: generateValues(row['Code Quality Score'] || 0)
+                    // Individual agent objects for drill-down
+                    agents: agents,
+                    // Metric value arrays for distribution stats
+                    healCap: healCapValues,
+                    invocation: invocationValues,
+                    hardened: hardenedValues,
+                    test: testValues,
+                    complexityHealth: complexityHealthValues,
+                    health: healthValues,
+                    typed: typedValues,
+                    documented: documentedValues,
+                    schemaStrictness: schemaValues,
+                    properBase: baseValues,
+                    codeQuality: qualityValues
                 };
             });
             return agentData;
