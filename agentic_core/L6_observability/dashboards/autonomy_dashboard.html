@@ -1819,6 +1819,123 @@
             }
         }
         
+        // ============================================
+        // PHASE 6: Architectural Integrity & Toxicity
+        // ============================================
+        
+        // Global state for toxicity filtering
+        let toxicityFilterEnabled = false;
+        
+        // Mock fan-in data (in production, this would come from ToxicDependencyAuditor)
+        // Higher fan-in = more dependents = more toxic if broken
+        function getMockFanInData(territory) {
+            const fanInMap = {
+                'L5 Safety/Base Class': 259,      // Critical hub - all validators depend on it
+                'L4 State/Base Class': 180,       // State management base
+                'L3 Orchestration/Base Class': 150, // Orchestration base
+                'L2 Execution/Base Class': 120,   // Execution base
+                'L1 Cognition/Base Class': 95,    // Cognition base
+                'L5 Safety/Validators': 45,
+                'L4 State/Managers': 38,
+                'L3 Orchestration/Core': 52,
+                'L6_Observability/Metrics': 28,
+                'L6_Observability/Telemetry': 15,
+                'L6_Observability/Tracing': 12,
+                'L6_Observability/Compliance': 8,
+                'L2 Execution/Agents': 35,
+                'L1 Cognition/Specialized': 22,
+                'L1 Cognition/Reasoning': 18
+            };
+            return fanInMap[territory] || Math.floor(Math.random() * 20) + 5;
+        }
+        
+        // Calculate Impact Score: (100 - MetricValue) × (1 + ln(FanInCount))
+        function calculateImpactScore(metricValue, fanIn) {
+            const deviation = 100 - metricValue;
+            const toxicityMultiplier = 1 + Math.log(Math.max(fanIn, 1));
+            return Math.round(deviation * toxicityMultiplier);
+        }
+        
+        // Get toxicity level based on fan-in
+        function getToxicityLevel(fanIn) {
+            if (fanIn >= 100) return { level: 'critical', icon: '☢️', color: '#dc2626', label: 'Critical Hub' };
+            if (fanIn >= 50) return { level: 'high', icon: '⚠️', color: '#ea580c', label: 'High Impact' };
+            if (fanIn >= 20) return { level: 'medium', icon: '⚡', color: '#f59e0b', label: 'Medium Impact' };
+            return { level: 'low', icon: '', color: '#6b7280', label: 'Low Impact' };
+        }
+        
+        // Calculate territory toxicity score (sum of impact scores for outliers)
+        function calculateTerritoryToxicity(territory) {
+            const agentData = globalAgentData[territory];
+            if (!agentData) return { score: 0, hasSystemicRisk: false };
+            
+            const fanIn = getMockFanInData(territory);
+            let totalScore = 0;
+            let criticalOutliers = 0;
+            
+            // Check all metrics for outliers and calculate impact
+            const metrics = ['healCap', 'invocation', 'hardened', 'test', 'health', 'typed', 'documented', 'codeQuality'];
+            metrics.forEach(metric => {
+                const values = agentData[metric] || [];
+                values.forEach(val => {
+                    if (val < 50) {
+                        totalScore += calculateImpactScore(val, fanIn);
+                        if (val === 0 && fanIn >= 50) criticalOutliers++;
+                    }
+                });
+            });
+            
+            return {
+                score: totalScore,
+                fanIn: fanIn,
+                hasSystemicRisk: criticalOutliers > 0 && fanIn >= 50,
+                toxicity: getToxicityLevel(fanIn)
+            };
+        }
+        
+        // Format toxicity badge for territory
+        function formatToxicityBadge(territory) {
+            const tox = calculateTerritoryToxicity(territory);
+            if (tox.toxicity.level === 'low') return '';
+            
+            let badge = `<span style="margin-left:6px; font-size:0.8em;" title="Fan-in: ${tox.fanIn} dependents">${tox.toxicity.icon}</span>`;
+            
+            if (tox.hasSystemicRisk) {
+                badge += `<span style="background:#dc2626; color:white; padding:1px 6px; border-radius:4px; font-size:0.7em; margin-left:4px;">SYSTEMIC RISK</span>`;
+            }
+            
+            return badge;
+        }
+        
+        // Toggle toxicity filter
+        function toggleToxicityFilter() {
+            toxicityFilterEnabled = !toxicityFilterEnabled;
+            renderTerritorySummaryTable(dashboardData);
+            renderCodeQualityTable(dashboardData);
+        }
+        
+        // Render toxicity filter control
+        function renderToxicityControl() {
+            const toxicHubCount = dashboardData.filter(row => {
+                if (row.Territory === 'TOTAL') return false;
+                const fanIn = getMockFanInData(row.Territory);
+                return fanIn >= 20;
+            }).length;
+            
+            return `
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; padding:12px; background:linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%); border-radius:8px; border:1px solid rgba(220, 38, 38, 0.2);">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em; font-weight:600;">
+                    <input type="checkbox" id="toxicity-filter" ${toxicityFilterEnabled ? 'checked' : ''} 
+                           onchange="toggleToxicityFilter()" style="cursor:pointer; width:18px; height:18px;">
+                    <span>☢️ Show Only Toxic Hubs (Fan-in ≥ 20)</span>
+                    <span style="background:#dc2626; color:white; padding:2px 8px; border-radius:10px; font-size:0.8em;">${toxicHubCount} hubs</span>
+                </label>
+                <span style="color:#6b7280; font-size:0.85em; margin-left:auto;">
+                    Impact Score = (100 - Metric) × (1 + ln(Fan-in)) — Higher fan-in = more systemic risk
+                </span>
+            </div>`;
+        }
+        
         // Render compact alert banner for a specific table (table1 or table2)
         function renderTableAlertBanner(territoryData, tableType = 'table1') {
             const alerts = aggregateOutlierAlerts(territoryData);
@@ -1902,26 +2019,54 @@
             const container = document.getElementById('kpiGrid');
             if (!container) return;
 
-            // Sort territories: TOTAL first, then L6→L5→L4→L3→L2→L1, then non-L territories at bottom
-            const sortedData = [...territoryData].sort((a, b) => {
+            // PHASE 1: Generate mock agent data for distribution calculations (before filtering)
+            globalAgentData = generateMockAgentData(territoryData);
+            
+            // PHASE 5: Apply filtering if enabled
+            const filterState = tableFilterState.table1;
+            let filteredData = [...territoryData];
+            
+            if (filterState.showOnlyOutliers) {
+                filteredData = filteredData.filter(row => {
+                    if (row.Territory === 'TOTAL') return true; // Always show TOTAL
+                    const status = hasRowCriticalOutliers(row.Territory);
+                    return status.hasCritical || status.hasWarning;
+                });
+            }
+            
+            // PHASE 6: Apply toxicity filter if enabled
+            if (toxicityFilterEnabled) {
+                filteredData = filteredData.filter(row => {
+                    if (row.Territory === 'TOTAL') return true;
+                    const fanIn = getMockFanInData(row.Territory);
+                    return fanIn >= 20; // Only show toxic hubs
+                });
+            }
+
+            // Sort territories: TOTAL first, then by outliers or layer
+            const sortedData = [...filteredData].sort((a, b) => {
                 const aTerritory = a.Territory || '';
                 const bTerritory = b.Territory || '';
                 // TOTAL always first
                 if (aTerritory === 'TOTAL') return -1;
                 if (bTerritory === 'TOTAL') return 1;
-                // Check if territory starts with L followed by digit
+                
+                // PHASE 5: Sort by outlier count if enabled
+                if (filterState.sortByOutliers) {
+                    const aOutliers = getTerritoryOutlierCount(aTerritory);
+                    const bOutliers = getTerritoryOutlierCount(bTerritory);
+                    if (aOutliers !== bOutliers) return bOutliers - aOutliers; // Higher outliers first
+                }
+                
+                // Default: L6→L5→L4→L3→L2→L1, then non-L territories at bottom
                 const aMatch = aTerritory.match(/^L(\d)/);
                 const bMatch = bTerritory.match(/^L(\d)/);
-                const aLayer = aMatch ? parseInt(aMatch[1]) : -1; // Non-L territories get -1 (bottom)
+                const aLayer = aMatch ? parseInt(aMatch[1]) : -1;
                 const bLayer = bMatch ? parseInt(bMatch[1]) : -1;
-                // Higher layer numbers first (L6 before L5), non-L at bottom
                 if (aLayer !== bLayer) return bLayer - aLayer;
                 return aTerritory.localeCompare(bTerritory);
             });
             territoryData = sortedData;
-
-            // PHASE 1: Generate mock agent data for distribution calculations
-            globalAgentData = generateMockAgentData(territoryData);
             
             // Compute aggregate distribution stats across all territories
             const allHealthValues = territoryData.map(r => r.Health);
@@ -1944,9 +2089,11 @@
                 <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
                     Territory Summary 
                     <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
-                        📊 Phase 1-4: Stats, Outliers, Worst Performers & Visual Alerts
+                        📊 Phase 1-6: Stats, Outliers, Worst Performers, Alerts, Drill-down & Toxicity
                     </span>
                 </h3>
+                ${renderToxicityControl()}
+                ${renderTableControls('table1', dashboardData)}
                 ${renderTableAlertBanner(territoryData, 'table1')}
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
@@ -2173,7 +2320,7 @@
                         onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'" 
                         onclick="openDrillModal('${row.Territory}')" 
                         title="Click to view detailed per-agent diagnostics for ${row.Territory}">
-                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}</td>
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(healCapMin)}; border-right:1px solid #e5e7eb;">
                             <span style="color:${getWorstCaseColor(healCapMin)};">${formatDistributionCell(row['Heal Cap %'], healCapTerritoryStats, false)}${formatOutlierBadge(healCapTerritoryOutliers.atZero, healCapTerritoryOutliers.belowThreshold, 50)}</span>
@@ -2225,19 +2372,47 @@
             const container = document.getElementById('codeQualityGrid');
             if (!container) return;
             
-            // Sort territories: TOTAL first, then L6→L5→L4→L3→L2→L1, then non-L territories at bottom
-            const sortedData = [...territoryData].sort((a, b) => {
+            // PHASE 5: Apply filtering if enabled
+            const filterState = tableFilterState.table2;
+            let filteredData = [...territoryData];
+            
+            if (filterState.showOnlyOutliers) {
+                filteredData = filteredData.filter(row => {
+                    if (row.Territory === 'TOTAL') return true; // Always show TOTAL
+                    const status = hasRowCriticalOutliers(row.Territory);
+                    return status.hasCritical || status.hasWarning;
+                });
+            }
+            
+            // PHASE 6: Apply toxicity filter if enabled
+            if (toxicityFilterEnabled) {
+                filteredData = filteredData.filter(row => {
+                    if (row.Territory === 'TOTAL') return true;
+                    const fanIn = getMockFanInData(row.Territory);
+                    return fanIn >= 20; // Only show toxic hubs
+                });
+            }
+            
+            // Sort territories: TOTAL first, then by outliers or layer
+            const sortedData = [...filteredData].sort((a, b) => {
                 const aTerritory = a.Territory || '';
                 const bTerritory = b.Territory || '';
                 // TOTAL always first
                 if (aTerritory === 'TOTAL') return -1;
                 if (bTerritory === 'TOTAL') return 1;
-                // Check if territory starts with L followed by digit
+                
+                // PHASE 5: Sort by outlier count if enabled
+                if (filterState.sortByOutliers) {
+                    const aOutliers = getTerritoryOutlierCount(aTerritory);
+                    const bOutliers = getTerritoryOutlierCount(bTerritory);
+                    if (aOutliers !== bOutliers) return bOutliers - aOutliers; // Higher outliers first
+                }
+                
+                // Default: L6→L5→L4→L3→L2→L1, then non-L territories at bottom
                 const aMatch = aTerritory.match(/^L(\d)/);
                 const bMatch = bTerritory.match(/^L(\d)/);
-                const aLayer = aMatch ? parseInt(aMatch[1]) : -1; // Non-L territories get -1 (bottom)
+                const aLayer = aMatch ? parseInt(aMatch[1]) : -1;
                 const bLayer = bMatch ? parseInt(bMatch[1]) : -1;
-                // Higher layer numbers first (L6 before L5), non-L at bottom
                 if (aLayer !== bLayer) return bLayer - aLayer;
                 return aTerritory.localeCompare(bTerritory);
             });
@@ -2249,9 +2424,10 @@
                 <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
                     Code Quality by Territory & Sub-Territory
                     <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
-                        📊 Phase 1-4: Stats, Outliers, Worst Performers & Visual Alerts
+                        📊 Phase 1-6: Stats, Outliers, Worst Performers, Alerts, Drill-down & Toxicity
                     </span>
                 </h3>
+                ${renderTableControls('table2', dashboardData)}
                 ${renderTableAlertBanner(territoryData, 'table2')}
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
@@ -2420,7 +2596,7 @@
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s; ${rowBorderStyle}" 
                         onmouseover="this.style.background='#f0f9ff'" 
                         onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'">
-                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}</td>
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(typedColorVal)}; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(typed, typedStats, false)}${formatOutlierBadge(typedTerritoryOutliers.atZero, typedTerritoryOutliers.belowThreshold, 50)}
