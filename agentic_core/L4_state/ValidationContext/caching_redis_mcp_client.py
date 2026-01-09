@@ -9,7 +9,7 @@ L3 routed, L5 shielded, L6 observable.
 import logging
 from typing import Any, Optional, List, Dict
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 

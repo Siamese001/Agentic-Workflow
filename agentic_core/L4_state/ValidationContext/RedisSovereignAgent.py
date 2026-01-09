@@ -16,7 +16,7 @@ from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent
 class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):

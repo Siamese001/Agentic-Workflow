@@ -1075,7 +1075,7 @@ class NervousSystemPhaseOrchestratorAgent(HealerMixin):
 
 # NAMING CANON COMPLIANCE — renamed to NervousSystemAgent for discovery and sovereignty — 2025-12-30
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.bases.OrchestrationBaseAgent import L3SubatomicTestingMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin

@@ -82,7 +82,7 @@ class InternalAgent:
             doc.close()
 
             # Split into paragraphs
-            paragraphs = [p.strip() for p in full_text.split('\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n\n') if len(p.strip()) > 50]
+            paragraphs = [p.strip() for p in full_text.split('\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n\n') if len(p.strip()) > 50]
             
             rag_results = []
             for para in paragraphs[:50]:  # Cap at 50 paragraphs to avoid overload

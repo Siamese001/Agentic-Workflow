@@ -228,7 +228,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     def _report_impact(self, impact: ImpactAnalysis):
         """Report impact analysis to user."""
         change = impact.change
-        Logger.info(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
+        Logger.info(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
         Logger.info(f'🛡️  SCHEMA CHANGE IMPACT ANALYSIS')
         Logger.info(f"{'=' * 80}")
         Logger.info(f'Schema: {change.schema_name}')

@@ -19,7 +19,6 @@ except ImportError:
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Extracted to L1 canonical agent_logic.py (2026-01-06)
 from agentic_core.L1_cognition.thought_engine.agent_logic import CanonValidatorAgent

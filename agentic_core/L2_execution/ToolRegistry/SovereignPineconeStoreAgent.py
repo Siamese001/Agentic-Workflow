@@ -30,7 +30,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 Logger: Any = logging.getLogger('L4.PineconeStore')
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
@@ -43,7 +43,6 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
 
     def __init__(self, index_name: Optional[str]=None, namespace: Optional[str]=None) -> None:
         """Initialize the adapter with MCP client."""
-        from agentic_core.L4_state.semantic_memory.pinecone_mcp_client import SovereignPineconeMCPClient
         self.McpClient = SovereignPineconeMCPClient()
         self.namespace = namespace
         self._initialized = False

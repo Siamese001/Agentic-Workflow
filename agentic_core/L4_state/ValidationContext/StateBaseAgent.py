@@ -36,7 +36,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
@@ -344,7 +344,7 @@ def test_balanced_sentiment():
         escaped_artifact = artifact_str.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 def test_artifact_exists():
     """Verify Artifact is not empty."""
@@ -384,7 +384,6 @@ def test_artifact_exists():
     async def _delegate_to_l5_specialist(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
         """Delegate to TestSovereigntyAgent for advanced state testing."""
         try:
-            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
             artifact_str = json.dumps(Artifact) if isinstance(Artifact, dict) else str(Artifact)

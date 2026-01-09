@@ -3,7 +3,7 @@ from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-'\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nsignature_verifier.py - function Module\n\nDomain: inspection\nGenerated: 2025-12-07T12:07:59.842368\n'
+'\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nsignature_verifier.py - function Module\n\nDomain: inspection\nGenerated: 2025-12-07T12:07:59.842368\n'
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol

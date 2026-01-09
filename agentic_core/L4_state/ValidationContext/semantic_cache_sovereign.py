@@ -13,8 +13,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 
