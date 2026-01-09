@@ -4,6 +4,11 @@ L1 Protocol Handler - Stub module for backwards compatibility.
 from typing import Any, Dict, List, Optional
 
 
+class GitConflictError(Exception):
+    """Error raised when a git conflict is detected."""
+    pass
+
+
 class ProtocolHandler:
     """Handler for L1 protocols."""
     def __init__(self):
@@ -18,4 +23,9 @@ class ProtocolHandler:
         return self._handlers[protocol](data)
 
 
-__all__ = ['ProtocolHandler']
+class L1ProtocolHandler(ProtocolHandler):
+    """L1-specific protocol handler."""
+    pass
+
+
+__all__ = ['ProtocolHandler', 'GitConflictError', 'L1ProtocolHandler']

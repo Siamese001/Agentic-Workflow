@@ -21,17 +21,15 @@ Logger = logging.getLogger(__name__)
 # Configuration
 # NAMING FIXED: BENCHMARK_HISTORY_SIZE → benchmark_history_size
 benchmark_history_size = 1000
-# NAMING FIXED: PERFORMANCE_DEGRADATION_THRESHOLD → performance_degradation_threshold
-performance_degradation_threshold = 0.5  # 50% slower than average
+# NAMING FIXED: PERFORMANCE_DEGRADATION_THRESHOLD → PERFORMANCE_DEGRADATION_THRESHOLD
+PERFORMANCE_DEGRADATION_THRESHOLD = 0.5  # 50% slower than average
 
 
 # NAMING FIXED: BenchmarkResult → BenchmarkResult
 class BenchmarkResult:
     pass
 
-BenchmarkResult = BenchmarkResult
 BenchmarkSuite = type("BenchmarkSuite", (), {"name": "", "add_result": lambda s,r: None, "is_degraded": lambda s: False, "stats": {"avg_ms": 0, "count": 0}, "get_summary": lambda s: {}})
-PERFORMANCE_DEGRADATION_THRESHOLD = performance_degradation_threshold
 
 class BenchmarkResultActual:
     """Result of a single benchmark measurement."""
@@ -124,7 +122,7 @@ class BenchmarkSuite:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-# NAMING FIXED: BenchmarkingAgent → benchmarking_agent
+# NAMING FIXED: BenchmarkingAgent → BenchmarkingAgent
 class BenchmarkingAgent(HealerMixin):
     """
     Measures and tracks performance metrics.
@@ -388,7 +386,7 @@ class BenchmarkingAgent(HealerMixin):
 class BenchmarkContext:
     """Context manager for benchmarking."""
 
-    def __init__(self, agent: "benchmarking_agent", name: str, metadata: Dict = None):
+    def __init__(self, agent: "BenchmarkingAgent", name: str, metadata: Dict = None):
         self.agent = agent
         self.name = name
         self.metadata = metadata
@@ -404,18 +402,17 @@ class BenchmarkContext:
 
 
 # Global instance
-_benchmarking_agent: Optional["benchmarking_agent"] = None
+_benchmarking_agent: Optional["BenchmarkingAgent"] = None
 
 
-def get_benchmarking_agent() -> "benchmarking_agent":
+def get_benchmarking_agent() -> "BenchmarkingAgent":
     """Get or create the global BenchmarkingAgent instance."""
     global _benchmarking_agent
     if _benchmarking_agent is None:
-        _benchmarking_agent = benchmarking_agent()
+        _benchmarking_agent = BenchmarkingAgent()
     return _benchmarking_agent
 
 # Aliases for discovery
-BenchmarkingAgent = benchmarking_agent
 BenchmarkContext = benchmark_context_manager = type("benchmark_context_manager", (), {})
 
 def initialize_benchmarking():

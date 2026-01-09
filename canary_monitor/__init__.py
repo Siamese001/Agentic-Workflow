@@ -4,16 +4,22 @@ Canary Monitor - Stub module for backwards compatibility.
 from typing import Any, Dict, List, Optional
 
 
+def run_canary_monitor(*args, **kwargs) -> Dict[str, Any]:
+    """Run the canary monitor."""
+    return {"status": "ok", "canaries": []}
+
+
 class CanaryMonitor:
     """Monitor for canary deployments."""
+    
     def __init__(self):
-        self._metrics = {}
+        self._canaries = {}
     
-    def record(self, metric: str, value: Any) -> None:
-        self._metrics[metric] = value
+    def register(self, name: str, check: callable) -> None:
+        self._canaries[name] = check
     
-    def get_metrics(self) -> Dict[str, Any]:
-        return self._metrics.copy()
+    def check_all(self) -> Dict[str, bool]:
+        return {name: check() for name, check in self._canaries.items()}
 
 
-__all__ = ['CanaryMonitor']
+__all__ = ['CanaryMonitor', 'run_canary_monitor']

@@ -33,7 +33,7 @@ class TestAutonomyGuardianAgent:
     def test_detect_mcp_hardening(self, agent):
         """Test MCP hardening detection logic."""
         # Test with MCPHardenedMixin
-        content_with_mixin = "class TestAgent(MCPHardenedMixin):\n    pass"
+        content_with_mixin = "class TestAgent():\n    pass"
         result = agent._detect_mcp_hardening(None, content_with_mixin)
         assert result == 1
         

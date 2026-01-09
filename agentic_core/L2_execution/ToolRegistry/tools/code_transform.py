@@ -10,6 +10,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class CodeTransformArgs:
+    """Arguments for code transformation."""
+    def __init__(self, source: str = "", target: str = "", **kwargs):
+        self.source = source
+        self.target = target
+        self.options = kwargs
+
+
 class CodeTransformer:
     """Tool for transforming code."""
     
@@ -36,4 +44,4 @@ class CodeTransformer:
         return ast.unparse(tree)
 
 
-__all__ = ['CodeTransformer']
+__all__ = ['CodeTransformer', 'CodeTransformArgs']

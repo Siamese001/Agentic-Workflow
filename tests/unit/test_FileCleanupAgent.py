@@ -13,7 +13,7 @@ class MockContext:
         self.scan_directories = []
 
 
-class TestFileCleanupAgent(MCPHardenedMixin, unittest.TestCase):
+class TestFileCleanupAgent(unittest.TestCase):
     """Test FileCleanupAgent functionality."""
     
     def setUp(self):

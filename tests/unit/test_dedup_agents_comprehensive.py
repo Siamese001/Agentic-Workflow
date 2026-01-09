@@ -83,7 +83,7 @@ class TestFileLibrarian(unittest.TestCase):
         self.assertTrue(is_allowed_duplicate("__init__.py"))
 
 
-class TestCodeDeduplicationAgent(MCPHardenedMixin, unittest.TestCase):
+class TestCodeDeduplicationAgent( unittest.TestCase):
     """Test suite for L2 CodeDeduplicationAgent"""
     
     def setUp(self):
