@@ -1517,12 +1517,19 @@
                 };
                 
                 agentData[territory] = {
+                    // Table 1 metrics
                     healCap: generateValues(row['Heal Cap %'] || 0),
                     invocation: generateValues(row['Invocation %'] || 0),
                     hardened: generateValues(row['Hardened %'] || 0),
                     test: generateValues(row['Test %'] || 0),
                     complexityHealth: generateValues(row['Complexity Health'] || 0),
-                    health: generateValues(row.Health || 0)
+                    health: generateValues(row.Health || 0),
+                    // Table 2 metrics (Code Quality)
+                    typed: generateValues(row['Typed %'] || 0),
+                    documented: generateValues(row['Documented %'] || 0),
+                    schemaStrictness: generateValues(row['Schema Strictness %'] || 100),
+                    properBase: generateValues(row['Proper Base %'] || 0),
+                    codeQuality: generateValues(row['Code Quality Score'] || 0)
                 };
             });
             return agentData;
@@ -1905,7 +1912,7 @@
                 return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
             };
             
-            // Add TOTAL row first
+            // Add TOTAL row first with distribution statistics (Phase 1)
             const totalRow = dashboardData.find(row => row.Territory === 'TOTAL');
             if (totalRow) {
                 const codeQuality = parseFloat(totalRow['Code Quality Score'] || 0);
@@ -1914,29 +1921,81 @@
                 const schemaStrictness = parseFloat(totalRow['Schema Strictness %'] || 100);
                 const properBase = parseFloat(totalRow['Proper Base %'] || 0);
                 
+                // Aggregate distribution stats across all territories for TOTAL row
+                const allTyped = [], allDocumented = [], allSchema = [], allBase = [], allQuality = [];
+                territoryData.forEach(row => {
+                    const territory = row.Territory;
+                    if (globalAgentData[territory]) {
+                        allTyped.push(...globalAgentData[territory].typed);
+                        allDocumented.push(...globalAgentData[territory].documented);
+                        allSchema.push(...globalAgentData[territory].schemaStrictness);
+                        allBase.push(...globalAgentData[territory].properBase);
+                        allQuality.push(...globalAgentData[territory].codeQuality);
+                    }
+                });
+                
+                const typedStats = computeDistributionStats(allTyped);
+                const documentedStats = computeDistributionStats(allDocumented);
+                const schemaStats = computeDistributionStats(allSchema);
+                const baseStats = computeDistributionStats(allBase);
+                const qualityStats = computeDistributionStats(allQuality);
+                
                 const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
                 
                 html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
-                        <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">TOTAL</td>
+                        <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">
+                            TOTAL<br><span style="font-size:0.7em; color:#6b7280; font-weight:normal;">Avg (Min-Max, σ)</span>
+                        </td>
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(typed)}; font-weight:600; border-right:1px solid #e5e7eb;">${typed.toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(documented)}; font-weight:600; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(schemaStrictness)}; font-weight:600; border-right:1px solid #e5e7eb;">${schemaStrictness.toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(properBase)}; font-weight:600; border-right:1px solid #e5e7eb;">${properBase.toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:800; font-size:1.05em;">${codeQuality.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(typedStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            ${formatDistributionCell(typed, typedStats)}
+                            ${generateSparkline(allTyped.slice(-10), '#2563eb', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(documentedStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            ${formatDistributionCell(documented, documentedStats)}
+                            ${generateSparkline(allDocumented.slice(-10), '#2563eb', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(schemaStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            ${formatDistributionCell(schemaStrictness, schemaStats)}
+                            ${generateSparkline(allSchema.slice(-10), '#2563eb', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(baseStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            ${formatDistributionCell(properBase, baseStats)}
+                            ${generateSparkline(allBase.slice(-10), '#2563eb', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(qualityStats.min)}; color:${qualityColor}; font-weight:800; font-size:1.05em;">
+                            ${formatDistributionCell(codeQuality, qualityStats)}
+                            ${generateSparkline(allQuality.slice(-10), '#2563eb', true)}
+                        </td>
                     </tr>`;
             }
             
-            // Add territory rows
+            // Add territory rows with distribution statistics (Phase 1)
             territoryData.forEach((row, index) => {
+                const territory = row.Territory;
                 const codeQuality = parseFloat(row['Code Quality Score'] || 0);
                 const typed = parseFloat(row['Typed %'] || 0);
                 const documented = parseFloat(row['Documented %'] || 0);
                 const schemaStrictness = parseFloat(row['Schema Strictness %'] || 100);
                 const properBase = parseFloat(row['Proper Base %'] || 0);
                 
+                // Get distribution stats for this territory
+                const agentData = globalAgentData[territory] || {};
+                const typedStats = computeDistributionStats(agentData.typed || []);
+                const documentedStats = computeDistributionStats(agentData.documented || []);
+                const schemaStats = computeDistributionStats(agentData.schemaStrictness || []);
+                const baseStats = computeDistributionStats(agentData.properBase || []);
+                const qualityStats = computeDistributionStats(agentData.codeQuality || []);
+                
                 const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
+                
+                // Use worst-case (min) for color coding
+                const typedColorVal = typedStats.min !== undefined ? typedStats.min : typed;
+                const documentedColorVal = documentedStats.min !== undefined ? documentedStats.min : documented;
+                const schemaColorVal = schemaStats.min !== undefined ? schemaStats.min : schemaStrictness;
+                const baseColorVal = baseStats.min !== undefined ? baseStats.min : properBase;
+                const qualityColorVal = qualityStats.min !== undefined ? qualityStats.min : codeQuality;
                 
                 html += `
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
@@ -1944,11 +2003,21 @@
                         onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'">
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(typed)}; border-right:1px solid #e5e7eb;">${typed.toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(documented)}; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(schemaStrictness)}; border-right:1px solid #e5e7eb;">${schemaStrictness.toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(properBase)}; border-right:1px solid #e5e7eb;">${properBase.toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:700;">${codeQuality.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(typedColorVal)}; border-right:1px solid #e5e7eb;">
+                            ${formatDistributionCell(typed, typedStats, false)}
+                        </td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(documentedColorVal)}; border-right:1px solid #e5e7eb;">
+                            ${formatDistributionCell(documented, documentedStats, false)}
+                        </td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(schemaColorVal)}; border-right:1px solid #e5e7eb;">
+                            ${formatDistributionCell(schemaStrictness, schemaStats, false)}
+                        </td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(baseColorVal)}; border-right:1px solid #e5e7eb;">
+                            ${formatDistributionCell(properBase, baseStats, false)}
+                        </td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(qualityColorVal)}; color:${qualityColor}; font-weight:700;">
+                            ${formatDistributionCell(codeQuality, qualityStats, false)}
+                        </td>
                     </tr>`;
             });
             
