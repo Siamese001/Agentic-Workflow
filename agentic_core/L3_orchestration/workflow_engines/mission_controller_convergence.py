@@ -42,8 +42,17 @@ class ConvergenceEngine:
         while len(current_violations) > 0 and round_num <= self.max_rounds:
             print(f"🌀 Convergence Round {round_num}: {len(current_violations)} remaining")
             
-            # Tandem Enforcement: Spawn healer for each violation
-            for violation in current_violations:
+            # PHASE 6: Toxicity-Weighted Triage
+            # Sort violations so Toxic Hubs (highest impact) are healed first
+            prioritized_violations = sorted(
+                current_violations, 
+                key=lambda v: v.get('impact_score', 0), 
+                reverse=True
+            )
+
+            for violation in prioritized_violations:
+                if violation.get('audit_fail_count', 0) > 3:
+                    print(f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating healing...")
                 await healer.heal(violation)
             
             # Re-validate state
