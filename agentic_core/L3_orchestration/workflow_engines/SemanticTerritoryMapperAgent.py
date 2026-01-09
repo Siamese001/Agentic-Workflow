@@ -15,8 +15,10 @@ import redis
 
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 from agentic_core.config.blueprint_sovereign.structure_blueprint import TERRITORY_EXAMPLES
-    PineconeSovereignAgent,
-)
+try:
+    from agentic_core.L2_execution.ToolRegistry.PineconeSovereignAgent import PineconeSovereignAgent
+except ImportError:
+    PineconeSovereignAgent = None
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin

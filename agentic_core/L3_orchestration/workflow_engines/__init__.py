@@ -7,8 +7,15 @@ Note: IOrchestratorAgent relocated to ../interfaces/ (2026-01-07)
       for proper ABC architectural placement.
 """
 
-from ..interfaces.IOrchestratorAgent import IOrchestratorAgent
-from .McpConnectionManagerAgent import McpConnectionManagerAgent
+try:
+    from ..interfaces.IOrchestratorAgent import IOrchestratorAgent
+except ImportError:
+    IOrchestratorAgent = None
+
+try:
+    from .McpConnectionManagerAgent import McpConnectionManagerAgent
+except ImportError:
+    McpConnectionManagerAgent = None
 
 __all__ = [
     "IOrchestratorAgent",

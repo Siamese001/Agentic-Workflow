@@ -97,7 +97,7 @@ class SovereignMcpRouter(HealerMixin, MCPHardenedMixin):
                 try:
                     template_key: Any = f'seq_template:key{key_id}'
                     cached_template: Any = None
-                                        try:
+                    try:
                         cached: Any = redis_shield.execute('get', template_key)
                         if cached:
                             cached_template: Any = json.loads(cached)

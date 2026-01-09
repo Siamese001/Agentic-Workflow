@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 import yaml
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 
 class McpConnectionManagerAgent(MCPHardenedMixin):

@@ -9,7 +9,7 @@ using DeepWiki's codebase intelligence capabilities.
 import asyncio
 import logging
 from typing import List, Dict, Any
-from agentic_core.observability.deepwiki_client_sovereign import SovereignDeepWikiClient
+from agentic_core.L6_observability.deepwiki_client_sovereign import SovereignDeepWikiClient
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

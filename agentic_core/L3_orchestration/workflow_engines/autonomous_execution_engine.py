@@ -29,6 +29,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # L4 Checkpoint integration
 # GRAVITY FIXED: Dynamic import for Checkpoint manager
 try:
+    from agentic_core.L4_state.checkpoint_manager import create_autonomous_checkpoint_manager
 except ImportError:
     create_autonomous_checkpoint_manager = None
 

@@ -35,8 +35,8 @@ from agentic_core.utils.general_helpers.mission_utils import (
     get_layer_rank,
     get_placement_guidance,
 )
-from agentic_core.observability.metrics.mission_metrics import get_metrics
-from agentic_core.observability.telemetry.gemini_spy import GeminiSpy
+from agentic_core.L6_observability.metrics.mission_metrics import get_metrics
+from agentic_core.L6_observability.telemetry.gemini_spy import GeminiSpy
 
 
 class MissionController:
@@ -272,7 +272,7 @@ class MissionController:
         
         # [FULL AGENT DISCOVERY] Initialize orchestrator with ALL agents from ALL layers
         try:
-                        self._orchestrator = compliance_orchestrator(self.project_root)
+            self._orchestrator = compliance_orchestrator(self.project_root)
             print(f"   [OK] Orchestrator armed with {len(self._orchestrator.get_all_agents())} agents")
         except Exception as e:
             print(f"   [!] Orchestrator init failed: {e}")
@@ -394,7 +394,7 @@ class MissionController:
     async def _run_sovereign_dashboard(self, ctx: Any) -> None:
         """Run Sovereign Dashboard using ReportingAgent."""
         try:
-            from agentic_core.observability.compliance.ReportingAgent import ReportingAgent
+            from agentic_core.L6_observability.compliance.ReportingAgent import ReportingAgent
             reporter = ReportingAgent(self.project_root)
             report = reporter.run_diagnostic_report()
             
@@ -449,7 +449,7 @@ class MissionController:
         
         # Initialize SubAtomicEngine (LLM-powered code mutation)
         try:
-                        self._subatomic_engine = SubAtomicEngine(self.project_root)
+            self._subatomic_engine = SubAtomicEngine(self.project_root)
             ctx.engine = self._subatomic_engine
             print(f"   [OK] SubAtomicEngine armed — LLM healing available")
         except ImportError as e:
@@ -461,7 +461,7 @@ class MissionController:
         
         # Initialize SafetyGuardrail (mutation safety checks)
         try:
-                        self._safety_guardrail = SafetyGuardrail(self.project_root)
+            self._safety_guardrail = SafetyGuardrail(self.project_root)
             ctx.safety = self._safety_guardrail
             print(f"   [OK] SafetyGuardrail armed — mutation protection active")
         except ImportError as e:

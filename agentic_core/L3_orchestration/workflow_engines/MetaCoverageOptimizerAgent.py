@@ -5,8 +5,8 @@ from typing import Deque, Dict, Optional
 import time
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import get_validated_project_root
-from agentic_core.observability.metrics.CoverageAgent import CoverageAgent
-from agentic_core.observability.metrics.shared_counters import counters
+from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
+from agentic_core.L6_observability.metrics.shared_counters import counters
 from agentic_core.runtime.shared_runtime import log_event, publish_event
 
 

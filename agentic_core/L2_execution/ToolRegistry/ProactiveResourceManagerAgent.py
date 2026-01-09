@@ -338,9 +338,6 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         finally:
             _call_path.discard(agent_name)
 
-    def get_proactive_resource_manager(thresholds: Optional[ResourceThreshold]=None) -> ProactiveResourceManagerAgent:
-        """Factory function to create proactive resource manager."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
-        return ProactiveResourceManagerAgent(thresholds=thresholds)
+def create_proactive_resource_manager(thresholds: Optional[ResourceThreshold]=None) -> ProactiveResourceManagerAgent:
+    """Factory function to create proactive resource manager."""
+    return ProactiveResourceManagerAgent(thresholds=thresholds)

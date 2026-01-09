@@ -68,7 +68,7 @@ from agentic_core.utils.general_helpers.change_tracker import ChangeTracker
 
 # [HARDENING 9] Import audit Logger for comprehensive action tracking
 try:
-    from agentic_core.observability.audit.audit_logger import AuditLogger
+    from agentic_core.L6_observability.audit.audit_logger import AuditLogger
     AUDIT_LOGGER_AVAILABLE = True
 except ImportError:
     AUDIT_LOGGER_AVAILABLE = False
@@ -160,9 +160,9 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
         # Observability Linkage
         try:
-            from agentic_core.observability.tracing.TracingAgent import tracing_agent as TracingAgent
-            from agentic_core.observability.telemetry.TelemetryAgent import telemetry_agent as TelemetryAgent
-            from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
+            from agentic_core.L6_observability.tracing.TracingAgent import tracing_agent as TracingAgent
+            from agentic_core.L6_observability.telemetry.TelemetryAgent import telemetry_agent as TelemetryAgent
+            from agentic_core.L6_observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
             self.tracing = TracingAgent(project_root)
             self.telemetry = TelemetryAgent(project_root)
             self.metrics = MetricsAgent(project_root)

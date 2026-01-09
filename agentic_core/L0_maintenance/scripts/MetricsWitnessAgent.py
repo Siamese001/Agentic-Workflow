@@ -43,7 +43,7 @@ class MetricsWitnessAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, 
         self.MANDATORY_COMPONENTS = ["metrics"]
 
         try:
-            from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgentCls
+            from agentic_core.L6_observability.metrics.MetricsAgent import metrics_agent as MetricsAgentCls
             self.metrics = MetricsAgentCls(project_root)
         except Exception:  # ImportError or instantiation failure
             self.metrics = None

@@ -83,7 +83,7 @@ class HealingOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
             self.Logger.warning("HealingTransaction manager not available")
 
         try:
-            from agentic_core.observability.healing_audit import log_healing_action
+            from agentic_core.L6_observability.healing_audit import log_healing_action
             self.log_healing_action = log_healing_action
         except ImportError:
             self.log_healing_action = None

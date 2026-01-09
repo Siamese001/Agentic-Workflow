@@ -186,7 +186,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             
             # Dynamic decay: Reduce weight if proportion healthy
             try:
-                from agentic_core.observability.metrics.CoverageAgent import CoverageAgent
+                from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
                 coverage_agent = CoverageAgent()
                 metrics = coverage_agent._fetch_metrics()
                 if metrics:

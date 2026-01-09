@@ -5,7 +5,7 @@ import uuid
 import time
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import get_validated_project_root
-from agentic_core.observability.metrics.layer_decorator import layer_entry
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 # Lazy imports — gravity-safe (same L1 territory)
 def _get_thought_node():
