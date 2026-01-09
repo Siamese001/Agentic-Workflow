@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Dict, List, Set, Any
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.config.blueprint_sovereign.structure_blueprint import STRUCTURE_BLUEPRINT
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class GospelSyncAgent(MCPHardenedMixin):

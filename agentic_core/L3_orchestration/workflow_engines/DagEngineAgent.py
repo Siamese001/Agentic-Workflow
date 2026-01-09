@@ -73,6 +73,7 @@ class DagExecutionResult:
         return {'success': self.success, 'completed_tasks': self.completed_tasks, 'failed_tasks': self.failed_tasks, 'skipped_tasks': self.skipped_tasks, 'task_results': self.task_results, 'execution_order': self.execution_order, 'metadata': self.metadata}
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON COMPLIANCE — renamed to DagEngineAgent for discovery and sovereignty — 2025-12-30
 class DagEngineAgent(MCPHardenedMixin, HealerMixin):

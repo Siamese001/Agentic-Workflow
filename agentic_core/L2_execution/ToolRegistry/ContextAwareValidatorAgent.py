@@ -19,6 +19,7 @@ Constitutional Alignment:
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class ContextAwareValidatorAgent(HealerMixin, MCPHardenedMixin):

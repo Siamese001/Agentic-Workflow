@@ -34,6 +34,7 @@ from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 # [PHASE 2] L0 Delegated Testing
 from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class ScriptToAgentClassifierAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,

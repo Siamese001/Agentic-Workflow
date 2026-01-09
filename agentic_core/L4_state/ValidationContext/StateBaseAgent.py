@@ -345,6 +345,8 @@ def test_balanced_sentiment():
         return f'''
 import pytest
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 def test_artifact_exists():
     """Verify Artifact is not empty."""

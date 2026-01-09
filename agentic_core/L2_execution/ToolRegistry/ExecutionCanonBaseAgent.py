@@ -504,6 +504,7 @@ def test_no_corrupted_markers():
         return f'''
 import pytest
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 ARTIFACT_UNDER_TEST = """{escaped_artifact}"""
 

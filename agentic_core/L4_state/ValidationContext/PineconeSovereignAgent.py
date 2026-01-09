@@ -27,6 +27,7 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
     """

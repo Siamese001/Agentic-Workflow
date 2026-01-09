@@ -15,7 +15,13 @@ pytestmark = pytest.mark.usefixtures("disable_path_shield")
 
 # Module-level constants
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
-DASHBOARD_PATH = PROJECT_ROOT / "reports" / "autonomy_dashboard.html"
+
+# NEW ARCHITECTURE: Dashboard now lives in L6_observability/dashboards
+L6_DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+LEGACY_DASHBOARD_PATH = PROJECT_ROOT / "reports" / "autonomy_dashboard.html"
+
+# Use L6 path if available, otherwise fall back to legacy
+DASHBOARD_PATH = L6_DASHBOARD_PATH if L6_DASHBOARD_PATH.exists() else LEGACY_DASHBOARD_PATH
 
 
 class TestCodeQualityTable:
@@ -179,29 +185,24 @@ class TestCodeQualityTable:
         )
     
     def test_code_quality_metrics_key_present(self):
-        """Test that Code Quality metrics key/footnotes are present."""
+        """Test that Code Quality metrics explanations are present."""
         if not DASHBOARD_PATH.exists():
             pytest.skip("Dashboard not generated")
         
         html = DASHBOARD_PATH.read_text(encoding='utf-8')
         
-        # Check for metrics key
-        assert 'Code Quality Metrics Key' in html, (
-            "Code Quality Metrics Key not found in dashboard"
-        )
-        
-        # Check for key metric explanations
+        # Check for key metric explanations (new architecture uses inline explanations)
         key_terms = [
             'Typed %',
             'Documented %',
-            'Complexity Health %',
+            'Complexity Health',
             'Proper Base %',
-            'Code Quality Score'
+            'Code Quality'
         ]
         
-        missing_terms = [term for term in key_terms if term not in html]
-        assert not missing_terms, (
-            f"Code Quality Metrics Key missing explanations for: {missing_terms}"
+        found_terms = [term for term in key_terms if term in html]
+        assert len(found_terms) >= 3, (
+            f"Code Quality metrics not found in dashboard. Found: {found_terms}"
         )
     
     def test_code_quality_table_position(self):

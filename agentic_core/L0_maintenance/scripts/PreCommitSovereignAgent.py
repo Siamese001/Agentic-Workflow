@@ -240,7 +240,7 @@ from pathlib import Path
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root))
 
-from agentic_core.L0_maintenance.scripts.PreCommitSovereignAgent import PreCommitSovereignAgent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 if __name__ == "__main__":
     agent = PreCommitSovereignAgent(root_dir=str(repo_root))

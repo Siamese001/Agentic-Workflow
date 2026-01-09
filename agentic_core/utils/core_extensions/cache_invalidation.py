@@ -6,7 +6,6 @@ This ensures stale cached data (like AST results, compliance checks) is purged
 when the underlying code changes.
 
 Usage:
-    from agentic_core.utils.core_extensions.cache_invalidation import heal_invalidate_cache
     
     class HealerAgent(L2ExecutionBaseAgent):
         @heal_invalidate_cache("canon:*")  # Invalidate AST caches after heal

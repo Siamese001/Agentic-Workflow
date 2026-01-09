@@ -25,6 +25,7 @@ from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVec
 
 # [PHASE 2] L0 Delegated Testing Mixin
 from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class L0SovereignSeverity(Enum):

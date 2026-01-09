@@ -15,6 +15,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout, Protoc
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30
 class SemanticGatekeeperAgent(MCPHardenedMixin, HealerMixin):

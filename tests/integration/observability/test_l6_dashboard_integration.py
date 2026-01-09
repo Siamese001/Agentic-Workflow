@@ -257,7 +257,7 @@ class TestJavaScriptIntegration:
             'loadData',
             'renderTable',
             'openDrillModal',
-            'calculateDistributionStats',
+            'computeDistributionStats',  # Actual function name in dashboard
             'triggerHealAgent'
         ]
         
