@@ -44,6 +44,7 @@ class ConvergenceEngine:
             
             # PHASE 6: Toxicity-Weighted Triage
             # Sort violations so Toxic Hubs (highest impact) are healed first
+            # Formula: Impact = (100 - Metric) * (1 + ln(FanIn))
             prioritized_violations = sorted(
                 current_violations, 
                 key=lambda v: v.get('impact_score', 0), 
@@ -51,9 +52,27 @@ class ConvergenceEngine:
             )
 
             for violation in prioritized_violations:
+                # PHASE 5: Zombie Detection
+                # If an agent fails to heal over multiple cycles, escalate priority
                 if violation.get('audit_fail_count', 0) > 3:
-                    print(f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating healing...")
+                    print(f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating to Sub-atomic Refactor...")
+                
+                # Fission-Aware Healing: Snapshot before healing
+                file_path = Path(violation.get('path', ''))
+                pre_hash = None
+                file_size = 0
+                if file_path.exists():
+                    pre_hash = self.get_file_hash(file_path)
+                    file_size = file_path.stat().st_size
+                
+                # Execute targeted healing mission
                 await healer.heal(violation)
+                
+                # Fission Detection: Check if large file failed to change
+                if pre_hash and file_path.exists():
+                    post_hash = self.get_file_hash(file_path)
+                    if self.detect_fission(pre_hash, post_hash, file_size):
+                        print(f"⚛️ FISSION DETECTED: {violation.get('path')} unchanged after healing (>{file_size//1024}KB) - Terminating mission for this file.")
             
             # Re-validate state
             current_violations = await validator.validate()
