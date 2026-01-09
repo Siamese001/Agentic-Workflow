@@ -1,12 +1,13 @@
 # Dashboard Live Reload Server
 # Location: scripts/dashboard_live_server.py
-# Purpose: Serves reports/ directory with automatic browser reload on file changes
+# Purpose: Serves L6_observability/dashboards/ directory with automatic browser reload on file changes
 # Features:
 # - Uses livereload (pip install livereload)
 # - Watches autonomy_dashboard.html + any included assets
 # - Auto-reloads browser tab when dashboard regenerates
 # - Runs on http://localhost:8000
 # - Windsurf task integration ready
+# SSOT: agentic_core/L6_observability/dashboards/
 
 from livereload import Server
 from pathlib import Path
@@ -37,7 +38,7 @@ def regenerate_dashboard():
     except Exception as e:
         print(f"   ❌ Error running dashboard generation: {e}")
 
-REPORTS_DIR = Path(__file__).parent.parent / "reports"
+REPORTS_DIR = Path(__file__).parent.parent / "agentic_core" / "L6_observability" / "dashboards"
 PORT = 8000
 
 # Ensure we're in reports directory

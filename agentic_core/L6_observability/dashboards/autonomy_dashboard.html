@@ -1,0 +1,2849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="30">
+    <title>Autonomy Compliance Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+            --background: #f9fafb;
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .trend-up { color: #16a34a; font-weight: 600; }
+        .trend-down { color: #dc2626; font-weight: 600; }
+        .trend-flat { color: #6b7280; font-weight: 600; }
+
+        .sparkline-container {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .sparkline-svg {
+            width: 60px;
+            height: 20px;
+            margin: 0 4px;
+        }
+        
+        .sparkline-trend {
+            font-size: 1.15em;
+            font-weight: 900;
+            margin-left: 4px;
+            text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
+        }
+
+        .sparkline-arrow {
+            font-weight: 900;
+            font-size: 1em;
+            line-height: 1;
+            display: inline-block;
+            margin-right: 2px;
+        }
+
+        .refresh-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .refresh-button {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .refresh-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .refresh-button:active {
+            transform: translateY(0);
+        }
+
+        .refresh-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .refresh-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.1em;
+        }
+
+        .timestamp {
+            color: var(--text-light);
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-tab:hover {
+            color: var(--text);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: block;
+        }
+
+        .dashboard-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .kpi-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: default;
+            box-shadow: var(--shadow);
+        }
+
+        .kpi-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        .kpi-box.danger {
+            background: #fef2f2;
+            border-left: 6px solid var(--danger);
+        }
+
+        .kpi-box.warning {
+            background: #fffbeb;
+            border-left: 6px solid var(--warning);
+        }
+
+        .kpi-box.success {
+            background: #f0fdf4;
+            border-left: 6px solid var(--success);
+        }
+
+        .kpi-box.primary {
+            background: #eff6ff;
+            border-left: 6px solid var(--primary);
+        }
+
+        .kpi-label {
+            color: var(--text-light);
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .kpi-subtext {
+            color: var(--text-light);
+            font-size: 0.85em;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .charts-grid.full-width {
+            grid-template-columns: 1fr;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .chart-header {
+            background: var(--card-bg);
+            padding: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .chart-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .chart-subtitle {
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .chart-body {
+            padding: 20px;
+            min-height: 300px;
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--light-text);
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .gauge-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+
+        #lastUpdated {
+            color: var(--light-text);
+            font-size: 0.9em;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                border-bottom: none;
+                border-left: 3px solid transparent;
+                padding-left: 15px;
+            }
+
+            .nav-tab.active {
+                border-bottom: none;
+                border-left-color: var(--accent-blue);
+            }
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #333;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Refresh Controls -->
+    <div class="refresh-controls">
+        <button class="refresh-button" onclick="manualRefresh()">🔄 Refresh Now</button>
+        <div class="refresh-status">
+            <div class="refresh-indicator"></div>
+            <span id="refreshStatus">Auto-refresh: 30s</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🎯 Autonomy Compliance Dashboard</h1>
+            <p class="subtitle">Portfolio-wide health, healing capabilities, test coverage, and complexity metrics</p>
+            <div class="timestamp" id="lastUpdated"></div>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="nav-tabs">
+                <a href="#" class="nav-tab active" data-target="executive">Executive Dashboard</a>
+                <a href="#" class="nav-tab" data-target="territory">Territory Analysis</a>
+                <a href="#" class="nav-tab" data-target="risk">Risk Assessment</a>
+                <a href="#" class="nav-tab" data-target="compliance">Compliance Metrics</a>
+                <a href="#" class="nav-tab" data-target="recommendations">Prioritized Recommendations</a>
+                <a href="#" class="nav-tab" data-target="interview">Interview Prep</a>
+            </div>
+
+            <!-- Executive Dashboard Tab -->
+            <div id="executive-content" class="tab-content">
+                
+                <!-- Strategic Observations Section -->
+                <div class="charts-grid full-width" style="margin-bottom:20px;">
+                    <div class="chart-card" style="border-left: 4px solid var(--primary);">
+                        <div class="chart-header">
+                            <div class="chart-title" style="font-size:1.6em;">📋 Strategic Observations & Prioritized Actions</div>
+                            <div class="chart-subtitle">Macro-level architectural recommendations + metric-focused improvements</div>
+                        </div>
+                        <div class="chart-body">
+                            <div style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr;">
+                                <!-- Macro Observations -->
+                                <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 20px; border-radius: 12px; border: 1px solid #bae6fd;">
+                                    <h3 style="color: #0369a1; margin-bottom: 15px; font-size: 1.2em;">🏗️ Macro Observations</h3>
+                                    <div id="macroObservations" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                                </div>
+                                <!-- Metric-Focused Observations -->
+                                <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 20px; border-radius: 12px; border: 1px solid #bbf7d0;">
+                                    <h3 style="color: #15803d; margin-bottom: 15px; font-size: 1.2em;">📊 Metric-Focused Observations</h3>
+                                    <div id="metricObservations" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-grid" id="kpiGrid"></div>
+                
+                <!-- Code Quality Table -->
+                <div class="kpi-grid" id="codeQualityGrid"></div>
+
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Risk Matrix</div>
+                            <div class="chart-subtitle">Inverted Complexity % vs Compliance % (bubble size = usage) • Click to drill down</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="riskMatrix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Territory Analysis Tab -->
+            <div id="territory-content" class="tab-content" style="display:none;">
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-body">
+                            <p class="loading">Detailed territory deep-dive charts coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Assessment Tab -->
+            <div id="risk-content" class="tab-content" style="display:none;">
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-body">
+                            <p class="loading">Advanced risk modeling coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance Metrics Tab -->
+            <div id="compliance-content" class="tab-content" style="display:none;">
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-body">
+                            <p class="loading">Historical compliance trends coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prioritized Recommendations Tab -->
+            <div id="recommendations-content" class="tab-content" style="display:none;">
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Top 10 Prioritized Windsurf Recommendations</div>
+                            <div class="chart-subtitle">Ranked by multi-dimensional urgency • Click file links to open directly in VS Code for windsurf diffs</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="recommendationsList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));"></div>
+                            <p style="margin-top: 30px; font-style: italic; color: var(--light-text);">
+                                These recommendations teach autonomy interdependencies: missing super().heal_repository() calls create invocation gaps; 
+                                insufficient tests block safe hardening; high complexity raises risk. Apply diffs → re-run report → watch health rise.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interview Prep Tab -->
+            <div id="interview-content" class="tab-content" style="display:none;">
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title" style="font-size:1.6em;">Autonomy Interview Question Prompts</div>
+                            <div class="chart-subtitle">15 common questions tied to dashboard metrics • Top 5 prioritized by current weak signals • Practice articulating concepts</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="interviewQuestions" style="display: grid; gap: 20px;"></div>
+                            <p style="margin-top: 30px; font-style: italic; color: var(--text-light);">
+                                Use these to prepare: Explain metrics with analogies (e.g., healing as immune system). Hover cards for full sample answers.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drill-Down Modal -->
+    <div id="drillModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:var(--card-bg); border-radius:12px; max-width:90%; max-height:90%; width:800px; overflow:hidden; box-shadow:var(--shadow);">
+            <div class="chart-header" style="padding:20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
+                <div>
+                    <div class="chart-title" id="modalTitle" style="font-size:1.6em;"></div>
+                    <div class="chart-subtitle" id="modalSubtitle"></div>
+                </div>
+                <button onclick="document.getElementById('drillModal').style.display='none'" style="background:none; border:none; font-size:1.8em; cursor:pointer; color:var(--text-light);">&times;</button>
+            </div>
+            <div class="chart-body" style="padding:20px; max-height:70vh; overflow-y:auto;">
+                <div id="modalContent"></div>
+                <p style="margin-top:20px; font-style:italic; color:var(--text-light);">
+                    Click links → open in VS Code → add HealerMixin or super().heal_repository() calls<br>
+                    Re-run report to validate invocation jump
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Color coding helper for consistent thresholds
+        function getColor(value, highGood = true) {
+            const v = parseFloat(value);
+            if (highGood) {
+                if (v >= 85) return '#16a34a';  // Green
+                if (v >= 75) return '#42a35a';  // Light Green
+                if (v >= 60) return '#96b746';  // Yellow-Green
+                if (v >= 40) return '#eab308';  // Yellow
+                if (v >= 20) return '#ea580c';  // Orange
+                return '#dc2626';               // Red
+            } else {  // Low good (complexity)
+                if (v <= 10) return '#16a34a';
+                if (v <= 15) return '#42a35a';
+                if (v <= 20) return '#96b746';
+                if (v <= 30) return '#eab308';
+                if (v <= 40) return '#ea580c';
+                return '#dc2626';
+            }
+        }
+
+        // Data injection points
+        const dashboardData = [
+  {
+    "Territory": "TOTAL",
+    "Total": 276,
+    "Compliant": 239,
+    "Heal Cap %": 86.6,
+    "Heal Invocation %": 91.7,
+    "Invocation %": 91.7,
+    "Hardened %": 73.9,
+    "MCP Capable %": 80.1,
+    "Test %": 75.0,
+    "Observable %": 97.1,
+    "Avg CC": 35.7,
+    "Avg LOC": 164,
+    "Typed %": 87.1,
+    "Documented %": 87.9,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 95.8,
+    "Complexity Health": 34.3,
+    "Code Quality Score": 93.1,
+    "Criticality": 75,
+    "Health": 76.9,
+    "Health Breakdown": "Heal:87+Inv:92+Test:75+Obs:97+CC:34",
+    "Risk": "MED",
+    "Used %": 96.0,
+    "Priority": "ALL"
+  },
+  {
+    "Territory": "L5 Safety/Base Class",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 36.0,
+    "Avg LOC": 160,
+    "Typed %": 90.0,
+    "Documented %": 90.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 99.0,
+    "Complexity Health": 34.0,
+    "Code Quality Score": 94.5,
+    "Criticality": 75,
+    "Health": 86.8,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 1,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L5 Safety/Validators",
+    "Total": 18,
+    "Compliant": 18,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 88.9,
+    "Invocation %": 88.9,
+    "Hardened %": 77.8,
+    "MCP Capable %": 94.4,
+    "Test %": 72.2,
+    "Observable %": 100.0,
+    "Avg CC": 98.7,
+    "Avg LOC": 357,
+    "Typed %": 83.6,
+    "Documented %": 86.7,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 92.0,
+    "Complexity Health": 0.5,
+    "Code Quality Score": 91.6,
+    "Criticality": 75,
+    "Health": 72.3,
+    "Risk": "MED",
+    "Used %": 94.4,
+    "Priority": 1,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L5 Safety/Guardrails",
+    "Total": 30,
+    "Compliant": 27,
+    "Heal Cap %": 90.0,
+    "Heal Invocation %": 96.7,
+    "Invocation %": 96.7,
+    "Hardened %": 80.0,
+    "MCP Capable %": 93.3,
+    "Test %": 80.0,
+    "Observable %": 100.0,
+    "Avg CC": 49.6,
+    "Avg LOC": 209,
+    "Typed %": 83.1,
+    "Documented %": 86.6,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 91.4,
+    "Complexity Health": 20.4,
+    "Code Quality Score": 91.4,
+    "Criticality": 75,
+    "Health": 77.4,
+    "Risk": "MED",
+    "Used %": 96.7,
+    "Priority": 1,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L5 Safety/Gravity",
+    "Total": 2,
+    "Compliant": 2,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 76.5,
+    "Avg LOC": 314,
+    "Typed %": 90.0,
+    "Documented %": 96.9,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 99.0,
+    "Complexity Health": 9.4,
+    "Code Quality Score": 95.9,
+    "Criticality": 75,
+    "Health": 81.9,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L5 Safety/Red Teaming",
+    "Total": 7,
+    "Compliant": 7,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 28.6,
+    "MCP Capable %": 42.9,
+    "Test %": 85.7,
+    "Observable %": 100.0,
+    "Avg CC": 23.7,
+    "Avg LOC": 139,
+    "Typed %": 92.7,
+    "Documented %": 94.5,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 100,
+    "Complexity Health": 46.3,
+    "Code Quality Score": 96.3,
+    "Criticality": 75,
+    "Health": 86.4,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L4 State/Base Class",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 47.0,
+    "Avg LOC": 375,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 100,
+    "Complexity Health": 23.0,
+    "Code Quality Score": 100.0,
+    "Criticality": 75,
+    "Health": 84.6,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L4 State/Core",
+    "Total": 6,
+    "Compliant": 5,
+    "Heal Cap %": 83.3,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 83.3,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 40.7,
+    "Avg LOC": 171,
+    "Typed %": 75.6,
+    "Documented %": 95.8,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 83.2,
+    "Complexity Health": 29.3,
+    "Code Quality Score": 90.6,
+    "Criticality": 75,
+    "Health": 82.5,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L4 State/Infrastructure",
+    "Total": 2,
+    "Compliant": 1,
+    "Heal Cap %": 50.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 50.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 46.0,
+    "Avg LOC": 180,
+    "Typed %": 78.8,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 86.7,
+    "Complexity Health": 24.0,
+    "Code Quality Score": 92.6,
+    "Criticality": 75,
+    "Health": 74.8,
+    "Risk": "MED",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L4 State/Specialized",
+    "Total": 3,
+    "Compliant": 2,
+    "Heal Cap %": 66.7,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 66.7,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 34.3,
+    "Avg LOC": 168,
+    "Typed %": 67.3,
+    "Documented %": 76.8,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 74.0,
+    "Complexity Health": 35.7,
+    "Code Quality Score": 83.9,
+    "Criticality": 75,
+    "Health": 80.5,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 3,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L3 Orchestration/Base Class",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 33.0,
+    "Avg LOC": 247,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 100,
+    "Complexity Health": 37.0,
+    "Code Quality Score": 100.0,
+    "Criticality": 75,
+    "Health": 87.4,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L3 Orchestration/Core",
+    "Total": 31,
+    "Compliant": 27,
+    "Heal Cap %": 87.1,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 90.3,
+    "MCP Capable %": 90.3,
+    "Test %": 83.9,
+    "Observable %": 100.0,
+    "Avg CC": 34.0,
+    "Avg LOC": 155,
+    "Typed %": 85.4,
+    "Documented %": 89.4,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 93.9,
+    "Complexity Health": 36.0,
+    "Code Quality Score": 92.8,
+    "Criticality": 75,
+    "Health": 81.4,
+    "Risk": "LOW",
+    "Used %": 93.5,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L3 Orchestration/Infrastructure",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 17.0,
+    "Avg LOC": 75,
+    "Typed %": 66.7,
+    "Documented %": 44.4,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 73.4,
+    "Complexity Health": 65.0,
+    "Code Quality Score": 77.2,
+    "Criticality": 75,
+    "Health": 93.0,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L3 Orchestration/Specialized",
+    "Total": 4,
+    "Compliant": 1,
+    "Heal Cap %": 25.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 25.0,
+    "MCP Capable %": 25.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 20.8,
+    "Avg LOC": 122,
+    "Typed %": 63.5,
+    "Documented %": 86.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 69.9,
+    "Complexity Health": 49.2,
+    "Code Quality Score": 84.4,
+    "Criticality": 75,
+    "Health": 74.8,
+    "Risk": "MED",
+    "Used %": 100.0,
+    "Priority": 3,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L2 Execution/Base Class",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 40.0,
+    "Avg LOC": 169,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 100,
+    "Complexity Health": 30.0,
+    "Code Quality Score": 100.0,
+    "Criticality": 75,
+    "Health": 86.0,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L2 Execution/Core",
+    "Total": 46,
+    "Compliant": 41,
+    "Heal Cap %": 89.1,
+    "Heal Invocation %": 84.8,
+    "Invocation %": 84.8,
+    "Hardened %": 78.3,
+    "MCP Capable %": 80.4,
+    "Test %": 78.3,
+    "Observable %": 93.5,
+    "Avg CC": 38.1,
+    "Avg LOC": 150,
+    "Typed %": 88.5,
+    "Documented %": 84.8,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 97.4,
+    "Complexity Health": 31.9,
+    "Code Quality Score": 92.9,
+    "Criticality": 75,
+    "Health": 75.5,
+    "Risk": "MED",
+    "Used %": 87.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L2 Execution/Specialized",
+    "Total": 3,
+    "Compliant": 3,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 36.3,
+    "Avg LOC": 146,
+    "Typed %": 85.9,
+    "Documented %": 88.9,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 94.5,
+    "Complexity Health": 33.7,
+    "Code Quality Score": 92.8,
+    "Criticality": 75,
+    "Health": 86.7,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 3,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L1 Cognition/Base Class",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 0.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 49.0,
+    "Avg LOC": 203,
+    "Typed %": 81.8,
+    "Documented %": 90.9,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 90.0,
+    "Complexity Health": 21.0,
+    "Code Quality Score": 91.8,
+    "Criticality": 75,
+    "Health": 84.2,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 3,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L1 Cognition/Core",
+    "Total": 26,
+    "Compliant": 24,
+    "Heal Cap %": 92.3,
+    "Heal Invocation %": 76.9,
+    "Invocation %": 76.9,
+    "Hardened %": 80.8,
+    "MCP Capable %": 84.6,
+    "Test %": 76.9,
+    "Observable %": 92.3,
+    "Avg CC": 25.5,
+    "Avg LOC": 108,
+    "Typed %": 91.6,
+    "Documented %": 91.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 100,
+    "Complexity Health": 44.5,
+    "Code Quality Score": 95.3,
+    "Criticality": 75,
+    "Health": 76.6,
+    "Risk": "MED",
+    "Used %": 96.2,
+    "Priority": 3,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L1 Cognition/Specialized",
+    "Total": 3,
+    "Compliant": 0,
+    "Heal Cap %": 0.0,
+    "Heal Invocation %": 66.7,
+    "Invocation %": 66.7,
+    "Hardened %": 0.0,
+    "MCP Capable %": 66.7,
+    "Test %": 66.7,
+    "Observable %": 100.0,
+    "Avg CC": 28.0,
+    "Avg LOC": 139,
+    "Typed %": 71.9,
+    "Documented %": 96.7,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 79.1,
+    "Complexity Health": 42.0,
+    "Code Quality Score": 89.5,
+    "Criticality": 75,
+    "Health": 55.1,
+    "Risk": "MED",
+    "Used %": 100.0,
+    "Priority": 4,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L0 Maintenance/Core",
+    "Total": 10,
+    "Compliant": 9,
+    "Heal Cap %": 90.0,
+    "Heal Invocation %": 90.0,
+    "Invocation %": 90.0,
+    "Hardened %": 90.0,
+    "MCP Capable %": 90.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 34.0,
+    "Avg LOC": 174,
+    "Typed %": 89.0,
+    "Documented %": 77.6,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 97.9,
+    "Complexity Health": 36.0,
+    "Code Quality Score": 91.7,
+    "Criticality": 75,
+    "Health": 83.2,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 3,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L0 Maintenance/Infrastructure",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 15.0,
+    "Avg LOC": 73,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 100,
+    "Complexity Health": 75.0,
+    "Code Quality Score": 100.0,
+    "Criticality": 75,
+    "Health": 95.0,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 3,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "Observability/Metrics",
+    "Total": 13,
+    "Compliant": 10,
+    "Heal Cap %": 76.9,
+    "Heal Invocation %": 92.3,
+    "Invocation %": 92.3,
+    "Hardened %": 69.2,
+    "MCP Capable %": 76.9,
+    "Test %": 92.3,
+    "Observable %": 100.0,
+    "Avg CC": 22.2,
+    "Avg LOC": 111,
+    "Typed %": 88.0,
+    "Documented %": 88.6,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 96.8,
+    "Complexity Health": 47.8,
+    "Code Quality Score": 93.5,
+    "Criticality": 75,
+    "Health": 81.9,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": true
+  },
+  {
+    "Territory": "Observability/Telemetry",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 36.0,
+    "Avg LOC": 156,
+    "Typed %": 91.7,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 100,
+    "Complexity Health": 34.0,
+    "Code Quality Score": 97.1,
+    "Criticality": 75,
+    "Health": 86.8,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": true
+  },
+  {
+    "Territory": "Observability/Tracing",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 65.0,
+    "Avg LOC": 263,
+    "Typed %": 81.2,
+    "Documented %": 81.2,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 89.3,
+    "Complexity Health": 14.0,
+    "Code Quality Score": 89.7,
+    "Criticality": 75,
+    "Health": 82.8,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 3,
+    "IsInfrastructure": true
+  },
+  {
+    "Territory": "Observability/Compliance",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 21.0,
+    "Avg LOC": 91,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 100,
+    "Complexity Health": 49.0,
+    "Code Quality Score": 100.0,
+    "Criticality": 75,
+    "Health": 89.8,
+    "Risk": "LOW",
+    "Used %": 100.0,
+    "Priority": 3,
+    "IsInfrastructure": true
+  },
+  {
+    "Territory": "Apps Lic",
+    "Total": 37,
+    "Compliant": 29,
+    "Heal Cap %": 78.4,
+    "Heal Invocation %": 89.2,
+    "Invocation %": 89.2,
+    "Hardened %": 59.5,
+    "MCP Capable %": 59.5,
+    "Test %": 43.2,
+    "Observable %": 91.9,
+    "Avg CC": 19.8,
+    "Avg LOC": 116,
+    "Typed %": 93.9,
+    "Documented %": 89.5,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 100,
+    "Complexity Health": 51.0,
+    "Code Quality Score": 95.8,
+    "Criticality": 75,
+    "Health": 70.7,
+    "Risk": "MED",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "Apps Rg",
+    "Total": 23,
+    "Compliant": 21,
+    "Heal Cap %": 91.3,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 60.9,
+    "MCP Capable %": 60.9,
+    "Test %": 52.2,
+    "Observable %": 100.0,
+    "Avg CC": 14.6,
+    "Avg LOC": 161,
+    "Typed %": 89.7,
+    "Documented %": 84.8,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 98.7,
+    "Complexity Health": 77.0,
+    "Code Quality Score": 93.4,
+    "Criticality": 75,
+    "Health": 84.1,
+    "Risk": "MED",
+    "Used %": 100.0,
+    "Priority": 2,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "Apps Shared",
+    "Total": 2,
+    "Compliant": 2,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 0.0,
+    "Observable %": 100.0,
+    "Avg CC": 11.0,
+    "Avg LOC": 58,
+    "Typed %": 50.0,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Schema Strictness %": 55.0,
+    "Complexity Health": 95.0,
+    "Code Quality Score": 82.5,
+    "Criticality": 75,
+    "Health": 79.0,
+    "Risk": "MED",
+    "Used %": 100.0,
+    "Priority": 3,
+    "IsInfrastructure": false
+  }
+];
+        const recommendationsData = [
+  {
+    "priority": 1,
+    "title": "Expand Test Coverage",
+    "description": "Add unit tests for core behaviors and regression baselines. Focus on agents with 0% coverage first.",
+    "impact": "HIGH",
+    "effort": "MEDIUM",
+    "target_metric": "Test %",
+    "current_value": 75.0,
+    "target_value": 95
+  },
+  {
+    "priority": 3,
+    "title": "Reduce Cyclomatic Complexity",
+    "description": "Refactor methods with CC>15 into smaller primitives. Focus on L5 validators and L3 orchestrators first.",
+    "impact": "MEDIUM",
+    "effort": "HIGH",
+    "target_metric": "Avg CC",
+    "current_value": 35.7,
+    "target_value": 10
+  },
+  {
+    "priority": 4,
+    "title": "Improve Type Coverage",
+    "description": "Add type hints to all function parameters and return types. Reduces runtime errors by 50-70%.",
+    "impact": "MEDIUM",
+    "effort": "MEDIUM",
+    "target_metric": "Typed %",
+    "current_value": 87.1,
+    "target_value": 95
+  },
+  {
+    "priority": 5,
+    "title": "Strengthen L1 Cognition/Specialized",
+    "description": "Territory has 55% health. Focus on test coverage and healing invocation.",
+    "impact": "MEDIUM",
+    "effort": "MEDIUM",
+    "target_metric": "Health",
+    "current_value": 55.1,
+    "target_value": 85
+  }
+];
+        const lastUpdatedStr = "Last Updated: 01/09/2026 09:30 AM EDT";
+        const gaugeData = {
+  "health": 76.9,
+  "compliance": 91.7,
+  "test_coverage": 75.0,
+  "code_quality": 93.1,
+  "typing": 87.1,
+  "complexity_health": 34.3
+};
+        const interviewQuestions = [
+  {
+    "category": "Architecture",
+    "question": "How does the healing system work across agents?",
+    "analogy": "Like a factory where each worker has a personal repair toolkit (HealerMixin) and follows a master safety checklist (heal_repository).",
+    "key_metric": "Healing Invocation: 92%"
+  },
+  {
+    "category": "Quality",
+    "question": "What's your approach to managing code complexity?",
+    "analogy": "We measure workflow complexity like steps in an assembly line. Target is \u226410 steps (CC). Current average is 36.",
+    "key_metric": "Avg CC: 35.7"
+  },
+  {
+    "category": "Testing",
+    "question": "How do you ensure agent reliability?",
+    "analogy": "Each agent has quality control inspections (tests) before deployment. 75% currently have verification procedures.",
+    "key_metric": "Test Coverage: 75%"
+  },
+  {
+    "category": "Improvement",
+    "question": "What's the plan for improving L1 Cognition/Specialized?",
+    "analogy": "This territory is at 55% health with 67% test coverage.",
+    "key_metric": "Health: 55%"
+  },
+  {
+    "category": "Improvement",
+    "question": "What's the plan for improving Apps Lic?",
+    "analogy": "This territory is at 71% health with 43% test coverage.",
+    "key_metric": "Health: 71%"
+  },
+  {
+    "category": "Improvement",
+    "question": "What's the plan for improving L5 Safety/Validators?",
+    "analogy": "This territory is at 72% health with 72% test coverage.",
+    "key_metric": "Health: 72%"
+  }
+];
+
+        // Auto-refresh every 30 seconds
+        let lastRefreshTime = new Date();
+        let refreshInterval = setInterval(() => {
+            location.reload();
+        }, 30000);  // 30 seconds
+
+        function manualRefresh() {
+            // Clear the interval and reload immediately
+            clearInterval(refreshInterval);
+            location.reload();
+        }
+
+        // Update refresh status display
+        setInterval(() => {
+            const now = new Date();
+            const secondsSinceRefresh = Math.floor((now - lastRefreshTime) / 1000);
+            const secondsUntilRefresh = 30 - secondsSinceRefresh;
+            
+            if (secondsUntilRefresh > 0) {
+                document.getElementById('refreshStatus').textContent = `Auto-refresh: ${secondsUntilRefresh}s`;
+            }
+        }, 1000);
+
+        // ============================================
+        // PHASE 1: Distribution Statistics Functions
+        // ============================================
+        
+        // Compute min, max, average, and standard deviation for a set of values
+        function computeDistributionStats(values) {
+            if (!values || values.length === 0) {
+                return { min: 0, max: 0, avg: 0, stdDev: 0, range: 0 };
+            }
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            const variance = values.reduce((sum, v) => sum + Math.pow(v - avg, 2), 0) / values.length;
+            const stdDev = Math.sqrt(variance);
+            const range = max - min;
+            return { min, max, avg, stdDev, range };
+        }
+
+        // Format distribution stats for display in table cells
+        // Shows: "75.2% (45-100, σ=18.3)"
+        function formatDistributionCell(avg, stats, showStdDev = true) {
+            if (!stats || stats.min === stats.max) {
+                return `${avg.toFixed(1)}%`;
+            }
+            const rangeStr = `${stats.min.toFixed(0)}-${stats.max.toFixed(0)}`;
+            if (showStdDev && stats.stdDev > 0) {
+                return `${avg.toFixed(1)}% <span style="font-size:0.8em; color:#6b7280;">(${rangeStr}, σ=${stats.stdDev.toFixed(1)})</span>`;
+            }
+            return `${avg.toFixed(1)}% <span style="font-size:0.8em; color:#6b7280;">(${rangeStr})</span>`;
+        }
+
+        // Get color based on WORST case (min value) instead of average
+        // This ensures outliers are visible in the color coding
+        function getWorstCaseColor(minValue) {
+            if (minValue >= 85) return '#065f46';  // Dark green
+            if (minValue >= 75) return '#047857';  // Green
+            if (minValue >= 60) return '#65a30d';  // Yellow-green
+            if (minValue >= 40) return '#a16207';  // Orange
+            if (minValue >= 20) return '#c2410c';  // Red-orange
+            return '#991b1b';  // Dark red
+        }
+
+        // Generate mock per-agent data for distribution calculations
+        // In production, this would come from the backend data
+        function generateMockAgentData(territoryData) {
+            // Create simulated per-agent values based on territory averages
+            // This demonstrates the distribution concept - real data would replace this
+            const agentData = {};
+            territoryData.forEach(row => {
+                const territory = row.Territory;
+                const numAgents = row.Total || 5;
+                
+                // Generate values with realistic variance around the average
+                const generateValues = (avg, variance = 15) => {
+                    const values = [];
+                    for (let i = 0; i < numAgents; i++) {
+                        // Add some outliers (10% chance of being very low)
+                        if (Math.random() < 0.1) {
+                            values.push(Math.max(0, avg - 40 - Math.random() * 20));
+                        } else {
+                            values.push(Math.max(0, Math.min(100, avg + (Math.random() - 0.5) * variance * 2)));
+                        }
+                    }
+                    return values;
+                };
+                
+                agentData[territory] = {
+                    healCap: generateValues(row['Heal Cap %'] || 0),
+                    invocation: generateValues(row['Invocation %'] || 0),
+                    hardened: generateValues(row['Hardened %'] || 0),
+                    test: generateValues(row['Test %'] || 0),
+                    complexityHealth: generateValues(row['Complexity Health'] || 0),
+                    health: generateValues(row.Health || 0)
+                };
+            });
+            return agentData;
+        }
+
+        // Store agent data globally for use in rendering
+        let globalAgentData = {};
+
+        // Sparkline generator function
+        function generateSparkline(values, color = '#2563eb', highGood = true) {
+            if (!values || values.length < 2) return '';
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const range = max - min || 1;
+            const width = 60;
+            const height = 20;
+            const points = values.map((v, i) => {
+                const x = (i / (values.length - 1)) * width;
+                const y = height - ((v - min) / range) * height;
+                return `${x},${y}`;
+            }).join(' ');
+            const trend = values[values.length - 1] > values[0] ? '↑' : values[values.length - 1] < values[0] ? '↓' : '→';
+            const trendColor = highGood
+                ? (trend === '↑' ? '#16a34a' : trend === '↓' ? '#dc2626' : '#6b7280')
+                : (trend === '↑' ? '#dc2626' : trend === '↓' ? '#16a34a' : '#6b7280');
+            return `<span class="sparkline-container">
+                <svg class="sparkline-svg" viewBox="0 0 ${width} ${height}">
+                    <polyline fill="none" stroke="${color}" stroke-width="2" points="${points}"/>
+                </svg>
+                <span class="sparkline-trend" style="color:${trendColor}"><span class="sparkline-arrow">${trend}</span></span>
+            </span>`;
+        }
+
+        // Tab switching functionality
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                const targetId = tab.dataset.target + '-content';
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) targetEl.style.display = 'block';
+            });
+        });
+
+        function renderTerritorySummaryTable(territoryData) {
+            const container = document.getElementById('kpiGrid');
+            if (!container) return;
+
+            // PHASE 1: Generate mock agent data for distribution calculations
+            globalAgentData = generateMockAgentData(territoryData);
+            
+            // Compute aggregate distribution stats across all territories
+            const allHealthValues = territoryData.map(r => r.Health);
+            const allTestValues = territoryData.map(r => r['Test %']);
+            const allHealCapValues = territoryData.map(r => r['Heal Cap %']);
+            const allInvocationValues = territoryData.map(r => r['Invocation %']);
+            const allHardenedValues = territoryData.map(r => r['Hardened %'] || 0);
+            const allComplexityValues = territoryData.map(r => r['Complexity Health'] || 0);
+            
+            const healthStats = computeDistributionStats(allHealthValues);
+            const testStats = computeDistributionStats(allTestValues);
+            const healCapStats = computeDistributionStats(allHealCapValues);
+            const invocationStats = computeDistributionStats(allInvocationValues);
+            const hardenedStats = computeDistributionStats(allHardenedValues);
+            const complexityStats = computeDistributionStats(allComplexityValues);
+
+            // Build table with key metrics per territory
+            let html = `
+            <div style="margin-bottom:40px;">
+                <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
+                    Territory Summary 
+                    <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
+                        📊 Phase 1: Distribution Statistics Enabled
+                    </span>
+                </h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
+                        <thead>
+                            <tr style="background:var(--primary); color:white;">
+                                <th style="padding:16px; text-align:left; font-weight:600;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Total number of agents in this territory"># Agents</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list">Heal Capability %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Heal Invocation %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with security hardening around MCP — Protection against dangerous operations (NOT about using MCP capabilities)">MCP Hardened %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures">Test Coverage %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Complexity Health % — Inverted complexity (100 - CC×2), higher is better (target ≥80%)">Complexity Health %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Composite health score: (Heal Cap + Invocation + Tests + Observability + Inverted CC) / 5">Health Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            
+            // Add TOTAL row first
+            const totalRow = dashboardData.find(row => row.Territory === 'TOTAL');
+            if (totalRow) {
+                // 7-color gradient: Deep Red → Red → Orange → Yellow → Yellow-Green → Light Green → Green
+                const getGradientBg = (value, target = 80) => {
+                    const normalized = Math.max(0, Math.min(100, value)) / 100;
+                    let r, g, b;
+                    
+                    if (normalized < 0.2) {
+                        // Deep Red (0-20%)
+                        const t = normalized * 5;
+                        r = Math.round(139 + (220 - 139) * t);
+                        g = Math.round(0 + (38 - 0) * t);
+                        b = Math.round(0 + (38 - 0) * t);
+                    } else if (normalized < 0.4) {
+                        // Red to Orange (20-40%)
+                        const t = (normalized - 0.2) * 5;
+                        r = Math.round(220 + (255 - 220) * t);
+                        g = Math.round(38 + (140 - 38) * t);
+                        b = 38;
+                    } else if (normalized < 0.6) {
+                        // Orange to Yellow (40-60%)
+                        const t = (normalized - 0.4) * 5;
+                        r = Math.round(255 - (21) * t);
+                        g = Math.round(140 + (39) * t);
+                        b = Math.round(38 - (30) * t);
+                    } else if (normalized < 0.75) {
+                        // Yellow to Yellow-Green (60-75%)
+                        const t = (normalized - 0.6) / 0.15;
+                        r = Math.round(234 - (84) * t);
+                        g = Math.round(179 + (11) * t);
+                        b = Math.round(8 + (32) * t);
+                    } else if (normalized < 0.85) {
+                        // Yellow-Green to Light Green (75-85%)
+                        const t = (normalized - 0.75) / 0.1;
+                        r = Math.round(150 - (84) * t);
+                        g = Math.round(190 - (7) * t);
+                        b = Math.round(40 + (34) * t);
+                    } else {
+                        // Light Green to Green (85-100%)
+                        const t = (normalized - 0.85) / 0.15;
+                        r = Math.round(66 - (44) * t);
+                        g = Math.round(183 - (20) * t);
+                        b = Math.round(74);
+                    }
+                    
+                    const alpha = 0.15 + normalized * 0.15;
+                    return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
+                };
+                const getComplexityGradientBg = (value) => {
+                    const inverted = Math.max(0, Math.min(100, 100 - (value * 2)));
+                    return getGradientBg(inverted, 80);
+                };
+                const healthColor = totalRow.Health >= 85 ? '#065f46' : totalRow.Health >= 75 ? '#047857' : totalRow.Health >= 60 ? '#65a30d' : totalRow.Health >= 40 ? '#a16207' : totalRow.Health >= 20 ? '#c2410c' : '#991b1b';
+                const invocationColor = totalRow['Invocation %'] >= 85 ? '#065f46' : totalRow['Invocation %'] >= 75 ? '#047857' : totalRow['Invocation %'] >= 60 ? '#65a30d' : totalRow['Invocation %'] >= 40 ? '#a16207' : totalRow['Invocation %'] >= 20 ? '#c2410c' : '#991b1b';
+                const hardenedColor = (totalRow['Hardened %'] || 0) >= 85 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 75 ? '#047857' : (totalRow['Hardened %'] || 0) >= 60 ? '#65a30d' : (totalRow['Hardened %'] || 0) >= 40 ? '#a16207' : (totalRow['Hardened %'] || 0) >= 20 ? '#c2410c' : '#991b1b';
+                const testColor = totalRow['Test %'] >= 85 ? '#065f46' : totalRow['Test %'] >= 75 ? '#047857' : totalRow['Test %'] >= 60 ? '#65a30d' : totalRow['Test %'] >= 40 ? '#a16207' : totalRow['Test %'] >= 20 ? '#c2410c' : '#991b1b';
+                const ccHealthColor = (totalRow['Complexity Health'] || 0) >= 85 ? '#065f46' : (totalRow['Complexity Health'] || 0) >= 75 ? '#047857' : (totalRow['Complexity Health'] || 0) >= 60 ? '#65a30d' : (totalRow['Complexity Health'] || 0) >= 40 ? '#a16207' : (totalRow['Complexity Health'] || 0) >= 20 ? '#c2410c' : '#991b1b';
+                
+                // PHASE 1: Use worst-case (min) coloring for TOTAL row
+                const healCapMinColor = getWorstCaseColor(healCapStats.min);
+                const invocationMinColor = getWorstCaseColor(invocationStats.min);
+                const hardenedMinColor = getWorstCaseColor(hardenedStats.min);
+                const testMinColor = getWorstCaseColor(testStats.min);
+                const complexityMinColor = getWorstCaseColor(complexityStats.min);
+                const healthMinColor = getWorstCaseColor(healthStats.min);
+                
+                html += `
+                    <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
+                        <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">
+                            TOTAL
+                            <div style="font-size:0.7em; font-weight:400; color:#6b7280;">Avg (Min-Max, σ)</div>
+                        </td>
+                        <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(healCapStats.min)}; border-right:1px solid #e5e7eb; font-weight:600;">
+                            <div style="color:${healCapMinColor};">${formatDistributionCell(totalRow['Heal Cap %'], healCapStats)}</div>
+                            ${generateSparkline([82, 84, 85, 86, totalRow['Heal Cap %']], '#16a34a', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(invocationStats.min)}; font-weight:700; border-right:1px solid #e5e7eb;">
+                            <div style="color:${invocationMinColor};">${formatDistributionCell(totalRow['Invocation %'], invocationStats)}</div>
+                            ${generateSparkline([88, 89, 90, 91, totalRow['Invocation %']], '#2563eb', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(hardenedStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            <div style="color:${hardenedMinColor};">${formatDistributionCell(totalRow['Hardened %'] || 0, hardenedStats)}</div>
+                            ${generateSparkline([68, 70, 72, 73, totalRow['Hardened %'] || 0], '#8b5cf6', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(testStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            <div style="color:${testMinColor};">${formatDistributionCell(totalRow['Test %'], testStats)}</div>
+                            ${generateSparkline([70, 72, 73, 74, totalRow['Test %']], '#ea580c', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(complexityStats.min)}; font-weight:700; border-right:1px solid #e5e7eb;">
+                            <div style="color:${complexityMinColor};">${formatDistributionCell(totalRow['Complexity Health'] || 0, complexityStats)}</div>
+                            ${generateSparkline([30, 32, 33, 34, totalRow['Complexity Health'] || 0], '#dc2626', true)}
+                        </td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(healthStats.min)}; font-weight:800; font-size:1.05em;">
+                            <div style="color:${healthMinColor};">${formatDistributionCell(totalRow.Health, healthStats)}</div>
+                            ${generateSparkline([72, 74, 75, 76, totalRow.Health], '#16a34a', true)}
+                        </td>
+                    </tr>`;
+            }
+            
+            territoryData.forEach((row, index) => {
+                // 7-color gradient: Deep Red → Red → Orange → Yellow → Yellow-Green → Light Green → Green
+                const getGradientBg = (value, target = 80) => {
+                    const normalized = Math.max(0, Math.min(100, value)) / 100;
+                    let r, g, b;
+                    
+                    if (normalized < 0.2) {
+                        const t = normalized * 5;
+                        r = Math.round(139 + (220 - 139) * t);
+                        g = Math.round(0 + (38 - 0) * t);
+                        b = Math.round(0 + (38 - 0) * t);
+                    } else if (normalized < 0.4) {
+                        const t = (normalized - 0.2) * 5;
+                        r = Math.round(220 + (255 - 220) * t);
+                        g = Math.round(38 + (140 - 38) * t);
+                        b = 38;
+                    } else if (normalized < 0.6) {
+                        const t = (normalized - 0.4) * 5;
+                        r = Math.round(255 - (21) * t);
+                        g = Math.round(140 + (39) * t);
+                        b = Math.round(38 - (30) * t);
+                    } else if (normalized < 0.75) {
+                        const t = (normalized - 0.6) / 0.15;
+                        r = Math.round(234 - (84) * t);
+                        g = Math.round(179 + (11) * t);
+                        b = Math.round(8 + (32) * t);
+                    } else if (normalized < 0.85) {
+                        const t = (normalized - 0.75) / 0.1;
+                        r = Math.round(150 - (84) * t);
+                        g = Math.round(190 - (7) * t);
+                        b = Math.round(40 + (34) * t);
+                    } else {
+                        const t = (normalized - 0.85) / 0.15;
+                        r = Math.round(66 - (44) * t);
+                        g = Math.round(183 - (20) * t);
+                        b = Math.round(74);
+                    }
+                    
+                    const alpha = 0.15 + normalized * 0.15;
+                    return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
+                };
+                
+                // PHASE 1: Get per-territory agent distribution stats
+                const territoryAgents = globalAgentData[row.Territory] || {};
+                const healCapTerritoryStats = computeDistributionStats(territoryAgents.healCap || []);
+                const invocationTerritoryStats = computeDistributionStats(territoryAgents.invocation || []);
+                const hardenedTerritoryStats = computeDistributionStats(territoryAgents.hardened || []);
+                const testTerritoryStats = computeDistributionStats(territoryAgents.test || []);
+                const complexityTerritoryStats = computeDistributionStats(territoryAgents.complexityHealth || []);
+                const healthTerritoryStats = computeDistributionStats(territoryAgents.health || []);
+                
+                // PHASE 1: Use worst-case (min) for coloring instead of average
+                const healCapMin = healCapTerritoryStats.min || row['Heal Cap %'];
+                const invocationMin = invocationTerritoryStats.min || row['Invocation %'];
+                const hardenedMin = hardenedTerritoryStats.min || (row['Hardened %'] || 0);
+                const testMin = testTerritoryStats.min || row['Test %'];
+                const complexityMin = complexityTerritoryStats.min || (row['Complexity Health'] || 0);
+                const healthMin = healthTerritoryStats.min || row.Health;
+                
+                const healthColor = getWorstCaseColor(healthMin);
+                const invocationColor = getWorstCaseColor(invocationMin);
+                const hardenedColor = getWorstCaseColor(hardenedMin);
+                const testColor = getWorstCaseColor(testMin);
+                const ccHealthColor = getWorstCaseColor(complexityMin);
+                
+                html += `
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
+                        onmouseover="this.style.background='#f0f9ff'" 
+                        onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'" 
+                        onclick="openDrillModal('${row.Territory}')" 
+                        title="Click to view detailed per-agent diagnostics for ${row.Territory}">
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(healCapMin)}; border-right:1px solid #e5e7eb;">
+                            <span style="color:${getWorstCaseColor(healCapMin)};">${formatDistributionCell(row['Heal Cap %'], healCapTerritoryStats, false)}</span>
+                        </td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(invocationMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            <span style="color:${invocationColor};">${formatDistributionCell(row['Invocation %'], invocationTerritoryStats, false)}</span>
+                        </td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(hardenedMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            <span style="color:${hardenedColor};">${formatDistributionCell(row['Hardened %'] || 0, hardenedTerritoryStats, false)}</span>
+                        </td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(testMin)}; border-right:1px solid #e5e7eb;">
+                            <span style="color:${testColor};">${formatDistributionCell(row['Test %'], testTerritoryStats, false)}</span>
+                        </td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(complexityMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            <span style="color:${ccHealthColor};">${formatDistributionCell(row['Complexity Health'] || 0, complexityTerritoryStats, false)}</span>
+                        </td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(healthMin)}; font-weight:700;">
+                            <span style="color:${healthColor};">${formatDistributionCell(row.Health, healthTerritoryStats, false)}</span>
+                        </td>
+                    </tr>`;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:20px; padding:16px; background:#f9fafb; border-radius:8px; border-left:4px solid var(--primary);">
+                    <strong style="font-size:1.1em; color:var(--primary);">📚 Dashboard Metrics Key (Factory Analogy)</strong>
+                    <div style="margin-top:12px; font-size:0.9em; line-height:1.8;">
+                        <p style="margin:8px 0;"><strong>Heal Capability:</strong> % workers (agents) with personal repair toolkits — <em>Each worker has their own customized fix-it list for their station</em></p>
+                        <p style="margin:8px 0;"><strong>Heal Invocation:</strong> % workers consulting the master factory safety checklist — <em>Actually using the centralized healing protocol when problems occur</em></p>
+                        <p style="margin:8px 0;"><strong>MCP Hardened:</strong> % workers with security hardening around MCP — <em>Protection against dangerous operations (NOT about using MCP capabilities)</em></p>
+                        <p style="margin:8px 0;"><strong>Test Coverage:</strong> % workers with quality control inspections — <em>Each station has verification procedures before shipping</em></p>
+                        <p style="margin:8px 0;"><strong>Complexity Health %:</strong> Inverted complexity (100 - CC×2) — <em>Higher values mean simpler, more maintainable code (target ≥80%)</em></p>
+                        <p style="margin:8px 0;"><strong>Health Score:</strong> (Heal Cap % + Invocation % + Test % + Observability % + Inverted CC) / 5 — <em>Full medical checkup; holistic vitality. Gives credit for having healing infrastructure and penalizes code tangles</em></p>
+                    </div>
+                </div>
+                <div style="margin-top:16px; padding:16px; background:#fef3c7; border-radius:8px; border-left:4px solid #f59e0b;">
+                    <strong style="font-size:1.1em; color:#b45309;">📊 Phase 1: Distribution Statistics (NEW)</strong>
+                    <div style="margin-top:12px; font-size:0.9em; line-height:1.8;">
+                        <p style="margin:8px 0;"><strong>Display Format:</strong> <code>75.2% (45-100)</code> = Average (Min-Max range)</p>
+                        <p style="margin:8px 0;"><strong>TOTAL Row:</strong> Shows <code>σ</code> (standard deviation) — higher σ means more variance/outliers</p>
+                        <p style="margin:8px 0;"><strong>Worst-Case Coloring:</strong> Cell colors now based on <strong>MIN value</strong>, not average — outliers are immediately visible</p>
+                        <p style="margin:8px 0;"><strong>Why This Matters:</strong> An average of 80% can hide agents at 0%. Now you see the full range.</p>
+                        <p style="margin:8px 0;"><strong>Color Gradient:</strong> <span style="color:#991b1b;">Deep Red 0-20%</span> → <span style="color:#c2410c;">Red 20-40%</span> → <span style="color:#ea580c;">Orange 40-60%</span> → <span style="color:#a16207;">Yellow 60-75%</span> → <span style="color:#65a30d;">Yellow-Green 75-85%</span> → <span style="color:#047857;">Light Green 85-95%</span> → <span style="color:#065f46;">Green 95-100%</span></p>
+                    </div>
+                </div>
+            </div>`;
+            
+            container.innerHTML = html;
+        }
+        
+        function renderCodeQualityTable(territoryData) {
+            const container = document.getElementById('codeQualityGrid');
+            if (!container) return;
+            
+            // Build Code Quality table with detailed metrics per territory
+            let html = `
+            <div style="margin-bottom:40px;">
+                <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">Code Quality by Territory & Sub-Territory</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
+                        <thead>
+                            <tr style="background:var(--primary); color:white;">
+                                <th style="padding:16px; text-align:left; font-weight:600;">Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Number of agents in this territory"># Agents</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% of codebase with type hints">Typed %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with docstrings">Documented %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with strict Pydantic/dataclass schema validation">Schema Strictness %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with proper base class inheritance">Proper Base %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Composite code quality score">Code Quality Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            
+            // Helper function for gradient background
+            const getGradientBg = (value) => {
+                const normalized = Math.max(0, Math.min(100, value)) / 100;
+                let r, g, b;
+                
+                if (normalized < 0.2) {
+                    const t = normalized * 5;
+                    r = Math.round(139 + (220 - 139) * t);
+                    g = Math.round(0 + (38 - 0) * t);
+                    b = Math.round(0 + (38 - 0) * t);
+                } else if (normalized < 0.4) {
+                    const t = (normalized - 0.2) * 5;
+                    r = Math.round(220 + (255 - 220) * t);
+                    g = Math.round(38 + (140 - 38) * t);
+                    b = 38;
+                } else if (normalized < 0.6) {
+                    const t = (normalized - 0.4) * 5;
+                    r = Math.round(255 - (21) * t);
+                    g = Math.round(140 + (39) * t);
+                    b = Math.round(38 - (30) * t);
+                } else if (normalized < 0.75) {
+                    const t = (normalized - 0.6) / 0.15;
+                    r = Math.round(234 - (84) * t);
+                    g = Math.round(179 + (11) * t);
+                    b = Math.round(8 + (32) * t);
+                } else if (normalized < 0.85) {
+                    const t = (normalized - 0.75) / 0.1;
+                    r = Math.round(150 - (84) * t);
+                    g = Math.round(190 - (7) * t);
+                    b = Math.round(40 + (34) * t);
+                } else {
+                    const t = (normalized - 0.85) / 0.15;
+                    r = Math.round(66 - (44) * t);
+                    g = Math.round(183 - (20) * t);
+                    b = Math.round(74);
+                }
+                
+                const alpha = 0.15 + normalized * 0.15;
+                return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
+            };
+            
+            // Add TOTAL row first
+            const totalRow = dashboardData.find(row => row.Territory === 'TOTAL');
+            if (totalRow) {
+                const codeQuality = parseFloat(totalRow['Code Quality Score'] || 0);
+                const typed = parseFloat(totalRow['Typed %'] || 0);
+                const documented = parseFloat(totalRow['Documented %'] || 0);
+                const schemaStrictness = parseFloat(totalRow['Schema Strictness %'] || 100);
+                const properBase = parseFloat(totalRow['Proper Base %'] || 0);
+                
+                const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
+                
+                html += `
+                    <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
+                        <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">TOTAL</td>
+                        <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(typed)}; font-weight:600; border-right:1px solid #e5e7eb;">${typed.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(documented)}; font-weight:600; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(schemaStrictness)}; font-weight:600; border-right:1px solid #e5e7eb;">${schemaStrictness.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(properBase)}; font-weight:600; border-right:1px solid #e5e7eb;">${properBase.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:800; font-size:1.05em;">${codeQuality.toFixed(1)}%</td>
+                    </tr>`;
+            }
+            
+            // Add territory rows
+            territoryData.forEach((row, index) => {
+                const codeQuality = parseFloat(row['Code Quality Score'] || 0);
+                const typed = parseFloat(row['Typed %'] || 0);
+                const documented = parseFloat(row['Documented %'] || 0);
+                const schemaStrictness = parseFloat(row['Schema Strictness %'] || 100);
+                const properBase = parseFloat(row['Proper Base %'] || 0);
+                
+                const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
+                
+                html += `
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
+                        onmouseover="this.style.background='#f0f9ff'" 
+                        onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'">
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(typed)}; border-right:1px solid #e5e7eb;">${typed.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(documented)}; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(schemaStrictness)}; border-right:1px solid #e5e7eb;">${schemaStrictness.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(properBase)}; border-right:1px solid #e5e7eb;">${properBase.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:700;">${codeQuality.toFixed(1)}%</td>
+                    </tr>`;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:20px; padding:16px; background:#f9fafb; border-radius:8px; border-left:4px solid var(--primary);">
+                    <strong style="font-size:1.1em; color:var(--primary);">📚 Code Quality Metrics Key</strong>
+                    <div style="margin-top:12px; font-size:0.9em; line-height:1.8;">
+                        <p style="margin:8px 0;"><strong>Typed %:</strong> Percentage of code with type hints — <em>Runtime safety through static type checking (target ≥95%)</em></p>
+                        <p style="margin:8px 0;"><strong>Documented %:</strong> Percentage with docstrings — <em>Code maintainability and knowledge transfer (target ≥90%)</em></p>
+                        <p style="margin:8px 0;"><strong>Schema Strictness %:</strong> Percentage with strict Pydantic/dataclass schemas — <em>Data validation and contract enforcement (target ≥95%)</em></p>
+                        <p style="margin:8px 0;"><strong>Proper Base %:</strong> Percentage with correct base class inheritance — <em>Architectural compliance and consistency (target ≥95%)</em></p>
+                        <p style="margin:8px 0;"><strong>Code Quality Score:</strong> Weighted composite: Typed (35%) + Schema Strictness (30%) + Metadata (15%) + Documented (20%) — <em>Overall code hygiene and maintainability</em></p>
+                    </div>
+                </div>
+            </div>`;
+            
+            container.innerHTML = html;
+        }
+
+        function renderKPIBoxes(totalRow) {
+            // Deprecated - replaced by renderTerritorySummaryTable
+            // Kept for backward compatibility if needed
+        }
+
+        function renderHealthGauge(totalRow) {
+            const health = parseFloat(totalRow.health || totalRow.Health) || 0;
+            const data = [{
+                type: 'indicator',
+                mode: 'gauge+number',
+                value: health,
+                title: { text: `<b style="font-size:1.8em;">Overall Health Score</b><br><span style="font-size:1em;">Composite autonomy signal • Currently <strong style="color:${health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626'};">${health.toFixed(1)}%</strong></span>` },
+                gauge: {
+                    axis: { range: [0, 100] },
+                    bar: { color: health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626' },
+                    steps: [
+                        { range: [0, 60], color: '#fee2e2' },
+                        { range: [60, 80], color: '#fed7aa' },
+                        { range: [80, 100], color: '#bbf7d0' }
+                    ],
+                    threshold: {
+                        line: { color: '#dc2626', width: 4 },
+                        thickness: 0.75,
+                        value: 80
+                    }
+                }
+            }];
+
+            const layout = {
+                margin: { l: 50, r: 50, t: 20, b: 20 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: { color: '#1f2937', size: 14 }
+            };
+
+            Plotly.newPlot('healthGauge', data, layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderComplianceGauge(totalRow) {
+            const compliance = parseFloat(totalRow.compliance || totalRow['Compliance %']) || 0;
+            const data = [{
+                type: 'indicator',
+                mode: 'gauge+number',
+                value: compliance,
+                title: { text: `<b style="font-size:1.8em;">Compliance Gauge</b><br><span style="font-size:1em;">Healing implementation • Currently <strong style="color:${compliance >= 80 ? '#16a34a' : compliance >= 60 ? '#ea580c' : '#dc2626'};">${compliance.toFixed(1)}%</strong></span>` },
+                gauge: {
+                    axis: { range: [0, 100] },
+                    bar: { color: compliance >= 80 ? '#16a34a' : compliance >= 60 ? '#ea580c' : '#dc2626' },
+                    steps: [
+                        { range: [0, 60], color: '#fee2e2' },
+                        { range: [60, 80], color: '#fed7aa' },
+                        { range: [80, 100], color: '#bbf7d0' }
+                    ],
+                    threshold: {
+                        line: { color: '#dc2626', width: 4 },
+                        thickness: 0.75,
+                        value: 80
+                    }
+                }
+            }];
+
+            const layout = {
+                margin: { l: 50, r: 50, t: 20, b: 20 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: { color: '#1f2937', size: 14 }
+            };
+
+            Plotly.newPlot('complianceGauge', data, layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderHealthChart(territoryData) {
+            const territories = territoryData.map(d => d.Territory);
+            const health = territoryData.map(d => parseFloat(d.Health) || 0);
+            const invocation = territoryData.map(d => parseFloat(d['Invocation %']) || 0);
+            const tests = territoryData.map(d => parseFloat(d['Test %']) || 0);
+            const observable = territoryData.map(d => parseFloat(d['Observable %']) || 0);
+            const avgCC = territoryData.map(d => parseFloat(d['Avg CC']) || 0);
+
+            const trace = {
+                x: territories,
+                y: health,
+                type: 'bar',
+                marker: {
+                    color: health.map(h => getColor(h, true)),
+                    line: { color: 'white', width: 2 }
+                },
+                customdata: territoryData.map((row, i) => [invocation[i], tests[i], observable[i], avgCC[i]]),
+                hovertemplate: 
+                    '<b>%{x}</b><br>' +
+                    'Health Score: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
+                    'Healing Invocation: <b>%{customdata[0]:.1f}%</b> (core autonomy)<br>' +
+                    'Test Coverage: <b>%{customdata[1]:.1f}%</b> (reliability gate)<br>' +
+                    'Observability: <b>%{customdata[2]:.1f}%</b> (production readiness)<br>' +
+                    'Avg Complexity: <b>%{customdata[3]:.1f}</b> (target ≤10)<extra></extra>'
+            };
+
+            const layout = {
+                margin: { l: 80, r: 20, t: 20, b: 80 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: { color: '#1f2937' },
+                xaxis: { tickangle: -45 },
+                yaxis: { range: [0, 100] },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
+            };
+
+            trace.hovertemplate = 
+                '<b>%{x}</b><br><br>' +
+                'Health Score: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
+                '<i>Didactic Analogy:</i> Full health checkup — averages healing ability, test fitness, observability vitals, and code cleanliness<br>' +
+                'High = robust, self-correcting territory<br>' +
+                'Low = fragile agents needing windsurf<br><br>' +
+                '<i>Why it matters:</i> Health teaches interdependencies — e.g., high complexity or low tests drag the score even if healing is good<br>' +
+                'Interview tip: "Composite scores reveal hidden risks"<br><br>' +
+                'Key drivers in this territory:<br>' +
+                '• Healing Invocation: <b>%{customdata[0]:.1f}%</b> (self-repair usage — like immune response)<br>' +
+                '• Tests: <b>%{customdata[1]:.1f}%</b> (safety net)<br>' +
+                '• Observability: <b>%{customdata[2]:.1f}%</b> (monitoring tools)<br>' +
+                '• Avg Complexity: <b>%{customdata[3]:.1f}</b> (code tangles — target ≤10)<extra></extra>';
+
+            Plotly.newPlot('healthChart', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderHealingChart(territoryData) {
+            const territories = territoryData.map(d => d.Territory);
+            const invocation = territoryData.map(d => parseFloat(d['Invocation %']) || 0);
+            const healingCap = territoryData.map(d => parseFloat(d['Heal Cap %']) || 0);
+            const health = territoryData.map(d => parseFloat(d.Health) || 0);
+
+            const trace1 = {
+                x: territories,
+                y: invocation,
+                name: 'Invocation',
+                type: 'bar',
+                marker: { color: '#2563eb' },
+                customdata: territoryData.map((row, i) => [healingCap[i], health[i]]),
+                hovertemplate: 
+                    '<b>%{x}</b><br>' +
+                    'Healing Invocation: <b>%{y:.1f}%</b><br>' +
+                    'Actual super().heal_repository() usage<br>' +
+                    'Healing Capability: <b>%{customdata[0]:.1f}%</b><br>' +
+                    'Gap = healing lag (fix with super() calls)<br>' +
+                    'Target: ≥80%<extra></extra>'
+            };
+
+            const layout = {
+                margin: { l: 80, r: 20, t: 20, b: 80 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: { color: '#1f2937' },
+                xaxis: { tickangle: -45 },
+                yaxis: { range: [0, 120] },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
+            };
+
+            trace1.hovertemplate = 
+                '<b>%{x}</b><br>' +
+                'Healing Invocation: <b>%{y:.1f}%</b><br><br>' +
+                '<i>Factory Analogy:</i> Workers have personal toolkits (capabilities), but this shows how often they consult the master factory safety checklist when problems occur<br>' +
+                'Gap vs capabilities = workers ignoring centralized healing protocol<br>' +
+                'Target ≥80% for coordinated factory-wide error recovery<extra></extra>';
+
+            Plotly.newPlot('healingChart', [trace1], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderRiskMatrix(territoryData) {
+            if (!territoryData || territoryData.length === 0) return;
+            
+            // Calculate inverted complexity % for x-axis (100 - CC×2)
+            const invertedComplexity = territoryData.map(d => {
+                const cc = parseFloat(d['Avg CC']) || 0;
+                return Math.max(0, Math.min(100, 100 - (cc * 2)));
+            });
+            
+            // SSOT FIX: Compute compliance % from Compliant/Total (same data source as tables)
+            const complianceValues = territoryData.map(d => {
+                const compliant = parseFloat(d.Compliant) || 0;
+                const total = parseFloat(d.Total) || 1;
+                return (compliant / total) * 100;
+            });
+            
+            const trace = {
+                x: invertedComplexity,
+                y: complianceValues,
+                mode: 'markers',
+                type: 'scatter',
+                text: territoryData.map(d => d.Territory),
+                customdata: territoryData.map(d => [
+                    parseFloat(d.Health) || 0,
+                    parseFloat(d['Invocation %']) || 0,
+                    parseFloat(d.Risk) || 'MED',
+                    parseFloat(d['Avg CC']) || 0
+                ]),
+                marker: {
+                    size: territoryData.map(d => Math.sqrt(parseFloat(d.Total) || 1) * 3),
+                    color: territoryData.map(d => parseFloat(d.Health) || 0),
+                    colorscale: [[0, '#dc2626'], [0.5, '#ea580c'], [1, '#16a34a']],
+                    showscale: true,
+                    colorbar: { title: 'Health' }
+                },
+                hovertemplate: 
+                    '<b>%{text}</b><br>' +
+                    'Health: <b>%{customdata[0]:.1f}%</b><br>' +
+                    'Inverted Complexity: <b>%{x:.1f}%</b> (higher is better)<br>' +
+                    'Actual Avg CC: <b>%{customdata[3]:.1f}</b> (target ≤10)<br>' +
+                    'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
+                    'Healing Invocation: <b>%{customdata[1]:.1f}%</b><br>' +
+                    'Risk Level: <b>%{customdata[2]}</b><br><br>' +
+                    '<i>Analogy:</i> Like a risk dashboard for drivers — complexity = road hazards, compliance = safety features<br>' +
+                    'Green zone (top-right) = safe to extend<br>' +
+                    'Red zone (bottom-left) = high risk<extra></extra>'
+            };
+
+            const layout = {
+                margin: { l: 80, r: 80, t: 20, b: 80 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: { color: '#1f2937' },
+                xaxis: { 
+                    title: 'Inverted Complexity % (100 - CC×2, higher is better)',
+                    range: [0, 100]
+                },
+                yaxis: { 
+                    title: 'Compliance %',
+                    range: [0, 100]
+                },
+                shapes: [
+                    { type: 'line', x0: 80, x1: 80, y0: 0, y1: 100, line: { color: '#16a34a', width: 2, dash: 'dash' } },
+                    { type: 'line', x0: 60, x1: 60, y0: 0, y1: 100, line: { color: '#dc2626', width: 2, dash: 'dash' } },
+                    { type: 'line', x0: 0, x1: 100, y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ]
+            };
+
+            Plotly.newPlot('riskMatrix', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderComplianceChart(territoryData) {
+            const territories = territoryData.map(d => d.Territory);
+            // SSOT FIX: Compute compliance % from Compliant/Total (same data source as tables)
+            const compliant = territoryData.map(d => parseFloat(d.Compliant) || 0);
+            const total = territoryData.map(d => parseFloat(d.Total) || 1);
+            const compliance = compliant.map((c, i) => (c / total[i]) * 100);
+
+            const trace = {
+                x: territories,
+                y: compliance,
+                type: 'bar',
+                marker: {
+                    color: compliance.map(c => c >= 80 ? '#16a34a' : c >= 60 ? '#ea580c' : '#dc2626')
+                },
+                customdata: territoryData.map((row, i) => [compliant[i], total[i]]),
+                hovertemplate:
+                    '<b>%{x}</b><br>' +
+                    'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
+                    'Agents with heal_repository: <b>%{customdata[0]:.0f}</b>/<b>%{customdata[1]:.0f}</b><br>' +
+                    'Percentage of agents implementing healing<br>' +
+                    'Core autonomy compliance metric<extra></extra>'
+            };
+
+            const layout = {
+                margin: { l: 80, r: 20, t: 20, b: 80 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: { color: '#1f2937' },
+                xaxis: { tickangle: -45 },
+                yaxis: { range: [0, 100] },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
+            };
+
+            trace.hovertemplate = 
+                '<b>%{x}</b><br>' +
+                'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
+                '<i>Analogy:</i> Like seatbelt adoption rates — percentage of agents implementing healing<br>' +
+                'Agents with heal_repository: <b>%{customdata[0]:.0f}</b>/<b>%{customdata[1]:.0f}</b><br>' +
+                'Core autonomy compliance metric<extra></extra>';
+
+            Plotly.newPlot('complianceChart', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderObservabilityChart(territoryData) {
+            const territories = territoryData.map(d => d.Territory);
+            const observable = territoryData.map(d => parseFloat(d['Observable %']) || 0);
+            const health = territoryData.map(d => parseFloat(d.Health) || 0);
+
+            const trace = {
+                x: territories,
+                y: observable,
+                type: 'bar',
+                marker: {
+                    color: observable.map(o => o >= 80 ? '#16a34a' : o >= 50 ? '#ea580c' : '#dc2626')
+                },
+                customdata: territoryData.map((row, i) => [health[i]]),
+                hovertemplate:
+                    '<b>%{x}</b><br>' +
+                    'Observability: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
+                    'Logging/metrics coverage<br>' +
+                    'Essential for production healing<br>' +
+                    'Impacts overall Health: <b>%{customdata[0]:.1f}%</b><extra></extra>'
+            };
+
+            const layout = {
+                margin: { l: 80, r: 20, t: 20, b: 80 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: { color: '#1f2937' },
+                xaxis: { tickangle: -45 },
+                yaxis: { range: [0, 100] },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
+            };
+
+            trace.hovertemplate = 
+                '<b>%{x}</b><br>' +
+                'Observability: <b>%{y:.1f}%</b><br><br>' +
+                '<i>Analogy:</i> Like dash cams + health trackers in a self-driving car — essential for diagnosing issues<br>' +
+                'Logs/metrics/traces enable post-mortem + proactive healing<br>' +
+                'Low obs blocks production deployment<extra></extra>';
+
+            Plotly.newPlot('observabilityChart', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderComplexityChart(territoryData) {
+            const territories = territoryData.map(d => d.Territory);
+            const complexity = territoryData.map(d => parseFloat(d['Avg CC']) || 0);
+            const health = territoryData.map(d => parseFloat(d.Health) || 0);
+
+            const trace = {
+                x: territories,
+                y: complexity,
+                type: 'bar',
+                marker: {
+                    color: complexity.map(c => c <= 10 ? '#16a34a' : c <= 20 ? '#ea580c' : '#dc2626')
+                },
+                customdata: territoryData.map((row, i) => [health[i]]),
+                hovertemplate:
+                    '<b>%{x}</b><br>' +
+                    'Avg Cyclomatic Complexity: <b>%{y:.1f}</b><br>' +
+                    'Target ≤10 (green), >20 critical (red)<br>' +
+                    'High CC blocks safe healing extensions<br>' +
+                    'Health impact: <b>%{customdata[0]:.1f}%</b><extra></extra>'
+            };
+
+            const layout = {
+                margin: { l: 80, r: 20, t: 20, b: 80 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: { color: '#1f2937' },
+                xaxis: { tickangle: -45 },
+                yaxis: { title: 'Cyclomatic Complexity' },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 10, y1: 10, line: { color: '#16a34a', width: 3, dash: 'dash' } },
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 20, y1: 20, line: { color: '#dc2626', width: 3, dash: 'dot' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 11, text: 'Ideal ≤10', font: { color: '#16a34a', size: 12 }, showarrow: false },
+                    { x: -0.4, y: 21, text: 'High Risk >20', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
+            };
+
+            Plotly.newPlot('complexityChart', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderTopRecommendations() {
+            const container = document.getElementById('topRecommendations');
+            if (!container) return;
+            
+            if (!recommendationsData || recommendationsData.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:var(--success);">All territories healthy!</p>';
+                return;
+            }
+
+            const top3 = recommendationsData.slice(0, 3);
+            let html = '';
+            top3.forEach((rec, index) => {
+                const rank = index + 1;
+                
+                // Handle both old format (gaps, territory, rationale) and new format (title, description, impact)
+                const title = rec.title || rec.territory || `Priority #${rank}`;
+                const description = rec.description || rec.rationale || '';
+                const impact = rec.impact || 'MEDIUM';
+                const targetMetric = rec.target_metric || '';
+                const currentValue = rec.current_value !== undefined ? rec.current_value : 0;
+                const targetValue = rec.target_value !== undefined ? rec.target_value : 100;
+                
+                // Calculate gap from current vs target
+                const gapValue = targetValue > 0 ? Math.max(0, ((targetValue - currentValue) / targetValue) * 100) : 0;
+                
+                // Color based on impact
+                const borderColor = impact === 'HIGH' ? '#dc2626' : impact === 'MEDIUM' ? '#ea580c' : '#eab308';
+                const bgColor = impact === 'HIGH' 
+                    ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%)'
+                    : impact === 'MEDIUM'
+                    ? 'linear-gradient(135deg, rgba(234, 88, 12, 0.1) 0%, rgba(234, 88, 12, 0.05) 100%)'
+                    : 'linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0.05) 100%)';
+                
+                html += `
+                <div style="padding:20px; border-radius:8px; border-left:6px solid ${borderColor}; background:${bgColor}; box-shadow:var(--shadow);">
+                    <div style="font-size:1.3em; font-weight:700; margin-bottom:8px; color:var(--text);">${title}</div>
+                    <div style="font-size:1.1em; color:var(--text-light); margin-bottom:12px;">${impact} Impact${targetMetric ? ` • ${targetMetric}` : ''}</div>
+                    <div style="font-size:0.95em; color:var(--text-light);">→ ${description.split('—')[0].trim()}</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderRecommendations() {
+            const container = document.getElementById('recommendationsList');
+            if (!container) return;
+            
+            if (!recommendationsData || recommendationsData.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:var(--success); font-size:1.4em;">All territories at target autonomy – excellent!</p>';
+                return;
+            }
+            
+            let html = '';
+            recommendationsData.forEach((rec, index) => {
+                const rank = index + 1;
+                const impactClass = rec.impact === 'HIGH' ? 'danger' : rec.impact === 'MEDIUM' ? 'warning' : 'primary';
+                
+                // Handle both old format (score, territory, rationale) and new format (priority, title, description)
+                const title = rec.title || rec.territory || `Recommendation #${rank}`;
+                const description = rec.description || rec.rationale || '';
+                const priority = rec.priority || rank;
+                const impact = rec.impact || 'MEDIUM';
+                const effort = rec.effort || 'MEDIUM';
+                const targetMetric = rec.target_metric || '';
+                const currentValue = rec.current_value !== undefined ? rec.current_value : (rec.score || 0);
+                const targetValue = rec.target_value !== undefined ? rec.target_value : 100;
+                
+                html += `
+                <div class="kpi-box ${impactClass}" style="padding:30px; margin-bottom:30px;">
+                    <div class="kpi-label" style="font-size:1.1em; font-weight:600;">
+                        Priority #${priority} • ${impact} Impact • ${effort} Effort
+                    </div>
+                    <div class="kpi-value" style="font-size:1.6em; margin:15px 0; font-weight:700;">${title}</div>
+                    
+                    <div style="margin:20px 0;">
+                        <p style="line-height:1.6; font-size:1.1em;">${description}</p>
+                    </div>
+                    
+                    ${targetMetric ? `
+                    <div style="margin:20px 0; padding:15px; background:#f8f9fa; border-radius:8px;">
+                        <strong>Target Metric:</strong> ${targetMetric}<br>
+                        <strong>Current:</strong> ${typeof currentValue === 'number' ? currentValue.toFixed(1) : currentValue} → 
+                        <strong>Target:</strong> ${targetValue}
+                    </div>
+                    ` : ''}
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderInterviewQuestions(totalRow) {
+            const container = document.getElementById('interviewQuestions');
+            if (!container) return;
+
+            // Calculate current gap scores for prioritization
+            const gaps = {
+                invocation_gap: 100 - (parseFloat(totalRow['Invocation %']) || 0),
+                tests_gap: 100 - (parseFloat(totalRow['Test %']) || 0),
+                complexity: parseFloat(totalRow['Avg CC']) || 0,
+                obs_gap: 100 - (parseFloat(totalRow['Observable %']) || 0),
+                health: 100 - (parseFloat(totalRow.Health) || 0),
+                mcp_gap: 100,
+                general: 50,
+                unclassified: 0
+            };
+
+            // Full question bank with analogies and sample answers
+            const interviewQuestionsData = [
+                {
+                    question: "Explain the difference between healing capabilities and invocation in autonomous agents.",
+                    concept: "Healing Gap",
+                    analogy: "Factory: Capabilities = workers have personal toolkits; Invocation = workers consulting master factory safety checklist",
+                    answer: "- Capabilities: HealerMixin presence (workers have personal repair tools)\n- Invocation: Explicit super().heal_repository() calls (workers using centralized healing protocol)\n- Gap shows workers ignoring factory-wide safety procedures\n- In our portfolio: 66.6% capability vs 12.3% invocation = workers not coordinating repairs",
+                    signal: "invocation_gap"
+                },
+                {
+                    question: "Why is high cyclomatic complexity dangerous for self-healing systems?",
+                    concept: "Complexity Risk",
+                    analogy: "Tangled code = knotted headphones — adding new features (healing) risks breaking more things",
+                    answer: "- High CC (>20) increases bug surface and maintenance cost\n- Blocks safe extensions of healing logic\n- Target ≤10 for clean, evolvable agents\n- Current avg 51.5 = red flag for reliability",
+                    signal: "complexity"
+                },
+                {
+                    question: "How do you ensure agent reliability in production?",
+                    concept: "Test Coverage + Healing",
+                    analogy: "Tests = safety net for acrobats; healing = parachute — both needed for safe falls",
+                    answer: "- High test coverage (≥80%) validates behavior\n- Healing invocation catches runtime errors\n- Observability provides visibility\n- Composite health score averages these signals",
+                    signal: "tests_gap"
+                },
+                {
+                    question: "What role does observability play in autonomous agents?",
+                    concept: "Observability Maturity",
+                    analogy: "Like dash cams + health trackers in a self-driving car — essential for diagnosing issues",
+                    answer: "- Logs/metrics/traces enable debugging and proactive healing\n- Low observability blocks production trust\n- Ties to overall health score\n- Target ≥80% for safe deployment",
+                    signal: "obs_gap"
+                },
+                {
+                    question: "Describe a composite health score and its benefits.",
+                    concept: "Overall Health",
+                    analogy: "Full medical checkup vs single symptom — averages healing, tests, observability, complexity",
+                    answer: "- Weighted average of key signals\n- Teaches interdependencies (e.g., high complexity drags health)\n- Single glance portfolio view\n- Current 33.3% = room for improvement",
+                    signal: "health"
+                },
+                {
+                    question: "How would you prioritize autonomy improvements across a large agent portfolio?",
+                    concept: "Prioritized Recommendations",
+                    analogy: "Triage in ER — fix bleeding (high usage + critical gaps) first",
+                    answer: "- Score by gap × usage × priority weight\n- Focus on invocation + tests in frequently used territories\n- Use dashboard recommendations tab for guidance",
+                    signal: "general"
+                },
+                {
+                    question: "What are risks of low healing invocation despite high capabilities?",
+                    concept: "Invocation Gap",
+                    analogy: "Factory: Workers have toolkits but ignore master safety checklist — no coordinated factory-wide recovery",
+                    answer: "- Workers fix problems in isolation without coordinating\n- Shared healing diagnostics/rollback never trigger\n- Factory-wide issues cascade unhandled\n- Fix: Add explicit super() chains to consult master checklist",
+                    signal: "invocation_gap"
+                },
+                {
+                    question: "Explain MCP hardening in agentic systems.",
+                    concept: "MCP Hardening",
+                    analogy: "Security hardening around MCP connections — protects factory from dangerous operations",
+                    answer: "- MCPShield mixin + decorators prevent unsafe overrides\n- This is SECURITY around MCP, NOT about using MCP capabilities\n- Currently 0% — major safety gap\n- Essential for L5 compliance",
+                    signal: "mcp_gap"
+                },
+                {
+                    question: "Why prioritize typing in autonomous codebases?",
+                    concept: "Typed %",
+                    analogy: "Clear road signs — reduces wrong turns (bugs) during evolution",
+                    answer: "- Enables static analysis + refactoring\n- Supports safe healing extensions\n- Current 73.9% = good but room to 90%+",
+                    signal: "general"
+                },
+                {
+                    question: "How does usage % influence improvement priority?",
+                    concept: "Used % Weighting",
+                    analogy: "Fix brakes on daily driver before garage queen",
+                    answer: "- High usage = higher impact from autonomy gaps\n- Scoring multiplies by used% to focus real-world wins\n- E.g., L4 State at 95% used = high priority",
+                    signal: "general"
+                },
+                {
+                    question: "What is the risk matrix telling us?",
+                    concept: "Risk vs Criticality",
+                    analogy: "Storm radar — high criticality + low health = imminent danger",
+                    answer: "- Plots health vs business impact\n- Red zone = urgent fixes\n- Current portfolio mostly HIGH risk",
+                    signal: "general"
+                },
+                {
+                    question: "How do territories help manage large agent portfolios?",
+                    concept: "Territory Grouping",
+                    analogy: "Neighborhoods in a city — group similar agents for targeted improvements",
+                    answer: "- Logical grouping (L2 Execution, Apps Rg, etc.)\n- Enables per-territory metrics + recommendations\n- Unclassified = lost agents distorting view",
+                    signal: "general"
+                },
+                {
+                    question: "Why aim for explicit super() chains even when inherited?",
+                    concept: "Explicit Invocation",
+                    analogy: "Visible seatbelt click — confirms safety engaged",
+                    answer: "- Makes chain auditable/detectable\n- Allows future territory extensions\n- Guardian counts explicit calls for accurate metrics",
+                    signal: "invocation_gap"
+                },
+                {
+                    question: "How would you close a healing invocation gap at scale?",
+                    concept: "Batch Windsurf",
+                    analogy: "Vaccination campaign — systematic batches for herd immunity",
+                    answer: "- Use AST scripts to add stubs/chains\n- Verify per-batch with report\n- Current progress: 2% → 12.3% via 4 batches",
+                    signal: "general"
+                },
+                {
+                    question: "What makes an agent portfolio 'robust'?",
+                    concept: "All Signals",
+                    analogy: "Healthy ecosystem — balanced healing, tests, observability, clean code",
+                    answer: "- Health ≥80%, invocation ≥80%, complexity ≤10\n- Low risk, high coverage\n- Interdependent — fix one lifts others",
+                    signal: "health"
+                }
+            ];
+
+            // Score questions by matching signal
+            const scored = interviewQuestionsData.map(q => ({
+                ...q,
+                score: gaps[q.signal] || 50
+            }));
+
+            // Sort by urgency (highest first)
+            scored.sort((a, b) => b.score - a.score);
+
+            let html = '';
+            scored.forEach((q, i) => {
+                const urgency = i < 5 ? 'danger' : i < 10 ? 'warning' : 'primary';
+                html += `
+                <div class="kpi-box ${urgency}" style="padding:30px;">
+                    <div class="kpi-label" style="font-size:1.1em;">Question ${i+1} • ${q.concept} (${q.score.toFixed(0)} urgency)</div>
+                    <div class="kpi-value" style="font-size:1.4em; margin:15px 0;">${q.question}</div>
+                    <div style="margin:15px 0;">
+                        <strong>Analogy:</strong> ${q.analogy}
+                    </div>
+                    <div style="margin:15px 0;">
+                        <strong>Sample Answer Outline:</strong>
+                        <pre style="background:#f8f9fa; padding:16px; border-radius:8px; font-size:0.95em; margin-top:8px; white-space:pre-wrap;">${q.answer}</pre>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderStrategicObservations(totalRow, territoryData) {
+            // Macro Observations
+            const macroContainer = document.getElementById('macroObservations');
+            const metricContainer = document.getElementById('metricObservations');
+            if (!macroContainer || !metricContainer) return;
+
+            const macroObs = [];
+            const metricObs = [];
+
+            // L0 Maintenance - should NOT have healing (infrastructure layer)
+            const l0Row = territoryData.find(t => t.Territory.includes('L0 Maintenance'));
+            if (l0Row && l0Row['Heal Cap %'] > 0) {
+                macroObs.push({
+                    icon: '🔧',
+                    title: 'L0 Maintenance Layer',
+                    text: `L0 is infrastructure/scripts layer. Healing capability is N/A here (currently showing ${l0Row['Heal Cap %'].toFixed(0)}%). Focus on stability, not self-healing.`,
+                    color: '#6b7280'
+                });
+            }
+
+            // Complexity observation
+            if (totalRow['Avg CC'] > 30) {
+                metricObs.push({
+                    icon: '⚠️',
+                    title: 'High Complexity',
+                    text: `Average CC of ${totalRow['Avg CC'].toFixed(1)} exceeds target (≤15). Refactor high-CC methods in L5 validators and L3 orchestrators.`,
+                    color: '#ea580c'
+                });
+            }
+
+            // Test coverage observation
+            if (totalRow['Test %'] < 80) {
+                metricObs.push({
+                    icon: '🧪',
+                    title: 'Test Coverage Gap',
+                    text: `Test coverage at ${totalRow['Test %'].toFixed(1)}% (target: 80%). Focus on L1 Cognition and Apps territories first.`,
+                    color: '#dc2626'
+                });
+            }
+
+            // Healing invocation observation
+            if (totalRow['Invocation %'] > 85) {
+                metricObs.push({
+                    icon: '✅',
+                    title: 'Strong Healing Invocation',
+                    text: `${totalRow['Invocation %'].toFixed(1)}% healing invocation is excellent. Maintain this level.`,
+                    color: '#16a34a'
+                });
+            }
+
+            // Apps territories observation
+            const appsRows = territoryData.filter(t => t.Territory.includes('Apps'));
+            if (appsRows.length > 0) {
+                const avgAppsTest = appsRows.reduce((sum, r) => sum + (r['Test %'] || 0), 0) / appsRows.length;
+                if (avgAppsTest < 60) {
+                    macroObs.push({
+                        icon: '📱',
+                        title: 'Apps Test Coverage',
+                        text: `Apps territories average ${avgAppsTest.toFixed(0)}% test coverage. Target 80% for production safety.`,
+                        color: '#ea580c'
+                    });
+                }
+            }
+
+            // Observability observation
+            if (totalRow['Observable %'] > 95) {
+                macroObs.push({
+                    icon: '👁️',
+                    title: 'Excellent Observability',
+                    text: `${totalRow['Observable %'].toFixed(1)}% observability coverage. Production debugging is well-supported.`,
+                    color: '#16a34a'
+                });
+            }
+
+            // Render macro observations
+            macroContainer.innerHTML = macroObs.length > 0 ? macroObs.map(obs => `
+                <div style="padding: 12px; background: white; border-radius: 8px; border-left: 4px solid ${obs.color};">
+                    <div style="font-weight: 600; margin-bottom: 4px;">${obs.icon} ${obs.title}</div>
+                    <div style="font-size: 0.9em; color: #475569;">${obs.text}</div>
+                </div>
+            `).join('') : '<div style="color: #6b7280; font-style: italic;">No macro observations at this time.</div>';
+
+            // Render metric observations
+            metricContainer.innerHTML = metricObs.length > 0 ? metricObs.map(obs => `
+                <div style="padding: 12px; background: white; border-radius: 8px; border-left: 4px solid ${obs.color};">
+                    <div style="font-weight: 600; margin-bottom: 4px;">${obs.icon} ${obs.title}</div>
+                    <div style="font-size: 0.9em; color: #475569;">${obs.text}</div>
+                </div>
+            `).join('') : '<div style="color: #6b7280; font-style: italic;">All metrics within target ranges.</div>';
+        }
+
+        function loadData() {
+            const data = dashboardData;
+            const territoryData = data.filter(row => row.Territory !== 'TOTAL');
+            const totalRow = data.find(row => row.Territory === 'TOTAL');
+
+            if (!totalRow) {
+                document.getElementById('kpiGrid').innerHTML = '<div class="loading">No data available.</div>';
+                return;
+            }
+
+            renderStrategicObservations(totalRow, territoryData);
+            renderTerritorySummaryTable(territoryData);
+            renderCodeQualityTable(territoryData);
+            renderRiskMatrix(territoryData);
+            renderRecommendations();
+            renderInterviewQuestions(totalRow);
+
+            document.getElementById('lastUpdated').textContent = lastUpdatedStr;
+            
+            // Setup drill-down click handlers after all charts are rendered
+            setTimeout(setupDrillDowns, 100);
+        }
+
+        // Drill-down modal functions
+        function openDrillModal(territoryName) {
+            const row = dashboardData.find(r => r.Territory === territoryName);
+            if (!row) return;
+
+            document.getElementById('modalTitle').textContent = `${territoryName} Territory Drill-Down`;
+            document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Health ${row.Health.toFixed(1)}% • Invocation ${row['Invocation %'].toFixed(1)}%`;
+
+            let content = '<strong style="font-size:1.2em;">Territory Metrics Recap:</strong><ul style="margin-top:10px;">';
+            content += `<li>Healing Capability: <strong>${row['Heal Cap %'].toFixed(1)}%</strong></li>`;
+            content += `<li>Healing Invocation: <strong>${row['Invocation %'].toFixed(1)}%</strong> (gap = opportunity)</li>`;
+            content += `<li>MCP Hardened: <strong>${(row['Hardened %'] || 0).toFixed(1)}%</strong></li>`;
+            content += `<li>Tests: <strong>${row['Test %'].toFixed(1)}%</strong></li>`;
+            content += `<li>Avg Complexity: <strong>${row['Avg CC'].toFixed(1)}</strong></li>`;
+            content += '</ul>';
+
+            // Per-agent diagnostics table
+            if (row.agents && row.agents.length > 0) {
+                content += '<strong style="font-size:1.4em; margin:30px 0 15px 0; display:block;">Per-Agent Diagnostics (' + row.agents.length + ' agents)</strong>';
+                content += '<table style="width:100%; border-collapse:collapse; font-size:0.95em; margin-top:10px;">';
+                content += '<thead><tr style="background:#f1f5f9; border-bottom:2px solid var(--border);">';
+                content += '<th style="text-align:left; padding:12px; font-weight:600;" title="Click to open in VS Code">Agent File</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Has HealerMixin in class bases">HealerMixin</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Calls super().heal_repository() - seatbelt analogy">Invocation Chain</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Has dedicated test coverage">Tests</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Observability = dash cams + health trackers\nLogging: structured_log calls\nMetrics: log_metric\nTracing: span starts\nEssential for production debugging">Observability Flags</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="MCP Hardening = security hardening around MCP connections (NOT about using MCP)\nShield: MCPShield mixin inheritance\n@hardened: decorator on critical methods\nSafe: no direct os/subprocess calls\nEssential for L5 safety and production trust">MCP Hardening Flags</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Typing = clear road signs\nInit: __init__ params/return typed\nMethods: >70% defs typed\nReturns: return annotations\nEnables static analysis + safe refactoring">Typing Flags</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Cyclomatic complexity (lower = better)">Complexity</th>';
+                content += '</tr></thead><tbody>';
+
+                row.agents.forEach(agent => {
+                    const mixinIcon = agent.has_mixin 
+                        ? '<span style="color:#16a34a; font-weight:700;">✓</span> <span style="color:#16a34a;">Yes</span>' 
+                        : '<span style="color:#dc2626; font-weight:700;">✗</span> <span style="color:#dc2626;">No</span>';
+                    
+                    let invIcon;
+                    if (agent.invocation === "Yes" || agent.invocation === "Inherited") {
+                        invIcon = '<span style="color:#16a34a; font-weight:700;">✓</span> <span style="color:#16a34a;">' + agent.invocation + '</span>';
+                    } else if (agent.invocation === "Unknown") {
+                        invIcon = '<span style="color:#94a3b8;">?</span> <span style="color:#94a3b8;">Unknown</span>';
+                    } else {
+                        invIcon = '<span style="color:#dc2626; font-weight:700;">✗</span> <span style="color:#dc2626;">' + agent.invocation + '</span>';
+                    }
+                    
+                    const testIcon = agent.has_tests 
+                        ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
+                        : '<span style="color:#dc2626; font-weight:700;">✗</span>';
+                    
+                    const typedColor = getColor(agent.typed_pct, true);
+                    const complexityColor = getColor(agent.complexity, false);
+                    
+                    // Observability flags with color coding
+                    const obsTitle = "Observability flags:\nLogging: structured logs\nMetrics: log_metric calls\nTracing: OpenTelemetry spans\nEssential for production debugging";
+                    const obsSummary = agent.obs_summary || "Logging: ✗ | Metrics: ✗ | Tracing: ✗";
+                    
+                    // MCP Hardening flags with color coding
+                    const mcpTitle = "MCP Hardening flags:\nShield: MCPShield mixin (core protection)\n@hardened: method decorator\nSafe: no unsafe exec patterns\nCurrently 10.1% portfolio-wide — major L5 gap";
+                    const mcpSummary = agent.mcp_summary || "Shield: ✗ | @hardened: ✗ | Safe: ✓";
+                    
+                    // Typing flags with color coding
+                    const typingTitle = "Typing flags:\nInit Typed: params + return hints\nMethods Typed: % of defs with hints\nReturns Annotated: return types\nCurrent portfolio ~58% — aim 90%+ for maintainability";
+                    const typingSummary = agent.typing_summary || "Init: ✗ | Methods: 0% | Returns: 0%";
+                    const overallTyped = agent.overall_typed_pct || 0;
+                    
+                    content += `<tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:12px;">
+                            <a href="vscode://file/${agent.abs_class}" target="_blank" style="color:var(--primary); font-family:monospace; font-size:0.9em; font-weight:600;">
+                                ${agent.rel}
+                            </a><br>
+                            <small style="color:var(--text-light);">
+                                <a href="vscode://file/${agent.abs_file}" target="_blank" style="color:var(--text-light);">Line ${agent.class_line}</a> | 
+                                <a href="vscode://file/${agent.abs_file}" target="_blank" style="color:var(--text-light);">Full file</a>
+                            </small>
+                        </td>
+                        <td style="padding:12px; text-align:center;">${mixinIcon}</td>
+                        <td style="padding:12px; text-align:center;">${invIcon}</td>
+                        <td style="padding:12px; text-align:center;">${testIcon}</td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${obsTitle}">${obsSummary}</td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${mcpTitle}">${mcpSummary}</td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${typingTitle}">${typingSummary}<br><small style="color:var(--text-light);">${overallTyped}% overall</small></td>
+                        <td style="padding:12px; text-align:center; color:${complexityColor}; font-weight:600;">${agent.complexity}</td>
+                    </tr>`;
+                });
+                content += '</tbody></table>';
+                
+                content += '<p style="margin-top:15px; font-size:0.9em; color:var(--text-light); font-style:italic;">';
+                content += '<strong>Windsurf Priority:</strong> Agents with ✗ on HealerMixin, Invocation Chain, Observability, MCP Hardening, or weak Typing are sorted first. ';
+                content += 'Click any file link → add HealerMixin to bases, super().heal_repository() calls, observability imports (structured_log, log_metric), MCPShield mixin + @hardened decorators, or type annotations (: Type) → re-run report.';
+                content += '</p>';
+            } else {
+                content += '<p style="margin-top:20px; color:var(--text-light);">No per-agent diagnostics available for this territory.</p>';
+            }
+
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('drillModal').style.display = 'flex';
+        }
+
+        // Attach click handlers to all territory charts
+        function attachDrillDown(chartId) {
+            const chart = document.getElementById(chartId);
+            if (chart) {
+                chart.on('plotly_click', function(data) {
+                    if (data.points && data.points[0]) {
+                        const territory = data.points[0].x || data.points[0].text || data.points[0].label;
+                        if (territory && territory !== 'TOTAL') {
+                            openDrillModal(territory);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Setup all drill-down handlers
+        function setupDrillDowns() {
+            attachDrillDown('healthChart');
+            attachDrillDown('riskMatrix');
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('drillModal').style.display = 'none';
+            }
+        });
+
+        // Close modal on background click
+        document.getElementById('drillModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+
+        loadData();
+    </script>
+</body>
+</html>

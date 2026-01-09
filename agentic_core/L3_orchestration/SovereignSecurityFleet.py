@@ -172,7 +172,7 @@ class SovereignSecurityFleet:
         print("\n[5/5] RuntimeTelemetryAgent (L6) - Performance Monitoring")
         print("-" * 50)
         try:
-            from agentic_core.L6_observability.RuntimeTelemetryAgent import RuntimeTelemetryAgent
+            from agentic_core.L6_observability.agents.RuntimeTelemetryAgent import RuntimeTelemetryAgent
             telemetry = self._load_agent("RuntimeTelemetryAgent", RuntimeTelemetryAgent, limit_multiplier=2.0)
             if telemetry:
                 # Calculate total fleet startup time
