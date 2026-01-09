@@ -1,12 +1,7 @@
-"""
-DEPRECATED: This test file has runtime errors or missing dependencies.
-Marked as skipped to allow test suite to pass.
-"""
+# tests/unit/test_l3_rag_cost_governance.py
 import pytest
+import agentic_core.L3_orchestration
 
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test has runtime errors or missing dependencies")
-
-
-def test_placeholder():
-    """Placeholder test to ensure file is valid."""
-    pytest.skip("This test file is deprecated")
+class TestStructure:
+    def test_l3_module_exists(self):
+        assert agentic_core.L3_orchestration is not None

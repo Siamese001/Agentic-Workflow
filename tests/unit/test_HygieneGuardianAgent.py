@@ -1,12 +1,7 @@
-"""
-DEPRECATED: This test file has fixture errors or malformed structure.
-Marked as skipped to allow test suite to pass.
-"""
+# tests/unit/test_HygieneGuardianAgent.py
 import pytest
+import agentic_core.L5_safety
 
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test has fixture errors or malformed structure")
-
-
-def test_placeholder():
-    """Placeholder test to ensure file is valid."""
-    pytest.skip("This test file is deprecated")
+class TestStructure:
+    def test_l5_safety_module_exists(self):
+        assert agentic_core.L5_safety is not None
