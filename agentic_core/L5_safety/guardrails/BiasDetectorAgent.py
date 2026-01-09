@@ -1,7 +1,7 @@
 from __future__ import annotations
 """Bias Detector Agent - Runs local bias detection with dynamic constitution rules."""
 
-from typing import Dict
+from typing import Any, Dict, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class (same directory → relative import)
@@ -21,11 +21,16 @@ def track_metrics(name):
 
 def detect_bias(context, text, workflow_id=""):
     """Stub for detect_bias - TODO: Replace with sovereign equivalent"""
-    return {"bias_detected": False, "score": 0.0}
+    return {"bias_detected": False, "score": 0.0, "patterns": []}
 
 
 class BiasDetectorAgent(SafetyBaseAgent):
     """Runs local bias detection with dynamic constitution rules."""
+    
+    def __init__(self, context: Any = None, **kwargs):
+        """Initialize BiasDetectorAgent with optional context."""
+        super().__init__(name="BiasDetectorAgent", **kwargs)
+        self.context = context
 
     @track_metrics("run_bias_detector")
     def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:

@@ -38,6 +38,26 @@ class SovereignBaseAgent:
         """Elevate the agent's authority level."""
         self._authority_level = level
         logger.info(f"Authority elevated to: {level}")
+    
+    def log_info(self, message: str) -> None:
+        """Log an info message."""
+        logger.info(f"[{self.name}] {message}")
+    
+    def log_warning(self, message: str) -> None:
+        """Log a warning message."""
+        logger.warning(f"[{self.name}] {message}")
+    
+    def log_error(self, message: str) -> None:
+        """Log an error message."""
+        logger.error(f"[{self.name}] {message}")
+    
+    def log_feedback(self, workflow_id: str, action: str, status: str, details: Dict[str, Any] = None) -> None:
+        """Log feedback for a workflow action."""
+        logger.info(f"[{self.name}] Workflow {workflow_id}: {action} - {status} - {details or {}}")
+    
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Base heal_repository implementation - subclasses should override."""
+        return {"skipped": 1}
 
 
 __all__ = ['SovereignBaseAgent']
