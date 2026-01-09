@@ -396,6 +396,30 @@
             <!-- Executive Dashboard Tab -->
             <div id="executive-content" class="tab-content">
                 
+                <!-- Global Alert Banner for Critical Outliers -->
+                <div id="outlierAlertBanner" style="display:none; margin-bottom:25px;">
+                    <div class="chart-card" style="border: 2px solid var(--danger); background: #fef2f2;">
+                        <div class="chart-header" style="background: var(--danger); color: white; padding: 10px 20px;">
+                            <div class="chart-title" style="color: white; display: flex; align-items: center; gap: 10px;">
+                                <span>⚠️ CRITICAL ARCHITECTURAL GAPS</span>
+                                <span id="outlierCountBadge" style="background: white; color: var(--danger); padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 800;">0</span>
+                            </div>
+                        </div>
+                        <div class="chart-body" style="padding: 15px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div id="healthAlerts" style="border-right: 1px solid #fee2e2; padding-right: 20px;">
+                                    <h4 style="color: var(--danger); margin-bottom: 10px; font-size: 0.9em; text-transform: uppercase;">Health & Autonomy Gaps (@0%)</h4>
+                                    <ul id="healthAlertList" style="font-size: 0.85em; color: #991b1b; padding-left: 20px;"></ul>
+                                </div>
+                                <div id="qualityAlerts">
+                                    <h4 style="color: var(--danger); margin-bottom: 10px; font-size: 0.9em; text-transform: uppercase;">Quality & Schema Gaps (@0%)</h4>
+                                    <ul id="qualityAlertList" style="font-size: 0.85em; color: #991b1b; padding-left: 20px;"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Strategic Observations Section -->
                 <div class="charts-grid full-width" style="margin-bottom:20px;">
                     <div class="chart-card" style="border-left: 4px solid var(--primary);">
@@ -1842,8 +1866,8 @@
         
         // Global state for table filtering and sorting
         let tableFilterState = {
-            table1: { showOnlyOutliers: false, sortByOutliers: false },
-            table2: { showOnlyOutliers: false, sortByOutliers: false }
+            table1: { showOnlyOutliers: false, sortByOutliers: false, showZombies: false },
+            table2: { showOnlyOutliers: false, sortByOutliers: false, showZombies: false }
         };
         
         // Count total outliers for a territory (for sorting)
@@ -1888,6 +1912,11 @@
             
             return `
             <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em; color:#dc2626; font-weight:700;">
+                    <input type="checkbox" id="${tableType}-filter-zombies" ${state.showZombies ? 'checked' : ''} 
+                           onchange="toggleZombieFilter('${tableType}')" style="cursor:pointer;">
+                    <span>🧟 Show Only Zombies (Persistent Outliers)</span>
+                </label>
                 <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em;">
                     <input type="checkbox" id="${tableType}-filter-outliers" ${state.showOnlyOutliers ? 'checked' : ''} 
                            onchange="toggleOutlierFilter('${tableType}')" style="cursor:pointer;">
@@ -1928,9 +1957,44 @@
             }
         }
         
+        // PHASE 5: Toggle zombie filter (persistent outliers)
+        function toggleZombieFilter(tableType) {
+            tableFilterState[tableType].showZombies = !tableFilterState[tableType].showZombies;
+            // Re-render the appropriate table
+            if (tableType === 'table1') {
+                renderTerritorySummaryTable(dashboardData);
+            } else {
+                renderCodeQualityTable(dashboardData);
+            }
+        }
+        
+        // PHASE 5: Check if territory is a "zombie" (persistent outlier with high toxicity)
+        function isZombieTerritory(territory) {
+            const fanIn = getMockFanInData(territory);
+            const status = hasRowCriticalOutliers(territory);
+            // Zombie = has critical outliers AND high fan-in (toxic hub)
+            return status.hasCritical && fanIn >= 20;
+        }
+        
         // ============================================
         // PHASE 6: Architectural Integrity & Toxicity
         // ============================================
+        
+        // PHASE 6: Calculate toxicity-weighted impact score
+        function calculateToxicityImpact(metricValue, territory) {
+            const fanIn = getMockFanInData(territory);
+            // Impact = Deviation from 100 * (1 + ln(FanIn))
+            const deviation = 100 - metricValue;
+            const multiplier = 1 + Math.log(Math.max(fanIn, 1));
+            return Math.round(deviation * multiplier);
+        }
+
+        // PHASE 6: Trigger heal agent (remediation webhook)
+        function triggerHealAgent(agentPath) {
+            console.log(`🚀 Dispatching ConvergenceEngine to: ${agentPath}`);
+            alert(`Convergence mission initiated for: ${agentPath.split('/').pop()}\n\nChecking sub-atomic primitives...`);
+            // Future implementation: fetch('/api/heal', { method: 'POST', body: JSON.stringify({ path: agentPath }) });
+        }
         
         // Global state for toxicity filtering
         let toxicityFilterEnabled = false;
@@ -2143,6 +2207,14 @@
                 });
             }
             
+            // PHASE 5: Apply zombie filter if enabled (Table 1)
+            if (filterState.showZombies) {
+                filteredData = filteredData.filter(row => {
+                    if (row.Territory === 'TOTAL') return true;
+                    return isZombieTerritory(row.Territory);
+                });
+            }
+            
             // PHASE 6: Apply toxicity filter if enabled
             if (toxicityFilterEnabled) {
                 filteredData = filteredData.filter(row => {
@@ -2267,7 +2339,7 @@
                         b = Math.round(74);
                     }
                     
-                    const alpha = 0.15 + normalized * 0.15;
+                    const alpha = normalized < 0.3 ? 0.35 : (0.15 + normalized * 0.15);
                     return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
                 };
                 const getComplexityGradientBg = (value) => {
@@ -2341,13 +2413,13 @@
                             ${generateSparkline([72, 74, 75, 76, totalRow.Health], '#16a34a', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:rgba(124, 58, 237, 0.1); font-weight:600;">
-                            <span style="color:#6b7280; font-size:0.85em;">See territory rows</span>
+                            <span style="color:#7c3aed; font-size:0.85em; text-transform:uppercase; letter-spacing:0.5px;">Remediation Circuit Active</span>
                         </td>
                     </tr>`;
             }
             
             territoryData.forEach((row, index) => {
-                // 7-color gradient: Deep Red → Red → Orange → Yellow → Yellow-Green → Light Green → Green
+                // PHASE 4: Non-linear Intensity Gradient (Floor-based) - 7-color gradient
                 const getGradientBg = (value, target = 80) => {
                     const normalized = Math.max(0, Math.min(100, value)) / 100;
                     let r, g, b;
@@ -2384,7 +2456,7 @@
                         b = Math.round(74);
                     }
                     
-                    const alpha = 0.15 + normalized * 0.15;
+                    const alpha = normalized < 0.3 ? 0.35 : (0.15 + normalized * 0.15);
                     return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
                 };
                 
@@ -2432,22 +2504,22 @@
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(healCapMin)}; border-right:1px solid #e5e7eb;">
-                            <span style="color:${getWorstCaseColor(healCapMin)};">${formatDistributionCell(row['Heal Cap %'], healCapTerritoryStats, false)}${formatOutlierBadge(healCapTerritoryOutliers.atZero, healCapTerritoryOutliers.belowThreshold, 50)}</span>
+                            <span style="color:${getWorstCaseColor(healCapMin)};">${formatDistributionCell(row['Heal Cap %'], healCapTerritoryStats, true)}${formatOutlierBadge(healCapTerritoryOutliers.atZero, healCapTerritoryOutliers.belowThreshold, 50)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(invocationMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <span style="color:${invocationColor};">${formatDistributionCell(row['Invocation %'], invocationTerritoryStats, false)}${formatOutlierBadge(invocationTerritoryOutliers.atZero, invocationTerritoryOutliers.belowThreshold, 50)}</span>
+                            <span style="color:${invocationColor};">${formatDistributionCell(row['Invocation %'], invocationTerritoryStats, true)}${formatOutlierBadge(invocationTerritoryOutliers.atZero, invocationTerritoryOutliers.belowThreshold, 50)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(hardenedMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <span style="color:${hardenedColor};">${formatDistributionCell(row['Hardened %'] || 0, hardenedTerritoryStats, false)}${formatOutlierBadge(hardenedTerritoryOutliers.atZero, hardenedTerritoryOutliers.belowThreshold, 50)}</span>
+                            <span style="color:${hardenedColor};">${formatDistributionCell(row['Hardened %'] || 0, hardenedTerritoryStats, true)}${formatOutlierBadge(hardenedTerritoryOutliers.atZero, hardenedTerritoryOutliers.belowThreshold, 50)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(testMin)}; border-right:1px solid #e5e7eb;">
-                            <span style="color:${testColor};">${formatDistributionCell(row['Test %'], testTerritoryStats, false)}${formatOutlierBadge(testTerritoryOutliers.atZero, testTerritoryOutliers.belowThreshold, 50)}</span>
+                            <span style="color:${testColor};">${formatDistributionCell(row['Test %'], testTerritoryStats, true)}${formatOutlierBadge(testTerritoryOutliers.atZero, testTerritoryOutliers.belowThreshold, 50)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(complexityMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <span style="color:${ccHealthColor};">${formatDistributionCell(row['Complexity Health'] || 0, complexityTerritoryStats, false)}${formatOutlierBadge(complexityTerritoryOutliers.atZero, complexityTerritoryOutliers.belowThreshold, 30)}</span>
+                            <span style="color:${ccHealthColor};">${formatDistributionCell(row['Complexity Health'] || 0, complexityTerritoryStats, true)}${formatOutlierBadge(complexityTerritoryOutliers.atZero, complexityTerritoryOutliers.belowThreshold, 30)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(healthMin)}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            <span style="color:${healthColor};">${formatDistributionCell(row.Health, healthTerritoryStats, false)}${formatOutlierBadge(healthTerritoryOutliers.atZero, healthTerritoryOutliers.belowThreshold, 60)}</span>
+                            <span style="color:${healthColor};">${formatDistributionCell(row.Health, healthTerritoryStats, true)}${formatOutlierBadge(healthTerritoryOutliers.atZero, healthTerritoryOutliers.belowThreshold, 60)}</span>
                         </td>
                         <td style="padding:12px; text-align:center; background:rgba(124, 58, 237, 0.05);">
                             ${(() => {
@@ -2490,6 +2562,14 @@
                     if (row.Territory === 'TOTAL') return true; // Always show TOTAL
                     const status = hasRowCriticalOutliers(row.Territory);
                     return status.hasCritical || status.hasWarning;
+                });
+            }
+            
+            // PHASE 5: Apply zombie filter if enabled (Table 2)
+            if (filterState.showZombies) {
+                filteredData = filteredData.filter(row => {
+                    if (row.Territory === 'TOTAL') return true;
+                    return isZombieTerritory(row.Territory);
                 });
             }
             
@@ -2591,7 +2671,7 @@
                     b = Math.round(74);
                 }
                 
-                const alpha = 0.15 + normalized * 0.15;
+                const alpha = normalized < 0.3 ? 0.35 : (0.15 + normalized * 0.15);
                 return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
             };
             
@@ -2708,19 +2788,19 @@
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(typedColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(typed, typedStats, false)}${formatOutlierBadge(typedTerritoryOutliers.atZero, typedTerritoryOutliers.belowThreshold, 50)}
+                            ${formatDistributionCell(typed, typedStats, true)}${formatOutlierBadge(typedTerritoryOutliers.atZero, typedTerritoryOutliers.belowThreshold, 50)}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(documentedColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(documented, documentedStats, false)}${formatOutlierBadge(documentedTerritoryOutliers.atZero, documentedTerritoryOutliers.belowThreshold, 50)}
+                            ${formatDistributionCell(documented, documentedStats, true)}${formatOutlierBadge(documentedTerritoryOutliers.atZero, documentedTerritoryOutliers.belowThreshold, 50)}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(schemaColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(schemaStrictness, schemaStats, false)}${formatOutlierBadge(schemaTerritoryOutliers.atZero, schemaTerritoryOutliers.belowThreshold, 80)}
+                            ${formatDistributionCell(schemaStrictness, schemaStats, true)}${formatOutlierBadge(schemaTerritoryOutliers.atZero, schemaTerritoryOutliers.belowThreshold, 80)}
                         </td>
                         <td style="padding:12px; text-align:center; background:${row.Territory.includes('Base Class') ? '#f3f4f6' : getGradientBg(baseColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${row.Territory.includes('Base Class') ? '<span style="color:#6b7280; font-style:italic;">N/A</span>' : formatDistributionCell(properBase, baseStats, false) + formatOutlierBadge(baseTerritoryOutliers.atZero, baseTerritoryOutliers.belowThreshold, 50)}
+                            ${row.Territory.includes('Base Class') ? '<span style="color:#6b7280; font-style:italic;">N/A</span>' : formatDistributionCell(properBase, baseStats, true) + formatOutlierBadge(baseTerritoryOutliers.atZero, baseTerritoryOutliers.belowThreshold, 50)}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(qualityColorVal)}; color:${qualityColor}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(codeQuality, qualityStats, false)}${formatOutlierBadge(qualityTerritoryOutliers.atZero, qualityTerritoryOutliers.belowThreshold, 60)}
+                            ${formatDistributionCell(codeQuality, qualityStats, true)}${formatOutlierBadge(qualityTerritoryOutliers.atZero, qualityTerritoryOutliers.belowThreshold, 60)}
                         </td>
                         <td style="padding:12px; text-align:center; background:rgba(124, 58, 237, 0.05);">
                             ${(() => {
@@ -3465,6 +3545,36 @@
             `).join('') : '<div style="color: #6b7280; font-style: italic;">All metrics within target ranges.</div>';
         }
 
+        // Update Global Alert Banner with critical outliers
+        function updateGlobalAlertBanner(territoryData) {
+            const alerts = aggregateOutlierAlerts(territoryData);
+            const banner = document.getElementById('outlierAlertBanner');
+            const healthList = document.getElementById('healthAlertList');
+            const qualityList = document.getElementById('qualityAlertList');
+            const countBadge = document.getElementById('outlierCountBadge');
+            
+            if (!banner || !healthList || !qualityList) return;
+            
+            const criticalTable1 = alerts.table1.filter(a => a.type === 'critical');
+            const criticalTable2 = alerts.table2.filter(a => a.type === 'critical');
+            
+            if (criticalTable1.length === 0 && criticalTable2.length === 0) {
+                banner.style.display = 'none';
+                return;
+            }
+            
+            banner.style.display = 'block';
+            countBadge.textContent = criticalTable1.length + criticalTable2.length;
+            
+            healthList.innerHTML = criticalTable1.slice(0, 5).map(a => 
+                `<li style="margin-bottom: 5px;"><strong>${a.territory}</strong>: ${a.message} in ${a.metric}</li>` 
+            ).join('') || '<li>No critical health gaps.</li>';
+            
+            qualityList.innerHTML = criticalTable2.slice(0, 5).map(a => 
+                `<li style="margin-bottom: 5px;"><strong>${a.territory}</strong>: ${a.message} in ${a.metric}</li>` 
+            ).join('') || '<li>No critical quality gaps.</li>';
+        }
+
         function loadData() {
             const data = dashboardData;
             const territoryData = data.filter(row => row.Territory !== 'TOTAL');
@@ -3476,6 +3586,7 @@
             }
 
             renderStrategicObservations(totalRow, territoryData);
+            updateGlobalAlertBanner(territoryData);
             renderTerritorySummaryTable(territoryData);
             renderCodeQualityTable(territoryData);
             renderRecommendations();
@@ -3520,6 +3631,8 @@
                 content += '<th style="padding:12px; font-weight:600;" title="MCP Hardening = security hardening around MCP connections (NOT about using MCP)\nShield: MCPShield mixin inheritance\n@hardened: decorator on critical methods\nSafe: no direct os/subprocess calls\nEssential for L5 safety and production trust">MCP Hardening Flags</th>';
                 content += '<th style="padding:12px; font-weight:600;" title="Typing = clear road signs\nInit: __init__ params/return typed\nMethods: >70% defs typed\nReturns: return annotations\nEnables static analysis + safe refactoring">Typing Flags</th>';
                 content += '<th style="padding:12px; font-weight:600;" title="Cyclomatic complexity (lower = better)">Complexity</th>';
+                content += '<th style="padding:12px; font-weight:600;">Status</th>';
+                content += '<th style="padding:12px; font-weight:600;">Remediation</th>';
                 content += '</tr></thead><tbody>';
 
                 agents.forEach(agent => {
@@ -3556,7 +3669,11 @@
                     const typingSummary = agent.typing_summary || "Init: ✗ | Methods: 0% | Returns: 0%";
                     const overallTyped = agent.overall_typed_pct || 0;
                     
-                    content += `<tr style="border-bottom:1px solid var(--border);">
+                    // PHASE 5: Zombie Detection (if health < 40, it's a zombie)
+                    const isZombie = agent.health < 40;
+                    const statusLabel = isZombie ? '<span style="color:#dc2626; font-weight:900;">🧟 ZOMBIE</span>' : '<span style="color:#16a34a;">Active</span>';
+                    
+                    content += `<tr style="border-bottom:1px solid var(--border); ${isZombie ? 'background:rgba(220, 38, 38, 0.05);' : ''}">`
                         <td style="padding:12px;">
                             <a href="vscode://file/${agent.abs_class}" target="_blank" style="color:var(--primary); font-family:monospace; font-size:0.9em; font-weight:600;">
                                 ${agent.rel}
