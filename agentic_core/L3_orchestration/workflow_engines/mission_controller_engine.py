@@ -35,7 +35,6 @@ from agentic_core.utils.general_helpers.mission_utils import (
     get_layer_rank,
     get_placement_guidance,
 )
-from agentic_core.L5_safety.validators.mission_preflight import MissionPreflight
 from agentic_core.observability.metrics.mission_metrics import get_metrics
 from agentic_core.observability.telemetry.gemini_spy import GeminiSpy
 
@@ -197,8 +196,7 @@ class MissionController:
         
         # [FULL AGENT DISCOVERY] Initialize orchestrator with ALL agents from ALL layers
         try:
-            from agentic_core.L5_safety.validators.compliance_orchestrator import compliance_orchestrator
-            self._orchestrator = compliance_orchestrator(self.project_root)
+                        self._orchestrator = compliance_orchestrator(self.project_root)
             print(f"   [OK] Orchestrator armed with {len(self._orchestrator.get_all_agents())} agents")
         except Exception as e:
             print(f"   [!] Orchestrator init failed: {e}")
@@ -375,8 +373,7 @@ class MissionController:
         
         # Initialize SubAtomicEngine (LLM-powered code mutation)
         try:
-            from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
-            self._subatomic_engine = SubAtomicEngine(self.project_root)
+                        self._subatomic_engine = SubAtomicEngine(self.project_root)
             ctx.engine = self._subatomic_engine
             print(f"   [OK] SubAtomicEngine armed — LLM healing available")
         except ImportError as e:
@@ -388,8 +385,7 @@ class MissionController:
         
         # Initialize SafetyGuardrail (mutation safety checks)
         try:
-            from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail
-            self._safety_guardrail = SafetyGuardrail(self.project_root)
+                        self._safety_guardrail = SafetyGuardrail(self.project_root)
             ctx.safety = self._safety_guardrail
             print(f"   [OK] SafetyGuardrail armed — mutation protection active")
         except ImportError as e:

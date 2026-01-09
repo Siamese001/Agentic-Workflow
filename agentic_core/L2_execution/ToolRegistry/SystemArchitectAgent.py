@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
@@ -39,7 +39,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         [L5 HARDENING] Sovereign Architectural Execution.
         Enforces Hierarchy (Key 40), Nesting (Key 41), and Header Sovereignty.
         """
-        print(f'\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...')
+        print(f'\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...')
         print(f'   [{self.name}] 🔍 Checking Key 40: Hierarchy & Headers...')
         passed_arch, arch_viols = self.check_key_40_core_architecture()
         header_viols: Any = await self._check_file_headers()
@@ -90,7 +90,6 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         violations: Any = []
         from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         # [PHASE 20] DEPRECATION: void_compliance.py removed - using HierarchyAgent
-        from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
         def validate_canonical_hierarchy(proj_root):
             return HierarchyAgent(proj_root).validate_hierarchy()
         project_root: Any = Path(self.ctx.project_root or os.getcwd()).resolve()

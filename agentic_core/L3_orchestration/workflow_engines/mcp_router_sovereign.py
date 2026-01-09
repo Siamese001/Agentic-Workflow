@@ -9,8 +9,6 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from agentic_core.L3_orchestration.workflow_engines.mcp_manager import MCPConnectionManager, load_mcp_config
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
@@ -18,7 +16,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -98,8 +96,7 @@ class SovereignMcpRouter(HealerMixin, MCPHardenedMixin):
                 try:
                     template_key: Any = f'seq_template:key{key_id}'
                     cached_template: Any = None
-                    from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
-                    try:
+                                        try:
                         cached: Any = redis_shield.execute('get', template_key)
                         if cached:
                             cached_template: Any = json.loads(cached)

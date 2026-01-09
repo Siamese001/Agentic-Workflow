@@ -37,7 +37,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 try:
@@ -503,7 +503,7 @@ def test_no_corrupted_markers():
         escaped_artifact = str(Artifact)[:200].replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 ARTIFACT_UNDER_TEST = """{escaped_artifact}"""
 
@@ -547,7 +547,6 @@ def test_artifact_exists():
     async def _delegate_to_specialist(self, Artifact: str, artifact_type: str, context: Dict) -> Dict:
         """Delegate to TestSovereigntyAgent for advanced testing."""
         try:
-            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
             result = await specialist.execute({

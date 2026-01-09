@@ -71,16 +71,19 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
         # GOLD STANDARD: Domain-specific agent integrations for post-phase validation
         self.project_root = Path(__file__).resolve().parents[3]
+        # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
             from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
             self.location_agent = LocationAgent(self.project_root)
         except ImportError:
             self.location_agent = None
+        # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
             from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
             self.hierarchy_agent = HierarchyAgent(self.project_root)
         except ImportError:
             self.hierarchy_agent = None
+        # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
             from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
             self.import_agent = ImportAgent(self.project_root)

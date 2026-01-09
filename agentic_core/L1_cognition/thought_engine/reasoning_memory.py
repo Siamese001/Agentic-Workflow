@@ -13,7 +13,6 @@ from typing import Dict, List, Optional
 
 import redis
 
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

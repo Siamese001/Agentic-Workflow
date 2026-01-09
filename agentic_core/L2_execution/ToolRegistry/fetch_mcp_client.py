@@ -9,7 +9,6 @@ HTML to clean Markdown—essential for feeding L1 Cognition high-signal data.
 """
 import logging
 from typing import Dict, Any, Optional
-from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -17,7 +16,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 

@@ -27,9 +27,8 @@ except ImportError:
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
-from agentic_core.L3_orchestration.workflow_engines.TestPilotAgent import TestPilotAgent
 
 class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
@@ -141,5 +140,4 @@ Return ONLY the python code for {primary}.
 
 
 # Legacy classes removed 2026-01-06 - use standalone TestPilotAgent.py and ToolsmithAgent.py
-# from agentic_core.L3_orchestration.workflow_engines.TestPilotAgent import TestPilotAgent
 # from agentic_core.L2_execution.ToolRegistry.ToolsmithAgent import ToolsmithAgent

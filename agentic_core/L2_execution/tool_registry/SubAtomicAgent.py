@@ -17,7 +17,6 @@ import logging
 import os
 import re
 from typing import Any, Dict, List, Optional, Protocol, Union
-from agentic_core.L4_state.validation_context.ValidationContext import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

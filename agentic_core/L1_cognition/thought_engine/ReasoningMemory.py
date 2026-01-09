@@ -243,7 +243,6 @@ class ReasoningMemory:
         """Persist thought to storage."""
         try:
             # Try to append to ledger
-            from agentic_core.L4_state.ledger import Ledger
             Ledger.append({
                 "type": "reasoning_memory",
                 "thought": self._thought_to_dict(thought)
@@ -255,7 +254,6 @@ class ReasoningMemory:
     def _load_persistent(self) -> None:
         """Load thoughts from persistent storage."""
         try:
-            from agentic_core.L4_state.ledger import Ledger
             entries = Ledger.query({"type": "reasoning_memory"}, limit=self.capacity)
             for entry in entries:
                 thought_dict = entry.get("thought", {})

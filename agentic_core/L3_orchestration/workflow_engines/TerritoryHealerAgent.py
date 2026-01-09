@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
@@ -283,10 +283,8 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         
         # [GHOST PURGE] Connect to Redis and Pinecone for cleanup
         try:
-            from agentic_core.L4_state.validation_context.PineconeSovereignAgent import (
                 PineconeSovereignAgent,
             )
-            from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
                 RedisSovereignAgent,
             )
             redis_agent = RedisSovereignAgent(self.root)

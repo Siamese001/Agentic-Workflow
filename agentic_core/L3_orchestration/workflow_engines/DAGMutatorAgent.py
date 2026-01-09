@@ -190,7 +190,7 @@ class DAGConfig(BaseModel):
     mutation_history_size: int = Field(default=1000, ge=100)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
