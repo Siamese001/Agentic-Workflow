@@ -1,12 +1,7 @@
-"""
-DEPRECATED: This test file requires external modules or complex import chains.
-Marked as skipped to allow test collection to proceed.
-"""
+# tests/unit/test_apps_cv_protocol_compliance_test_cv_p001.py
 import pytest
+import agentic_core.L5_safety
 
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules or complex import chains")
-
-
-def test_placeholder():
-    """Placeholder test to ensure file is valid."""
-    pytest.skip("This test file is deprecated")
+class TestStructure:
+    def test_l5_safety_module_exists(self):
+        assert agentic_core.L5_safety is not None

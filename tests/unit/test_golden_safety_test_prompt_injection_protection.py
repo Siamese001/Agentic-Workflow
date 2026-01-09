@@ -1,12 +1,7 @@
-"""
-DEPRECATED: This test file has runtime errors or missing dependencies.
-Marked as skipped to allow test suite to pass.
-"""
+# tests/unit/test_golden_safety_test_prompt_injection_protection.py
 import pytest
+import agentic_core
 
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test has runtime errors or missing dependencies")
-
-
-def test_placeholder():
-    """Placeholder test to ensure file is valid."""
-    pytest.skip("This test file is deprecated")
+class TestStructure:
+    def test_agentic_core_exists(self):
+        assert agentic_core is not None

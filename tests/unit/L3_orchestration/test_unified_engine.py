@@ -1,12 +1,14 @@
-"""
-DEPRECATED: This test file requires external modules or complex import chains.
-Marked as skipped to allow test collection to proceed.
-"""
+# tests/unit/L3_orchestration/test_unified_engine.py
+"""Unit tests for L3 Unified Engine."""
+from __future__ import annotations
 import pytest
 
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules or complex import chains")
 
+class TestUnifiedEngine:
+    """Test unified engine structure."""
 
-def test_placeholder():
-    """Placeholder test to ensure file is valid."""
-    pytest.skip("This test file is deprecated")
+    def test_unified_engine_importable(self):
+        """Test unified_engine can be imported."""
+        from agentic_core.L3_orchestration.unified_engine import ExecutionStatus, WorkflowContext
+        assert ExecutionStatus is not None
+        assert WorkflowContext is not None

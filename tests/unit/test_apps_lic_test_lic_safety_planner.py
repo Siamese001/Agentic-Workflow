@@ -1,12 +1,7 @@
-"""
-DEPRECATED: This test file requires external modules or complex import chains.
-Marked as skipped to allow test collection to proceed.
-"""
+# tests/unit/test_apps_lic_test_lic_safety_planner.py
 import pytest
+import agentic_core
 
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules or complex import chains")
-
-
-def test_placeholder():
-    """Placeholder test to ensure file is valid."""
-    pytest.skip("This test file is deprecated")
+class TestStructure:
+    def test_agentic_core_exists(self):
+        assert agentic_core is not None

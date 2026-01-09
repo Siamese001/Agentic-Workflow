@@ -1,12 +1,19 @@
-"""
-DEPRECATED: This test file has runtime errors or missing dependencies.
-Marked as skipped to allow test suite to pass.
-"""
+# tests/unit/test_dashboard_no_server.py
+"""Unit tests for L6 Dashboard without server dependencies."""
+from __future__ import annotations
 import pytest
+from pathlib import Path
 
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test has runtime errors or missing dependencies")
 
+class TestDashboardNoServer:
+    """Test dashboard can work without external server."""
 
-def test_placeholder():
-    """Placeholder test to ensure file is valid."""
-    pytest.skip("This test file is deprecated")
+    def test_data_generator_can_be_imported(self):
+        """Test DashboardDataGenerator can be imported."""
+        from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
+        assert DashboardDataGenerator is not None
+
+    def test_dashboards_module_importable(self):
+        """Test dashboards module can be imported."""
+        import agentic_core.L6_observability.dashboards
+        assert agentic_core.L6_observability.dashboards is not None

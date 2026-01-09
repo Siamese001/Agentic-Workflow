@@ -1,12 +1,38 @@
-"""
-DEPRECATED: This test file has fixture errors or malformed structure.
-Marked as skipped to allow test suite to pass.
-"""
+# tests/unit/test_observability_agents.py
+"""Unit tests for L6 Observability agents."""
+from __future__ import annotations
 import pytest
+from pathlib import Path
 
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test has fixture errors or malformed structure")
+
+class TestRuntimeTelemetryAgent:
+    """Test suite for RuntimeTelemetryAgent."""
+
+    def test_agent_can_be_imported(self):
+        """Test agent can be imported."""
+        from agentic_core.L6_observability.agents.RuntimeTelemetryAgent import RuntimeTelemetryAgent
+        assert RuntimeTelemetryAgent is not None
+
+    def test_agent_has_benchmark_startup(self):
+        """Test agent has benchmark_startup method."""
+        from agentic_core.L6_observability.agents.RuntimeTelemetryAgent import RuntimeTelemetryAgent
+        assert hasattr(RuntimeTelemetryAgent, 'benchmark_startup')
 
 
-def test_placeholder():
-    """Placeholder test to ensure file is valid."""
-    pytest.skip("This test file is deprecated")
+class TestL6ObservabilityStructure:
+    """Test L6 observability module structure."""
+
+    def test_l6_observability_exists(self):
+        """Test L6_observability module exists."""
+        import agentic_core.L6_observability
+        assert agentic_core.L6_observability is not None
+
+    def test_agents_submodule_exists(self):
+        """Test agents submodule exists."""
+        import agentic_core.L6_observability.agents
+        assert agentic_core.L6_observability.agents is not None
+
+    def test_dashboards_submodule_exists(self):
+        """Test dashboards submodule exists."""
+        import agentic_core.L6_observability.dashboards
+        assert agentic_core.L6_observability.dashboards is not None
