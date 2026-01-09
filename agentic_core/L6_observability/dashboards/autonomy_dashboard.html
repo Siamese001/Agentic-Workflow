@@ -424,18 +424,6 @@
                 
                 <!-- Code Quality Table -->
                 <div class="kpi-grid" id="codeQualityGrid"></div>
-
-                <div class="charts-grid full-width">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">Risk Matrix</div>
-                            <div class="chart-subtitle">Inverted Complexity % vs Compliance % (bubble size = usage) • Click to drill down</div>
-                        </div>
-                        <div class="chart-body">
-                            <div id="riskMatrix"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Territory Analysis Tab -->
@@ -1148,7 +1136,7 @@
     "IsInfrastructure": false
   },
   {
-    "Territory": "Observability/Metrics",
+    "Territory": "L6_Observability/Metrics",
     "Total": 13,
     "Compliant": 10,
     "Heal Cap %": 76.9,
@@ -1175,7 +1163,7 @@
     "IsInfrastructure": true
   },
   {
-    "Territory": "Observability/Telemetry",
+    "Territory": "L6_Observability/Telemetry",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -1202,7 +1190,7 @@
     "IsInfrastructure": true
   },
   {
-    "Territory": "Observability/Tracing",
+    "Territory": "L6_Observability/Tracing",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -1229,7 +1217,7 @@
     "IsInfrastructure": true
   },
   {
-    "Territory": "Observability/Compliance",
+    "Territory": "L6_Observability/Compliance",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -1379,7 +1367,7 @@
     "target_value": 85
   }
 ];
-        const lastUpdatedStr = "Last Updated: 01/09/2026 09:30 AM EDT";
+        const lastUpdatedStr = "Last Updated: " + new Date().toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZoneName: 'short' });
         const gaugeData = {
   "health": 76.9,
   "compliance": 91.7,
@@ -1631,6 +1619,247 @@
             return { agent: mockAgent, value: minValue };
         }
 
+        // ============================================
+        // PHASE 4: Visual Enhancements
+        // ============================================
+        
+        // Aggregate outlier alerts across all territories for both tables
+        function aggregateOutlierAlerts(territoryData) {
+            const alerts = { table1: [], table2: [], hasCritical: false };
+            
+            territoryData.forEach(row => {
+                const territory = row.Territory;
+                const agentData = globalAgentData[territory];
+                if (!agentData) return;
+                
+                // Table 1 metrics
+                const table1Metrics = [
+                    { key: 'healCap', name: 'Heal Capability', threshold: 50 },
+                    { key: 'invocation', name: 'Heal Invocation', threshold: 50 },
+                    { key: 'hardened', name: 'MCP Hardened', threshold: 50 },
+                    { key: 'test', name: 'Test Coverage', threshold: 50 },
+                    { key: 'complexityHealth', name: 'Complexity Health', threshold: 30 },
+                    { key: 'health', name: 'Health Score', threshold: 60 }
+                ];
+                
+                table1Metrics.forEach(metric => {
+                    const summary = getOutlierSummary(agentData[metric.key] || [], metric.threshold);
+                    if (summary.atZero > 0) {
+                        alerts.table1.push({ territory, metric: metric.name, count: summary.atZero, type: 'critical', message: `${summary.atZero} agent(s) at 0%` });
+                        alerts.hasCritical = true;
+                    } else if (summary.belowThreshold > 0) {
+                        alerts.table1.push({ territory, metric: metric.name, count: summary.belowThreshold, type: 'warning', message: `${summary.belowThreshold} agent(s) below ${metric.threshold}%` });
+                    }
+                });
+                
+                // Table 2 metrics
+                const table2Metrics = [
+                    { key: 'typed', name: 'Typed', threshold: 50 },
+                    { key: 'documented', name: 'Documented', threshold: 50 },
+                    { key: 'schemaStrictness', name: 'Schema Strictness', threshold: 80 },
+                    { key: 'properBase', name: 'Proper Base', threshold: 50 },
+                    { key: 'codeQuality', name: 'Code Quality', threshold: 60 }
+                ];
+                
+                table2Metrics.forEach(metric => {
+                    const summary = getOutlierSummary(agentData[metric.key] || [], metric.threshold);
+                    if (summary.atZero > 0) {
+                        alerts.table2.push({ territory, metric: metric.name, count: summary.atZero, type: 'critical', message: `${summary.atZero} agent(s) at 0%` });
+                        alerts.hasCritical = true;
+                    } else if (summary.belowThreshold > 0) {
+                        alerts.table2.push({ territory, metric: metric.name, count: summary.belowThreshold, type: 'warning', message: `${summary.belowThreshold} agent(s) below ${metric.threshold}%` });
+                    }
+                });
+            });
+            
+            return alerts;
+        }
+        
+        // Check if a territory row has any critical outliers
+        function hasRowCriticalOutliers(territory) {
+            const agentData = globalAgentData[territory];
+            if (!agentData) return { hasCritical: false, hasWarning: false, criticalCount: 0, warningCount: 0 };
+            
+            let criticalCount = 0;
+            let warningCount = 0;
+            
+            // Check all metrics
+            const allMetrics = ['healCap', 'invocation', 'hardened', 'test', 'complexityHealth', 'health', 
+                               'typed', 'documented', 'schemaStrictness', 'properBase', 'codeQuality'];
+            
+            allMetrics.forEach(key => {
+                const values = agentData[key] || [];
+                const atZero = countOutliers(values, 0.1, 'below');
+                const belowThreshold = countOutliers(values, 50, 'below');
+                criticalCount += atZero;
+                warningCount += (belowThreshold - atZero);
+            });
+            
+            return { 
+                hasCritical: criticalCount > 0, 
+                hasWarning: warningCount > 0, 
+                criticalCount, 
+                warningCount 
+            };
+        }
+        
+        // Format warning icon for row header
+        function formatRowWarningIcon(territory) {
+            const status = hasRowCriticalOutliers(territory);
+            if (status.hasCritical) {
+                return `<span style="color:#dc2626; margin-right:6px;" title="${status.criticalCount} critical outlier(s)">⚠️</span>`;
+            }
+            if (status.hasWarning) {
+                return `<span style="color:#f59e0b; margin-right:6px;" title="${status.warningCount} warning(s)">⚡</span>`;
+            }
+            return '';
+        }
+        
+        // Get row background style based on outlier status
+        function getRowOutlierStyle(territory, baseStyle = '') {
+            const status = hasRowCriticalOutliers(territory);
+            if (status.hasCritical) {
+                return `${baseStyle} border-left:4px solid #dc2626;`;
+            }
+            if (status.hasWarning) {
+                return `${baseStyle} border-left:4px solid #f59e0b;`;
+            }
+            return baseStyle;
+        }
+        
+        // ============================================
+        // PHASE 5: Interactive Drill-down Functions
+        // ============================================
+        
+        // Global state for table filtering and sorting
+        let tableFilterState = {
+            table1: { showOnlyOutliers: false, sortByOutliers: false },
+            table2: { showOnlyOutliers: false, sortByOutliers: false }
+        };
+        
+        // Count total outliers for a territory (for sorting)
+        function getTerritoryOutlierCount(territory) {
+            const status = hasRowCriticalOutliers(territory);
+            return status.criticalCount * 10 + status.warningCount; // Weight critical higher
+        }
+        
+        // Export outliers to CSV
+        function exportOutliersToCSV(tableType = 'both') {
+            const alerts = aggregateOutlierAlerts(dashboardData);
+            let csv = 'Territory,Metric,Type,Count,Message\n';
+            
+            const processAlerts = (alertList, tableName) => {
+                alertList.forEach(alert => {
+                    csv += `"${alert.territory}","${alert.metric}","${alert.type}","${alert.count}","${alert.message || ''}"\n`;
+                });
+            };
+            
+            if (tableType === 'both' || tableType === 'table1') {
+                processAlerts(alerts.table1, 'Health Metrics');
+            }
+            if (tableType === 'both' || tableType === 'table2') {
+                processAlerts(alerts.table2, 'Code Quality');
+            }
+            
+            // Download CSV
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `outliers_${tableType}_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+        
+        // Render table controls (filter, sort, export)
+        function renderTableControls(tableType, territoryData) {
+            const state = tableFilterState[tableType];
+            const alerts = aggregateOutlierAlerts(territoryData);
+            const tableAlerts = tableType === 'table1' ? alerts.table1 : alerts.table2;
+            const outlierCount = tableAlerts.length;
+            const criticalCount = tableAlerts.filter(a => a.type === 'critical').length;
+            
+            return `
+            <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em;">
+                    <input type="checkbox" id="${tableType}-filter-outliers" ${state.showOnlyOutliers ? 'checked' : ''} 
+                           onchange="toggleOutlierFilter('${tableType}')" style="cursor:pointer;">
+                    <span>Show only territories with outliers</span>
+                    <span style="background:#dc2626; color:white; padding:2px 8px; border-radius:10px; font-size:0.8em;">${criticalCount} critical</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em;">
+                    <input type="checkbox" id="${tableType}-sort-outliers" ${state.sortByOutliers ? 'checked' : ''} 
+                           onchange="toggleOutlierSort('${tableType}')" style="cursor:pointer;">
+                    <span>Sort by outlier count</span>
+                </label>
+                <button onclick="exportOutliersToCSV('${tableType}')" 
+                        style="background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.85em; display:flex; align-items:center; gap:4px;">
+                    📥 Export ${outlierCount} Outliers
+                </button>
+            </div>`;
+        }
+        
+        // Toggle outlier filter
+        function toggleOutlierFilter(tableType) {
+            tableFilterState[tableType].showOnlyOutliers = !tableFilterState[tableType].showOnlyOutliers;
+            // Re-render the appropriate table
+            if (tableType === 'table1') {
+                renderTerritorySummaryTable(dashboardData);
+            } else {
+                renderCodeQualityTable(dashboardData);
+            }
+        }
+        
+        // Toggle outlier sort
+        function toggleOutlierSort(tableType) {
+            tableFilterState[tableType].sortByOutliers = !tableFilterState[tableType].sortByOutliers;
+            // Re-render the appropriate table
+            if (tableType === 'table1') {
+                renderTerritorySummaryTable(dashboardData);
+            } else {
+                renderCodeQualityTable(dashboardData);
+            }
+        }
+        
+        // Render compact alert banner for a specific table (table1 or table2)
+        function renderTableAlertBanner(territoryData, tableType = 'table1') {
+            const alerts = aggregateOutlierAlerts(territoryData);
+            const tableAlerts = tableType === 'table1' ? alerts.table1 : alerts.table2;
+            
+            // Only show banner if there are critical alerts for this table
+            const criticalAlerts = tableAlerts.filter(a => a.type === 'critical');
+            if (criticalAlerts.length === 0) {
+                return '';
+            }
+            
+            // Group by territory
+            const grouped = {};
+            criticalAlerts.slice(0, 8).forEach(alert => {
+                if (!grouped[alert.territory]) grouped[alert.territory] = [];
+                grouped[alert.territory].push(alert);
+            });
+            
+            const criticalCount = criticalAlerts.length;
+            const warningCount = tableAlerts.filter(a => a.type === 'warning').length;
+            
+            let html = `
+            <div style="margin-bottom:16px; padding:12px 16px; background:rgba(220, 38, 38, 0.08); border-radius:8px; border-left:4px solid #dc2626;">
+                <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <span style="font-size:1.1em;">⚠️</span>
+                    <strong style="color:#991b1b; font-size:0.9em;">Critical Outliers:</strong>
+                    <span style="background:#dc2626; color:white; padding:2px 8px; border-radius:12px; font-size:0.75em; font-weight:600;">${criticalCount}</span>
+                    <span style="background:#f59e0b; color:white; padding:2px 8px; border-radius:12px; font-size:0.75em; font-weight:600;">${warningCount} warnings</span>
+                    <span style="color:#6b7280; font-size:0.85em; margin-left:8px;">—</span>`;
+            
+            // Inline list of territories with issues
+            const territoryList = Object.entries(grouped).map(([territory, territoryAlerts]) => {
+                const alertText = territoryAlerts.map(a => `${a.count}@0% ${a.metric}`).join(', ');
+                return `<strong>${territory}</strong>: ${alertText}`;
+            }).join(' · ');
+            
+            html += `<span style="color:#374151; font-size:0.85em;">${territoryList}</span>`;
+            html += `</div></div>`;
+            return html;
+        }
+
         // Sparkline generator function
         function generateSparkline(values, color = '#2563eb', highGood = true) {
             if (!values || values.length < 2) return '';
@@ -1673,6 +1902,24 @@
             const container = document.getElementById('kpiGrid');
             if (!container) return;
 
+            // Sort territories: TOTAL first, then L6→L5→L4→L3→L2→L1, then non-L territories at bottom
+            const sortedData = [...territoryData].sort((a, b) => {
+                const aTerritory = a.Territory || '';
+                const bTerritory = b.Territory || '';
+                // TOTAL always first
+                if (aTerritory === 'TOTAL') return -1;
+                if (bTerritory === 'TOTAL') return 1;
+                // Check if territory starts with L followed by digit
+                const aMatch = aTerritory.match(/^L(\d)/);
+                const bMatch = bTerritory.match(/^L(\d)/);
+                const aLayer = aMatch ? parseInt(aMatch[1]) : -1; // Non-L territories get -1 (bottom)
+                const bLayer = bMatch ? parseInt(bMatch[1]) : -1;
+                // Higher layer numbers first (L6 before L5), non-L at bottom
+                if (aLayer !== bLayer) return bLayer - aLayer;
+                return aTerritory.localeCompare(bTerritory);
+            });
+            territoryData = sortedData;
+
             // PHASE 1: Generate mock agent data for distribution calculations
             globalAgentData = generateMockAgentData(territoryData);
             
@@ -1697,9 +1944,10 @@
                 <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
                     Territory Summary 
                     <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
-                        📊 Phase 1-3: Stats, Outliers & Worst Performers
+                        📊 Phase 1-4: Stats, Outliers, Worst Performers & Visual Alerts
                     </span>
                 </h3>
+                ${renderTableAlertBanner(territoryData, 'table1')}
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
                         <thead>
@@ -1915,13 +2163,17 @@
                 const complexityTerritoryOutliers = getOutlierSummary(territoryAgents.complexityHealth || [], 30);
                 const healthTerritoryOutliers = getOutlierSummary(territoryAgents.health || [], 60);
                 
+                // PHASE 4: Get row outlier status for visual highlighting
+                const rowStatus = hasRowCriticalOutliers(row.Territory);
+                const rowBorderStyle = rowStatus.hasCritical ? 'border-left:4px solid #dc2626;' : (rowStatus.hasWarning ? 'border-left:4px solid #f59e0b;' : '');
+                
                 html += `
-                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s; ${rowBorderStyle}" 
                         onmouseover="this.style.background='#f0f9ff'" 
                         onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'" 
                         onclick="openDrillModal('${row.Territory}')" 
                         title="Click to view detailed per-agent diagnostics for ${row.Territory}">
-                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(healCapMin)}; border-right:1px solid #e5e7eb;">
                             <span style="color:${getWorstCaseColor(healCapMin)};">${formatDistributionCell(row['Heal Cap %'], healCapTerritoryStats, false)}${formatOutlierBadge(healCapTerritoryOutliers.atZero, healCapTerritoryOutliers.belowThreshold, 50)}</span>
@@ -1954,25 +2206,14 @@
                         </tbody>
                     </table>
                 </div>
-                <div style="margin-top:20px; padding:16px; background:#f9fafb; border-radius:8px; border-left:4px solid var(--primary);">
-                    <strong style="font-size:1.1em; color:var(--primary);">📚 Dashboard Metrics Key (Factory Analogy)</strong>
-                    <div style="margin-top:12px; font-size:0.9em; line-height:1.8;">
-                        <p style="margin:8px 0;"><strong>Heal Capability:</strong> % workers (agents) with personal repair toolkits — <em>Each worker has their own customized fix-it list for their station</em></p>
-                        <p style="margin:8px 0;"><strong>Heal Invocation:</strong> % workers consulting the master factory safety checklist — <em>Actually using the centralized healing protocol when problems occur</em></p>
-                        <p style="margin:8px 0;"><strong>MCP Hardened:</strong> % workers with security hardening around MCP — <em>Protection against dangerous operations (NOT about using MCP capabilities)</em></p>
-                        <p style="margin:8px 0;"><strong>Test Coverage:</strong> % workers with quality control inspections — <em>Each station has verification procedures before shipping</em></p>
-                        <p style="margin:8px 0;"><strong>Complexity Health %:</strong> Inverted complexity (100 - CC×2) — <em>Higher values mean simpler, more maintainable code (target ≥80%)</em></p>
-                        <p style="margin:8px 0;"><strong>Health Score:</strong> (Heal Cap % + Invocation % + Test % + Observability % + Inverted CC) / 5 — <em>Full medical checkup; holistic vitality. Gives credit for having healing infrastructure and penalizes code tangles</em></p>
-                    </div>
-                </div>
-                <div style="margin-top:16px; padding:16px; background:#fef3c7; border-radius:8px; border-left:4px solid #f59e0b;">
-                    <strong style="font-size:1.1em; color:#b45309;">📊 Phase 1: Distribution Statistics (NEW)</strong>
-                    <div style="margin-top:12px; font-size:0.9em; line-height:1.8;">
-                        <p style="margin:8px 0;"><strong>Display Format:</strong> <code>75.2% (45-100)</code> = Average (Min-Max range)</p>
-                        <p style="margin:8px 0;"><strong>TOTAL Row:</strong> Shows <code>σ</code> (standard deviation) — higher σ means more variance/outliers</p>
-                        <p style="margin:8px 0;"><strong>Worst-Case Coloring:</strong> Cell colors now based on <strong>MIN value</strong>, not average — outliers are immediately visible</p>
-                        <p style="margin:8px 0;"><strong>Why This Matters:</strong> An average of 80% can hide agents at 0%. Now you see the full range.</p>
-                        <p style="margin:8px 0;"><strong>Color Gradient:</strong> <span style="color:#991b1b;">Deep Red 0-20%</span> → <span style="color:#c2410c;">Red 20-40%</span> → <span style="color:#ea580c;">Orange 40-60%</span> → <span style="color:#a16207;">Yellow 60-75%</span> → <span style="color:#65a30d;">Yellow-Green 75-85%</span> → <span style="color:#047857;">Light Green 85-95%</span> → <span style="color:#065f46;">Green 95-100%</span></p>
+                <div style="margin-top:16px; padding:16px; background:#f0f9ff; border-radius:8px; border-left:4px solid var(--primary); font-size:0.85em; line-height:1.7;">
+                    <div style="display:grid; gap:10px;">
+                        <div><strong>Heal Capability %:</strong> Percentage of agents that implement a local <code>heal_repository()</code> method with custom remediation logic. <em>Factory analogy: Workers who carry their own personal repair toolkit at their station—they can fix minor issues without waiting for the maintenance crew.</em></div>
+                        <div><strong>Heal Invocation %:</strong> Percentage of agents that call <code>super().heal_repository()</code> to invoke the centralized healing protocol from the base class. <em>Factory analogy: Workers who actually consult the master safety checklist when problems occur, ensuring consistent factory-wide repair procedures are followed.</em></div>
+                        <div><strong>MCP Hardened %:</strong> Percentage of agents with security validation around Model Context Protocol operations (tool calls, file access). <em>Factory analogy: Workers with safety guards on their power tools—prevents dangerous operations even if someone accidentally hits the wrong button.</em></div>
+                        <div><strong>Test Coverage %:</strong> Percentage of agents with associated unit/integration tests validating their behavior. <em>Factory analogy: Stations with quality control inspectors who verify each product before it leaves—catches defects before they reach customers.</em></div>
+                        <div><strong>Complexity Health %:</strong> Calculated as <code>100 - (Cyclomatic Complexity × 2)</code>. Higher values indicate simpler, more maintainable code (target ≥80%). <em>Factory analogy: How clean and organized a workstation is—cluttered stations slow everyone down and cause accidents.</em></div>
+                        <div><strong>Health Score:</strong> Composite metric: <code>(Heal Cap + Invocation + Test + Observable + Complexity Health) / 5</code>. Overall agent wellness. <em>Factory analogy: The worker's annual physical exam score—checks all vital signs to ensure they're fit for duty.</em></div>
                     </div>
                 </div>
             </div>`;
@@ -1984,15 +2225,34 @@
             const container = document.getElementById('codeQualityGrid');
             if (!container) return;
             
+            // Sort territories: TOTAL first, then L6→L5→L4→L3→L2→L1, then non-L territories at bottom
+            const sortedData = [...territoryData].sort((a, b) => {
+                const aTerritory = a.Territory || '';
+                const bTerritory = b.Territory || '';
+                // TOTAL always first
+                if (aTerritory === 'TOTAL') return -1;
+                if (bTerritory === 'TOTAL') return 1;
+                // Check if territory starts with L followed by digit
+                const aMatch = aTerritory.match(/^L(\d)/);
+                const bMatch = bTerritory.match(/^L(\d)/);
+                const aLayer = aMatch ? parseInt(aMatch[1]) : -1; // Non-L territories get -1 (bottom)
+                const bLayer = bMatch ? parseInt(bMatch[1]) : -1;
+                // Higher layer numbers first (L6 before L5), non-L at bottom
+                if (aLayer !== bLayer) return bLayer - aLayer;
+                return aTerritory.localeCompare(bTerritory);
+            });
+            territoryData = sortedData;
+            
             // Build Code Quality table with detailed metrics per territory
             let html = `
             <div style="margin-bottom:40px;">
                 <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
                     Code Quality by Territory & Sub-Territory
                     <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
-                        📊 Phase 1-3: Stats, Outliers & Worst Performers
+                        📊 Phase 1-4: Stats, Outliers, Worst Performers & Visual Alerts
                     </span>
                 </h3>
+                ${renderTableAlertBanner(territoryData, 'table2')}
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
                         <thead>
@@ -2152,11 +2412,15 @@
                 const baseTerritoryOutliers = getOutlierSummary(agentData.properBase || [], 50);
                 const qualityTerritoryOutliers = getOutlierSummary(agentData.codeQuality || [], 60);
                 
+                // PHASE 4: Get row outlier status for visual highlighting
+                const rowStatus = hasRowCriticalOutliers(row.Territory);
+                const rowBorderStyle = rowStatus.hasCritical ? 'border-left:4px solid #dc2626;' : (rowStatus.hasWarning ? 'border-left:4px solid #f59e0b;' : '');
+                
                 html += `
-                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s; ${rowBorderStyle}" 
                         onmouseover="this.style.background='#f0f9ff'" 
                         onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'">
-                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(typedColorVal)}; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(typed, typedStats, false)}${formatOutlierBadge(typedTerritoryOutliers.atZero, typedTerritoryOutliers.belowThreshold, 50)}
@@ -2167,8 +2431,8 @@
                         <td style="padding:12px; text-align:center; background:${getGradientBg(schemaColorVal)}; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(schemaStrictness, schemaStats, false)}${formatOutlierBadge(schemaTerritoryOutliers.atZero, schemaTerritoryOutliers.belowThreshold, 80)}
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(baseColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(properBase, baseStats, false)}${formatOutlierBadge(baseTerritoryOutliers.atZero, baseTerritoryOutliers.belowThreshold, 50)}
+                        <td style="padding:12px; text-align:center; background:${row.Territory.includes('Base Class') ? '#f3f4f6' : getGradientBg(baseColorVal)}; border-right:1px solid #e5e7eb;">
+                            ${row.Territory.includes('Base Class') ? '<span style="color:#6b7280; font-style:italic;">N/A</span>' : formatDistributionCell(properBase, baseStats, false) + formatOutlierBadge(baseTerritoryOutliers.atZero, baseTerritoryOutliers.belowThreshold, 50)}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(qualityColorVal)}; color:${qualityColor}; font-weight:700; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(codeQuality, qualityStats, false)}${formatOutlierBadge(qualityTerritoryOutliers.atZero, qualityTerritoryOutliers.belowThreshold, 60)}
@@ -2186,14 +2450,13 @@
                         </tbody>
                     </table>
                 </div>
-                <div style="margin-top:20px; padding:16px; background:#f9fafb; border-radius:8px; border-left:4px solid var(--primary);">
-                    <strong style="font-size:1.1em; color:var(--primary);">📚 Code Quality Metrics Key</strong>
-                    <div style="margin-top:12px; font-size:0.9em; line-height:1.8;">
-                        <p style="margin:8px 0;"><strong>Typed %:</strong> Percentage of code with type hints — <em>Runtime safety through static type checking (target ≥95%)</em></p>
-                        <p style="margin:8px 0;"><strong>Documented %:</strong> Percentage with docstrings — <em>Code maintainability and knowledge transfer (target ≥90%)</em></p>
-                        <p style="margin:8px 0;"><strong>Schema Strictness %:</strong> Percentage with strict Pydantic/dataclass schemas — <em>Data validation and contract enforcement (target ≥95%)</em></p>
-                        <p style="margin:8px 0;"><strong>Proper Base %:</strong> Percentage with correct base class inheritance — <em>Architectural compliance and consistency (target ≥95%)</em></p>
-                        <p style="margin:8px 0;"><strong>Code Quality Score:</strong> Weighted composite: Typed (35%) + Schema Strictness (30%) + Metadata (15%) + Documented (20%) — <em>Overall code hygiene and maintainability</em></p>
+                <div style="margin-top:16px; padding:16px; background:#f0f9ff; border-radius:8px; border-left:4px solid var(--primary); font-size:0.85em; line-height:1.7;">
+                    <div style="display:grid; gap:10px;">
+                        <div><strong>Typed %:</strong> Percentage of function signatures and variables with Python type hints (e.g., <code>def process(data: dict) -> bool</code>). Target ≥95%. <em>Factory analogy: Labels on every bin and shelf—workers instantly know what goes where without guessing, preventing mix-ups and speeding up work.</em></div>
+                        <div><strong>Documented %:</strong> Percentage of classes and functions with docstrings explaining purpose, parameters, and return values. Target ≥90%. <em>Factory analogy: Instruction manuals at each station—new workers can learn the job without constantly asking veterans, and everyone follows the same procedures.</em></div>
+                        <div><strong>Schema Strictness %:</strong> Percentage using Pydantic models or dataclasses with validation for input/output data contracts. Target ≥95%. <em>Factory analogy: Quality gates that reject malformed parts—if a component doesn't meet spec, it gets caught immediately rather than causing problems downstream.</em></div>
+                        <div><strong>Proper Base %:</strong> Percentage of agents inheriting from the correct architectural base class (e.g., <code>SovereignAgentBase</code>). N/A for base classes themselves. <em>Factory analogy: Workers wearing the right department uniform—ensures they have access to the correct tools and follow department-specific safety protocols.</em></div>
+                        <div><strong>Code Quality Score:</strong> Weighted composite: <code>Typed (35%) + Schema (30%) + Metadata (15%) + Documented (20%)</code>. Overall code hygiene. <em>Factory analogy: The station's cleanliness and organization audit score—well-maintained stations produce better products with fewer defects.</em></div>
                     </div>
                 </div>
             </div>`;
@@ -2930,7 +3193,6 @@
             renderStrategicObservations(totalRow, territoryData);
             renderTerritorySummaryTable(territoryData);
             renderCodeQualityTable(territoryData);
-            renderRiskMatrix(territoryData);
             renderRecommendations();
             renderInterviewQuestions(totalRow);
 
