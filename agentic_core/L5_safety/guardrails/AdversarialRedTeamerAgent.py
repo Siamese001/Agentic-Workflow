@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

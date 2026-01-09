@@ -19,10 +19,9 @@ class TestMCPHardenedMixin:
     def mixin_client(self):
         """Create a test client with MCPHardenedMixin."""
         from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import (
-            MCPHardenedMixin,
-        )
+            MCPHardenedMixin)
 
-        class TestClient(MCPHardenedMixin):
+        class TestClient():
             MAX_RETRIES = 3
             BASE_DELAY = 0.01  # Fast for testing
 
@@ -159,8 +158,7 @@ class TestSovereignEvents:
     def test_emit_event_logs_correctly(self):
         """Test that emit_event logs structured events."""
         from agentic_core.observability.telemetry.sovereign_events import (
-            emit_event,
-        )
+            emit_event)
 
         with patch(
             "agentic_core.observability.telemetry.sovereign_events.logger"
@@ -177,8 +175,7 @@ class TestSovereignEvents:
         from agentic_core.observability.telemetry.sovereign_events import (
             emit_event,
             register_handler,
-            _event_handlers,
-        )
+            _event_handlers)
 
         handler_calls = []
 

@@ -9,6 +9,29 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class WorkflowContext:
+    """Context for workflow execution."""
+    def __init__(self, **kwargs):
+        self._data = kwargs
+    def get(self, key: str, default: Any = None) -> Any:
+        return self._data.get(key, default)
+    def set(self, key: str, value: Any) -> None:
+        self._data[key] = value
+
+
+class ExecutionStatus:
+    """Status of workflow execution."""
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    
+    def __init__(self, status: str = "pending"):
+        self.status = status
+        self.result = None
+        self.error = None
+
+
 class ExecutionStrategy:
     """Strategy for workflow execution."""
     def __init__(self, name: str = "default"):
@@ -49,4 +72,4 @@ class UnifiedEngine:
         return list(self._workflows.keys())
 
 
-__all__ = ['UnifiedEngine', 'ExecutionStrategy']
+__all__ = ['UnifiedEngine', 'ExecutionStrategy', 'ExecutionStatus', 'WorkflowContext']

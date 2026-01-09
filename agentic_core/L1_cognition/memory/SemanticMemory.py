@@ -9,6 +9,27 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class EmbeddingProvider:
+    """Provider for embeddings."""
+    def __init__(self, model: str = "default"):
+        self.model = model
+    def embed(self, text: str) -> List[float]:
+        return [0.0] * 384  # Default embedding size
+
+
+class VectorIndex:
+    """Index for vector storage and retrieval."""
+    def __init__(self, dimension: int = 384):
+        self.dimension = dimension
+        self._vectors: Dict[str, List[float]] = {}
+    
+    def add(self, key: str, vector: List[float]) -> None:
+        self._vectors[key] = vector
+    
+    def search(self, query: List[float], top_k: int = 5) -> List[str]:
+        return list(self._vectors.keys())[:top_k]
+
+
 class SemanticEntry:
     """Entry in semantic memory."""
     def __init__(self, key: str, value: Any, embedding: Optional[List[float]] = None):
@@ -65,4 +86,4 @@ class SemanticMemory:
         self._embeddings.clear()
 
 
-__all__ = ['SemanticMemory', 'SemanticEntry']
+__all__ = ['SemanticMemory', 'SemanticEntry', 'EmbeddingProvider', 'VectorIndex']

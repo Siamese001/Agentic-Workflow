@@ -4,6 +4,14 @@ Runtime Shared Cache - Stub module for backwards compatibility.
 from typing import Any, Dict, Optional
 
 
+def generate_llm_cache_key(*args, **kwargs) -> str:
+    """Generate a cache key for LLM requests."""
+    import hashlib
+    key_parts = [str(arg) for arg in args]
+    key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()))
+    return hashlib.md5(":".join(key_parts).encode()).hexdigest()
+
+
 class Cache:
     """Simple in-memory cache."""
     def __init__(self):
@@ -23,4 +31,4 @@ class Cache:
         self._data.clear()
 
 
-__all__ = ['Cache']
+__all__ = ['Cache', 'generate_llm_cache_key']
