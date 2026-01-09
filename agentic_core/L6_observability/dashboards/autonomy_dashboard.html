@@ -3673,7 +3673,7 @@
                     const isZombie = agent.health < 40;
                     const statusLabel = isZombie ? '<span style="color:#dc2626; font-weight:900;">🧟 ZOMBIE</span>' : '<span style="color:#16a34a;">Active</span>';
                     
-                    content += `<tr style="border-bottom:1px solid var(--border); ${isZombie ? 'background:rgba(220, 38, 38, 0.05);' : ''}">`
+                    content += `<tr style="border-bottom:1px solid var(--border); ${isZombie ? 'background:rgba(220, 38, 38, 0.05);' : ''}">
                         <td style="padding:12px;">
                             <a href="vscode://file/${agent.abs_class}" target="_blank" style="color:var(--primary); font-family:monospace; font-size:0.9em; font-weight:600;">
                                 ${agent.rel}
@@ -3690,6 +3690,13 @@
                         <td style="padding:12px; text-align:center; font-size:0.85em;" title="${mcpTitle}">${mcpSummary}</td>
                         <td style="padding:12px; text-align:center; font-size:0.85em;" title="${typingTitle}">${typingSummary}<br><small style="color:var(--text-light);">${overallTyped}% overall</small></td>
                         <td style="padding:12px; text-align:center; color:${complexityColor}; font-weight:600;">${agent.complexity}</td>
+                        <td style="padding:12px; text-align:center;">${statusLabel}</td>
+                        <td style="padding:12px; text-align:center;">
+                            <button onclick="triggerHealAgent('${agent.path}')" 
+                                    style="background:#16a34a; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.8em; font-weight:700;">
+                                🛠️ HEAL
+                            </button>
+                        </td>
                     </tr>`;
                 });
                 content += '</tbody></table>';
