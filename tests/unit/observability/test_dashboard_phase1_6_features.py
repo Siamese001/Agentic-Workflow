@@ -470,5 +470,53 @@ class TestDashboardUIElements:
         assert found, "Trend/sparkline indicators not found"
 
 
+class TestDeterministicDataGeneration:
+    """Tests for deterministic data generation (no random values on refresh)."""
+    
+    def test_seeded_random_generator_exists(self):
+        """Test that deterministic seeded random generator is implemented."""
+        html = load_dashboard_html()
+        
+        # Check for seeded random implementation
+        assert 'createSeededRandom' in html, "Seeded random generator function not found"
+        assert 'mulberry32' in html, "Mulberry32 PRNG not found"
+        assert 'hashString' in html, "Hash string function not found"
+    
+    def test_no_math_random_in_data_generation(self):
+        """Test that Math.random() is not used in data generation functions."""
+        html = load_dashboard_html()
+        
+        # Extract JavaScript section
+        script_match = re.search(r'<script>(.*?)</script>', html, re.DOTALL)
+        if not script_match:
+            pytest.skip("No script section found")
+        
+        script_content = script_match.group(1)
+        
+        # Check that Math.random() is not used (should use seededRandom instead)
+        random_calls = re.findall(r'Math\.random\(\)', script_content)
+        assert len(random_calls) == 0, (
+            f"Found {len(random_calls)} Math.random() calls - should use seededRandom() for deterministic values"
+        )
+    
+    def test_generate_mock_agent_data_uses_seeded_random(self):
+        """Test that generateMockAgentData uses seeded random."""
+        html = load_dashboard_html()
+        
+        # Check that generateMockAgentData creates seeded random
+        assert 'createSeededRandom(territory)' in html, (
+            "generateMockAgentData should use createSeededRandom(territory)"
+        )
+    
+    def test_fan_in_data_uses_seeded_random(self):
+        """Test that getMockFanInData uses seeded random for unknown territories."""
+        html = load_dashboard_html()
+        
+        # Check that getMockFanInData uses seeded random
+        assert "createSeededRandom('fanIn_'" in html, (
+            "getMockFanInData should use seeded random for unknown territories"
+        )
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])

@@ -25,6 +25,10 @@ mock_blueprint_module.STRUCTURE_BLUEPRINT = {
         "agents": ["ToxicDependencyAuditor"]
     }
 }
+# Add required functions to mock
+mock_blueprint_module.get_validated_project_root = lambda: Path('.')
+mock_blueprint_module.safe_path_join = lambda base, *parts: Path(base).joinpath(*parts)
+mock_blueprint_module.validate_path_within_project = lambda path: True
 sys.modules['agentic_core.config.blueprint_sovereign.structure_blueprint'] = mock_blueprint_module
 
 # Direct import
