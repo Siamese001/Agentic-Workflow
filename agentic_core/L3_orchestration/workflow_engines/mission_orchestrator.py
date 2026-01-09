@@ -32,7 +32,7 @@ ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
 def enforce_void_compliance(files, project_root):
     """Bridge to LocationAgent."""
-        return LocationAgent(project_root).enforce_void_compliance(files)
+    return LocationAgent(project_root).enforce_void_compliance(files)
 
 def get_folder_scope_summary(project_root):
     """Returns py file counts per folder."""
@@ -46,7 +46,7 @@ def get_folder_scope_summary(project_root):
 
 def check_import_waterfall_violations(file_path, project_root):
     """Bridge to ImportAgent."""
-        return ImportAgent(project_root).check_waterfall_violations(file_path)
+    return ImportAgent(project_root).check_waterfall_violations(file_path)
 
 # [L2 KNOWLEDGE]
 from agentic_core.knowledge.rag_manager import get_rag_manager

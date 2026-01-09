@@ -1,44 +1,28 @@
-"""
-Auto-generated stub for golden\\safety	est_safety_properties.py
-
-Original file had syntax errors and has been regenerated as a stub.
-All tests are skipped until the original implementation is fixed.
-"""
+# tests/unit/test_golden_safety_test_safety_properties.py
+"""Unit tests for Safety Properties."""
+from __future__ import annotations
 import pytest
-from typing import Any
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
-def test_threshold_in_valid_range() -> Any:
-    """
-    Docstring.
-    """
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
-def test_threshold_determinism() -> Any:
-    """
-    Docstring.
-    """
+class TestSafetyProperties:
+    """Test safety properties module."""
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
-def test_gate_decision_has_values() -> Any:
-    """
-    Docstring.
-    """
+    def test_l5_safety_module_exists(self):
+        """Test L5 safety module exists."""
+        import agentic_core.L5_safety
+        assert agentic_core.L5_safety is not None
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
-def test_gate_decision_iteration_stable() -> Any:
-    """
-    Docstring.
-    """
+    def test_safety_base_agent_importable(self):
+        """Test SafetyBaseAgent can be imported."""
+        from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
+        assert SafetyBaseAgent is not None
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
-def test_severity_has_levels() -> Any:
-    """
-    Docstring.
-    """
+    def test_bias_detector_importable(self):
+        """Test BiasDetectorAgent can be imported."""
+        from agentic_core.L5_safety.guardrails.BiasDetectorAgent import BiasDetectorAgent
+        assert BiasDetectorAgent is not None
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
-def test_severity_determinism() -> Any:
-    """
-    Docstring.
-    """
+    def test_pii_sanitizer_importable(self):
+        """Test PIISanitizerAgent can be imported."""
+        from agentic_core.L5_safety.guardrails.PIISanitizerAgent import PIISanitizerAgent
+        assert PIISanitizerAgent is not None

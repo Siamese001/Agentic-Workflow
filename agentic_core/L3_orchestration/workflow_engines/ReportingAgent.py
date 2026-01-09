@@ -36,7 +36,7 @@ SCOPE_SUMMARY_EXCLUSIONS = {
 
 # Optional import: MetricsAgent from sibling territory
 try:
-    from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
+    from agentic_core.L6_observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
     METRICS_AGENT_AVAILABLE = True
 except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False

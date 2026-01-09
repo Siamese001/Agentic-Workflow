@@ -10,7 +10,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     has_forbidden_layer_prefix,
     is_broken_backup_file,
 )
-from agentic_core.observability.metrics.layer_decorator import layer_entry
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 # Lazy imports — gravity-safe (same/downstream L5)
 # Agents loaded on-demand to avoid circular dependencies

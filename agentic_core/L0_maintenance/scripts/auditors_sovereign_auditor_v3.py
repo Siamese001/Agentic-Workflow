@@ -51,7 +51,7 @@ try:
 _mod = importlib.import_module('agentic_core.L5_safety.validators.LocationAgent')
 location_agent as LocationAgent = getattr(_mod, 'location_agent as LocationAgent')
     from agentic_core.utils.naming.NamingAgent import NamingAgent
-    from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
+    from agentic_core.L6_observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
 except ImportError:
     LocationAgent = None
     NamingAgent = None

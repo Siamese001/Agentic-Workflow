@@ -60,9 +60,11 @@ class AutonomousSovereignCore:
         )
         # GRAVITY FIXED: Dynamic imports for autonomous components
         try:
+            from agentic_core.L4_state.checkpoint_manager import create_autonomous_checkpoint_manager
         except ImportError:
             create_autonomous_checkpoint_manager = lambda: None
         try:
+            from agentic_core.L4_state.state_guardian import create_autonomous_state_guardian
         except ImportError:
             create_autonomous_state_guardian = lambda: None
         try:

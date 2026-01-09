@@ -6,7 +6,7 @@ import time
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import get_validated_project_root
 from agentic_core.runtime.shared_runtime import log_event
-from agentic_core.observability.metrics.layer_decorator import layer_entry
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 
 class GeneralExerciserAgent:

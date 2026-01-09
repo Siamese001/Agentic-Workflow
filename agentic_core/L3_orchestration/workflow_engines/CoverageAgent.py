@@ -6,7 +6,7 @@ import uuid
 import math
 from typing import Dict, List, Optional
 
-from agentic_core.observability.metrics.layer_decorator import layer_entry
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 # Gravity-safe imports for active interventions
 try:
