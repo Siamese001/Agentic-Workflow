@@ -16,8 +16,8 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.observability.dashboard.core.data_generator import DashboardDataGenerator
-from agentic_core.observability.dashboard.core.renderer import DashboardRenderer
+from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
+from agentic_core.L6_observability.dashboards.renderer import DashboardRenderer
 
 log = logging.getLogger(__name__)
 
@@ -134,7 +134,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
 
     def _save_modular_markdown_report(self, today: str, total_row: Dict[str, Any], dashboard_rows: List[Dict[str, Any]]) -> None:
         """Passive Markdown renderer consuming pre-computed L6 rows."""
-        report_path = self.project_root / "reports" / "autonomy_compliance_report.md"
+        report_path = self.project_root / "agentic_core" / "L6_observability" / "reports" / "autonomy_compliance_report.md"
         md = f"# Autonomy Compliance SSOT Report — {today}\n\n"
         md += f"System Health: {total_row['Health']:.1f}% | Risk: {total_row['Risk']}\n\n"
         md += "| Territory | Total | % Heal Cap | % Heal Inv | % Test | CC | Health |\n|---|---|---|---|---|---|---|\n"

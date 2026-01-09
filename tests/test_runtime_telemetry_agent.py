@@ -17,7 +17,7 @@ sys.modules['agentic_core.utils.core_extensions.mcp_hardened_mixin'] = mock_modu
 import importlib.util
 spec = importlib.util.spec_from_file_location(
     'RuntimeTelemetryAgent',
-    Path('agentic_core/L6_observability/RuntimeTelemetryAgent.py')
+    Path('agentic_core/L6_observability/agents/RuntimeTelemetryAgent.py')
 )
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
