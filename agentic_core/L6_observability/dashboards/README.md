@@ -23,12 +23,18 @@ python agentic_core/L6_observability/dashboards/generate_dashboard.py
 4. Updates autonomy_dashboard.html
 5. Validates output
 
-**FIXED Territory Structure (NEVER CHANGES):**
+**FIXED Territory Structure (29 rows - NEVER CHANGES):**
 - TOTAL (always first)
-- L5, L4, L3, L2, L1, L0
+- L5 Safety/Base Class, L5 Safety/Validators, L5 Safety/Guardrails, L5 Safety/Gravity, L5 Safety/Red Teaming
+- L4 State/Base Class, L4 State/Core, L4 State/Infrastructure, L4 State/Specialized
+- L3 Orchestration/Base Class, L3 Orchestration/Core, L3 Orchestration/Infrastructure, L3 Orchestration/Specialized
+- L2 Execution/Base Class, L2 Execution/Core, L2 Execution/Specialized
+- L1 Cognition/Base Class, L1 Cognition/Core, L1 Cognition/Specialized
+- L0 Maintenance/Core, L0 Maintenance/Infrastructure
+- L6_Observability/Metrics, L6_Observability/Telemetry, L6_Observability/Tracing, L6_Observability/Compliance
 - Apps Lic, Apps Rg, Apps Shared
 
-**FIXED Field Schema (24 fields - NEVER CHANGES):**
+**FIXED Field Schema (25 fields - NEVER CHANGES):**
 - Territory, Total, Compliant
 - Heal Cap %, Heal Invocation %, Invocation %
 - Hardened %, MCP Capable %
@@ -38,7 +44,7 @@ python agentic_core/L6_observability/dashboards/generate_dashboard.py
 - Metadata %, Proper Base %, Schema Strictness %
 - Complexity Health, Code Quality Score
 - Criticality, Health, Health Breakdown, Risk
-- Used %, Priority
+- Used %, Priority, IsInfrastructure
 
 ---
 
