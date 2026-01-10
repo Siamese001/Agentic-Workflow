@@ -214,7 +214,7 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             for k, v in cfg['annotations'].items():
                 yaml_lines.append(f"          {k}: '{v}'")
 
-        yaml_str = "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n".join(yaml_lines)
+        yaml_str = "\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n".join(yaml_lines)
 
         if self.alerting_rules_file:
             try:

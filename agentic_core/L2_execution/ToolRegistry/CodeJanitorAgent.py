@@ -51,7 +51,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
 
     async def execute(self) -> Any:
         """Execute Code Janitor validation checks."""
-        print(f'\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Syntax and Style...')
+        print(f'\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Syntax and Style...')
         passed, violations = self.check_key_10_syntax()
         if not passed:
             print(f'   [{self.name}] Key 10: FAIL ({len(violations)} violations)')

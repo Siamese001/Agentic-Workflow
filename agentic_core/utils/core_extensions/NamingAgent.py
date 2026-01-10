@@ -29,8 +29,10 @@ except ImportError:
         def analyze_placement(self, code: str) -> PlacementResult:
             return PlacementResult()
 
-def get_naming_agent():
+def get_naming_agent(project_root=None):
     """Get a NamingAgent instance."""
+    if project_root:
+        return NamingAgent(project_root)
     return NamingAgent()
 
 __all__ = ['NamingAgent', 'get_naming_agent', 'TREE_SITTER_AVAILABLE', 'PlacementResult']

@@ -23,7 +23,7 @@ from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -47,7 +47,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
 
     async def execute(self) -> Any:
         """Execute Structural Engineer validation checks."""
-        print(f'\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Code Structure...')
+        print(f'\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Code Structure...')
         print(f'   [{self.name}] 🔍 Checking Key 20: Large Classes...')
         passed, violations = self.check_key_20_no_large_classes()
         if not passed:

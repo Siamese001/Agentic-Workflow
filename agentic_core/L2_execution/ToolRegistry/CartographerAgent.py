@@ -31,7 +31,7 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
 
     async def execute(self) -> None:
                     
-        print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space...")
+        print(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space...")
         await asyncio.sleep(0)
 
         if not getattr(self.ctx, "pinecone_available", False):

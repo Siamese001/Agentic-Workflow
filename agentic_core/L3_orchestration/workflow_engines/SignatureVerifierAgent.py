@@ -3,7 +3,7 @@ from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-'\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nsignature_verifier.py - function Module\n\nDomain: inspection\nGenerated: 2025-12-07T12:07:59.842368\n'
+'\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nsignature_verifier.py - function Module\n\nDomain: inspection\nGenerated: 2025-12-07T12:07:59.842368\n'
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
@@ -20,7 +20,7 @@ class OperationResult:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class SignatureVerifierAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):

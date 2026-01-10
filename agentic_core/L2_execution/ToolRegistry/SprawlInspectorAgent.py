@@ -12,7 +12,7 @@ from typing import Any
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Brief description of functionality and purpose."""
@@ -36,7 +36,7 @@ class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
 
     def print_summary(self) -> Any:
         """Print human-readable summary."""
-        print('\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n' + '=' * 70)
+        print('\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n' + '=' * 70)
         print('🔍 PROJECT SPRAWL REPORT')
         print('=' * 70)
         print(f"Target: {self.report['metadata']['target']}")

@@ -118,7 +118,7 @@ class ImportUpdater(ast.NodeVisitor):
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
@@ -259,7 +259,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             timestamp = int(time.time())
             backup_path = self.project_root.parent / f"{self.project_root.name}.bak.{timestamp}"
             
-            print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n[STAGING] Committing {len(self.staged_changes)} changes...")
+            print(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n[STAGING] Committing {len(self.staged_changes)} changes...")
             print(f"   [BACKUP] Creating full backup at {backup_path.name}")
             
             # Backup current state

@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 'Brief description of functionality and purpose.'
 from enum import Enum, auto
-'\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\ncoordinate_observability_operations.py - Orchestration Module\n\nDomain: operations\nGenerated: 2025-12-07T12:07:59.851272\n'
+'\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\ncoordinate_observability_operations.py - Orchestration Module\n\nDomain: operations\nGenerated: 2025-12-07T12:07:59.851272\n'
 import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
@@ -36,7 +36,7 @@ class OrchestrationResult:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class CoordinateObservabilityOperationsAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):

@@ -232,7 +232,7 @@ class HealingOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
             print("   [L0 HEALING] No automated fixes available for current violations")
             return
 
-        print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n   [L0 HEALING] Initiating transactional healing for {len(fixes)} fixes...")
+        print(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n   [L0 HEALING] Initiating transactional healing for {len(fixes)} fixes...")
         await self.apply_fixes_transactionally(fixes)
 
     @timeout(300)

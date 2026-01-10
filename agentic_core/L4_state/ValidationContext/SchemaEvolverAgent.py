@@ -23,7 +23,7 @@ from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -230,7 +230,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     def _report_impact(self, impact: ImpactAnalysis):
         """Report impact analysis to user."""
         change = impact.change
-        Logger.info(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
+        Logger.info(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
         Logger.info(f'🛡️  SCHEMA CHANGE IMPACT ANALYSIS')
         Logger.info(f"{'=' * 80}")
         Logger.info(f'Schema: {change.schema_name}')

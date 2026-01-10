@@ -20,7 +20,7 @@ from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
