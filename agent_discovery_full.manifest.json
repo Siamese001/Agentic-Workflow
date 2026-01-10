@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-10T20:51:56.254866Z",
-  "scan_duration_seconds": 18.96,
+  "generated_at": "2026-01-10T21:17:36.766638Z",
+  "scan_duration_seconds": 16.14,
   "agent_count": 291,
-  "content_hash": "sha256:fcb483975d8a4c5f156f0c7389afaa5fcbf2004a50660fab3d61e01a7c8f7482",
+  "content_hash": "sha256:b41c298b0d49308bbb336f7dc5fef25b42ed9a862d57842563a85f11f231db4c",
   "layer_breakdown": {
     "L0": 13,
     "L1": 30,
@@ -1351,6 +1351,7 @@
     "scripts/ast_layer_stats.py": "7accd7662db72ba6fd13227219c7fd3b",
     "scripts/ast_redundancy_analyzer.py": "87c6525665693fb296ae3ab9c7b21b77",
     "scripts/ast_redundancy_analyzer_ultra.py": "d1a1171255d6a7aca251b7dafdad4d9e",
+    "scripts/audit_dashboard_heal_cap.py": "eb2babee5ba10295cfeea0288b97f85c",
     "scripts/bulk_agent_rename.py": "d5b4a4cd02b9ae4dc05c7a17e8dfe180",
     "scripts/bulk_mcp_harden.py": "6acc47a2a0dc1777baeae0c873008d76",
     "scripts/check_base_classes.py": "481c4992865f8c077c5158cc4aff6104",
@@ -1462,6 +1463,7 @@
     "scripts/trace_dashboard_generation.py": "903a0fbc2420dab95d008957ce6a5c6c",
     "scripts/trace_drilldown.py": "0cdbb3f9093ad2f771e5f9285d212ae9",
     "scripts/update_dashboard_data.py": "7540260b8a1a2b82ae45e29609d98005",
+    "scripts/update_heal_cap_only.py": "2424fb83aa62754710c80b25e94c2fee",
     "scripts/validate_dashboard_totals.py": "ac3e70ff7af95521fbeab733b35369fa",
     "scripts/validate_drilldown.py": "cfa5728e7b4994191376799d04a25a94",
     "scripts/verify_dashboard_state.py": "1d54faf92c1dc36f38e8c06ad245dce9",
@@ -1493,6 +1495,6 @@
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63",
     "scripts/refactor/verify_integrity.py": "8abdef8ddfcff519caacc70f7a684e41"
   },
-  "hashed_file_count": 1470,
+  "hashed_file_count": 1472,
   "hash_errors": 0
 }
