@@ -17,6 +17,20 @@ class IOrchestratorAgent(ABC):
     """
     
     @abstractmethod
+
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+        
+        Returns:
+            Dict with healing summary
+        """
+        return {"violations": 0, "fixed": 0, "errors": 0}
+
     def execute(self, context: Any) -> Dict[str, Any]:
         """Execute the orchestration task."""
         pass
