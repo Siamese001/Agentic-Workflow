@@ -5,12 +5,13 @@ Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
 Consolidated 2026-01-06: Blueprint now imports from canonical L5 implementation
 """
 
-    BiasAuditorAgent,
-    BiasResult,
-    BiasType,
-    BiasMatch,
-    audit_bias,
-)
+# from agentic_core.L5_safety.validators.bias_auditor import (
+#     BiasAuditorAgent,
+#     BiasResult,
+#     BiasType,
+#     BiasMatch,
+#     audit_bias,
+# )
 
 # Legacy class definition removed - use canonical L5 version above
 # Original implementation preserved in: L5_safety/validators/bias_auditor.py

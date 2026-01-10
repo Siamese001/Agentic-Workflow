@@ -36,10 +36,11 @@ def _get_workflow_engine():
     import importlib
     module = importlib.import_module('agentic_core.L3_orchestration.workflow_engines')
     return module
-.mcp_router_sovereign import SovereignMCPRouter
-        self.router = SovereignMCPRouter(role=role)
-        self._mcp_audit('init')
-        Logger.info('[L0 GITKRAKEN] Sovereign GitKraken MCP client initialized')
+
+        # Orphaned code - appears to be part of __init__ method but incorrectly placed
+        # self.router = SovereignMCPRouter(role=role)
+        # self._mcp_audit('init')
+        # Logger.info('[L0 GITKRAKEN] Sovereign GitKraken MCP client initialized')
 
     async def create_healing_commit(self, files: List[str], message: str) -> Dict[str, Any]:
         """

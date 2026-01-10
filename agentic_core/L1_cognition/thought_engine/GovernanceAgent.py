@@ -293,9 +293,9 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """Lazy-load HierarchyAgent to avoid circular import."""
         if self._hierarchy_agent is None:
             try:
-# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.HierarchyAgent')
-HierarchyAgent = getattr(_mod, 'HierarchyAgent')
+                # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
+                _mod = importlib.import_module('agentic_core.L5_safety.guardrails.HierarchyAgent')
+                HierarchyAgent = getattr(_mod, 'HierarchyAgent')
                 self._hierarchy_agent = HierarchyAgent(self.root_dir)
             except ImportError:
                 pass
@@ -306,9 +306,9 @@ HierarchyAgent = getattr(_mod, 'HierarchyAgent')
         """Lazy-load ImportAgent to avoid circular import."""
         if self._import_agent is None:
             try:
-# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
-_mod = importlib.import_module('agentic_core.L5_safety.gravity.ImportAgent')
-ImportAgent = getattr(_mod, 'ImportAgent')
+                # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+                _mod = importlib.import_module('agentic_core.L5_safety.gravity.ImportAgent')
+                ImportAgent = getattr(_mod, 'ImportAgent')
                 self._import_agent = ImportAgent(self.root_dir)
             except ImportError:
                 pass

@@ -14,12 +14,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-# GRAVITY VIOLATION: from apps_shared.config.operational_config import (
-    OPERATIONAL_EXCLUDED_DIRS,
-    OPERATIONAL_ALLOWED_DUPLICATES,
-    is_excluded_path as op_is_excluded_path,
-    is_allowed_duplicate as op_is_allowed_duplicate,
-)
+# GRAVITY VIOLATION: 
+# from apps_shared.config.operational_config import (
+#     OPERATIONAL_EXCLUDED_DIRS,
+#     OPERATIONAL_ALLOWED_DUPLICATES,
+#     is_excluded_path as op_is_excluded_path,
+#     is_allowed_duplicate as op_is_allowed_duplicate,
+# )
 
 def is_excluded_path(path: Path) -> bool:
     """Check if a path should be excluded from indexing."""

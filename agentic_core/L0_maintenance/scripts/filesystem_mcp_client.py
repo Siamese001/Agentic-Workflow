@@ -38,10 +38,11 @@ def _get_workflow_engine():
     import importlib
     module = importlib.import_module('agentic_core.L3_orchestration.workflow_engines')
     return module
-.mcp_router_sovereign import SovereignMCPRouter
-        self.router = SovereignMCPRouter(role=role)
-        self._mcp_audit('init')
-        Logger.info('[L0 FILESYSTEM] Sovereign Filesystem MCP client initialized')
+
+    # Orphaned code - appears to be part of __init__ method but incorrectly placed
+    # self.router = SovereignMCPRouter(role=role)
+    # self._mcp_audit('init')
+    # Logger.info('[L0 FILESYSTEM] Sovereign Filesystem MCP client initialized')
 
     def _validate_path(self, path: str) -> str:
         """L5 safety validation — enforce allowed roots and forbidden patterns."""

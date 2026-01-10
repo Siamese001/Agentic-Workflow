@@ -128,15 +128,14 @@ class BootstrapAgent(HealerMixin, L0DelegationTestingMixin, MCPHardenedMixin):
         """
         # from agentic_core.L2_execution.ToolRegistry.Toolsmith  # Refactored to dynamic import to avoid upward dependency
 
-def _get_toolsmith():
-    """Lazy load Toolsmith to avoid L0 → L2 dependency."""
-    import importlib
-    module = importlib.import_module('agentic_core.L2_execution.ToolRegistry.Toolsmith')
-    return module.Toolsmith
-Agent import ToolsmithAgent
+        def _get_toolsmith():
+            """Lazy load Toolsmith to avoid L0 → L2 dependency."""
+            import importlib
+            module = importlib.import_module('agentic_core.L2_execution.ToolRegistry.Toolsmith')
+            return module.Toolsmith
         
         root = project_root or self.project_root
-        toolsmith = ToolsmithAgent()
+        toolsmith = _get_toolsmith()()
         
         result = await toolsmith.seed_territory(root, dry_run=False)
         
