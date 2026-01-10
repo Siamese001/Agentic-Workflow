@@ -341,6 +341,10 @@ class TestCapabilityMonitor:
 class TestProactiveAgent:
     """Tests for ProactiveAgent."""
 
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs):
+        """Autonomous healing - test class stub."""
+        return {"violations": 0, "fixed": 0, "errors": 0}
+
     @pytest.mark.asyncio
     async def test_execute(self, ctx):
         """Test agent execution."""
