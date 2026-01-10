@@ -92,9 +92,9 @@ class GeminiEngine(LLMEngine):
         
         # Lazy load SubAtomicEngine to avoid circular imports
         try:
-# GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngineImpl
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.subatomic_engine')
-SubAtomicEngineImpl = getattr(_mod, 'SubAtomicEngineImpl')
+            # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngineImpl
+            _mod = importlib.import_module('agentic_core.L5_safety.guardrails.subatomic_engine')
+            SubAtomicEngineImpl = getattr(_mod, 'SubAtomicEngineImpl')
             self._engine = SubAtomicEngineImpl(project_root)
             Logger.info("[GeminiEngine] Initialized successfully")
         except Exception as e:

@@ -22,7 +22,8 @@ def _get_cognitive_node():
     import importlib
     module = importlib.import_module('agentic_core.L1_cognition.cognitive_node.CognitiveNode')
     return module.CognitiveNode
- import CognitiveNode
+
+# from CognitiveNode import CognitiveNode  # Commented out - appears to be incomplete/broken import
 
 
 class L1HealthBenchmark:

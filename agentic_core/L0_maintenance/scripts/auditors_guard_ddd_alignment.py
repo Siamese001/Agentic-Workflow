@@ -13,7 +13,8 @@ def _get_sovereign_domain():
     import importlib
     module = importlib.import_module('agentic_core.L1_cognition.P2_domain.sovereign')
     return module
-_domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE
+
+# from _domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE  # Commented out - appears to be incomplete/broken import
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
