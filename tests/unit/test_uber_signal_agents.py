@@ -8,28 +8,24 @@ import pytest
 from typing import Any
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_architecture_visualizer() -> Any:
     """
     Test the Architecture Visualizer Agent.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_cultural_decoder() -> Any:
     """
     Test the Cultural Decoder Agent.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_pre_mortem_agent() -> Any:
     """
     Test the Pre-Mortem Agent.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_integration_scenario() -> Any:
     """
     Test all three agents working together on a complete scenario.

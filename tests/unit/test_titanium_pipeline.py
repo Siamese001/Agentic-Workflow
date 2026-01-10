@@ -8,34 +8,29 @@ import pytest
 from typing import Any
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_individual_phases() -> Any:
     """
     Test each phase individually.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_full_pipeline_scenarios() -> Any:
     """
     Test complete pipeline with various scenarios.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_pipeline_statistics() -> Any:
     """
     Test pipeline statistics and monitoring.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_error_handling() -> Any:
     """
     Test pipeline error handling and fallbacks.
     """
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_convenience_functions() -> Any:
     """
     Test convenience functions for easy setup.

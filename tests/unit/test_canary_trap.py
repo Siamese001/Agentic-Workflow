@@ -24,7 +24,6 @@ def setup_canary_env(tmp_path: Any) -> Any:
     with patch('canary_monitor.CANARY_FILE_PATH', str(canary_path)), patch('canary_monitor.TERMINATE_PID_PATH', str(pid_path)):
         yield canary_path
 
-@pytest.mark.skip(reason='Test not implemented')
 def test_canary_trap_triggers_on_access(setup_canary_env: Any) -> Any:
     """Brief description of functionality and purpose."""
     canary_path: Any = setup_canary_env

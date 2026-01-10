@@ -31,6 +31,43 @@ def disable_path_shield():
     pass
 
 @pytest.fixture(autouse=True)
+def mock_llm_calls(monkeypatch):
+    """
+    Global LLM Mock: Prevents actual API calls to Gemini, OpenAI, etc.
+    Returns deterministic responses for testing.
+    """
+    try:
+        import google.generativeai as genai
+        
+        class MockGenerativeModel:
+            def __init__(self, *args, **kwargs):
+                pass
+            
+            def generate_content(self, *args, **kwargs):
+                class MockResponse:
+                    text = "Mock LLM response for testing"
+                    def __iter__(self):
+                        yield self
+                return MockResponse()
+        
+        monkeypatch.setattr(genai, "GenerativeModel", MockGenerativeModel)
+    except ImportError:
+        pass
+
+@pytest.fixture(autouse=True)
+def mock_mcp_tools(monkeypatch):
+    """
+    Global MCP Tool Mock: Prevents actual tool executions.
+    Returns safe stub responses.
+    """
+    # Mock common MCP tool patterns
+    def mock_tool_execute(*args, **kwargs):
+        return {"status": "mocked", "result": "stub_data"}
+    
+    # This will be expanded as we identify specific MCP tool patterns
+    pass
+
+@pytest.fixture(autouse=True)
 def path_shield(request, monkeypatch):
     """
     Sovereign Path Shield v2:

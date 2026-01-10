@@ -5,7 +5,6 @@ import pytest
 from consensus_engine import ConsensusEngine
 from typing import Any
 
-@pytest.mark.skip(reason='Test not implemented')
 def test_unanimous_pass() -> Any:
     """All Big Three reasoning models should agree on clean code."""
     jury: Any = ConsensusEngine()
@@ -14,7 +13,6 @@ def test_unanimous_pass() -> Any:
     assert result['status'] == 'PASS'
     assert result['score'] == 1.0
 
-@pytest.mark.skip(reason='Test not implemented')
 def test_gpt_5_1_logic_catch() -> Any:
     """GPT-5.1 catches a functional regression (infinite loop)."""
     jury: Any = ConsensusEngine()
@@ -23,7 +21,6 @@ def test_gpt_5_1_logic_catch() -> Any:
     no_votes: Any = [v for v in result['votes'] if v['verdict'] == 'NO']
     assert any(('gpt-5.1' in v['model'] for v in no_votes))
 
-@pytest.mark.skip(reason='Test not implemented')
 def test_claude_sonnet_4_5_safety_catch() -> Any:
     """Claude Sonnet 4.5 catches a safety issue (race condition)."""
     jury: Any = ConsensusEngine()
@@ -32,7 +29,6 @@ def test_claude_sonnet_4_5_safety_catch() -> Any:
     no_votes: Any = [v for v in result['votes'] if v['verdict'] == 'NO']
     assert any(('claude-sonnet-4-5' in v['model'] for v in no_votes))
 
-@pytest.mark.skip(reason='Test not implemented')
 def test_gemini_3_pro_hallucination_catch() -> Any:
     """Gemini 3 Pro catches a hallucination using Deep Think."""
     jury: Any = ConsensusEngine()
@@ -41,7 +37,6 @@ def test_gemini_3_pro_hallucination_catch() -> Any:
     no_votes: Any = [v for v in result['votes'] if v['verdict'] == 'NO']
     assert any(('gemini-3-pro' in v['model'] for v in no_votes))
 
-@pytest.mark.skip(reason='Test not implemented')
 def test_majority_fail_complex_bug() -> Any:
     """
     Simulates a complex bug that triggers 2 out of 3 reasoning models.

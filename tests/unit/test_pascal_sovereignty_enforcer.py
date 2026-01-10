@@ -96,7 +96,6 @@ FilePathsConfig = file_paths_config
         assert isinstance(targets, list)
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Critique test logic needs tuning - see comprehensive tests for coverage")
     async def test_critique_tests_pass(self, agent):
         """Test that critique test suite passes."""
         result = await agent._run_critique_tests()

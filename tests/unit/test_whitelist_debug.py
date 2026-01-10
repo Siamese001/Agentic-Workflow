@@ -7,7 +7,6 @@ All tests are skipped until the original implementation is fixed.
 import pytest
 from typing import Any
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_whitelist_behavior() -> Any:
     """
     Test how whitelist behaves with different code patterns

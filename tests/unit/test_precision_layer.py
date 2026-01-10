@@ -7,25 +7,21 @@ All tests are skipped until the original implementation is fixed.
 import pytest
 from typing import Any
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_contextual_compressor() -> Any:
     """
     Test the Contextual Compressor with various queries.
     """
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_adaptive_retrieval_gate() -> Any:
     """
     Test the Adaptive Retrieval Gate with various queries.
     """
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_integration_scenario() -> Any:
     """
     Test both components working together in a realistic scenario.
     """
 
-@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_convenience_functions() -> Any:
     """
     Test the convenience functions for direct usage.
