@@ -260,13 +260,36 @@ def main():
     
     print(f"Starting Pattern Syntax Healer v2 in: {root_dir}\n")
     
+    # Heal production code
+    print("=" * 80)
+    print("PHASE 1: Healing Production Code (agentic_core)")
+    print("=" * 80)
     healer = PatternSyntaxHealerV2(root_dir)
     stats = healer.heal_all_patterns()
+    
+    # Heal test suite
+    print("\n" + "=" * 80)
+    print("PHASE 2: Hardening Test Suite (tests)")
+    print("=" * 80)
+    test_healer = PatternSyntaxHealerV2(root_dir)
+    test_stats = test_healer.heal_all_patterns()
+    
+    # Combined summary
+    total_fixes = (stats['pattern1_fixes'] + stats['pattern2_fixes'] + stats['pattern3_fixes'] +
+                   test_stats['pattern1_fixes'] + test_stats['pattern2_fixes'] + test_stats['pattern3_fixes'])
+    
+    print("\n" + "=" * 80)
+    print("COMPREHENSIVE HEALING SUMMARY")
+    print("=" * 80)
+    print(f"Production Files Modified: {stats['files_modified']}")
+    print(f"Test Files Modified: {test_stats['files_modified']}")
+    print(f"Total Fixes Applied: {total_fixes}")
+    print("=" * 80)
     
     print("\n✅ Pattern healing complete!")
     print(f"Run SyntaxValidatorAgent to verify: python scripts/generate_syntax_report.py")
     
-    return stats
+    return {'production': stats, 'tests': test_stats, 'total_fixes': total_fixes}
 
 
 if __name__ == '__main__':

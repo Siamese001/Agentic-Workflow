@@ -21,8 +21,9 @@ def main():
     # Initialize orchestrator
     orchestrator = SSOTOrchestratorAgent(project_root=project_root)
     
-    # Run orchestration
-    result = orchestrator.heal_repository(dry_run=True, execute=False)
+    # Run orchestration with full healing enabled
+    # Triggering full healing and Meta-Learning write-loop
+    result = orchestrator.heal_repository(dry_run=False, execute=True)
     
     # Print results
     print()
@@ -38,6 +39,10 @@ def main():
     print(f"Success Rate: {result.get('success_rate', 0):.1f}%")
     print(f"Execution Time: {result.get('execution_time_ms', 0):.0f}ms")
     print("=" * 60)
+    
+    # Meta-Learning status
+    if result.get('status') == 'PASS' and result.get('violations_fixed', 0) > 0:
+        print(f"\n✅ Meta-Learning Enabled: {result.get('violations_fixed')} fixes recorded to L4 State.")
     
     return 0 if result.get('status') == 'PASS' else 1
 
