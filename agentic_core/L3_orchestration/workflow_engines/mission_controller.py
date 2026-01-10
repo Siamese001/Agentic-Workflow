@@ -75,7 +75,7 @@ class MissionController:
         self.agent_retry_backoff_base = AGENT_RESILIENCE_CONFIG["backoff_base"]
         
         # Metrics
-        self.metrics = get_metrics(verbose=False)
+        self.metrics = get_metrics()
         
         # Tracer (will be set during initialization)
         self.tracer = None
