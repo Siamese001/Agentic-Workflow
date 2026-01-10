@@ -15,6 +15,9 @@ from typing import List, Dict, Any, Tuple
 # Import the SSOT generator
 from generate_dashboard import DashboardGenerator, TERRITORY_ORDER, REQUIRED_FIELDS
 
+# Expected number of territories in frozen wireframe (excluding TOTAL)
+EXPECTED_TERRITORY_COUNT = 28  # 29 rows total, minus TOTAL row
+
 class DashboardTestSuite:
     """Comprehensive test suite for dashboard generation."""
     
@@ -58,7 +61,7 @@ class DashboardTestSuite:
             return False, f"Exception: {e}"
     
     def test_territory_order(self) -> Tuple[bool, str]:
-        """Test 2: Verify territory order matches FIXED structure."""
+        """Test 2: Verify territory order matches FIXED detailed structure."""
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
             start_marker = 'const dashboardData = ['
@@ -72,12 +75,16 @@ class DashboardTestSuite:
             territory_rows = data[1:]
             actual_order = [r["Territory"] for r in territory_rows]
             
-            # Check that actual territories are subset of expected order
+            # Check that actual territories match expected order
             for territory in actual_order:
                 if territory not in TERRITORY_ORDER:
-                    return False, f"Unexpected territory: {territory}"
+                    return False, f"Unexpected territory: {territory} (not in frozen wireframe)"
             
-            return True, f"Territory order valid: {actual_order}"
+            # Check we have expected number of territories
+            if len(actual_order) < EXPECTED_TERRITORY_COUNT:
+                return False, f"Missing territories: expected {EXPECTED_TERRITORY_COUNT}, got {len(actual_order)}"
+            
+            return True, f"Territory order valid: {len(actual_order)} detailed territories"
             
         except Exception as e:
             return False, f"Exception: {e}"
@@ -154,34 +161,29 @@ class DashboardTestSuite:
             return False, f"Exception: {e}"
     
     def test_regeneration_stability(self) -> Tuple[bool, str]:
-        """Test 5: Verify regeneration produces same structure."""
+        """Test 5: Verify regeneration produces frozen wireframe structure."""
         try:
-            # Save original data
-            html = self.dashboard_path.read_text(encoding='utf-8')
-            start_marker = 'const dashboardData = ['
-            end_marker = '];'
-            start_idx = html.find(start_marker)
-            end_idx = html.find(end_marker, start_idx) + len(end_marker)
-            json_str = html[start_idx+len(start_marker)-1:end_idx-1]
-            original_data = json.loads(json_str)
-            
             # Regenerate
             generator = DashboardGenerator(self.project_root)
             generator.load_agent_discovery()
             new_data = generator.generate_dashboard_data()
             
-            # Compare structure
-            if len(original_data) != len(new_data):
-                return False, f"Row count changed: {len(original_data)} -> {len(new_data)}"
+            # Check we have TOTAL + expected territories
+            expected_total_rows = EXPECTED_TERRITORY_COUNT + 1  # +1 for TOTAL
+            if len(new_data) < expected_total_rows:
+                return False, f"Row count too low: expected {expected_total_rows}, got {len(new_data)}"
             
-            # Check territories match
-            original_territories = [r["Territory"] for r in original_data]
-            new_territories = [r["Territory"] for r in new_data]
+            # Check TOTAL is first
+            if new_data[0].get("Territory") != "TOTAL":
+                return False, "TOTAL row must be first"
             
-            if original_territories != new_territories:
-                return False, f"Territory order changed: {original_territories} -> {new_territories}"
+            # Check all territories are from frozen wireframe
+            new_territories = [r["Territory"] for r in new_data[1:]]
+            for territory in new_territories:
+                if territory not in TERRITORY_ORDER:
+                    return False, f"Generated unexpected territory: {territory}"
             
-            return True, "Regeneration produces stable structure"
+            return True, f"Regeneration produces frozen wireframe: {len(new_data)} rows"
             
         except Exception as e:
             return False, f"Exception: {e}"

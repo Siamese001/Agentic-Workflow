@@ -43,14 +43,33 @@ from pathlib import Path
 from typing import Dict, List, Any
 from collections import defaultdict
 
-# FIXED TERRITORY ORDER - NEVER CHANGE THIS
+# FIXED TERRITORY ORDER - NEVER CHANGE THIS (29 detailed territories)
 TERRITORY_ORDER = [
-    "L5",
-    "L4", 
-    "L3",
-    "L2",
-    "L1",
-    "L0",
+    "L5 Safety/Base Class",
+    "L5 Safety/Validators",
+    "L5 Safety/Guardrails",
+    "L5 Safety/Gravity",
+    "L5 Safety/Red Teaming",
+    "L4 State/Base Class",
+    "L4 State/Core",
+    "L4 State/Infrastructure",
+    "L4 State/Specialized",
+    "L3 Orchestration/Base Class",
+    "L3 Orchestration/Core",
+    "L3 Orchestration/Infrastructure",
+    "L3 Orchestration/Specialized",
+    "L2 Execution/Base Class",
+    "L2 Execution/Core",
+    "L2 Execution/Specialized",
+    "L1 Cognition/Base Class",
+    "L1 Cognition/Core",
+    "L1 Cognition/Specialized",
+    "L0 Maintenance/Core",
+    "L0 Maintenance/Infrastructure",
+    "L6_Observability/Metrics",
+    "L6_Observability/Telemetry",
+    "L6_Observability/Tracing",
+    "L6_Observability/Compliance",
     "Apps Lic",
     "Apps Rg",
     "Apps Shared"
@@ -67,7 +86,7 @@ REQUIRED_FIELDS = [
     "Metadata %", "Proper Base %", "Schema Strictness %",
     "Complexity Health", "Code Quality Score",
     "Criticality", "Health", "Health Breakdown", "Risk",
-    "Used %", "Priority"
+    "Used %", "Priority", "IsInfrastructure"
 ]
 
 class DashboardGenerator:
@@ -101,32 +120,89 @@ class DashboardGenerator:
             return False
     
     def group_agents_by_territory(self) -> Dict[str, List[Dict]]:
-        """Group agents by FIXED territory structure."""
+        """Group agents by FIXED detailed territory structure with subcategories."""
         territories = defaultdict(list)
         
         for agent in self.agents:
             layer = agent.get('layer', '')
             sub_dir = agent.get('sub_dir', '')
+            path = agent.get('path', '').replace('\\', '/')
+            class_name = agent.get('class_name', '')
             
-            # Map to FIXED territory names
-            if layer.startswith('L5'):
-                territory = "L5"
-            elif layer.startswith('L4'):
-                territory = "L4"
-            elif layer.startswith('L3'):
-                territory = "L3"
-            elif layer.startswith('L2'):
-                territory = "L2"
-            elif layer.startswith('L1'):
-                territory = "L1"
-            elif layer.startswith('L0'):
-                territory = "L0"
-            elif 'apps_lic' in sub_dir:
+            # Map to FIXED detailed territory names with subcategories
+            if 'apps_lic' in sub_dir:
                 territory = "Apps Lic"
             elif 'apps_rg' in sub_dir:
                 territory = "Apps Rg"
             elif 'apps_shared' in sub_dir:
                 territory = "Apps Shared"
+            elif layer.startswith('L5'):
+                # L5 Safety subcategories based on actual paths
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L5 Safety/Base Class"
+                elif '/validators' in path or 'validators/' in path:
+                    territory = "L5 Safety/Validators"
+                elif '/red_team' in path or 'red_teaming/' in path:
+                    territory = "L5 Safety/Red Teaming"
+                elif '/gravity' in path or 'Gravity' in class_name:
+                    territory = "L5 Safety/Gravity"
+                else:
+                    # Default: guardrails
+                    territory = "L5 Safety/Guardrails"
+            elif layer.startswith('L4'):
+                # L4 State subcategories
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L4 State/Base Class"
+                elif '/filesystem' in path or '/infrastructure' in path:
+                    territory = "L4 State/Infrastructure"
+                elif '/adapters' in path or 'Adapter' in class_name:
+                    territory = "L4 State/Specialized"
+                else:
+                    territory = "L4 State/Core"
+            elif layer.startswith('L3'):
+                # L3 Orchestration subcategories
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L3 Orchestration/Base Class"
+                elif '/infrastructure' in path:
+                    territory = "L3 Orchestration/Infrastructure"
+                elif '/adapters' in path or 'Adapter' in class_name:
+                    territory = "L3 Orchestration/Specialized"
+                else:
+                    territory = "L3 Orchestration/Core"
+            elif layer.startswith('L2'):
+                # L2 Execution subcategories
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L2 Execution/Base Class"
+                elif '/adapters' in path or 'Adapter' in class_name:
+                    territory = "L2 Execution/Specialized"
+                else:
+                    territory = "L2 Execution/Core"
+            elif layer.startswith('L1'):
+                # L1 Cognition subcategories
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L1 Cognition/Base Class"
+                elif '/adapters' in path or 'Adapter' in class_name:
+                    territory = "L1 Cognition/Specialized"
+                else:
+                    territory = "L1 Cognition/Core"
+            elif layer.startswith('L0'):
+                # L0 Maintenance subcategories
+                if '/infrastructure' in path or 'Infrastructure' in class_name:
+                    territory = "L0 Maintenance/Infrastructure"
+                else:
+                    territory = "L0 Maintenance/Core"
+            elif 'L6_observability' in path or 'L6_Observability' in path:
+                # L6 Observability subcategories
+                if '/metrics' in path or 'Metric' in class_name:
+                    territory = "L6_Observability/Metrics"
+                elif '/telemetry' in path or 'Telemetry' in class_name:
+                    territory = "L6_Observability/Telemetry"
+                elif '/tracing' in path or 'Tracing' in class_name or 'Trace' in class_name:
+                    territory = "L6_Observability/Tracing"
+                elif '/compliance' in path or 'Compliance' in class_name:
+                    territory = "L6_Observability/Compliance"
+                else:
+                    territory = "L6_Observability/Metrics"  # Default L6
             else:
                 # Fallback - should not happen
                 territory = "Unknown"
@@ -185,7 +261,7 @@ class DashboardGenerator:
             "hardened_pct": hardened_pct
         }
     
-    def build_territory_row(self, territory_name: str, metrics: Dict[str, Any], priority: int) -> Dict[str, Any]:
+    def build_territory_row(self, territory_name: str, metrics: Dict[str, Any], priority: int, is_infrastructure: bool = False) -> Dict[str, Any]:
         """Build a territory row with FIXED field schema."""
         return {
             "Territory": territory_name,
@@ -212,7 +288,8 @@ class DashboardGenerator:
             "Health Breakdown": f"Heal:{metrics['heal_cap_pct']:.0f}+Inv:{metrics['heal_inv_pct']:.0f}+Test:{metrics['test_pct']:.0f}+Obs:{metrics['obs_pct']:.0f}+CC:{metrics['complexity_health']:.0f}",
             "Risk": metrics["risk"],
             "Used %": 95.0,
-            "Priority": priority
+            "Priority": priority,
+            "IsInfrastructure": is_infrastructure
         }
     
     def build_total_row(self, rows: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -252,26 +329,51 @@ class DashboardGenerator:
             "Health Breakdown": f"Heal:{weighted_avg('Heal Cap %'):.0f}+Inv:{weighted_avg('Heal Invocation %'):.0f}+Test:{weighted_avg('Test %'):.0f}+Obs:{weighted_avg('Observable %'):.0f}+CC:{weighted_avg('Complexity Health'):.0f}",
             "Risk": "HIGH" if health < 70 else "MED" if health < 85 else "LOW",
             "Used %": 95.0,
-            "Priority": "ALL"
+            "Priority": "ALL",
+            "IsInfrastructure": False
         }
     
     def generate_dashboard_data(self) -> List[Dict[str, Any]]:
-        """Generate complete dashboard data with FIXED structure."""
+        """Generate complete dashboard data with FIXED structure (always 29 rows)."""
         territories = self.group_agents_by_territory()
         
-        # Build rows in FIXED order
+        # Build rows in FIXED order - create row for EVERY territory (even if empty)
         rows = []
         for i, territory_name in enumerate(TERRITORY_ORDER):
-            if territory_name in territories:
+            priority = i + 1
+            is_infrastructure = "L6_Observability" in territory_name
+            
+            if territory_name in territories and len(territories[territory_name]) > 0:
+                # Territory has agents - compute real metrics
                 agents_list = territories[territory_name]
                 metrics = self.compute_territory_metrics(agents_list)
                 if metrics:
-                    priority = i + 1
-                    row = self.build_territory_row(territory_name, metrics, priority)
+                    row = self.build_territory_row(territory_name, metrics, priority, is_infrastructure)
                     rows.append(row)
+            else:
+                # Territory has no agents - create empty row to maintain wireframe
+                empty_metrics = {
+                    "total": 0,
+                    "compliant": 0,
+                    "heal_cap_pct": 0.0,
+                    "heal_inv_pct": 0.0,
+                    "test_pct": 0.0,
+                    "obs_pct": 0.0,
+                    "avg_cc": 0.0,
+                    "typed_pct": 0.0,
+                    "doc_pct": 0.0,
+                    "complexity_health": 0.0,
+                    "code_quality": 0.0,
+                    "health": 0.0,
+                    "risk": "N/A",
+                    "hardened_pct": 0.0
+                }
+                row = self.build_territory_row(territory_name, empty_metrics, priority, is_infrastructure)
+                rows.append(row)
         
-        # Build TOTAL row
-        total_row = self.build_total_row(rows)
+        # Build TOTAL row (only from non-empty rows)
+        non_empty_rows = [r for r in rows if r["Total"] > 0]
+        total_row = self.build_total_row(non_empty_rows)
         
         # TOTAL always first
         all_rows = [total_row] + rows
