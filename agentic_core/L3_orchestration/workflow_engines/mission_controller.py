@@ -30,6 +30,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SCOPE_SUMMARY_EXCLUSIONS,
 )
+from agentic_core.config.blueprint_sovereign.mission_preflight import MissionPreflight
 from agentic_core.utils.general_helpers.mission_utils import (
     dynamic_import,
     get_layer_rank,
@@ -384,12 +385,15 @@ class MissionController:
 
     def _record_preflight_metrics(self, results: Dict[str, Any]) -> None:
         """Record preflight results to Prometheus metrics."""
-        violations_total = self.metrics.get("violations_total")
-        if violations_total:
-            violations_total.labels(type="depth_span").inc(results.get("Span", 0))
-            violations_total.labels(type="hierarchy").inc(results.get("hierarchy", 0))
-            violations_total.labels(type="gravity_import").inc(results.get("gravity", 0))
-            violations_total.labels(type="naming_signal").inc(results.get("naming", 0))
+        try:
+            if hasattr(self.metrics, 'violations_total'):
+                violations_total = self.metrics.violations_total
+                violations_total.labels(type="depth_span").inc(results.get("Span", 0))
+                violations_total.labels(type="hierarchy").inc(results.get("hierarchy", 0))
+                violations_total.labels(type="gravity_import").inc(results.get("gravity", 0))
+                violations_total.labels(type="naming_signal").inc(results.get("naming", 0))
+        except Exception as e:
+            Logger.debug(f"Could not record preflight metrics: {e}")
 
     async def _run_sovereign_dashboard(self, ctx: Any) -> None:
         """Run Sovereign Dashboard using ReportingAgent."""

@@ -154,23 +154,14 @@ def main():
         agents = []
         json_path = project_root / "agent_discovery_full.json"
 
-        # Case 1: Cached JSON exists → prompt user
+        # Case 1: Cached JSON exists → use it automatically
         if json_path.exists():
-            if not args.yes:
-                print(f"\n[*] Cached agent discovery found ({json_path.name})")
-                choice = input("   Use cached JSON (faster) [Y/n]? ").strip().lower()
-                use_cache = (choice != "n")
-            else:
-                use_cache = True
-            
-            if use_cache:
-                try:
-                    data = json.loads(json_path.read_text(encoding="utf-8"))
-                    agents = process_discovery_data(data)
-                    print(f"   [OK] Loaded {len(agents)} agents from cache")
-                except Exception as e:
-                    print(f"   [!] Cache corrupt: {e}")
-            # User wants fresh scan (fall through to live scan block)
+            try:
+                data = json.loads(json_path.read_text(encoding="utf-8"))
+                agents = process_discovery_data(data)
+                print(f"   [OK] Loaded {len(agents)} agents from cache")
+            except Exception as e:
+                print(f"   [!] Cache corrupt: {e}, falling back to live scan")
 
         # Case 2: No cache or user requested refresh → try live scan
         if not agents:  # Either no cache, corrupt, or user chose refresh
@@ -187,16 +178,10 @@ def main():
                     print("   [ERROR] No agent list available — aborting discovery")
                     return []
             else:
-                # Prompt only if we reached here because cache was skipped/corrupt
-                if json_path.exists():
-                    print("   Proceeding with live scan as requested...")
-                else:
-                    if not args.yes:
-                        print(f"\n[*] No cached discovery file found.")
-                        choice = input("   Run live agent discovery now [Y/n]? ").strip().lower()
-                        run_live = (choice != "n")
-                    else:
-                        run_live = True
+                # Auto-run live scan if cache doesn't exist or is corrupt
+                run_live = True
+                if not json_path.exists():
+                    print(f"\n[*] No cached discovery file found, running live scan...")
                     
                     if not run_live:
                         print("   [ABORT] Cannot proceed without agent list")

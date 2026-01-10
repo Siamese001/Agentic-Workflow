@@ -37,6 +37,30 @@ class CognitiveContractEnforcer:
         self.contracts.append(contract)
 
 
+class Constraint:
+    """A constraint in a cognitive contract."""
+    def __init__(self, name: str, condition: str):
+        self.name = name
+        self.condition = condition
+
+
+class Plan:
+    """A plan in a cognitive contract."""
+    def __init__(self, name: str, steps: Optional[List[str]] = None):
+        self.name = name
+        self.steps = steps or []
+
+
+class PlanQualityError(Exception):
+    """Error raised when plan quality is insufficient."""
+    pass
+
+
+class ConsistencyError(Exception):
+    """Error raised when consistency checks fail."""
+    pass
+
+
 class CognitiveContractValidatorAgent:
     """Agent for validating cognitive contracts."""
     
