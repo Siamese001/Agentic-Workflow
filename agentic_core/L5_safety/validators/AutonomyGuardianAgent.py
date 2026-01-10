@@ -165,7 +165,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[List] = None) -> Dict[str, Any]:
         """
-        Phase 4.4: Autonomous healing with Semantic Retrieval Loop.
+        Autonomous healing with Cognitive Performance tracking.
         
         Searches Pinecone for existing healing patterns before applying fixes,
         enabling pattern reuse and accelerated healing convergence.
@@ -182,6 +182,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         """
         log.info(f"[AutonomyGuardian] heal_repository(dry_run={dry_run})")
         
+        # Cognitive stats for Dashboard metrics
+        self.retrieval_stats = {"hits": 0, "misses": 0, "conf_scores": []}
+        
         # Set timestamp for Meta-Learning cache keys
         from datetime import datetime
         self.timestamp = datetime.now().isoformat()
@@ -190,9 +193,15 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         if self.gemini_embedder:
             existing_pattern = self.search_healing_patterns("missing heal_repository")
             if existing_pattern:
+                self.retrieval_stats["hits"] += 1
+                # Track confidence score if available
+                if "score" in existing_pattern:
+                    self.retrieval_stats["conf_scores"].append(existing_pattern["score"])
                 print(f"[Meta-Learning] Found existing healing pattern. Reusing fix signature.")
                 print(f"   Pattern ID: {existing_pattern.get('id', 'unknown')}")
                 print(f"   Previous fixes: {existing_pattern.get('metadata', {}).get('fixed', 0)}")
+            else:
+                self.retrieval_stats["misses"] += 1
         
         summary = {"violations": 0, "healed": 0, "errors": 0, "renamed": 0, "fixed": 0}
         
