@@ -165,7 +165,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[List] = None) -> Dict[str, Any]:
         """
-        Autonomous repository healing for Canon Key 51 compliance.
+        Phase 4.4: Autonomous healing with Semantic Retrieval Loop.
+        
+        Searches Pinecone for existing healing patterns before applying fixes,
+        enabling pattern reuse and accelerated healing convergence.
         
         Args:
             dry_run: If True, only report violations without fixing
@@ -182,6 +185,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
         # Set timestamp for Meta-Learning cache keys
         from datetime import datetime
         self.timestamp = datetime.now().isoformat()
+        
+        # Phase 4.4: Semantic Search for existing patterns in Pinecone
+        if self.gemini_embedder:
+            existing_pattern = self.search_healing_patterns("missing heal_repository")
+            if existing_pattern:
+                print(f"[Meta-Learning] Found existing healing pattern. Reusing fix signature.")
+                print(f"   Pattern ID: {existing_pattern.get('id', 'unknown')}")
+                print(f"   Previous fixes: {existing_pattern.get('metadata', {}).get('fixed', 0)}")
         
         summary = {"violations": 0, "healed": 0, "errors": 0, "renamed": 0, "fixed": 0}
         
@@ -335,6 +346,44 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
                 log.warning(f"[META-LEARNING] Failed to record healing event: {meta_error}")
         
         return summary
+    
+    def search_healing_patterns(self, query: str) -> Optional[Dict[str, Any]]:
+        """
+        Phase 4.4: Search Pinecone for existing healing patterns.
+        
+        Performs semantic search to find similar healing events from history,
+        enabling pattern reuse and accelerated convergence.
+        
+        Args:
+            query: Description of the healing pattern to search for
+            
+        Returns:
+            Dict with pattern metadata if found, None otherwise
+        """
+        if not self.gemini_embedder:
+            return None
+        
+        try:
+            # Generate embedding for the query
+            query_embedding = self.gemini_embedder.embed_query(query)
+            if not query_embedding:
+                return None
+            
+            # Search Pinecone for similar patterns
+            import asyncio
+            results = asyncio.run(self.vector_search(
+                query_embedding=query_embedding,
+                top_k=1,
+                filter={"action": "inject_heal_repository_stub"}
+            ))
+            
+            if results and len(results) > 0:
+                return results[0]
+            
+        except Exception as e:
+            log.warning(f"[META-LEARNING] Pattern search failed: {e}")
+        
+        return None
 
 
 def get_autonomy_guardian(project_root: Path) -> AutonomyGuardianAgent:

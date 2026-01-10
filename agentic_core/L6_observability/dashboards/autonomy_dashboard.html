@@ -385,16 +385,31 @@
 
         <div class="dashboard-container">
             <div class="nav-tabs">
-                <a href="#" class="nav-tab active" data-target="executive">Executive Dashboard</a>
-                <a href="#" class="nav-tab" data-target="territory">Territory Analysis</a>
-                <a href="#" class="nav-tab" data-target="risk">Risk Assessment</a>
-                <a href="#" class="nav-tab" data-target="compliance">Compliance Metrics</a>
-                <a href="#" class="nav-tab" data-target="recommendations">Prioritized Recommendations</a>
-                <a href="#" class="nav-tab" data-target="interview">Interview Prep</a>
+                <a href="#" class="nav-tab active" data-target="executive" onclick="openTab(event, 'executive')">📊 Strategic Health</a>
+                <a href="#" class="nav-tab" data-target="runtime" onclick="openTab(event, 'runtime')">⚡ Live Runtime</a>
+                <a href="#" class="nav-tab" data-target="territory" onclick="openTab(event, 'territory')">Territory Analysis</a>
+                <a href="#" class="nav-tab" data-target="risk" onclick="openTab(event, 'risk')">Risk Assessment</a>
+                <a href="#" class="nav-tab" data-target="compliance" onclick="openTab(event, 'compliance')">Compliance Metrics</a>
+                <a href="#" class="nav-tab" data-target="recommendations" onclick="openTab(event, 'recommendations')">Prioritized Recommendations</a>
+                <a href="#" class="nav-tab" data-target="interview" onclick="openTab(event, 'interview')">Interview Prep</a>
             </div>
 
             <!-- Executive Dashboard Tab -->
             <div id="executive-content" class="tab-content">
+                
+                <!-- Semantic Retrieval Metrics -->
+                <div class="kpi-grid" id="cognitiveGrid" style="margin-bottom: 25px;">
+                    <div class="kpi-box success">
+                        <div class="kpi-label">🧠 Semantic Reuse Rate</div>
+                        <div class="kpi-value" id="reuseRate">--%</div>
+                        <div class="kpi-subtext">Efficiency of Memory Retrieval vs Generative Synthesis</div>
+                    </div>
+                    <div class="kpi-box primary">
+                        <div class="kpi-label">🎯 Retrieval Confidence</div>
+                        <div class="kpi-value" id="retrievalConfidence">0.00</div>
+                        <div class="kpi-subtext">Avg Cosine Similarity Score (Pinecone)</div>
+                    </div>
+                </div>
                 
                 <!-- Global Alert Banner for Critical Outliers -->
                 <div id="outlierAlertBanner" style="display:none; margin-bottom:25px;">
@@ -498,6 +513,29 @@
                                 insufficient tests block safe hardening; high complexity raises risk. Apply diffs → re-run report → watch health rise.
                             </p>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Runtime Tab -->
+            <div id="runtime-content" class="tab-content" style="display:none;">
+                <div class="kpi-grid">
+                    <div class="kpi-box warning">
+                        <div class="kpi-label">⏱️ API Latency (Gemini)</div>
+                        <div class="kpi-value" id="geminiLatency">--ms</div>
+                    </div>
+                    <div class="kpi-box warning">
+                        <div class="kpi-label">⏱️ API Latency (Pinecone)</div>
+                        <div class="kpi-value" id="pineconeLatency">--ms</div>
+                    </div>
+                </div>
+                <div class="chart-card" style="margin-top: 20px;">
+                    <div class="chart-header">
+                        <div class="chart-title">📟 Live Sovereign Log</div>
+                        <div class="chart-subtitle">Real-time telemetry stream from Redis</div>
+                    </div>
+                    <div class="chart-body">
+                        <pre id="liveLog" style="height: 400px; background: #000; color: #0f0; padding: 15px; overflow-y: scroll; font-family: monospace;"></pre>
                     </div>
                 </div>
             </div>
