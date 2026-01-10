@@ -12,7 +12,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealerAgent
+from agentic_core.L5_safety.guardrails.HierarchyHealerAgent import HierarchyHealerAgent
 
 
 class MissionPreflight:

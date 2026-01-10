@@ -15,7 +15,6 @@ import logging
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
-from agentic_core.utils.mixins import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
