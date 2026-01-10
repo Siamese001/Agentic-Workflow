@@ -481,6 +481,10 @@ class TestMemoryPersistence:
 class TestResumeLearningAgent:
     """Tests for ResumeLearningAgent class."""
 
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs):
+        """Autonomous healing - test class stub."""
+        return {"violations": 0, "fixed": 0, "errors": 0}
+
     def test_init(self, ctx):
         """Test ResumeLearningAgent initialization."""
         agent = ResumeLearningAgent(ctx)

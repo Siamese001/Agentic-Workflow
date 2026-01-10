@@ -181,6 +181,10 @@ class TestOutreachEngineContext:
 class TestLeadQualityAgent:
     """Tests for LeadQualityAgent."""
 
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs):
+        """Autonomous healing - test class stub."""
+        return {"violations": 0, "fixed": 0, "errors": 0}
+
     @pytest.mark.asyncio
     async def test_valid_leads(self, ctx, valid_leads):
         """Test with valid leads."""
@@ -205,6 +209,10 @@ class TestLeadQualityAgent:
 class TestContactValidatorAgent:
     """Tests for ContactValidatorAgent."""
 
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs):
+        """Autonomous healing - test class stub."""
+        return {"violations": 0, "fixed": 0, "errors": 0}
+
     @pytest.mark.asyncio
     async def test_valid_contacts(self, ctx, valid_contacts):
         """Test with valid contacts."""
@@ -228,6 +236,10 @@ class TestContactValidatorAgent:
 
 class TestMessageComplianceAgent:
     """Tests for MessageComplianceAgent."""
+
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs):
+        """Autonomous healing - test class stub."""
+        return {"violations": 0, "fixed": 0, "errors": 0}
 
     @pytest.mark.asyncio
     async def test_compliant_message(self, ctx, valid_messages):

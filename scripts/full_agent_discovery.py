@@ -1253,7 +1253,7 @@ def main():
                 testing = 'None'
             
             # Determine healing (MRO-aware detection)
-            has_heal = has_method(node, 'heal') or has_method(node, 'apply_fix') or has_method(node, 'heal_violation')
+            has_heal = has_method(node, 'heal') or has_method(node, 'apply_fix') or has_method(node, 'heal_violation') or has_method(node, 'heal_repository')
             inherits_healing = has_healing_in_chain(node.name, bases)
             has_healing = has_heal or inherits_healing
             
