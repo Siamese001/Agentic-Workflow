@@ -255,6 +255,62 @@ class DuplicateCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
         else:
             return f"Keep shortest path: {len(keep_path.parts)} levels deep"
     
+    def archive_duplicates(self, recommendations: List[Dict], dry_run: bool = True) -> Dict:
+        """Archive duplicate files to archives/ directory (Phase 2.2).
+        
+        Args:
+            recommendations: List of deletion recommendations from execute()
+            dry_run: If True, only simulate archiving
+            
+        Returns:
+            Dict with archiving results
+        """
+        import shutil
+        from datetime import datetime
+        
+        archived = []
+        errors = []
+        
+        # Create archive directory with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        archive_dir = self.project_root / "archives" / f"duplicates_{timestamp}"
+        
+        if not dry_run:
+            archive_dir.mkdir(parents=True, exist_ok=True)
+            Logger.info(f"Created archive directory: {archive_dir}")
+        
+        for rec in recommendations:
+            for delete_path_str in rec["delete"]:
+                full_path = self.project_root / delete_path_str
+                
+                try:
+                    # Preserve directory structure in archive
+                    relative_path = Path(delete_path_str)
+                    archive_target = archive_dir / relative_path
+                    
+                    if dry_run:
+                        Logger.info(f"[DRY RUN] Would archive: {delete_path_str} -> archives/duplicates_{timestamp}/{delete_path_str}")
+                        archived.append(delete_path_str)
+                    else:
+                        # Create parent directories in archive
+                        archive_target.parent.mkdir(parents=True, exist_ok=True)
+                        
+                        # Move file to archive
+                        shutil.move(str(full_path), str(archive_target))
+                        Logger.info(f"[ARCHIVED] {delete_path_str} -> {archive_target.relative_to(self.project_root)}")
+                        archived.append(delete_path_str)
+                except Exception as e:
+                    Logger.error(f"Failed to archive {delete_path_str}: {e}")
+                    errors.append({"path": delete_path_str, "error": str(e)})
+        
+        return {
+            "archived_count": len(archived),
+            "archived_files": archived,
+            "archive_location": str(archive_dir.relative_to(self.project_root)) if not dry_run else f"archives/duplicates_{timestamp}",
+            "errors": errors,
+            "dry_run": dry_run
+        }
+    
     def delete_duplicates(self, recommendations: List[Dict], dry_run: bool = True) -> Dict:
         """Delete duplicate files based on recommendations.
         
