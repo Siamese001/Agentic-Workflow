@@ -19,7 +19,11 @@ shadow_mode_key = "AGENT_MODE"
 def mock_canon_deps(monkeypatch):
     """Mocks git commit function in core_utils for Canon Validator tests."""
     mock_commit = MagicMock(return_value=True)
-    monkeypatch.setattr("core_utils.sign_and_commit", mock_commit)
+    # Create mock module if it doesn't exist
+    if not hasattr(core_utils, 'sign_and_commit'):
+        core_utils.sign_and_commit = mock_commit
+    else:
+        monkeypatch.setattr(core_utils, "sign_and_commit", mock_commit)
     return mock_commit
 
 @pytest.fixture
@@ -33,7 +37,7 @@ def mock_outreach_deps():
 def test_canon_validator_blocks_commit_in_shadow(mock_canon_deps, monkeypatch):
     """Verify Canon Validator does NOT call sign_and_commit in shadow mode."""
     # 1. Set environment flag to SHADOW
-    monkeypatch.setenv(SHADOW_MODE_KEY, "SHADOW")
+    monkeypatch.setenv(shadow_mode_key, "SHADOW")
 
     # Reload module to pick up the new SHADOW_MODE_ACTIVE setting
     # In a real system, you'd restart the process. We use a function call here.
@@ -58,12 +62,12 @@ def test_canon_validator_blocks_commit_in_shadow(mock_canon_deps, monkeypatch):
 def test_outreach_engine_blocks_email_in_shadow(mock_outreach_deps, monkeypatch):
     """Verify Outreach Engine does NOT call the actual send_email function."""
     # 1. Set environment flag to SHADOW
-    monkeypatch.setenv(SHADOW_MODE_KEY, "SHADOW")
+    monkeypatch.setenv(shadow_mode_key, "SHADOW")
 
     # Mock the send_email function call in outreach_engine
     def mock_send_email(recipient, subject, body):
                     
-        if os.environ.get(SHADOW_MODE_KEY) == "SHADOW":
+        if os.environ.get(shadow_mode_key) == "SHADOW":
             return {"status": "SUCCESS", "result": "SHADOW_BLOCKED"}
         else:
             mock_outreach_deps(recipient, subject, body) # Call the real sender mock
@@ -78,7 +82,7 @@ def test_outreach_engine_blocks_email_in_shadow(mock_outreach_deps, monkeypatch)
 def test_production_mode_executes_side_effects(mock_canon_deps, monkeypatch):
     """Verify that in PRODUCTION mode, side effects are executed."""
     # 1. Set environment flag to PRODUCTION (or remove it)
-    monkeypatch.setenv(SHADOW_MODE_KEY, "PRODUCTION")
+    monkeypatch.setenv(shadow_mode_key, "PRODUCTION")
 
     # Simulate production execution
     class MockEngine:
