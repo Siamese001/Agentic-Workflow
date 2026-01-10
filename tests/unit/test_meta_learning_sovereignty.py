@@ -19,6 +19,13 @@ from typing import Dict, Any
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not required for tests
+
 from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
 
 

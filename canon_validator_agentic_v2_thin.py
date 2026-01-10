@@ -12,6 +12,13 @@ import traceback
 from pathlib import Path
 from datetime import datetime
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not required
+
 # ----------------------------------------------------------------------
 # NEW: Hybrid Interactive Discovery (Cached JSON ↔ Live Scan)
 # ----------------------------------------------------------------------
@@ -363,7 +370,22 @@ def main():
                 # ("UniquenessAgent", get_uniqueness_agent(project_root)),
             ]
             
-            total_summary = {"agents_run": 0, "total_renamed": 0, "total_errors": 0}
+            total_summary = {
+                "agents_run": 0, 
+                "total_renamed": 0, 
+                "total_errors": 0,
+                "total_scanned": 0,
+                "total_fixed": 0,
+                "total_violations": 0
+            }
+            
+            # Track Gemini embedder status
+            gemini_active = False
+            try:
+                guardian = get_autonomy_guardian(project_root)
+                gemini_active = guardian.gemini_embedder is not None
+            except:
+                pass
             
             for agent_name, agent in agents:
                 print(f"\n   [AGENT] {agent_name}.heal_repository()")
@@ -378,14 +400,41 @@ def main():
                     total_summary["agents_run"] += 1
                     total_summary["total_renamed"] += result.get("renamed", 0)
                     total_summary["total_errors"] += result.get("errors", 0)
+                    total_summary["total_fixed"] += result.get("fixed", 0)
+                    total_summary["total_violations"] += result.get("violations", 0)
                 except Exception as e:
                     print(f"   [!] {agent_name} failed: {e}")
                     total_summary["total_errors"] += 1
             
+            # Calculate compliance score
+            total_checks = total_summary["total_violations"] + total_summary["total_fixed"]
+            compliance_score = 100 if total_checks == 0 else int((1 - total_summary["total_violations"] / max(total_checks, 1)) * 100)
+            
             print(f"\n[SOVEREIGN HEAL COMPLETE]")
-            print(f"   Agents run: {total_summary['agents_run']}")
-            print(f"   Total renamed: {total_summary['total_renamed']}")
-            print(f"   Total errors: {total_summary['total_errors']}")
+            print(f"  Agents Scanned: {total_summary['agents_run']}")
+            print(f"  Canon Compliance: {compliance_score}%")
+            print(f"  Total Renamed: {total_summary['total_renamed']}")
+            print(f"  Total Errors: {total_summary['total_errors']}")
+            
+            # Display Meta-Learning memory growth
+            if gemini_active:
+                print(f"\n  Meta-Learning: ACTIVE (Gemini 768D)")
+                try:
+                    # Try to get Redis stats if available
+                    from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+                    guardian = get_autonomy_guardian(project_root)
+                    if hasattr(guardian, 'redis') and guardian.redis:
+                        try:
+                            total_fixes = guardian.redis.get('autonomous_fixes_total') or 0
+                            print(f"  L4 Memory Entries: {total_fixes}")
+                        except:
+                            print(f"  L4 Memory: Local Fallback (Redis not connected)")
+                    else:
+                        print(f"  L4 Memory: Local Fallback (Redis not configured)")
+                except Exception as e:
+                    print(f"  L4 Memory: Monitoring unavailable")
+            else:
+                print(f"\n  Meta-Learning: LOGGING ONLY (Set GOOGLE_API_KEY to activate)")
             
         except Exception as e:
             print(f"   [!] Heal mode failed: {e}")

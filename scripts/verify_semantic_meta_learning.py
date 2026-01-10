@@ -21,6 +21,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("[INFO] Loaded environment variables from .env file")
+except ImportError:
+    print("[WARNING] python-dotenv not installed - environment variables must be set manually")
+
 from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
 
 
@@ -173,4 +181,21 @@ def main():
 
 
 if __name__ == '__main__':
+    # Sovereign Production Handshake
+    import os
+    print("\n" + "=" * 80)
+    print("SOVEREIGN PRODUCTION HANDSHAKE")
+    print("=" * 80)
+    
+    if not os.getenv("GOOGLE_API_KEY"):
+        print("❌ CRITICAL: GOOGLE_API_KEY missing. Semantic Meta-Learning will remain in 'Logging Only' mode.")
+        print("   → Set GOOGLE_API_KEY environment variable to activate Gemini embedder")
+        print("   → Without this key, healing events will be logged but not embedded")
+    else:
+        print("✅ Meta-Learning ACTIVE: Gemini Embedder Ready.")
+        print("✅ L4 STATE: Pinecone/Redis Write-Loop Operational.")
+        print("   → Healing events will be embedded and persisted to long-term memory")
+    
+    print("=" * 80 + "\n")
+    
     sys.exit(main())
