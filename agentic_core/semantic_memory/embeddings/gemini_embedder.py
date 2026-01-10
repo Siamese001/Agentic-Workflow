@@ -30,14 +30,31 @@ class GeminiEmbedder:
             List of embedding vectors
         """
         try:
-            result: Any = genai.embed_content(model=self.model, content=texts, TaskType='retrieval_document')
+            result: Any = genai.embed_content(model=self.model, content=texts)
             return result['embedding']
         except Exception as e:
             raise RuntimeError(f'Gemini embedding failed: {e}')
 
     def embed_query(self, query: str) -> List[float]:
-        """Embed single query string."""
-        return self.embed_texts([query])[0]
+        """
+        Generates semantic vectors with built-in error handling.
+        
+        Args:
+            query: Text string to embed
+            
+        Returns:
+            List of float values representing the embedding vector, or None on failure
+        """
+        try:
+            result = self.embed_texts([query])
+            if result and len(result) > 0:
+                return result[0]
+            else:
+                print(f"⚠️  Meta-Learning Error: Empty embedding result for query")
+                return None
+        except Exception as e:
+            print(f"⚠️  Meta-Learning Error: Failed to generate embedding: {e}")
+            return None
 
 def get_gemini_embedder() -> GeminiEmbedder:
     """Brief description of functionality and purpose."""
