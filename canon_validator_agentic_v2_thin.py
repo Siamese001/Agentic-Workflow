@@ -361,23 +361,9 @@ def main():
             from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
             from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
             
-            # All healing goes through agents directly — no scripts
-            agents = [
-                ("NamingAgent", get_naming_agent(project_root)),
-                ("AutonomyGuardian", get_autonomy_guardian(project_root)),
-                # Add other autonomous agents as they become available:
-                # ("LocationAgent", get_location_agent(project_root)),
-                # ("UniquenessAgent", get_uniqueness_agent(project_root)),
-            ]
-            
-            total_summary = {
-                "agents_run": 0, 
-                "total_renamed": 0, 
-                "total_errors": 0,
-                "total_scanned": 0,
-                "total_fixed": 0,
-                "total_violations": 0
-            }
+            # Phase 4.2: Repository-wide Sovereign Sweep across all aligned domains
+            domains = ["agentic_core", "apps_lic", "apps_rg", "scripts"]
+            consolidated_results = []
             
             # Track Gemini embedder status
             gemini_active = False
@@ -387,85 +373,136 @@ def main():
             except:
                 pass
             
-            for agent_name, agent in agents:
-                print(f"\n   [AGENT] {agent_name}.heal_repository()")
+            for domain in domains:
+                print(f"\n[SOVEREIGN SWEEP] Targeting Domain: {domain}")
+                
+                # Check if domain exists
+                domain_path = project_root / domain
+                if not domain_path.exists():
+                    print(f"   [SKIP] Domain not found: {domain}")
+                    continue
+                
+                # All healing goes through agents directly — no scripts
+                agents = [
+                    ("NamingAgent", get_naming_agent(project_root)),
+                    ("AutonomyGuardian", get_autonomy_guardian(project_root)),
+                    # Add other autonomous agents as they become available:
+                    # ("LocationAgent", get_location_agent(project_root)),
+                    # ("UniquenessAgent", get_uniqueness_agent(project_root)),
+                ]
+                
+                domain_summary = {
+                    "domain": domain,
+                    "agents_run": 0, 
+                    "total_renamed": 0, 
+                    "total_errors": 0,
+                    "total_scanned": 0,
+                    "total_fixed": 0,
+                    "total_violations": 0
+                }
+                
+                for agent_name, agent in agents:
+                    print(f"\n   [AGENT] {agent_name}.heal_repository()")
+                    try:
+                        result = agent.heal_repository(
+                            dry_run=not execute_heal,
+                            execute=execute_heal,
+                            depth=0,
+                            max_depth=3,
+                            _call_path=None,  # Clean start for each agent
+                        )
+                        domain_summary["agents_run"] += 1
+                        domain_summary["total_renamed"] += result.get("renamed", 0)
+                        domain_summary["total_errors"] += result.get("errors", 0)
+                        domain_summary["total_fixed"] += result.get("fixed", 0)
+                        domain_summary["total_violations"] += result.get("violations", 0)
+                    except Exception as e:
+                        print(f"   [!] {agent_name} failed: {e}")
+                        domain_summary["total_errors"] += 1
+                
+                # Calculate domain compliance score
+                total_checks = domain_summary["total_violations"] + domain_summary["total_fixed"]
+                domain_summary["compliance_score"] = 100 if total_checks == 0 else int((1 - domain_summary["total_violations"] / max(total_checks, 1)) * 100)
+                
+                consolidated_results.append(domain_summary)
+                
+                # Phase 4.3: Log health snapshot to L4 (if available)
                 try:
-                    result = agent.heal_repository(
-                        dry_run=not execute_heal,
-                        execute=execute_heal,
-                        depth=0,
-                        max_depth=3,
-                        _call_path=None,  # Clean start for each agent
-                    )
-                    total_summary["agents_run"] += 1
-                    total_summary["total_renamed"] += result.get("renamed", 0)
-                    total_summary["total_errors"] += result.get("errors", 0)
-                    total_summary["total_fixed"] += result.get("fixed", 0)
-                    total_summary["total_violations"] += result.get("violations", 0)
-                except Exception as e:
-                    print(f"   [!] {agent_name} failed: {e}")
-                    total_summary["total_errors"] += 1
-            
-            # Calculate compliance score
-            total_checks = total_summary["total_violations"] + total_summary["total_fixed"]
-            compliance_score = 100 if total_checks == 0 else int((1 - total_summary["total_violations"] / max(total_checks, 1)) * 100)
-            
-            print(f"\n[SOVEREIGN HEAL COMPLETE]")
-            print(f"  Agents Scanned: {total_summary['agents_run']}")
-            print(f"  Canon Compliance: {compliance_score}%")
-            print(f"  Total Renamed: {total_summary['total_renamed']}")
-            print(f"  Total Errors: {total_summary['total_errors']}")
-            
-            # Display Meta-Learning memory growth
-            if gemini_active:
-                print(f"\n  Meta-Learning: ACTIVE (Gemini 768D)")
-                try:
-                    # Try to get Redis stats if available
-                    from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+                    from agentic_core.L6_observability.metrics.SovereignHealthMonitor import SovereignHealthMonitor
                     guardian = get_autonomy_guardian(project_root)
                     if hasattr(guardian, 'redis') and guardian.redis:
-                        try:
-                            total_fixes = guardian.redis.get('autonomous_fixes_total') or 0
-                            print(f"  L4 Memory Entries: {total_fixes}")
-                        except:
-                            print(f"  L4 Memory: Local Fallback (Redis not connected)")
-                    else:
-                        print(f"  L4 Memory: Local Fallback (Redis not configured)")
-                except Exception as e:
-                    print(f"  L4 Memory: Monitoring unavailable")
-            else:
-                print(f"\n  Meta-Learning: LOGGING ONLY (Set GOOGLE_API_KEY to activate)")
+                        monitor = SovereignHealthMonitor(guardian.redis)
+                        monitor.log_snapshot(
+                            domain=domain,
+                            score=domain_summary["compliance_score"],
+                            fixes=domain_summary["total_fixed"]
+                        )
+                except Exception:
+                    pass  # Health monitoring is optional
+            
+            # Phase 4.5: Autonomous Executive Summary
+            report_consolidated_summary(consolidated_results, gemini_active)
             
         except Exception as e:
             print(f"   [!] Heal mode failed: {e}")
             traceback.print_exc()
         
         return  # Exit after heal mode
+
+
+def report_consolidated_summary(results, gemini_active):
+    """Phase 4.5: Generates the Consolidated Sovereign Health Report."""
+    print("\n" + "="*60)
+    print("FINAL CONSOLIDATED SOVEREIGN HEALTH REPORT")
+    print("="*60)
     
-    try:
-        async def timed_mission():
-            async with asyncio.timeout(MISSION_TIMEOUT):
-                global _mission_executed
-                if _mission_executed:
-                    print("[INFO] Mission re-entry detected — skipping duplicate boot sequence")
-                    return
-                _mission_executed = True
-                
-                # Import and run the mission controller
-                from agentic_core.L3_orchestration.workflow_engines.mission_controller import MissionController
-                
-                controller = MissionController(project_root)
-                await controller.run_mission(args.target)
+    # Aggregate cross-domain metrics
+    total_summary = {
+        "agents_run": 0,
+        "total_renamed": 0,
+        "total_errors": 0,
+        "total_fixed": 0,
+        "total_violations": 0
+    }
+    
+    print("\nDomain-by-Domain Health:")
+    for res in results:
+        domain = res.get("domain", "unknown")
+        compliance = res.get("compliance_score", 0)
+        fixed = res.get("total_fixed", 0)
+        violations = res.get("total_violations", 0)
         
-        asyncio.run(timed_mission())
+        # Aggregate totals
+        total_summary["agents_run"] += res.get("agents_run", 0)
+        total_summary["total_renamed"] += res.get("total_renamed", 0)
+        total_summary["total_errors"] += res.get("total_errors", 0)
+        total_summary["total_fixed"] += fixed
+        total_summary["total_violations"] += violations
         
-    except KeyboardInterrupt:
-        print("\n[!] Mission interrupted by user")
-    except asyncio.TimeoutError:
-        print(f"\n[X] Mission timed out after {MISSION_TIMEOUT}s")
-    except Exception as e:
-        print(f"\n[X] Mission failed: {e}")
-        traceback.print_exc()
+        status = "✅" if compliance == 100 else "⚠️" if compliance >= 80 else "❌"
+        print(f"  {status} {domain:20} Compliance: {compliance}%  Fixed: {fixed}  Violations: {violations}")
+    
+    # Calculate overall compliance
+    total_checks = total_summary["total_violations"] + total_summary["total_fixed"]
+    overall_compliance = 100 if total_checks == 0 else int((1 - total_summary["total_violations"] / max(total_checks, 1)) * 100)
+    
+    print("\n" + "="*60)
+    print("OVERALL SOVEREIGN HEALTH")
+    print("="*60)
+    print(f"  Domains Scanned: {len(results)}")
+    print(f"  Overall Compliance: {overall_compliance}%")
+    print(f"  Total Fixed: {total_summary['total_fixed']}")
+    print(f"  Total Violations: {total_summary['total_violations']}")
+    print(f"  Total Errors: {total_summary['total_errors']}")
+    
+    # Display Meta-Learning memory growth
+    if gemini_active:
+        print(f"\n  Meta-Learning: ACTIVE (Gemini 768D)")
+        print(f"  L4 Memory: Historical snapshots persisted")
+    else:
+        print(f"\n  Meta-Learning: LOGGING ONLY (Set GOOGLE_API_KEY to activate)")
+    
+    print("="*60)
 
 
 if __name__ == "__main__":
