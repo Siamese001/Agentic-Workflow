@@ -31,10 +31,11 @@ except ImportError:
 # from archives.legacy_lic.Agentic LIC.llm_clients import GeminiLLMClient  # TODO: Replace with sovereign equivalent
 
 from apps_lic.core.data_models import (
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     RAGResult, MessageClaim, Archetype, RAGCritique, OutreachMission, 
     ProfileAnalysis, ResearchContext, SenderGroundingWhitelists, MessageScaffold
 )
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Stub classes for Missing dependencies (TODO: Replace with sovereign equivalents)
 class CircuitBreaker:
