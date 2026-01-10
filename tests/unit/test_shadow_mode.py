@@ -30,7 +30,6 @@ def mock_outreach_deps():
 
 # --- TEST CASES ---
 
-@pytest.mark.skip(reason="Test not implemented")
 def test_canon_validator_blocks_commit_in_shadow(mock_canon_deps, monkeypatch):
     """Verify Canon Validator does NOT call sign_and_commit in shadow mode."""
     # 1. Set environment flag to SHADOW
@@ -56,7 +55,6 @@ def test_canon_validator_blocks_commit_in_shadow(mock_canon_deps, monkeypatch):
     mock_canon_deps.assert_not_called()
     assert result["reason"] == "SHADOW_BLOCKED"
 
-@pytest.mark.skip(reason="Test not implemented")
 def test_outreach_engine_blocks_email_in_shadow(mock_outreach_deps, monkeypatch):
     """Verify Outreach Engine does NOT call the actual send_email function."""
     # 1. Set environment flag to SHADOW
@@ -77,7 +75,6 @@ def test_outreach_engine_blocks_email_in_shadow(mock_outreach_deps, monkeypatch)
     mock_outreach_deps.assert_not_called()
     assert result["result"] == "SHADOW_BLOCKED"
 
-@pytest.mark.skip(reason="Test not implemented")
 def test_production_mode_executes_side_effects(mock_canon_deps, monkeypatch):
     """Verify that in PRODUCTION mode, side effects are executed."""
     # 1. Set environment flag to PRODUCTION (or remove it)
