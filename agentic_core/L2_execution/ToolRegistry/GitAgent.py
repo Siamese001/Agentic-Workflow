@@ -27,6 +27,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 try:
+    from agentic_core.L4_state.ValidationContext.CachedStateLedger import CachedStateLedger
 except ImportError:
     CachedStateLedger = None
 

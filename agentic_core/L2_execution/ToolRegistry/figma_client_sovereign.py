@@ -13,8 +13,6 @@ from urllib.parse import urljoin
 
 import httpx
 
-    SovereignSemanticCache,
-)
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
