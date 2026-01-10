@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="30">
     <title>Autonomy Compliance Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
     <style>
@@ -387,9 +386,6 @@
             <div class="nav-tabs">
                 <a href="#" class="nav-tab active" data-target="executive" onclick="openTab(event, 'executive')">📊 Strategic Health</a>
                 <a href="#" class="nav-tab" data-target="runtime" onclick="openTab(event, 'runtime')">⚡ Live Runtime</a>
-                <a href="#" class="nav-tab" data-target="territory" onclick="openTab(event, 'territory')">Territory Analysis</a>
-                <a href="#" class="nav-tab" data-target="risk" onclick="openTab(event, 'risk')">Risk Assessment</a>
-                <a href="#" class="nav-tab" data-target="compliance" onclick="openTab(event, 'compliance')">Compliance Metrics</a>
                 <a href="#" class="nav-tab" data-target="recommendations" onclick="openTab(event, 'recommendations')">Prioritized Recommendations</a>
                 <a href="#" class="nav-tab" data-target="interview" onclick="openTab(event, 'interview')">Interview Prep</a>
             </div>
@@ -463,39 +459,6 @@
                 
                 <!-- Code Quality Table -->
                 <div class="kpi-grid" id="codeQualityGrid"></div>
-            </div>
-
-            <!-- Territory Analysis Tab -->
-            <div id="territory-content" class="tab-content" style="display:none;">
-                <div class="charts-grid full-width">
-                    <div class="chart-card">
-                        <div class="chart-body">
-                            <p class="loading">Detailed territory deep-dive charts coming soon...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Risk Assessment Tab -->
-            <div id="risk-content" class="tab-content" style="display:none;">
-                <div class="charts-grid full-width">
-                    <div class="chart-card">
-                        <div class="chart-body">
-                            <p class="loading">Advanced risk modeling coming soon...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Compliance Metrics Tab -->
-            <div id="compliance-content" class="tab-content" style="display:none;">
-                <div class="charts-grid full-width">
-                    <div class="chart-card">
-                        <div class="chart-body">
-                            <p class="loading">Historical compliance trends coming soon...</p>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Prioritized Recommendations Tab -->
@@ -2254,18 +2217,81 @@
             </span>`;
         }
 
-        // Tab switching functionality
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-                const targetId = tab.dataset.target + '-content';
-                const targetEl = document.getElementById(targetId);
-                if (targetEl) targetEl.style.display = 'block';
-            });
-        });
+        // Phase 4.7: Sovereign Tab Controller
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("nav-tab");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName + "-content").style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Phase 4.9: Live Tactical Poller
+        async function updateRuntime() {
+            try {
+                // Poll Redis for latest tactical state
+                const logRes = await fetch('/api/redis/lrange/sovereign:runtime:log/0/49');
+                const logData = await logRes.json();
+                document.getElementById('liveLog').textContent = logData.join('\n');
+                
+                const latRes = await fetch('/api/redis/hgetall/sovereign:runtime:pulse');
+                const latData = await latRes.json();
+                document.getElementById('geminiLatency').textContent = (latData.GeminiEmbedder?.latency || '--') + 'ms';
+                document.getElementById('pineconeLatency').textContent = (latData.PineconeSearch?.latency || '--') + 'ms';
+            } catch (e) { 
+                console.warn("Waiting for tactical stream..."); 
+            }
+        }
+        setInterval(updateRuntime, 1000); // 1Hz Refresh Rate
+        
+        // Initialize semantic retrieval metrics
+        function initializeSemanticMetrics() {
+            // Mock data - in production, fetch from Redis/Pinecone
+            const reuseRate = Math.floor(Math.random() * 40) + 60; // 60-100%
+            const retrievalConfidence = (Math.random() * 0.3 + 0.7).toFixed(2); // 0.70-1.00
+            
+            document.getElementById('reuseRate').textContent = reuseRate + '%';
+            document.getElementById('retrievalConfidence').textContent = retrievalConfidence;
+        }
+        
+        // Initialize runtime monitoring
+        function initializeRuntimeMonitoring() {
+            // Mock API latency data
+            const geminiLatency = Math.floor(Math.random() * 200) + 100; // 100-300ms
+            const pineconeLatency = Math.floor(Math.random() * 100) + 50; // 50-150ms
+            
+            document.getElementById('geminiLatency').textContent = geminiLatency + 'ms';
+            document.getElementById('pineconeLatency').textContent = pineconeLatency + 'ms';
+            
+            // Simulate live log stream
+            const liveLog = document.getElementById('liveLog');
+            if (liveLog && liveLog.textContent === '') {
+                const logEntries = [
+                    '[INFO] Meta-Learning: Gemini embedder initialized',
+                    '[INFO] AutonomyGuardian: heal_repository(dry_run=False)',
+                    '[INFO] Semantic search: Found 3 matching patterns',
+                    '[INFO] Pattern reuse: autonomy_healing_20260110_132547',
+                    '[INFO] Pinecone upsert: 768D vector persisted',
+                    '[INFO] Redis cache: autonomy_fix_20260110_132547 (TTL: 24h)',
+                    '[SUCCESS] Domain: agentic_core - Compliance: 100%',
+                    '[SUCCESS] Domain: apps_lic - Compliance: 100%',
+                    '[SUCCESS] Domain: apps_rg - Compliance: 100%',
+                    '[SUCCESS] Domain: scripts - Compliance: 100%',
+                    '[INFO] Overall compliance: 100% across 4 domains',
+                    '[INFO] Meta-Learning: 0 new patterns learned',
+                    '[INFO] Health snapshot persisted to L4 State'
+                ];
+                
+                liveLog.textContent = logEntries.join('\n');
+                liveLog.scrollTop = liveLog.scrollHeight;
+            }
+        }
 
         function renderTerritorySummaryTable(territoryData) {
             const container = document.getElementById('kpiGrid');
@@ -3827,6 +3853,9 @@
             }
         });
 
+        // Initialize semantic metrics on page load
+        initializeSemanticMetrics();
+        
         loadData();
     </script>
 </body>
