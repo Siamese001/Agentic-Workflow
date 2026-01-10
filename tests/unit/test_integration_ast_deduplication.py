@@ -236,11 +236,18 @@ def test_function(param):
         print(f"\n✓ AST vs Text comparison ({iterations} iterations):")
         print(f"  AST fingerprinting: {elapsed_ast:.3f}s")
         print(f"  Text normalization: {elapsed_text:.3f}s")
-        print(f"  Overhead: {((elapsed_ast/elapsed_text - 1) * 100):.1f}%")
         
-        # AST should be reasonable (< 50x slower than text)
-        # Note: AST parsing has higher overhead but provides structural analysis
-        self.assertLess(elapsed_ast, elapsed_text * 50)
+        # Calculate overhead only if text normalization took measurable time
+        if elapsed_text > 0:
+            overhead = ((elapsed_ast/elapsed_text - 1) * 100)
+            print(f"  Overhead: {overhead:.1f}%")
+            # AST should be reasonable (< 50x slower than text)
+            # Note: AST parsing has higher overhead but provides structural analysis
+            self.assertLess(elapsed_ast, elapsed_text * 50)
+        else:
+            print(f"  Text normalization too fast to measure (<{elapsed_text:.6f}s)")
+            # Just verify AST completed successfully
+            self.assertGreater(elapsed_ast, 0)
 
 
 if __name__ == '__main__':
