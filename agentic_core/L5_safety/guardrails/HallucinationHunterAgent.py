@@ -16,7 +16,7 @@ except ImportError:
     NUMPY_AVAILABLE: Any = False
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -83,7 +83,7 @@ class ClaimExtractor:
 
     async def _extract_claims_with_gemini(self, text: str) -> List[AtomicClaim]:
         """Use Gemini to extract atomic claims from text."""
-        prompt = f'Extract atomic claims from this text. Each Claim should be a single, verifiable fact.\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nTEXT:\n{text}\n\nREQUIREMENTS:\n1. Break the text into individual atomic claims (propositions)\n2. Each Claim should be independently verifiable\n3. Focus on factual statements (skills, experience, achievements)\n4. Ignore filler words and formatting\n5. Number each Claim\n\nOUTPUT FORMAT:\nReturn a numbered list of atomic claims, one per line:\n1. [First atomic Claim]\n2. [Second atomic Claim]\n...\n\nExample for "John has 5 years of Python experience and led 3 projects":\n1. John has 5 years of Python experience\n2. John led 3 projects\n'
+        prompt = f'Extract atomic claims from this text. Each Claim should be a single, verifiable fact.\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nTEXT:\n{text}\n\nREQUIREMENTS:\n1. Break the text into individual atomic claims (propositions)\n2. Each Claim should be independently verifiable\n3. Focus on factual statements (skills, experience, achievements)\n4. Ignore filler words and formatting\n5. Number each Claim\n\nOUTPUT FORMAT:\nReturn a numbered list of atomic claims, one per line:\n1. [First atomic Claim]\n2. [Second atomic Claim]\n...\n\nExample for "John has 5 years of Python experience and led 3 projects":\n1. John has 5 years of Python experience\n2. John led 3 projects\n'
         response = self.genai_client.models.generate_content(model='gemini-2.5-flash', contents=prompt, config=types.GenerateContentConfig(temperature=0.1, max_output_tokens=2048))
         claims = []
         lines = response.text.strip().split('\n')

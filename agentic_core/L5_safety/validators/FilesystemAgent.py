@@ -372,7 +372,7 @@ class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                     counts["errors"] += 1
                     print(f"  [!] ERROR on {file_path.name}: {e}")
             
-            print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
+            print(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
             return counts
         finally:
             _call_path.discard(agent_name)

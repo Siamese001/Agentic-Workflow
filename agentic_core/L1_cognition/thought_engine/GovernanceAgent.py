@@ -230,7 +230,7 @@ class DependencyGraph:
                 to_name: Any = dep.replace('/', '_').replace('\\', '_').replace('.py', '')
                 dot.append(f'  "{from_name}" -> "{to_name}";')
         dot.append('}')
-        dot_str: Any = '\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n'.join(dot)
+        dot_str: Any = '\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n'.join(dot)
         if output_file:
             with open(output_file, 'w') as f:
                 f.write(dot_str)

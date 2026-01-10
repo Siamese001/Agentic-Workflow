@@ -213,7 +213,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
         report["predicted_imminent_breaches"] = predictions
 
         if predictions:
-            print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n[🔮 PREDICTIVE IMMUNE ALERT] {len(predictions)} high-risk files identified")
+            print(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n[🔮 PREDICTIVE IMMUNE ALERT] {len(predictions)} high-risk files identified")
             for p in predictions[:5]:
                 print(f"   → {p['file']} | {p['risk_score']:.0%} risk | {p['predicted_breach_type']}")
 

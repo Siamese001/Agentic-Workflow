@@ -369,7 +369,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         """
         if isinstance(value, str):
             # Remove control characters
-            value = ''.join(char for char in value if ord(char) >= 32 or char in '\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n\r\t')
+            value = ''.join(char for char in value if ord(char) >= 32 or char in '\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n\r\t')
             
             # Limit length
             if rule.max_length:

@@ -161,7 +161,7 @@ class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content: Any = f.read()
-                lines: Any = content.split('\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n')
+                lines: Any = content.split('\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n')
             for pattern in self.secret_patterns:
                 if re.search(pattern, content, re.IGNORECASE):
                     if self.enable_socratic_judge and file_path not in self._false_positive_cache:

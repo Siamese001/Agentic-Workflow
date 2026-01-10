@@ -7,7 +7,7 @@ import ast
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L1_cognition.thought_engine.SubAtomicAgent import SubAtomicAgent
 

@@ -22,7 +22,7 @@ import threading
 
 from .secure_error import SecurityError, ConfigurationError
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 

@@ -27,7 +27,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -210,7 +210,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
 
     def _display_report(self, report: CostReport):
         """Display cost report."""
-        Logger.info(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
+        Logger.info(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
         Logger.info('💰 PREDICTIVE COST AUDIT REPORT')
         Logger.info(f"{'=' * 80}")
         Logger.info(f'Total Files Analyzed: {report.total_files}')

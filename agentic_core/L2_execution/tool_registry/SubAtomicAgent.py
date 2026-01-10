@@ -25,7 +25,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 # [PHASE 1] Self-testing mixin for L2 canonical compliance
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 # [PHASE 3] Default-on healing mixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin

@@ -51,7 +51,7 @@ _orchestrator_instance: Optional['ConsolidatedOrchestratorAgent'] = None
 
 def _signal_handler(signum, frame):
     """Handle CTRL+C and graceful shutdown."""
-    Logger.info('\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n🛑 Shutdown signal received. Releasing all leases...')
+    Logger.info('\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n🛑 Shutdown signal received. Releasing all leases...')
     if _orchestrator_instance:
         _orchestrator_instance.release_all_leases()
     sys.exit(0)

@@ -15,7 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealerAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 # NOT_AN_AGENT — utility healer class, not a true agent — excluded from agent discovery
 class _BlueprintHierarchyHealerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):

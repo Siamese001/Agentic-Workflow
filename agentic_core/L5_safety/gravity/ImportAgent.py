@@ -105,7 +105,7 @@ class ImportValidationVisitor(ast.NodeVisitor):
 
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 @registers_prompt(
     template_name="gravity_repair.jinja",

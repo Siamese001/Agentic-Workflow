@@ -72,7 +72,7 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
                     insert_idx: Any = lineno
                     def_line: Any = lines[lineno - 1]
                     indent: Any = '    ' * (len(def_line) - len(def_line.lstrip()) + 1)
-                doc_lines: Any = [f'{indent}{self.MIN_DOCSTRING}\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n', f'{indent}\n']
+                doc_lines: Any = [f'{indent}{self.MIN_DOCSTRING}\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n', f'{indent}\n']
                 new_lines[insert_idx:insert_idx] = doc_lines
                 added_count += 1
             if added_count > 0:

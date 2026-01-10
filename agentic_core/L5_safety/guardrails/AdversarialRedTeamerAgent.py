@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -130,7 +130,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
     async def _attempt_mass_deletion(self) -> RedTeamResult:
         """Attempt to delete 50% of code and pass preservation check."""
         test_id = 'PRES-001'
-        original_code = textwrap.dedent('\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n            def function1():\n                pass\n\n            def function2():\n                pass\n\n            def function3():\n                pass\n\n            def function4():\n                pass\n        ')
+        original_code = textwrap.dedent('\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n            def function1():\n                pass\n\n            def function2():\n                pass\n\n            def function3():\n                pass\n\n            def function4():\n                pass\n        ')
         modified_code = textwrap.dedent('\n            def function1():\n                pass\n\n            def function2():\n                pass\n        ')
         original_lines = len([l for l in original_code.split('\n') if l.strip()])
         modified_lines = len([l for l in modified_code.split('\n') if l.strip()])
