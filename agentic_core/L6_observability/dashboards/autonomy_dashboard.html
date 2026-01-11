@@ -11054,8 +11054,11 @@
             const reuseRate = 0; // Disabled until real data available
             const retrievalConfidence = 0; // Disabled until real data available
             
-            document.getElementById('semanticReuseRate').textContent = `${reuseRate}%`;
-            document.getElementById('retrievalConfidence').textContent = retrievalConfidence;
+            const reuseRateEl = document.getElementById('semanticReuseRate');
+            const retrievalConfidenceEl = document.getElementById('retrievalConfidence');
+            
+            if (reuseRateEl) reuseRateEl.textContent = `${reuseRate}%`;
+            if (retrievalConfidenceEl) retrievalConfidenceEl.textContent = retrievalConfidence;
         }
         
         // Initialize runtime monitoring
@@ -11064,8 +11067,11 @@
             const geminiLatency = 0; // Disabled until real data available
             const pineconeLatency = 0; // Disabled until real data available
             
-            document.getElementById('geminiLatency').textContent = geminiLatency + 'ms';
-            document.getElementById('pineconeLatency').textContent = pineconeLatency + 'ms';
+            const geminiLatencyEl = document.getElementById('geminiLatency');
+            const pineconeLatencyEl = document.getElementById('pineconeLatency');
+            
+            if (geminiLatencyEl) geminiLatencyEl.textContent = geminiLatency + 'ms';
+            if (pineconeLatencyEl) pineconeLatencyEl.textContent = pineconeLatency + 'ms';
             
             // Simulate live log stream
             const liveLog = document.getElementById('liveLog');
