@@ -2522,28 +2522,28 @@
                             <div style="font-size:0.7em; font-weight:400; color:#6b7280;">Avg (Min-Max, σ)</div>
                         </td>
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(healCapStats.min)}; border-right:1px solid #e5e7eb; font-weight:600;">
-                            <div style="color:${healCapMinColor};">${formatDistributionCell(totalRow['Heal Cap %'], healCapStats)}${formatOutlierBadge(healCapOutliers.atZero, healCapOutliers.belowThreshold, 50)}</div>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Heal Cap %'])}; border-right:1px solid #e5e7eb; font-weight:600;">
+                            <div style="color:${getWorstCaseColor(totalRow['Heal Cap %'])};">${formatDistributionCell(totalRow['Heal Cap %'], healCapStats)}${formatOutlierBadge(healCapOutliers.atZero, healCapOutliers.belowThreshold, 50)}</div>
                             ${generateSparkline([82, 84, 85, 86, totalRow['Heal Cap %']], '#16a34a', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(invocationStats.min)}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            <div style="color:${invocationMinColor};">${formatDistributionCell(totalRow['Invocation %'], invocationStats)}${formatOutlierBadge(invocationOutliers.atZero, invocationOutliers.belowThreshold, 50)}</div>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Invocation %'])}; font-weight:700; border-right:1px solid #e5e7eb;">
+                            <div style="color:${getWorstCaseColor(totalRow['Invocation %'])};">${formatDistributionCell(totalRow['Invocation %'], invocationStats)}${formatOutlierBadge(invocationOutliers.atZero, invocationOutliers.belowThreshold, 50)}</div>
                             ${generateSparkline([88, 89, 90, 91, totalRow['Invocation %']], '#2563eb', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(hardenedStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <div style="color:${hardenedMinColor};">${formatDistributionCell(totalRow['Hardened %'] || 0, hardenedStats)}${formatOutlierBadge(hardenedOutliers.atZero, hardenedOutliers.belowThreshold, 50)}</div>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Hardened %'] || 0)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            <div style="color:${getWorstCaseColor(totalRow['Hardened %'] || 0)};">${formatDistributionCell(totalRow['Hardened %'] || 0, hardenedStats)}${formatOutlierBadge(hardenedOutliers.atZero, hardenedOutliers.belowThreshold, 50)}</div>
                             ${generateSparkline([68, 70, 72, 73, totalRow['Hardened %'] || 0], '#8b5cf6', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(testStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
-                            <div style="color:${testMinColor};">${formatDistributionCell(totalRow['Test %'], testStats)}${formatOutlierBadge(testOutliers.atZero, testOutliers.belowThreshold, 50)}</div>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Test %'])}; font-weight:600; border-right:1px solid #e5e7eb;">
+                            <div style="color:${getWorstCaseColor(totalRow['Test %'])};">${formatDistributionCell(totalRow['Test %'], testStats)}${formatOutlierBadge(testOutliers.atZero, testOutliers.belowThreshold, 50)}</div>
                             ${generateSparkline([70, 72, 73, 74, totalRow['Test %']], '#ea580c', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(complexityStats.min)}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            <div style="color:${complexityMinColor};">${formatDistributionCell(totalRow['Complexity Health'] || 0, complexityStats)}${formatOutlierBadge(complexityOutliers.atZero, complexityOutliers.belowThreshold, 30)}</div>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow['Complexity Health'] || 0)}; font-weight:700; border-right:1px solid #e5e7eb;">
+                            <div style="color:${getWorstCaseColor(totalRow['Complexity Health'] || 0)};">${formatDistributionCell(totalRow['Complexity Health'] || 0, complexityStats)}${formatOutlierBadge(complexityOutliers.atZero, complexityOutliers.belowThreshold, 30)}</div>
                             ${generateSparkline([30, 32, 33, 34, totalRow['Complexity Health'] || 0], '#dc2626', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(healthStats.min)}; font-weight:800; font-size:1.05em; border-right:1px solid #e5e7eb;">
-                            <div style="color:${healthMinColor};">${formatDistributionCell(totalRow.Health, healthStats)}${formatOutlierBadge(healthOutliers.atZero, healthOutliers.belowThreshold, 60)}</div>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow.Health)}; font-weight:800; font-size:1.05em; border-right:1px solid #e5e7eb;">
+                            <div style="color:${getWorstCaseColor(totalRow.Health)};">${formatDistributionCell(totalRow.Health, healthStats)}${formatOutlierBadge(healthOutliers.atZero, healthOutliers.belowThreshold, 60)}</div>
                             ${generateSparkline([72, 74, 75, 76, totalRow.Health], '#16a34a', true)}
                         </td>
                         <td style="padding:14px; text-align:center; background:rgba(124, 58, 237, 0.1); font-weight:600;">
@@ -2852,23 +2852,23 @@
                             TOTAL<br><span style="font-size:0.7em; color:#6b7280; font-weight:normal;">Avg (Min-Max, σ)</span>
                         </td>
                         <td style="padding:14px; text-align:center; font-weight:700; border-right:1px solid #e5e7eb;">${totalRow.Total}</td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(typedStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(typed)}; font-weight:600; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(typed, typedStats)}${formatOutlierBadge(typedOutliers.atZero, typedOutliers.belowThreshold, 50)}
                             ${generateSparkline(allTyped.slice(-10), '#2563eb', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(documentedStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(documented)}; font-weight:600; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(documented, documentedStats)}${formatOutlierBadge(documentedOutliers.atZero, documentedOutliers.belowThreshold, 50)}
                             ${generateSparkline(allDocumented.slice(-10), '#2563eb', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(schemaStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(schemaStrictness)}; font-weight:600; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(schemaStrictness, schemaStats)}${formatOutlierBadge(schemaOutliers.atZero, schemaOutliers.belowThreshold, 80)}
                             ${generateSparkline(allSchema.slice(-10), '#2563eb', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(baseStats.min)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(properBase)}; font-weight:600; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(properBase, baseStats)}${formatOutlierBadge(baseOutliers.atZero, baseOutliers.belowThreshold, 50)}
                             ${generateSparkline(allBase.slice(-10), '#2563eb', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(qualityStats.min)}; color:${qualityColor}; font-weight:800; font-size:1.05em; border-right:1px solid #e5e7eb;">
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:800; font-size:1.05em; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(codeQuality, qualityStats)}${formatOutlierBadge(qualityOutliers.atZero, qualityOutliers.belowThreshold, 60)}
                             ${generateSparkline(allQuality.slice(-10), '#2563eb', true)}
                         </td>
