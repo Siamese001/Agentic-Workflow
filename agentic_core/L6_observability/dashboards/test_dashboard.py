@@ -476,6 +476,82 @@ class DashboardTestSuite:
         
         return True, f"Metrics OK: {size_kb:.1f}KB, {line_count:,} lines"
     
+    def test_source_vs_rendered_data(self) -> Tuple[bool, str]:
+        """Test 11: Verify rendered TOTAL row matches source data (P0 - Critical Gap).
+        
+        This test catches silent data mismatches where:
+        - Dashboard looks good visually
+        - All structural tests pass
+        - BUT numbers don't match source truth
+        
+        Prevents "looks good but numbers wrong" bugs.
+        """
+        try:
+            # 1. Load source truth from agent_discovery_full.json
+            discovery_path = self.project_root / "agent_discovery_full.json"
+            if not discovery_path.exists():
+                return False, f"Source data not found: {discovery_path}"
+            
+            with open(discovery_path, 'r', encoding='utf-8') as f:
+                agents = json.load(f)
+            
+            # Calculate expected metrics from source
+            expected_total = len(agents)
+            expected_heal_cap = sum(1 for a in agents if a.get('has_healing')) / expected_total * 100 if expected_total > 0 else 0
+            expected_heal_inv = sum(1 for a in agents if a.get('invocation') == 'Yes') / expected_total * 100 if expected_total > 0 else 0
+            
+            # 2. Parse rendered dashboardData from HTML
+            html = self.dashboard_path.read_text(encoding='utf-8')
+            start_marker = 'const dashboardData = ['
+            end_marker = '];'
+            start_idx = html.find(start_marker)
+            end_idx = html.find(end_marker, start_idx) + len(end_marker)
+            
+            if start_idx == -1 or end_idx == -1:
+                return False, "Could not find dashboardData in HTML"
+            
+            json_str = html[start_idx + len(start_marker) - 1:end_idx - 1]
+            data = json.loads(json_str)
+            
+            # Find TOTAL row
+            total_row = None
+            for row in data:
+                if row.get('Territory') == 'TOTAL':
+                    total_row = row
+                    break
+            
+            if not total_row:
+                return False, "TOTAL row not found in dashboardData"
+            
+            # 3. Compare rendered vs expected (allow ±1% rounding tolerance)
+            rendered_total = total_row.get('Total', 0)
+            rendered_heal_cap = total_row.get('Heal Cap %', 0)
+            rendered_heal_inv = total_row.get('Heal Invocation %', 0)
+            
+            errors = []
+            
+            # Check agent count (exact match required)
+            if abs(rendered_total - expected_total) > 0:
+                errors.append(f"Total agents: expected {expected_total}, got {rendered_total}")
+            
+            # Check Heal Cap % (allow ±1% for rounding)
+            if abs(rendered_heal_cap - expected_heal_cap) > 1.0:
+                errors.append(f"Heal Cap %: expected {expected_heal_cap:.1f}%, got {rendered_heal_cap}%")
+            
+            # Check Heal Invocation % (allow ±1% for rounding)
+            if abs(rendered_heal_inv - expected_heal_inv) > 1.0:
+                errors.append(f"Heal Invocation %: expected {expected_heal_inv:.1f}%, got {rendered_heal_inv}%")
+            
+            if errors:
+                return False, f"Data mismatch: {'; '.join(errors)}"
+            
+            return True, f"Data matches source: {rendered_total} agents, Heal Cap {rendered_heal_cap:.1f}%, Heal Inv {rendered_heal_inv:.1f}%"
+            
+        except json.JSONDecodeError as e:
+            return False, f"JSON parse error: {e}"
+        except Exception as e:
+            return False, f"Exception: {e}"
+    
     def run_test(self, name: str, test_func) -> bool:
         """Run a single test and report results."""
         print(f"\n{'─' * 70}")
@@ -509,7 +585,8 @@ class DashboardTestSuite:
             ("Visual Data Population", self.test_visual_data_population),
             ("Cell-by-Cell Visual Inspection (MANDATORY)", self.test_cell_by_cell_visual_inspection),
             ("No Duplicate Declarations (Phase 1 Guardrail)", self.test_no_duplicate_declarations),
-            ("File Metrics Validation (Phase 1 Guardrail)", self.test_file_metrics)
+            ("File Metrics Validation (Phase 1 Guardrail)", self.test_file_metrics),
+            ("Source vs Rendered Data (P0 - Critical Gap)", self.test_source_vs_rendered_data)
         ]
         
         for name, test_func in tests:
