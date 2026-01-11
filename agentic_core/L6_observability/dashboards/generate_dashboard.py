@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 SSOT Dashboard Generator - L6 Observability
 ============================================
@@ -39,9 +40,14 @@ All rows must have these exact fields:
 """
 import json
 import sys
+import io
 from pathlib import Path
 from typing import Dict, List, Any
 from collections import defaultdict
+
+# Fix UTF-8 encoding for Windows console (emoji support)
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # FIXED TERRITORY ORDER - NEVER CHANGE THIS (29 detailed territories)
 TERRITORY_ORDER = [
