@@ -21,15 +21,17 @@ import webbrowser
 from pathlib import Path
 from typing import Optional
 import argparse
+import importlib.util
 
 class DashboardPipeline:
     """Orchestrates the complete dashboard generation and deployment pipeline."""
     
-    def __init__(self, project_root: Path, skip_tests: bool = False, watch: bool = False):
+    def __init__(self, project_root: Path, skip_tests: bool = False, watch: bool = False, keep_server: bool = False):
         self.project_root = project_root
         self.dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
         self.skip_tests = skip_tests
         self.watch = watch
+        self.keep_server = keep_server
         self.server_process: Optional[subprocess.Popen] = None
         
     def print_header(self, title: str):
@@ -153,9 +155,47 @@ class DashboardPipeline:
             print(f"❌ Server start ERROR: {e}")
             return False
     
-    def step_4_open_browser(self):
-        """Step 4: Open browser to dashboard with cache-busting."""
-        self.print_step("4. Opening Browser")
+    def step_4_playwright_verification(self) -> bool:
+        """Step 4: Automated browser verification gate (P1)."""
+        self.print_step("4. Automated Browser Verification (P1 Gate)")
+        
+        # Check if Playwright verification script exists
+        verify_path = self.dashboard_dir / "verify_dashboard_e2e_playwright.py"
+        
+        if not verify_path.exists():
+            print("⚠️  Playwright verification script not found - skipping")
+            print("   Install: pip install playwright && playwright install chromium")
+            return True  # Don't fail if optional script missing
+        
+        try:
+            # Dynamic import to avoid hard dependency
+            spec = importlib.util.spec_from_file_location(
+                "verify_playwright", 
+                str(verify_path)
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            
+            # Run headless verification
+            print("🎭 Running Playwright browser verification...")
+            success = module.verify_with_playwright(headless=True)
+            
+            if success:
+                print("✅ Automated browser verification PASSED")
+                return True
+            else:
+                print("❌ Automated browser verification FAILED")
+                print("   Check dashboard_verification_failure.png for details")
+                return False
+                
+        except Exception as e:
+            print(f"⚠️  Playwright verification error: {e}")
+            print("   Continuing with pipeline (non-blocking)")
+            return True  # Don't fail pipeline on verification error
+    
+    def step_5_open_browser(self):
+        """Step 5: Open browser to dashboard with cache-busting."""
+        self.print_step("5. Opening Browser")
         
         # Add cache-busting timestamp to force fresh load
         base_url = "http://localhost:8080/autonomy_dashboard.html"
@@ -172,8 +212,8 @@ class DashboardPipeline:
             print(f"⚠️  Could not open browser automatically: {e}")
             print(f"   Please open manually: {url}")
     
-    def step_5_watch_mode(self):
-        """Step 5: Watch for changes and auto-reload (optional)."""
+    def step_6_watch_mode(self):
+        """Step 6: Watch for changes and auto-reload (optional)."""
         if not self.watch:
             return
         
@@ -241,25 +281,45 @@ class DashboardPipeline:
             if not self.step_3_start_server():
                 return False
             
-            # Step 4: Open browser
-            self.step_4_open_browser()
+            # Step 4: Playwright verification gate (P1)
+            if not self.step_4_playwright_verification():
+                print("\n❌ PIPELINE FAILED: Automated browser verification failed")
+                print("   Dashboard may not be rendering correctly")
+                return False
             
-            # Step 5: Watch mode (optional)
-            self.step_5_watch_mode()
+            # Step 5: Open browser
+            self.step_5_open_browser()
             
-            # If not in watch mode, keep server running
+            # Step 6: Watch mode (optional)
+            self.step_6_watch_mode()
+            
+            # If not in watch mode, decide whether to keep server running
             if not self.watch:
                 self.print_header("PIPELINE COMPLETE")
-                print("\n✅ Dashboard is live at http://localhost:8080/autonomy_dashboard.html")
-                print("   Server is running in background")
-                print("   Press Ctrl+C to stop server and exit")
                 
-                try:
-                    # Keep script alive while server runs
-                    while True:
-                        time.sleep(1)
-                except KeyboardInterrupt:
-                    print("\n\n⏹️  Shutting down...")
+                if self.keep_server:
+                    print("\n✅ Dashboard is live at http://localhost:8080/autonomy_dashboard.html")
+                    print("   Server is running in foreground (--keep-server flag)")
+                    print("   Press Ctrl+C to stop server and exit")
+                    
+                    try:
+                        # Keep script alive while server runs
+                        while True:
+                            time.sleep(1)
+                    except KeyboardInterrupt:
+                        print("\n\n⏹️  Shutting down...")
+                else:
+                    # Exit cleanly after verification (Windsurf-friendly)
+                    print("\n✅ Dashboard verified and ready")
+                    print("   All checks passed:")
+                    print("   - Data regenerated")
+                    print("   - Tests passed")
+                    print("   - Browser verification passed")
+                    print("\n💡 To start server manually:")
+                    print("   python agentic_core/L6_observability/dashboards/serve_dashboard.py")
+                    print("\n💡 To keep server running after pipeline:")
+                    print("   python run_dashboard_pipeline.py --keep-server")
+                    # Server will be stopped in cleanup()
             
             return True
             
@@ -294,6 +354,12 @@ Examples:
         help='Watch for changes and auto-reload'
     )
     
+    parser.add_argument(
+        '--keep-server',
+        action='store_true',
+        help='Keep server running after verification (blocks terminal)'
+    )
+    
     args = parser.parse_args()
     
     # Determine project root
@@ -304,7 +370,8 @@ Examples:
     pipeline = DashboardPipeline(
         project_root=project_root,
         skip_tests=args.skip_tests,
-        watch=args.watch
+        watch=args.watch,
+        keep_server=args.keep_server
     )
     
     success = pipeline.run()

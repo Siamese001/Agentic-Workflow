@@ -32,40 +32,60 @@ except ImportError:
     print("   Then run: playwright install chromium")
     sys.exit(1)
 
+try:
+    import psutil
+except ImportError:
+    print("❌ ERROR: psutil not installed")
+    print("   Install with: pip install psutil")
+    sys.exit(1)
+
 DASHBOARD_URL = "http://localhost:8080/autonomy_dashboard.html"
 EXPECTED_MIN_ROWS = 29  # TOTAL + 28 territories
 PORT = 8080
 
 
 def kill_existing_servers():
-    """Kill any existing processes on port 8080."""
+    """Kill any existing processes on port 8080 (cross-platform using psutil)."""
     print("🛑 Killing existing servers on port 8080...")
     try:
-        # Find process using port 8080
-        result = subprocess.run(
-            ['netstat', '-ano', '|', 'findstr', f':{PORT}'],
-            capture_output=True,
-            text=True,
-            shell=True
-        )
+        pids_to_kill = []
         
-        if result.returncode == 0 and result.stdout.strip():
-            # Extract PID from netstat output
-            lines = result.stdout.strip().split('\n')
-            pids = set()
-            for line in lines:
-                parts = line.split()
-                if parts and 'LISTENING' in line:
-                    pid = parts[-1]
-                    pids.add(pid)
+        # Use psutil to find processes listening on port 8080
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                # Get connections for this process (use net_connections to avoid deprecation)
+                connections = proc.net_connections(kind='inet')
+                for conn in connections:
+                    if hasattr(conn, 'laddr') and conn.laddr.port == PORT:
+                        # Check if it's a listening socket
+                        if conn.status == psutil.CONN_LISTEN or conn.status == 'LISTEN':
+                            pids_to_kill.append(proc.pid)
+                            break
+            except (psutil.AccessDenied, psutil.NoSuchProcess, AttributeError):
+                continue
+        
+        if pids_to_kill:
+            for pid in pids_to_kill:
+                try:
+                    proc = psutil.Process(pid)
+                    proc.terminate()  # Try graceful termination first
+                    print(f"   Terminated process {pid} ({proc.name()})")
+                except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
+                    print(f"   ⚠️  Could not terminate {pid}: {e}")
             
-            # Kill each PID
-            for pid in pids:
-                subprocess.run(['taskkill', '/F', '/PID', pid],
-                             capture_output=True, check=False)
-                print(f"   Killed process {pid}")
-            
+            # Wait for processes to terminate
             time.sleep(1.5)
+            
+            # Force kill any that didn't terminate
+            for pid in pids_to_kill:
+                try:
+                    proc = psutil.Process(pid)
+                    if proc.is_running():
+                        proc.kill()
+                        print(f"   Force killed process {pid}")
+                except psutil.NoSuchProcess:
+                    pass  # Already dead
+            
             print("   ✅ Existing servers killed")
         else:
             print("   ℹ️  No existing servers on port 8080")
@@ -201,8 +221,28 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
                         f"TOTAL agents value looks wrong: {total_agents} (expected 200-400)"
                     )
                 
-                print(f"   ✅ TOTAL row verified ({total_agents} agents)")
+                # P1 Enhancement: Verify Heal Cap % (3rd column)
+                heal_cap_cell = total_row.locator('td').nth(2)
+                heal_cap_full_text = heal_cap_cell.inner_text().strip()
                 
+                # Extract just the percentage value (before any parentheses or newlines)
+                # Example: "100.0% (0-100, σ=47.9)\n↑" -> "100.0"
+                heal_cap_text = heal_cap_full_text.split('%')[0].split('(')[0].split('\n')[0].strip()
+                heal_cap = float(heal_cap_text)
+                
+                print(f"   Heal Cap %: {heal_cap}%")
+                
+                # Check Heal Cap is reasonable (should be >80% for healthy codebase)
+                if heal_cap < 80:
+                    raise AssertionError(
+                        f"Heal Cap too low: {heal_cap}% (expected ≥80%)"
+                    )
+                
+                print(f"   ✅ TOTAL row verified ({total_agents} agents, Heal Cap {heal_cap}%)")
+                
+            except ValueError as e:
+                print(f"   ❌ Failed to parse TOTAL row values: {e}")
+                raise
             except Exception as e:
                 print(f"   ❌ Failed to verify TOTAL row: {e}")
                 raise
