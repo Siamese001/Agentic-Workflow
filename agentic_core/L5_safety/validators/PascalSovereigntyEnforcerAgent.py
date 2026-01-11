@@ -127,9 +127,25 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
             # Additional validation: primary class should end with Agent
             try:
                 tree = ast.parse(purged_content)
-                primary_class = next((node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)), None)
-                if primary_class and not primary_class.endswith("Agent"):
-                    print(f"   [WARNING] Primary class {primary_class} in {file_path} lacks Agent suffix - consider rename")
+                # Filter for classes that are not Exceptions, Enums, or standard utility types
+                sovereign_classes = [
+                    node.name for node in ast.walk(tree) 
+                    if isinstance(node, ast.ClassDef) 
+                    and not any(getattr(base, 'id', '') in ('Exception', 'Enum', 'str', 'int') for base in node.bases if isinstance(base, ast.Name))
+                ]
+                
+                if sovereign_classes:
+                    # Select primary class based on filename match or first non-utility class
+                    primary_class = next((c for c in sovereign_classes if c in file_path.stem), sovereign_classes[0])
+                    
+                    if not primary_class.endswith("Agent") and self.prefer_agent_suffix:
+                        # Only warn for execution/safety layers that mandate Agent status
+                        if any(layer in str(file_path) for layer in ["L1", "L2", "L3", "L5", "orchestration", "execution", "validators"]):
+                            print(f"   [WARNING] Sovereign class {primary_class} in {file_path.name} lacks Agent suffix - consider rename")
+                    
+                    # Verify File/Class SSOT alignment
+                    if file_path.stem != primary_class:
+                        print(f"   [SSOT VIOLATION] Filename '{file_path.name}' mismatch with detected Primary Class '{primary_class}'")
             except SyntaxError:
                 pass
 
