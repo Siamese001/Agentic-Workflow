@@ -578,23 +578,45 @@ class DashboardGenerator:
             html = self.dashboard_path.read_text(encoding='utf-8')
             
             # Find and replace dashboardData
-            start_marker = 'const dashboardData = ['
-            end_marker = '];'
-            start_idx = html.find(start_marker)
-            end_idx = html.find(end_marker, start_idx) + len(end_marker)
+            data_start_marker = 'const dashboardData = ['
+            data_end_marker = '];'
+            data_start_idx = html.find(data_start_marker)
+            data_end_idx = html.find(data_end_marker, data_start_idx) + len(data_end_marker)
             
-            if start_idx == -1 or end_idx == -1:
+            if data_start_idx == -1 or data_end_idx == -1:
                 print("❌ ERROR: Could not find dashboardData in HTML")
                 return False
             
-            new_json = json.dumps(data, indent=2)
-            new_data_block = f'const dashboardData = {new_json};'
+            # Find and replace realAgentData (search after dashboardData)
+            agent_start_marker = 'const realAgentData = {'
+            agent_end_marker = '};'
+            agent_start_idx = html.find(agent_start_marker, data_end_idx)
             
-            # Add realAgentData right after dashboardData
-            agent_json = json.dumps(per_agent_data, indent=2)
-            real_agent_block = f'\n\n        // Real per-agent data (replaces generateMockAgentData)\n        const realAgentData = {agent_json};'
-            
-            new_html = html[:start_idx] + new_data_block + real_agent_block + html[end_idx:]
+            if agent_start_idx == -1:
+                # realAgentData doesn't exist yet, insert it after dashboardData
+                new_json = json.dumps(data, indent=2)
+                new_data_block = f'const dashboardData = {new_json};'
+                
+                agent_json = json.dumps(per_agent_data, indent=2)
+                real_agent_block = f'\n\n        // Real per-agent data (replaces generateMockAgentData)\n        const realAgentData = {agent_json};'
+                
+                new_html = html[:data_start_idx] + new_data_block + real_agent_block + html[data_end_idx:]
+            else:
+                # realAgentData exists, replace both dashboardData and realAgentData
+                agent_end_idx = html.find(agent_end_marker, agent_start_idx) + len(agent_end_marker)
+                
+                if agent_end_idx == -1:
+                    print("❌ ERROR: Could not find end of realAgentData in HTML")
+                    return False
+                
+                new_json = json.dumps(data, indent=2)
+                new_data_block = f'const dashboardData = {new_json};'
+                
+                agent_json = json.dumps(per_agent_data, indent=2)
+                real_agent_block = f'\n\n        // Real per-agent data (replaces generateMockAgentData)\n        const realAgentData = {agent_json};'
+                
+                # Replace from dashboardData start to realAgentData end
+                new_html = html[:data_start_idx] + new_data_block + real_agent_block + html[agent_end_idx:]
             
             self.dashboard_path.write_text(new_html, encoding='utf-8')
             print(f"✅ Updated {self.dashboard_path}")
