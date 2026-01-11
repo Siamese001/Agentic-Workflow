@@ -39,10 +39,11 @@ All rows must have these exact fields:
 - Used %, Priority
 """
 import json
+import re
 import sys
 import io
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 from collections import defaultdict
 
 # Fix UTF-8 encoding for Windows console (emoji support)
@@ -568,6 +569,68 @@ class DashboardGenerator:
         print(f"✅ VALIDATION PASSED: {len(data)} rows with all required fields")
         return True
     
+    def validate_html_before_write(self, html: str) -> Tuple[bool, List[str]]:
+        """Validate HTML content before writing to disk.
+        
+        Checks:
+        - No duplicate const declarations
+        - File size within expected range (300-500KB)
+        - Line count within expected range (10K-15K)
+        - Basic JavaScript syntax (brace/bracket matching)
+        - Required variables/functions exist
+        
+        Returns:
+            (is_valid, error_messages)
+        """
+        errors = []
+        
+        # Check 1: Detect duplicate const declarations
+        const_patterns = {
+            'dashboardData': r'const\s+dashboardData\s*=',
+            'realAgentData': r'const\s+realAgentData\s*=',
+        }
+        
+        for var_name, pattern in const_patterns.items():
+            matches = re.findall(pattern, html)
+            if len(matches) > 1:
+                errors.append(f"CRITICAL: Found {len(matches)} declarations of 'const {var_name}' (expected 1)")
+            elif len(matches) == 0:
+                errors.append(f"ERROR: Found 0 declarations of 'const {var_name}' (expected 1)")
+        
+        # Check 2: Validate file size (should be 300KB-500KB)
+        size_bytes = len(html.encode('utf-8'))
+        size_kb = size_bytes / 1024
+        if size_kb > 500:
+            errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected <500KB) - possible duplication")
+        elif size_kb < 300:
+            errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected >300KB) - possible data missing")
+        
+        # Check 3: Validate line count (should be 10K-15K lines)
+        line_count = html.count('\n')
+        if line_count > 15000:
+            errors.append(f"WARNING: HTML has {line_count:,} lines (expected <15K) - possible duplication")
+        elif line_count < 10000:
+            errors.append(f"WARNING: HTML has {line_count:,} lines (expected >10K) - possible data missing")
+        
+        # Check 4: Validate JavaScript syntax (basic check - brace matching)
+        script_blocks = re.findall(r'<script>(.*?)</script>', html, re.DOTALL)
+        for i, script in enumerate(script_blocks):
+            # Check for balanced braces, parentheses, brackets
+            if script.count('{') != script.count('}'):
+                errors.append(f"ERROR: Script block {i+1} has mismatched braces")
+            if script.count('(') != script.count(')'):
+                errors.append(f"ERROR: Script block {i+1} has mismatched parentheses")
+            if script.count('[') != script.count(']'):
+                errors.append(f"ERROR: Script block {i+1} has mismatched brackets")
+        
+        # Check 5: Verify required data structures and functions exist
+        required_items = ['dashboardData', 'realAgentData', 'loadData', 'renderTerritorySummaryTable']
+        for item in required_items:
+            if item not in html:
+                errors.append(f"ERROR: Required variable/function '{item}' not found in HTML")
+        
+        return (len(errors) == 0, errors)
+    
     def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict[str, Dict]) -> bool:
         """Update dashboard HTML with new data and real per-agent data."""
         if not self.dashboard_path.exists():
@@ -577,7 +640,12 @@ class DashboardGenerator:
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
             
-            # Find and replace dashboardData
+            # PHASE 1 GUARDRAIL: Remove any existing realAgentData declarations using regex
+            # This prevents duplicate accumulation across multiple regenerations
+            real_agent_pattern = r'//\s*Real per-agent data.*?\n\s*const realAgentData = \{.*?\};'
+            html = re.sub(real_agent_pattern, '', html, flags=re.DOTALL | re.MULTILINE)
+            
+            # Find dashboardData location
             data_start_marker = 'const dashboardData = ['
             data_end_marker = '];'
             data_start_idx = html.find(data_start_marker)
@@ -587,37 +655,26 @@ class DashboardGenerator:
                 print("❌ ERROR: Could not find dashboardData in HTML")
                 return False
             
-            # Find and replace realAgentData (search after dashboardData)
-            agent_start_marker = 'const realAgentData = {'
-            agent_end_marker = '};'
-            agent_start_idx = html.find(agent_start_marker, data_end_idx)
+            # Build new data blocks
+            new_json = json.dumps(data, indent=2)
+            new_data_block = f'const dashboardData = {new_json};'
             
-            if agent_start_idx == -1:
-                # realAgentData doesn't exist yet, insert it after dashboardData
-                new_json = json.dumps(data, indent=2)
-                new_data_block = f'const dashboardData = {new_json};'
-                
-                agent_json = json.dumps(per_agent_data, indent=2)
-                real_agent_block = f'\n\n        // Real per-agent data (replaces generateMockAgentData)\n        const realAgentData = {agent_json};'
-                
-                new_html = html[:data_start_idx] + new_data_block + real_agent_block + html[data_end_idx:]
-            else:
-                # realAgentData exists, replace both dashboardData and realAgentData
-                agent_end_idx = html.find(agent_end_marker, agent_start_idx) + len(agent_end_marker)
-                
-                if agent_end_idx == -1:
-                    print("❌ ERROR: Could not find end of realAgentData in HTML")
-                    return False
-                
-                new_json = json.dumps(data, indent=2)
-                new_data_block = f'const dashboardData = {new_json};'
-                
-                agent_json = json.dumps(per_agent_data, indent=2)
-                real_agent_block = f'\n\n        // Real per-agent data (replaces generateMockAgentData)\n        const realAgentData = {agent_json};'
-                
-                # Replace from dashboardData start to realAgentData end
-                new_html = html[:data_start_idx] + new_data_block + real_agent_block + html[agent_end_idx:]
+            agent_json = json.dumps(per_agent_data, indent=2)
+            real_agent_block = f'\n\n        // Real per-agent data (replaces generateMockAgentData)\n        const realAgentData = {agent_json};'
             
+            # Replace dashboardData and insert realAgentData after it
+            new_html = html[:data_start_idx] + new_data_block + real_agent_block + html[data_end_idx:]
+            
+            # PHASE 1 GUARDRAIL: Validate before writing
+            is_valid, errors = self.validate_html_before_write(new_html)
+            
+            if not is_valid:
+                print("❌ VALIDATION FAILED - HTML NOT WRITTEN")
+                for error in errors:
+                    print(f"   {error}")
+                return False
+            
+            # Only write if validation passes
             self.dashboard_path.write_text(new_html, encoding='utf-8')
             print(f"✅ Updated {self.dashboard_path}")
             print(f"   - Embedded {len(data)} territory rows")

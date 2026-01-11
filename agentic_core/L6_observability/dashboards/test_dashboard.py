@@ -420,10 +420,61 @@ class DashboardTestSuite:
             if issues:
                 return False, f"Cell inspection failed: {len(issues)} issues found: {'; '.join(issues[:3])}..."
             
-            return True, f"Cell-by-cell inspection passed: TOTAL row verified, sample territory verified, outlier data verified, sparkline data verified, drill-down data verified"
+            print(f"✅ PASSED: Cell-by-cell inspection passed: TOTAL row verified, sample territory verified, outlier data verified, sparkline data verified, drill-down data verified")
+            return True, "Cell-by-cell inspection passed"
             
         except Exception as e:
-            return False, f"Exception during cell inspection: {e}"
+            return False, f"Exception: {e}"
+    
+    def test_no_duplicate_declarations(self) -> Tuple[bool, str]:
+        """Test 9: Ensure no duplicate const declarations (Phase 1 Guardrail)."""
+        html = self.dashboard_path.read_text(encoding='utf-8')
+        
+        # Check for duplicate const declarations
+        const_vars = ['dashboardData', 'realAgentData']
+        issues = []
+        
+        for var_name in const_vars:
+            pattern = rf'const\s+{var_name}\s*='
+            matches = re.findall(pattern, html)
+            
+            if len(matches) > 1:
+                issues.append(f"{var_name}: {len(matches)} declarations (expected 1)")
+            elif len(matches) == 0:
+                issues.append(f"{var_name}: 0 declarations (expected 1)")
+        
+        if issues:
+            return False, f"Duplicate/missing declarations: {'; '.join(issues)}"
+        
+        return True, "No duplicate declarations found"
+    
+    def test_file_metrics(self) -> Tuple[bool, str]:
+        """Test 10: Validate file size and line count are within expected ranges (Phase 1 Guardrail)."""
+        html = self.dashboard_path.read_text(encoding='utf-8')
+        
+        # Check file size (should be 300KB-500KB)
+        size_bytes = len(html.encode('utf-8'))
+        size_kb = size_bytes / 1024
+        
+        # Check line count (should be 10K-15K)
+        line_count = html.count('\n')
+        
+        issues = []
+        
+        if size_kb > 500:
+            issues.append(f"Size {size_kb:.1f}KB exceeds 500KB (possible duplication)")
+        elif size_kb < 300:
+            issues.append(f"Size {size_kb:.1f}KB below 300KB (possible missing data)")
+        
+        if line_count > 15000:
+            issues.append(f"Lines {line_count:,} exceed 15K (possible duplication)")
+        elif line_count < 10000:
+            issues.append(f"Lines {line_count:,} below 10K (possible missing data)")
+        
+        if issues:
+            return False, '; '.join(issues)
+        
+        return True, f"Metrics OK: {size_kb:.1f}KB, {line_count:,} lines"
     
     def run_test(self, name: str, test_func) -> bool:
         """Run a single test and report results."""
@@ -456,7 +507,9 @@ class DashboardTestSuite:
             ("Regeneration Stability", self.test_regeneration_stability),
             ("HTML Rendering Elements", self.test_html_rendering_elements),
             ("Visual Data Population", self.test_visual_data_population),
-            ("Cell-by-Cell Visual Inspection (MANDATORY)", self.test_cell_by_cell_visual_inspection)
+            ("Cell-by-Cell Visual Inspection (MANDATORY)", self.test_cell_by_cell_visual_inspection),
+            ("No Duplicate Declarations (Phase 1 Guardrail)", self.test_no_duplicate_declarations),
+            ("File Metrics Validation (Phase 1 Guardrail)", self.test_file_metrics)
         ]
         
         for name, test_func in tests:
