@@ -11092,11 +11092,22 @@
         }
 
         function renderTerritorySummaryTable(territoryData) {
+            console.log('[DEBUG] renderTerritorySummaryTable called with', territoryData?.length, 'territories');
             const container = document.getElementById('kpiGrid');
-            if (!container) return;
+            if (!container) {
+                console.error('[ERROR] #kpiGrid container NOT FOUND');
+                return;
+            }
+            console.log('[DEBUG] kpiGrid container found');
 
             // PHASE 1: Use real per-agent data (embedded from backend)
-            globalAgentData = realAgentData;
+            try {
+                globalAgentData = realAgentData;
+                console.log('[DEBUG] globalAgentData assigned:', Object.keys(globalAgentData).length, 'territories');
+            } catch (e) {
+                console.error('[ERROR] Failed to assign realAgentData:', e);
+                return;
+            }
             
             // PHASE 5: Apply filtering if enabled
             const filterState = tableFilterState.table1;
