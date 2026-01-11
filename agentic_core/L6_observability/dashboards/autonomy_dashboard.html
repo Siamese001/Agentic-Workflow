@@ -38320,26 +38320,39 @@
         }
 
         function loadData() {
+            console.log('🚀 loadData() called');
             const data = dashboardData;
+            console.log('📊 dashboardData:', data ? data.length + ' rows' : 'UNDEFINED');
             const territoryData = data.filter(row => row.Territory !== 'TOTAL');
+            console.log('🗺️ territoryData:', territoryData.length + ' territories');
             const totalRow = data.find(row => row.Territory === 'TOTAL');
+            console.log('📈 totalRow:', totalRow ? 'FOUND' : 'NOT FOUND');
 
             if (!totalRow) {
+                console.error('❌ No TOTAL row found');
                 document.getElementById('kpiGrid').innerHTML = '<div class="loading">No data available.</div>';
                 return;
             }
 
+            console.log('✅ Starting render functions...');
             renderStrategicObservations(totalRow, territoryData);
+            console.log('✅ renderStrategicObservations done');
             updateGlobalAlertBanner(territoryData);
+            console.log('✅ updateGlobalAlertBanner done');
             renderTerritorySummaryTable(territoryData);
+            console.log('✅ renderTerritorySummaryTable done');
             renderCodeQualityTable(territoryData);
+            console.log('✅ renderCodeQualityTable done');
             renderRecommendations();
+            console.log('✅ renderRecommendations done');
             renderInterviewQuestions(totalRow);
+            console.log('✅ renderInterviewQuestions done');
 
             document.getElementById('lastUpdated').textContent = lastUpdatedStr;
             
             // Setup drill-down click handlers after all charts are rendered
             setTimeout(setupDrillDowns, 100);
+            console.log('🎉 loadData() complete');
         }
 
         // Drill-down modal functions

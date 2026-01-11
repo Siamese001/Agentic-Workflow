@@ -44,17 +44,17 @@
             
             // Test 1: Can we reach the server?
             try {
-                const serverTest = await fetch('http://localhost:8765/');
+                const serverTest = await fetch('http://localhost:8080/');
                 status(`Server reachable (HTTP ${serverTest.status})`, serverTest.ok);
             } catch (e) {
                 status(`Server NOT reachable: ${e.message}`, false);
-                log('Start server: python scripts/serve_dashboard.py', 'warning');
+                log('Start server: python agentic_core/L6_observability/dashboards/serve_dashboard.py', 'warning');
                 return;
             }
             
             // Test 2: Can we load Plotly?
             try {
-                const plotlyTest = await fetch('http://localhost:8765/plotly.min.js');
+                const plotlyTest = await fetch('http://localhost:8080/plotly.min.js');
                 const size = plotlyTest.headers.get('content-length');
                 status(`Plotly.js accessible (${(size/1024/1024).toFixed(1)}MB)`, plotlyTest.ok);
             } catch (e) {
@@ -63,7 +63,7 @@
             
             // Test 3: Can we load dashboard HTML?
             try {
-                const dashTest = await fetch('http://localhost:8765/autonomy_dashboard.html');
+                const dashTest = await fetch('http://localhost:8080/autonomy_dashboard.html');
                 status(`Dashboard HTML accessible (${dashTest.status})`, dashTest.ok);
             } catch (e) {
                 status(`Dashboard HTML NOT accessible: ${e.message}`, false);
@@ -72,7 +72,7 @@
             // Test 4: Load dashboard in iframe and check for errors
             log('\n--- Loading Dashboard in iframe ---', 'info');
             const iframe = document.createElement('iframe');
-            iframe.src = 'http://localhost:8765/autonomy_dashboard.html';
+            iframe.src = 'http://localhost:8080/autonomy_dashboard.html';
             iframe.style.width = '100%';
             iframe.style.height = '600px';
             iframe.style.border = '2px solid #569cd6';
@@ -145,7 +145,7 @@
                     
                 } catch (e) {
                     status(`Cannot access iframe content: ${e.message}`, false);
-                    log('This is normal for file:// protocol - use http://localhost:8765', 'warning');
+                    log('This is normal for file:// protocol - use http://localhost:8080', 'warning');
                 }
             };
             
