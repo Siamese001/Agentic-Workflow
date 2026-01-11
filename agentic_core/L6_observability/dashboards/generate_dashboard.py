@@ -334,6 +334,108 @@ class DashboardGenerator:
             "IsInfrastructure": False
         }
     
+    def build_per_agent_data(self, territories: Dict[str, List[Dict]]) -> Dict[str, Dict]:
+        """Build per-agent data structure for each territory to replace mock data."""
+        per_agent_data = {}
+        
+        for territory_name, agents_list in territories.items():
+            if not agents_list:
+                continue
+            
+            # Extract per-agent metric arrays
+            heal_cap_values = []
+            invocation_values = []
+            hardened_values = []
+            test_values = []
+            complexity_health_values = []
+            health_values = []
+            typed_values = []
+            documented_values = []
+            schema_values = []
+            base_values = []
+            quality_values = []
+            agent_objects = []
+            
+            for agent in agents_list:
+                # Heal capability (0 or 100)
+                heal_cap = 100.0 if agent.get('has_healing') else 0.0
+                heal_cap_values.append(heal_cap)
+                
+                # Invocation (0 or 100 based on invocation field)
+                invocation = 100.0 if agent.get('invocation') == 'Yes' else 0.0
+                invocation_values.append(invocation)
+                
+                # Hardened (0 or 100)
+                hardened = 100.0 if agent.get('mcp_hardened') else 0.0
+                hardened_values.append(hardened)
+                
+                # Test coverage (0 or 100)
+                test = 100.0 if agent.get('has_tests') else 0.0
+                test_values.append(test)
+                
+                # Complexity health (inverted CC)
+                cc = agent.get('cyclomatic_complexity', 0)
+                complexity_health = max(0, min(100, 100 - (cc * 2)))
+                complexity_health_values.append(complexity_health)
+                
+                # Health (average of 5 components)
+                obs_pct = 100.0 if agent.get('observability', {}).get('logging') else 0.0
+                health = (heal_cap + invocation + test + obs_pct + complexity_health) / 5
+                health_values.append(health)
+                
+                # Code quality metrics
+                typed = agent.get('typed_pct', 0.0)
+                typed_values.append(typed)
+                
+                documented = agent.get('documented_pct', 0.0)
+                documented_values.append(documented)
+                
+                schema = agent.get('schema_strictness', 100.0)
+                schema_values.append(schema)
+                
+                base = 100.0 if agent.get('proper_base_class') else 0.0
+                base_values.append(base)
+                
+                # Code quality score (average of code metrics)
+                quality = (typed + documented + schema + base) / 4
+                quality_values.append(quality)
+                
+                # Build agent object for drill-down
+                agent_objects.append({
+                    'name': agent.get('class_name', 'Unknown'),
+                    'path': agent.get('path', ''),
+                    'healCap': heal_cap,
+                    'invocation': invocation,
+                    'hardened': hardened,
+                    'test': test,
+                    'complexityHealth': complexity_health,
+                    'health': health,
+                    'typed': typed,
+                    'documented': documented,
+                    'schema': schema,
+                    'base': base,
+                    'quality': quality,
+                    'cc': cc,
+                    'loc': agent.get('loc', 0)
+                })
+            
+            per_agent_data[territory_name] = {
+                'healCap': heal_cap_values,
+                'invocation': invocation_values,
+                'hardened': hardened_values,
+                'test': test_values,
+                'complexityHealth': complexity_health_values,
+                'health': health_values,
+                'typed': typed_values,
+                'documented': documented_values,
+                'schemaStrictness': schema_values,
+                'properBase': base_values,
+                'codeQuality': quality_values,
+                'agents': agent_objects
+            }
+        
+        return per_agent_data
+    
     def generate_dashboard_data(self) -> List[Dict[str, Any]]:
         """Generate complete dashboard data with FIXED structure (always 29 rows)."""
         territories = self.group_agents_by_territory()
@@ -442,10 +544,10 @@ class DashboardGenerator:
         print(f"✅ VALIDATION PASSED: {len(data)} rows with all required fields")
         return True
     
-    def update_dashboard_html(self, data: List[Dict[str, Any]]) -> bool:
-        """Update autonomy_dashboard.html with new data."""
+    def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict[str, Dict]) -> bool:
+        """Update dashboard HTML with new data and real per-agent data."""
         if not self.dashboard_path.exists():
-            print(f"❌ ERROR: {self.dashboard_path} not found")
+            print(f"❌ ERROR: Dashboard HTML not found at {self.dashboard_path}")
             return False
         
         try:
@@ -463,10 +565,17 @@ class DashboardGenerator:
             
             new_json = json.dumps(data, indent=2)
             new_data_block = f'const dashboardData = {new_json};'
-            new_html = html[:start_idx] + new_data_block + html[end_idx:]
+            
+            # Add realAgentData right after dashboardData
+            agent_json = json.dumps(per_agent_data, indent=2)
+            real_agent_block = f'\n\n        // Real per-agent data (replaces generateMockAgentData)\n        const realAgentData = {agent_json};'
+            
+            new_html = html[:start_idx] + new_data_block + real_agent_block + html[end_idx:]
             
             self.dashboard_path.write_text(new_html, encoding='utf-8')
             print(f"✅ Updated {self.dashboard_path}")
+            print(f"   - Embedded {len(data)} territory rows")
+            print(f"   - Embedded real per-agent data for {len(per_agent_data)} territories")
             return True
             
         except Exception as e:
@@ -486,16 +595,21 @@ class DashboardGenerator:
         
         # Step 2: Generate dashboard data
         print("\n📊 Generating dashboard data...")
+        territories = self.group_agents_by_territory()
         data = self.generate_dashboard_data()
+        
+        # Step 2b: Build real per-agent data
+        print("\n📊 Building per-agent data...")
+        per_agent_data = self.build_per_agent_data(territories)
         
         # Step 3: Validate data
         print("\n🔍 Validating dashboard data...")
         if not self.validate_dashboard_data(data):
             return False
         
-        # Step 4: Update HTML
+        # Step 4: Update HTML with both aggregate and per-agent data
         print("\n💾 Updating dashboard HTML...")
-        if not self.update_dashboard_html(data):
+        if not self.update_dashboard_html(data, per_agent_data):
             return False
         
         # Step 5: Print summary
@@ -507,6 +621,7 @@ class DashboardGenerator:
         print(f"Heal Cap %: {total_row['Heal Cap %']}%")
         print(f"Health: {total_row['Health']}%")
         print(f"Territories: {len(data) - 1}")
+        print(f"Per-agent data: {len(per_agent_data)} territories")
         print("=" * 70)
         
         return True
