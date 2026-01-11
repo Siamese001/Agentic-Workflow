@@ -338,8 +338,26 @@ class DashboardGenerator:
         """Build per-agent data structure for each territory to replace mock data."""
         per_agent_data = {}
         
-        for territory_name, agents_list in territories.items():
+        # Iterate through ALL territories in TERRITORY_ORDER to ensure complete coverage
+        for territory_name in TERRITORY_ORDER:
+            agents_list = territories.get(territory_name, [])
+            
+            # Include empty territories with empty arrays (for consistent rendering)
             if not agents_list:
+                per_agent_data[territory_name] = {
+                    'healCap': [],
+                    'invocation': [],
+                    'hardened': [],
+                    'test': [],
+                    'complexityHealth': [],
+                    'health': [],
+                    'typed': [],
+                    'documented': [],
+                    'schemaStrictness': [],
+                    'properBase': [],
+                    'codeQuality': [],
+                    'agents': []
+                }
                 continue
             
             # Extract per-agent metric arrays
