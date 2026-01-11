@@ -8,6 +8,7 @@ Tests wireframe consistency across multiple data changes.
 MUST PASS before any dashboard changes are committed.
 """
 import json
+import re
 import sys
 from pathlib import Path
 from typing import List, Dict, Any, Tuple
@@ -217,6 +218,65 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
     
+    def test_visual_data_population(self) -> Tuple[bool, str]:
+        """Test 7: Verify dashboard is populated with real data (no mock data)."""
+        try:
+            html = self.dashboard_path.read_text(encoding='utf-8')
+            
+            # 1. Verify realAgentData is embedded
+            real_data_match = re.search(r'const realAgentData = (\{.*?\});', html, re.DOTALL)
+            if not real_data_match:
+                return False, "realAgentData not embedded"
+            
+            try:
+                real_json = real_data_match.group(1)
+                real_data = json.loads(real_json)
+                territory_count = len(real_data)
+                
+                if territory_count == 0:
+                    return False, "realAgentData is empty"
+                
+                # Check sample territory has required structure
+                sample_territory = list(real_data.keys())[0]
+                sample_data = real_data[sample_territory]
+                
+                if 'agents' not in sample_data or 'healCap' not in sample_data:
+                    return False, f"realAgentData missing required fields (agents, healCap)"
+                
+                agent_count = len(sample_data['agents'])
+                
+            except json.JSONDecodeError:
+                return False, "realAgentData is not valid JSON"
+            
+            # 2. Verify globalAgentData uses realAgentData (not mock)
+            if 'globalAgentData = realAgentData' not in html:
+                return False, "globalAgentData not assigned to realAgentData"
+            
+            # 3. Verify no mock data calls
+            if 'globalAgentData = generateMockAgentData' in html:
+                return False, "Still calling generateMockAgentData"
+            
+            # 4. Verify generateMockAgentData is deprecated
+            if 'function generateMockAgentData(' in html and 'generateMockAgentData_DEPRECATED' not in html:
+                return False, "generateMockAgentData not deprecated"
+            
+            # 5. Verify no Math.random() calls
+            random_count = html.count('Math.random()')
+            if random_count > 0:
+                return False, f"Found {random_count} Math.random() calls (mock data)"
+            
+            # 6. Verify getMockFanInData is disabled
+            fanin_match = re.search(r'function getMockFanInData\([^)]+\)\s*\{[^}]*return\s+(\d+)', html, re.DOTALL)
+            if fanin_match:
+                return_val = fanin_match.group(1)
+                if return_val != '0':
+                    return False, f"getMockFanInData returns {return_val} (should be 0)"
+            
+            return True, f"Visual data populated: {territory_count} territories, {agent_count} agents in sample, 0 mock calls"
+            
+        except Exception as e:
+            return False, f"Exception: {e}"
+    
     def run_test(self, name: str, test_func) -> bool:
         """Run a single test and report results."""
         print(f"\n{'─' * 70}")
@@ -246,7 +306,8 @@ class DashboardTestSuite:
             ("Data Consistency", self.test_data_consistency),
             ("Field Types", self.test_field_types),
             ("Regeneration Stability", self.test_regeneration_stability),
-            ("HTML Rendering Elements", self.test_html_rendering_elements)
+            ("HTML Rendering Elements", self.test_html_rendering_elements),
+            ("Visual Data Population", self.test_visual_data_population)
         ]
         
         for name, test_func in tests:
