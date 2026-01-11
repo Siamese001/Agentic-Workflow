@@ -11,7 +11,7 @@ from pathlib import Path
 PORT = 8080
 
 class DashboardHandler(http.server.SimpleHTTPRequestHandler):
-    """Custom handler to serve from dashboard directory."""
+    """Custom handler to serve from dashboard directory with strong no-cache headers."""
     
     def __init__(self, *args, **kwargs):
         # Set directory to dashboard location
@@ -22,7 +22,12 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         # Add CORS headers for local development
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        
+        # Strong no-cache headers to prevent browser caching issues
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.send_header('Pragma', 'no-cache')
+        self.send_header('Expires', '0')
+        
         super().end_headers()
 
 def main():
@@ -30,7 +35,7 @@ def main():
     dashboard_dir = Path(__file__).parent
     os.chdir(dashboard_dir)
     
-    with socketserver.TCPServer(("", PORT), http.server.SimpleHTTPRequestHandler) as httpd:
+    with socketserver.TCPServer(("", PORT), DashboardHandler) as httpd:
         print("=" * 70)
         print("DASHBOARD HTTP SERVER")
         print("=" * 70)

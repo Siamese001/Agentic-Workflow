@@ -154,15 +154,20 @@ class DashboardPipeline:
             return False
     
     def step_4_open_browser(self):
-        """Step 4: Open browser to dashboard."""
+        """Step 4: Open browser to dashboard with cache-busting."""
         self.print_step("4. Opening Browser")
         
-        url = "http://localhost:8080/autonomy_dashboard.html"
+        # Add cache-busting timestamp to force fresh load
+        base_url = "http://localhost:8080/autonomy_dashboard.html"
+        cache_bust = f"?v={int(time.time())}"
+        url = base_url + cache_bust
         
         try:
             print(f"🌐 Opening {url}")
+            print("   (Cache-busting enabled - forces fresh load)")
             webbrowser.open(url)
             print("✅ Browser opened")
+            print("\n⚠️  IMPORTANT: If tables don't appear, press Ctrl+Shift+R to hard refresh")
         except Exception as e:
             print(f"⚠️  Could not open browser automatically: {e}")
             print(f"   Please open manually: {url}")
