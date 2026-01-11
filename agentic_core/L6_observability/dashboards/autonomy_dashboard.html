@@ -10183,6 +10183,8 @@
   }
 };
 
+        
+
 
 
 
@@ -11050,28 +11052,54 @@
         
         // Initialize semantic retrieval metrics
         function initializeSemanticMetrics() {
-            // DISABLED: Mock data removed - waiting for real Redis/Pinecone integration
-            const reuseRate = 0; // Disabled until real data available
-            const retrievalConfidence = 0; // Disabled until real data available
-            
-            const reuseRateEl = document.getElementById('semanticReuseRate');
-            const retrievalConfidenceEl = document.getElementById('retrievalConfidence');
-            
-            if (reuseRateEl) reuseRateEl.textContent = `${reuseRate}%`;
-            if (retrievalConfidenceEl) retrievalConfidenceEl.textContent = retrievalConfidence;
+            try {
+                // DISABLED: Mock data removed - waiting for real Redis/Pinecone integration
+                const reuseRate = 0; // Disabled until real data available
+                const retrievalConfidence = 0; // Disabled until real data available
+                
+                const reuseRateEl = document.getElementById('semanticReuseRate');
+                const retrievalConfidenceEl = document.getElementById('retrievalConfidence');
+                
+                if (reuseRateEl) {
+                    reuseRateEl.textContent = `${reuseRate}%`;
+                } else {
+                    console.warn('[DEFENSIVE] semanticReuseRate element missing - skipping');
+                }
+                
+                if (retrievalConfidenceEl) {
+                    retrievalConfidenceEl.textContent = retrievalConfidence;
+                } else {
+                    console.warn('[DEFENSIVE] retrievalConfidence element missing - skipping');
+                }
+            } catch (err) {
+                console.error('[DEFENSIVE] initializeSemanticMetrics failed:', err);
+            }
         }
         
         // Initialize runtime monitoring
         function initializeRuntimeMonitoring() {
-            // DISABLED: Mock API latency removed - waiting for real monitoring integration
-            const geminiLatency = 0; // Disabled until real data available
-            const pineconeLatency = 0; // Disabled until real data available
-            
-            const geminiLatencyEl = document.getElementById('geminiLatency');
-            const pineconeLatencyEl = document.getElementById('pineconeLatency');
-            
-            if (geminiLatencyEl) geminiLatencyEl.textContent = geminiLatency + 'ms';
-            if (pineconeLatencyEl) pineconeLatencyEl.textContent = pineconeLatency + 'ms';
+            try {
+                // DISABLED: Mock API latency removed - waiting for real monitoring integration
+                const geminiLatency = 0; // Disabled until real data available
+                const pineconeLatency = 0; // Disabled until real data available
+                
+                const geminiLatencyEl = document.getElementById('geminiLatency');
+                const pineconeLatencyEl = document.getElementById('pineconeLatency');
+                
+                if (geminiLatencyEl) {
+                    geminiLatencyEl.textContent = geminiLatency + 'ms';
+                } else {
+                    console.warn('[DEFENSIVE] geminiLatency element missing - skipping');
+                }
+                
+                if (pineconeLatencyEl) {
+                    pineconeLatencyEl.textContent = pineconeLatency + 'ms';
+                } else {
+                    console.warn('[DEFENSIVE] pineconeLatency element missing - skipping');
+                }
+            } catch (err) {
+                console.error('[DEFENSIVE] initializeRuntimeMonitoring failed:', err);
+            }
             
             // Simulate live log stream
             const liveLog = document.getElementById('liveLog');
