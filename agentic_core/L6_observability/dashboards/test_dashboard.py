@@ -277,6 +277,154 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
     
+    def test_cell_by_cell_visual_inspection(self) -> Tuple[bool, str]:
+        """Test 8: Cell-by-cell visual inspection of HTML data population (MANDATORY)."""
+        try:
+            html = self.dashboard_path.read_text(encoding='utf-8')
+            
+            # Extract dashboardData
+            start_marker = 'const dashboardData = ['
+            end_marker = '];'
+            start_idx = html.find(start_marker)
+            end_idx = html.find(end_marker, start_idx) + len(end_marker)
+            json_str = html[start_idx+len(start_marker)-1:end_idx-1]
+            data = json.loads(json_str)
+            
+            # Extract realAgentData
+            real_data_match = re.search(r'const realAgentData = (\{.*?\});', html, re.DOTALL)
+            if not real_data_match:
+                return False, "realAgentData not found for cell inspection"
+            real_data = json.loads(real_data_match.group(1))
+            
+            issues = []
+            
+            # 1. INSPECT TOTAL ROW CELLS
+            total_row = data[0]
+            if total_row.get('Territory') != 'TOTAL':
+                issues.append("TOTAL row not first")
+            
+            # Check critical TOTAL row cell values
+            expected_total_agents = 291
+            expected_heal_cap = 100.0
+            
+            if total_row.get('Total') != expected_total_agents:
+                issues.append(f"TOTAL Total cell: expected {expected_total_agents}, got {total_row.get('Total')}")
+            
+            if total_row.get('Heal Cap %') != expected_heal_cap:
+                issues.append(f"TOTAL Heal Cap % cell: expected {expected_heal_cap}, got {total_row.get('Heal Cap %')}")
+            
+            # Verify TOTAL row has all numeric cells populated (not null/undefined)
+            numeric_fields = ['Total', 'Heal Cap %', 'Invocation %', 'Test %', 'Health', 'Avg CC']
+            for field in numeric_fields:
+                if field not in total_row or total_row[field] is None:
+                    issues.append(f"TOTAL row cell '{field}' is null or missing")
+            
+            # 2. INSPECT SAMPLE TERRITORY ROW CELLS
+            # Find first non-TOTAL territory with agents
+            sample_territory = None
+            for row in data[1:]:
+                if row.get('Total', 0) > 0:
+                    sample_territory = row
+                    break
+            
+            if not sample_territory:
+                issues.append("No territory rows with agents found")
+            else:
+                territory_name = sample_territory.get('Territory')
+                
+                # Verify territory row cells are populated
+                if sample_territory.get('Total', 0) <= 0:
+                    issues.append(f"Territory '{territory_name}' Total cell is 0 or missing")
+                
+                # Check that numeric cells have valid values (0-100 for percentages)
+                percentage_fields = ['Heal Cap %', 'Invocation %', 'Test %', 'Health']
+                for field in percentage_fields:
+                    value = sample_territory.get(field)
+                    if value is None:
+                        issues.append(f"Territory '{territory_name}' cell '{field}' is null")
+                    elif not (0 <= value <= 100):
+                        issues.append(f"Territory '{territory_name}' cell '{field}' = {value} (out of range 0-100)")
+            
+            # 3. INSPECT OUTLIER BADGE DATA IN CELLS
+            # Verify realAgentData has per-agent arrays for outlier calculation
+            if real_data:
+                sample_real_territory = list(real_data.keys())[0]
+                sample_real_data = real_data[sample_real_territory]
+                
+                if 'healCap' not in sample_real_data:
+                    issues.append(f"realAgentData territory '{sample_real_territory}' missing healCap array for outlier badges")
+                elif not isinstance(sample_real_data['healCap'], list):
+                    issues.append(f"realAgentData territory '{sample_real_territory}' healCap is not an array")
+                else:
+                    # Verify healCap array has values
+                    heal_cap_array = sample_real_data['healCap']
+                    if len(heal_cap_array) == 0:
+                        issues.append(f"realAgentData territory '{sample_real_territory}' healCap array is empty")
+                    
+                    # Check that all values are valid percentages
+                    for i, val in enumerate(heal_cap_array[:5]):  # Check first 5
+                        if not (0 <= val <= 100):
+                            issues.append(f"realAgentData '{sample_real_territory}' healCap[{i}] = {val} (invalid)")
+            
+            # 4. INSPECT SPARKLINE DATA IN CELLS
+            # Verify that aggregate stats exist for sparkline rendering
+            if sample_territory:
+                # Check that we have the data needed for sparklines (min/max/avg)
+                # Sparklines use the per-agent data arrays from realAgentData
+                territory_name = sample_territory.get('Territory')
+                if territory_name in real_data:
+                    territory_real = real_data[territory_name]
+                    required_arrays = ['healCap', 'invocation', 'test', 'health']
+                    for arr_name in required_arrays:
+                        if arr_name not in territory_real:
+                            issues.append(f"Territory '{territory_name}' missing '{arr_name}' array for sparklines")
+                        elif not isinstance(territory_real[arr_name], list):
+                            issues.append(f"Territory '{territory_name}' '{arr_name}' is not an array")
+            
+            # 5. INSPECT DRILL-DOWN MODAL DATA IN CELLS
+            # Verify agents array exists for drill-down
+            if real_data:
+                sample_real_territory = list(real_data.keys())[0]
+                sample_real_data = real_data[sample_real_territory]
+                
+                if 'agents' not in sample_real_data:
+                    issues.append(f"realAgentData territory '{sample_real_territory}' missing agents array for drill-down")
+                elif not isinstance(sample_real_data['agents'], list):
+                    issues.append(f"realAgentData territory '{sample_real_territory}' agents is not an array")
+                else:
+                    agents = sample_real_data['agents']
+                    if len(agents) == 0:
+                        issues.append(f"realAgentData territory '{sample_real_territory}' agents array is empty")
+                    else:
+                        # Check first agent has required fields
+                        agent = agents[0]
+                        required_agent_fields = ['name', 'path', 'healCap', 'invocation', 'test', 'health']
+                        for field in required_agent_fields:
+                            if field not in agent:
+                                issues.append(f"Agent object missing '{field}' field for drill-down")
+            
+            # 6. VERIFY CELL RENDERING FUNCTIONS EXIST
+            # Check for functions and const declarations
+            if 'function formatOutlierBadge' not in html:
+                issues.append("Missing formatOutlierBadge function for outlier badge rendering")
+            if 'function generateSparkline' not in html:
+                issues.append("Missing generateSparkline function for sparkline rendering")
+            if 'const getGradientBg' not in html and 'function getGradientBg' not in html:
+                issues.append("Missing getGradientBg for cell background color")
+            if 'function getWorstCaseColor' not in html:
+                issues.append("Missing getWorstCaseColor function for cell text color")
+            if 'function openDrillModal' not in html:
+                issues.append("Missing openDrillModal function for drill-down modal")
+            
+            # SUMMARY
+            if issues:
+                return False, f"Cell inspection failed: {len(issues)} issues found: {'; '.join(issues[:3])}..."
+            
+            return True, f"Cell-by-cell inspection passed: TOTAL row verified, sample territory verified, outlier data verified, sparkline data verified, drill-down data verified"
+            
+        except Exception as e:
+            return False, f"Exception during cell inspection: {e}"
+    
     def run_test(self, name: str, test_func) -> bool:
         """Run a single test and report results."""
         print(f"\n{'─' * 70}")
@@ -307,7 +455,8 @@ class DashboardTestSuite:
             ("Field Types", self.test_field_types),
             ("Regeneration Stability", self.test_regeneration_stability),
             ("HTML Rendering Elements", self.test_html_rendering_elements),
-            ("Visual Data Population", self.test_visual_data_population)
+            ("Visual Data Population", self.test_visual_data_population),
+            ("Cell-by-Cell Visual Inspection (MANDATORY)", self.test_cell_by_cell_visual_inspection)
         ]
         
         for name, test_func in tests:

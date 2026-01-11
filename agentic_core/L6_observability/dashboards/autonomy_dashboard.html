@@ -10882,22 +10882,12 @@
         }
 
         // Phase 4.9: Live Tactical Poller
+        // DISABLED: API polling disabled - no backend API server running
         async function updateRuntime() {
-            try {
-                // Poll Redis for latest tactical state
-                const logRes = await fetch('/api/redis/lrange/sovereign:runtime:log/0/49');
-                const logData = await logRes.json();
-                document.getElementById('liveLog').textContent = logData.join('\n');
-                
-                const latRes = await fetch('/api/redis/hgetall/sovereign:runtime:pulse');
-                const latData = await latRes.json();
-                document.getElementById('geminiLatency').textContent = (latData.GeminiEmbedder?.latency || '--') + 'ms';
-                document.getElementById('pineconeLatency').textContent = (latData.PineconeSearch?.latency || '--') + 'ms';
-            } catch (e) { 
-                console.warn("Waiting for tactical stream..."); 
-            }
+            // Disabled - would poll /api/redis endpoints which don't exist in simple HTTP server
+            // Re-enable when backend API server is available
         }
-        setInterval(updateRuntime, 1000); // 1Hz Refresh Rate
+        // setInterval(updateRuntime, 1000); // DISABLED - no API server
         
         // Initialize semantic retrieval metrics
         function initializeSemanticMetrics() {
