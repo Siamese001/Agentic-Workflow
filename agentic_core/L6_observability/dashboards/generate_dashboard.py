@@ -238,7 +238,8 @@ class DashboardGenerator:
         # Derived metrics
         complexity_health = round(max(0, 100 - (avg_cc * 2)), 1)
         code_quality = round((typed_pct + doc_pct) / 2, 1)
-        health = round((test_pct + heal_inv_pct + obs_pct) / 3, 1)
+        # Health is weighted average of 5 components as shown in Health Breakdown
+        health = round((heal_cap_pct + heal_inv_pct + test_pct + obs_pct + complexity_health) / 5, 1)
         risk = "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW"
         
         # Hardened % - estimate based on layer
@@ -381,30 +382,62 @@ class DashboardGenerator:
         return all_rows
     
     def validate_dashboard_data(self, data: List[Dict[str, Any]]) -> bool:
-        """Validate dashboard data against FIXED wireframe."""
+        """Validate dashboard data against FIXED wireframe with strict guardrails."""
         if not data:
             print("❌ VALIDATION FAILED: No data generated")
             return False
         
-        # Check TOTAL row is first
-        if data[0].get("Territory") != "TOTAL":
-            print("❌ VALIDATION FAILED: TOTAL row must be first")
+        # GUARDRAIL 1: Enforce exactly 29 rows (TOTAL + 28 territories)
+        expected_row_count = len(TERRITORY_ORDER) + 1  # +1 for TOTAL
+        if len(data) != expected_row_count:
+            print(f"❌ GUARDRAIL VIOLATION: Row count mismatch")
+            print(f"   Expected: {expected_row_count} rows (TOTAL + {len(TERRITORY_ORDER)} territories)")
+            print(f"   Actual: {len(data)} rows")
+            print(f"   This violates the frozen wireframe structure!")
             return False
         
-        # Check all rows have required fields
+        # GUARDRAIL 2: TOTAL row must be first
+        if data[0].get("Territory") != "TOTAL":
+            print("❌ GUARDRAIL VIOLATION: TOTAL row must be first")
+            return False
+        
+        # GUARDRAIL 3: All rows must have all required fields
         for i, row in enumerate(data):
             missing_fields = [f for f in REQUIRED_FIELDS if f not in row]
             if missing_fields:
-                print(f"❌ VALIDATION FAILED: Row {i} ({row.get('Territory', 'UNKNOWN')}) missing fields: {missing_fields}")
+                print(f"❌ GUARDRAIL VIOLATION: Row {i} ({row.get('Territory', 'UNKNOWN')}) missing fields: {missing_fields}")
                 return False
         
-        # Check territory order (excluding TOTAL)
+        # GUARDRAIL 4: Territory order must match FIXED structure exactly
         territory_rows = data[1:]
         for i, row in enumerate(territory_rows):
-            expected = TERRITORY_ORDER[i] if i < len(TERRITORY_ORDER) else None
+            expected = TERRITORY_ORDER[i]
             actual = row.get("Territory")
-            if expected and actual != expected:
-                print(f"⚠️  WARNING: Territory order deviation at position {i}: expected {expected}, got {actual}")
+            if actual != expected:
+                print(f"❌ GUARDRAIL VIOLATION: Territory order mismatch at position {i+1}")
+                print(f"   Expected: {expected}")
+                print(f"   Actual: {actual}")
+                print(f"   Territory order must never deviate from frozen wireframe!")
+                return False
+        
+        # GUARDRAIL 5: Verify health formula consistency
+        # Health should be weighted average of 5 components: Heal Cap, Heal Inv, Test, Obs, Complexity Health
+        for i, row in enumerate(data[1:], 1):  # Skip TOTAL row
+            if row.get('Total', 0) > 0:  # Only check non-empty territories
+                heal_cap = row.get('Heal Cap %', 0)
+                heal_inv = row.get('Heal Invocation %', 0)
+                test = row.get('Test %', 0)
+                obs = row.get('Observable %', 0)
+                complexity = row.get('Complexity Health', 0)
+                health = row.get('Health', 0)
+                
+                expected_health = round((heal_cap + heal_inv + test + obs + complexity) / 5, 1)
+                
+                if abs(health - expected_health) > 0.2:  # Allow small rounding differences
+                    print(f"⚠️  WARNING: Health formula mismatch in {row.get('Territory')}")
+                    print(f"   Expected: {expected_health}% (avg of 5 components)")
+                    print(f"   Actual: {health}%")
+                    print(f"   Components: Heal:{heal_cap} Inv:{heal_inv} Test:{test} Obs:{obs} CC:{complexity}")
         
         print(f"✅ VALIDATION PASSED: {len(data)} rows with all required fields")
         return True
