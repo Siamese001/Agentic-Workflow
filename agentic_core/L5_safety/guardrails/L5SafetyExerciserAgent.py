@@ -11,6 +11,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     is_broken_backup_file,
 )
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Lazy imports — gravity-safe (same/downstream L5)
 # Agents loaded on-demand to avoid circular dependencies
@@ -58,7 +59,7 @@ def log_event(event_type: str, payload: dict):
         print(f"[L5SafetyExerciserAgent] Event logged (stub): {event_type} = {payload}")
 
 
-class L5SafetyExerciserAgent:
+class L5SafetyExerciserAgent(MCPHardenedMixin):
     """
     Sub-atomic responsibility: Safely exercise L5 safety primitives via no-op/dry-run checks.
     Triggered by CoverageAgent synthetic tasks — directly boosts L5 metrics.

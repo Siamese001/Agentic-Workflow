@@ -1299,7 +1299,7 @@ def main():
             # Base agents end with "BaseAgent" or are known base class names
             is_base_class = (
                 node.name.endswith('BaseAgent') or 
-                node.name in {'L0Agent', 'L1Agent', 'L6Agent', 'L6ObservabilityBaseAgent'} or
+                node.name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent', 'L6ObservabilityBaseAgent'} or
                 'BaseAgent' in node.name
             )
             

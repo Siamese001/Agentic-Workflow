@@ -27,6 +27,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class GuardrailResult(Enum):
@@ -254,7 +255,7 @@ class AuthorizationGuardrail(Guardrail):
         return {"result": GuardrailResult.ALLOW, "reason": "authorized"}
 
 
-class CompositeGuardrailAgent:
+class CompositeGuardrailAgent(MCPHardenedMixin):
     """
     Unified guardrail agent - membrane pattern composition.
     
