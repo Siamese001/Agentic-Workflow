@@ -8,7 +8,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 
-class InternalAgent:
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
+class InternalAgent(SovereignBaseAgent):
     """
     v12.0: UPGRADED to primary intelligence-gathering unit.
     NOW LOADS: 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 import tempfile
 from pathlib import Path
 from typing import List
@@ -50,7 +52,7 @@ def log_event(event_type: str, payload: dict):
         print(f"[L4StateExerciserAgent] Event logged (stub): {event_type} = {payload}")
 
 
-class L4StateExerciserAgent:
+class L4StateExerciserAgent(SovereignBaseAgent):
     """
     Sub-atomic responsibility: Safely exercise L4 state primitives via no-op/dry-run operations.
     Triggered by CoverageAgent synthetic tasks — directly boosts L4 metrics.

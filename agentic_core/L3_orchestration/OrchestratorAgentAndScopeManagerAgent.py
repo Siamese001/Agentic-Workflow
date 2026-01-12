@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 import ast
 '''Brief description of functionality and purpose.'''
@@ -238,7 +240,7 @@ class OrchestratorStateManager:
             duration: Any = (self.state.end_time - self.state.start_time).total_seconds()
         return {'workflow_id': self.state.workflow_id, 'status': self.state.status, 'cycles_executed': self.state.current_cycle, 'signals': list(self.state.signals), 'modified_files': list(self.state.modified_files), 'healing_attempts': self.state.healing_attempts, 'healing_budget_used': self.state.healing_budget_used, 'checkpoints_created': len(self.state.checkpoints), 'duration_seconds': duration, 'start_time': self.state.start_time.isoformat() if self.state.start_time else None, 'end_time': self.state.end_time.isoformat() if self.state.end_time else None}
 
-class OrchestratorAgentAndScopeManagerAgent:
+class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
     """
     Manages the creation of the subatomic agent swarm and calculates
     the smart scope for targeted execution.

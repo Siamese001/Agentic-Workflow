@@ -6,6 +6,7 @@ import time
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import get_validated_project_root
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
+from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
 
 # Lazy imports — gravity-safe (same L1 territory)
 def _get_thought_node():
@@ -59,7 +60,7 @@ def log_event(event_type: str, payload: dict):
         print(f"[L1CognitionExerciserAgent] Event logged (stub): {event_type} = {payload}")
 
 
-class L1CognitionExerciserAgent:
+class L1CognitionExerciserAgent(L1CognitionBaseAgent):
     """
     Sub-atomic responsibility: Safely exercise L1 cognition primitives via no-op reasoning cycles.
     Triggered by CoverageAgent synthetic tasks — directly boosts L1 metrics.

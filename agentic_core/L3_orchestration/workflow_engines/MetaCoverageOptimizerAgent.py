@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 from collections import deque
 from typing import Deque, Dict, Optional
 import time
@@ -10,7 +12,7 @@ from agentic_core.L6_observability.metrics.shared_counters import counters
 from agentic_core.runtime.shared_runtime import log_event, publish_event
 
 
-class MetaCoverageOptimizerAgent:
+class MetaCoverageOptimizerAgent(SovereignBaseAgent):
     """
     Sub-atomic meta-responsibility: Autonomously optimize coverage parameters for sustained high entropy.
     Monitors history, performs bounded hill-climb tweaks, applies safe adjustments.

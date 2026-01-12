@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 import warnings
 import logging
 import torch
@@ -44,7 +46,7 @@ class PPOActorCritic(nn.Module):
         return self.actor(shared), self.critic(shared).squeeze()
 
 
-class PPOOrchestratorAgent:
+class PPOOrchestratorAgent(SovereignBaseAgent):
     """
     DEPRECATED: Use UnifiedWorkflowEngine instead.
     

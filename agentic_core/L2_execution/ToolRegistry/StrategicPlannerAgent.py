@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 """
 Planning and reflection agents for strategic decision-making.
 
@@ -26,7 +28,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # - Documented 2026-01-06
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class StrategicPlannerAgent(SubAtomicAgent):
+class StrategicPlannerAgent(SovereignBaseAgent):
     """
     ROLE: High-level strategist.
     Analyzes aggregated signals/violations and generates multi-step refactor plans.

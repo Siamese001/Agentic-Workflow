@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 import numpy as np
 import time
 import uuid
@@ -27,7 +29,7 @@ except ImportError:
 
 # Use the canonical base for metric-related agents (observed pattern in MetricsAgent/BenchmarkingAgent)
 # If no specific base exists, fall back to a lightweight object; adjust if your MetricsAgent inherits something specific
-class CoverageAgent:
+class CoverageAgent(SovereignBaseAgent):
     def __init__(
         self,
         layers: list[str] = None,

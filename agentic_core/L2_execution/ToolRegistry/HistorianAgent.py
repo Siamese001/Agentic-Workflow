@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import asyncio
 '''Brief description of functionality and purpose.'''
 
@@ -46,7 +48,7 @@ except ImportError:
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class HistorianAgent(SubAtomicAgent):
+class HistorianAgent(SovereignBaseAgent):
     """
     ROLE: Records all validation events to a Markdown log file.
     """

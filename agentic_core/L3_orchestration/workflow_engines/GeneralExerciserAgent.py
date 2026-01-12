@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 from typing import Dict
 import uuid
 import time
@@ -9,7 +11,7 @@ from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 
-class GeneralExerciserAgent:
+class GeneralExerciserAgent(SovereignBaseAgent):
     """
     Generalized sub-atomic exerciser base: Config-driven no-op cycles for any layer.
     Subclasses or config override hooks for layer-specific probes.
