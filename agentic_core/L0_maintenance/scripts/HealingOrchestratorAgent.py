@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-HealingOrchestratorAgent – Sovereign Agent (Phase 16 – Dec 30, 2025)
+RgHealingOrchestratorAgent – Sovereign Agent (Phase 16 – Dec 30, 2025)
 SSOT-compliant location: L0_maintenance/scripts/
 Responsible for autonomous self-correction using diagnosed issues and healing strategies.
 Pure orchestration with transactional safety – zero direct file mutation outside transaction manager.
@@ -12,22 +12,24 @@ import logging
 from datetime import datetime
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
+# PHASE 2.1: L0 Structural Standardization
+from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
+
 # Sovereign Hardening Mixins – Phase 33
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class HealingOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin, AutonomyMixin,
+class RgHealingOrchestratorAgent(L0Agent, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """
     Sovereign healing engine orchestrator.
     Coordinates diagnosis, strategy selection, transactional application, and audit logging.
+    
+    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     Now hardened with:
       - Proactive initiation (AutonomyMixin)

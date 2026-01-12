@@ -6,12 +6,12 @@ Provides domain-specific agents for outreach campaigns:
 - LeadQualityAgent: Validates lead quality
 - ContactValidatorAgent: Validates contact information
 - MessageComplianceAgent: Ensures message compliance
-- TemplateOptimizerAgent: Optimizes message templates
+- RgTemplateOptimizerAgent: Optimizes message templates
 - CampaignBalanceAgent: Balances campaign elements
 - DeliverabilityAgent: Checks email deliverability
 - OutreachTestPilot: Runs validation tests
 - CampaignPlannerAgent: Strategic campaign planning
-- OutreachReflectionAgent: Reflects on execution
+- LicReflectionAgent: Reflects on execution
 """
 
 import re

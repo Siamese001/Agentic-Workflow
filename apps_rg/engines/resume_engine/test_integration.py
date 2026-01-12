@@ -72,7 +72,7 @@ class TestAgentCoordination:
             ContentQualityAgent(ctx),
             FactCheckAgent(ctx),
             BrandComplianceAgent(ctx),
-            TemplateOptimizerAgent(ctx),
+            RgTemplateOptimizerAgent(ctx),
             SectionBalanceAgent(ctx),
             ATSCompatibilityAgent(ctx),
             TestPilot(ctx),
@@ -121,7 +121,7 @@ class TestSignalPropagation:
         assert "QUALITY_FAILURE" in ctx.signals
 
         # Strategic planner should pick up the signal
-        planner = StrategicPlannerAgent(ctx)
+        planner = RgStrategicPlannerAgent(ctx)
         await planner.execute()
 
         plan = ctx.results["strategic_plan"]
@@ -143,7 +143,7 @@ class TestSignalPropagation:
         assert "BRAND_VIOLATION" in ctx.signals
 
         # Strategic planner should recommend BrandComplianceAgent
-        planner = StrategicPlannerAgent(ctx)
+        planner = RgStrategicPlannerAgent(ctx)
         await planner.execute()
 
         plan = ctx.results["strategic_plan"]
@@ -162,7 +162,7 @@ class TestSignalPropagation:
         assert len(ctx.signals) >= 2
 
         # Strategic planner should handle all
-        planner = StrategicPlannerAgent(ctx)
+        planner = RgStrategicPlannerAgent(ctx)
         await planner.execute()
 
         plan = ctx.results["strategic_plan"]
@@ -227,7 +227,7 @@ class TestStrategicPlanningIntegration:
         await ATSCompatibilityAgent(ctx).execute()
 
         # Run strategic planner
-        planner = StrategicPlannerAgent(ctx)
+        planner = RgStrategicPlannerAgent(ctx)
         await planner.execute()
 
         plan = ctx.results["strategic_plan"]
@@ -257,7 +257,7 @@ class TestStrategicPlanningIntegration:
             await agent.execute()
 
         # Run reflection
-        reflection = ReflectionAgent(ctx)
+        reflection = RgReflectionAgent(ctx)
         await reflection.execute()
 
         insights = ctx.results["reflection"]
@@ -275,7 +275,7 @@ class TestStrategicPlanningIntegration:
         ctx.record_result("Agent2", passed=True)
 
         # Run reflection
-        reflection = ReflectionAgent(ctx)
+        reflection = RgReflectionAgent(ctx)
         await reflection.execute()
 
         # Should have recorded success
@@ -321,15 +321,15 @@ class TestEndToEndScenarios:
 
         # Full agent pipeline
         agents = [
-            TemplateOptimizerAgent(ctx),
+            RgTemplateOptimizerAgent(ctx),
             ContentQualityAgent(ctx),
             FactCheckAgent(ctx),
             BrandComplianceAgent(ctx),
             SectionBalanceAgent(ctx),
             ATSCompatibilityAgent(ctx),
             TestPilot(ctx),
-            StrategicPlannerAgent(ctx),
-            ReflectionAgent(ctx),
+            RgStrategicPlannerAgent(ctx),
+            RgReflectionAgent(ctx),
         ]
 
         for agent in agents:
@@ -357,7 +357,7 @@ class TestEndToEndScenarios:
         assert len(ctx.signals) > 0
 
         # Strategic planner should identify issues
-        await StrategicPlannerAgent(ctx).execute()
+        await RgStrategicPlannerAgent(ctx).execute()
         plan = ctx.results["strategic_plan"]
         assert len(plan["recommended_agents"]) > 0
 

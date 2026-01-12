@@ -118,6 +118,14 @@ EXCLUDED_PATH_PATTERNS = {
     '/fixtures/', '/mocks/', '/stubs/', '/fakes/',
 }
 
+# PHASE 2: Special layer mappings for non-standard paths (fixes "Unknown" territories)
+SPECIAL_LAYER_MAPPINGS = {
+    'schemas': 'L1',  # Validation schemas are cognition-related
+    'prompt_governance': 'L1',  # Prompt management is cognition
+    'base_agents': 'Base',  # Special category for base agents
+    'utils': 'Utils',  # Utility category
+}
+
 
 def should_exclude_path(path: Path) -> bool:
     """Return True if path should be excluded from scanning/hashing.
@@ -1342,8 +1350,22 @@ def main():
             # ASSIGN DETAILED TERRITORIES - SSOT for dashboard
             path_str = str(rel_path).replace('\\', '/').lower()
             
+            # PHASE 2: Check special layer mappings first (schemas, prompt_governance, etc.)
+            special_territory = None
+            for pattern, special_layer in SPECIAL_LAYER_MAPPINGS.items():
+                if pattern in path_str:
+                    if special_layer == 'Base':
+                        special_territory = f"{layer}/Base Class"
+                    elif special_layer in ('L1', 'L2', 'L3', 'L4', 'L5', 'L6'):
+                        special_territory = f"{special_layer}/{pattern.title()}"
+                    else:
+                        special_territory = special_layer
+                    break
+            
+            if special_territory:
+                territory = special_territory
             # Apps territories
-            if 'apps_lic' in path_str:
+            elif 'apps_lic' in path_str:
                 territory = "Apps Lic"
             elif 'apps_rg' in path_str:
                 territory = "Apps Rg"

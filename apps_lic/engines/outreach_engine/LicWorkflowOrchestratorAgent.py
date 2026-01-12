@@ -31,7 +31,7 @@ from .HOP6ValidationAgent import HOP6ValidationAgent
 from .HOP8QAReportAgent import HOP8QAReportAgent
 
 
-class WorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+class LicWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.0: HOP-based Workflow Orchestrator
     
@@ -199,7 +199,7 @@ async def main():
         prior_message_count=0
     )
     
-    orchestrator = WorkflowOrchestratorAgent()
+    orchestrator = LicWorkflowOrchestratorAgent()
     result = await orchestrator.execute_workflow(mission)
     
     print("\n" + "="*80)

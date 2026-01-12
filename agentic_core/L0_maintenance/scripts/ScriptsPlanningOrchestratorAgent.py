@@ -10,9 +10,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.mixins import SubatomicTestingMixin
+# PHASE 2.1: L0 Structural Standardization
+from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
 Logger: Any = logging.getLogger(__name__)
 
 class ScriptExecutionPriority(Enum):
@@ -55,8 +54,11 @@ class ScriptsPlanningResult:
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-class ScriptsPlanningOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-    """Orchestrator for planning script execution operations."""
+class ScriptsPlanningOrchestratorAgent(L0Agent):
+    """Orchestrator for planning script execution operations.
+    
+    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    """
 
     def __init__(self, config: Optional[ScriptsPlanningConfig]=None) -> None:
         self.config = config or ScriptsPlanningConfig()

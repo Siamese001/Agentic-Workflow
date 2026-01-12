@@ -3,7 +3,7 @@ from __future__ import annotations
 Integration Tests for Phase 2: Self-Healing
 
 Tests the integration of self-healing components:
-- HealingOrchestratorAgent with multiple cycles
+- RgHealingOrchestratorAgent with multiple cycles
 - Signal-based routing across cycles
 - Rollback integration
 - Convergence across cycles
@@ -65,7 +65,7 @@ class TestHealingOrchestratorIntegration:
         ctx.current_resume = valid_resume
         ctx.JobDescription = "Software Engineer"
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=3)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=3)
         result = await orchestrator.run()
 
         assert result.success is True
@@ -79,7 +79,7 @@ class TestHealingOrchestratorIntegration:
         ctx.current_resume = problematic_resume
         ctx.JobDescription = "Software Engineer"
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # May not converge due to issues
@@ -91,7 +91,7 @@ class TestHealingOrchestratorIntegration:
         """Test orchestrator respects max_cycles limit."""
         ctx.current_resume = problematic_resume
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=1)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=1)
         result = await orchestrator.run()
 
         assert result.total_cycles == 1
@@ -101,7 +101,7 @@ class TestHealingOrchestratorIntegration:
         """Test orchestrator tracks all cycle results."""
         ctx.current_resume = valid_resume
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=3)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=3)
         result = await orchestrator.run()
 
         assert len(result.cycle_results) > 0
@@ -115,7 +115,7 @@ class TestHealingOrchestratorIntegration:
         """Test orchestrator runs reflection agent."""
         ctx.current_resume = valid_resume
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2, enable_reflection=True)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2, enable_reflection=True)
         await orchestrator.run()
 
         # Reflection should have recorded insights
@@ -126,7 +126,7 @@ class TestHealingOrchestratorIntegration:
         """Test orchestrator without reflection agent."""
         ctx.current_resume = valid_resume
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2, enable_reflection=False)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2, enable_reflection=False)
         result = await orchestrator.run()
 
         assert result.success is True
@@ -140,7 +140,7 @@ class TestMultiCycleHealing:
         """Test that strategy changes based on signals."""
         ctx.current_resume = valid_resume
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=3)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=3)
         result = await orchestrator.run()
 
         # First cycle is always FULL_DIAGNOSTIC
@@ -155,7 +155,7 @@ class TestMultiCycleHealing:
         """Test that signals propagate between cycles."""
         ctx.current_resume = problematic_resume
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # First cycle should detect issues
@@ -167,7 +167,7 @@ class TestMultiCycleHealing:
         """Test that convergence stops further cycles."""
         ctx.current_resume = valid_resume
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=5)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=5)
         result = await orchestrator.run()
 
         # Should converge before max cycles
@@ -251,7 +251,7 @@ class TestConvergenceIntegration:
 
         detector = ConvergenceDetectorAgent(ctx)
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=3)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=3)
         await orchestrator.run()
 
         # After successful run, should be converged
@@ -264,7 +264,7 @@ class TestConvergenceIntegration:
 
         detector = ConvergenceDetectorAgent(ctx)
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # May not converge
@@ -282,7 +282,7 @@ class TestBudgetIntegration:
 
         initial_cost = ctx.budget.current_cost
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Budget should be tracked (even if no LLM calls)
@@ -296,7 +296,7 @@ class TestBudgetIntegration:
         ctx.budget.max_cost = 0.0  # Exhaust budget immediately
         ctx.budget.current_cost = 0.001
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=5)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=5)
         result = await orchestrator.run()
 
         # Either budget exhausted OR converged in cycle 1
@@ -316,7 +316,7 @@ class TestHealingResultIntegration:
         ctx.current_resume = valid_resume
         ctx.JobDescription = "Software Engineer"
 
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=3)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=3)
         result = await orchestrator.run()
 
         # Check all fields are populated

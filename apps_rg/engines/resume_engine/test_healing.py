@@ -6,7 +6,7 @@ Tests the core self-healing functionality:
 - SignalRouterAgent
 - AgentFactory
 - HealingCycle
-- HealingOrchestratorAgent
+- RgHealingOrchestratorAgent
 - ConvergenceDetectorAgent
 - AutomaticRollback
 """

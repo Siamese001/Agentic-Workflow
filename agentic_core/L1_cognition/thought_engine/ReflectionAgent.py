@@ -17,7 +17,7 @@ Logger: Any = logging.getLogger(__name__)
 # - Intentional variants for domain-specific behavior
 # - Consolidated 2026-01-06
 
-class ReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Agent responsible for learning from successful execution traces
     and consolidating them into long-term memory (Pinecone).
@@ -81,7 +81,7 @@ class ReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         if not successful_traces:
             Logger.debug('No successful traces to process')
             return {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
-        Logger.info(f'ReflectionAgent processing {len(successful_traces)} successful traces')
+        Logger.info(f'RgReflectionAgent processing {len(successful_traces)} successful traces')
         results: Any = {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
         for trace in successful_traces:
             try:

@@ -158,7 +158,7 @@ class TestCompleteCampaignLifecycle:
             LeadQualityAgent(ctx),
             ContactValidatorAgent(ctx),
             MessageComplianceAgent(ctx),
-            TemplateOptimizerAgent(ctx),
+            RgTemplateOptimizerAgent(ctx),
             CampaignBalanceAgent(ctx),
             DeliverabilityAgent(ctx),
         ]
@@ -243,7 +243,7 @@ class TestMultiPhaseOrchestration:
         # Phase 3: Healing (if needed)
         if ctx.signals:
             step_id = phase5.track_agent("HealingOrchestratorAgent", "heal")
-            orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
+            orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=2)
             result = await orchestrator.run()
             phase5.complete_agent(step_id, success=result.total_cycles >= 1)
 
@@ -253,7 +253,7 @@ class TestMultiPhaseOrchestration:
         phase5.complete_agent(step_id, success=True)
 
         # Phase 5: Reflection
-        reflection = OutreachReflectionAgent(ctx)
+        reflection = LicReflectionAgent(ctx)
         step_id = phase5.track_agent("ReflectionAgent", "reflect")
         await reflection.execute()
         phase5.complete_agent(step_id, success=True)

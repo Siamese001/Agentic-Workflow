@@ -20,7 +20,7 @@ from .agents import (
     LeadQualityAgent,
     OutreachTestPilot,
 )
-from .TemplateOptimizerAgent import TemplateOptimizerAgent
+from .RgTemplateOptimizerAgent import LicHealingOrchestratorAgent
 from .context import OutreachEngineContext
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -131,7 +131,7 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
             LeadQualityAgent(ctx),
             ContactValidatorAgent(ctx),
             MessageComplianceAgent(ctx),
-            TemplateOptimizerAgent(ctx),
+            RgTemplateOptimizerAgent(ctx),
             CampaignBalanceAgent(ctx),
             DeliverabilityAgent(ctx),
             OutreachTestPilot(ctx),
@@ -143,7 +143,7 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
         return [
             LeadQualityAgent(ctx),
             ContactValidatorAgent(ctx),
-            TemplateOptimizerAgent(ctx),
+            RgTemplateOptimizerAgent(ctx),
             OutreachTestPilot(ctx),
         ]
 
@@ -324,5 +324,5 @@ async def run_outreach_healing_mission(
     # Backup initial state
     ctx.backup_campaign("default")
 
-    orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=max_cycles)
+    orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=max_cycles)
     return await orchestrator.run()

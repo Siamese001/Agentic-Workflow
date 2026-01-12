@@ -21,8 +21,8 @@ _logger = logging.getLogger(__name__)
 Logger = logging.getLogger(__name__)
 
 
-class ResumeOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
-    """Orchestrate the multi-hop resume generation workflow."""
+class RgResumeOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+    """Orchestrate the multi-hop resume generation workflow (Resume Generator app-specific)."""
 
     def __init__(self, master_resume: Dict, test_mode: bool) -> None:
         """Initialize the orchestrator."""

@@ -1,5 +1,5 @@
 """
-HealingOrchestratorAgent - Extracted for one-class-per-file pattern.
+RgHealingOrchestratorAgent - Extracted for one-class-per-file pattern.
 
 Originally from: SignalRouterAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
@@ -8,7 +8,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 
-class HealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrates the complete self-healing process."""
 
     def __init__(
@@ -83,7 +83,7 @@ class HealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
 
         # Run reflection if enabled
         if self.enable_reflection:
-            reflection = ReflectionAgent(self.ctx)
+            reflection = RgReflectionAgent(self.ctx)
             await reflection.execute()
 
         end_time = time.time()

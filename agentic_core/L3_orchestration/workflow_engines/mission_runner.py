@@ -86,8 +86,8 @@ def _get_imports():
     TypeEnforcer = None  # Key 22 + auto-inject typing imports
     GitAgent = None
     Historian = None
-    ReflectionAgent = None
-    StrategicPlannerAgent = None
+    RgReflectionAgent = None
+    RgStrategicPlannerAgent = None
 
     # Use the FULL ValidationContext from scripts/CanonValidatorAgent which has all methods
     # GRAVITY FIX: Removed all scripts.CanonValidatorAgent imports
@@ -236,8 +236,8 @@ def run_standard_mode():
     StructuralEngineer = imports['StructuralEngineer']
     SafetyInspectorAgent = imports['SafetyInspectorAgent']
     TestPilot = imports['TestPilot']
-    ReflectionAgent = imports['ReflectionAgent']
-    StrategicPlannerAgent = imports['StrategicPlannerAgent']
+    RgReflectionAgent = imports['ReflectionAgent']
+    RgStrategicPlannerAgent = imports['StrategicPlannerAgent']
 
     try:
         ctx = ValidationContext()
@@ -383,7 +383,7 @@ def _build_agenda(cycle: int, ctx, agents: List, GitAgent, StrategicPlannerAgent
     else:
         print(f"   🤔 STRATEGY: Analyzing {len(ctx.signals)} signals to form agenda...")
         agenda.append(agents[0])  # Historian
-        agenda.append(StrategicPlannerAgent(ctx))
+        agenda.append(RgStrategicPlannerAgent(ctx))
 
         if "TEST_FAILURE" in ctx.signals:
             agenda.extend([a for a in agents if a.name in ["Sherlock", "TestPilot"]])
@@ -414,7 +414,7 @@ def _build_agenda(cycle: int, ctx, agents: List, GitAgent, StrategicPlannerAgent
             agenda.append(agents[-1])  # TestPilot
             print("      -> Plan: General System Verification")
 
-    agenda.append(ReflectionAgent(ctx))
+    agenda.append(RgReflectionAgent(ctx))
     return agenda
 
 

@@ -1,5 +1,5 @@
 """
-TemplateOptimizerAgent - Extracted for one-class-per-file pattern.
+RgTemplateOptimizerAgent - Extracted for one-class-per-file pattern.
 
 Originally from: LeadQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
@@ -9,7 +9,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class TemplateOptimizerAgent(OutreachAgent, MCPHardenedMixin):
+class LicTemplateOptimizerAgent(OutreachAgent, MCPHardenedMixin):
     """Optimizes message templates for engagement."""
 
     async def execute(self) -> None:

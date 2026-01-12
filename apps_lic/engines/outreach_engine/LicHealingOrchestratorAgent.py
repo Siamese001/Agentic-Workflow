@@ -1,5 +1,5 @@
 """
-OutreachHealingOrchestratorAgent - Extracted for one-class-per-file pattern.
+LicHealingOrchestratorAgent - Extracted for one-class-per-file pattern.
 
 Originally from: OutreachSignalRouterAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
@@ -8,7 +8,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 
-class OutreachHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrates the complete self-healing process."""
 
     def __init__(
@@ -81,7 +81,7 @@ class OutreachHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3Subatomi
 
         # Run reflection if enabled
         if self.enable_reflection:
-            reflection = OutreachReflectionAgent(self.ctx)
+            reflection = LicReflectionAgent(self.ctx)
             await reflection.execute()
 
         end_time = time.time()

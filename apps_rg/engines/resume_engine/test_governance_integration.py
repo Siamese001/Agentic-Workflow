@@ -361,7 +361,7 @@ def process_resume(resume):
 
         # Run healing
         step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
-        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
+        healing = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         await healing.run()
         phase5.complete_agent(step_id, success=True)
 

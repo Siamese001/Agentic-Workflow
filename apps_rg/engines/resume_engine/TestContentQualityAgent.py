@@ -6,12 +6,12 @@ Tests each specialized agent's functionality:
 - ContentQualityAgent
 - FactCheckAgent
 - BrandComplianceAgent
-- TemplateOptimizerAgent
+- RgTemplateOptimizerAgent
 - SectionBalanceAgent
 - ATSCompatibilityAgent
 - TestPilot
-- StrategicPlannerAgent
-- ReflectionAgent
+- RgStrategicPlannerAgent
+- RgReflectionAgent
 """
 import re
 
@@ -226,7 +226,7 @@ class TestTemplateOptimizer:
         """Test technical job type detection."""
         ctx.current_resume = valid_resume
         ctx.JobDescription = "Senior Software Engineer needed for cloud development"
-        agent = TemplateOptimizerAgent(ctx)
+        agent = RgTemplateOptimizerAgent(ctx)
 
         await agent.execute()
 
@@ -238,7 +238,7 @@ class TestTemplateOptimizer:
         """Test executive job type detection."""
         ctx.current_resume = valid_resume
         ctx.JobDescription = "VP of Engineering, Director level position"
-        agent = TemplateOptimizerAgent(ctx)
+        agent = RgTemplateOptimizerAgent(ctx)
 
         await agent.execute()
 
@@ -249,7 +249,7 @@ class TestTemplateOptimizer:
         """Test handling of Missing job description."""
         ctx.current_resume = valid_resume
         ctx.JobDescription = ""
-        agent = TemplateOptimizerAgent(ctx)
+        agent = RgTemplateOptimizerAgent(ctx)
 
         await agent.execute()
 
@@ -383,14 +383,14 @@ class TestTestPilot:
 
 
 class TestStrategicPlanner:
-    """Tests for StrategicPlannerAgent agent."""
+    """Tests for RgStrategicPlannerAgent agent."""
 
     @pytest.mark.asyncio
     async def test_quality_failure_strategy(self, ctx, valid_resume):
         """Test strategy for quality failure."""
         ctx.current_resume = valid_resume
         ctx.add_signal("QUALITY_FAILURE")
-        agent = StrategicPlannerAgent(ctx)
+        agent = RgStrategicPlannerAgent(ctx)
 
         await agent.execute()
 
@@ -403,7 +403,7 @@ class TestStrategicPlanner:
         """Test strategy for ATS failure."""
         ctx.current_resume = valid_resume
         ctx.add_signal("ATS_FAILURE")
-        agent = StrategicPlannerAgent(ctx)
+        agent = RgStrategicPlannerAgent(ctx)
 
         await agent.execute()
 
@@ -417,7 +417,7 @@ class TestStrategicPlanner:
         ctx.current_resume = valid_resume
         ctx.impact_zone.add("skills")
         ctx.impact_zone.add("summary")
-        agent = StrategicPlannerAgent(ctx)
+        agent = RgStrategicPlannerAgent(ctx)
 
         await agent.execute()
 
@@ -439,7 +439,7 @@ class TestReflectionAgent:
         ctx.current_cycle = 1
         ctx.record_result("Agent1", passed=True)
         ctx.record_result("Agent2", passed=True)
-        agent = ReflectionAgent(ctx)
+        agent = RgReflectionAgent(ctx)
 
         await agent.execute()
 
@@ -453,7 +453,7 @@ class TestReflectionAgent:
         ctx.current_resume = valid_resume
         ctx.current_cycle = 1
         ctx.add_signal("QUALITY_FAILURE")
-        agent = ReflectionAgent(ctx)
+        agent = RgReflectionAgent(ctx)
 
         await agent.execute()
 

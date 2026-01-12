@@ -16,7 +16,7 @@ import asyncio
 import pytest
 
 from ..context import ResumeEngineContext
-from ..healing import HealingOrchestratorAgent, HealingResult, run_self_healing_mission
+from ..healing import LicHealingOrchestratorAgent, HealingResult, run_self_healing_mission
 from ..learning import (
     ConfidenceScorer,
     InstructionInjector,
@@ -89,7 +89,7 @@ class TestFullMissionWithLearning:
         learning_agent = ResumeLearningAgent(ctx)
 
         # Run mission
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Record learning from mission
@@ -124,7 +124,7 @@ class TestFullMissionWithLearning:
         )
 
         # Run mission
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         assert result.success is True
@@ -140,7 +140,7 @@ class TestFullMissionWithLearning:
         memory = MemoryPersistence(memory_file=temp_memory_dir / "mission_memory.json")
 
         # Run first mission
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Record section validations
@@ -194,7 +194,7 @@ class TestFewShotRecallDuringHealing:
             ctx.signals.clear()
             ctx.results.clear()
 
-            orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+            orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
             result = await orchestrator.run()
 
             if result.success:
@@ -411,7 +411,7 @@ class TestComprehensiveWorkflow:
                 sections_to_validate.append(section)
 
         # 3. Run healing mission
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # 4. Record section validations
