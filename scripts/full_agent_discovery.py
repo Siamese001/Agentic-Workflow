@@ -810,6 +810,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         return False
     
     # 1c. Non-agent base classes (Protocol, ABC, etc.)
+    # EXCEPTION: Base agents (L0Agent-L6Agent, *BaseAgent) can inherit from ABC
     non_agent_bases = {
         'Protocol', 'ABC',
         'BaseModel', 'TypedDict',
@@ -818,8 +819,10 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         'TestCase',
     }
     if bases & non_agent_bases:
-        log.debug(f"EXCLUDED {name}: inherits from non-agent base {bases & non_agent_bases}")
-        return False
+        # Allow base agents to inherit from ABC (e.g., L6ObservabilityBaseAgent)
+        if not is_base_agent:
+            log.debug(f"TRACE: {name} excluded - inherits from non-agent base {bases & non_agent_bases}")
+            return False
     
     # 1d. Data container suffixes without 'Agent'
     data_container_suffixes = ('Config', 'Settings', 'Context', 'Options', 'Schema', 'State')
@@ -879,8 +882,12 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         'ExecutionCanonBaseAgent',
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
         'BaseAgent', 'SovereignBaseAgent',
-        # L6ObservabilityBaseAgent intentionally NOT in this set - it should be discovered
     }
+    
+    # Allow L-series (L0Agent, etc) and *BaseAgent classes to pass through even if in agent_bases
+    if name in agent_bases and not is_base_agent:
+        log.debug(f"TRACE: {name} excluded - strictly a base class without discovery flag")
+        return False
     
     has_strong_positive_signal = (
         name.endswith('Agent')
@@ -890,7 +897,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     
     # If not an agent candidate, exclude early
     if not has_strong_positive_signal:
-        log.debug(f"EXCLUDED {name}: not an agent candidate (no Agent suffix, base class, or healing)")
+        log.debug(f"TRACE: {name} excluded - not an agent candidate (no Agent suffix, base class, or healing)")
         return False
     
     # =========================================================================
@@ -918,9 +925,9 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
 
     decorators = extract_decorators(class_node)
     # Conditional negative: dataclass/attrs only disqualifies absent strong positive
-    # CRITICAL FIX: Never exclude BaseAgent classes regardless of decorators (fixes L6ObservabilityBaseAgent)
-    is_base_agent = name.endswith('BaseAgent')
+    # Base agents bypass this check (is_base_agent set at Layer 0)
     if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators) and not has_strong_positive_signal and not is_base_agent:
+        log.debug(f"TRACE: {name} excluded - dataclass without strong signal or base agent flag")
         return False
 
     # Remaining conditional negatives removed - strict enforcement already applied above

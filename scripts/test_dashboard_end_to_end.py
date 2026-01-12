@@ -573,11 +573,67 @@ def run_all_tests() -> bool:
                     else:
                         print(f"✅ Test 12 PASSED: Table 2 data valid")
                         print(f"   Typed: {typed_pct}%, Documented: {doc_pct}%, Quality: {quality_score}")
+                    
+                    # Test 12A: Proper Base % Accuracy (cross-validate with discovery data)
+                    proper_base_pct = total_row.get('Proper Base %', 0)
+                    proper_base_true = sum(1 for a in agents if a.get('proper_base_class', False))
+                    expected_proper_base = round((proper_base_true / len(agents)) * 100, 1) if agents else 0
+                    tolerance = 1.0  # Allow 1% variance
+                    
+                    if abs(proper_base_pct - expected_proper_base) > tolerance:
+                        errors.append(f"Test 12A FAILED: Proper Base % mismatch")
+                        errors.append(f"  Expected: {expected_proper_base:.1f}% ({proper_base_true}/{len(agents)} agents)")
+                        errors.append(f"  Actual: {proper_base_pct}%")
+                        errors.append(f"  Difference: {abs(proper_base_pct - expected_proper_base):.1f}%")
+                    else:
+                        print(f"✅ Test 12A PASSED: Proper Base % accurate ({proper_base_pct}% vs {expected_proper_base:.1f}% expected)")
             else:
                 errors.append("Test 12 FAILED: No dashboard data to validate Table 2")
     
     except Exception as e:
         errors.append(f"Test 12 FAILED: Could not validate Table 2: {e}")
+    
+    # Test 12B: Territory-Level Table 2 Accuracy
+    print("\n" + "─" * 70)
+    print("Running: Territory-Level Table 2 Data Accuracy")
+    print("─" * 70)
+    
+    try:
+        # Re-extract dashboard data
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        
+        if data_match:
+            dashboard_data_test = json.loads(data_match.group(1))
+            territory_errors = []
+            
+            # Check first 5 territories for accuracy
+            for territory_row in dashboard_data_test[1:6]:  # Skip TOTAL
+                territory_name = territory_row.get('Territory', '')
+                dashboard_proper_base = territory_row.get('Proper Base %', 0)
+                
+                # Find agents in this territory
+                territory_agents = [a for a in agents if a.get('territory') == territory_name]
+                
+                if territory_agents:
+                    proper_base_count = sum(1 for a in territory_agents if a.get('proper_base_class', False))
+                    expected_pct = round((proper_base_count / len(territory_agents)) * 100, 1)
+                    
+                    if abs(dashboard_proper_base - expected_pct) > 1.0:
+                        territory_errors.append(f"{territory_name}: Expected {expected_pct}%, Got {dashboard_proper_base}%")
+            
+            if territory_errors:
+                errors.append(f"Test 12B FAILED: {len(territory_errors)} territories have incorrect Proper Base %")
+                for err in territory_errors[:3]:  # Show first 3
+                    errors.append(f"  - {err}")
+            else:
+                print(f"✅ Test 12B PASSED: Territory-level Proper Base % accurate (sampled 5 territories)")
+        else:
+            errors.append("Test 12B FAILED: Could not extract dashboard data")
+    
+    except Exception as e:
+        errors.append(f"Test 12B FAILED: Could not validate territory data: {e}")
     
     # Test 13: Footnote Accuracy
     print("\n" + "─" * 70)
