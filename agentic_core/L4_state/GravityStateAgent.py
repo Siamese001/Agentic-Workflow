@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
 from datetime import datetime
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class HealingRecord:
     line_number: Optional[int] = None
 
 
-class GravityStateAgent:
+class GravityStateAgent(MCPHardenedMixin):
     """
     [L4 STATE] Tracks gravity healing operations and prevents re-flagging.
     
