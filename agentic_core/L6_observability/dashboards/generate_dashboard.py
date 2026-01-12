@@ -220,6 +220,10 @@ class DashboardGenerator:
             health = base_health
         risk = "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW"
         
+        # Calculate proper base class percentage
+        proper_base_count = sum(1 for a in agents_list if a.get('proper_base_class', False))
+        proper_base_pct = round((proper_base_count / total * 100), 1) if total > 0 else 0.0
+        
         return {
             "total": total,
             "compliant": heal_cap,
@@ -235,7 +239,8 @@ class DashboardGenerator:
             "health": health,
             "risk": risk,
             "hardened_pct": hardened_pct,
-            "mcp_pct": mcp_pct
+            "mcp_pct": mcp_pct,
+            "proper_base_pct": proper_base_pct
         }
     
     def build_territory_row(self, territory_name: str, metrics: Dict[str, Any], priority: int, is_infrastructure: bool = False) -> Dict[str, Any]:
@@ -256,7 +261,7 @@ class DashboardGenerator:
             "Typed %": metrics["typed_pct"],
             "Documented %": metrics["doc_pct"],
             "Metadata %": 100.0,
-            "Proper Base %": 100.0,
+            "Proper Base %": metrics["proper_base_pct"],
             "Schema Strictness %": metrics["typed_pct"],
             "Complexity Health": metrics["complexity_health"],
             "Code Quality Score": metrics["code_quality"],
@@ -297,7 +302,7 @@ class DashboardGenerator:
             "Typed %": weighted_avg("Typed %"),
             "Documented %": weighted_avg("Documented %"),
             "Metadata %": 100.0,
-            "Proper Base %": 100.0,
+            "Proper Base %": weighted_avg("Proper Base %"),
             "Schema Strictness %": weighted_avg("Schema Strictness %"),
             "Complexity Health": weighted_avg("Complexity Health"),
             "Code Quality Score": weighted_avg("Code Quality Score"),
