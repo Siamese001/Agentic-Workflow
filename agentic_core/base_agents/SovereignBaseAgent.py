@@ -5,11 +5,12 @@ Provides foundational capabilities for agents with sovereign authority.
 """
 from typing import Any, Dict, Optional
 import logging
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 logger = logging.getLogger(__name__)
 
 
-class SovereignBaseAgent:
+class SovereignBaseAgent(MCPHardenedMixin):
     """Base class for sovereign agents with elevated authority."""
     
     def __init__(self, name: str = "SovereignAgent", **kwargs):

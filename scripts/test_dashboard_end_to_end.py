@@ -280,8 +280,83 @@ def run_all_tests() -> bool:
     
     print()
     print("=" * 70)
+    # Test 7: Drill-Down Agent Data Integrity
+    print("\n" + "─" * 70)
+    print("Running: Drill-Down Agent Data Integrity")
+    print("─" * 70)
+    
+    # Extract realAgentData from HTML
+    import re
+    import json
+    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+    html_content = dashboard_path.read_text(encoding='utf-8')
+    agent_data_pattern = r'const realAgentData = (\{.*?\});'
+    match = re.search(agent_data_pattern, html_content, re.DOTALL)
+    
+    errors = []
+    if not match:
+        errors.append("Test 7 FAILED: realAgentData not found in dashboard HTML")
+    else:
+        try:
+            agent_data_json = match.group(1)
+            real_agent_data = json.loads(agent_data_json)
+            
+            # Required fields for drill-down
+            REQUIRED_AGENT_FIELDS = ['name', 'path', 'rel', 'abs_file', 'abs_class', 'class_line',
+                                     'has_mixin', 'invocation', 'has_tests', 'obs_summary',
+                                     'mcp_summary', 'typing_summary', 'health', 'complexity']
+            
+            territories_checked = 0
+            agents_checked = 0
+            undefined_found = False
+            
+            for territory, territory_data in real_agent_data.items():
+                agents = territory_data.get('agents', [])
+                if not agents:
+                    continue
+                
+                territories_checked += 1
+                for agent in agents:
+                    agents_checked += 1
+                    
+                    # Check for missing fields
+                    missing = [f for f in REQUIRED_AGENT_FIELDS if f not in agent]
+                    if missing:
+                        errors.append(f"Test 7 FAILED: Agent in {territory} missing fields: {missing}")
+                        break
+                    
+                    # Check for "undefined" values
+                    if agent.get('name') == 'undefined' or not agent.get('name'):
+                        errors.append(f"Test 7 FAILED: Agent name is undefined in {territory}")
+                        undefined_found = True
+                        break
+                    
+                    if 'undefined' in json.dumps(agent):
+                        errors.append(f"Test 7 FAILED: Agent {agent.get('name', 'unknown')} in {territory} contains 'undefined'")
+                        undefined_found = True
+                        break
+                
+                if undefined_found:
+                    break
+            
+            if not undefined_found and agents_checked > 0:
+                print(f"✅ Test 7 PASSED: All {agents_checked} agents in {territories_checked} territories have valid drill-down data")
+                print(f"   No 'undefined' values found")
+        
+        except json.JSONDecodeError as e:
+            errors.append(f"Test 7 FAILED: Could not parse realAgentData: {e}")
+        except Exception as e:
+            errors.append(f"Test 7 FAILED: Drill-down validation error: {e}")
+    
+    print("\n" + "=" * 70)
+    if errors:
+        print("❌ TESTS FAILED - Dashboard has issues")
+        print("=" * 70)
+        print("\n".join(errors))
+        sys.exit(1)
+    
     if all_passed:
-        print("✅ ALL TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 7 TESTS PASSED - Dashboard is ready for deployment")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")
         for test in failed_tests:

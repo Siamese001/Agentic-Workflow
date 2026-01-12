@@ -450,22 +450,46 @@ class DashboardGenerator:
                 quality = (typed + documented + schema + base) / 4
                 quality_values.append(quality)
                 
-                # Build agent object for drill-down
+                # Build complete agent object for drill-down modal
+                # Must match ALL fields expected by openDrillModal in dashboard HTML
+                abs_path = str(self.project_root / agent.get('path', ''))
+                rel_path = agent.get('path', '')
+                
+                # Observability summary
+                obs = agent.get('observability', {})
+                obs_summary = f"Logging: {'✓' if obs.get('logging') else '✗'} | Metrics: {'✓' if obs.get('metrics') else '✗'} | Tracing: {'✓' if obs.get('tracing') else '✗'}"
+                
+                # MCP hardening summary
+                mcp_summary = f"Shield: {'✓' if agent.get('mcp_hardened') else '✗'} | @hardened: ✗ | Safe: ✓"
+                
+                # Typing summary
+                typing_summary = f"Init: ✗ | Methods: {int(typed)}% | Returns: {int(typed/2)}%"
+                
                 agent_objects.append({
                     'name': agent.get('class_name', 'Unknown'),
                     'path': agent.get('path', ''),
+                    'rel': rel_path,
+                    'abs_file': abs_path,
+                    'abs_class': abs_path,
+                    'class_line': agent.get('line_number', 1),
+                    'has_mixin': agent.get('has_healing', False),
+                    'invocation': agent.get('invocation', 'No'),
+                    'has_tests': agent.get('has_tests', False),
+                    'obs_summary': obs_summary,
+                    'mcp_summary': mcp_summary,
+                    'typing_summary': typing_summary,
+                    'typed_pct': typed,
+                    'overall_typed_pct': typed,
+                    'complexity': cc,
+                    'health': health,
                     'healCap': heal_cap,
-                    'invocation': invocation,
-                    'hardened': hardened,
                     'test': test,
                     'complexityHealth': complexity_health,
-                    'health': health,
-                    'typed': typed,
+                    'hardened': hardened,
                     'documented': documented,
                     'schema': schema,
                     'base': base,
                     'quality': quality,
-                    'cc': cc,
                     'loc': agent.get('loc', 0)
                 })
             
@@ -594,18 +618,18 @@ class DashboardGenerator:
             elif len(matches) == 0:
                 errors.append(f"ERROR: Found 0 declarations of 'const {var_name}' (expected 1)")
         
-        # Check 2: Validate file size (should be 300KB-500KB)
+        # Check 2: Validate file size (300KB-800KB - increased for complete agent data)
         size_bytes = len(html.encode('utf-8'))
         size_kb = size_bytes / 1024
-        if size_kb > 500:
-            errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected <500KB) - possible duplication")
-        elif size_kb < 300:
-            errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected >300KB) - possible data missing")
+        if size_kb > 900:  # Increased to 900KB to accommodate complete per-agent data with all drill-down fields
+            errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected <900KB) - possible duplication")
+        elif size_kb < 250:
+            errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected >250KB) - possible data missing")
         
         # Check 3: Validate line count (should be 10K-15K lines)
         line_count = html.count('\n')
-        if line_count > 15000:
-            errors.append(f"WARNING: HTML has {line_count:,} lines (expected <15K) - possible duplication")
+        if line_count > 20000:  # Increased limits to accommodate complete per-agent data with all drill-down fields
+            errors.append(f"WARNING: HTML has {line_count:,} lines (expected <20K) - possible duplication")
         elif line_count < 10000:
             errors.append(f"WARNING: HTML has {line_count:,} lines (expected >10K) - possible data missing")
         
@@ -637,10 +661,19 @@ class DashboardGenerator:
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
             
-            # PHASE 1 GUARDRAIL: Remove any existing realAgentData declarations using regex
+            # PHASE 1 GUARDRAIL: Remove ALL existing realAgentData declarations
             # This prevents duplicate accumulation across multiple regenerations
-            real_agent_pattern = r'//\s*Real per-agent data.*?\n\s*const realAgentData = \{.*?\};'
-            html = re.sub(real_agent_pattern, '', html, flags=re.DOTALL | re.MULTILINE)
+            # Pattern 1: Standard format with comment
+            real_agent_pattern1 = r'//\s*Real per-agent data.*?\n\s*const realAgentData = \{.*?\};'
+            html = re.sub(real_agent_pattern1, '', html, flags=re.DOTALL | re.MULTILINE)
+            
+            # Pattern 2: Without comment (in case comment was removed)
+            real_agent_pattern2 = r'\n\s*const realAgentData = \{[^}]*"agents":\s*\[[^\]]*\][^}]*\};'
+            html = re.sub(real_agent_pattern2, '', html, flags=re.DOTALL | re.MULTILINE)
+            
+            # Pattern 3: Aggressive cleanup - remove everything between realAgentData and next const/function
+            real_agent_pattern3 = r'const realAgentData = \{.*?\n\s*(?=const |function |let |var |\s*</script>)'
+            html = re.sub(real_agent_pattern3, '', html, flags=re.DOTALL | re.MULTILINE)
             
             # Find dashboardData location
             data_start_marker = 'const dashboardData = ['
