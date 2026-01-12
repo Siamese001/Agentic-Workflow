@@ -31,19 +31,18 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
-# [PHASE 2] L0 Delegated Testing
-from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# PHASE 2.1: L0 Structural Standardization
+from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
 
 
-class ScriptToAgentClassifierAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
+class ScriptToAgentClassifierAgent(L0Agent, AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,
-    L0DelegationTestingMixin,):
+    SelfDiagnosisMixin,):
     """
     Sovereign classifier for script vs agent constitutional compliance.
     Uses static analysis (AST) + heuristics aligned with semantic_l2_registry.
+    
+    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     Now hardened with:
       - Proactive reclassification of low-confidence files

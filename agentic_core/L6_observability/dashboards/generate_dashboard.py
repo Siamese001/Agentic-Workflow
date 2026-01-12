@@ -404,6 +404,11 @@ class DashboardGenerator:
                 abs_path = str(self.project_root / agent.get('path', ''))
                 rel_path = agent.get('path', '')
                 
+                # Get base class inheritance info for drill-down
+                proper_base = agent.get('proper_base_class', False)
+                inheritance = agent.get('inheritance', [])
+                base_class_name = inheritance[0] if inheritance else 'None'
+                
                 # Observability summary
                 obs = agent.get('observability', {})
                 obs_summary = f"Logging: {'✓' if obs.get('logging') else '✗'} | Metrics: {'✓' if obs.get('metrics') else '✗'} | Tracing: {'✓' if obs.get('tracing') else '✗'}"
@@ -416,7 +421,7 @@ class DashboardGenerator:
                 
                 agent_objects.append({
                     'name': agent.get('class_name', 'Unknown'),
-                    'path': agent.get('path', ''),
+                    'path': rel_path,
                     'rel': rel_path,
                     'abs_file': abs_path,
                     'abs_class': abs_path,
@@ -439,7 +444,10 @@ class DashboardGenerator:
                     'schema': schema,
                     'base': base,
                     'quality': quality,
-                    'loc': agent.get('loc', 0)
+                    'loc': agent.get('loc', 0),
+                    'proper_base_class': proper_base,
+                    'base_class_name': base_class_name,
+                    'has_base_violation': not proper_base
                 })
             
             per_agent_data[territory_name] = {

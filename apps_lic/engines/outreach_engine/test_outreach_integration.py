@@ -83,7 +83,7 @@ class TestHealingWithLearning:
         learning_agent = OutreachLearningAgent(ctx)
 
         # Run healing
-        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Run learning
@@ -125,7 +125,7 @@ class TestObservabilityWithHealing:
 
         # Run healing
         step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
-        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
         phase5.complete_agent(step_id, success=result.total_cycles >= 1)
 
@@ -150,7 +150,7 @@ class TestObservabilityWithHealing:
         phase5.metrics.gauge("message_count", len(valid_messages))
 
         # Run healing
-        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=2)
         await orchestrator.run()
 
         phase5.metrics.counter("healing_cycles", 2)
@@ -193,7 +193,7 @@ class TestFullPipelineIntegration:
         # Run healing if needed
         if ctx.signals:
             step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
-            orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
+            orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=2)
             result = await orchestrator.run()
             phase5.complete_agent(step_id, success=result.total_cycles >= 1)
 
@@ -232,7 +232,7 @@ class TestFullPipelineIntegration:
         assert ctx.has_signal("COMPLIANCE_ISSUE")
 
         # Run healing
-        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Healing should complete even with issues
@@ -266,7 +266,7 @@ class TestSignalRouting:
         ctx.add_signal("LEAD_QUALITY_ISSUE")
 
         # Run healing with surgical strike
-        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Should have executed LeadQualityAgent
@@ -285,7 +285,7 @@ class TestBudgetIntegration:
 
         ctx.budget.current_cost
 
-        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=2)
         await orchestrator.run()
 
         # Budget should still be available
@@ -298,7 +298,7 @@ class TestBudgetIntegration:
         ctx.budget.max_budget = 0.0001  # Very low budget
         ctx.budget.current_cost = 0.0001  # Already at limit
 
-        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=5)
+        orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=5)
         result = await orchestrator.run()
 
         # Should stop due to budget

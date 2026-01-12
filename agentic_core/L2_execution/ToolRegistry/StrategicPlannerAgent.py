@@ -5,8 +5,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 Planning and reflection agents for strategic decision-making.
 
 Contains:
-- StrategicPlannerAgent: High-level strategist that analyzes signals and generates multi-step refactor plans
-- ReflectionAgent: Consolidates successful mutations into long-term memory and performs self-critique
+- RgStrategicPlannerAgent: High-level strategist that analyzes signals and generates multi-step refactor plans
+- RgReflectionAgent: Consolidates successful mutations into long-term memory and performs self-critique
 """
 import json
 import re
@@ -28,7 +28,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # - Documented 2026-01-06
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class StrategicPlannerAgent(SovereignBaseAgent):
+class RgStrategicPlannerAgent(SovereignBaseAgent):
     """
     ROLE: High-level strategist.
     Analyzes aggregated signals/violations and generates multi-step refactor plans.

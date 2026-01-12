@@ -51,7 +51,7 @@ from .healing import (
     SignalRouterAgent,
     run_self_healing_mission,
 )
-from .HealingOrchestratorAgent import HealingOrchestratorAgent
+from .RgHealingOrchestratorAgent import LicHealingOrchestratorAgent
 
 from .learning import (
     ConfidenceLevel,

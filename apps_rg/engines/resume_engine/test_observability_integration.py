@@ -295,7 +295,7 @@ class TestPhase5WithPreviousPhases:
 
         # Track healing
         step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
-        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
+        healing = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         await healing.run()
         # Mark step as successful if healing ran (even if not fully converged)
         phase5.complete_agent(step_id, success=True)

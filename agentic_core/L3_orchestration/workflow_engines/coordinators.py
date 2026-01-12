@@ -216,7 +216,7 @@ class MissionCoordinator(WorkflowCoordinator):
     - MissionOrchestratorAgent
     - MissionRunnerAgent
     - TestPilotAgent
-    - ResumeOrchestratorAgent
+    - RgResumeOrchestratorAgent
     """
     
     def __init__(self):

@@ -401,7 +401,7 @@ class TestCrossComponentIntegration:
         )
 
         # Run orchestrator
-        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
+        orchestrator = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Record outcome

@@ -27,25 +27,20 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
-# [PHASE 2] L0 Delegated Testing - stub mixin for compatibility
-class L0DelegationTestingMixin:
-    """Stub mixin for L0 delegation testing."""
-    pass
-# GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+# PHASE 2.1: L0 Structural Standardization - inherit from L0Agent
+from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 Logger = logging.getLogger(__name__)
 
 
-class BootstrapAgent(HealerMixin, L0DelegationTestingMixin, MCPHardenedMixin):
+class BootstrapAgent(L0Agent):
     """
     Autonomous boot integrity agent.
     Runs before any validation mission to anchor the environment.
+    
+    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     """
 
     def __init__(self, project_root: Path) -> None:

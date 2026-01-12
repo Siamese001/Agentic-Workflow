@@ -264,7 +264,7 @@ class TestPhase6WithPreviousPhases:
         analysis_before = await phase6.analyze_resume(valid_resume)
 
         # Run healing
-        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
+        healing = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         healing_result = await healing.run()
 
         # Verify both worked
@@ -337,7 +337,7 @@ class TestCrossComponentIntegration:
 
         # Phase 2: Healing
         step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
-        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
+        healing = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         healing_result = await healing.run()
         phase5.complete_agent(step_id, success=True)
 

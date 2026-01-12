@@ -1,5 +1,5 @@
 """
-S2_SupervisorAgent - Extracted for one-class-per-file pattern.
+LicS2SupervisorAgent - Extracted for one-class-per-file pattern.
 
 Originally from: campaign_rag.py
 Extracted: 2026-01-06 (Surgical Extraction)
@@ -9,7 +9,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class S2_SupervisorAgent(MCPHardenedMixin):
+class LicS2SupervisorAgent(MCPHardenedMixin):
     """
     v12.0: Updated coordination logic for strategic alignment workflow.
     Now manages entity extraction + validation flow.
@@ -33,9 +33,9 @@ class S2_SupervisorAgent(MCPHardenedMixin):
 
     def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient, llm_client: GeminiLLMClient) -> None:
         self.circuit_breaker = circuit_breaker
-        self.internal_agent = InternalAgent(circuit_breaker)
-        self.recipient_agent = RecipientAgent(circuit_breaker, search_client)
-        self.organization_agent = OrganizationAgent(circuit_breaker, search_client)
+        self.internal_agent = LicInternalAgent(circuit_breaker)
+        self.recipient_agent = LicRecipientAgent(circuit_breaker, search_client)
+        self.organization_agent = LicOrganizationAgent(circuit_breaker, search_client)
         self.llm_client = llm_client
         self.signal_scorer = SignalQualityScorer()
         self.claim_scorer = ClaimConfidenceScorer()
@@ -51,9 +51,9 @@ class S2_SupervisorAgent(MCPHardenedMixin):
         """
         v12.0: Orchestrate strategic alignment research.
         Flow:
-        1. InternalAgent loads strategic brief + sender grounding
+        1. LicInternalAgent loads strategic brief + sender grounding
         2. Extract entities from strategic brief
-        3. Validate entities with RecipientAgent/OrganizationAgent
+        3. Validate entities with RecipientAgent/LicOrganizationAgent
         4. Run reflexion loop if needed
         """
         self.status = AgentStatus.RUNNING

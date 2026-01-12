@@ -274,7 +274,7 @@ class TestOutreachHealingOrchestrator:
         ctx.leads = valid_leads
         ctx.messages = valid_messages
 
-        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=3)
+        orchestrator = LicHealingOrchestratorAgent(ctx, max_cycles=3)
         result = await orchestrator.run()
 
         assert result.total_cycles >= 1

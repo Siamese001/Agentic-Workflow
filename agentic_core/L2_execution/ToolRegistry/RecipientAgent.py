@@ -1,5 +1,5 @@
 """
-RecipientAgent - Extracted for one-class-per-file pattern.
+LicRecipientAgent - Extracted for one-class-per-file pattern.
 
 Originally from: campaign_rag.py
 Extracted: 2026-01-06 (Surgical Extraction)
@@ -9,7 +9,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class RecipientAgent(MCPHardenedMixin):
+class LicRecipientAgent(MCPHardenedMixin):
     """
     v12.0: DEMOTED to secondary fact-checker role.
     Now performs validation searches based on strategic brief entities.

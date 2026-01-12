@@ -20,7 +20,7 @@ from ..gitops import (
     ImportPatcher,
     Phase4OrchestratorAgent,
 )
-from ..healing import HealingOrchestratorAgent, HealingResult, run_self_healing_mission
+from ..healing import LicHealingOrchestratorAgent, HealingResult, run_self_healing_mission
 from ..learning import MemoryPersistence, ResumeLearningAgent
 
 
@@ -85,7 +85,7 @@ class TestFullHealingMissionWithGitOps:
             orchestrator.gitops.backup_file(str(file_path))
 
         # Run healing
-        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
+        healing = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await healing.run()
 
         # Verify backups exist
@@ -247,7 +247,7 @@ class TestIntegrationWithPreviousPhases:
         phase4.gitops.enable_git = False
 
         # Run healing
-        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
+        healing = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await healing.run()
 
         assert result.success is True
@@ -388,7 +388,7 @@ class TestComprehensiveWorkflow:
         phase4.ImportPatcher.build_import_map(list(files.values()))
 
         # 4. Run healing
-        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
+        healing = RgHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await healing.run()
 
         # 5. Record learning

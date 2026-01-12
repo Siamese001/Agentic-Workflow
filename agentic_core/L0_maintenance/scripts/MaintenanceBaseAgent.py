@@ -18,14 +18,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+# PHASE 2.1: L0 Structural Standardization
+from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-
-# [PHASE 2] L0 Delegated Testing Mixin
-from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -178,9 +175,10 @@ class L0DelegationMixin(MCPHardenedMixin):
 
 
 @dataclass
-class MaintenanceBaseAgent(SovereignBaseAgent, L0DelegationMixin, L0DelegationTestingMixin, RedisCacheMixin, PineconeVectorMixin):
+class MaintenanceBaseAgent(L0Agent, L0DelegationMixin, RedisCacheMixin, PineconeVectorMixin):
     """Base class for L0 Maintenance agents with delegation-only testing.
     
+    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     HARDENED: Now with Redis caching + Pinecone vector support.
     
     NOTE: _healing_enabled = False for L0 boot isolation safety.

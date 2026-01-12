@@ -17,7 +17,7 @@ from L3_orchestration.nervous_system import NervousSystem, OrchestratorConfig
 from L4_state.checkpointing import get_deep_brain
 from L4_state.storage import SignalLedger, create_storage_adapter, get_hot_brain
 from L5_safety.intervention_server import InterventionContext, InterventionServer
-from apps_shared.reflection_agent import ReflectionAgent
+from apps_shared.reflection_agent import LicHealingOrchestratorAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -175,13 +175,13 @@ async def test_deep_brain() -> Any:
     return True
 
 async def test_reflection_learning() -> Any:
-    """Test the ReflectionAgent learning loop."""
+    """Test the RgReflectionAgent learning loop."""
     print('\n' + '=' * 80)
     print('REFLECTION AGENT LEARNING LOOP')
     print('=' * 80)
     print('\n1. Testing Successful Trace Storage')
     print('-' * 50)
-    reflection_agent: Any = ReflectionAgent()
+    reflection_agent: Any = RgReflectionAgent()
     execution_log: Any = [{'action': 'validate_permissions', 'result': 'permissions_valid', 'success': True, 'strategy': 'use_stat_check'}, {'action': 'parse_syntax', 'result': 'syntax_valid', 'success': True, 'strategy': 'ast_parse'}, {'action': 'run_tests', 'result': 'tests_passed', 'success': True, 'strategy': 'pytest_run'}]
     stored: Any = await reflection_agent.store_successful_trace(execution_log, cycle=1)
     if stored:

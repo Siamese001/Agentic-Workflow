@@ -1,5 +1,5 @@
 """
-StrategicPlannerAgent - Extracted for one-class-per-file pattern.
+RgStrategicPlannerAgent - Extracted for one-class-per-file pattern.
 
 Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
@@ -9,7 +9,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class StrategicPlannerAgent(ResumeAgent, MCPHardenedMixin):
+class RgStrategicPlannerAgent(ResumeAgent, MCPHardenedMixin):
     """
     Plans execution strategy based on signals and state.
 

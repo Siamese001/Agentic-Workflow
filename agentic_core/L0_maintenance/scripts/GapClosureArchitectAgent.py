@@ -6,9 +6,8 @@ from dataclasses import dataclass, field
 'Gap Closure Architect - Leadership Competencies with Gap Filling (K.9).\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n\nThis agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,\nenforcing Industry-First ranking and 24-30 word descriptions.\n\nSub-Atomic Agent Name: GapClosureArchitect\nLegacy K-Node: K.9 (K.8 in some versions)\n'
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.mixins import SubatomicTestingMixin
+# PHASE 2.1: L0 Structural Standardization
+from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -32,8 +31,10 @@ class CompetenciesOutput:
     industry_first_compliant: bool
     _metadata: Dict[str, Any]
 
-class GapClosureArchitectAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, Agent):
+class GapClosureArchitectAgent(L0Agent, Agent):
     """Gap Closure Architect agent for leadership competencies.
+    
+    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     This agent generates competencies with strict constraints:
     - Count: Exactly 6 competencies (ZERO TOLERANCE)

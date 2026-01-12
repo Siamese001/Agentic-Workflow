@@ -14,7 +14,7 @@ import pytest
 
 from ..context import ResumeEngineContext
 from ..gitops import Phase4OrchestratorAgent
-from ..healing import HealingOrchestratorAgent, HealingResult, run_self_healing_mission
+from ..healing import LicHealingOrchestratorAgent, HealingResult, run_self_healing_mission
 from ..learning import MemoryPersistence, ResumeLearningAgent
 from ..observability import Phase5Orchestrator
 
@@ -259,7 +259,7 @@ class TestIntegrationWithAllPhases:
         # Run healing with observability
         step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
 
-        healing = HealingOrchestratorAgent(ctx, max_cycles=3)
+        healing = RgHealingOrchestratorAgent(ctx, max_cycles=3)
         result = await healing.run()
 
         phase5.complete_agent(step_id, success=result.success)

@@ -5,7 +5,7 @@ Self-Healing Engine - Phase 2 Implementation
 This module provides the core self-healing capabilities:
 - HealingCycle: Manages individual healing cycles
 - HealingStrategy: Determines which agents to run based on signals
-- HealingOrchestratorAgent: Coordinates multiple healing cycles
+- RgHealingOrchestratorAgent: Coordinates multiple healing cycles
 - AutomaticRollback: Handles rollback on critical failures
 """
 from typing import Any, Optional, Protocol, Dict, List
@@ -139,7 +139,7 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
             ContentQualityAgent(ctx),
             FactCheckAgent(ctx),
             BrandComplianceAgent(ctx),
-            TemplateOptimizerAgent(ctx),
+            RgTemplateOptimizerAgent(ctx),
             SectionBalanceAgent(ctx),
             ATSCompatibilityAgent(ctx),
             TestPilot(ctx),
@@ -337,7 +337,7 @@ async def run_self_healing_mission(
     ctx.max_cycles = max_cycles
 
     # Create and run orchestrator
-    orchestrator = HealingOrchestratorAgent(
+    orchestrator = RgHealingOrchestratorAgent(
         ctx=ctx,
         max_cycles=max_cycles,
         enable_reflection=enable_reflection,

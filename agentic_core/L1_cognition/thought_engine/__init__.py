@@ -20,14 +20,14 @@ Current Status (January 7, 2026):
 
 Canonical Exports:
     - CanonBaseAgent: Base class for cognitive agents
-    - ReflectionAgent: Cognitive reflection and meta-reasoning
+    - RgReflectionAgent: Cognitive reflection and meta-reasoning
     
-Note: StructuralEngineerAgent, SystemArchitectAgent, and StrategicPlannerAgent
+Note: StructuralEngineerAgent, SystemArchitectAgent, and RgStrategicPlannerAgent
       have evolved to L2_execution/ToolRegistry/ with healing capabilities.
 """
 
 from .CanonBaseAgent import CanonBaseAgent
-from .ReflectionAgent import ReflectionAgent
+from .RgReflectionAgent import LicHealingOrchestratorAgent
 
 # Public API surface — expose only what's intended
 __all__ = [

@@ -12,16 +12,18 @@ VIOLATION JUSTIFICATION: None. Standard L0 Infrastructure mapping.
 import os
 from pathlib import Path
 from typing import Dict, List, Set, Any
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+# PHASE 2.1: L0 Structural Standardization
+from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
 from agentic_core.config.blueprint_sovereign.structure_blueprint import STRUCTURE_BLUEPRINT
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class GospelSyncAgent(MCPHardenedMixin):
+class GospelSyncAgent(L0Agent):
     """
     THE SSOT GUARDIAN
     Ensures the 'World as it Is' (Filesystem) matches the 'World as it Should Be' (Blueprint).
     Detects heretical files and missing canonical files to protect Toxic Hubs.
+    
+    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     """
 
 

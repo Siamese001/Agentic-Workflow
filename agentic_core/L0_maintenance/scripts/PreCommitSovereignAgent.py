@@ -24,7 +24,8 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+# PHASE 2.1: L0 Structural Standardization
+from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
 from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTValidator
 
 
@@ -39,10 +40,12 @@ class ViolationReport:
     target_layer: str
 
 
-class PreCommitSovereignAgent(MCPHardenedMixin):
+class PreCommitSovereignAgent(L0Agent):
     """
     The 'Seal-Guard' of the Sovereign Architecture.
     Ensures compliance stays at 99.7%+ by blocking architectural rot at the source.
+    
+    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     
     This agent runs as a git pre-commit hook to prevent new violations from
     entering the codebase. It validates staged files against SSOT gravity laws.

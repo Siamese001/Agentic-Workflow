@@ -6,12 +6,12 @@ This module contains all specialized agents for autonomous resume generation:
 - ContentQualityAgent: Validates resume content quality
 - FactCheckAgent: Verifies claims against user profile
 - BrandComplianceAgent: Ensures brand voice and tone
-- TemplateOptimizerAgent: Optimizes template selection
+- RgTemplateOptimizerAgent: Optimizes template selection
 - SectionBalanceAgent: Ensures proper section balance
 - ATSCompatibilityAgent: Validates ATS-friendly formatting
 - TestPilot: Runs validation tests
-- StrategicPlannerAgent: Plans execution strategy
-- ReflectionAgent: Learns from execution
+- RgStrategicPlannerAgent: Plans execution strategy
+- RgReflectionAgent: Learns from execution
 """
 from typing import Any, Optional, Protocol, Dict, List
 

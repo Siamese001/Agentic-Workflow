@@ -1,5 +1,5 @@
 """
-InternalAgent - Extracted for one-class-per-file pattern.
+LicInternalAgent - Extracted for one-class-per-file pattern.
 
 Originally from: campaign_rag.py
 Extracted: 2026-01-06 (Surgical Extraction)
@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
-class InternalAgent(SovereignBaseAgent):
+class LicInternalAgent(SovereignBaseAgent):
     """
     v12.0: UPGRADED to primary intelligence-gathering unit.
     NOW LOADS: 

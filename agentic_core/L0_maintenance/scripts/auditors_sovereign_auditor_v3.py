@@ -26,7 +26,7 @@ from agentic_core.L0_maintenance.scripts.metrics_witness import MetricsWitness
 from agentic_core.L0_maintenance.scripts.guardian_orchestrator import GuardianOrchestratorAgent
 
 # [PHASE 16] Healing Orchestrator – Sovereign Agent
-from agentic_core.L0_maintenance.scripts.healing_orchestrator import HealingOrchestratorAgent
+from agentic_core.L0_maintenance.scripts.healing_orchestrator import LicHealingOrchestratorAgent
 
 # [PHASE 17] Script-to-Agent Classifier – Sovereign Agent
 from agentic_core.L0_maintenance.scripts.script_to_agent_classifier import ScriptToAgentClassifierAgent
@@ -55,7 +55,7 @@ except ImportError:
     NamingAgent = None
     MetricsAgent = None
 
-# Healing components now loaded internally by HealingOrchestratorAgent
+# Healing components now loaded internally by RgHealingOrchestratorAgent
 
 async def main():
     """
@@ -71,7 +71,7 @@ async def main():
     # === Sovereign Agent Instantiation (Hardened) ===
     metrics_witness = MetricsWitness(project_root_path)
     guardian_orchestrator = GuardianOrchestratorAgent(target)
-    healing_orchestrator = HealingOrchestratorAgent()
+    healing_orchestrator = RgHealingOrchestratorAgent()
     classifier = ScriptToAgentClassifierAgent()
 
     # === Optional: Proactive Self-Diagnosis Cycle ===
@@ -127,7 +127,7 @@ async def main():
     report = builder.build()
     overall_score = report.print_summary()
     
-    # Phase 16: Sovereign Healing Engine – Delegated to HealingOrchestratorAgent
+    # Phase 16: Sovereign Healing Engine – Delegated to RgHealingOrchestratorAgent
     if overall_score >= 95:
         print("\n[OK] SOVEREIGN BRAIN IN PERFECT ALIGNMENT")
     else:
@@ -162,7 +162,7 @@ async def main():
     
     return report
 
-# Healing logic fully extracted to HealingOrchestratorAgent agent
+# Healing logic fully extracted to RgHealingOrchestratorAgent agent
 # Supreme Court now only triggers sovereign self-correction
 
 if __name__ == "__main__":

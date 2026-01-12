@@ -66,7 +66,7 @@ async def run_resume_mission(
         ContentQualityAgent(ctx),
         FactCheckAgent(ctx),
         BrandComplianceAgent(ctx),
-        TemplateOptimizerAgent(ctx),
+        RgTemplateOptimizerAgent(ctx),
         SectionBalanceAgent(ctx),
         ATSCompatibilityAgent(ctx),
         TestPilot(ctx),
@@ -97,7 +97,7 @@ async def run_resume_mission(
             print(f"   🤔 STRATEGY: Analyzing {len(ctx.signals)} signals...")
 
             # Always run strategic planner first
-            agenda.append(StrategicPlannerAgent(ctx))
+            agenda.append(RgStrategicPlannerAgent(ctx))
 
             # Route based on signals
             if ctx.has_signal("QUALITY_FAILURE"):
@@ -125,12 +125,12 @@ async def run_resume_mission(
                 print("      → Priority: Test Validation")
 
             # If no specific signals, run TestPilot for verification
-            if len(agenda) == 1:  # Only StrategicPlannerAgent
+            if len(agenda) == 1:  # Only RgStrategicPlannerAgent
                 agenda.append(TestPilot(ctx))
                 print("      → Default: Verification")
 
         # Always add reflection at the end
-        agenda.append(ReflectionAgent(ctx))
+        agenda.append(RgReflectionAgent(ctx))
 
         # Execute agenda
         print(f"\n   📋 Executing {len(agenda)} agents...")
