@@ -33,7 +33,7 @@ All rows must have these exact fields:
 - Test %, Observable %
 - Avg CC, Avg LOC
 - Typed %, Documented %
-- Metadata %, Proper Base %, Schema Strictness %
+- Metadata %, Base Class Inherit %, Schema Strictness %
 - Complexity Health, Code Quality Score
 - Criticality, Health, Health Breakdown, Risk
 - Used %, Priority
@@ -117,7 +117,7 @@ REQUIRED_FIELDS = [
     "Test %", "Observable %",
     "Avg CC", "Avg LOC",
     "Typed %", "Documented %",
-    "Metadata %", "Proper Base %", "Schema Strictness %",
+    "Metadata %", "Base Class Inherit %", "Schema Strictness %",
     "Complexity Health", "Code Quality Score",
     "Criticality", "Health", "Health Breakdown", "Risk",
     "Used %", "Priority", "IsInfrastructure"
@@ -261,7 +261,7 @@ class DashboardGenerator:
             "Typed %": metrics["typed_pct"],
             "Documented %": metrics["doc_pct"],
             "Metadata %": 100.0,
-            "Proper Base %": metrics["proper_base_pct"],
+            "Base Class Inherit %": metrics["proper_base_pct"],
             "Schema Strictness %": metrics["typed_pct"],
             "Complexity Health": metrics["complexity_health"],
             "Code Quality Score": metrics["code_quality"],
@@ -302,7 +302,7 @@ class DashboardGenerator:
             "Typed %": weighted_avg("Typed %"),
             "Documented %": weighted_avg("Documented %"),
             "Metadata %": 100.0,
-            "Proper Base %": weighted_avg("Proper Base %"),
+            "Base Class Inherit %": weighted_avg("Base Class Inherit %"),
             "Schema Strictness %": weighted_avg("Schema Strictness %"),
             "Complexity Health": weighted_avg("Complexity Health"),
             "Code Quality Score": weighted_avg("Code Quality Score"),
