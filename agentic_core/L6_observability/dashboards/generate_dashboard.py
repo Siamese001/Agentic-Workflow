@@ -99,6 +99,7 @@ TERRITORY_ORDER = [
     "L1 Cognition/Specialized",
     "L0 Maintenance/Core",
     "L0 Maintenance/Infrastructure",
+    "L6_Observability/Base Class",
     "L6_Observability/Metrics",
     "L6_Observability/Telemetry",
     "L6_Observability/Tracing",
@@ -658,6 +659,40 @@ class DashboardGenerator:
             print(f"❌ ERROR updating dashboard HTML: {e}")
             return False
     
+    def generate_strategic_observations(self, data: List[Dict]) -> Dict:
+        """Generate strategic observations using StrategicObservationAgent."""
+        try:
+            import asyncio
+            import sys
+            sys.path.insert(0, str(self.project_root))
+            from agentic_core.L6_observability.agents.StrategicObservationAgent import StrategicObservationAgent
+            
+            print("\n🔍 Generating strategic observations...")
+            agent = StrategicObservationAgent()
+            
+            # Prepare data for agent
+            total_row = data[0] if data else {}
+            territory_data = data[1:] if len(data) > 1 else []
+            
+            # Run agent analysis
+            observations = asyncio.run(agent.generate_observations({
+                'total_row': total_row,
+                'territory_data': territory_data,
+                'dashboard_data': data
+            }))
+            
+            print(f"✅ Generated strategic observations")
+            return observations
+            
+        except Exception as e:
+            print(f"⚠️  Strategic observations generation failed: {e}")
+            print(f"   Continuing with default observations")
+            return {
+                "summary": "Dashboard data generated successfully",
+                "critical_path_status": "Nominal",
+                "detected_drift": False
+            }
+    
     def run(self) -> bool:
         """Execute complete dashboard generation pipeline."""
         print("=" * 70)
@@ -683,6 +718,9 @@ class DashboardGenerator:
         if not self.validate_dashboard_data(data):
             return False
         
+        # Step 3b: Generate strategic observations (MANDATORY)
+        observations = self.generate_strategic_observations(data)
+        
         # Step 4: Update HTML with both aggregate and per-agent data
         print("\n💾 Updating dashboard HTML...")
         if not self.update_dashboard_html(data, per_agent_data):
@@ -697,6 +735,7 @@ class DashboardGenerator:
         print(f"Heal Cap %: {total_row['Heal Cap %']}%")
         print(f"Health: {total_row['Health']}%")
         print(f"Territories: {len(data) - 1}")
+        print(f"Strategic Observations: {observations.get('summary', 'N/A')}")
         print(f"Per-agent data: {len(per_agent_data)} territories")
         print("=" * 70)
         

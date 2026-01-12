@@ -786,12 +786,21 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     path_str = str(rel_path).replace('\\', '/').lower() if rel_path else ''
     
     # =========================================================================
+    # LAYER 0: BASE AGENT IDENTIFICATION (Highest Priority)
+    # =========================================================================
+    # Identify base agents FIRST before any exclusion logic
+    # This ensures L0Agent-L6Agent and *BaseAgent classes are always discoverable
+    is_l_series_base = name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
+    is_suffix_base = name.endswith('BaseAgent')
+    is_base_agent = is_l_series_base or is_suffix_base
+    
+    # =========================================================================
     # LAYER 1: IMMEDIATE HARD NEGATIVES (Fast path exclusion)
     # =========================================================================
     
     # 1a. Mixin exclusion - class name contains 'Mixin' anywhere
     if 'Mixin' in name:
-        log.debug(f"EXCLUDED {name}: class name contains 'Mixin'")
+        log.debug(f"TRACE: {name} excluded - contains 'Mixin'")
         return False
     
     # 1b. Test/mock prefixes without 'Agent'
@@ -865,15 +874,14 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     
     # Known agent base classes
     agent_bases = {
-        'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-        'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+        'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
+        'L2ExecutionBaseAgent', 'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
         'ExecutionCanonBaseAgent',
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
         'BaseAgent', 'SovereignBaseAgent',
-        'L6ObservabilityBaseAgent',  # L6 base agent (inherits from ABC)
+        # L6ObservabilityBaseAgent intentionally NOT in this set - it should be discovered
     }
-
-    # Determine if this is an agent candidate
+    
     has_strong_positive_signal = (
         name.endswith('Agent')
         or bool(bases & agent_bases)
@@ -1280,11 +1288,12 @@ def main():
             # Determine territory (layer + subdirectory)
             # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
             # DEPRECATED: Exclude simple bases (L2Agent, L3Agent, L4Agent, L5Agent) - use *BaseAgent instead
-            DEPRECATED_SIMPLE_BASES = {'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent'}
+            # CRITICAL FIX: Check if this is a base agent class
+            # Base agents end with "BaseAgent" or are known base class names
             is_base_class = (
-                (node.name.endswith('BaseAgent') or 
-                 node.name in {'L0Agent', 'L1Agent', 'L6Agent'}) and
-                node.name not in DEPRECATED_SIMPLE_BASES
+                node.name.endswith('BaseAgent') or 
+                node.name in {'L0Agent', 'L1Agent', 'L6Agent', 'L6ObservabilityBaseAgent'} or
+                'BaseAgent' in node.name
             )
             
             # ASSIGN DETAILED TERRITORIES - SSOT for dashboard
