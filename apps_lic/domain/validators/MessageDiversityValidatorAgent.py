@@ -7,8 +7,11 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from typing import Dict, Any, List
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class MessageDiversityValidatorAgent:
+class MessageDiversityValidatorAgent(MCPHardenedMixin, HealerMixin):
     """
     Prevent repetitive messages using cosine similarity
     FEATURE 1.3 from SUPREME_SPELL

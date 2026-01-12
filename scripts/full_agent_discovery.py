@@ -177,9 +177,9 @@ LAYER_BASE_MAP = {
 #   - 2026-01-05: 312 agents (after string error caused 60+ agent loss - UNACCEPTABLE)
 #
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
-MINIMUM_AGENT_COUNT = 273  # Updated after Phase 2 gravity relocation (10 agents moved, 3 duplicates consolidated)
+MINIMUM_AGENT_COUNT = 268  # Phase 3.2: 5 test fixtures excluded from discovery (2026-01-12)
 MAX_AGENT_DROP_PERCENT = 0   # Zero tolerance for agent loss - strict enforcement
-EXPECTED_AGENT_COUNT = 273  # Updated baseline after L1/L2 Gospel enforcement (2026-01-07)
+EXPECTED_AGENT_COUNT = 268  # Phase 3.2: Updated after test fixture exclusion (2026-01-12)
 # 2026-01-07: Reduced from 276 to 273 after Phase 2 relocation (legitimate consolidation)
 # and bulk extraction (47 agents to 1:1 files). Net -2 from duplicate consolidation.
 # 2026-01-05: CONSOLIDATION MIGRATION - Relaxed thresholds to allow safe agent consolidation
@@ -1246,6 +1246,14 @@ def main():
         source, tree = parsed_files[py_file]
         rel_path = py_file.relative_to(PROJECT_ROOT)
         layer = get_canonical_layer(py_file)
+        
+        # Phase 3.1: Override layer for special paths (schemas, prompt_governance, base_agents)
+        path_str = str(rel_path).replace('\\', '/').lower()
+        for pattern, special_layer in SPECIAL_LAYER_MAPPINGS.items():
+            if pattern in path_str:
+                layer = special_layer
+                break
+        
         loc = count_loc(source)
         class_count = sum(1 for n in ast.walk(tree) if isinstance(n, ast.ClassDef))
         
@@ -1287,6 +1295,12 @@ def main():
                 'ValidationProtocol',
                 'Protocol',
                 # NOTE: ABC removed - L6ObservabilityBaseAgent inherits from ABC
+                # Phase 3.2: Test fixtures (not production agents)
+                'TestContentQualityAgent',
+                'TestLeadQualityAgent',
+                'TestOutreachProactiveAgent',
+                'TestProactiveAgent',
+                'TestResumeLearningAgent',
             }
             if node.name in skip_names:
                 continue

@@ -7,8 +7,12 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from typing import Dict, Any
+from agentic_core.L2_execution.ToolRegistry.l2_self_testing_mixin import L2SelfTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class LicInternalAgent:
+class LicInternalAgent(MCPHardenedMixin, HealerMixin, L2SelfTestingMixin):
     """
     v12.0: UPGRADED to primary intelligence-gathering unit.
     NOW LOADS: 

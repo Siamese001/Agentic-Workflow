@@ -1,4 +1,72 @@
 from __future__ import annotations
+from typing import Dict, Any, List
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
+class ContentCleanlinessValidatorAgent(MCPHardenedMixin, HealerMixin):
+    """
+    Forbidden verbs and weak language detection
+    FEATURE 3.1 and 3.2 from SUPREME_SPELL
+    """
+    
+    FORBIDDEN_VERBS = [
+        "spearheaded", "leveraged", "utilized", "facilitated",
+        "orchestrated", "championed", "pioneered", "revolutionized",
+        "transformed", "optimized", "enhanced", "streamlined",
+        "synergized", "enabled", "empowered", "drove", "drive"
+    ]
+    MAX_VIOLATIONS = 1
+    
+    FILLER_PATTERNS = [
+        r"(?i)\bi hope\b",
+        r"(?i)\bhope (this|you) (finds|are|don't)",
+        r"(?i)\bi (wanted|would like) to (reach|connect|discuss|share)",
+        r"(?i)\bi was wondering if",
+        r"(?i)\bperhaps (we|you) could",
+        r"(?i)\bif you('re| are) interested",
+        r"(?i)\bjust (wanted|reaching|following)",
+    ]
+    
+    def detect_forbidden_verbs(self, text: str) -> List[str]:
+        """Find forbidden verbs in message text"""
+        text_lower = text.lower()
+        found = []
+        
+        for verb in self.FORBIDDEN_VERBS:
+            if verb in text_lower:
+                found.append(verb)
+        
+        return found
+    
+    def detect_fillers(self, text: str) -> List[Tuple[str, str]]:
+        """Find filler phrases in message"""
+        found = []
+        
+        for pattern in self.FILLER_PATTERNS:
+            matches = re.findall(pattern, text)
+            if matches:
+                for match in matches:
+                    match_text = match if isinstance(match, str) else " ".join(match) if isinstance(match, tuple) else str(match)
+                    found.append((pattern, match_text))
+        
+        return found
+    
+    def validate_verbs(self, message: str) -> Tuple[bool, str]:
+        """Validate no excessive forbidden verbs"""
+        forbidden = self.detect_forbidden_verbs(message)
+        
+        if len(forbidden) > self.MAX_VIOLATIONS:
+            return False, f"Found {len(forbidden)} forbidden verbs: {', '.join(forbidden[:3])}"
+        
+        return True, ""
+    
+    def validate_fillers(self, message: str) -> Tuple[bool, str]:
+        """Validate message is direct and confident"""
+        fillers = self.detect_fillers(message)
+        
+        if fillers:
+            filler_texts = [f[1] for f in fillers]
+
 # File: validation.py
 # Description: Validation agents, rules, and utilities for the LIC workflow.
 

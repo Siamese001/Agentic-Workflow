@@ -16,6 +16,10 @@ import numpy as np
 
 Logger = logging.getLogger(__name__)
 
+# Phase 3.2: Add proper L1 cognition base inheritance
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
@@ -44,7 +48,7 @@ def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
         return True, "Bootstrap"
 
 # NAMING FIXED: PromptRegistry → PromptRegistryAgent
-class PromptRegistryAgent:
+class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
     """
     Sovereign registry for all prompt templates and meta-prompts.
 
