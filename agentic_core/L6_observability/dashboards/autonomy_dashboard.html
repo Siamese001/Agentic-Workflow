@@ -614,24 +614,24 @@
         const dashboardData = [
   {
     "Territory": "TOTAL",
-    "Total": 277,
-    "Compliant": 277,
+    "Total": 278,
+    "Compliant": 278,
     "Heal Cap %": 100.0,
-    "Heal Invocation %": 97.8,
-    "Invocation %": 97.8,
-    "Hardened %": 90.6,
-    "MCP Capable %": 90.6,
-    "Test %": 62.5,
+    "Heal Invocation %": 97.5,
+    "Invocation %": 97.5,
+    "Hardened %": 90.3,
+    "MCP Capable %": 90.3,
+    "Test %": 62.2,
     "Observable %": 100.0,
-    "Avg CC": 33.2,
+    "Avg CC": 33.1,
     "Avg LOC": 150,
     "Typed %": 85.2,
-    "Documented %": 89.0,
+    "Documented %": 89.1,
     "Metadata %": 100.0,
     "Proper Base %": 100.0,
     "Schema Strictness %": 85.2,
-    "Complexity Health": 38.2,
-    "Code Quality Score": 87.1,
+    "Complexity Health": 38.4,
+    "Code Quality Score": 87.2,
     "Criticality": 75,
     "Health": 73.2,
     "Health Breakdown": "Heal:100+Inv:98+Test:62+Obs:100+CC:38",
@@ -1062,8 +1062,8 @@
   },
   {
     "Territory": "L6_Observability/Metrics",
-    "Total": 1,
-    "Compliant": 1,
+    "Total": 2,
+    "Compliant": 2,
     "Heal Cap %": 100.0,
     "Heal Invocation %": 0.0,
     "Invocation %": 0.0,
@@ -1071,19 +1071,19 @@
     "MCP Capable %": 0.0,
     "Test %": 0.0,
     "Observable %": 100.0,
-    "Avg CC": 18.0,
+    "Avg CC": 11.5,
     "Avg LOC": 150,
-    "Typed %": 66.7,
+    "Typed %": 83.3,
     "Documented %": 100.0,
     "Metadata %": 100.0,
     "Proper Base %": 100.0,
-    "Schema Strictness %": 66.7,
-    "Complexity Health": 64.0,
-    "Code Quality Score": 83.3,
+    "Schema Strictness %": 83.3,
+    "Complexity Health": 77.0,
+    "Code Quality Score": 91.7,
     "Criticality": 75,
-    "Health": 59.6,
-    "Health Breakdown": "Heal:100+Inv:0+Test:0+Obs:100+CC:64",
-    "Risk": "HIGH",
+    "Health": 61.55,
+    "Health Breakdown": "Heal:100+Inv:0+Test:0+Obs:100+CC:77",
+    "Risk": "MED",
     "Used %": 95.0,
     "Priority": 16,
     "IsInfrastructure": true
@@ -9544,39 +9544,64 @@
     "codeQuality": [],
     "agents": []
   },
+  "L6_Observability/Base Class": {
+    "healCap": [],
+    "invocation": [],
+    "hardened": [],
+    "test": [],
+    "complexityHealth": [],
+    "health": [],
+    "typed": [],
+    "documented": [],
+    "schemaStrictness": [],
+    "properBase": [],
+    "codeQuality": [],
+    "agents": []
+  },
   "L6_Observability/Metrics": {
     "healCap": [
+      100.0,
       100.0
     ],
     "invocation": [
+      0.0,
       0.0
     ],
     "hardened": [
+      0.0,
       0.0
     ],
     "test": [
+      0.0,
       0.0
     ],
     "complexityHealth": [
-      64
+      64,
+      90
     ],
     "health": [
-      52.8
+      52.8,
+      58.0
     ],
     "typed": [
-      66.7
+      66.7,
+      100.0
     ],
     "documented": [
+      100.0,
       100.0
     ],
     "schemaStrictness": [
-      66.7
+      66.7,
+      100.0
     ],
     "properBase": [
+      100.0,
       100.0
     ],
     "codeQuality": [
-      83.35
+      83.35,
+      100.0
     ],
     "agents": [
       {
@@ -9605,6 +9630,33 @@
         "base": 100.0,
         "quality": 83.35,
         "loc": 116
+      },
+      {
+        "name": "StrategicObservationAgent",
+        "path": "agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
+        "rel": "agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
+        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
+        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
+        "class_line": 1,
+        "has_mixin": true,
+        "invocation": "Inherited",
+        "has_tests": false,
+        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
+        "mcp_summary": "Shield: \u2717 | @hardened: \u2717 | Safe: \u2713",
+        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
+        "typed_pct": 100.0,
+        "overall_typed_pct": 100.0,
+        "complexity": 5,
+        "health": 58.0,
+        "healCap": 100.0,
+        "test": 0.0,
+        "complexityHealth": 90,
+        "hardened": 0.0,
+        "documented": 100.0,
+        "schema": 100.0,
+        "base": 100.0,
+        "quality": 100.0,
+        "loc": 26
       }
     ]
   },
@@ -12363,6 +12415,8 @@
     ]
   }
 };
+
+        
 
         
 
