@@ -934,7 +934,9 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
 
     decorators = extract_decorators(class_node)
     # Conditional negative: dataclass/attrs only disqualifies absent strong positive
-    if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators) and not has_strong_positive_signal:
+    # CRITICAL FIX: Never exclude BaseAgent classes regardless of decorators (fixes L6ObservabilityBaseAgent)
+    is_base_agent = name.endswith('BaseAgent')
+    if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators) and not has_strong_positive_signal and not is_base_agent:
         return False
 
     # Remaining conditional negatives removed - strict enforcement already applied above
