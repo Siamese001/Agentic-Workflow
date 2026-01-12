@@ -9,6 +9,23 @@ import time
 from pathlib import Path
 from typing import Optional
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 try:
     from tqdm import tqdm
     HAS_TQDM = True
@@ -38,7 +55,7 @@ class ColoredProgress:
         total_skips = 0
         skip_pattern = re.compile(r'@pytest\.mark\.skip')
         
-        test_dir = Path('tests/unit')
+        test_dir = Path(TESTS_UNIT_DIR)
         if not test_dir.exists():
             return 0, 0
         
@@ -74,7 +91,7 @@ class ColoredProgress:
         skips_removed = 0
         skip_pattern = re.compile(r'@pytest\.mark\.skip\([^)]*\)\s*\n')
         
-        test_dir = Path('tests/unit')
+        test_dir = Path(TESTS_UNIT_DIR)
         test_files = [f for f in test_dir.rglob('*.py') if '__pycache__' not in str(f)]
         
         if HAS_TQDM:

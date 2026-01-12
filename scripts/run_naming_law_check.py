@@ -9,11 +9,28 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def main():
     agent = NamingAgent(PROJECT_ROOT)
     
     # Directories to scan
-    scan_dirs = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared']
+    scan_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
     
     violations = []
     compliant = 0

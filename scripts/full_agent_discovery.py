@@ -37,6 +37,23 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Set, Tuple
 from collections import defaultdict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Fix Windows console UnicodeEncodeError when printing warnings/emojis
 if platform.system() == "Windows":
     # Force stdout/stderr to UTF-8 (works in most modern Windows terminals)
@@ -58,10 +75,10 @@ logging.basicConfig(
 log = logging.getLogger("full_agent_discovery")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-AGENTIC_CORE = PROJECT_ROOT / 'agentic_core'
-CANONICAL_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
-MANIFEST_JSON = PROJECT_ROOT / 'agent_discovery_full.manifest.json'
-LEGACY_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
+AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
+CANONICAL_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
+MANIFEST_JSON = PROJECT_ROOT / AGENT_DISCOVERY_MANIFEST_JSON
+LEGACY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 MISTAKE_JSON = PROJECT_ROOT / 'agent_full.json'
 MISTAKE_JSON_2 = PROJECT_ROOT / 'agent_discovery_legacy.json'
 OUTPUT_JSON = CANONICAL_JSON
@@ -80,7 +97,7 @@ EXCLUDED_DIRS = {
     # Coverage/test artifacts (CRITICAL: prevents HTML files from being scanned)
     'coverage_html', 'htmlcov', '.coverage',
     # Project-specific exclusions
-    'archives', '.sovereign_healing_backup', 'reports',
+    ARCHIVES_DIR, '.sovereign_healing_backup', REPORTS_DIR,
 }
 
 # Filename patterns that indicate non-agent files (case-insensitive)
@@ -351,7 +368,8 @@ def safe_parse(code: str, file_path: Path) -> Optional[ast.AST]:
 def infer_layer(file_path: Path) -> str:
     """Infer canonical layer from file path."""
     path_str = str(file_path)
-    # Core layers
+    # Core layers - check L6 first before other checks
+    if 'L6_observability' in path_str or 'L6_' in path_str: return 'L6'
     if 'L0_maintenance' in path_str or 'L0_' in path_str: return 'L0'
     if 'L1_cognition' in path_str or 'L1_' in path_str: return 'L1'
     if 'L2_execution' in path_str or 'L2_' in path_str: return 'L2'
@@ -359,20 +377,20 @@ def infer_layer(file_path: Path) -> str:
     if 'L4_state' in path_str or 'L4_' in path_str: return 'L4'
     if 'L5_safety' in path_str or 'L5_' in path_str: return 'L5'
     # agentic_core subfolders -> assign to appropriate layers
-    if 'agentic_core' in path_str:
+    if AGENTIC_CORE_DIR in path_str:
         if 'schemas' in path_str: return 'L1'  # Schemas are cognition-tier
         if 'common' in path_str: return 'L2'  # Common utilities are execution-tier
         if 'sovereign_clients' in path_str: return 'L2'  # Clients are execution-tier
-        if 'observability' in path_str: return 'L3'  # Observability is orchestration-tier
+        if 'observability' in path_str: return 'L6'  # L6_observability layer (changed from L3)
         if 'utils/core_extensions' in path_str: return 'L2'  # Relocated utils
         return 'L2'  # Default agentic_core to L2
     # Apps
-    if 'apps_rg' in path_str: return 'apps_rg'
-    if 'apps_lic' in path_str: return 'apps_lic'
-    if 'apps_shared' in path_str: return 'apps_shared'
-    if 'tests' in path_str: return 'tests'
+    if APPS_RG_DIR in path_str: return APPS_RG_DIR
+    if APPS_LIC_DIR in path_str: return APPS_LIC_DIR
+    if APPS_SHARED_DIR in path_str: return APPS_SHARED_DIR
+    if TESTS_DIR in path_str: return TESTS_DIR
     # Scripts and utilities
-    if 'scripts' in path_str: return 'utils'
+    if SCRIPTS_DIR in path_str: return 'utils'
     # Data/examples
     if 'data' in path_str and 'examples' in path_str: return 'examples'
     # Production routers in data/sdks_mcps

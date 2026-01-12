@@ -6,43 +6,60 @@ L0-L6 Sovereign Stack Hierarchy established.
 """
 from typing import Any, Dict, List
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # 1. Bounded Contexts (Strict Boundaries)
 # Sovereign Layer Hierarchy (L0=Governance, L6=Observability)
 # Higher ranks (smaller numbers) define Policy and Intent.
 # Lower ranks (larger numbers) provide Data and Infrastructure.
 BOUNDED_CONTEXTS: Dict[str, Dict[str, Any]] = {
     "L0_Governance": {
-        "path": "agentic_core/L0_maintenance",
+        "path": L0_MAINTENANCE_DIR,
         "rank": 0,
         "role": "Metacognition: The Law, Auditors, and Healers"
     },
     "L1_Cognition": {
-        "path": "agentic_core/L1_cognition",
+        "path": L1_COGNITION_DIR,
         "rank": 1,
         "role": "Strategic Reasoning: Planning and Consensus"
     },
     "L2_Execution": {
-        "path": "agentic_core/L2_execution",
+        "path": L2_EXECUTION_DIR,
         "rank": 2,
         "role": "Action: Tool Implementation and Agent Realization"
     },
     "L3_Orchestration": {
-        "path": "agentic_core/L3_orchestration",
+        "path": L3_ORCHESTRATION_DIR,
         "rank": 3,
         "role": "Workflow: Task Fission and Fusion"
     },
     "L4_State": {
-        "path": "agentic_core/L4_state",
+        "path": L4_STATE_DIR,
         "rank": 4,
         "role": "Memory: Persistence and Semantic Caching"
     },
     "L5_Safety": {
-        "path": "agentic_core/L5_safety",
+        "path": L5_SAFETY_DIR,
         "rank": 5,
         "role": "Membrane: Input/Output Sanitization"
     },
     "L6_Observability": {
-        "path": "agentic_core/L6_observability",
+        "path": L6_OBSERVABILITY_DIR,
         "rank": 6,
         "role": "Truth: Telemetry, Logging, and Audit Trails"
     },

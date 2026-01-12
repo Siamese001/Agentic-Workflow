@@ -8,6 +8,23 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Union
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -106,7 +123,7 @@ class WorkflowLoader:
 
     def _get_fallback_workflow(self) -> Dict[str, Any]:
         """Get minimal fallback workflow configuration."""
-        return {'metadata': {'version': 'fallback', 'architecture': '3-phase pipeline: Clerk, Artist, Assembler', 'description': 'Fallback configuration used when JSON file is unavailable'}, 'pre_flight_engine_validation': {'tests': [{'test_id': 'VALIDATE_ITERATION', 'description': 'Basic iteration check'}]}, '1.role': {'description': 'Resume generation assistant'}, '2.Task': {'pipeline': [{'phase': 1, 'name': 'The Clerk: Deterministic Data Scaffolding'}, {'phase': 2, 'name': 'The Artist: Grounded Generation'}, {'phase': 3, 'name': 'The Assembler: Final Rendering & Validation'}]}, '3.context': {'pre_flight_file_complexity_gate': {'thresholds': {'total_file_count_max': 5, 'total_file_size_mb_max': 10}}, 'pre_flight_file_manifest_check': {'required_file_manifest': ['App_Schema_v4.json']}}, '4.reasoning': {'description': 'Creative generation phase', 'creative_brief': {'headline': {'word_count': [8, 12], 'char_count_max': 90}, 'executive_summary': {'word_count': [120, 140], 'voice': 'third_person_implied', 'forbidden_patterns': []}, 'experience_bullets': {'unify_bullet_word_count': [28, 33], 'ibm_bullet_word_count': [24, 30]}, 'experience_overview': {'unify_word_count': [25, 33], 'ibm_word_count': [22, 28]}, 'leadership_competencies': {'word_count_per_desc': [24, 30]}, 'cover_letter': {'word_count_per_para': [85, 100]}, 'deduplication_matrix': {'thresholds': {}}}, 'hardcoded_config': {'K.0': {'description': 'Thematic analysis', 'temp': 0.3, 'rag_total_calls': 50, 'rag_hops': 3}, 'K.1': {'description': 'Executive summary', 'temp': 0.9, 'rag_total_calls': 4, 'rag_hops': 2}, 'K.2': {'description': 'Competitive analysis', 'temp': 0.3, 'rag_total_calls': 24, 'rag_hops': 3}}}}
+        return {'metadata': {'version': 'fallback', 'architecture': '3-phase pipeline: Clerk, Artist, Assembler', 'description': 'Fallback configuration used when JSON file is unavailable'}, 'pre_flight_engine_validation': {TESTS_DIR: [{'test_id': 'VALIDATE_ITERATION', 'description': 'Basic iteration check'}]}, '1.role': {'description': 'Resume generation assistant'}, '2.Task': {'pipeline': [{'phase': 1, 'name': 'The Clerk: Deterministic Data Scaffolding'}, {'phase': 2, 'name': 'The Artist: Grounded Generation'}, {'phase': 3, 'name': 'The Assembler: Final Rendering & Validation'}]}, '3.context': {'pre_flight_file_complexity_gate': {'thresholds': {'total_file_count_max': 5, 'total_file_size_mb_max': 10}}, 'pre_flight_file_manifest_check': {'required_file_manifest': ['App_Schema_v4.json']}}, '4.reasoning': {'description': 'Creative generation phase', 'creative_brief': {'headline': {'word_count': [8, 12], 'char_count_max': 90}, 'executive_summary': {'word_count': [120, 140], 'voice': 'third_person_implied', 'forbidden_patterns': []}, 'experience_bullets': {'unify_bullet_word_count': [28, 33], 'ibm_bullet_word_count': [24, 30]}, 'experience_overview': {'unify_word_count': [25, 33], 'ibm_word_count': [22, 28]}, 'leadership_competencies': {'word_count_per_desc': [24, 30]}, 'cover_letter': {'word_count_per_para': [85, 100]}, 'deduplication_matrix': {'thresholds': {}}}, 'hardcoded_config': {'K.0': {'description': 'Thematic analysis', 'temp': 0.3, 'rag_total_calls': 50, 'rag_hops': 3}, 'K.1': {'description': 'Executive summary', 'temp': 0.9, 'rag_total_calls': 4, 'rag_hops': 2}, 'K.2': {'description': 'Competitive analysis', 'temp': 0.3, 'rag_total_calls': 24, 'rag_hops': 3}}}}
 
     def get_version(self) -> str:
         """Get the workflow version."""
@@ -176,7 +193,7 @@ class WorkflowLoader:
     def get_pre_flight_tests(self) -> List[Dict[str, Any]]:
         """Get pre-flight validation tests."""
         if self._cached_pre_flight_tests is None:
-            self._cached_pre_flight_tests = self._workflow_data.get('pre_flight_engine_validation', {}).get('tests', [])
+            self._cached_pre_flight_tests = self._workflow_data.get('pre_flight_engine_validation', {}).get(TESTS_DIR, [])
         return self._cached_pre_flight_tests
 
     def get_file_complexity_thresholds(self) -> Dict[str, int]:

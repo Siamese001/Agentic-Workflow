@@ -3,12 +3,29 @@
 from pathlib import Path
 import sys
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 sys.path.insert(0, str(Path.cwd()))
 
 project_root = Path.cwd()
 
 # Simulate the template loading logic from AutonomyGuardianAgent
-template_path = project_root / "agentic_core" / "config" / "validators" / "dashboard_template.html"
+template_path = project_root / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
 
 print("=" * 80)
 print("TEMPLATE LOADING DEBUG")

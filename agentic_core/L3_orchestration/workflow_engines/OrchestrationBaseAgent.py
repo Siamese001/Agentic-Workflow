@@ -119,7 +119,7 @@ class L3SubatomicTestingMixin(MCPHardenedMixin):
         if test_result["passed"]:
             self._emit_l3_event(L3SovereignSeverity.INFO, "L3_CRITIQUE_PASSED", {
                 "artifact_type": artifact_type,
-                "tests_run": len(test_result.get("tests", []))
+                "tests_run": len(test_result.get(TESTS_DIR, []))
             })
             return test_result
         
@@ -273,6 +273,23 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def test_artifact_exists():
     """Verify Artifact is not empty."""
     Artifact = """{escaped_artifact}"""
@@ -299,14 +316,14 @@ def test_artifact_exists():
             passed = result.returncode == 0
             return {
                 "passed": passed,
-                "tests": [{"name": "plan_tests", "passed": passed}],
+                TESTS_DIR: [{"name": "plan_tests", "passed": passed}],
                 "output": result.stdout.decode()[:500],
                 "error": result.stderr.decode()[:200] if not passed else None
             }
         except subprocess.TimeoutExpired:
-            return {"passed": False, "error": "Test timeout (30s)", "tests": []}
+            return {"passed": False, "error": "Test timeout (30s)", TESTS_DIR: []}
         except Exception as e:
-            return {"passed": False, "error": str(e), "tests": []}
+            return {"passed": False, "error": str(e), TESTS_DIR: []}
 
     async def _delegate_to_l5_specialist(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
         """Delegate to TestSovereigntyAgent for advanced plan testing."""
@@ -323,9 +340,9 @@ def test_artifact_exists():
             })
             return result
         except ImportError:
-            return {"passed": False, "error": "TestSovereigntyAgent not available", "tests": []}
+            return {"passed": False, "error": "TestSovereigntyAgent not available", TESTS_DIR: []}
         except Exception as e:
-            return {"passed": False, "error": str(e), "tests": []}
+            return {"passed": False, "error": str(e), TESTS_DIR: []}
 
     def _emit_l3_event(self, Severity: L3SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Emit L3 subatomic testing event for observability."""

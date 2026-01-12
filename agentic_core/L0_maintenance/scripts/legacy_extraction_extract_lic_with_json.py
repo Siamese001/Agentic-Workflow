@@ -6,6 +6,23 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def get_file_hash(filepath: Path) -> str:
     """Docstring."""
     hasher: Any = hashlib.sha256()
@@ -18,7 +35,7 @@ def get_existing_file_hashes() -> Dict[str, str]:
     """Get dict of filename -> content hash for existing sovereign files."""
     existing: Any = {}
     repo_root: Any = Path('.')
-    sovereign_roots: Any = {'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives'}
+    sovereign_roots: Any = {AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, 'schemas', 'prompt_governance', 'observability', 'config', 'data', ARCHIVES_DIR}
     for root in sovereign_roots:
         root_path: Any = repo_root / root
         if root_path.exists():

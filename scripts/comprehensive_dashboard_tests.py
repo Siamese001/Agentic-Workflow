@@ -7,11 +7,28 @@ import json
 import sys
 from pathlib import Path
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-DASHBOARD_PATH = project_root / "reports" / "autonomy_dashboard.html"
-TEMPLATE_PATH = project_root / "agentic_core" / "L5_safety" / "validators" / "dashboard_template.html"
+DASHBOARD_PATH = project_root / REPORTS_DIR / "autonomy_dashboard.html"
+TEMPLATE_PATH = project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "dashboard_template.html"
 
 class DashboardTestSuite:
     def __init__(self):
@@ -395,7 +412,7 @@ class DashboardTestSuite:
     def test_context_target_resolver(self):
         """Tests for context/target_resolver passing from Python to dashboard generation."""
         # Check that AutonomyGuardianAgent stores context
-        guardian_path = project_root / "agentic_core" / "L5_safety" / "validators" / "AutonomyGuardianAgent.py"
+        guardian_path = project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "AutonomyGuardianAgent.py"
         if guardian_path.exists():
             guardian_code = guardian_path.read_text(encoding='utf-8')
             

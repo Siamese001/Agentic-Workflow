@@ -10,6 +10,23 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 from collections import defaultdict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class AgentDeduplicator:
     """
@@ -22,7 +39,7 @@ class AgentDeduplicator:
         
     def _load_registry(self) -> List[Dict]:
         """Load agent discovery registry."""
-        registry_path = self.root_dir / "agent_discovery_full.json"
+        registry_path = self.root_dir / AGENT_DISCOVERY_JSON
         if not registry_path.exists():
             raise FileNotFoundError(f"Registry not found: {registry_path}")
         
@@ -138,10 +155,10 @@ class AgentDeduplicator:
             return "L4"
         elif "L5_" in path:
             return "L5"
-        elif "apps_lic" in path:
-            return "apps_lic"
-        elif "apps_rg" in path:
-            return "apps_rg"
+        elif APPS_LIC_DIR in path:
+            return APPS_LIC_DIR
+        elif APPS_RG_DIR in path:
+            return APPS_RG_DIR
         else:
             return "other"
     

@@ -7,11 +7,11 @@ from pathlib import Path
 from collections import defaultdict
 
 # Load current registry
-with open('agent_discovery_full.json') as f:
+with open(AGENT_DISCOVERY_JSON) as f:
     all_agents = json.load(f)
 
 # Filter to active codebase only (exclude archives)
-active_agents = [a for a in all_agents if not a['path'].startswith('archives')]
+active_agents = [a for a in all_agents if not a['path'].startswith(ARCHIVES_DIR)]
 
 print("="*80)
 print("FINAL BULK EXTRACTION AUDIT")
@@ -53,6 +53,23 @@ print("LAYER DISTRIBUTION (Active Only)")
 print("="*80)
 
 from collections import Counter
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 layer_counts = Counter(a.get('layer', 'unknown') for a in active_agents)
 
 for layer in sorted(layer_counts.keys()):

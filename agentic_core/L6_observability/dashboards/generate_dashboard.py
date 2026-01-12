@@ -46,6 +46,26 @@ from pathlib import Path
 from typing import Dict, List, Any, Tuple
 from collections import defaultdict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    get_validated_project_root,
+)
+
 # Fix UTF-8 encoding for Windows console (emoji support)
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -101,8 +121,8 @@ class DashboardGenerator:
     
     def __init__(self, project_root: Path):
         self.project_root = project_root
-        self.discovery_path = project_root / "agent_discovery_full.json"
-        self.dashboard_path = project_root / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+        self.discovery_path = project_root / AGENT_DISCOVERY_JSON
+        self.dashboard_path = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
         self.agents = []
         
     def load_agent_discovery(self) -> bool:
@@ -137,11 +157,11 @@ class DashboardGenerator:
             class_name = agent.get('class_name', '')
             
             # Map to FIXED detailed territory names with subcategories
-            if 'apps_lic' in sub_dir:
+            if APPS_LIC_DIR in sub_dir:
                 territory = "Apps Lic"
-            elif 'apps_rg' in sub_dir:
+            elif APPS_RG_DIR in sub_dir:
                 territory = "Apps Rg"
-            elif 'apps_shared' in sub_dir:
+            elif APPS_SHARED_DIR in sub_dir:
                 territory = "Apps Shared"
             elif layer.startswith('L5'):
                 # L5 Safety subcategories based on actual paths
@@ -224,7 +244,7 @@ class DashboardGenerator:
         if total == 0:
             return {}
         
-        # Compute raw metrics
+        # Compute raw metrics from ACTUAL agent data
         heal_cap = sum(1 for a in agents_list if a.get('has_healing'))
         heal_inv = sum(1 for a in agents_list if a.get('invocation') == 'Yes')
         test = sum(1 for a in agents_list if a.get('has_tests'))
@@ -233,7 +253,10 @@ class DashboardGenerator:
         typed_sum = sum(a.get('typed_pct', 0) for a in agents_list)
         doc_sum = sum(a.get('documented_pct', 0) for a in agents_list)
         
-        # Calculate percentages
+        # MCP Hardened - from actual agent data (not hardcoded!)
+        mcp_hardened = sum(1 for a in agents_list if a.get('mcp_hardened'))
+        
+        # Calculate percentages from REAL counts
         heal_cap_pct = round(heal_cap / total * 100, 1)
         heal_inv_pct = round(heal_inv / total * 100, 1)
         test_pct = round(test / total * 100, 1)
@@ -242,15 +265,16 @@ class DashboardGenerator:
         doc_pct = round(doc_sum / total, 1)
         avg_cc = round(cc_sum / total, 1)
         
+        # Hardened % and MCP Capable % - REAL calculation from mcp_hardened field
+        hardened_pct = round(mcp_hardened / total * 100, 1)
+        mcp_pct = hardened_pct  # Same metric, different label
+        
         # Derived metrics
         complexity_health = round(max(0, 100 - (avg_cc * 2)), 1)
         code_quality = round((typed_pct + doc_pct) / 2, 1)
         # Health is weighted average of 5 components as shown in Health Breakdown
         health = round((heal_cap_pct + heal_inv_pct + test_pct + obs_pct + complexity_health) / 5, 1)
         risk = "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW"
-        
-        # Hardened % - estimate based on layer
-        hardened_pct = 80.0  # Default estimate
         
         return {
             "total": total,
@@ -266,7 +290,8 @@ class DashboardGenerator:
             "code_quality": code_quality,
             "health": health,
             "risk": risk,
-            "hardened_pct": hardened_pct
+            "hardened_pct": hardened_pct,
+            "mcp_pct": mcp_pct
         }
     
     def build_territory_row(self, territory_name: str, metrics: Dict[str, Any], priority: int, is_infrastructure: bool = False) -> Dict[str, Any]:
@@ -279,7 +304,7 @@ class DashboardGenerator:
             "Heal Invocation %": metrics["heal_inv_pct"],
             "Invocation %": metrics["heal_inv_pct"],  # Same as Heal Invocation
             "Hardened %": metrics["hardened_pct"],
-            "MCP Capable %": metrics["hardened_pct"],  # Same as Hardened
+            "MCP Capable %": metrics["mcp_pct"],  # From actual mcp_hardened data
             "Test %": metrics["test_pct"],
             "Observable %": metrics["obs_pct"],
             "Avg CC": metrics["avg_cc"],
@@ -462,13 +487,13 @@ class DashboardGenerator:
         return per_agent_data
     
     def generate_dashboard_data(self) -> List[Dict[str, Any]]:
-        """Generate complete dashboard data with FIXED structure (always 29 rows)."""
+        """Generate dashboard data with only territories that have actual agents."""
         territories = self.group_agents_by_territory()
         
-        # Build rows in FIXED order - create row for EVERY territory (even if empty)
+        # Build rows ONLY for territories with agents (no empty placeholders)
         rows = []
-        for i, territory_name in enumerate(TERRITORY_ORDER):
-            priority = i + 1
+        priority = 1
+        for territory_name in TERRITORY_ORDER:
             is_infrastructure = "L6_Observability" in territory_name
             
             if territory_name in territories and len(territories[territory_name]) > 0:
@@ -478,30 +503,11 @@ class DashboardGenerator:
                 if metrics:
                     row = self.build_territory_row(territory_name, metrics, priority, is_infrastructure)
                     rows.append(row)
-            else:
-                # Territory has no agents - create empty row to maintain wireframe
-                empty_metrics = {
-                    "total": 0,
-                    "compliant": 0,
-                    "heal_cap_pct": 0.0,
-                    "heal_inv_pct": 0.0,
-                    "test_pct": 0.0,
-                    "obs_pct": 0.0,
-                    "avg_cc": 0.0,
-                    "typed_pct": 0.0,
-                    "doc_pct": 0.0,
-                    "complexity_health": 0.0,
-                    "code_quality": 0.0,
-                    "health": 0.0,
-                    "risk": "N/A",
-                    "hardened_pct": 0.0
-                }
-                row = self.build_territory_row(territory_name, empty_metrics, priority, is_infrastructure)
-                rows.append(row)
+                    priority += 1
+            # Skip territories with no agents - no fake placeholder rows
         
-        # Build TOTAL row (only from non-empty rows)
-        non_empty_rows = [r for r in rows if r["Total"] > 0]
-        total_row = self.build_total_row(non_empty_rows)
+        # Build TOTAL row from all rows (all have agents now)
+        total_row = self.build_total_row(rows)
         
         # TOTAL always first
         all_rows = [total_row] + rows
@@ -509,18 +515,14 @@ class DashboardGenerator:
         return all_rows
     
     def validate_dashboard_data(self, data: List[Dict[str, Any]]) -> bool:
-        """Validate dashboard data against FIXED wireframe with strict guardrails."""
+        """Validate dashboard data - only real territories with agents."""
         if not data:
             print("❌ VALIDATION FAILED: No data generated")
             return False
         
-        # GUARDRAIL 1: Enforce exactly 29 rows (TOTAL + 28 territories)
-        expected_row_count = len(TERRITORY_ORDER) + 1  # +1 for TOTAL
-        if len(data) != expected_row_count:
-            print(f"❌ GUARDRAIL VIOLATION: Row count mismatch")
-            print(f"   Expected: {expected_row_count} rows (TOTAL + {len(TERRITORY_ORDER)} territories)")
-            print(f"   Actual: {len(data)} rows")
-            print(f"   This violates the frozen wireframe structure!")
+        # GUARDRAIL 1: Must have at least TOTAL row + some territory rows
+        if len(data) < 2:
+            print("❌ VALIDATION FAILED: Need at least TOTAL + 1 territory")
             return False
         
         # GUARDRAIL 2: TOTAL row must be first
@@ -535,16 +537,11 @@ class DashboardGenerator:
                 print(f"❌ GUARDRAIL VIOLATION: Row {i} ({row.get('Territory', 'UNKNOWN')}) missing fields: {missing_fields}")
                 return False
         
-        # GUARDRAIL 4: Territory order must match FIXED structure exactly
-        territory_rows = data[1:]
-        for i, row in enumerate(territory_rows):
-            expected = TERRITORY_ORDER[i]
-            actual = row.get("Territory")
-            if actual != expected:
-                print(f"❌ GUARDRAIL VIOLATION: Territory order mismatch at position {i+1}")
-                print(f"   Expected: {expected}")
-                print(f"   Actual: {actual}")
-                print(f"   Territory order must never deviate from frozen wireframe!")
+        # GUARDRAIL 4: All territory rows must have agents (no 0-count placeholders)
+        for row in data[1:]:  # Skip TOTAL
+            if row.get("Total", 0) == 0:
+                print(f"❌ GUARDRAIL VIOLATION: Territory '{row.get('Territory')}' has 0 agents")
+                print("   Empty placeholder rows are not allowed!")
                 return False
         
         # GUARDRAIL 5: Verify health formula consistency

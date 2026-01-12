@@ -5,7 +5,7 @@ from pathlib import Path
 def _add_project_root_to_sys_path() -> None:
     current = Path(__file__).resolve()
     while current.parent != current:
-        if (current / "agentic_core").exists():
+        if (current / AGENTIC_CORE_DIR).exists():
             root_str = str(current)
             if root_str not in sys.path:
                 sys.path.insert(0, root_str)
@@ -25,6 +25,23 @@ import random
 from typing import Any, List
 from tqdm import tqdm
 import shutil  # For terminal width detection in formatting
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 
 
 def create_agent_parser(description: str) -> argparse.ArgumentParser:
@@ -71,7 +88,7 @@ def setup_execution_context(args: argparse.Namespace, project_root: Path) -> Any
     
     python_files: List[str] = []
     for f in files_gen:
-        if f.is_file() and "archives" not in str(f) and ".venv" not in str(f) and "__pycache__" not in str(f):
+        if f.is_file() and ARCHIVES_DIR not in str(f) and ".venv" not in str(f) and "__pycache__" not in str(f):
             python_files.append(str(f))
         pbar.update(1)
     

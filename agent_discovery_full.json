@@ -50,8 +50,8 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "AdaptiveExecutionMixin"
     ],
     "key_methods": [
@@ -98,8 +98,8 @@
     "layer": "L0",
     "inheritance": [
       "SubatomicTestingMixin",
-      "Agent",
       "HealerMixin",
+      "Agent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -177,11 +177,11 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin",
       "HealerMixin",
+      "AutonomyMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin"
     ],
     "key_methods": [
@@ -227,11 +227,11 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin",
       "HealerMixin",
+      "AutonomyMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin"
     ],
     "key_methods": [
@@ -361,11 +361,11 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin",
       "HealerMixin",
+      "AutonomyMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin"
     ],
     "key_methods": [
@@ -452,11 +452,11 @@
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
     "inheritance": [
-      "AutonomyMixin",
-      "SelfDiagnosisMixin",
       "HealerMixin",
+      "AutonomyMixin",
       "MCPHardenedMixin",
       "L0DelegationTestingMixin",
+      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin"
     ],
     "key_methods": [
@@ -584,8 +584,8 @@
     "layer": "L1",
     "inheritance": [
       "SubatomicTestingMixin",
-      "CanonASTValidator",
       "HealerMixin",
+      "CanonASTValidator",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -626,8 +626,8 @@
     "layer": "L1",
     "inheritance": [
       "SubatomicTestingMixin",
-      "CanonASTValidator",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -877,8 +877,8 @@
     "layer": "L1",
     "inheritance": [
       "SubatomicTestingMixin",
-      "CanonASTValidator",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -916,8 +916,8 @@
     "layer": "L1",
     "inheritance": [
       "SubatomicTestingMixin",
-      "CanonASTValidator",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -997,8 +997,8 @@
     "layer": "L1",
     "inheritance": [
       "SubatomicTestingMixin",
-      "CanonASTValidator",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -1036,8 +1036,8 @@
     "layer": "L1",
     "inheritance": [
       "SubatomicTestingMixin",
-      "CanonASTValidator",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -1075,8 +1075,8 @@
     "layer": "L1",
     "inheritance": [
       "SubatomicTestingMixin",
-      "CanonASTValidator",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Import",
@@ -1377,8 +1377,8 @@
     "layer": "L1",
     "inheritance": [
       "PineconeVectorMixin",
-      "RedisCacheMixin",
-      "SovereignBaseAgent"
+      "SovereignBaseAgent",
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "_init_registry",
@@ -1514,8 +1514,8 @@
     "layer": "L1",
     "inheritance": [
       "SubatomicTestingMixin",
-      "CanonASTValidator",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -1850,8 +1850,8 @@
     "layer": "L2",
     "inheritance": [
       "SubatomicTestingMixin",
-      "NodeVisitor",
       "HealerMixin",
+      "NodeVisitor",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -1892,8 +1892,8 @@
     "layer": "L2",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
       "HealerMixin",
+      "SubAtomicAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -1933,9 +1933,9 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
+      "HealerMixin",
       "PineconeVectorMixin",
       "RedisCacheMixin",
-      "HealerMixin",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -2803,10 +2803,10 @@
     "sub_dir": "agentic_core/L2_execution",
     "layer": "L2",
     "inheritance": [
-      "PineconeVectorMixin",
       "SubatomicTestingMixin",
-      "RedisCacheMixin",
-      "SovereignBaseAgent"
+      "PineconeVectorMixin",
+      "SovereignBaseAgent",
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -3220,6 +3220,48 @@
     "schema_strictness": 87.5
   },
   {
+    "class_name": "PromptRegistryAgent",
+    "path": "agentic_core\\prompt_governance\\version_registry\\PromptRegistryAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/prompt_governance",
+    "layer": "L2",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "_load_registry",
+      "_save_registry",
+      "_hash_content",
+      "_compute_embedding",
+      "_find_similar_prompts",
+      "register_prompt",
+      "get_active_version",
+      "list_active_prompts"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 211,
+    "class_count": 2,
+    "description": "\n    Sovereign registry for all prompt templates and meta-prompts.\n\n    Responsibilities (per bluepr",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 88.9,
+    "documented_pct": 88.9,
+    "observability": {
+      "logging": true,
+      "metrics": false,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 38,
+    "proper_base_class": false,
+    "schema_strictness": 88.9
+  },
+  {
     "class_name": "RecipientAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\RecipientAgent.py",
     "top_dir": "agentic_core",
@@ -3307,8 +3349,8 @@
     "layer": "L2",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
       "HealerMixin",
+      "SubAtomicAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -4948,11 +4990,11 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "PineconeVectorMixin",
-      "RedisCacheMixin",
-      "L3SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "PineconeVectorMixin",
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5039,10 +5081,10 @@
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
     "inheritance": [
-      "PineconeVectorMixin",
       "RedisCacheMixin",
-      "L3SubatomicTestingMixin",
-      "SovereignBaseAgent"
+      "PineconeVectorMixin",
+      "SovereignBaseAgent",
+      "L3SubatomicTestingMixin"
     ],
     "key_methods": [
       "route",
@@ -5447,46 +5489,6 @@
     "cyclomatic_complexity": 1,
     "proper_base_class": false,
     "schema_strictness": 100.0
-  },
-  {
-    "class_name": "RuntimeTelemetryAgent",
-    "path": "agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
-    "top_dir": "agentic_core",
-    "sub_dir": "agentic_core/L6_observability",
-    "layer": "L3",
-    "inheritance": [
-      "MCPHardenedMixin"
-    ],
-    "key_methods": [
-      "heal_repository",
-      "__init__",
-      "benchmark_startup",
-      "audit_security_overhead",
-      "report_performance"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "No (missing super)",
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 55,
-    "class_count": 2,
-    "description": "\n    THE PERFORMANCE GUARDIAN\n    Ensures architectural purity does not sacrifice operational speed.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": false,
-    "typed_pct": 80.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 8,
-    "proper_base_class": false,
-    "schema_strictness": 80.0
   },
   {
     "class_name": "SSOTOrchestratorAgent",
@@ -5937,9 +5939,9 @@
     "layer": "L3",
     "inheritance": [
       "SubatomicTestingMixin",
+      "FileSystemEventHandler",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "FileSystemEventHandler"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6674,10 +6676,10 @@
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
     "inheritance": [
-      "L4SubatomicTestingMixin",
       "RedisCacheMixin",
       "PineconeVectorMixin",
-      "SovereignBaseAgent"
+      "SovereignBaseAgent",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "recall",
@@ -6951,9 +6953,9 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
+      "HealerMixin",
       "PineconeVectorMixin",
       "RedisCacheMixin",
-      "HealerMixin",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -8696,11 +8698,11 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin",
       "HealerMixin",
+      "AutonomyMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin"
     ],
     "key_methods": [
@@ -8785,8 +8787,8 @@
     "layer": "L5",
     "inheritance": [
       "SubatomicTestingMixin",
-      "ASTEnforcementMixin",
       "CanonBaseAgent",
+      "ASTEnforcementMixin",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -8807,7 +8809,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 206,
+    "loc": 215,
     "class_count": 2,
     "description": "L5 Safety agent \u2014 enforces PascalCase as eternal sole SSOT.\n    \n    Uses ASTEnforcementMixin for ul",
     "pascal_compliant": true,
@@ -8821,7 +8823,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 60,
+    "cyclomatic_complexity": 67,
     "proper_base_class": false,
     "schema_strictness": 100.0
   },
@@ -9123,10 +9125,10 @@
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",
     "inheritance": [
-      "PineconeVectorMixin",
       "RedisCacheMixin",
-      "MCPHardenedMixin",
-      "SovereignBaseAgent"
+      "PineconeVectorMixin",
+      "SovereignBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9649,6 +9651,46 @@
     "cyclomatic_complexity": 9,
     "proper_base_class": false,
     "schema_strictness": 50.0
+  },
+  {
+    "class_name": "RuntimeTelemetryAgent",
+    "path": "agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L6_observability",
+    "layer": "L6",
+    "inheritance": [
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "heal_repository",
+      "__init__",
+      "benchmark_startup",
+      "audit_security_overhead",
+      "report_performance"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "No (missing super)",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 55,
+    "class_count": 2,
+    "description": "\n    THE PERFORMANCE GUARDIAN\n    Ensures architectural purity does not sacrifice operational speed.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 80.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 8,
+    "proper_base_class": true,
+    "schema_strictness": 80.0
   },
   {
     "class_name": "ASCIIEnforcerAgent",
@@ -11225,8 +11267,8 @@
     "sub_dir": "apps_rg/engines",
     "layer": "apps_rg",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
+      "ResumeAgent",
       "HealerMixin",
       "MCPHardenedMixin"
     ],

@@ -9,12 +9,29 @@ Defines expected targets per metric and territory pattern.
 import re
 from typing import Dict, Any, Union, Optional
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Default targets for high-autonomy layers (L1-L5)
 DEFAULT_TARGETS = {
     "heal_capability": 100,
     "invocation": 100,
     "mcp_hardened": 100,
-    "tests": 95,
+    TESTS_DIR: 95,
     "observability": 95,
     "complexity_max": 10,   # Lower is better
     "typing": 95,
@@ -31,14 +48,14 @@ TARGETS: Dict[str, Dict[str, Union[int, str]]] = {
         "invocation": 20,           # Rare execution path
         "observability": 70,        # Minimal runtime events
         "mcp_hardened": "N/A",      # Often no external tools
-        "tests": 80,
+        TESTS_DIR: 80,
     },
 
     # --- Infrastructure (Utilities/Wrappers) ---
     # Wrappers around DBs/APIs; heavy on complexity, light on autonomous decision making.
     ".*infrastructure": {
         "invocation": 70,
-        "tests": 85,
+        TESTS_DIR: 85,
         "mcp_hardened": "conditional_tools", # Special flag handled in logic
         "complexity_max": 20,       # Validation logic often requires nesting
     },
@@ -50,7 +67,7 @@ TARGETS: Dict[str, Dict[str, Union[int, str]]] = {
     "Base Class": {
         "invocation": "N/A",
         "observability": "N/A",
-        "tests": 70,                # Interface tests only
+        TESTS_DIR: 70,                # Interface tests only
         "mcp_hardened": "N/A",
     },
 

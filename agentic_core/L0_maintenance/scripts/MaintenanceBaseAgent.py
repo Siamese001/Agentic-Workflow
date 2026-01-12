@@ -27,6 +27,23 @@ from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVec
 from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class L0SovereignSeverity(Enum):
     """Sovereign event Severity levels for L0 delegation."""
@@ -104,7 +121,7 @@ class L0DelegationMixin(MCPHardenedMixin):
         
         if result["passed"]:
             self._emit_l0_event(L0SovereignSeverity.INFO, "L0_HEALING_VALIDATED", {
-                "tests_passed": len(result.get("tests", []))
+                "tests_passed": len(result.get(TESTS_DIR, []))
             })
         else:
             self._emit_l0_event(L0SovereignSeverity.ERROR, "L0_HEALING_REJECTED", {
@@ -132,9 +149,9 @@ class L0DelegationMixin(MCPHardenedMixin):
             })
             return result
         except ImportError:
-            return {"passed": False, "error": "TestSovereigntyAgent not available", "tests": []}
+            return {"passed": False, "error": "TestSovereigntyAgent not available", TESTS_DIR: []}
         except Exception as e:
-            return {"passed": False, "error": str(e), "tests": []}
+            return {"passed": False, "error": str(e), TESTS_DIR: []}
 
     async def _delegate_healing_to_specialist(self, healed_code: str, context: Dict) -> Dict:
         """Delegate healed code validation to TestSovereigntyAgent."""
@@ -149,9 +166,9 @@ class L0DelegationMixin(MCPHardenedMixin):
             })
             return result
         except ImportError:
-            return {"passed": False, "error": "TestSovereigntyAgent not available", "tests": []}
+            return {"passed": False, "error": "TestSovereigntyAgent not available", TESTS_DIR: []}
         except Exception as e:
-            return {"passed": False, "error": str(e), "tests": []}
+            return {"passed": False, "error": str(e), TESTS_DIR: []}
 
     def _emit_l0_event(self, Severity: L0SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Emit L0 delegation event for observability."""

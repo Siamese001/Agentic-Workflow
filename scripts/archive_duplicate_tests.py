@@ -9,8 +9,25 @@ from pathlib import Path
 from datetime import datetime
 import shutil
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def main():
-    test_dir = Path(__file__).parent.parent / "tests"
+    test_dir = Path(__file__).parent.parent / TESTS_DIR
     
     # Find all test files and group by name
     seen = {}
@@ -32,7 +49,7 @@ def main():
     
     # Create archive directory
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    archive_dir = Path(__file__).parent.parent / "archives" / f"duplicate_tests_{timestamp}"
+    archive_dir = Path(__file__).parent.parent / ARCHIVES_DIR / f"duplicate_tests_{timestamp}"
     archive_dir.mkdir(parents=True, exist_ok=True)
     
     # Archive duplicates (keep first occurrence, archive rest)

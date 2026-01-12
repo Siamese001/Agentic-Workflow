@@ -16,6 +16,23 @@ import ast
 import sys
 from pathlib import Path
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Layer to expected base class mapping (SSOT - update if layers change)
 LAYER_BASE_MAP = {
     "L0": "MaintenanceBaseAgent",
@@ -80,7 +97,7 @@ def main() -> int:
         print("Error: Not a git repo or no staged files")
         return 1
     
-    python_files = [Path(p) for p in staged if p.endswith(".py") and "agentic_core" in p]
+    python_files = [Path(p) for p in staged if p.endswith(".py") and AGENTIC_CORE_DIR in p]
     
     failures = []
     for file_path in python_files:

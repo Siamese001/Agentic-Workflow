@@ -20,12 +20,29 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """L5: Self-healing security agent"""
     def __init__(self, SafetyEngine=None) -> None:
         self.safety = SafetyEngine
-        # Use relative pathing to stay within the 'agentic_core' root gravity
+        # Use relative pathing to stay within the AGENTIC_CORE_DIR root gravity
         self.log_path = Path("observability/logs/threat_detections.json")
         self.evolution_interval = 3600  
         self.running = True

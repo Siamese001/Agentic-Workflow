@@ -25,6 +25,23 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.smart_discovery import is_discovery_stale, get_json_mtime, get_latest_source_mtime
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s] %(levelname)s: %(message)s",
@@ -40,8 +57,8 @@ def check_dashboard_freshness() -> tuple[bool, str]:
     Returns:
         (is_fresh, reason)
     """
-    dashboard_path = PROJECT_ROOT / "reports" / "autonomy_dashboard.html"
-    discovery_json = PROJECT_ROOT / "agent_discovery_full.json"
+    dashboard_path = PROJECT_ROOT / REPORTS_DIR / "autonomy_dashboard.html"
+    discovery_json = PROJECT_ROOT / AGENT_DISCOVERY_JSON
     
     # Check if dashboard exists
     if not dashboard_path.exists():

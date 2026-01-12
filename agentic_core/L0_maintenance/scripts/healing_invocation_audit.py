@@ -12,6 +12,23 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 from datetime import datetime
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class HealingInvocationAudit:
     """Audit heal_repository() methods for super() presence and chain completeness."""
@@ -19,7 +36,7 @@ class HealingInvocationAudit:
     def __init__(self, project_root: Path = None):
         """Initialize audit tool."""
         self.project_root = project_root or Path.cwd()
-        self.agentic_core = self.project_root / 'agentic_core'
+        self.agentic_core = self.project_root / AGENTIC_CORE_DIR
         self.results = {
             'total_methods': 0,
             'with_super': 0,

@@ -2,7 +2,24 @@
 import json
 from collections import defaultdict
 
-data = json.load(open('agent_discovery_full.json'))
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
+data = json.load(open(AGENT_DISCOVERY_JSON))
 
 stats = defaultdict(lambda: {'count': 0, 'healing': 0, 'mcp': 0, 'testing': 0, 'tools': 0})
 
@@ -16,7 +33,7 @@ for a in data:
 
 print('| Layer | Agents | Healing | MCP Hardened | Testing | Tools |')
 print('|-------|--------|---------|--------------|---------|-------|')
-for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'apps_lic', 'apps_rg', 'apps_shared', 'tests', 'misc']:
+for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, TESTS_DIR, 'misc']:
     s = stats[layer]
     if s['count'] > 0:
         h_pct = 100 * s['healing'] // s['count']

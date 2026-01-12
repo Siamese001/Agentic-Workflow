@@ -12,6 +12,23 @@ import json
 from pathlib import Path
 from typing import List, Tuple, Dict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 def audit_agents(root_dir: str = ".") -> Dict:
     """
@@ -26,7 +43,7 @@ def audit_agents(root_dir: str = ".") -> Dict:
     agent_files = []
     
     # Load agent registry for comparison
-    registry_path = root / "agent_discovery_full.json"
+    registry_path = root / AGENT_DISCOVERY_JSON
     registry_count = 0
     if registry_path.exists():
         with open(registry_path, 'r') as f:
@@ -43,7 +60,7 @@ def audit_agents(root_dir: str = ".") -> Dict:
         # Skip excluded directories
         if any(skip in str(path) for skip in [
             'venv', '.venv', 'env', '__pycache__', 
-            '.refactor_backups', 'node_modules', 'tests'
+            '.refactor_backups', 'node_modules', TESTS_DIR
         ]):
             continue
         

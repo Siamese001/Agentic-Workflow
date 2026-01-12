@@ -1,7 +1,24 @@
 """Check which BaseAgent classes are now discovered."""
 import json
 
-with open('agent_discovery_full.json', 'r') as f:
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
+with open(AGENT_DISCOVERY_JSON, 'r') as f:
     agents = json.load(f)
 
 base_agents = [a for a in agents if 'BaseAgent' in a.get('class_name', '')]

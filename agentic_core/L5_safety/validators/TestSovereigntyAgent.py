@@ -20,6 +20,23 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 from enum import Enum
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class SovereignSeverity(Enum):
     """Sovereign event Severity levels."""
@@ -68,7 +85,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         results = {
             "passed": True,
             "coverage": 0.0,
-            "tests": [],
+            TESTS_DIR: [],
             "output": ""
         }
 
@@ -91,7 +108,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
             if not critique["all_passed"]:
                 self._emit_event(SovereignSeverity.ERROR, "TEST_SOVEREIGNTY_CRITIQUE_FAILED", critique)
                 results["passed"] = False
-                results["tests"].append({"name": "self_critique", "passed": False})
+                results[TESTS_DIR].append({"name": "self_critique", "passed": False})
         finally:
             if temp_path and temp_path.exists():
                 temp_path.unlink()
@@ -121,21 +138,21 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
             return {
                 "passed": passed,
                 "coverage": coverage,
-                "tests": [{"name": "pytest_cov", "passed": result.returncode == 0}],
+                TESTS_DIR: [{"name": "pytest_cov", "passed": result.returncode == 0}],
                 "output": output[:2000]
             }
         except subprocess.TimeoutExpired:
             return {
                 "passed": False,
                 "coverage": 0.0,
-                "tests": [{"name": "pytest_cov", "passed": False, "error": "timeout"}],
+                TESTS_DIR: [{"name": "pytest_cov", "passed": False, "error": "timeout"}],
                 "output": "Test timeout after 120s"
             }
         except Exception as e:
             return {
                 "passed": False,
                 "coverage": 0.0,
-                "tests": [{"name": "pytest_cov", "passed": False, "error": str(e)}],
+                TESTS_DIR: [{"name": "pytest_cov", "passed": False, "error": str(e)}],
                 "output": str(e)
             }
 
@@ -153,14 +170,14 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
             return {
                 "passed": passed,
                 "coverage": 0.0,
-                "tests": [{"name": "pytest_basic", "passed": passed}],
+                TESTS_DIR: [{"name": "pytest_basic", "passed": passed}],
                 "output": result.stdout.decode()[:1000]
             }
         except Exception as e:
             return {
                 "passed": False,
                 "coverage": 0.0,
-                "tests": [{"name": "pytest_basic", "passed": False, "error": str(e)}],
+                TESTS_DIR: [{"name": "pytest_basic", "passed": False, "error": str(e)}],
                 "output": str(e)
             }
 
@@ -179,14 +196,14 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
             return {
                 "passed": passed,
                 "coverage": 0.0,
-                "tests": [{"name": f"pytest_{target}", "passed": passed}],
+                TESTS_DIR: [{"name": f"pytest_{target}", "passed": passed}],
                 "output": result.stdout.decode()[:1000]
             }
         except Exception as e:
             return {
                 "passed": False,
                 "coverage": 0.0,
-                "tests": [{"name": f"pytest_{target}", "passed": False, "error": str(e)}],
+                TESTS_DIR: [{"name": f"pytest_{target}", "passed": False, "error": str(e)}],
                 "output": str(e)
             }
 
@@ -220,7 +237,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         tests.append({"name": "temp_cleanup", "passed": True})
 
         all_passed = all(t["passed"] for t in tests)
-        return {"tests": tests, "all_passed": all_passed}
+        return {TESTS_DIR: tests, "all_passed": all_passed}
 
     def _emit_event(self, Severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Telemetry for observability."""

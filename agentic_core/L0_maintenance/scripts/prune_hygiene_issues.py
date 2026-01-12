@@ -13,6 +13,23 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from agentic_core.L0_maintenance.scripts.hygiene_validator import HygieneValidatorAgent
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 def prompt_user(question, default="no"):
     """Ask a yes/no question via input() and return their answer."""
@@ -177,7 +194,7 @@ if __name__ == "__main__":
         # Default to agentic_core from project root
         script_dir = Path(__file__).parent
         target_dir = script_dir.parent.parent.parent  # Go up to project root
-        target_dir = target_dir / "agentic_core"
+        target_dir = target_dir / AGENTIC_CORE_DIR
 
     target_dir = Path(target_dir).resolve()
 

@@ -10,11 +10,28 @@ import re
 from pathlib import Path
 import pytest
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Disable path_shield for real file I/O testing
 pytestmark = pytest.mark.usefixtures("disable_path_shield")
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.resolve()
-L6_DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+L6_DASHBOARD_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
 
 
 def load_dashboard_html():

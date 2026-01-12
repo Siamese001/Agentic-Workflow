@@ -7,12 +7,29 @@ from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Load current agent registry
-with open('agent_discovery_full.json') as f:
+with open(AGENT_DISCOVERY_JSON) as f:
     agents = json.load(f)
 
 # Filter to active agents only (exclude archives)
-active_agents = [a for a in agents if not a['path'].startswith('archives')]
+active_agents = [a for a in agents if not a['path'].startswith(ARCHIVES_DIR)]
 
 print(f"Generating sovereign state report for {len(active_agents)} active agents...")
 

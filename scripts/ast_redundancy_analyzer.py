@@ -18,6 +18,23 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Set, Tuple, Optional
 import json
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 @dataclass
 class AgentInfo:
@@ -197,9 +214,9 @@ def find_agent_classes(base_path: str) -> List[AgentInfo]:
     
     # Also search apps directories
     search_paths = [base]
-    apps_rg = base.parent / "apps_rg"
-    apps_lic = base.parent / "apps_lic"
-    apps_shared = base.parent / "apps_shared"
+    apps_rg = base.parent / APPS_RG_DIR
+    apps_lic = base.parent / APPS_LIC_DIR
+    apps_shared = base.parent / APPS_SHARED_DIR
     if apps_rg.exists():
         search_paths.append(apps_rg)
     if apps_lic.exists():

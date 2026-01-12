@@ -39,16 +39,16 @@ class TestPreCommitE2E:
             )
             
             # Create SSOT directory structure
-            (repo_path / "agentic_core").mkdir()
-            (repo_path / "agentic_core" / "L0_maintenance").mkdir()
-            (repo_path / "agentic_core" / "L0_maintenance" / "scripts").mkdir()
-            (repo_path / "agentic_core" / "L5_safety").mkdir()
-            (repo_path / "agentic_core" / "L5_safety" / "guardrails").mkdir()
-            (repo_path / "agentic_core" / "utils").mkdir()
-            (repo_path / "agentic_core" / "utils" / "core_extensions").mkdir()
+            (repo_path / AGENTIC_CORE_DIR).mkdir()
+            (repo_path / AGENTIC_CORE_DIR / "L0_maintenance").mkdir()
+            (repo_path / AGENTIC_CORE_DIR / "L0_maintenance" / SCRIPTS_DIR).mkdir()
+            (repo_path / AGENTIC_CORE_DIR / "L5_safety").mkdir()
+            (repo_path / AGENTIC_CORE_DIR / "L5_safety" / "guardrails").mkdir()
+            (repo_path / AGENTIC_CORE_DIR / "utils").mkdir()
+            (repo_path / AGENTIC_CORE_DIR / "utils" / "core_extensions").mkdir()
             
             # Create minimal required files for SSOT scanner
-            init_file = repo_path / "agentic_core" / "__init__.py"
+            init_file = repo_path / AGENTIC_CORE_DIR / "__init__.py"
             init_file.write_text("")
             
             yield repo_path
@@ -75,7 +75,7 @@ class TestPreCommitE2E:
     def test_commit_with_compliant_file(self, test_repo):
         """Test that compliant files can be committed."""
         # Create a compliant file
-        compliant_file = test_repo / "agentic_core" / "L0_maintenance" / "scripts" / "good.py"
+        compliant_file = test_repo / AGENTIC_CORE_DIR / "L0_maintenance" / SCRIPTS_DIR / "good.py"
         compliant_file.write_text("""
 #!/usr/bin/env python3
 \"\"\"A compliant L0 script.\"\"\"
@@ -100,12 +100,29 @@ if __name__ == "__main__":
     def test_commit_blocked_with_violation(self, test_repo):
         """Test that commits with violations are blocked."""
         # Create a file with upward dependency violation
-        violator_file = test_repo / "agentic_core" / "L0_maintenance" / "scripts" / "bad.py"
+        violator_file = test_repo / AGENTIC_CORE_DIR / "L0_maintenance" / SCRIPTS_DIR / "bad.py"
         violator_file.write_text("""
 #!/usr/bin/env python3
 \"\"\"A non-compliant L0 script with upward leak.\"\"\"
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 
 class BadAgent(MCPHardenedMixin):
     pass
@@ -172,7 +189,7 @@ class BadAgent(MCPHardenedMixin):
         good_file.write_text("print('ok')")
         
         # Create one non-compliant file
-        bad_file = test_repo / "agentic_core" / "L0_maintenance" / "bad.py"
+        bad_file = test_repo / AGENTIC_CORE_DIR / "L0_maintenance" / "bad.py"
         bad_file.write_text("from agentic_core.L5_safety import X")
         
         # Stage both

@@ -12,6 +12,23 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
@@ -27,7 +44,7 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
     def __init__(self, project_root: Path, dry_run: bool = True) -> None:
         self.project_root = project_root.resolve()
         self.dry_run = dry_run
-        self.target_prefixes = ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]
+        self.target_prefixes = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
         self.renames_applied = 0
 
     def run(self) -> List[Dict[str, str]]:

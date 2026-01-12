@@ -10,6 +10,23 @@ from typing import List, Dict, Any
 import sys
 import os
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -25,7 +42,7 @@ class CoverageValidator:
         violations = []
         
         # Simulate coverage check for L0 utilities
-        l0_modules = list(Path('agentic_core/L0_maintenance').rglob('*.py'))
+        l0_modules = list(Path(L0_MAINTENANCE_DIR).rglob('*.py'))
         
         for module in l0_modules[:20]:  # Sample first 20 for demo
             if '__pycache__' in str(module):

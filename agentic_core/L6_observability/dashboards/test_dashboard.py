@@ -16,6 +16,23 @@ from typing import List, Dict, Any, Tuple
 # Import the SSOT generator
 from generate_dashboard import DashboardGenerator, TERRITORY_ORDER, REQUIRED_FIELDS
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Expected number of territories in frozen wireframe (excluding TOTAL)
 EXPECTED_TERRITORY_COUNT = 28  # 29 rows total, minus TOTAL row
 
@@ -24,7 +41,7 @@ class DashboardTestSuite:
     
     def __init__(self, project_root: Path):
         self.project_root = project_root
-        self.dashboard_path = project_root / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+        self.dashboard_path = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
         self.passed = 0
         self.failed = 0
         self.warnings = 0
@@ -94,7 +111,7 @@ class DashboardTestSuite:
         """Test 3: Verify dashboard data matches agent discovery."""
         try:
             # Load agent discovery
-            discovery_path = self.project_root / "agent_discovery_full.json"
+            discovery_path = self.project_root / AGENT_DISCOVERY_JSON
             with open(discovery_path, 'r', encoding='utf-8') as f:
                 agents = json.load(f)
             
@@ -488,7 +505,7 @@ class DashboardTestSuite:
         """
         try:
             # 1. Load source truth from agent_discovery_full.json
-            discovery_path = self.project_root / "agent_discovery_full.json"
+            discovery_path = self.project_root / AGENT_DISCOVERY_JSON
             if not discovery_path.exists():
                 return False, f"Source data not found: {discovery_path}"
             

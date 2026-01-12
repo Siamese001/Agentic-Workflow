@@ -23,10 +23,27 @@ from collections import defaultdict
 from typing import Dict, List, Set, Tuple, Any
 import copy
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-AGENTIC_CORE = PROJECT_ROOT / 'agentic_core'
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 
-EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', 'data', '.sovereign_healing_backup'}
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
+
+EXCLUDED_DIRS = {'__pycache__', '.git', ARCHIVES_DIR, 'data', '.sovereign_healing_backup'}
 ORCHESTRATOR_FILES = {'compliance_orchestrator.py', 'canon_validator_agentic_v2.py'}
 
 

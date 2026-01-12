@@ -9,6 +9,23 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # All renames grouped by package
 RENAMES = {
     # apps_lic
@@ -132,7 +149,7 @@ EXCLUDE_DIRS = {
     ".venv",
     "__pycache__",
     ".git",
-    "archives",
+    ARCHIVES_DIR,
     "coverage_html",
     "node_modules",
     ".sovereign_healing_backup",

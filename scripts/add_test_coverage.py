@@ -6,22 +6,39 @@ import re
 from pathlib import Path
 import json
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 TEST_METHOD = '''
     def _run_self_tests(self) -> dict:
         """Run internal self-tests."""
-        results = {"passed": 0, "failed": 0, "tests": []}
+        results = {"passed": 0, "failed": 0, TESTS_DIR: []}
         try:
             assert self is not None
             results["passed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "passed"})
+            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 '''
 
 def has_tests(path, content):
-    has_external = (path.parent / "tests" / f"test_{path.stem}.py").exists()
+    has_external = (path.parent / TESTS_DIR / f"test_{path.stem}.py").exists()
     has_self = "_run_self_tests" in content or "SubatomicTestingMixin" in content
     has_delegation = "L0DelegationTestingMixin" in content or "_delegate_tests" in content
     has_inline = "def test_" in content or "import pytest" in content
@@ -68,7 +85,7 @@ def add_test_to_file(filepath: Path, class_name: str) -> bool:
 
 def main():
     """Add test coverage to all agents missing tests."""
-    agents = json.load(open("agent_discovery_full.json"))
+    agents = json.load(open(AGENT_DISCOVERY_JSON))
     files_processed = set()
     added = 0
     
@@ -186,25 +203,25 @@ TEST_METHOD_TEMPLATE = '''
         Returns:
             dict: Test results with 'passed', 'failed', 'skipped' counts.
         """
-        results = {"passed": 0, "failed": 0, "skipped": 0, "tests": []}
+        results = {"passed": 0, "failed": 0, "skipped": 0, TESTS_DIR: []}
         
         # Test 1: Verify class instantiation
         try:
             assert self is not None, "Instance should exist"
             results["passed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "passed"})
+            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         
         # Test 2: Verify class has expected attributes
         try:
             assert hasattr(self, "__class__"), "Should have __class__ attribute"
             results["passed"] += 1
-            results["tests"].append({"name": "test_has_class", "status": "passed"})
+            results[TESTS_DIR].append({"name": "test_has_class", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_has_class", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append({"name": "test_has_class", "status": "failed", "error": str(e)})
         
         return results
 '''

@@ -16,6 +16,23 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 @dataclass
 class L1Agent(HealerMixin, MCPHardenedMixin):
@@ -43,4 +60,4 @@ class L1Agent(HealerMixin, MCPHardenedMixin):
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
 
-        return {"status": "not_implemented", "tests": 0}
+        return {"status": "not_implemented", TESTS_DIR: 0}

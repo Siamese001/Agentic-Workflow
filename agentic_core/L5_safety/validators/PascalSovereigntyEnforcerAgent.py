@@ -27,6 +27,23 @@ from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereign
 from agentic_core.L5_safety.utils.ASTEnforcementMixin import ASTEnforcementMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class SovereignSeverity(Enum):
     """Sovereign event Severity levels."""
@@ -65,7 +82,7 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
         # Prefer agent suffix for sovereign discovery
         self.prefer_agent_suffix = True
         # Sovereign scope
-        self.target_prefixes = ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]
+        self.target_prefixes = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
         # Incremental layer order (from audit priority — schemas first)
         self.purge_order = [
             "schemas", "config", "apps_", "L5_safety", "L4_state",
@@ -158,7 +175,7 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
                 if not self.dry_run:
                     Path(file_path).write_text(original_content, encoding='utf-8')
                     subprocess.run(["git", "restore", str(file_path)], check=False)
-                layer_results.append({"file": str(file_path), "status": "failed_basic", "tests": test_result})
+                layer_results.append({"file": str(file_path), "status": "failed_basic", TESTS_DIR: test_result})
                 self._emit_event(SovereignSeverity.ERROR, "PASCAL_PURGE_CRITIQUE_FAILED")
                 continue
 
@@ -180,7 +197,7 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTE
                 except Exception as e:
                     print(f"    [!] Specialist error (non-blocking): {e}")
 
-            layer_results.append({"file": str(file_path), "status": "purged", "tests": test_result, "advanced": advanced_result})
+            layer_results.append({"file": str(file_path), "status": "purged", TESTS_DIR: test_result, "advanced": advanced_result})
 
         return layer_results
 
@@ -323,7 +340,7 @@ class SovereignEvent(BaseModel):
 
         basic_passed = all(t["passed"] for t in tests)
         return {
-            "tests": tests,
+            TESTS_DIR: tests,
             "basic_passed": basic_passed,
             "all_passed": basic_passed  # Strict mode checked in _purge_layer
         }

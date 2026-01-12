@@ -25,10 +25,27 @@ import os
 from pathlib import Path
 from typing import Any, Dict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Resolve config root relative to this file
 _THIS_DIR = Path(__file__).parent
 _REPO_ROOT = _THIS_DIR.parent.parent.parent.parent  # apps_lic/engines/outreach_engine -> repo root
-_CONFIG_ROOT = _REPO_ROOT / "agentic_core" / "config"
+_CONFIG_ROOT = _REPO_ROOT / AGENTIC_CORE_DIR / "config"
 _DOMAIN_ROOT = _THIS_DIR.parent.parent / "domain"  # apps_lic/domain
 
 

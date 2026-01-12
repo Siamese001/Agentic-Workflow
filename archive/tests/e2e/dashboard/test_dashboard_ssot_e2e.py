@@ -21,6 +21,23 @@ from typing import Dict, Any, List, Set
 
 import pytest
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -33,8 +50,8 @@ class TestDashboardSSOTCompliance:
     def dashboard_html(self) -> str:
         """Load the dashboard HTML file."""
         # NEW ARCHITECTURE: Dashboard now lives in L6_observability/dashboards
-        l6_path = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
-        legacy_path = PROJECT_ROOT / "reports" / "autonomy_dashboard.html"
+        l6_path = PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+        legacy_path = PROJECT_ROOT / REPORTS_DIR / "autonomy_dashboard.html"
         
         dashboard_path = l6_path if l6_path.exists() else legacy_path
         if not dashboard_path.exists():
@@ -52,7 +69,7 @@ class TestDashboardSSOTCompliance:
     @pytest.fixture
     def discovery_json(self) -> List[Dict[str, Any]]:
         """Load the SSOT discovery JSON."""
-        json_path = PROJECT_ROOT / "agent_discovery_full.json"
+        json_path = PROJECT_ROOT / AGENT_DISCOVERY_JSON
         if not json_path.exists():
             pytest.skip("Discovery JSON not found - run discovery first")
         return json.loads(json_path.read_text(encoding="utf-8"))
@@ -316,7 +333,7 @@ class TestDashboardGeneration:
         import json
         
         # Direct JSON load test (generator has complex processing)
-        json_path = PROJECT_ROOT / "agent_discovery_full.json"
+        json_path = PROJECT_ROOT / AGENT_DISCOVERY_JSON
         if not json_path.exists():
             pytest.skip("Discovery JSON not found")
         
@@ -355,8 +372,8 @@ class TestDashboardRegression:
     def dashboard_html(self) -> str:
         """Load the dashboard HTML file."""
         # NEW ARCHITECTURE: Dashboard now lives in L6_observability/dashboards
-        l6_path = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
-        legacy_path = PROJECT_ROOT / "reports" / "autonomy_dashboard.html"
+        l6_path = PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+        legacy_path = PROJECT_ROOT / REPORTS_DIR / "autonomy_dashboard.html"
         
         dashboard_path = l6_path if l6_path.exists() else legacy_path
         if not dashboard_path.exists():

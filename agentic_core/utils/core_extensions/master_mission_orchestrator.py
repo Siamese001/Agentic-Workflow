@@ -17,7 +17,24 @@ load_dotenv(dotenv_path=project_root / '.env', override=True)
 from canon_validator_agentic_v2 import run_mission
 from typing import Any
 
-async def execute_sovereign_sweep(target_scope: str='agentic_core') -> Any:
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
+async def execute_sovereign_sweep(target_scope: str=AGENTIC_CORE_DIR) -> Any:
     """Brief description of functionality and purpose."""
     print(f"\n{'=' * 70}\n[OBSERVABILITY] STARTING MASTER MISSION: {target_scope}\n{'=' * 70}")
     try:

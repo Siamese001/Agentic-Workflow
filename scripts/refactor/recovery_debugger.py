@@ -6,6 +6,23 @@ import ast
 from pathlib import Path
 from typing import Set, Dict, List
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 def get_agents_from_file(path: Path) -> Set[str]:
     """Extract agent class names from a Python file."""
@@ -63,7 +80,7 @@ def find_phantom_agents(backup_dir: str = ".refactor_backups", current_dir: str 
         # Skip excluded directories
         if any(skip in str(path) for skip in [
             '.refactor_backups', 'venv', '.venv', 'env', 
-            '__pycache__', 'node_modules', 'archives'
+            '__pycache__', 'node_modules', ARCHIVES_DIR
         ]):
             continue
         

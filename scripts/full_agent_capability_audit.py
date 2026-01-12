@@ -4,12 +4,29 @@ Full Agent Capability Audit - Maps ALL agents to violation types they should cat
 from pathlib import Path
 import re
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def analyze_all_agents():
     """Analyze all agents and their detection capabilities."""
     
     agents_with_methods = []
     
-    for py_file in Path('agentic_core').rglob('*.py'):
+    for py_file in Path(AGENTIC_CORE_DIR).rglob('*.py'):
         path_str = str(py_file)
         if '__pycache__' in path_str:
             continue
@@ -98,7 +115,7 @@ def find_violation_specific_agents():
         }
     }
     
-    for py_file in Path('agentic_core').rglob('*.py'):
+    for py_file in Path(AGENTIC_CORE_DIR).rglob('*.py'):
         path_str = str(py_file)
         if '__pycache__' in path_str:
             continue

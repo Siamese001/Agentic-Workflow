@@ -21,6 +21,23 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 from dataclasses import dataclass
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -91,7 +108,7 @@ class SSOTRelocator:
         
         # Setup logging
         if log_file is None:
-            log_dir = project_root / 'agentic_core' / 'L0_maintenance' / 'logs'
+            log_dir = project_root / AGENTIC_CORE_DIR / 'L0_maintenance' / 'logs'
             log_dir.mkdir(parents=True, exist_ok=True)
             log_file = log_dir / 'enforcement_history.log'
         
@@ -106,7 +123,7 @@ class SSOTRelocator:
         logger.addHandler(file_handler)
         
         # Archive root
-        self.archive_root = project_root / 'archives' / 'unmapped_drift'
+        self.archive_root = project_root / ARCHIVES_DIR / 'unmapped_drift'
         if not dry_run:
             self.archive_root.mkdir(parents=True, exist_ok=True)
     

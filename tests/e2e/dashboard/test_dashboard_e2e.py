@@ -12,6 +12,23 @@ import signal
 from pathlib import Path
 import json
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # E2E tests use requests to test against running server
 # These tests verify real browser-like behavior
 
@@ -22,7 +39,7 @@ class TestDashboardE2E:
     def server(self):
         """Start dashboard server for e2e tests"""
         # Get the dashboard server path
-        dashboard_dir = Path(__file__).parent.parent.parent.parent / "agentic_core" / "observability" / "metrics" / "dashboard"
+        dashboard_dir = Path(__file__).parent.parent.parent.parent / AGENTIC_CORE_DIR / "observability" / "metrics" / "dashboard"
         server_path = dashboard_dir / "dashboard_server.py"
         
         if not server_path.exists():
@@ -150,7 +167,7 @@ class TestDashboardPageLoad:
     @pytest.fixture(scope="class")
     def server(self):
         """Start dashboard server for page load tests"""
-        dashboard_dir = Path(__file__).parent.parent.parent.parent / "agentic_core" / "observability" / "metrics" / "dashboard"
+        dashboard_dir = Path(__file__).parent.parent.parent.parent / AGENTIC_CORE_DIR / "observability" / "metrics" / "dashboard"
         server_path = dashboard_dir / "dashboard_server.py"
         
         if not server_path.exists():

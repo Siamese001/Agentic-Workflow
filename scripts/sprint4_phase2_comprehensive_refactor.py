@@ -21,6 +21,23 @@ Expected: +3.7% compliance (96.3% → 100%)
 from pathlib import Path
 import re
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 REPO = Path(__file__).parent.parent
 
 def remove_import_line(content: str, import_statement: str) -> str:
@@ -38,7 +55,7 @@ def remove_import_line(content: str, import_statement: str) -> str:
 
 def refactor_l1_cognition_files():
     """Refactor L1 cognition layer violations."""
-    l1_dir = REPO / "agentic_core" / "L1_cognition" / "thought_engine"
+    l1_dir = REPO / AGENTIC_CORE_DIR / "L1_cognition" / "thought_engine"
     files_modified = 0
     
     print("\n" + "=" * 80)
@@ -104,8 +121,8 @@ def refactor_l1_cognition_files():
 
 def refactor_l2_execution_files():
     """Refactor L2 execution layer violations."""
-    l2_dir = REPO / "agentic_core" / "L2_execution" / "ToolRegistry"
-    l2_tool_registry = REPO / "agentic_core" / "L2_execution" / "tool_registry"
+    l2_dir = REPO / AGENTIC_CORE_DIR / "L2_execution" / "ToolRegistry"
+    l2_tool_registry = REPO / AGENTIC_CORE_DIR / "L2_execution" / "tool_registry"
     files_modified = 0
     
     print("\n" + "=" * 80)
@@ -174,7 +191,7 @@ def refactor_l2_execution_files():
 
 def refactor_l3_orchestration_files():
     """Refactor remaining L3 orchestration violations."""
-    l3_dir = REPO / "agentic_core" / "L3_orchestration" / "workflow_engines"
+    l3_dir = REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines"
     files_modified = 0
     
     print("\n" + "=" * 80)
@@ -241,7 +258,7 @@ def refactor_l3_orchestration_files():
 
 def refactor_l4_state_files():
     """Refactor L4 state layer violations."""
-    l4_dir = REPO / "agentic_core" / "L4_state" / "ValidationContext"
+    l4_dir = REPO / AGENTIC_CORE_DIR / "L4_state" / "ValidationContext"
     files_modified = 0
     
     print("\n" + "=" * 80)

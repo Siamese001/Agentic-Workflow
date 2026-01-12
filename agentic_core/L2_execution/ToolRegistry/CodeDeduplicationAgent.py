@@ -4,19 +4,19 @@ from pathlib import Path
 
 # === ENABLE DIRECT EXECUTION: Dynamically add project root to sys.path ===
 # This runs at module load time (before imports) when running the file directly.
-# It searches upward for the directory containing 'agentic_core' (your project root).
+# It searches upward for the directory containing AGENTIC_CORE_DIR (your project root).
 # Harmless when imported as a module (idempotent).
 def _add_project_root_to_sys_path() -> None:
     current = Path(__file__).resolve()
     while current.parent != current:  # Stop at filesystem root
-        if (current / "agentic_core").exists():
+        if (current / AGENTIC_CORE_DIR).exists():
             root_str = str(current)
             if root_str not in sys.path:
                 sys.path.insert(0, root_str)
             return
         current = current.parent
     raise RuntimeError(
-        "Could not locate project root (directory containing 'agentic_core'). "
+        "Could not locate project root (directory containing AGENTIC_CORE_DIR). "
         "Adjust the marker condition if your structure differs."
     )
 
@@ -68,6 +68,23 @@ from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.cache_decorator import cached
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 
 class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, PineconeVectorMixin):
     """
@@ -220,7 +237,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
             pbar.set_postfix(stats)
             
             # EXCLUDE archives/ directory
-            if not file_path.exists() or 'archives' in str(file_path):
+            if not file_path.exists() or ARCHIVES_DIR in str(file_path):
                 stats["skipped"] += 1
                 pbar.update(1)
                 continue
@@ -273,7 +290,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
 
     def _create_shared_utility(self, code: str, func_name: str, project_root: Path) -> Path:
         """Create deduplicated utility in sovereign shared location."""
-        utils_dir = project_root / 'agentic_core' / 'utils' / 'deduplicated'
+        utils_dir = project_root / AGENTIC_CORE_DIR / 'utils' / 'deduplicated'
         utils_dir.mkdir(parents=True, exist_ok=True)
         safe_name = ''.join((c if c.isalnum() else '_' for c in func_name.lower()))[:40]
         candidate = utils_dir / f'{safe_name}_shared.py'
@@ -355,7 +372,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
             pbar.set_description(f"Hashing: {path.name[:40]}")
             pbar.set_postfix(stats)
             
-            if not path.exists() or 'archives' in str(path):
+            if not path.exists() or ARCHIVES_DIR in str(path):
                 pbar.update(1)
                 continue
             file_hash = self._hash_entire_file(path)
@@ -396,7 +413,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
             pbar.set_description(f"Names: {path.name[:40]}")
             pbar.set_postfix(stats)
             
-            if not path.exists() or 'archives' in str(path) or path.name in {'__init__.py', 'setup.py'}:
+            if not path.exists() or ARCHIVES_DIR in str(path) or path.name in {'__init__.py', 'setup.py'}:
                 pbar.update(1)
                 continue
             basename = path.name
@@ -438,17 +455,17 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
         try:
             preview = file_path.read_text(encoding='utf-8', errors='ignore')[:2048].lower()
             if any(k in preview for k in ['safety', 'guardrail', 'mcp', 'pii', 'bias', 'redteam']):
-                target_dir = project_root / 'agentic_core' / 'L5_safety' / 'guardrails'
+                target_dir = project_root / AGENTIC_CORE_DIR / 'L5_safety' / 'guardrails'
             elif any(k in preview for k in ['outreach', 'lic', 'message', 'contact', 'cold']):
-                target_dir = project_root / 'apps_lic' / 'engines' / 'outreach_engine'
+                target_dir = project_root / APPS_LIC_DIR / 'engines' / 'outreach_engine'
             elif any(k in preview for k in ['resume', 'rg', 'cv', 'job', 'ranking']):
-                target_dir = project_root / 'apps_rg' / 'engines' / 'resume_engine'
+                target_dir = project_root / APPS_RG_DIR / 'engines' / 'resume_engine'
             elif any(k in preview for k in ['thought', 'cognition', 'reasoning', 'score']):
-                target_dir = project_root / 'agentic_core' / 'L1_cognition' / 'thought_engine'
+                target_dir = project_root / AGENTIC_CORE_DIR / 'L1_cognition' / 'thought_engine'
             elif any(k in preview for k in ['metric', 'observability', 'tracing']):
-                target_dir = project_root / 'agentic_core' / 'observability' / 'metrics'
+                target_dir = project_root / AGENTIC_CORE_DIR / 'observability' / 'metrics'
             else:
-                target_dir = project_root / 'agentic_core' / 'utils' / 'deduplicated'
+                target_dir = project_root / AGENTIC_CORE_DIR / 'utils' / 'deduplicated'
             target_dir.mkdir(parents=True, exist_ok=True)
             new_path = target_dir / file_path.name
             stem, suffix = file_path.stem, file_path.suffix
@@ -468,7 +485,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
         for file_hash, paths in self.file_duplicate_groups.items():
             if len(paths) > 1:
                 # Prefer active locations over archives
-                primary = min(paths, key=lambda p: ('archives' in str(p), 'old' in str(p), str(p)))
+                primary = min(paths, key=lambda p: (ARCHIVES_DIR in str(p), 'old' in str(p), str(p)))
                 for p in paths:
                     if p != primary:
                         if not dry_run:
@@ -489,7 +506,7 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
             # Prioritizes snake_case 'tool_registry' as the canonical SSOT location.
             if len(paths) > 1:
                 primary = min(paths, key=lambda p: (
-                    'archives' in str(p), 
+                    ARCHIVES_DIR in str(p), 
                     'ToolRegistry' in str(p),
                     str(p)
                 ))

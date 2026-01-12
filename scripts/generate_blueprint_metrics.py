@@ -7,6 +7,23 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 def count_methods(file_path: Path) -> int:
     """Count method definitions in file."""
@@ -50,11 +67,11 @@ def generate_unified_diff(canonical: Path, duplicate: Path) -> str:
 
 def main():
     project_root = Path.cwd()
-    blueprint_dir = project_root / "agentic_core" / "config" / "blueprint_sovereign"
-    validators_dir = project_root / "agentic_core" / "L5_safety" / "validators"
+    blueprint_dir = project_root / AGENTIC_CORE_DIR / "config" / "blueprint_sovereign"
+    validators_dir = project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators"
     
     # Create output directory
-    diff_dir = project_root / "reports" / "blueprint_diffs"
+    diff_dir = project_root / REPORTS_DIR / "blueprint_diffs"
     diff_dir.mkdir(parents=True, exist_ok=True)
     
     # Find blueprint agent files
@@ -70,7 +87,7 @@ def main():
     print("=" * 80)
     
     # Generate report
-    report_file = project_root / "reports" / "blueprint_metrics_report.md"
+    report_file = project_root / REPORTS_DIR / "blueprint_metrics_report.md"
     
     with open(report_file, 'w', encoding='utf-8') as f:
         f.write("# Blueprint Duplicate Metrics Report\n")

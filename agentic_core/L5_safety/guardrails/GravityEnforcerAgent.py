@@ -25,6 +25,23 @@ from dataclasses import dataclass
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 Logger = logging.getLogger(__name__)
 
 
@@ -67,10 +84,10 @@ class GravityEnforcerAgent(MCPHardenedMixin, HealerMixin):
     }
     
     # Approved folders for validation
-    SOVEREIGN_ROOTS = ['agentic_core', 'apps_lic', 'apps_rg', 'scripts', 'tests']
+    SOVEREIGN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR, TESTS_DIR]
     
     # Directories to skip
-    SKIP_DIRS = {'__pycache__', '.git', 'node_modules', '.venv', 'venv', 'archives'}
+    SKIP_DIRS = {'__pycache__', '.git', 'node_modules', '.venv', 'venv', ARCHIVES_DIR}
     
     def __init__(self, project_root: Path = None) -> None:
         """Initialize the gravity enforcer."""
@@ -222,7 +239,7 @@ class GravityEnforcerAgent(MCPHardenedMixin, HealerMixin):
         
         for root_folder in self.SOVEREIGN_ROOTS:
             folder_path = self.project_root / root_folder
-            if folder_path.exists() and root_folder == 'agentic_core':  # Focus on agentic_core
+            if folder_path.exists() and root_folder == AGENTIC_CORE_DIR:  # Focus on agentic_core
                 violations = self.scan_directory(folder_path)
                 all_violations.extend(violations)
         

@@ -15,6 +15,23 @@ from agentic_core.L4_state.ValidationContext import ValidationContext
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.runtime.shared_runtime import log_event
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +107,7 @@ class ChaosEngineeringAgent(HealerMixin):
             self.failures_detected = results["failures_detected"]
 
             log_event("chaos_engineering_test", {
-                "tests": results["tests_executed"],
+                TESTS_DIR: results["tests_executed"],
                 "failures": results["failures_detected"],
                 "avg_recovery_ms": results["recovery_metrics"].get("avg_recovery_ms", 0),
             })

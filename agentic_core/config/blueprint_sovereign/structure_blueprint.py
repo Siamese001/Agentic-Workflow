@@ -15,6 +15,58 @@ CANON_KEY_EXCEPTIONS: Dict[int, Dict[str, Any]] = {23: {'files': {'agentic_core/
 ACTIVE_CANON_KEYS: Any = list(range(0, 20))
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {0: ['.'], 1: ['agentic_core/prompt_governance'], 2: ['agentic_core/schemas'], 3: ['agentic_core/L1_cognition'], 4: ['agentic_core/L3_orchestration'], 5: ['agentic_core/L4_state'], 6: ['agentic_core/L5_safety'], 7: ['agentic_core/L0_maintenance'], 8: ['agentic_core/L2_execution', 'agentic_core/patterns', 'agentic_core/semantic_memory', 'agentic_core/knowledge'], 9: ['agentic_core/config', 'agentic_core/runtime'], 10: ['agentic_core/utils', 'agentic_core/L6_observability'], 11: ['apps_shared', 'apps_rg', 'apps_lic'], 12: ['tests'], 13: ['*'], 14: ['*'], 15: ['*'], 16: ['*'], 17: ['*'], 18: ['*'], 19: ['*']}
 SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'L6_observability', 'config', 'schemas', 'prompt_governance', 'runtime', 'utils', 'patterns', 'semantic_memory', 'knowledge']}, 'apps_rg': {'depth': 3, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain']}, 'apps_lic': {'depth': 3, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain', 'core']}, 'apps_shared': {'depth': 2, 'subfolders': ['base_definitions', 'common_utils', 'core_components', 'base_agents', 'models', 'utils', 'P1_core', 'config']}, 'tests': {'depth': 2, 'subfolders': ['unit', 'integration', 'e2e', 'functional', 'fixtures', 'automation', 'core', 'data', 'performance', 'security', 'autogen']}}
+# ============================================================================
+# === SSOT: CRITICAL FILE AND DIRECTORY PATHS ===
+# ============================================================================
+# Single source of truth for all commonly referenced paths in the codebase.
+# NO HARDCODING OF THESE PATHS IN DOWNSTREAM FILES - ALWAYS IMPORT FROM HERE.
+#
+# Usage Pattern:
+#   from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+#       AGENT_DISCOVERY_JSON, DASHBOARD_DIR, get_validated_project_root
+#   )
+#   discovery_path = get_validated_project_root() / AGENT_DISCOVERY_JSON
+
+# === Agent Discovery Files ===
+AGENT_DISCOVERY_JSON: str = "agent_discovery_full.json"
+AGENT_DISCOVERY_MANIFEST_JSON: str = "agent_discovery_full.manifest.json"
+
+# === Core Directory Paths ===
+AGENTIC_CORE_DIR: str = "agentic_core"
+SCRIPTS_DIR: str = "scripts"
+TESTS_DIR: str = "tests"
+APPS_RG_DIR: str = "apps_rg"
+APPS_LIC_DIR: str = "apps_lic"
+APPS_SHARED_DIR: str = "apps_shared"
+
+# === Layer Directories (L0-L6) ===
+L0_MAINTENANCE_DIR: str = "agentic_core/L0_maintenance"
+L1_COGNITION_DIR: str = "agentic_core/L1_cognition"
+L2_EXECUTION_DIR: str = "agentic_core/L2_execution"
+L3_ORCHESTRATION_DIR: str = "agentic_core/L3_orchestration"
+L4_STATE_DIR: str = "agentic_core/L4_state"
+L5_SAFETY_DIR: str = "agentic_core/L5_safety"
+L6_OBSERVABILITY_DIR: str = "agentic_core/L6_observability"
+
+# === Critical Subdirectories ===
+DASHBOARD_DIR: str = "agentic_core/L6_observability/dashboards"
+BLUEPRINT_SOVEREIGN_DIR: str = "agentic_core/config/blueprint_sovereign"
+SCHEMAS_DIR: str = "agentic_core/schemas"
+PROMPT_GOVERNANCE_DIR: str = "agentic_core/prompt_governance"
+UTILS_DIR: str = "agentic_core/utils"
+RUNTIME_DIR: str = "agentic_core/runtime"
+
+# === Test Subdirectories ===
+TESTS_UNIT_DIR: str = "tests/unit"
+TESTS_INTEGRATION_DIR: str = "tests/integration"
+TESTS_E2E_DIR: str = "tests/e2e"
+TESTS_AUTOGEN_DIR: str = "tests/autogen"
+
+# === Reporting and Output Directories ===
+REPORTS_DIR: str = "reports"
+ARCHIVES_DIR: str = "archives"
+COVERAGE_HTML_DIR: str = "coverage_html"
+
 CORE_SUBFOLDER_MAP: Any = {'L0_maintenance': ['scripts', 'logs', 'benchmarks', 'mixins'], 'L1_cognition': ['thought_engine', 'intent_analysis', 'planning'], 'L2_execution': ['ToolRegistry', 'action_handlers', 'mcp', 'tool_registry'], 'L3_orchestration': ['workflow_engines', 'fission_logic', 'S3_vitality', 'mcp', 'meta_learning', 'interfaces'], 'L4_state': ['ValidationContext', 'ledger', 'filesystem', 'memory', 'validation_context'], 'L5_safety': ['guardrails', 'red_teaming', 'gravity', 'validators', 'agents', 'bases', 'policies', 'utils', 'verifiability'], 'L6_observability': ['dashboards', 'reports', 'metrics', 'telemetry', 'tracing', 'compliance', 'agents'], 'schemas': ['models', 'messages', 'types', 'validators'], 'config': ['blueprint_sovereign', 'environments', 'feature_flags', 'secrets_manager'], 'prompt_governance': ['meta_prompts', 'version_registry', 'rendering', 'templates'], 'runtime': ['shared_runtime', 'environment_setup', 'shared', 'resource_management'], 'utils': ['core_extensions', 'wrappers', 'general_helpers', 'naming', 'deduplicated'], 'patterns': ['agent_roles', 'communication_flow', 'interaction_patterns', 'reasoning_patterns'], 'semantic_memory': ['store', 'embeddings', 'retrieval', 'index'], 'knowledge': ['document_loaders', 'static_index', 'ResearchCache']}
 APPS_RG_SUBFOLDER_MAP: Any = {'logic_nodes': ['node_definitions', 'node_helpers'], 'asset_library': ['asset_definitions', 'asset_helpers'], 'system_flow': ['flow_definitions', 'flow_helpers'], 'engines': ['engine_definitions', 'engine_helpers'], 'templates': ['template_definitions', 'template_helpers']}
 APPS_LIC_SUBFOLDER_MAP: Any = APPS_RG_SUBFOLDER_MAP

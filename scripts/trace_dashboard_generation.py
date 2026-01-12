@@ -4,6 +4,23 @@ from pathlib import Path
 import sys
 import json
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 sys.path.insert(0, str(Path.cwd()))
 
 try:
@@ -17,7 +34,7 @@ try:
     print("=" * 80)
     
     # Check template path
-    template_path = project_root / "agentic_core" / "config" / "validators" / "dashboard_template.html"
+    template_path = project_root / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
     print(f"\nTemplate path: {template_path}")
     print(f"Template exists: {template_path.exists()}")
     
@@ -66,7 +83,7 @@ try:
         traceback.print_exc()
     
     # Check if dashboard was created
-    dashboard_path = project_root / "reports" / "autonomy_dashboard.html"
+    dashboard_path = project_root / REPORTS_DIR / "autonomy_dashboard.html"
     print(f"\nDashboard exists: {dashboard_path.exists()}")
     
 except Exception as e:

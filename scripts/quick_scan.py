@@ -4,6 +4,23 @@ from pathlib import Path
 import re
 import sys
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # ANSI colors
 G = '\033[92m'  # Green
 Y = '\033[93m'  # Yellow
@@ -22,7 +39,7 @@ def progress_bar(current, total, width=40):
     sys.stdout.flush()
 
 # Scan tests
-test_files = list(Path('tests/unit').rglob('*.py'))
+test_files = list(Path(TESTS_UNIT_DIR).rglob('*.py'))
 test_files = [f for f in test_files if '__pycache__' not in str(f)]
 
 skip_pattern = re.compile(r'@pytest\.mark\.skip')

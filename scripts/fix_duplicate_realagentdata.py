@@ -7,9 +7,12 @@ This script removes all but the first occurrence of realAgentData.
 import re
 from pathlib import Path
 
+# Import SSOT for dashboard directory - NO HARDCODING
+from agentic_core.config.blueprint_sovereign.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+
 def fix_duplicates():
     """Remove duplicate realAgentData declarations."""
-    dashboard_path = Path("C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html")
+    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
     
     print("Reading dashboard HTML...")
     html = dashboard_path.read_text(encoding='utf-8')

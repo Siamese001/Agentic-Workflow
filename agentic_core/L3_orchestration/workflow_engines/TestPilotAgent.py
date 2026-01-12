@@ -34,6 +34,23 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -65,7 +82,7 @@ class TestPilotAgent(HealerMixin, MCPHardenedMixin):
             test_paths: Paths to test directories
             enable_conversational_repair: Whether to enable multi-agent debate for failures
         """
-        self.test_paths = test_paths or ['tests']
+        self.test_paths = test_paths or [TESTS_DIR]
         self.property_violations = []
         self.enable_conversational_repair = enable_conversational_repair
         if self.enable_conversational_repair:

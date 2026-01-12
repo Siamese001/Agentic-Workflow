@@ -8,6 +8,23 @@ from collections import defaultdict
 import hashlib
 import difflib
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -79,19 +96,19 @@ def analyze_diff(file1: Path, file2: Path) -> dict:
 
 def classify_location(path_str: str) -> tuple:
     """Classify file location."""
-    if 'apps_lic' in path_str:
+    if APPS_LIC_DIR in path_str:
         return 'LIC_APP', 'LinkedIn Outreach Application'
-    elif 'apps_rg' in path_str:
+    elif APPS_RG_DIR in path_str:
         return 'RG_APP', 'Resume Generation Application'
-    elif 'apps_shared' in path_str:
+    elif APPS_SHARED_DIR in path_str:
         return 'SHARED_APP', 'Shared Application Code'
     elif 'L1_cognition' in path_str:
         return 'L1_COGNITION', 'Cognition Layer'
     elif 'L2_execution' in path_str:
         return 'L2_EXECUTION', 'Execution Layer'
-    elif 'archives' in path_str:
+    elif ARCHIVES_DIR in path_str:
         return 'ARCHIVE', 'Archived/Deprecated Code'
-    elif 'tests' in path_str:
+    elif TESTS_DIR in path_str:
         return 'TESTS', 'Test Code'
     else:
         return 'OTHER', 'Other Location'
@@ -206,7 +223,7 @@ def main():
         print(f"    RECOMMENDED ACTION:")
         
         # Check if files are in archives
-        archive_count = sum(1 for f in file_info if 'archives' in str(f['path']))
+        archive_count = sum(1 for f in file_info if ARCHIVES_DIR in str(f['path']))
         if archive_count > 0:
             print(f"      → {archive_count} file(s) in archives - DELETE archived copies")
         
@@ -240,10 +257,10 @@ def main():
     print()
     
     # Categorize by recommendation
-    archive_files = sum(1 for _, files in needs_review.items() if any('archives' in str(f['path']) for f in files))
+    archive_files = sum(1 for _, files in needs_review.items() if any(ARCHIVES_DIR in str(f['path']) for f in files))
     app_variants = sum(1 for filename, files in needs_review.items() 
-                      if any('apps_lic' in str(f['path']) for f in files) and 
-                         any('apps_rg' in str(f['path']) for f in files))
+                      if any(APPS_LIC_DIR in str(f['path']) for f in files) and 
+                         any(APPS_RG_DIR in str(f['path']) for f in files))
     
     print(f"Quick categorization:")
     print(f"  - Files with archived copies (safe to delete archives): ~{archive_files}")

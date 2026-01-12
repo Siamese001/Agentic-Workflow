@@ -7,6 +7,23 @@ from pathlib import Path
 from collections import defaultdict
 import hashlib
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -87,7 +104,7 @@ def classify_location(path_str: str) -> tuple:
         return 'CANONICAL', 'L2 execution (current)'
     elif 'tests/unit/L5_safety' in path_str:
         return 'STALE', 'Nested test location'
-    elif 'tests/unit' in path_str and path_str.count('\\') == 2:
+    elif TESTS_UNIT_DIR in path_str and path_str.count('\\') == 2:
         return 'CANONICAL', 'Root test location'
     else:
         return 'REVIEW', 'Needs manual review'

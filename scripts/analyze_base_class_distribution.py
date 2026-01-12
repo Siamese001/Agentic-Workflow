@@ -3,8 +3,25 @@
 from pathlib import Path
 import json
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Load agent discovery data
-discovery_path = Path('agent_discovery_full.json')
+discovery_path = Path(AGENT_DISCOVERY_JSON)
 if not discovery_path.exists():
     print("agent_discovery_full.json not found")
     exit(1)

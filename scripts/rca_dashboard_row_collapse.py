@@ -8,6 +8,9 @@ and analyzes the health score calculation logic.
 import json
 from pathlib import Path
 
+# Import SSOT for dashboard directory - NO HARDCODING
+from agentic_core.config.blueprint_sovereign.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+
 def investigate_row_collapse():
     """Investigate why rows were collapsed."""
     print("=" * 70)
@@ -15,7 +18,7 @@ def investigate_row_collapse():
     print("=" * 70)
     
     # Load current dashboard
-    dashboard_path = Path("C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html")
+    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
     html = dashboard_path.read_text(encoding='utf-8')
     
     # Extract dashboardData

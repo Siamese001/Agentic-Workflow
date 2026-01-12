@@ -14,6 +14,23 @@ from pathlib import Path
 import sys
 import ast
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def find_corruption(content: str) -> int:
     """Find position of literal backslash-n corruption. Returns -1 if none."""
     # Look for literal backslash followed by 'n' (two chars)
@@ -31,7 +48,7 @@ def main():
     fix_mode = '--fix' in sys.argv
     
     # Scan multiple directories
-    scan_dirs = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'scripts', 'tests']
+    scan_dirs = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, SCRIPTS_DIR, TESTS_DIR]
     
     corrupted_files = []
     fixed_files = []
@@ -44,7 +61,7 @@ def main():
         py_files = list(root_path.rglob('*.py'))
         
         for py_file in py_files:
-            if '__pycache__' in str(py_file) or 'archives' in str(py_file):
+            if '__pycache__' in str(py_file) or ARCHIVES_DIR in str(py_file):
                 continue
                 
             try:

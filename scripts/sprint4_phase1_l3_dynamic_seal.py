@@ -12,6 +12,23 @@ Expected: +1.6% compliance
 from pathlib import Path
 import re
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 REPO = Path(__file__).parent.parent
 
 # Files requiring Dynamic Seal pattern based on grep results
@@ -210,7 +227,7 @@ def main():
     print("Strategy: Remove static L5 imports, leverage existing dynamic imports")
     print()
     
-    l3_dir = REPO / "agentic_core" / "L3_orchestration" / "workflow_engines"
+    l3_dir = REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines"
     
     if not l3_dir.exists():
         print(f"❌ Directory not found: {l3_dir}")

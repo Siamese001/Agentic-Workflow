@@ -19,12 +19,12 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
-# CRITICAL ARCHITECTURAL REFACTOR: Removed import from 'apps_shared'.
+# CRITICAL ARCHITECTURAL REFACTOR: Removed import from APPS_SHARED_DIR.
 # The signal bus functionality is now provided via dependency injection.
 
 # Define a local Protocol for the signal bus interface.
 # This allows dependency injection of a signal bus without direct import
-# from downstream layers like 'apps_shared'.
+# from downstream layers like APPS_SHARED_DIR.
 # NAMING FIXED: SignalBusInterface → SignalBusInterface
 class SignalBusInterface(Protocol):
     """
@@ -37,7 +37,7 @@ class SignalBusInterface(Protocol):
         ...
 
 # Define local Enum for the specific signal types used by this executor.
-# This replaces the need to import SignalType from 'apps_shared'.
+# This replaces the need to import SignalType from APPS_SHARED_DIR.
 # NAMING FIXED: L5SignalType → L5SignalType
 class L5SignalType(str, Enum):
     """Specific signal types emitted by the L5IntegrityGateExecutor."""
@@ -158,6 +158,23 @@ class ValidationResult:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 
 class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
