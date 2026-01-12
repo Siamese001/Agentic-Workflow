@@ -272,8 +272,32 @@ class DashboardGenerator:
         # Derived metrics
         complexity_health = round(max(0, 100 - (avg_cc * 2)), 1)
         code_quality = round((typed_pct + doc_pct) / 2, 1)
-        # Health is weighted average of 5 components as shown in Health Breakdown
-        health = round((heal_cap_pct + heal_inv_pct + test_pct + obs_pct + complexity_health) / 5, 1)
+        
+        # GOSPEL-WEIGHTED HEALTH SCORE (replaces even weighting)
+        # Weights reflect architectural priorities:
+        # - 30% Heal Capability (core of autonomy)
+        # - 10% Invocation (proves healing works)
+        # - 25% Test Coverage (defense against regression)
+        # - 20% Observability (prevents Ghost Agents)
+        # - 15% Complexity Health (technical debt indicator)
+        base_health = round(
+            (heal_cap_pct * 0.30) + 
+            (heal_inv_pct * 0.10) + 
+            (test_pct * 0.25) + 
+            (obs_pct * 0.20) + 
+            (complexity_health * 0.15),
+            1
+        )
+        
+        # L5 SECURITY ZERO-MULTIPLIER
+        # If territory contains unhardened L5 agents, health drops to 0
+        l5_agents = [a for a in agents if a.get('layer', '').startswith('L5')]
+        unhardened_l5 = [a for a in l5_agents if not a.get('mcp_hardened')]
+        
+        if unhardened_l5:
+            health = 0.0  # CRITICAL: L5 security violation
+        else:
+            health = base_health
         risk = "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW"
         
         return {

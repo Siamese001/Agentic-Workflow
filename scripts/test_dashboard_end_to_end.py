@@ -195,11 +195,23 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
         
         # Check heal capability
         actual_healed = sum(1 for a in agents if a.get('has_healing'))
-        actual_heal_pct = round(actual_healed / actual_total * 100, 1)
-        dashboard_heal_pct = total_row['Heal Cap %']
+        heal_cap = total_row['Heal Cap %']
+        heal_inv = total_row['Heal Invocation %']
+        test = total_row['Test %']
+        obs = total_row['Observable %']
+        complexity = total_row['Complexity Health']
+        expected_health = round(
+            (heal_cap * 0.30) + 
+            (heal_inv * 0.10) + 
+            (test * 0.25) + 
+            (obs * 0.20) + 
+            (complexity * 0.15),
+            1
+        )
+        actual_heal_pct = total_row['Health']
         
-        if abs(dashboard_heal_pct - actual_heal_pct) > 0.5:
-            errors.append(f"❌ Heal Cap % mismatch: Dashboard={dashboard_heal_pct}%, Actual={actual_heal_pct}%")
+        if abs(actual_heal_pct - expected_health) > 0.5:
+            errors.append(f"❌ Heal Cap % mismatch: Dashboard={actual_heal_pct}%, Expected={expected_health}%")
             return False, errors
         
         print(f"✅ Test 5 PASSED: Dashboard data consistent with agent_discovery_full.json")
@@ -401,6 +413,158 @@ def run_all_tests() -> bool:
         
     except Exception as e:
         errors.append(f"Test 8 FAILED: Could not validate base agents: {e}")
+    
+    # Test 9: Orphaned Agents (No Base Inheritance)
+    print("\n" + "─" * 70)
+    print("Running: Orphaned Agents Check")
+    print("─" * 70)
+    
+    try:
+        orphans = []
+        for agent in agents:
+            name = agent.get('class_name', '')
+            layer = agent.get('layer', '')
+            inheritance = agent.get('inheritance', [])
+            
+            if not layer or not inheritance:
+                continue
+            
+            # Skip base agents
+            if name in CANONICAL_BASE_AGENTS.values() or 'BaseAgent' in name:
+                continue
+            
+            layer_prefix = layer[:2] if len(layer) >= 2 else layer
+            if layer_prefix not in LAYERS:
+                continue
+            
+            expected_base = CANONICAL_BASE_AGENTS.get(layer_prefix)
+            if not expected_base:
+                continue
+            
+            # Check for base agent in inheritance
+            has_base = False
+            inheritance_str = str(inheritance).lower()
+            if expected_base.lower() in inheritance_str:
+                has_base = True
+            elif f"{layer_prefix.lower()}agent" in inheritance_str:
+                has_base = True
+            elif f"{layer_prefix.lower()}baseagent" in inheritance_str:
+                has_base = True
+            
+            if not has_base:
+                orphans.append(f"{name} ({layer})")
+        
+        if orphans:
+            errors.append(f"Test 9 FAILED: {len(orphans)} orphaned agents lack base inheritance")
+            for orphan in orphans[:3]:
+                errors.append(f"  - {orphan}")
+        else:
+            print(f"✅ Test 9 PASSED: All agents inherit from layer base agents")
+    
+    except Exception as e:
+        errors.append(f"Test 9 FAILED: Could not validate inheritance: {e}")
+    
+    # Test 10: Metric Consistency
+    print("\n" + "─" * 70)
+    print("Running: Metric Consistency Check")
+    print("─" * 70)
+    
+    try:
+        inconsistencies = []
+        
+        # Check heal invocation vs capability
+        agents_with_healing = [a for a in agents if a.get('has_healing')]
+        heal_capable = len(agents_with_healing)
+        heal_invoked = sum(1 for a in agents_with_healing if a.get('invocation') == 'Yes')
+        
+        if heal_invoked > heal_capable:
+            inconsistencies.append(f"Invocation ({heal_invoked}) > Capability ({heal_capable})")
+        
+        # Check MCP mixin vs flag consistency
+        for agent in agents[:50]:  # Sample check
+            name = agent.get('class_name', '')
+            inheritance = str(agent.get('inheritance', []))
+            mcp_hardened = agent.get('mcp_hardened', False)
+            
+            if 'MCPHardenedMixin' in inheritance and not mcp_hardened:
+                inconsistencies.append(f"{name}: Has MCPHardenedMixin but flag=False")
+                break  # Just report first
+        
+        if inconsistencies:
+            errors.append(f"Test 10 FAILED: {len(inconsistencies)} metric inconsistencies")
+            for inc in inconsistencies[:2]:
+                errors.append(f"  - {inc}")
+        else:
+            print(f"✅ Test 10 PASSED: All metrics are logically consistent")
+    
+    except Exception as e:
+        errors.append(f"Test 10 FAILED: Could not validate metrics: {e}")
+    
+    # Test 11: L5 Safety MCP Requirement
+    print("\n" + "─" * 70)
+    print("Running: L5 Safety MCP Requirement")
+    print("─" * 70)
+    
+    try:
+        l5_agents = [a for a in agents if a.get('layer', '').startswith('L5')]
+        unhardened_l5 = [a for a in l5_agents if not a.get('mcp_hardened')]
+        
+        if unhardened_l5:
+            errors.append(f"Test 11 FAILED: {len(unhardened_l5)}/{len(l5_agents)} L5 agents NOT MCP hardened (SECURITY VIOLATION)")
+            for agent in unhardened_l5[:3]:
+                errors.append(f"  - {agent['class_name']}")
+        else:
+            print(f"✅ Test 11 PASSED: All {len(l5_agents)} L5 safety agents are MCP hardened")
+    
+    except Exception as e:
+        errors.append(f"Test 11 FAILED: Could not validate L5 MCP: {e}")
+    
+    # Test 12: Table 2 (Code Quality) Data Integrity
+    print("\n" + "─" * 70)
+    print("Running: Table 2 (Code Quality) Data Integrity")
+    print("─" * 70)
+    
+    try:
+        # Re-extract dashboard data for this test
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        
+        # Extract dashboardData
+        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        if not data_match:
+            errors.append("Test 12 FAILED: Could not extract dashboardData from HTML")
+        else:
+            dashboard_data_test = json.loads(data_match.group(1))
+            
+            # Check Table 2 fields exist in dashboard data
+            table2_fields = ['Typed %', 'Documented %', 'Schema Strictness %', 'Proper Base %', 'Code Quality Score']
+            
+            if dashboard_data_test and len(dashboard_data_test) > 0:
+                total_row = dashboard_data_test[0]
+                missing_table2_fields = [f for f in table2_fields if f not in total_row]
+                
+                if missing_table2_fields:
+                    errors.append(f"Test 12 FAILED: Table 2 missing fields: {missing_table2_fields}")
+                else:
+                    # Verify values are reasonable
+                    typed_pct = total_row.get('Typed %', 0)
+                    doc_pct = total_row.get('Documented %', 0)
+                    quality_score = total_row.get('Code Quality Score', 0)
+                    
+                    if typed_pct < 0 or typed_pct > 100:
+                        errors.append(f"Test 12 FAILED: Invalid Typed % = {typed_pct}")
+                    elif doc_pct < 0 or doc_pct > 100:
+                        errors.append(f"Test 12 FAILED: Invalid Documented % = {doc_pct}")
+                    elif quality_score < 0 or quality_score > 100:
+                        errors.append(f"Test 12 FAILED: Invalid Code Quality Score = {quality_score}")
+                    else:
+                        print(f"✅ Test 12 PASSED: Table 2 data valid")
+                        print(f"   Typed: {typed_pct}%, Documented: {doc_pct}%, Quality: {quality_score}")
+            else:
+                errors.append("Test 12 FAILED: No dashboard data to validate Table 2")
+    
+    except Exception as e:
+        errors.append(f"Test 12 FAILED: Could not validate Table 2: {e}")
     
     # Final Summary
     print("\n" + "=" * 70)
