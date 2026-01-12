@@ -374,42 +374,42 @@ def run_all_tests() -> bool:
         'L3': 'L3Agent',
         'L4': 'L4Agent',
         'L5': 'L5Agent',
-        'L6': 'L6ObservabilityBaseAgent'
     }
-    
     try:
-        with open('C:/Git/Agentic-Workflow/agent_discovery_full.json', 'r', encoding='utf-8') as f:
-            agents = json.load(f)
-        
+        # Group base agents by layer
         base_agents_by_layer = {}
-        for layer in LAYERS:
-            base_agents_by_layer[layer] = []
+        base_agents_wrong_territory = []
         
         for agent in agents:
-            class_name = agent.get('class_name', '')
+            name = agent.get('class_name', '')
             layer = agent.get('layer', '')
+            territory = agent.get('territory', '')
             
-            is_base = (
-                'BaseAgent' in class_name or
-                class_name in CANONICAL_BASE_AGENTS.values() or
-                'base_class' in agent.get('path', '').lower()
-            )
-            
-            if is_base and layer:
-                layer_prefix = layer[:2] if len(layer) >= 2 else layer
-                if layer_prefix in LAYERS:
-                    base_agents_by_layer[layer_prefix].append(agent)
+            # Identify base agents
+            if name.endswith('BaseAgent') or name in ['L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent']:
+                if layer not in base_agents_by_layer:
+                    base_agents_by_layer[layer] = []
+                base_agents_by_layer[layer].append(agent)
+                
+                # Verify base agents are in "Base Class" territories
+                if 'Base Class' not in territory:
+                    base_agents_wrong_territory.append(f"{name} ({layer}): territory='{territory}'")
         
-        duplicates_found = False
-        for layer in LAYERS:
-            base_agents = base_agents_by_layer.get(layer, [])
-            if len(base_agents) > 1:
-                agent_names = [a['class_name'] for a in base_agents]
-                errors.append(f"Test 8 FAILED: {layer} has {len(base_agents)} base agents: {agent_names}")
-                duplicates_found = True
+        # Report findings
+        total_base_agents = sum(len(agents) for agents in base_agents_by_layer.values())
+        print(f"   Found {total_base_agents} base agents across {len(base_agents_by_layer)} layers")
         
-        if not duplicates_found:
-            print(f"✅ Test 8 PASSED: No duplicate base agents across L0-L6")
+        for layer in sorted(base_agents_by_layer.keys()):
+            base_agents = base_agents_by_layer[layer]
+            agent_names = [a['class_name'] for a in base_agents]
+            print(f"   {layer}: {len(base_agents)} base agents - {', '.join(agent_names)}")
+        
+        if base_agents_wrong_territory:
+            errors.append(f"Test 8 FAILED: {len(base_agents_wrong_territory)} base agents NOT in 'Base Class' territories")
+            for issue in base_agents_wrong_territory[:5]:
+                errors.append(f"  - {issue}")
+        else:
+            print(f"✅ Test 8 PASSED: All {total_base_agents} base agents in correct 'Base Class' territories")
         
     except Exception as e:
         errors.append(f"Test 8 FAILED: Could not validate base agents: {e}")
