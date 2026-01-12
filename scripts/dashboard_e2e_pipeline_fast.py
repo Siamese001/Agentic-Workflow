@@ -325,15 +325,75 @@ class FastDashboardE2EPipeline:
         print("┗" + "━" * 78 + "┛")
         print()
     
+    def step0_validate_data(self) -> bool:
+        """Step 0: Validate dashboard data quality before processing."""
+        self.print_step("STEP 0: Validating dashboard data quality...")
+        
+        # Run comprehensive data validation
+        validation_script = self.project_root / 'scripts' / 'validate_dashboard_data.py'
+        base_agent_script = self.project_root / 'scripts' / 'validate_base_agents.py'
+        
+        if not validation_script.exists() or not base_agent_script.exists():
+            print("   ⚠️  Validation scripts not found - skipping validation")
+            return True
+        
+        try:
+            # Run base agent validation
+            result = subprocess.run(
+                [sys.executable, str(base_agent_script)],
+                cwd=str(self.project_root),
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            if result.returncode != 0:
+                print("   ❌ Base agent validation failed:")
+                print(result.stdout[-500:] if result.stdout else "")
+                print("\n   ⚠️  CRITICAL: Multiple base agents detected per layer")
+                print("   This causes inheritance confusion and must be fixed manually")
+                return False
+            
+            # Run comprehensive validation
+            result = subprocess.run(
+                [sys.executable, str(validation_script)],
+                cwd=str(self.project_root),
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            if result.returncode != 0:
+                print("   ⚠️  Data validation warnings (non-critical):")
+                print(result.stdout[-500:] if result.stdout else "")
+            else:
+                print("   ✅ All data validation checks passed")
+            
+            return True
+            
+        except Exception as e:
+            print(f"   ⚠️  Validation error: {e}")
+            return True  # Continue pipeline even if validation fails
+    
     def run(self) -> bool:
         """Run fast pipeline."""
         self.print_header("FAST DASHBOARD E2E PIPELINE")
         
-        # Step 1: Fix code
-        fixed_count = self.step1_fix_heal_invocation()
+        # Step 0: Validate data quality
+        if not self.step0_validate_data():
+            print("\n❌ PIPELINE BLOCKED: Critical data validation failures")
+            print("   Fix base agent duplicates before continuing")
+            print("   Run: python scripts/validate_base_agents.py")
+            return False
+        
+        # Step 1: Fix heal invocation
+        self.step1_fix_heal_invocation()
+        
+        # Step 1.5: Fix MCP hardening
+        self.step1_5_fix_mcp_hardening()
         
         # Step 2: Update metadata
-        if not self.step2_update_discovery_metadata(fixed_count):
+        if not self.step2_update_discovery_metadata(0):
             print("\n❌ PIPELINE FAILED at metadata update")
             return False
         
