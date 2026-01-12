@@ -8,10 +8,14 @@ import re
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+# Import SSOT for dashboard directory - NO HARDCODING
+from agentic_core.config.blueprint_sovereign.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+
 def test_agent_discovery_integrity() -> Tuple[bool, List[str]]:
     """Test 1: Verify agent_discovery_full.json integrity."""
     errors = []
-    discovery_path = Path('C:/Git/Agentic-Workflow/agent_discovery_full.json')
+    project_root = get_validated_project_root()
+    discovery_path = project_root / 'agent_discovery_full.json'
     
     if not discovery_path.exists():
         errors.append("❌ agent_discovery_full.json not found")
@@ -47,7 +51,8 @@ def test_agent_discovery_integrity() -> Tuple[bool, List[str]]:
 def test_dashboard_html_exists() -> Tuple[bool, List[str]]:
     """Test 2: Verify dashboard HTML exists and is valid."""
     errors = []
-    dashboard_path = Path('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html')
+    project_root = get_validated_project_root()
+    dashboard_path = project_root / DASHBOARD_DIR / 'autonomy_dashboard.html'
     
     if not dashboard_path.exists():
         errors.append("❌ autonomy_dashboard.html not found")
@@ -74,7 +79,7 @@ def test_dashboard_html_exists() -> Tuple[bool, List[str]]:
 def test_dashboard_data_structure() -> Tuple[bool, List[str]]:
     """Test 3: Verify dashboardData JSON structure in HTML."""
     errors = []
-    dashboard_path = Path('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html')
+    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
     
     try:
         html = dashboard_path.read_text(encoding='utf-8')
@@ -119,7 +124,7 @@ def test_dashboard_data_structure() -> Tuple[bool, List[str]]:
 def test_dashboard_required_fields() -> Tuple[bool, List[str]]:
     """Test 4: Verify all required fields exist in dashboardData."""
     errors = []
-    dashboard_path = Path('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html')
+    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
     
     required_fields = [
         'Territory', 'Total', 'Compliant', 'Heal Cap %', 'Heal Invocation %',
@@ -170,7 +175,7 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
             agents = json.load(f)
         
         # Load dashboard data
-        dashboard_path = Path('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html')
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
         html = dashboard_path.read_text(encoding='utf-8')
         start_marker = 'const dashboardData = ['
         end_marker = '];'
@@ -209,7 +214,7 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
 def test_table_rendering_elements() -> Tuple[bool, List[str]]:
     """Test 6: Verify HTML has table rendering functions."""
     errors = []
-    dashboard_path = Path('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html')
+    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
     
     required_functions = [
         'renderTerritorySummaryTable',

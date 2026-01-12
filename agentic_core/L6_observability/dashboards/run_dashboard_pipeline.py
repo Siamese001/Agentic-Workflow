@@ -23,12 +23,29 @@ from typing import Optional
 import argparse
 import importlib.util
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 class DashboardPipeline:
     """Orchestrates the complete dashboard generation and deployment pipeline."""
     
     def __init__(self, project_root: Path, skip_tests: bool = False, watch: bool = False, keep_server: bool = False):
         self.project_root = project_root
-        self.dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
+        self.dashboard_dir = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
         self.skip_tests = skip_tests
         self.watch = watch
         self.keep_server = keep_server
@@ -222,7 +239,7 @@ class DashboardPipeline:
         print("👀 Watching for changes to agent_discovery_full.json...")
         print("   Press Ctrl+C to stop")
         
-        agent_discovery = self.project_root / "agent_discovery_full.json"
+        agent_discovery = self.project_root / AGENT_DISCOVERY_JSON
         last_modified = agent_discovery.stat().st_mtime if agent_discovery.exists() else 0
         
         try:

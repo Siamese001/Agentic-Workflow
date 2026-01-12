@@ -13,8 +13,25 @@ import re
 from pathlib import Path
 from typing import List, Dict, Set, Tuple
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DISCOVERY_JSON = PROJECT_ROOT / "agent_discovery_full.json"
+DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 
 HEAL_METHOD_TEMPLATE = '''
     def heal_repository(self) -> dict:

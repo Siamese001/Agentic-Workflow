@@ -8,6 +8,23 @@ from unittest.mock import MagicMock
 
 from agentic_core.L5_safety.validators.PascalSovereigntyEnforcerAgent import PascalSovereigntyEnforcerAgent
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class TestPascalSovereigntyEnforcer:
     """Test cases for PascalCase sovereignty enforcement."""
@@ -99,7 +116,7 @@ FilePathsConfig = file_paths_config
     async def test_critique_tests_pass(self, agent):
         """Test that critique test suite passes."""
         result = await agent._run_critique_tests()
-        assert "tests" in result
+        assert TESTS_DIR in result
         assert "basic_passed" in result
         # Basic tests should pass
         assert result["basic_passed"] is True

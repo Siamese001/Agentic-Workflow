@@ -13,6 +13,23 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class CCMeasurement:
     """Measure and report cyclomatic complexity metrics."""
@@ -270,7 +287,7 @@ def main():
     tool.print_report(metrics, "Current Cyclomatic Complexity Report")
     
     # Save report
-    report_file = tool.project_root / 'agentic_core' / 'L0_maintenance' / 'logs' / 'cc_current_measurement.json'
+    report_file = tool.project_root / AGENTIC_CORE_DIR / 'L0_maintenance' / 'logs' / 'cc_current_measurement.json'
     tool.save_report(metrics, report_file)
     
     # Print success/failure

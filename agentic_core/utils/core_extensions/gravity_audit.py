@@ -6,8 +6,25 @@ import ast
 import os
 from pathlib import Path
 from typing import Any
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
+core: Any = ROOT / AGENTIC_CORE_DIR
 
 def audit_gravity() -> Any:
     """Brief description of functionality and purpose."""
@@ -22,10 +39,10 @@ def audit_gravity() -> Any:
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        if any((x in alias.name for x in ['apps_rg', 'apps_lic', 'apps_shared'])):
+                        if any((x in alias.name for x in [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR])):
                             leaks.append((py_file.relative_to(ROOT), f'Direct: {alias.name}'))
                 elif isinstance(node, ast.ImportFrom):
-                    if node.module and any((x in node.module for x in ['apps_rg', 'apps_lic', 'apps_shared'])):
+                    if node.module and any((x in node.module for x in [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR])):
                         leaks.append((py_file.relative_to(ROOT), f'From: {node.module}'))
         except Exception as e:
             print(f'  [!] Audit Failed for {py_file.name}: {e}')

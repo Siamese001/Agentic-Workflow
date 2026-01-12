@@ -7,8 +7,25 @@ from collections import defaultdict
 import ast
 import json
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Approved folders only
-APPROVED_FOLDERS = ['agentic_core', 'apps_lic', 'apps_rg', 'scripts', 'tests']
+APPROVED_FOLDERS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR, TESTS_DIR]
 ROOT = Path('.')
 
 # Layer order for gravity checks
@@ -37,7 +54,7 @@ def find_gravity_violations():
     """Find upward import violations (higher layer importing from lower layer)."""
     violations = []
     
-    for py_file in (ROOT / 'agentic_core').rglob('*.py'):
+    for py_file in (ROOT / AGENTIC_CORE_DIR).rglob('*.py'):
         if '__pycache__' in str(py_file):
             continue
         file_layer = get_layer(str(py_file))

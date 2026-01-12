@@ -12,8 +12,25 @@ from canon_validator_agentic_v2 import run_mission as run_healing
 # 2. Sequential Import Link
 from agentic_core.L0_maintenance.scripts.sovereign_auditor_v3 import main as run_audit
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 
-async def execute_unified_mission(target="agentic_core"):
+
+async def execute_unified_mission(target=AGENTIC_CORE_DIR):
     """
     [L6 MISSION CONTROL]
     Sequences Diagnosis (Auditor) and Surgery (Validator).

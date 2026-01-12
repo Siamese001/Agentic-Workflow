@@ -10,6 +10,23 @@ import re
 from pathlib import Path
 import pytest
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Disable path_shield for real file I/O testing
 pytestmark = pytest.mark.usefixtures("disable_path_shield")
 
@@ -17,8 +34,8 @@ pytestmark = pytest.mark.usefixtures("disable_path_shield")
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 
 # NEW ARCHITECTURE: Dashboard now lives in L6_observability/dashboards
-L6_DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
-LEGACY_DASHBOARD_PATH = PROJECT_ROOT / "reports" / "autonomy_dashboard.html"
+L6_DASHBOARD_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+LEGACY_DASHBOARD_PATH = PROJECT_ROOT / REPORTS_DIR / "autonomy_dashboard.html"
 
 # Use L6 path if available, otherwise fall back to legacy
 DASHBOARD_PATH = L6_DASHBOARD_PATH if L6_DASHBOARD_PATH.exists() else LEGACY_DASHBOARD_PATH

@@ -14,10 +14,27 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Brief description of functionality and purpose."""
 
-    def __init__(self, target_path='agentic_core') -> None:
+    def __init__(self, target_path=AGENTIC_CORE_DIR) -> None:
         self.root = Path(target_path)
         self.MAX_BREADTH = 7
         self.MIN_FILES = 3
@@ -60,7 +77,7 @@ class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             """Invoke healing chain via super()."""
             return super().heal_repository()
 if __name__ == '__main__':
-    inspector: Any = SprawlInspectorAgent('agentic_core')
+    inspector: Any = SprawlInspectorAgent(AGENTIC_CORE_DIR)
     data: Any = inspector.inspect()
     inspector.print_summary()
     with open('sprawl_report.json', 'w') as f:

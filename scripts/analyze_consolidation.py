@@ -3,8 +3,25 @@ import json
 from pathlib import Path
 from collections import defaultdict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def main():
-    data = json.load(open('agent_discovery_full.json'))
+    data = json.load(open(AGENT_DISCOVERY_JSON))
     
     l3_agents = [a for a in data if 'L3' in a.get('path', '')]
     l2_agents = [a for a in data if 'L2' in a.get('path', '')]

@@ -6,6 +6,23 @@ import sys
 from pathlib import Path
 import re
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -35,7 +52,7 @@ def extract_purpose_from_content(content: str, file_path: Path) -> str:
     
     # Check parent directory context
     parent = file_path.parent.name
-    if parent and parent != 'scripts':
+    if parent and parent != SCRIPTS_DIR:
         return f"Initializer for {parent} package"
     
     return "Package initializer"
@@ -69,14 +86,14 @@ def suggest_rename_for_init_files(file_paths):
             context = 'safety'
         elif 'observability' in path_parts:
             context = 'observability'
-        elif 'apps_lic' in path_parts:
+        elif APPS_LIC_DIR in path_parts:
             context = 'lic_app'
-        elif 'apps_rg' in path_parts:
+        elif APPS_RG_DIR in path_parts:
             context = 'rg_app'
-        elif 'apps_shared' in path_parts:
+        elif APPS_SHARED_DIR in path_parts:
             context = 'shared_app'
-        elif 'tests' in path_parts:
-            context = 'tests'
+        elif TESTS_DIR in path_parts:
+            context = TESTS_DIR
         else:
             context = path_parts[0] if path_parts else 'unknown'
         
@@ -100,7 +117,7 @@ def suggest_rename_for_init_files(file_paths):
             purpose = extract_purpose_from_content(content, file_path)
             suggestion = {
                 'original': str(rel_path),
-                'suggested_name': f'__{parent}_init__.py' if parent != 'scripts' else '__init__.py',
+                'suggested_name': f'__{parent}_init__.py' if parent != SCRIPTS_DIR else '__init__.py',
                 'action': 'CONSIDER_RENAME',
                 'reason': f'Non-empty init with purpose: {purpose[:60]}...',
                 'alternative': f'Consider consolidating into parent __init__.py or extracting to separate module'

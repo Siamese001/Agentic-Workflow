@@ -9,6 +9,23 @@ import tempfile
 import shutil
 from pathlib import Path
 from agentic_core.L5_safety.guardrails.DuplicateCodeDetectorAgent import (
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
     DuplicateCodeDetectorAgent,
     DuplicateFile
 )
@@ -20,9 +37,9 @@ def temp_project():
     temp_dir = Path(tempfile.mkdtemp())
     
     # Create directory structure
-    (temp_dir / "agentic_core" / "L5_safety").mkdir(parents=True)
-    (temp_dir / "agentic_core" / "config" / "blueprint").mkdir(parents=True)
-    (temp_dir / "scripts").mkdir(parents=True)
+    (temp_dir / AGENTIC_CORE_DIR / "L5_safety").mkdir(parents=True)
+    (temp_dir / AGENTIC_CORE_DIR / "config" / "blueprint").mkdir(parents=True)
+    (temp_dir / SCRIPTS_DIR).mkdir(parents=True)
     
     # Create duplicate Python files
     py_content = """
@@ -35,8 +52,8 @@ class TestClass:
         self.value = 100
 """
     
-    (temp_dir / "agentic_core" / "L5_safety" / "test_agent.py").write_text(py_content)
-    (temp_dir / "agentic_core" / "config" / "blueprint" / "test_agent.py").write_text(py_content)
+    (temp_dir / AGENTIC_CORE_DIR / "L5_safety" / "test_agent.py").write_text(py_content)
+    (temp_dir / AGENTIC_CORE_DIR / "config" / "blueprint" / "test_agent.py").write_text(py_content)
     
     # Create duplicate HTML files
     html_content = """<!DOCTYPE html>
@@ -45,12 +62,12 @@ class TestClass:
 <body><h1>Test Page</h1></body>
 </html>"""
     
-    (temp_dir / "agentic_core" / "L5_safety" / "template.html").write_text(html_content)
-    (temp_dir / "scripts" / "template.html").write_text(html_content)
+    (temp_dir / AGENTIC_CORE_DIR / "L5_safety" / "template.html").write_text(html_content)
+    (temp_dir / SCRIPTS_DIR / "template.html").write_text(html_content)
     
     # Create unique files
-    (temp_dir / "agentic_core" / "L5_safety" / "unique.py").write_text("# Unique content\nprint('unique')")
-    (temp_dir / "scripts" / "unique.js").write_text("console.log('unique');")
+    (temp_dir / AGENTIC_CORE_DIR / "L5_safety" / "unique.py").write_text("# Unique content\nprint('unique')")
+    (temp_dir / SCRIPTS_DIR / "unique.js").write_text("console.log('unique');")
     
     yield temp_dir
     
@@ -73,7 +90,7 @@ class TestDuplicateCodeDetectorAgent:
         assert agent.min_lines == 10
         assert '.py' in agent.SUPPORTED_EXTENSIONS
         assert '.html' in agent.SUPPORTED_EXTENSIONS
-        assert 'archives' in agent.EXCLUDE_DIRS
+        assert ARCHIVES_DIR in agent.EXCLUDE_DIRS
     
     @pytest.mark.asyncio
     async def test_scan_whole_files_python(self, agent):
@@ -204,7 +221,7 @@ class TestDuplicateCodeDetectorAgent:
     def test_exclude_directories(self, agent, temp_project):
         """Test that excluded directories are skipped."""
         # Create file in excluded directory
-        archives_dir = temp_project / "archives"
+        archives_dir = temp_project / ARCHIVES_DIR
         archives_dir.mkdir()
         (archives_dir / "old_file.py").write_text("print('archived')")
         
@@ -213,14 +230,14 @@ class TestDuplicateCodeDetectorAgent:
         # Archives should not appear in results
         for dup in results["whole_file_duplicates"]:
             for path in dup.paths:
-                assert "archives" not in str(path)
+                assert ARCHIVES_DIR not in str(path)
     
     @pytest.mark.asyncio
     async def test_no_duplicates(self, agent, temp_project):
         """Test behavior when no duplicates exist."""
         # Remove duplicate files
-        (temp_project / "agentic_core" / "config" / "blueprint" / "test_agent.py").unlink()
-        (temp_project / "scripts" / "template.html").unlink()
+        (temp_project / AGENTIC_CORE_DIR / "config" / "blueprint" / "test_agent.py").unlink()
+        (temp_project / SCRIPTS_DIR / "template.html").unlink()
         
         results = await agent.execute(file_types={'.py', '.html'}, scan_whole_files=True)
         
@@ -263,7 +280,7 @@ def function_b():
 def unique_function():
     return "unique"
 """
-        (temp_project / "agentic_core" / "L5_safety" / "code_dupes.py").write_text(code_with_dupes)
+        (temp_project / AGENTIC_CORE_DIR / "L5_safety" / "code_dupes.py").write_text(code_with_dupes)
         
         results = await agent.execute(file_types={'.py'}, scan_whole_files=False)
         

@@ -7,10 +7,27 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def wake_the_brain() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] MISSION START: FINAL SOVEREIGN VALIDATION')
-    cmd: Any = ['python', 'canon_validator_agentic_v2.py', '--target', 'agentic_core', '--mode', 'comprehensive', '--heal', 'true']
+    cmd: Any = ['python', 'canon_validator_agentic_v2.py', '--target', AGENTIC_CORE_DIR, '--mode', 'comprehensive', '--heal', 'true']
     try:
         process: Any = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in process.stdout:

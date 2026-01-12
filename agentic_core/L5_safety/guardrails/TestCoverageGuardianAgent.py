@@ -22,6 +22,23 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class TestCoverageGuardianAgent(HealerMixin, MCPHardenedMixin):
     """
@@ -39,14 +56,14 @@ class TestCoverageGuardianAgent(HealerMixin, MCPHardenedMixin):
         self.min_line_coverage = 95
         self.min_branch_coverage = 90
         self.min_mutation_score = 95
-        self.test_dir = self.project_root / "tests"
+        self.test_dir = self.project_root / TESTS_DIR
         self.html_report_dir = self.project_root / "htmlcov"
         self.history_file = self.project_root / "coverage_history.json"
         self.auto_generate = True
         self.mutation_hints = True
         self.property_testing_enabled = True
         # [FIX] distinct scope for coverage vs. root
-        self.target_scope = getattr(ctx, 'target_scope', 'agentic_core')
+        self.target_scope = getattr(ctx, 'target_scope', AGENTIC_CORE_DIR)
 
     def _load_history(self) -> List[Dict]:
         """Load coverage history from JSON file."""
@@ -229,7 +246,7 @@ class TestCoverageGuardianAgent(HealerMixin, MCPHardenedMixin):
         """Find classes with mutable state in core layers (L3, L4)."""
         candidates = []
         target_layers = ["L4_state", "L3_orchestration", "L2_execution"]
-        for py_file in (self.project_root / "agentic_core").rglob("*.py"):
+        for py_file in (self.project_root / AGENTIC_CORE_DIR).rglob("*.py"):
             if not any(layer in str(py_file) for layer in target_layers):
                 continue
             rel_path = py_file.relative_to(self.project_root)
@@ -258,7 +275,7 @@ class TestCoverageGuardianAgent(HealerMixin, MCPHardenedMixin):
 
     def _generate_stateful_test(self, candidate: Dict) -> tuple:
         """Generate RuleBasedStateMachine harness for complex objects."""
-        rel = Path(candidate["file"]).relative_to("agentic_core")
+        rel = Path(candidate["file"]).relative_to(AGENTIC_CORE_DIR)
         test_name = f"test_stateful_{rel.with_suffix('').as_posix().replace('/', '_')}_{candidate['class']}.py"
         test_path = self.test_dir / test_name
 

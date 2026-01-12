@@ -14,6 +14,10 @@ from pathlib import Path
 import os
 import subprocess
 import sys
+import signal
+
+# Import SSOT for dashboard directory - NO HARDCODING
+from agentic_core.config.blueprint_sovereign.structure_blueprint import DASHBOARD_DIR
 
 # Project root (adjust if script location changes)
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -38,13 +42,28 @@ def regenerate_dashboard():
     except Exception as e:
         print(f"   ❌ Error running dashboard generation: {e}")
 
-REPORTS_DIR = Path(__file__).parent.parent / "agentic_core" / "L6_observability" / "dashboards"
+REPORTS_DIR = PROJECT_ROOT / DASHBOARD_DIR
 PORT = 8000
+
+# Global server reference for signal handlers
+live_server = None
+
+def signal_handler(signum, frame):
+    """Handle shutdown signals gracefully."""
+    signal_name = signal.Signals(signum).name
+    print(f"\n\n⚠️  Received {signal_name} signal - shutting down live server...")
+    print("✅ Server stopped gracefully.")
+    sys.exit(0)
+
+# Register signal handlers for graceful shutdown
+signal.signal(signal.SIGINT, signal_handler)   # Ctrl+C
+signal.signal(signal.SIGTERM, signal_handler)  # Termination signal
 
 # Ensure we're in reports directory
 os.chdir(REPORTS_DIR)
 
 server = Server()
+live_server = server
 
 # Watch main dashboard HTML + common asset patterns
 server.watch("autonomy_dashboard.html")
@@ -64,4 +83,10 @@ server.watch(str(PROJECT_ROOT / "agentic_core" / "**" / "*.py"), func=regenerate
 print(f"🚀 Dashboard live server starting → http://localhost:{PORT}/autonomy_dashboard.html")
 print("   Live reload enabled - browser auto-refreshes on regeneration")
 print("   Auto-regeneration enabled - watches agentic_core/ for code changes")
-server.serve(port=PORT, host="localhost")
+print("   Press Ctrl+C to stop the server")
+try:
+    server.serve(port=PORT, host="localhost")
+except KeyboardInterrupt:
+    print("\n\n✅ Server stopped gracefully.")
+finally:
+    print("🔒 Cleanup complete.")

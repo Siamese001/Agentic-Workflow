@@ -8,6 +8,23 @@ import ast
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 import_patterns: Any = [('logging.', 'import logging', 'simple'), ('Logger.', 'import logging', 'simple'), ('Any', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Optional', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Protocol', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Dict[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('List[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('@dataclass', 'from dataclasses import dataclass, field', 'dataclass'), ('dataclass(', 'from dataclasses import dataclass, field', 'dataclass'), ('Enum', 'from enum import Enum, auto', 'enum'), ('Path(', 'from pathlib import Path', 'simple'), ('json.', 'import json', 'simple'), ('os.path', 'import os', 'simple'), ('sys.', 'import sys', 'simple'), ('re.', 'import re', 'simple'), ('datetime.', 'import datetime', 'simple'), ('time.', 'import time', 'simple'), ('asyncio.', 'import asyncio', 'simple')]
 
 def find_missing_imports(content: str) -> List[str]:
@@ -83,7 +100,7 @@ def main() -> Any:
     """Main entry point for namespace healing."""
     import argparse
     parser: Any = argparse.ArgumentParser(description='Namespace Medic - Fix Missing standard library imports')
-    parser.add_argument('--target', default='agentic_core', help='Target directory to scan')
+    parser.add_argument('--target', default=AGENTIC_CORE_DIR, help='Target directory to scan')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be fixed without modifying files')
     parser.add_argument('--verbose', '-v', action='store_true', help='Show detailed output')
     args: Any = parser.parse_args()

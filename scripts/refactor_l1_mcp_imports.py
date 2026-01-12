@@ -10,6 +10,23 @@ Target: ~27 L1 → L5 violations
 
 from pathlib import Path
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 REPO = Path(__file__).parent.parent
 
 # Old import (L5 - violates hierarchy)
@@ -51,7 +68,7 @@ def main():
     print()
     
     # Find all Python files in L1_cognition
-    l1_dir = REPO / "agentic_core" / "L1_cognition"
+    l1_dir = REPO / AGENTIC_CORE_DIR / "L1_cognition"
     
     if not l1_dir.exists():
         print(f"❌ Directory not found: {l1_dir}")

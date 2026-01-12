@@ -8,6 +8,23 @@ import json
 from pathlib import Path
 import pytest
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 def load_dashboard_data():
     """Load dashboard data from generated HTML."""
@@ -18,8 +35,8 @@ def load_dashboard_data():
     test_file = Path(__file__).resolve()
     project_root = test_file.parent.parent  # tests/ -> project_root
     
-    l6_path = project_root / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
-    legacy_path = project_root / "reports" / "autonomy_dashboard.html"
+    l6_path = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+    legacy_path = project_root / REPORTS_DIR / "autonomy_dashboard.html"
     
     dashboard_path = l6_path if l6_path.exists() else legacy_path
     if not dashboard_path.exists():

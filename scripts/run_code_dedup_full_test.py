@@ -10,6 +10,23 @@ sys.path.insert(0, str(project_root))
 
 from agentic_core.L2_execution.ToolRegistry.CodeDeduplicationAgent import CodeDeduplicationAgent
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 class TestContext:
     """Mock context for agent execution."""
     RUN_SPRAWL_SURGERY = False  # Dry-run mode (no actual file modifications)
@@ -41,7 +58,7 @@ def run_comprehensive_tests():
     print("\n[3/5] Scanning for code block duplicates...")
     python_files = [str(f) for f in project_root.rglob("*.py") 
                    if f.is_file() 
-                   and "archives" not in str(f)
+                   and ARCHIVES_DIR not in str(f)
                    and ".venv" not in str(f)
                    and "__pycache__" not in str(f)]
     

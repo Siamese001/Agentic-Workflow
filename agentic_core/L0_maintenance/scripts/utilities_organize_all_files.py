@@ -8,6 +8,23 @@ import logging
 import os
 import shutil
 from typing import Any
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 Logger: Any = logging.getLogger(__name__)
 
@@ -15,7 +32,7 @@ def organize_all_files() -> Any:
     """Move ALL files from root to appropriate sovereign silos"""
     Logger.info('📁 Starting comprehensive file organization...')
     essential_files: Any = {'Dockerfile', 'docker-compose.yml', 'requirements.txt', '.gitignore', '.env', '.env.example', '.env.production', '.env.production.template', 'pyproject.toml'}
-    file_mappings: Any = {'config': ['.yml', '.yaml', '.json', '.toml', '.ini', '.env*'], 'docs': ['.md', '.txt', '.rst'], 'scripts': ['.sh', '.ps1', '.bat'], 'docker': ['.dockerignore', 'Dockerfile.*'], 'archives': ['.backup', '.old', '.bak'], 'data': ['.csv', '.jsonl', '.parquet', '.db', '.sqlite'], 'agentic_core': ['ActionNode.py', 'agent_logic.py', 'CognitiveNode.py'], 'apps_rg': ['orchestrator.py', 'llm_client.py'], 'apps_shared': ['db_manager.py', 'etl_pipeline.py'], 'tests': ['test_*.py', '*_test.py'], 'scripts': ['fix_*.py', 'clean_*.py', 'assess_*.py']}
+    file_mappings: Any = {'config': ['.yml', '.yaml', '.json', '.toml', '.ini', '.env*'], 'docs': ['.md', '.txt', '.rst'], SCRIPTS_DIR: ['.sh', '.ps1', '.bat'], 'docker': ['.dockerignore', 'Dockerfile.*'], ARCHIVES_DIR: ['.backup', '.old', '.bak'], 'data': ['.csv', '.jsonl', '.parquet', '.db', '.sqlite'], AGENTIC_CORE_DIR: ['ActionNode.py', 'agent_logic.py', 'CognitiveNode.py'], APPS_RG_DIR: ['orchestrator.py', 'llm_client.py'], APPS_SHARED_DIR: ['db_manager.py', 'etl_pipeline.py'], TESTS_DIR: ['test_*.py', '*_test.py'], SCRIPTS_DIR: ['fix_*.py', 'clean_*.py', 'assess_*.py']}
     moved_count: Any = 0
     created_dirs: Any = set()
     root_files: Any = [f for f in os.listdir('.') if os.path.isfile(f)]
@@ -54,7 +71,7 @@ def organize_all_files() -> Any:
                         target_dir: Any = directory
                         break
         if not target_dir:
-            target_dir: Any = 'scripts'
+            target_dir: Any = SCRIPTS_DIR
         if target_dir not in created_dirs:
             os.makedirs(target_dir, exist_ok=True)
             created_dirs.add(target_dir)

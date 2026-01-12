@@ -20,6 +20,23 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 import logging
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 Logger = logging.getLogger(__name__)
 
 # Tree-sitter for AST fingerprinting
@@ -62,18 +79,18 @@ class DuplicateCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
     
     # Canonical locations (prefer these over others)
     CANONICAL_PREFIXES = [
-        'agentic_core/L5_safety',
-        'agentic_core/L4_state',
-        'agentic_core/L3_orchestration',
-        'agentic_core/L2_execution',
-        'agentic_core/L1_cognition',
-        'agentic_core/L0_maintenance',
+        L5_SAFETY_DIR,
+        L4_STATE_DIR,
+        L3_ORCHESTRATION_DIR,
+        L2_EXECUTION_DIR,
+        L1_COGNITION_DIR,
+        L0_MAINTENANCE_DIR,
         'agentic_core/observability',
-        'agentic_core/utils',
+        UTILS_DIR,
     ]
     
     # Directories to exclude from scanning
-    EXCLUDE_DIRS = {'archives', '__pycache__', '.git', 'node_modules', 'venv', '.venv', 'dist', 'build'}
+    EXCLUDE_DIRS = {ARCHIVES_DIR, '__pycache__', '.git', 'node_modules', 'venv', '.venv', 'dist', 'build'}
 
     def __init__(self, project_root: Path = None, ctx = None) -> None:
         self.project_root = Path(project_root) if project_root else Path.cwd()
@@ -273,7 +290,7 @@ class DuplicateCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
         
         # Create archive directory with timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        archive_dir = self.project_root / "archives" / f"duplicates_{timestamp}"
+        archive_dir = self.project_root / ARCHIVES_DIR / f"duplicates_{timestamp}"
         
         if not dry_run:
             archive_dir.mkdir(parents=True, exist_ok=True)

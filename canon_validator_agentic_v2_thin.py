@@ -12,6 +12,23 @@ import traceback
 from pathlib import Path
 from datetime import datetime
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Load environment variables from .env file
 try:
     from dotenv import load_dotenv
@@ -56,8 +73,8 @@ if project_root_str not in sys.path:
 
 # Re-establish Neural Link to Resurrected Territories
 sovereign_paths = [
-    project_root / "agentic_core" / "runtime" / "shared_runtime",
-    project_root / "apps_shared" / "utils"
+    project_root / AGENTIC_CORE_DIR / "runtime" / "shared_runtime",
+    project_root / APPS_SHARED_DIR / "utils"
 ]
 
 for p in sovereign_paths:
@@ -159,7 +176,7 @@ def main():
         import json
         
         agents = []
-        json_path = project_root / "agent_discovery_full.json"
+        json_path = project_root / AGENT_DISCOVERY_JSON
 
         # Case 1: Cached JSON exists → use it automatically
         if json_path.exists():
@@ -362,7 +379,7 @@ def main():
             from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
             
             # Phase 4.2: Repository-wide Sovereign Sweep across all aligned domains
-            domains = ["agentic_core", "apps_lic", "apps_rg", "scripts"]
+            domains = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR]
             consolidated_results = []
             
             # Track Gemini embedder status

@@ -7,6 +7,23 @@ import os
 from dataclasses import dataclass
 from typing import Optional
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 @dataclass(frozen=True)
 class SovereignConfig:
@@ -37,7 +54,7 @@ class SovereignConfig:
     PROMPT_CONSTITUTION_PATH: str = f"{BASE_GIT_PATH}agentic_core/prompt_governance/meta_prompts/sovereign_prompt_constitution.py"
     
     # System Paths
-    ROOT_DIR: str = os.path.dirname(os.path.abspath(__file__)).split("agentic_core")[0]
+    ROOT_DIR: str = os.path.dirname(os.path.abspath(__file__)).split(AGENTIC_CORE_DIR)[0]
     
     def validate(self):
         """Ensure critical secrets are present."""

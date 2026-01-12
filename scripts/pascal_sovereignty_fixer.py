@@ -10,6 +10,23 @@ from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Tuple, Set
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 def snake_to_pascal(name: str) -> str:
     """Convert snake_case to PascalCase."""
@@ -76,7 +93,7 @@ def fix_file(path: Path, mapping: Dict[str, str], dry_run: bool = False) -> Tupl
 
 def main():
     repo_root = Path('.')
-    target_prefixes = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared']
+    target_prefixes = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
     dry_run = '--dry-run' in sys.argv
     
     print(f"{'[DRY RUN] ' if dry_run else ''}Pascal Sovereignty Fixer")

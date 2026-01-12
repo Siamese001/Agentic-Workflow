@@ -11,6 +11,23 @@ sys.path.insert(0, str(project_root))
 
 from agentic_core.L2_execution.ToolRegistry.CodeDeduplicationAgent import CodeDeduplicationAgent
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def run_all_tests():
     """Execute comprehensive test suite."""
     print("=" * 80)
@@ -83,7 +100,7 @@ def run_all_tests():
     print("\n[TEST 5/7] Duplicate Detection (Small Sample)")
     tests_total += 1
     try:
-        sample_dir = project_root / "agentic_core" / "L2_execution"
+        sample_dir = project_root / AGENTIC_CORE_DIR / "L2_execution"
         python_files = [str(f) for f in sample_dir.rglob("*.py") if f.is_file()][:15]
         
         start_time = time.time()

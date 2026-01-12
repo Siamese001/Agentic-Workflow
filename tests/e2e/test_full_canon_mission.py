@@ -5,6 +5,23 @@ from typing import Any
 from unittest.mock import Mock, patch, MagicMock
 import json
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 @pytest.mark.e2e
 @pytest.mark.slow
 @pytest.mark.skip(reason='RecursionError in file_hash_tracker fixture - needs investigation')
@@ -19,9 +36,9 @@ class test_full_canon_mission:
         THEN: All 50 keys pass, no healing triggered
         """
         mock_gemini.return_value.generate_content.return_value = Mock(text='All canon keys validated successfully')
-        (tmp_sovereign_workspace / 'agentic_core').mkdir(exist_ok=True)
+        (tmp_sovereign_workspace / AGENTIC_CORE_DIR).mkdir(exist_ok=True)
         (tmp_sovereign_workspace / 'schemas').mkdir(exist_ok=True)
-        compliant_file: Any = tmp_sovereign_workspace / 'agentic_core' / 'core.py'
+        compliant_file: Any = tmp_sovereign_workspace / AGENTIC_CORE_DIR / 'core.py'
         compliant_file.write_text('\n"""Core sovereignty module."""\nfrom typing import Dict, Any\n\n# NAMING FIXED: agentic_core → agentic_core\nclass agentic_core:\n    """Main agentic core."""\n    \n    def run(self, mission: Dict[str, Any]) -> Dict[str, Any]:\n        return {"status": "success"}\n')
         mission_result: Any = {'mission_id': 'canon-001', 'status': 'completed', 'violations': 0, 'keys_passed': 50, 'healing_triggered': False}
         audit_log_tracker.log('mission_complete', mission_result)
@@ -48,7 +65,7 @@ class test_full_canon_mission:
         good_file: Any = tmp_sovereign_workspace / 'good_name.py'
         good_file.write_text(bad_file.read_text())
         bad_file.unlink()
-        core_dir: Any = tmp_sovereign_workspace / 'agentic_core'
+        core_dir: Any = tmp_sovereign_workspace / AGENTIC_CORE_DIR
         core_dir.mkdir(exist_ok=True)
         relocated: Any = core_dir / 'misplaced.py'
         relocated.write_text(misplaced.read_text())

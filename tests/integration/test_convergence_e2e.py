@@ -24,12 +24,12 @@ class TestConvergenceE2E:
             repo_path = Path(tmpdir)
             
             # Create structure
-            (repo_path / "agentic_core").mkdir()
-            (repo_path / "agentic_core" / "L0_maintenance").mkdir()
-            (repo_path / "agentic_core" / "L5_safety").mkdir()
+            (repo_path / AGENTIC_CORE_DIR).mkdir()
+            (repo_path / AGENTIC_CORE_DIR / "L0_maintenance").mkdir()
+            (repo_path / AGENTIC_CORE_DIR / "L5_safety").mkdir()
             
             # Create files with violations
-            violator1 = repo_path / "agentic_core" / "L0_maintenance" / "bad1.py"
+            violator1 = repo_path / AGENTIC_CORE_DIR / "L0_maintenance" / "bad1.py"
             violator1.write_text("""
 # This file has an upward dependency violation
 from agentic_core.L5_safety.guardrails import Something
@@ -38,7 +38,7 @@ def do_work():
     return Something()
 """)
             
-            violator2 = repo_path / "agentic_core" / "L0_maintenance" / "bad2.py"
+            violator2 = repo_path / AGENTIC_CORE_DIR / "L0_maintenance" / "bad2.py"
             violator2.write_text("""
 # Another violation
 from agentic_core.L5_safety.validators import Validator
@@ -48,10 +48,27 @@ class MyAgent:
 """)
             
             # Create compliant file
-            good = repo_path / "agentic_core" / "L0_maintenance" / "good.py"
+            good = repo_path / AGENTIC_CORE_DIR / "L0_maintenance" / "good.py"
             good.write_text("""
 # Compliant file
 from agentic_core.utils.core_extensions import Helper
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 
 def do_work():
     return Helper()
@@ -90,10 +107,10 @@ def do_work():
                 "files_scanned": 3,
                 "files_with_violations": violations,
                 "violations_by_file": {
-                    str(test_repo / "agentic_core" / "L0_maintenance" / "bad1.py"): [
+                    str(test_repo / AGENTIC_CORE_DIR / "L0_maintenance" / "bad1.py"): [
                         {"type": "import_violation", "line": 3}
                     ] if violations >= 1 else [],
-                    str(test_repo / "agentic_core" / "L0_maintenance" / "bad2.py"): [
+                    str(test_repo / AGENTIC_CORE_DIR / "L0_maintenance" / "bad2.py"): [
                         {"type": "import_violation", "line": 3}
                     ] if violations >= 2 else []
                 },
@@ -119,9 +136,9 @@ def do_work():
         controller._run_blueprint_reconciliation_hook = AsyncMock()
         controller._initialize_context = AsyncMock(return_value=self._create_mock_context(test_repo))
         controller._discover_python_files = Mock(return_value=[
-            str(test_repo / "agentic_core" / "L0_maintenance" / "bad1.py"),
-            str(test_repo / "agentic_core" / "L0_maintenance" / "bad2.py"),
-            str(test_repo / "agentic_core" / "L0_maintenance" / "good.py")
+            str(test_repo / AGENTIC_CORE_DIR / "L0_maintenance" / "bad1.py"),
+            str(test_repo / AGENTIC_CORE_DIR / "L0_maintenance" / "bad2.py"),
+            str(test_repo / AGENTIC_CORE_DIR / "L0_maintenance" / "good.py")
         ])
         controller._initialize_core_components = AsyncMock()
         controller._run_sovereign_dashboard = AsyncMock()
@@ -134,7 +151,7 @@ def do_work():
             mock_preflight_class.return_value = mock_preflight
             
             # Run mission
-            result = await controller.run_mission(target_scope="agentic_core", mode="heal")
+            result = await controller.run_mission(target_scope=AGENTIC_CORE_DIR, mode="heal")
         
         # Verify convergence
         assert result["converged"] is True
@@ -188,7 +205,7 @@ def do_work():
             
             # Set MAX_CONVERGENCE_ROUNDS to 3
             with patch.dict('os.environ', {'MAX_CONVERGENCE_ROUNDS': '3'}):
-                result = await controller.run_mission(target_scope="agentic_core", mode="heal")
+                result = await controller.run_mission(target_scope=AGENTIC_CORE_DIR, mode="heal")
         
         # Verify max rounds reached
         assert result["converged"] is False
@@ -203,7 +220,7 @@ def do_work():
         controller = MissionController(test_repo)
         
         # Create large file
-        large_file = test_repo / "agentic_core" / "L0_maintenance" / "large.py"
+        large_file = test_repo / AGENTIC_CORE_DIR / "L0_maintenance" / "large.py"
         large_file.write_text("x" * 15000)  # >10KB
         
         fission_detected = [False]
@@ -249,7 +266,7 @@ def do_work():
             mock_preflight_class.return_value = mock_preflight
             
             with patch.dict('os.environ', {'MAX_CONVERGENCE_ROUNDS': '3'}):
-                result = await controller.run_mission(target_scope="agentic_core", mode="heal")
+                result = await controller.run_mission(target_scope=AGENTIC_CORE_DIR, mode="heal")
         
         # Verify fission events were detected
         assert result["fission_events"] >= 1
@@ -268,7 +285,7 @@ def do_work():
         ctx.safety = None
         ctx.fission = None
         ctx.project_root = repo_path
-        ctx.target_scope = "agentic_core"
+        ctx.target_scope = AGENTIC_CORE_DIR
         ctx.cleaning_crew = []
         ctx.file_heal_history = defaultdict(list)
         ctx.max_heals_per_file = 8
@@ -294,11 +311,11 @@ class TestConvergencePerformance:
         
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_path = Path(tmpdir)
-            (repo_path / "agentic_core").mkdir()
+            (repo_path / AGENTIC_CORE_DIR).mkdir()
             
             # Create many files
             for i in range(100):
-                file_path = repo_path / "agentic_core" / f"file_{i}.py"
+                file_path = repo_path / AGENTIC_CORE_DIR / f"file_{i}.py"
                 file_path.write_text(f"# File {i}\nprint('hello')")
             
             controller = MissionController(repo_path)
@@ -323,7 +340,7 @@ class TestConvergencePerformance:
             
             # Create minimal mock context
             mock_ctx = Mock()
-            mock_ctx.python_files = [str(repo_path / "agentic_core" / f"file_{i}.py") for i in range(100)]
+            mock_ctx.python_files = [str(repo_path / AGENTIC_CORE_DIR / f"file_{i}.py") for i in range(100)]
             mock_ctx.convergence_history = []
             mock_ctx.fission_events = []
             mock_ctx.heal_attempts = defaultdict(int)
@@ -340,7 +357,7 @@ class TestConvergencePerformance:
                 mock_preflight_class.return_value = mock_preflight
                 
                 start = time.time()
-                result = await controller.run_mission(target_scope="agentic_core", mode="heal")
+                result = await controller.run_mission(target_scope=AGENTIC_CORE_DIR, mode="heal")
                 duration = time.time() - start
             
             # Should complete quickly (< 5 seconds with mocks)
@@ -359,7 +376,7 @@ class TestConvergenceEdgeCases:
         
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_path = Path(tmpdir)
-            (repo_path / "agentic_core").mkdir()
+            (repo_path / AGENTIC_CORE_DIR).mkdir()
             
             controller = MissionController(repo_path)
             
@@ -391,7 +408,7 @@ class TestConvergenceEdgeCases:
                 mock_preflight.run_preflight.return_value = {"compliant": True}
                 mock_preflight_class.return_value = mock_preflight
                 
-                result = await controller.run_mission(target_scope="agentic_core", mode="heal")
+                result = await controller.run_mission(target_scope=AGENTIC_CORE_DIR, mode="heal")
             
             # Should converge immediately with no files
             assert result["converged"] is True
@@ -404,7 +421,7 @@ class TestConvergenceEdgeCases:
         
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_path = Path(tmpdir)
-            (repo_path / "agentic_core").mkdir()
+            (repo_path / AGENTIC_CORE_DIR).mkdir()
             
             controller = MissionController(repo_path)
             
@@ -429,7 +446,7 @@ class TestConvergenceEdgeCases:
                 mock_preflight.run_preflight.return_value = {"compliant": True}
                 mock_preflight_class.return_value = mock_preflight
                 
-                result = await controller.run_mission(target_scope="agentic_core", mode="validate_only")
+                result = await controller.run_mission(target_scope=AGENTIC_CORE_DIR, mode="validate_only")
             
             # Should not have convergence data
             assert result["phase"] == "validation_complete"

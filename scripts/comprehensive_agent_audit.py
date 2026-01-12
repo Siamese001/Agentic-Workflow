@@ -5,6 +5,23 @@ from pathlib import Path
 import ast
 import re
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Keywords that indicate what violations an agent should detect
 DETECTION_KEYWORDS = {
     'duplicate': ['duplicate', 'dedup', 'copy', 'clone', 'identical', 'same content'],
@@ -23,7 +40,7 @@ def analyze_agents():
     agents_analysis = []
     
     # Scan all agent files in agentic_core
-    for py_file in Path('agentic_core').rglob('*.py'):
+    for py_file in Path(AGENTIC_CORE_DIR).rglob('*.py'):
         path_str = str(py_file)
         if '__pycache__' in path_str:
             continue

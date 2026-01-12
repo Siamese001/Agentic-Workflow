@@ -23,6 +23,23 @@ import pytest
 import tempfile
 import shutil
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # Disable path_shield for all tests in this module - we need real file I/O
 pytestmark = pytest.mark.usefixtures("disable_path_shield")
 
@@ -33,14 +50,14 @@ _TEST_FILE = Path(__file__).resolve()
 PROJECT_ROOT = _TEST_FILE.parent.parent  # Go up from tests/ to project root
 
 # NEW ARCHITECTURE: Dashboard now lives in L6_observability/dashboards
-L6_DASHBOARD_DIR = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards"
+L6_DASHBOARD_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
 DASHBOARD_PATH = L6_DASHBOARD_DIR / "autonomy_dashboard.html"
 
 # Legacy paths (deprecated)
-REPORTS_DIR = PROJECT_ROOT / "reports"
+REPORTS_DIR = PROJECT_ROOT / REPORTS_DIR
 LEGACY_DASHBOARD_PATH = REPORTS_DIR / "autonomy_dashboard.html"
-DISCOVERY_JSON_PATH = REPORTS_DIR / "agent_discovery_full.json"  # Primary source of truth (cache eliminated)
-TEMPLATE_PATH = PROJECT_ROOT / "agentic_core" / "config" / "validators" / "dashboard_template.html"
+DISCOVERY_JSON_PATH = REPORTS_DIR / AGENT_DISCOVERY_JSON  # Primary source of truth (cache eliminated)
+TEMPLATE_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
 
 
 def get_dashboard_path():
@@ -257,7 +274,7 @@ class TestJSONFileSourceing:
     def test_discovery_json_exists(self):
         """Test that discovery JSON file exists."""
         # Dashboard uses .dashboard_cache.json as the source
-        json_path = (Path(__file__).parent.parent / "reports" / ".dashboard_cache.json").resolve()
+        json_path = (Path(__file__).parent.parent / REPORTS_DIR / ".dashboard_cache.json").resolve()
         assert json_path.exists(), (
             f"Discovery JSON not found at {json_path}\n"
             f"Agent discovery must run before dashboard generation.\n"
@@ -267,7 +284,7 @@ class TestJSONFileSourceing:
     @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses embedded data")
     def test_discovery_json_not_empty(self):
         """Test that discovery JSON is not empty."""
-        json_path = (Path(__file__).parent.parent / "reports" / ".dashboard_cache.json").resolve()
+        json_path = (Path(__file__).parent.parent / REPORTS_DIR / ".dashboard_cache.json").resolve()
         if not json_path.exists():
             pytest.skip("Discovery JSON not found")
         
@@ -280,7 +297,7 @@ class TestJSONFileSourceing:
     @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses embedded data")
     def test_discovery_json_valid(self):
         """Test that discovery JSON is valid JSON."""
-        json_path = (Path(__file__).parent.parent / "reports" / ".dashboard_cache.json").resolve()
+        json_path = (Path(__file__).parent.parent / REPORTS_DIR / ".dashboard_cache.json").resolve()
         if not json_path.exists():
             pytest.skip("Discovery JSON not found")
         
@@ -296,7 +313,7 @@ class TestJSONFileSourceing:
     @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses embedded data")
     def test_discovery_json_has_agents(self):
         """Test that discovery JSON contains agent data."""
-        json_path = (Path(__file__).parent.parent / "reports" / ".dashboard_cache.json").resolve()
+        json_path = (Path(__file__).parent.parent / REPORTS_DIR / ".dashboard_cache.json").resolve()
         if not json_path.exists():
             pytest.skip("Discovery JSON not found")
         
@@ -319,7 +336,7 @@ class TestJSONFileSourceing:
         """Test that discovery JSON is reasonably fresh."""
         import time
         
-        json_path = (Path(__file__).parent.parent / "reports" / ".dashboard_cache.json").resolve()
+        json_path = (Path(__file__).parent.parent / REPORTS_DIR / ".dashboard_cache.json").resolve()
         if not json_path.exists():
             pytest.skip("Discovery JSON not found")
         
@@ -343,7 +360,7 @@ class TestTemplatePlaceholders:
     @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses self-contained dashboard")
     def test_template_file_exists(self):
         """Test that dashboard template exists."""
-        template_path = Path(__file__).parent.parent / "agentic_core" / "config" / "validators" / "dashboard_template.html"
+        template_path = Path(__file__).parent.parent / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
         assert template_path.exists(), (
             f"Dashboard template not found at {template_path}\n"
             f"Template file is missing."
@@ -352,7 +369,7 @@ class TestTemplatePlaceholders:
     @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses self-contained dashboard")
     def test_template_has_required_placeholders(self):
         """Test that template contains all required placeholders."""
-        template_path = Path(__file__).parent.parent / "agentic_core" / "config" / "validators" / "dashboard_template.html"
+        template_path = Path(__file__).parent.parent / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
         if not template_path.exists():
             pytest.skip("Template not found")
         
@@ -376,7 +393,7 @@ class TestTemplatePlaceholders:
     @pytest.mark.skip(reason="DEPRECATED: New L6 architecture uses self-contained dashboard")
     def test_template_has_chart_containers(self):
         """Test that template has all chart container divs."""
-        template_path = Path(__file__).parent.parent / "agentic_core" / "config" / "validators" / "dashboard_template.html"
+        template_path = Path(__file__).parent.parent / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
         if not template_path.exists():
             pytest.skip("Template not found")
         
@@ -417,7 +434,7 @@ class TestAtomicWriteOperations:
     
     def test_no_temp_files_left_behind(self):
         """Test that no temporary files are left behind after generation."""
-        reports_dir = Path(__file__).parent.parent / "reports"
+        reports_dir = Path(__file__).parent.parent / REPORTS_DIR
         if not reports_dir.exists():
             pytest.skip("Reports directory not found")
         
@@ -433,8 +450,8 @@ class TestDataPipelineIntegrity:
     
     def test_discovery_to_dashboard_data_flow(self):
         """Test that data flows from discovery JSON to dashboard HTML."""
-        json_path = (Path(__file__).parent.parent / "reports" / ".dashboard_cache.json").resolve()
-        dashboard_path = (Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html").resolve()
+        json_path = (Path(__file__).parent.parent / REPORTS_DIR / ".dashboard_cache.json").resolve()
+        dashboard_path = (Path(__file__).parent.parent / REPORTS_DIR / "autonomy_dashboard.html").resolve()
         
         if not json_path.exists():
             pytest.skip("Discovery JSON not found")
@@ -472,7 +489,7 @@ class TestDataPipelineIntegrity:
         """Test that dashboard was generated recently (not stale)."""
         import time
         
-        dashboard_path = Path(__file__).parent.parent / "reports" / "autonomy_dashboard.html"
+        dashboard_path = Path(__file__).parent.parent / REPORTS_DIR / "autonomy_dashboard.html"
         if not dashboard_path.exists():
             pytest.skip("Dashboard not generated")
         

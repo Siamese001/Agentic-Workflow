@@ -13,6 +13,23 @@ import ast
 from pathlib import Path
 from typing import List, Tuple, Dict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
     """
     [NEW] Detailed DDD Violation detector — structured output for L0 healing/forensics.
@@ -40,7 +57,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
 
         # Skip tests, migrations, and private modules
         # [SOVEREIGN FILTER] Adjusted to catch more valid code while skipping infrastructure
-        if any(skip in str(relative_path) for skip in ["tests", "migrations", "__pycache__", ".venv", "venv"]) or py_file.name.startswith("_"):
+        if any(skip in str(relative_path) for skip in [TESTS_DIR, "migrations", "__pycache__", ".venv", "venv"]) or py_file.name.startswith("_"):
             continue
         
         try:
@@ -102,7 +119,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                     has_dataclass_decorator or
                     "schemas" in path_str or
                     "config" in path_str or
-                    "scripts" in path_str or
+                    SCRIPTS_DIR in path_str or
                     "types" in path_str or
                     "deprecated" in path_str or
                     "_registry" in path_str or

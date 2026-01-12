@@ -5,6 +5,23 @@ import os
 from pathlib import Path
 from collections import defaultdict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 PROJECT_ROOT = Path(__file__).parent.parent
 
 # Mixins to detect
@@ -17,12 +34,12 @@ def get_layer(path: Path) -> str:
     parts = rel.replace('\\', '/').split('/')
     
     # Check root folder first
-    if parts[0] == 'apps_lic': return 'apps_lic'
-    if parts[0] == 'apps_rg': return 'apps_rg'
-    if parts[0] == 'apps_shared': return 'apps_shared'
+    if parts[0] == APPS_LIC_DIR: return APPS_LIC_DIR
+    if parts[0] == APPS_RG_DIR: return APPS_RG_DIR
+    if parts[0] == APPS_SHARED_DIR: return APPS_SHARED_DIR
     
     # Check agentic_core subfolders
-    if parts[0] == 'agentic_core' and len(parts) > 1:
+    if parts[0] == AGENTIC_CORE_DIR and len(parts) > 1:
         for part in parts[1:]:
             if part.startswith('L0'): return 'L0'
             if part.startswith('L1'): return 'L1'
@@ -39,7 +56,7 @@ def get_layer(path: Path) -> str:
 
 def find_test_file(agent_path: Path, agent_class: str) -> bool:
     """Check if a test file exists for this agent."""
-    tests_dir = PROJECT_ROOT / 'tests'
+    tests_dir = PROJECT_ROOT / TESTS_DIR
     if not tests_dir.exists():
         return False
     
@@ -165,10 +182,10 @@ def main():
     
     # Directories to scan
     scan_dirs = [
-        PROJECT_ROOT / 'agentic_core',
-        PROJECT_ROOT / 'apps_lic',
-        PROJECT_ROOT / 'apps_rg',
-        PROJECT_ROOT / 'apps_shared',
+        PROJECT_ROOT / AGENTIC_CORE_DIR,
+        PROJECT_ROOT / APPS_LIC_DIR,
+        PROJECT_ROOT / APPS_RG_DIR,
+        PROJECT_ROOT / APPS_SHARED_DIR,
     ]
     
     for scan_dir in scan_dirs:
@@ -189,7 +206,7 @@ def main():
                     stats[layer]['testing'] += 1
     
     # Define row order
-    all_layers = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'config', 'utils', 'observability', 'schemas', 'runtime', 'prompt_governance', 'apps_lic', 'apps_rg', 'apps_shared', 'other']
+    all_layers = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'config', 'utils', 'observability', 'schemas', 'runtime', 'prompt_governance', APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, 'other']
     
     print("| Layer | Agents | Testing% | Healing% | MCP% |")
     print("|-------|--------|----------|----------|------|")

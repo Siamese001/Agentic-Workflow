@@ -10,7 +10,24 @@ Audits the codebase for compliance with the Three Laws:
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
-folders: Any = ['apps_rg', 'apps_lic', 'apps_shared', 'agentic_core', 'schemas', 'prompt_governance', 'observability', 'config', 'scripts']
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+folders: Any = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, 'schemas', 'prompt_governance', 'observability', 'config', SCRIPTS_DIR]
 
 def count_lines(filepath: Any) -> Any:
     """Brief description of functionality and purpose."""
@@ -55,7 +72,7 @@ def main() -> Any:
     print('\n' + '=' * 80)
     print('DEPTH VIOLATIONS IN CORE FOLDERS (depth 1 or 2, non-init)')
     print('=' * 80)
-    core_depth: Any = [(f, l, d, fo) for f, l, d, fo in file_data if fo in ['apps_rg', 'apps_lic', 'apps_shared'] and d < 3 and (not f.endswith('__init__.py'))]
+    core_depth: Any = [(f, l, d, fo) for f, l, d, fo in file_data if fo in [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR] and d < 3 and (not f.endswith('__init__.py'))]
     for f, l, d, fo in sorted(core_depth, key=lambda x: (x[2], -x[1])):
         print(f'depth {d} | {l:4d} lines | {f}')
     print(f'\nTotal core depth violations: {len(core_depth)}')

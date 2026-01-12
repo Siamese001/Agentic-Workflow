@@ -5,6 +5,23 @@ Prevents Windows encoding issues.
 """
 from pathlib import Path
 from typing import Any
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 emoji_map: Any = {'✅': '[OK]', '⚠️': '[!]', '🔧': '[+]', '🔄': '[~]', '🆕': '[NEW]', '♻️': '[REUSE]', '🚨': '[ALERT]', '🚫': '[X]', '❌': '[X]', '🧹': '[CLEAN]', '🏛️': '[ARCH]', '💾': '[SAVE]', '🔍': '[SCAN]', '📊': '[STATS]', '📂': '[DIR]', '📋': '[PLAN]', '🚀': '[START]', '🌱': '[GIT]', '🧬': '[CYCLE]'}
 
 def fix_emojis_in_file(file_path: str) -> bool:
@@ -28,7 +45,7 @@ def fix_emojis_in_file(file_path: str) -> bool:
 def main() -> Any:
     """Find and fix all Python files with emojis."""
     root: Any = Path('c:/Git/Agentic-Workflow')
-    targets: Any = [root / 'agentic_core', root / 'apps_shared']
+    targets: Any = [root / AGENTIC_CORE_DIR, root / APPS_SHARED_DIR]
     fixed_count: Any = 0
     for target_dir in targets:
         if not target_dir.exists():

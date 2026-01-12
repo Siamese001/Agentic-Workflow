@@ -8,6 +8,23 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)
 # Reason: SafetyBaseAgent provides real log_info and initialization.
@@ -64,12 +81,12 @@ class PIISanitizerAgent(SafetyBaseAgent):
 
 def _run_self_tests(self) -> dict:
         """Run internal self-tests."""
-        results = {"passed": 0, "failed": 0, "tests": []}
+        results = {"passed": 0, "failed": 0, TESTS_DIR: []}
         try:
             assert self is not None
             results["passed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "passed"})
+            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results

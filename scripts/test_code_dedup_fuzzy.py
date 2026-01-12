@@ -8,6 +8,23 @@ sys.path.insert(0, str(project_root))
 
 from agentic_core.L2_execution.ToolRegistry.CodeDeduplicationAgent import CodeDeduplicationAgent
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 def test_fuzzy_matching():
     """Test the new fuzzy structural matching on a small sample."""
     print("=" * 80)
@@ -55,7 +72,7 @@ def test_fuzzy_matching():
     print("=" * 80)
     
     # Get a small sample of Python files from L2_execution
-    sample_dir = project_root / "agentic_core" / "L2_execution"
+    sample_dir = project_root / AGENTIC_CORE_DIR / "L2_execution"
     if sample_dir.exists():
         python_files = [str(f) for f in sample_dir.rglob("*.py") if f.is_file()][:10]
         print(f"\nScanning {len(python_files)} sample files from L2_execution...")

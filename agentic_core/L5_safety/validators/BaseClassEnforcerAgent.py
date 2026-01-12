@@ -29,6 +29,23 @@ from typing import Any, Dict, List, Optional
 
 from agentic_core.bases import L5Agent
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 @dataclass
 class BaseClassEnforcerAgent(L5Agent):
@@ -83,7 +100,7 @@ class BaseClassEnforcerAgent(L5Agent):
         Returns:
             Dict with violation summary and details
         """
-        discovery_path = self.project_root / "agent_discovery_full.json"
+        discovery_path = self.project_root / AGENT_DISCOVERY_JSON
         if not discovery_path.exists():
             return {"error": f"agent_discovery_full.json not found at {discovery_path}"}
         
@@ -263,7 +280,7 @@ class BaseClassEnforcerAgent(L5Agent):
         for pattern, layer in self.LAYER_PATTERNS.items():
             assert layer in self.LAYER_BASES, f"Pattern {pattern} maps to unknown layer {layer}"
         
-        return {"status": "passed", "tests": 2}
+        return {"status": "passed", TESTS_DIR: 2}
 
 
 def get_base_class_enforcer(project_root: Path = None) -> BaseClassEnforcerAgent:

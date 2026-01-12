@@ -26,6 +26,23 @@ from importlib.machinery import ModuleSpec
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class SovereigntyError(ImportError):
     """
@@ -149,7 +166,7 @@ class ImportLockAgent(MCPHardenedMixin, MetaPathFinder):
             SovereigntyError: If import violates architectural rules
         """
         # Only monitor internal agentic_core imports
-        if not fullname.startswith("agentic_core"):
+        if not fullname.startswith(AGENTIC_CORE_DIR):
             return None
 
         # Get the calling module

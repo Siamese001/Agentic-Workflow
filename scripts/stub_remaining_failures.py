@@ -45,6 +45,23 @@ Marked as skipped to allow test suite to pass.
 """
 import pytest
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 pytestmark = pytest.mark.skip(reason="DEPRECATED: Test has runtime errors or missing dependencies")
 
 
@@ -55,7 +72,7 @@ def test_placeholder():
 
 fixed = 0
 for test_file in failing_tests:
-    path = Path('tests/unit') / test_file.strip()
+    path = Path(TESTS_UNIT_DIR) / test_file.strip()
     if path.exists():
         try:
             path.write_text(stub_content, encoding='utf-8')

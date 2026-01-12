@@ -16,6 +16,23 @@ import json
 from pathlib import Path
 from typing import List, Tuple
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class DashboardQA:
     """Dashboard quality assurance validator."""
@@ -23,8 +40,8 @@ class DashboardQA:
     def __init__(self):
         self.root = Path(__file__).parent.parent
         # Consolidated dashboard location: agentic_core/observability/dashboard/
-        self.template_path = self.root / 'agentic_core' / 'observability' / 'dashboard' / 'dashboard_template.html'
-        self.dashboard_path = self.root / 'reports' / 'autonomy_dashboard.html'
+        self.template_path = self.root / AGENTIC_CORE_DIR / 'observability' / 'dashboard' / 'dashboard_template.html'
+        self.dashboard_path = self.root / REPORTS_DIR / 'autonomy_dashboard.html'
         self.errors: List[str] = []
         self.warnings: List[str] = []
     
@@ -266,8 +283,8 @@ class DashboardQA:
         """Validate agent discovery JSON is fresh and valid."""
         print('🔍 Validating agent discovery freshness...')
         
-        discovery_path = self.root / 'agent_discovery_full.json'
-        manifest_path = self.root / 'agent_discovery_full.manifest.json'
+        discovery_path = self.root / AGENT_DISCOVERY_JSON
+        manifest_path = self.root / AGENT_DISCOVERY_MANIFEST_JSON
         
         if not discovery_path.exists():
             self.errors.append('agent_discovery_full.json not found - run: python scripts/full_agent_discovery.py')

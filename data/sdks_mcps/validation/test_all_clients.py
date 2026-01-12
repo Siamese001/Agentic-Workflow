@@ -11,6 +11,23 @@ import sys
 from pathlib import Path
 from typing import Dict
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 logger = logging.getLogger(__name__)
 
 # Add parent directory to path for imports
@@ -35,12 +52,12 @@ def test_openai_client() -> Dict[str, object]:
     """Test OpenAI client functionality."""
     results = {
         "provider": "OpenAI",
-        "tests": {},
+        TESTS_DIR: {},
         "overall": False
     }
 
     if not os.getenv("OPENAI_API_KEY"):
-        results["tests"]["initialization"] = {
+        results[TESTS_DIR]["initialization"] = {
             "passed": False,
             "error": "OPENAI_API_KEY not set"
         }
@@ -49,7 +66,7 @@ def test_openai_client() -> Dict[str, object]:
     try:
         # Test client initialization
         client = create_openai_client()
-        results["tests"]["initialization"] = {"passed": True}
+        results[TESTS_DIR]["initialization"] = {"passed": True}
 
         # Test simple completion
         response = client.chat_completion([
@@ -57,7 +74,7 @@ def test_openai_client() -> Dict[str, object]:
         ], max_tokens=10)
 
         content = response.choices[0].message.content
-        results["tests"]["simple_completion"] = {
+        results[TESTS_DIR]["simple_completion"] = {
             "passed": True,
             "response": content,
             "tokens": response.usage.total_tokens
@@ -78,7 +95,7 @@ def test_openai_client() -> Dict[str, object]:
             schema
         )
 
-        results["tests"]["structured_output"] = {
+        results[TESTS_DIR]["structured_output"] = {
             "passed": structured["success"],
             "data": structured.get("data"),
             "error": structured.get("error")
@@ -89,15 +106,15 @@ def test_openai_client() -> Dict[str, object]:
             {"role": "user", "content": "Count from 1 to 3"}
         ])
 
-        results["tests"]["streaming"] = {
+        results[TESTS_DIR]["streaming"] = {
             "passed": len(chunks) > 0,
             "chunks": len(chunks)
         }
 
-        results["overall"] = all(test["passed"] for test in results["tests"].values())
+        results["overall"] = all(test["passed"] for test in results[TESTS_DIR].values())
 
     except Exception as e:
-        results["tests"]["error"] = {"passed": False, "error": str(e)}
+        results[TESTS_DIR]["error"] = {"passed": False, "error": str(e)}
         results["overall"] = False
 
     return results
@@ -106,12 +123,12 @@ def test_anthropic_client() -> Dict[str, object]:
     """Test Anthropic client functionality."""
     results = {
         "provider": "Anthropic",
-        "tests": {},
+        TESTS_DIR: {},
         "overall": False
     }
 
     if not os.getenv("ANTHROPIC_API_KEY"):
-        results["tests"]["initialization"] = {
+        results[TESTS_DIR]["initialization"] = {
             "passed": False,
             "error": "ANTHROPIC_API_KEY not set"
         }
@@ -120,7 +137,7 @@ def test_anthropic_client() -> Dict[str, object]:
     try:
         # Test client initialization with caching
         client = create_anthropic_client(enable_caching=True)
-        results["tests"]["initialization"] = {"passed": True}
+        results[TESTS_DIR]["initialization"] = {"passed": True}
 
         # Test simple message
         response = client.message([{
@@ -129,7 +146,7 @@ def test_anthropic_client() -> Dict[str, object]:
         }], max_tokens=10)
 
         content = response.content[0].text if response.content else ""
-        results["tests"]["simple_message"] = {
+        results[TESTS_DIR]["simple_message"] = {
             "passed": len(content) > 0,
             "response": content,
             "tokens": response.usage.input_tokens + response.usage.output_tokens
@@ -142,7 +159,7 @@ def test_anthropic_client() -> Dict[str, object]:
             cache_system=True
         )
 
-        results["tests"]["cached_message"] = {
+        results[TESTS_DIR]["cached_message"] = {
             "passed": len(cached_response.content) > 0,
             "cache_read_tokens": cached_response.usage.cache_read_input_tokens
         }
@@ -162,7 +179,7 @@ def test_anthropic_client() -> Dict[str, object]:
             tools
         )
 
-        results["tests"]["tool_use"] = {
+        results[TESTS_DIR]["tool_use"] = {
             "passed": len(tool_result["content"]) > 0 or len(tool_result["tool_calls"]) > 0,
             "tool_calls": len(tool_result["tool_calls"])
         }
@@ -173,15 +190,15 @@ def test_anthropic_client() -> Dict[str, object]:
             "content": [{"type": "text", "text": "Count from 1 to 3"}]
         }])
 
-        results["tests"]["streaming"] = {
+        results[TESTS_DIR]["streaming"] = {
             "passed": len(chunks) > 0,
             "chunks": len(chunks)
         }
 
-        results["overall"] = all(test["passed"] for test in results["tests"].values())
+        results["overall"] = all(test["passed"] for test in results[TESTS_DIR].values())
 
     except Exception as e:
-        results["tests"]["error"] = {"passed": False, "error": str(e)}
+        results[TESTS_DIR]["error"] = {"passed": False, "error": str(e)}
         results["overall"] = False
 
     return results
@@ -190,12 +207,12 @@ def test_vertex_client() -> Dict[str, object]:
     """Test Google Vertex client functionality."""
     results = {
         "provider": "Google Vertex",
-        "tests": {},
+        TESTS_DIR: {},
         "overall": False
     }
 
     if not os.getenv("GOOGLE_CLOUD_PROJECT"):
-        results["tests"]["initialization"] = {
+        results[TESTS_DIR]["initialization"] = {
             "passed": False,
             "error": "GOOGLE_CLOUD_PROJECT not set"
         }
@@ -204,7 +221,7 @@ def test_vertex_client() -> Dict[str, object]:
     try:
         # Test client initialization
         client = create_vertex_client(enable_grounding=True)
-        results["tests"]["initialization"] = {"passed": True}
+        results[TESTS_DIR]["initialization"] = {"passed": True}
 
         # Test simple generation
         response = client.generate_content(
@@ -212,7 +229,7 @@ def test_vertex_client() -> Dict[str, object]:
             max_tokens=10
         )
 
-        results["tests"]["simple_generation"] = {
+        results[TESTS_DIR]["simple_generation"] = {
             "passed": len(response.text) > 0,
             "response": response.text[:100]
         }
@@ -223,7 +240,7 @@ def test_vertex_client() -> Dict[str, object]:
             grounding_threshold=0.7
         )
 
-        results["tests"]["grounded_response"] = {
+        results[TESTS_DIR]["grounded_response"] = {
             "passed": len(grounded["content"]) > 0,
             "has_grounding": grounded["grounding_metadata"] is not None,
             "grounding_score": grounded["grounding_metadata"]["grounding_score"] if grounded["grounding_metadata"] else None
@@ -235,15 +252,15 @@ def test_vertex_client() -> Dict[str, object]:
             safety_threshold="BLOCK_NONE"
         )
 
-        results["tests"]["safe_response"] = {
+        results[TESTS_DIR]["safe_response"] = {
             "passed": len(safe["content"]) > 0,
             "safety_ratings": len(safe["safety_ratings"])
         }
 
-        results["overall"] = all(test["passed"] for test in results["tests"].values())
+        results["overall"] = all(test["passed"] for test in results[TESTS_DIR].values())
 
     except Exception as e:
-        results["tests"]["error"] = {"passed": False, "error": str(e)}
+        results[TESTS_DIR]["error"] = {"passed": False, "error": str(e)}
         results["overall"] = False
 
     return results
@@ -252,21 +269,21 @@ def test_multi_provider_router() -> Dict[str, object]:
     """Test multi-provider router functionality."""
     results = {
         "provider": "Multi-Provider Router",
-        "tests": {},
+        TESTS_DIR: {},
         "overall": False
     }
 
     try:
         # Test router initialization
         router = create_multi_provider_router()
-        results["tests"]["initialization"] = {"passed": True}
+        results[TESTS_DIR]["initialization"] = {"passed": True}
 
         # Test basic routing
         routing_result = router.chat_completion([
             {"role": "user", "content": "Say 'Router test passed' in 5 words"}
         ], strategy="priority")
 
-        results["tests"]["basic_routing"] = {
+        results[TESTS_DIR]["basic_routing"] = {
             "passed": routing_result["success"],
             "provider": routing_result.get("provider"),
             "strategy": routing_result["metadata"]["strategy"]
@@ -277,7 +294,7 @@ def test_multi_provider_router() -> Dict[str, object]:
             {"role": "user", "content": "Simple test message"}
         ], strategy="round_robin")
 
-        results["tests"]["failover"] = {
+        results[TESTS_DIR]["failover"] = {
             "passed": failover_result["success"],
             "providers_tried": failover_result["metadata"]["providers_tried"]
         }
@@ -294,7 +311,7 @@ def test_multi_provider_router() -> Dict[str, object]:
             schema
         )
 
-        results["tests"]["structured_routing"] = {
+        results[TESTS_DIR]["structured_routing"] = {
             "passed": structured_result["success"],
             "provider": structured_result.get("provider"),
             "has_data": "structured_data" in structured_result
@@ -302,16 +319,16 @@ def test_multi_provider_router() -> Dict[str, object]:
 
         # Test router statistics
         stats = router.get_router_stats()
-        results["tests"]["statistics"] = {
+        results[TESTS_DIR]["statistics"] = {
             "passed": "total_requests" in stats,
             "total_requests": stats["total_requests"],
             "success_rate": stats["success_rate"]
         }
 
-        results["overall"] = all(test["passed"] for test in results["tests"].values())
+        results["overall"] = all(test["passed"] for test in results[TESTS_DIR].values())
 
     except Exception as e:
-        results["tests"]["error"] = {"passed": False, "error": str(e)}
+        results[TESTS_DIR]["error"] = {"passed": False, "error": str(e)}
         results["overall"] = False
 
     return results
@@ -320,7 +337,7 @@ def test_reference_clients() -> Dict[str, object]:
     """Test minimal reference clients."""
     results = {
         "provider": "Reference Clients",
-        "tests": {},
+        TESTS_DIR: {},
         "overall": False
     }
 
@@ -330,12 +347,12 @@ def test_reference_clients() -> Dict[str, object]:
 
         if os.getenv("OPENAI_API_KEY"):
             openai_result = simple_completion("Say 'minimal test'", "gpt-4o-mini")
-            results["tests"]["openai_minimal"] = {
+            results[TESTS_DIR]["openai_minimal"] = {
                 "passed": len(openai_result) > 0,
                 "response": openai_result[:50]
             }
         else:
-            results["tests"]["openai_minimal"] = {
+            results[TESTS_DIR]["openai_minimal"] = {
                 "passed": False,
                 "error": "OPENAI_API_KEY not set"
             }
@@ -345,12 +362,12 @@ def test_reference_clients() -> Dict[str, object]:
 
         if os.getenv("ANTHROPIC_API_KEY"):
             anthropic_result = simple_message("Say 'minimal test'", "claude-3-5-haiku")
-            results["tests"]["anthropic_minimal"] = {
+            results[TESTS_DIR]["anthropic_minimal"] = {
                 "passed": len(anthropic_result) > 0,
                 "response": anthropic_result[:50]
             }
         else:
-            results["tests"]["anthropic_minimal"] = {
+            results[TESTS_DIR]["anthropic_minimal"] = {
                 "passed": False,
                 "error": "ANTHROPIC_API_KEY not set"
             }
@@ -360,22 +377,22 @@ def test_reference_clients() -> Dict[str, object]:
 
         if os.getenv("GOOGLE_CLOUD_PROJECT"):
             vertex_result = simple_generation("Say 'minimal test'", "gemini-1.5-flash")
-            results["tests"]["vertex_minimal"] = {
+            results[TESTS_DIR]["vertex_minimal"] = {
                 "passed": len(vertex_result) > 0,
                 "response": vertex_result[:50]
             }
         else:
-            results["tests"]["vertex_minimal"] = {
+            results[TESTS_DIR]["vertex_minimal"] = {
                 "passed": False,
                 "error": "GOOGLE_CLOUD_PROJECT not set"
             }
 
         results["overall"] = all(
-            test.get("passed", False) for test in results["tests"].values()
+            test.get("passed", False) for test in results[TESTS_DIR].values()
         )
 
     except Exception as e:
-        results["tests"]["error"] = {"passed": False, "error": str(e)}
+        results[TESTS_DIR]["error"] = {"passed": False, "error": str(e)}
         results["overall"] = False
 
     return results
@@ -400,7 +417,7 @@ def main():
 
             "✅" if result["overall"] else "❌"
 
-            for test_name, test_result in result["tests"].items():
+            for test_name, test_result in result[TESTS_DIR].items():
                 if "error" in test_result and not test_result.get("passed", True):
                     logger.error(f"    Failed: {test_name} - {test_result.get('error', 'Unknown error')}")
 

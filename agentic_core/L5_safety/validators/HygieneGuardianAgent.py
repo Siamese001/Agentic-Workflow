@@ -27,6 +27,23 @@ from collections import defaultdict
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 Logger = logging.getLogger(__name__)
 
 
@@ -52,10 +69,10 @@ class HygieneGuardianAgent(MCPHardenedMixin, HealerMixin):
     """
     
     # Approved folders for validation
-    SOVEREIGN_ROOTS = ['agentic_core', 'apps_lic', 'apps_rg', 'scripts', 'tests']
+    SOVEREIGN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR, TESTS_DIR]
     
     # Directories to skip
-    SKIP_DIRS = {'__pycache__', '.git', 'node_modules', '.venv', 'venv', 'archives'}
+    SKIP_DIRS = {'__pycache__', '.git', 'node_modules', '.venv', 'venv', ARCHIVES_DIR}
     
     # Files that are allowed to be empty
     ALLOWED_EMPTY = {'__init__.py'}

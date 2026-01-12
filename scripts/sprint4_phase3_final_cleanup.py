@@ -13,6 +13,23 @@ Target: 100% compliance
 from pathlib import Path
 import shutil
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 REPO = Path(__file__).parent.parent
 
 def fix_hierarchy_violations():
@@ -24,10 +41,10 @@ def fix_hierarchy_violations():
     violations_fixed = 0
     
     # apps_rg/engines/resume_engine/autonomous/tests (depth 4 > max 3)
-    test_dir_rg = REPO / "apps_rg" / "engines" / "resume_engine" / "autonomous" / "tests"
+    test_dir_rg = REPO / APPS_RG_DIR / "engines" / "resume_engine" / "autonomous" / TESTS_DIR
     if test_dir_rg.exists():
         # Move tests up one level
-        target_dir = REPO / "apps_rg" / "engines" / "resume_engine" / "tests"
+        target_dir = REPO / APPS_RG_DIR / "engines" / "resume_engine" / TESTS_DIR
         
         if not target_dir.exists():
             target_dir.mkdir(parents=True, exist_ok=True)
@@ -46,10 +63,10 @@ def fix_hierarchy_violations():
             violations_fixed += 1
     
     # apps_lic/engines/outreach_engine/autonomous/tests (depth 4 > max 3)
-    test_dir_lic = REPO / "apps_lic" / "engines" / "outreach_engine" / "autonomous" / "tests"
+    test_dir_lic = REPO / APPS_LIC_DIR / "engines" / "outreach_engine" / "autonomous" / TESTS_DIR
     if test_dir_lic.exists():
         # Move tests up one level
-        target_dir = REPO / "apps_lic" / "engines" / "outreach_engine" / "tests"
+        target_dir = REPO / APPS_LIC_DIR / "engines" / "outreach_engine" / TESTS_DIR
         
         if not target_dir.exists():
             target_dir.mkdir(parents=True, exist_ok=True)
@@ -75,7 +92,7 @@ def fix_drift_violation():
     print("  Drift Violation - Mixins Folder")
     print("=" * 80)
     
-    mixins_dir = REPO / "agentic_core" / "L0_maintenance" / "mixins"
+    mixins_dir = REPO / AGENTIC_CORE_DIR / "L0_maintenance" / "mixins"
     
     if mixins_dir.exists():
         # The mixins folder is not in the blueprint
@@ -84,7 +101,7 @@ def fix_drift_violation():
         # Option 3: Distribute mixins to appropriate locations
         
         # For now, let's move to scripts as it's an approved L0 subfolder
-        target_dir = REPO / "agentic_core" / "L0_maintenance" / "scripts" / "mixins"
+        target_dir = REPO / AGENTIC_CORE_DIR / "L0_maintenance" / SCRIPTS_DIR / "mixins"
         
         if not target_dir.exists():
             shutil.move(str(mixins_dir), str(target_dir))
@@ -106,7 +123,7 @@ def annotate_dynamic_imports():
     files_annotated = 0
     
     # NervousSystemAgent.py - already has dynamic imports in try/except
-    nervous_system = REPO / "agentic_core" / "L3_orchestration" / "workflow_engines" / "NervousSystemAgent.py"
+    nervous_system = REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines" / "NervousSystemAgent.py"
     if nervous_system.exists():
         content = nervous_system.read_text(encoding='utf-8')
         
@@ -131,7 +148,7 @@ def annotate_dynamic_imports():
             files_annotated += 1
     
     # OrchestrationBaseAgent.py - already has dynamic import in method
-    orchestration_base = REPO / "agentic_core" / "L3_orchestration" / "workflow_engines" / "OrchestrationBaseAgent.py"
+    orchestration_base = REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines" / "OrchestrationBaseAgent.py"
     if orchestration_base.exists():
         content = orchestration_base.read_text(encoding='utf-8')
         

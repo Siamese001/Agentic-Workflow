@@ -19,6 +19,23 @@ from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVec
 from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
 from agentic_core.L6_observability.dashboards.renderer import DashboardRenderer
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 log = logging.getLogger(__name__)
 
 class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
@@ -53,7 +70,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             log.warning(f"[AutonomyGuardian] Gemini embedder unavailable: {e}")
         
         # Resolve modular discovery engine
-        smart_module_path = self.project_root / "scripts" / "smart_discovery.py"
+        smart_module_path = self.project_root / SCRIPTS_DIR / "smart_discovery.py"
         if not smart_module_path.exists():
             raise FileNotFoundError(f"smart_discovery.py not found at {smart_module_path}")
         spec = importlib.util.spec_from_file_location("smart_discovery", smart_module_path)
@@ -71,7 +88,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
             "L1_cognition/core": ("L1", "Medium"),
             "L0_maintenance/core": ("L0", "Medium"),
             "observability/metrics": ("observability", "High"),
-            "tests": ("tests", "Medium"),
+            TESTS_DIR: (TESTS_DIR, "Medium"),
         }
 
     def validate_agent_autonomy(self, agent_file: Path) -> List[str]:
@@ -145,7 +162,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
 
     def _save_modular_markdown_report(self, today: str, total_row: Dict[str, Any], dashboard_rows: List[Dict[str, Any]]) -> None:
         """Passive Markdown renderer consuming pre-computed L6 rows."""
-        report_path = self.project_root / "agentic_core" / "L6_observability" / "reports" / "autonomy_compliance_report.md"
+        report_path = self.project_root / AGENTIC_CORE_DIR / "L6_observability" / REPORTS_DIR / "autonomy_compliance_report.md"
         md = f"# Autonomy Compliance SSOT Report — {today}\n\n"
         md += f"System Health: {total_row['Health']:.1f}% | Risk: {total_row['Risk']}\n\n"
         md += "| Territory | Total | % Heal Cap | % Heal Inv | % Test | CC | Health |\n|---|---|---|---|---|---|---|\n"

@@ -19,6 +19,23 @@ from typing import Dict, List, Set
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 
 class InterfaceBoundaryAgent(MCPHardenedMixin):
     """
@@ -47,7 +64,7 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
 
     def audit_boundaries(self) -> List[Dict]:
         """Scans L0 for complexity violations and upward leakage potential."""
-        l0_path = self.root / "agentic_core" / "L0_maintenance"
+        l0_path = self.root / AGENTIC_CORE_DIR / "L0_maintenance"
         for py_file in l0_path.glob("**/*.py"):
             metrics = self._analyze_file_complexity(py_file)
             if metrics['method_count'] > self.threshold:

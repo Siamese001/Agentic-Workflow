@@ -16,6 +16,23 @@ Target violations:
 from pathlib import Path
 import re
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 REPO = Path(__file__).parent.parent
 
 # Refactoring patterns for specific files
@@ -132,7 +149,7 @@ def main():
     print("=" * 80)
     print()
     
-    l0_scripts = REPO / "agentic_core" / "L0_maintenance" / "scripts"
+    l0_scripts = REPO / AGENTIC_CORE_DIR / "L0_maintenance" / SCRIPTS_DIR
     
     if not l0_scripts.exists():
         print(f"❌ Directory not found: {l0_scripts}")
