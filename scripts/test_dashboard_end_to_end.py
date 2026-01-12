@@ -348,15 +348,81 @@ def run_all_tests() -> bool:
         except Exception as e:
             errors.append(f"Test 7 FAILED: Drill-down validation error: {e}")
     
+    # Test 8: Base Agent Uniqueness
+    print("\n" + "─" * 70)
+    print("Running: Base Agent Uniqueness (Critical)")
+    print("─" * 70)
+    
+    # Check for multiple base agents per layer
+    LAYERS = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']
+    CANONICAL_BASE_AGENTS = {
+        'L0': 'L0Agent',
+        'L1': 'L1Agent',
+        'L2': 'L2Agent',
+        'L3': 'L3Agent',
+        'L4': 'L4Agent',
+        'L5': 'L5Agent',
+        'L6': 'L6ObservabilityBaseAgent'
+    }
+    
+    try:
+        with open('C:/Git/Agentic-Workflow/agent_discovery_full.json', 'r', encoding='utf-8') as f:
+            agents = json.load(f)
+        
+        base_agents_by_layer = {}
+        for layer in LAYERS:
+            base_agents_by_layer[layer] = []
+        
+        for agent in agents:
+            class_name = agent.get('class_name', '')
+            layer = agent.get('layer', '')
+            
+            is_base = (
+                'BaseAgent' in class_name or
+                class_name in CANONICAL_BASE_AGENTS.values() or
+                'base_class' in agent.get('path', '').lower()
+            )
+            
+            if is_base and layer:
+                layer_prefix = layer[:2] if len(layer) >= 2 else layer
+                if layer_prefix in LAYERS:
+                    base_agents_by_layer[layer_prefix].append(agent)
+        
+        duplicates_found = False
+        for layer in LAYERS:
+            base_agents = base_agents_by_layer.get(layer, [])
+            if len(base_agents) > 1:
+                agent_names = [a['class_name'] for a in base_agents]
+                errors.append(f"Test 8 FAILED: {layer} has {len(base_agents)} base agents: {agent_names}")
+                duplicates_found = True
+        
+        if not duplicates_found:
+            print(f"✅ Test 8 PASSED: No duplicate base agents across L0-L6")
+        
+    except Exception as e:
+        errors.append(f"Test 8 FAILED: Could not validate base agents: {e}")
+    
+    # Final Summary
     print("\n" + "=" * 70)
     if errors:
         print("❌ TESTS FAILED - Dashboard has issues")
         print("=" * 70)
         print("\n".join(errors))
+        
+        # Check if it's a critical base agent issue
+        base_agent_errors = [e for e in errors if 'base agents:' in e.lower()]
+        if base_agent_errors:
+            print("\n" + "!" * 70)
+            print("CRITICAL: Multiple base agents detected")
+            print("!" * 70)
+            print("This causes inheritance confusion. Run:")
+            print("  python scripts/validate_base_agents.py")
+            print("!" * 70)
+        
         sys.exit(1)
     
     if all_passed:
-        print("✅ ALL 7 TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 8 TESTS PASSED - Dashboard is ready for deployment")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")
         for test in failed_tests:
