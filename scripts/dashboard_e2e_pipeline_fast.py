@@ -113,6 +113,79 @@ class FastDashboardE2EPipeline:
         print(f"   ✅ Fixed {fixed_count} agents")
         return fixed_count
     
+    def step1_5_fix_mcp_hardening(self) -> int:
+        """Step 1.5: Fix MCP hardening gaps in code."""
+        self.print_step("STEP 1.5: Fixing MCP hardening gaps...")
+        
+        if not self.discovery_path.exists():
+            print("   ⚠️  No discovery data - skipping")
+            return 0
+        
+        data = json.load(open(self.discovery_path))
+        needs_hardening = [a for a in data if not a.get('mcp_hardened')]
+        
+        if not needs_hardening:
+            print("   ✅ All agents already MCP hardened")
+            return 0
+        
+        fixed_count = 0
+        for agent in needs_hardening:
+            path = Path(agent['path'])
+            if not path.exists():
+                continue
+            
+            try:
+                content = path.read_text(encoding='utf-8')
+                
+                # Skip if already has MCPHardenedMixin
+                if 'MCPHardenedMixin' in content:
+                    continue
+                
+                # Skip stub/re-export files
+                if 'from agentic_core' in content and 'import' in content and agent['class_name'] in content:
+                    if content.count(f"class {agent['class_name']}") == 0:
+                        continue
+                
+                # Find class definition
+                class_pattern = rf'class\s+{re.escape(agent["class_name"])}\s*\((.*?)\)\s*:'
+                match = re.search(class_pattern, content, re.DOTALL)
+                
+                if not match:
+                    continue
+                
+                current_inheritance = match.group(1).strip()
+                
+                # Build new inheritance
+                if current_inheritance:
+                    new_inheritance = f"{current_inheritance}, MCPHardenedMixin"
+                else:
+                    new_inheritance = "MCPHardenedMixin"
+                
+                # Replace class definition
+                old_class_def = match.group(0)
+                new_class_def = f"class {agent['class_name']}({new_inheritance}):"
+                content = content.replace(old_class_def, new_class_def)
+                
+                # Add import if needed
+                if 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin' not in content:
+                    lines = content.split('\n')
+                    insert_idx = 0
+                    for i, line in enumerate(lines):
+                        if line.strip().startswith('import ') or line.strip().startswith('from '):
+                            insert_idx = i + 1
+                    lines.insert(insert_idx, 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin')
+                    content = '\n'.join(lines)
+                
+                path.write_text(content, encoding='utf-8')
+                fixed_count += 1
+                
+            except Exception:
+                pass
+        
+        self.stats['mcp_fixes'] = fixed_count
+        print(f"   ✅ Fixed {fixed_count} agents")
+        return fixed_count
+    
     def step2_update_discovery_metadata(self, fixed_count: int) -> bool:
         """Step 2: Update discovery metadata directly (fast)."""
         self.print_step("STEP 2: Updating discovery metadata...")

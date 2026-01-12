@@ -96,7 +96,7 @@ from agentic_core.bases import L5Agent
     purpose="Enforces territory/file placement rules",
     territory="templates"
 )
-class LocationAgent(L5Agent):
+class LocationAgent(L5Agent, MCPHardenedMixin):
     """
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.
@@ -1965,6 +1965,7 @@ class LocationAgent(L5Agent):
         
         Full location compliance scan with automatic cleanup, post-heal validation,
         import fixing, and batch verification.
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
         
         Args:
             files: Optional list of files to scan (defaults to all .py files)

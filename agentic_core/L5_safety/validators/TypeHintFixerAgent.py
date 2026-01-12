@@ -7,8 +7,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer):
+class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer, MCPHardenedMixin):
     """
     AST transformer that adds Missing type hints to public symbols.
     """

@@ -21,9 +21,10 @@ import re
 from typing import Any, Dict
 
 from .resume_base import ResumeAgent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class ContentQualityAgent(ResumeAgent):
+class ContentQualityAgent(ResumeAgent, MCPHardenedMixin):
     """
     Validates resume content quality.
 

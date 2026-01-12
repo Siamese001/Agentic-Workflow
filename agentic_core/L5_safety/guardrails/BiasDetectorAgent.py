@@ -7,6 +7,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class (same directory → relative import)
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -41,7 +42,7 @@ def detect_bias(context, text, workflow_id=""):
     return {"bias_detected": False, "score": 0.0, "patterns": []}
 
 
-class BiasDetectorAgent(SafetyBaseAgent):
+class BiasDetectorAgent(SafetyBaseAgent, MCPHardenedMixin):
     """Runs local bias detection with dynamic constitution rules."""
     
     def __init__(self, context: Any = None, **kwargs):

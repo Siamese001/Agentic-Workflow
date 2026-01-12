@@ -25,11 +25,12 @@ from typing import List, Dict, Any, Optional
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 
 
-class GravityHealerAgent(HealerMixin, SubatomicTestingMixin):
+class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
     """
     [L2 HEALER] Specialized repair agent for Gravity violations.
     

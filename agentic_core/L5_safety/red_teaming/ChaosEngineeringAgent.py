@@ -16,6 +16,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.runtime.shared_runtime import log_event
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -37,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ChaosEngineeringAgent(HealerMixin):
+class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
     """
     Red team agent specializing in chaos engineering and fault injection.
     Tests system resilience under:

@@ -9,6 +9,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -37,7 +38,7 @@ def track_metrics(name):
     return decorator
 
 
-class PIISanitizerAgent(SafetyBaseAgent):
+class PIISanitizerAgent(SafetyBaseAgent, MCPHardenedMixin):
     """Performs local PII detection using regex heuristics."""
 
     PII_PATTERNS = {

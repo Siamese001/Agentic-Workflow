@@ -5,9 +5,10 @@ Part of the SubAtomic agent family for code quality enforcement.
 from typing import Any
 from agentic_core.L1_cognition.thought_engine.SubAtomicAgent import SubAtomicAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Sovereign Agent for token budget tracking and complexity management
-class BudgetAgent(SubAtomicAgent):
+class BudgetAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     KEYS: 17 (Large Functions), 19 (Complex Functions)
     ROLE: The Comptroller. Proactively marks functions exceeding size/complexity limits.

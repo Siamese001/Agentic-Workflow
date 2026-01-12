@@ -15,9 +15,10 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
 from agentic_core.L5_safety.guardrails.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent):
+class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, MCPHardenedMixin):
     def __init__(self, project_root: Path) -> None:
         self.redis = RedisSovereignAgent(project_root).get_client()
         self.threshold = 5
