@@ -566,6 +566,48 @@ def run_all_tests() -> bool:
     except Exception as e:
         errors.append(f"Test 12 FAILED: Could not validate Table 2: {e}")
     
+    # Test 13: Footnote Accuracy
+    print("\n" + "─" * 70)
+    print("Running: Footnote Accuracy Check")
+    print("─" * 70)
+    
+    try:
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        
+        footnote_checks = []
+        
+        # Check 1: Health footnote mentions weighted formula
+        if 'Gospel-weighted' in html_content or 'Heal Capability (30%)' in html_content:
+            print("   ✅ Health footnote updated to weighted formula")
+        else:
+            footnote_checks.append("Health footnote still shows old equal-weight formula")
+        
+        # Check 2: Code Quality Score footnote is accurate
+        if 'Typed (35%)' in html_content or 'Schema (30%)' in html_content:
+            footnote_checks.append("Code Quality Score footnote shows stale weighted formula")
+        elif '(Typed % + Documented %) / 2' in html_content or 'Simple average' in html_content:
+            print("   ✅ Code Quality Score footnote updated to simple average")
+        else:
+            footnote_checks.append("Code Quality Score footnote formula unclear")
+        
+        # Check 3: Stale percentage weights in footnotes
+        stale_patterns = ['35%.*Schema.*30%', 'Typed.*35%', 'Metadata.*15%']
+        for pattern in stale_patterns:
+            if re.search(pattern, html_content):
+                footnote_checks.append(f"Found stale percentage pattern: {pattern}")
+                break
+        
+        if footnote_checks:
+            errors.append(f"Test 13 FAILED: {len(footnote_checks)} footnote issues")
+            for issue in footnote_checks:
+                errors.append(f"  - {issue}")
+        else:
+            print(f"✅ Test 13 PASSED: All footnotes accurate and up-to-date")
+    
+    except Exception as e:
+        errors.append(f"Test 13 FAILED: Could not validate footnotes: {e}")
+    
     # Final Summary
     print("\n" + "=" * 70)
     if errors:
@@ -586,7 +628,7 @@ def run_all_tests() -> bool:
         sys.exit(1)
     
     if all_passed:
-        print("✅ ALL 8 TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 13 TESTS PASSED - Dashboard is ready for deployment")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")
         for test in failed_tests:
