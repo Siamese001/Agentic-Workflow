@@ -12,12 +12,13 @@ from agentic_core.L3_orchestration.workflow_engines.CachedOrchestratorAgent impo
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-class OrchestrationHandshakeAgent(CachedOrchestratorAgent):
+class OrchestrationHandshakeAgent(CachedOrchestratorAgent, MCPHardenedMixin):
     """
     Sovereign handshake protocol — now with deep L3 caching.
     Renamed from OrchestrationHandshake for consistent Agent suffix pattern.

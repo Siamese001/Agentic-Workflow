@@ -14,6 +14,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ def _run_self_tests() -> dict:
         results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results
 
-class SovereignCognitivePlaneAgent(ICognitivePlane):
+class SovereignCognitivePlaneAgent(ICognitivePlane, MCPHardenedMixin):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
     def __init__(self, enable_streaming: bool=True, streamer_factory: Optional[callable]=None):

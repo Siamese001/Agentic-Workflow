@@ -121,9 +121,10 @@ class BenchmarkSuite:
 
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING FIXED: BenchmarkingAgent → BenchmarkingAgent
-class BenchmarkingAgent(HealerMixin):
+class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
     """
     Measures and tracks performance metrics.
 

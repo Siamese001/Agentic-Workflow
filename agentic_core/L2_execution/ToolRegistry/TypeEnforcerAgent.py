@@ -8,8 +8,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 import asyncio
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class TypeEnforcerAgent(SubAtomicAgent):
+class TypeEnforcerAgent(SubAtomicAgent, MCPHardenedMixin):
     """ROLE: Type Guardian. Enforces PEP 484."""
     async def execute(self) -> None:
                     

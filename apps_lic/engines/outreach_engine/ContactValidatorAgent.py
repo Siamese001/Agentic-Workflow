@@ -7,8 +7,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class ContactValidatorAgent(OutreachAgent):
+class ContactValidatorAgent(OutreachAgent, MCPHardenedMixin):
     """Validates contact information."""
 
     EMAIL_PATTERN = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")

@@ -8,6 +8,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -48,7 +49,7 @@ async def _format_prompt_with_defaults(template, data, budget_manager, goal_stat
     return template
 
 
-class ConstitutionalReviewerAgent(SafetyBaseAgent):
+class ConstitutionalReviewerAgent(SafetyBaseAgent, MCPHardenedMixin):
     """Performs final constitutional review of the output."""
 
     @track_metrics("run_constitutional_review")

@@ -8,8 +8,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 import asyncio
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class OmniContextAgent(SubAtomicAgent):
+class OmniContextAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.
     """

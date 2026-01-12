@@ -7,8 +7,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class TemplateOptimizerAgent(ResumeAgent):
+class TemplateOptimizerAgent(ResumeAgent, MCPHardenedMixin):
     """
     Optimizes template selection based on job description.
 

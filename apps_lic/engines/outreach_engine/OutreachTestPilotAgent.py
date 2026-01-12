@@ -8,9 +8,10 @@ Renamed from OutreachTestPilot for consistent Agent suffix.
 from typing import Any, Dict
 
 from .OutreachAgent import OutreachAgent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class OutreachTestPilotAgent(OutreachAgent):
+class OutreachTestPilotAgent(OutreachAgent, MCPHardenedMixin):
     """
     Runs validation tests on the campaign.
     

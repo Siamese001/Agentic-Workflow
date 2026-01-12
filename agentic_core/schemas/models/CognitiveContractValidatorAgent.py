@@ -5,6 +5,7 @@ Provides validation for cognitive contract schemas.
 """
 from typing import Any, Dict, List, Optional
 import logging
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 logger = logging.getLogger(__name__)
 

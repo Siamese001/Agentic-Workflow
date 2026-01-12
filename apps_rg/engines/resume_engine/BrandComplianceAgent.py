@@ -7,8 +7,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class BrandComplianceAgent(ResumeAgent):
+class BrandComplianceAgent(ResumeAgent, MCPHardenedMixin):
     """
     Ensures brand voice and professional tone.
 

@@ -33,7 +33,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class HygieneValidatorAgent(L0Agent):
+class HygieneValidatorAgent(L0Agent, MCPHardenedMixin):
     """
     Detects 'Rot' within the system:
     1. Dead Code (Orphaned files that are never imported)
@@ -232,6 +232,7 @@ class HygieneValidatorAgent(L0Agent):
 
 if __name__ == "__main__":
     import sys
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
     root = sys.argv[1] if len(sys.argv) > 1 else "."
     print(f"Running Hygiene Validator on: {root}")

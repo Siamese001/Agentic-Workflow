@@ -7,8 +7,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class ProactiveAgent(ResumeAgent):
+class ProactiveAgent(ResumeAgent, MCPHardenedMixin):
     """
     Agent that proactively identifies and executes tasks.
     """

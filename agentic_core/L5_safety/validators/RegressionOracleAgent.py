@@ -8,8 +8,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 import ast
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class RegressionOracleAgent(SubAtomicAgent):
+class RegressionOracleAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     The Regression Oracle - Automated Test Synthesizer
     

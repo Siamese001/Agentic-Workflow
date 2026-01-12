@@ -28,6 +28,7 @@ from dataclasses import dataclass
 
 from agentic_core.utils.mixins import SubatomicTestingMixin
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_REGISTRY,
     LAYER_FORBIDDEN_IMPORTS,
@@ -49,7 +50,7 @@ class GravityViolation:
     line_number: Optional[int] = None
 
 
-class GravityValidatorAgent(SubatomicTestingMixin):
+class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
     [L5 VALIDATOR] Unified detection for all gravity laws.
     

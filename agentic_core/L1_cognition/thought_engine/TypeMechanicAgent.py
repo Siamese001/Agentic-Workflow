@@ -5,9 +5,10 @@ Part of the SubAtomic agent family for code quality enforcement.
 from typing import Any
 from agentic_core.L1_cognition.thought_engine.SubAtomicAgent import SubAtomicAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Sovereign Agent for type enforcement and precision engineering
-class TypeMechanicAgent(SubAtomicAgent):
+class TypeMechanicAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     KEYS: 22 (Missing Types), 23 (Unreachable Code), 24 (Unused Vars)
     ROLE: Precision Engineering. Requires AST_VALID signal.
