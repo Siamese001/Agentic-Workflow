@@ -11,6 +11,9 @@ from typing import Dict, List, Tuple
 # Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.config.blueprint_sovereign.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
 
+# SSOT: Import canonical health calculation (Violation 4 fix)
+from agentic_core.config.blueprint_sovereign.canonical_truth import calculate_health_score
+
 def test_agent_discovery_integrity() -> Tuple[bool, List[str]]:
     """Test 1: Verify agent_discovery_full.json integrity."""
     errors = []
@@ -200,13 +203,13 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
         test = total_row['Test %']
         obs = total_row['Observable %']
         complexity = total_row['Complexity Health']
-        expected_health = round(
-            (heal_cap * 0.30) + 
-            (heal_inv * 0.10) + 
-            (test * 0.25) + 
-            (obs * 0.20) + 
-            (complexity * 0.15),
-            1
+        # SSOT: Use canonical health calculation (Violation 4 fix)
+        expected_health = calculate_health_score(
+            heal_cap=heal_cap,
+            invoc=heal_inv,
+            test_cov=test,
+            obs=obs,
+            comp_health=complexity
         )
         actual_heal_pct = total_row['Health']
         
@@ -376,6 +379,10 @@ def run_all_tests() -> bool:
         'L5': 'L5Agent',
     }
     try:
+        # Load agents from discovery file
+        with open('C:/Git/Agentic-Workflow/agent_discovery_full.json', 'r', encoding='utf-8') as f:
+            agents = json.load(f)
+        
         # Group base agents by layer
         base_agents_by_layer = {}
         base_agents_wrong_territory = []

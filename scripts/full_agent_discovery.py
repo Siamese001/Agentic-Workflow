@@ -1304,40 +1304,89 @@ def main():
                 node.name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
             )
             
-            territory = layer
-            if layer:
-                # Extract subdirectory within layer (e.g., L1_cognition/thought_engine → thought_engine)
-                layer_dir_map = {
-                    'L0': L0_MAINTENANCE_DIR,
-                    'L1': L1_COGNITION_DIR,
-                    'L2': L2_EXECUTION_DIR,
-                    'L3': L3_ORCHESTRATION_DIR,
-                    'L4': L4_STATE_DIR,
-                    'L5': L5_SAFETY_DIR,
-                    'L6': L6_OBSERVABILITY_DIR,
-                }
-                layer_dir = layer_dir_map.get(layer)
-                if layer_dir:
-                    layer_path = AGENTIC_CORE / layer_dir
-                    try:
-                        rel_to_layer = py_file.relative_to(layer_path)
-                        subdir = rel_to_layer.parts[0] if len(rel_to_layer.parts) > 1 else None
-                        if subdir and subdir not in {'__pycache__', '.pytest_cache'}:
-                            # Capitalize first letter of each word for readability
-                            subdir_clean = subdir.replace('_', ' ').title()
-                            territory = f"{layer} {subdir_clean}"
-                    except ValueError:
-                        pass  # File not in expected layer directory
-                
-                # Override territory for base classes
+            # ASSIGN DETAILED TERRITORIES - SSOT for dashboard
+            path_str = str(rel_path).replace('\\', '/').lower()
+            
+            # Apps territories
+            if 'apps_lic' in path_str:
+                territory = "Apps Lic"
+            elif 'apps_rg' in path_str:
+                territory = "Apps Rg"
+            elif 'apps_shared' in path_str:
+                territory = "Apps Shared"
+            # L5 Safety detailed territories
+            elif layer == 'L5':
                 if is_base_class:
-                    # Extract subdirectory name for base class territory
-                    if '/' in territory or ' ' in territory:
-                        # Already has subdirectory, append "Base Class"
-                        territory = f"{territory}/Base Class"
-                    else:
-                        # Just layer, add subdirectory based on common patterns
-                        territory = f"{layer}/Base Class"
+                    territory = "L5 Safety/Base Class"
+                elif 'validators' in path_str or 'validator' in path_str:
+                    territory = "L5 Safety/Validators"
+                elif 'red_team' in path_str or 'red_teaming' in path_str:
+                    territory = "L5 Safety/Red Teaming"
+                elif 'gravity' in path_str or 'Gravity' in node.name:
+                    territory = "L5 Safety/Gravity"
+                else:
+                    territory = "L5 Safety/Guardrails"
+            # L4 State detailed territories
+            elif layer == 'L4':
+                if is_base_class:
+                    territory = "L4 State/Base Class"
+                elif 'filesystem' in path_str or 'infrastructure' in path_str:
+                    territory = "L4 State/Infrastructure"
+                elif 'adapter' in path_str:
+                    territory = "L4 State/Specialized"
+                else:
+                    territory = "L4 State/Core"
+            # L3 Orchestration detailed territories
+            elif layer == 'L3':
+                if is_base_class:
+                    territory = "L3 Orchestration/Base Class"
+                elif 'infrastructure' in path_str:
+                    territory = "L3 Orchestration/Infrastructure"
+                elif 'adapter' in path_str:
+                    territory = "L3 Orchestration/Specialized"
+                else:
+                    territory = "L3 Orchestration/Core"
+            # L2 Execution detailed territories
+            elif layer == 'L2':
+                if is_base_class:
+                    territory = "L2 Execution/Base Class"
+                elif 'adapter' in path_str:
+                    territory = "L2 Execution/Specialized"
+                else:
+                    territory = "L2 Execution/Core"
+            # L1 Cognition detailed territories
+            elif layer == 'L1':
+                if is_base_class:
+                    territory = "L1 Cognition/Base Class"
+                elif 'adapter' in path_str:
+                    territory = "L1 Cognition/Specialized"
+                else:
+                    territory = "L1 Cognition/Core"
+            # L0 Maintenance detailed territories
+            elif layer == 'L0':
+                if is_base_class:
+                    territory = "L0 Maintenance/Base Class"
+                elif 'infrastructure' in path_str or 'Infrastructure' in node.name:
+                    territory = "L0 Maintenance/Infrastructure"
+                else:
+                    territory = "L0 Maintenance/Core"
+            # L6 Observability detailed territories
+            elif layer == 'L6':
+                if 'metrics' in path_str or 'Metric' in node.name:
+                    territory = "L6_Observability/Metrics"
+                elif 'telemetry' in path_str or 'Telemetry' in node.name:
+                    territory = "L6_Observability/Telemetry"
+                elif 'tracing' in path_str or 'Trace' in node.name:
+                    territory = "L6_Observability/Tracing"
+                elif 'compliance' in path_str or 'Compliance' in node.name:
+                    territory = "L6_Observability/Compliance"
+                else:
+                    territory = "L6_Observability/Metrics"
+            # Utils and other
+            elif 'utils' in path_str:
+                territory = "utils"
+            else:
+                territory = layer if layer else "Unknown"
             
             agents.append({
                 'class_name': node.name,
