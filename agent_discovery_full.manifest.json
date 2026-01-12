@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-12T19:07:28.293373Z",
-  "scan_duration_seconds": 16.45,
+  "generated_at": "2026-01-12T19:13:40.449557Z",
+  "scan_duration_seconds": 21.37,
   "agent_count": 283,
-  "content_hash": "sha256:9eae261c91f374c2fe06a0907862ddd4e40208ff6a9fb92c04b635871a8cf576",
+  "content_hash": "sha256:856c5236b04432bc8db345f1b5c7c16ed7815fe111c017db2d81b89fbb423894",
   "layer_breakdown": {
     "Apps": 68,
     "L0": 12,
@@ -22,12 +22,17 @@
     "threshold": 273
   },
   "file_hashes": {
+    "analyze_base_inheritance.py": "3eea32d04d9a9e68c422022d396cd47e",
     "canon_validator_agentic_v2_thin.py": "a9244bc5d3605bb59d4d234483f37966",
+    "check_actual_bases.py": "df8a67d0c3b4bb4e0f651bd26d9bb424",
     "check_l3_l4.py": "c7cb4adae39f6bb691c7f5de8da821e8",
     "check_territories.py": "75aba661cdb86eb30d673d445f702398",
+    "debug_proper_base.py": "ce52aaf59c6497dbde0ae08fe59a5998",
     "run_discovery.py": "38d7f61d74529bb97dc67a02050d2255",
+    "test_base_check.py": "02b2a3cae590e0557602d6d0d1e7f426",
     "test_l6_discovery.py": "587d040be9dc82ecde9adaafcded98bc",
     "test_l6_final.py": "ae1fa23af53d81c07827296cc89f8108",
+    "verify_phase1.py": "47e5303ae281306191901ca1fc31f1a0",
     "agentic_core/base_agents/SovereignBaseAgent.py": "d6c6a990363443b36f9fdbc565da9cce",
     "agentic_core/config/autonomy_targets.py": "f81a9364fa45af7e0c3e5dbaba20d176",
     "agentic_core/config/flags.py": "239dabce1f54b7fc01d18acf7c36ee03",
@@ -907,7 +912,7 @@
     "agentic_core/L6_observability/agents/RuntimeTelemetryAgent.py": "b752566235c5af081c6d2fbe5ca16c94",
     "agentic_core/L6_observability/agents/StrategicObservationAgent.py": "8ea30585571af06b7477d6e12ebcbc4b",
     "agentic_core/L6_observability/dashboards/data_generator.py": "d156de6e7d580edfa44f338ab7eee286",
-    "agentic_core/L6_observability/dashboards/generate_dashboard.py": "31065a5bb54d077381824b75ce451be3",
+    "agentic_core/L6_observability/dashboards/generate_dashboard.py": "f43d875a9abdda57c7557b8b5e8ee53b",
     "agentic_core/L6_observability/dashboards/run_dashboard_pipeline.py": "bee05d64ff676bef452dab121f091d1a",
     "agentic_core/L6_observability/dashboards/serve_dashboard.py": "38aa56d7f0df5a6098945aea3eee5a29",
     "agentic_core/L6_observability/dashboards/simple_server.py": "d41d8cd98f00b204e9800998ecf8427e",
@@ -1437,7 +1442,7 @@
     "scripts/fix_remaining_mcp_gaps.py": "642426b693bea969dfcf6b6ea4fb6733",
     "scripts/fix_testing_observability.py": "5708b8fc5aed676958af07b6bd2e141e",
     "scripts/full_agent_capability_audit.py": "d2caad79192e8492878063882dde27b6",
-    "scripts/full_agent_discovery.py": "f0eaec673fbb6712e8c2b33705f52bbe",
+    "scripts/full_agent_discovery.py": "1e6615b2745bca5fc2d5a231d6112b6e",
     "scripts/generate_agent_duplicates_table.py": "65c2a540b0406b9dd07a20ae7ade4558",
     "scripts/generate_agent_report.py": "342335642afc5c8270d2f99bf753d3e0",
     "scripts/generate_agent_table_simple.py": "e05c78eb25c09907223885dd300326a1",
@@ -1553,6 +1558,6 @@
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63",
     "scripts/refactor/verify_integrity.py": "2bfe5aaf42a32e5a9c880b33b8b95217"
   },
-  "hashed_file_count": 1530,
+  "hashed_file_count": 1535,
   "hash_errors": 0
 }
