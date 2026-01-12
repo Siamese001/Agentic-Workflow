@@ -43,7 +43,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
-EXCLUDED_DIRS = {'__pycache__', '.git', ARCHIVES_DIR, 'data', '.sovereign_healing_backup'}
+EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', 'data', '.sovereign_healing_backup'}
 ORCHESTRATOR_FILES = {'compliance_orchestrator.py', 'canon_validator_agentic_v2.py'}
 
 

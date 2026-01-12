@@ -14,7 +14,6 @@ import sys
 import logging
 from pathlib import Path
 from typing import Dict, List, Any, Callable, Tuple
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
@@ -37,6 +36,8 @@ class RuntimeTelemetryAgent(MCPHardenedMixin):
         Returns:
             Dict with healing summary
         """
+        super().heal_repository()
+
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def __init__(self, limit_multiplier: float = 2.0):
@@ -49,16 +50,19 @@ class RuntimeTelemetryAgent(MCPHardenedMixin):
 
     def benchmark_startup(self, agent_init_func: Callable, *args: Any, **kwargs: Any) -> Tuple[Any, float]:
         """
-        VERBOSE HUNK: Measures the initialization time of a specific agent.
+        Measures the initialization time of a specific agent with high precision.
         Returns the agent instance and the duration in seconds.
         """
+        # Ensure we are not timing logging overhead
+        agent_instance = None
         start_time = time.perf_counter()
-        agent_instance = agent_init_func(*args, **kwargs)
-        end_time = time.perf_counter()
-        
-        duration = end_time - start_time
-        agent_name = agent_instance.__class__.__name__
-        self.metrics[agent_name] = duration
+        try:
+            agent_instance = agent_init_func(*args, **kwargs)
+        finally:
+            end_time = time.perf_counter()
+            duration = end_time - start_time
+            agent_name = getattr(agent_instance, "__class__", type("UnknownAgent", (), {})).__name__ if agent_instance else "UnknownAgent"
+            self.metrics[agent_name] = duration
         
         return agent_instance, duration
 
@@ -73,7 +77,7 @@ class RuntimeTelemetryAgent(MCPHardenedMixin):
         is_breached = False
         
         if overhead_ratio > self.limit_multiplier:
-            status = "☢️  CRITICAL OVERHEAD"
+            status = "☢️ CRITICAL OVERHEAD"
             is_breached = True
             self.logger.warning(f"SOVEREIGN ALERT: Performance overhead ratio {overhead_ratio:.2f}x exceeds Gospel limit.")
         

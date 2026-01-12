@@ -69,6 +69,8 @@ class GravityStateAgent:
         Returns:
             Dict with healing summary
         """
+        super().heal_repository()
+
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def __init__(self, project_root: Path) -> None:

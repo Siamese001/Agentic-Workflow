@@ -266,6 +266,8 @@ Return ONLY JSON in this format:
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """Autonomous healing implementation as per Canon Key 51."""
+        super().heal_repository()
+
         return {"violations": 0, "fixed": 0, "errors": 0}
 
 @timeout(300)

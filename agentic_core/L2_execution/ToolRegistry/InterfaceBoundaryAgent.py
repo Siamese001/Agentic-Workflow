@@ -55,6 +55,8 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
         Returns:
             Dict with healing summary
         """
+        super().heal_repository()
+
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def __init__(self, root_dir: str = ".", complexity_threshold: int = 15):

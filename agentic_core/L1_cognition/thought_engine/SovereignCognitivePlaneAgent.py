@@ -32,6 +32,8 @@ class AgentInfo(HealerMixin):
         Returns:
             Dict with healing summary
         """
+        super().heal_repository()
+
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def __init__(self, name: str, phase: str, capabilities: List[str]):

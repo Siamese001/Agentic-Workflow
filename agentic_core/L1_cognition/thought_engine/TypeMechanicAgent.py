@@ -25,6 +25,8 @@ class TypeMechanicAgent(SubAtomicAgent):
         Returns:
             Dict with healing summary
         """
+        super().heal_repository()
+
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def can_run(self) -> bool:
