@@ -37,6 +37,9 @@ All rows must have these exact fields:
 - Complexity Health, Code Quality Score
 - Criticality, Health, Health Breakdown, Risk
 - Used %, Priority
+
+SSOT IMPORTS:
+- Health calculation uses canonical_truth.calculate_health_score()
 """
 import json
 import re
@@ -63,8 +66,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
-    get_validated_project_root,
+    get_validated_project_root
 )
+
+# SSOT: Import canonical health calculation (Violation 4 fix)
+from agentic_core.config.blueprint_sovereign.canonical_truth import calculate_health_score
 
 # Fix UTF-8 encoding for Windows console (emoji support)
 if sys.platform == 'win32':
@@ -147,93 +153,12 @@ class DashboardGenerator:
             return False
     
     def group_agents_by_territory(self) -> Dict[str, List[Dict]]:
-        """Group agents by FIXED detailed territory structure with subcategories."""
+        """Group agents by territory field from discovery JSON (SSOT)."""
         territories = defaultdict(list)
         
         for agent in self.agents:
-            layer = agent.get('layer', '')
-            sub_dir = agent.get('sub_dir', '')
-            path = agent.get('path', '').replace('\\', '/')
-            class_name = agent.get('class_name', '')
-            
-            # Map to FIXED detailed territory names with subcategories
-            if APPS_LIC_DIR in sub_dir:
-                territory = "Apps Lic"
-            elif APPS_RG_DIR in sub_dir:
-                territory = "Apps Rg"
-            elif APPS_SHARED_DIR in sub_dir:
-                territory = "Apps Shared"
-            elif layer.startswith('L5'):
-                # L5 Safety subcategories based on actual paths
-                if 'BaseAgent' in class_name or 'base_class' in path.lower():
-                    territory = "L5 Safety/Base Class"
-                elif '/validators' in path or 'validators/' in path:
-                    territory = "L5 Safety/Validators"
-                elif '/red_team' in path or 'red_teaming/' in path:
-                    territory = "L5 Safety/Red Teaming"
-                elif '/gravity' in path or 'Gravity' in class_name:
-                    territory = "L5 Safety/Gravity"
-                else:
-                    # Default: guardrails
-                    territory = "L5 Safety/Guardrails"
-            elif layer.startswith('L4'):
-                # L4 State subcategories
-                if 'BaseAgent' in class_name or 'base_class' in path.lower():
-                    territory = "L4 State/Base Class"
-                elif '/filesystem' in path or '/infrastructure' in path:
-                    territory = "L4 State/Infrastructure"
-                elif '/adapters' in path or 'Adapter' in class_name:
-                    territory = "L4 State/Specialized"
-                else:
-                    territory = "L4 State/Core"
-            elif layer.startswith('L3'):
-                # L3 Orchestration subcategories
-                if 'BaseAgent' in class_name or 'base_class' in path.lower():
-                    territory = "L3 Orchestration/Base Class"
-                elif '/infrastructure' in path:
-                    territory = "L3 Orchestration/Infrastructure"
-                elif '/adapters' in path or 'Adapter' in class_name:
-                    territory = "L3 Orchestration/Specialized"
-                else:
-                    territory = "L3 Orchestration/Core"
-            elif layer.startswith('L2'):
-                # L2 Execution subcategories
-                if 'BaseAgent' in class_name or 'base_class' in path.lower():
-                    territory = "L2 Execution/Base Class"
-                elif '/adapters' in path or 'Adapter' in class_name:
-                    territory = "L2 Execution/Specialized"
-                else:
-                    territory = "L2 Execution/Core"
-            elif layer.startswith('L1'):
-                # L1 Cognition subcategories
-                if 'BaseAgent' in class_name or 'base_class' in path.lower():
-                    territory = "L1 Cognition/Base Class"
-                elif '/adapters' in path or 'Adapter' in class_name:
-                    territory = "L1 Cognition/Specialized"
-                else:
-                    territory = "L1 Cognition/Core"
-            elif layer.startswith('L0'):
-                # L0 Maintenance subcategories
-                if '/infrastructure' in path or 'Infrastructure' in class_name:
-                    territory = "L0 Maintenance/Infrastructure"
-                else:
-                    territory = "L0 Maintenance/Core"
-            elif 'L6_observability' in path or 'L6_Observability' in path:
-                # L6 Observability subcategories
-                if '/metrics' in path or 'Metric' in class_name:
-                    territory = "L6_Observability/Metrics"
-                elif '/telemetry' in path or 'Telemetry' in class_name:
-                    territory = "L6_Observability/Telemetry"
-                elif '/tracing' in path or 'Tracing' in class_name or 'Trace' in class_name:
-                    territory = "L6_Observability/Tracing"
-                elif '/compliance' in path or 'Compliance' in class_name:
-                    territory = "L6_Observability/Compliance"
-                else:
-                    territory = "L6_Observability/Metrics"  # Default L6
-            else:
-                # Fallback - should not happen
-                territory = "Unknown"
-            
+            # USE THE TERRITORY FROM DISCOVERY JSON - IT IS THE SSOT
+            territory = agent.get('territory', 'Unknown')
             territories[territory].append(agent)
         
         return territories
@@ -273,20 +198,14 @@ class DashboardGenerator:
         complexity_health = round(max(0, 100 - (avg_cc * 2)), 1)
         code_quality = round((typed_pct + doc_pct) / 2, 1)
         
-        # GOSPEL-WEIGHTED HEALTH SCORE (replaces even weighting)
-        # Weights reflect architectural priorities:
-        # - 30% Heal Capability (core of autonomy)
-        # - 10% Invocation (proves healing works)
-        # - 25% Test Coverage (defense against regression)
-        # - 20% Observability (prevents Ghost Agents)
-        # - 15% Complexity Health (technical debt indicator)
-        base_health = round(
-            (heal_cap_pct * 0.30) + 
-            (heal_inv_pct * 0.10) + 
-            (test_pct * 0.25) + 
-            (obs_pct * 0.20) + 
-            (complexity_health * 0.15),
-            1
+        # SSOT: Use canonical health calculation (Violation 4 fix)
+        # Weights: 30% Heal, 10% Invocation, 25% Test, 20% Observability, 15% Complexity
+        base_health = calculate_health_score(
+            heal_cap=heal_cap_pct,
+            invoc=heal_inv_pct,
+            test_cov=test_pct,
+            obs=obs_pct,
+            comp_health=complexity_health
         )
         
         # L5 SECURITY ZERO-MULTIPLIER
