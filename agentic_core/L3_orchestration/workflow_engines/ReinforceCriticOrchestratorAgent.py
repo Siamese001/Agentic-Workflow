@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -33,7 +35,7 @@ class PolicyCriticNet(nn.Module):
         return self.policy_head(shared), self.critic_head(shared)
 
 
-class ReinforceCriticOrchestratorAgent:
+class ReinforceCriticOrchestratorAgent(SovereignBaseAgent):
     """
     Sub-atomic REINFORCE with learned critic baseline: Policy gradient + value baseline.
     Reduces variance via V(s) subtraction from Monte-Carlo returns.

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 import warnings
 import logging
 from typing import Dict, List, Optional, Tuple
@@ -22,7 +24,7 @@ warnings.warn(
 )
 
 
-class QLearningOrchestratorAgent:
+class QLearningOrchestratorAgent(SovereignBaseAgent):
     """
     DEPRECATED: Use UnifiedWorkflowEngine instead.
     

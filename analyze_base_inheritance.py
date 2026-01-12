@@ -37,7 +37,7 @@ for layer in sorted(by_layer.keys()):
 print(f"\nCURRENT BASE CLASSES (for agents missing proper base):")
 base_class_counts = defaultdict(int)
 for agent in missing_base:
-    bases = agent.get('base_classes', [])
+    bases = agent.get('inheritance', [])  # Field is 'inheritance' not 'base_classes'
     if bases:
         for base in bases:
             base_class_counts[base] += 1

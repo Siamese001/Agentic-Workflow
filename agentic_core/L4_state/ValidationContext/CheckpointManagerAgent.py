@@ -6,6 +6,8 @@ Implements parent chain activation for full repository healing integration.
 """
 
 from __future__ import annotations
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 import logging
@@ -41,7 +43,7 @@ def timeout(seconds: int):
     return decorator
 
 
-class CheckpointManagerAgent:
+class CheckpointManagerAgent(SovereignBaseAgent):
     """Checkpoint management agent with parent chain healing."""
 
     def __init__(self, project_root: Optional[Path] = None):

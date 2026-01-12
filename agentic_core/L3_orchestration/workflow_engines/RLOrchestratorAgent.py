@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -33,7 +35,7 @@ class PPOActorCritic(nn.Module):
         return self.policy(shared), self.value(shared)
 
 
-class RLOrchestratorAgent:
+class RLOrchestratorAgent(SovereignBaseAgent):
     """
     Sub-atomic learned orchestrator: PPO policy for layer/agent selection maximizing long-term coverage entropy.
     Replaces heuristic bias — fallback to NervousSystemAgent on low confidence.

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 import warnings
 import logging
 import torch
@@ -43,7 +45,7 @@ class ActorCriticNet(nn.Module):
         return self.actor(shared), self.critic(shared)
 
 
-class ActorCriticOrchestratorAgent:
+class ActorCriticOrchestratorAgent(SovereignBaseAgent):
     """
     DEPRECATED: Use UnifiedWorkflowEngine instead.
     
