@@ -97,7 +97,7 @@ EXCLUDED_DIRS = {
     # Coverage/test artifacts (CRITICAL: prevents HTML files from being scanned)
     'coverage_html', 'htmlcov', '.coverage',
     # Project-specific exclusions
-    ARCHIVES_DIR, '.sovereign_healing_backup', REPORTS_DIR,
+    'archives', '.sovereign_healing_backup', 'reports',
 }
 
 # Filename patterns that indicate non-agent files (case-insensitive)
@@ -368,29 +368,27 @@ def safe_parse(code: str, file_path: Path) -> Optional[ast.AST]:
 def infer_layer(file_path: Path) -> str:
     """Infer canonical layer from file path."""
     path_str = str(file_path)
-    # Core layers - check L6 first before other checks
-    if 'L6_observability' in path_str or 'L6_' in path_str: return 'L6'
+    # Core layers - check specific layers first
     if 'L0_maintenance' in path_str or 'L0_' in path_str: return 'L0'
     if 'L1_cognition' in path_str or 'L1_' in path_str: return 'L1'
     if 'L2_execution' in path_str or 'L2_' in path_str: return 'L2'
     if 'L3_orchestration' in path_str or 'L3_' in path_str: return 'L3'
     if 'L4_state' in path_str or 'L4_' in path_str: return 'L4'
     if 'L5_safety' in path_str or 'L5_' in path_str: return 'L5'
+    if 'L6_observability' in path_str or 'L6_' in path_str: return 'L6'
+    # Apps
+    if 'apps_lic' in path_str or 'apps_rg' in path_str: return 'Apps'
+    # Tests and scripts
+    if 'tests/' in path_str or '/tests/' in path_str: return 'Tests'
+    if 'scripts/' in path_str or '/scripts/' in path_str: return 'Scripts'
     # agentic_core subfolders -> assign to appropriate layers
-    if AGENTIC_CORE_DIR in path_str:
+    if 'agentic_core' in path_str:
         if 'schemas' in path_str: return 'L1'  # Schemas are cognition-tier
         if 'common' in path_str: return 'L2'  # Common utilities are execution-tier
         if 'sovereign_clients' in path_str: return 'L2'  # Clients are execution-tier
-        if 'observability' in path_str: return 'L6'  # L6_observability layer (changed from L3)
+        if 'observability' in path_str: return 'L6'  # L6_observability layer
         if 'utils/core_extensions' in path_str: return 'L2'  # Relocated utils
         return 'L2'  # Default agentic_core to L2
-    # Apps
-    if APPS_RG_DIR in path_str: return APPS_RG_DIR
-    if APPS_LIC_DIR in path_str: return APPS_LIC_DIR
-    if APPS_SHARED_DIR in path_str: return APPS_SHARED_DIR
-    if TESTS_DIR in path_str: return TESTS_DIR
-    # Scripts and utilities
-    if SCRIPTS_DIR in path_str: return 'utils'
     # Data/examples
     if 'data' in path_str and 'examples' in path_str: return 'examples'
     # Production routers in data/sdks_mcps
@@ -1299,12 +1297,55 @@ def main():
             proper_base_class = check_proper_base(node, layer)
             schema_strictness = calculate_schema_strictness(node)
             
+            # Determine territory (layer + subdirectory)
+            # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
+            is_base_class = (
+                node.name.endswith('BaseAgent') or 
+                node.name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
+            )
+            
+            territory = layer
+            if layer:
+                # Extract subdirectory within layer (e.g., L1_cognition/thought_engine → thought_engine)
+                layer_dir_map = {
+                    'L0': L0_MAINTENANCE_DIR,
+                    'L1': L1_COGNITION_DIR,
+                    'L2': L2_EXECUTION_DIR,
+                    'L3': L3_ORCHESTRATION_DIR,
+                    'L4': L4_STATE_DIR,
+                    'L5': L5_SAFETY_DIR,
+                    'L6': L6_OBSERVABILITY_DIR,
+                }
+                layer_dir = layer_dir_map.get(layer)
+                if layer_dir:
+                    layer_path = AGENTIC_CORE / layer_dir
+                    try:
+                        rel_to_layer = py_file.relative_to(layer_path)
+                        subdir = rel_to_layer.parts[0] if len(rel_to_layer.parts) > 1 else None
+                        if subdir and subdir not in {'__pycache__', '.pytest_cache'}:
+                            # Capitalize first letter of each word for readability
+                            subdir_clean = subdir.replace('_', ' ').title()
+                            territory = f"{layer} {subdir_clean}"
+                    except ValueError:
+                        pass  # File not in expected layer directory
+                
+                # Override territory for base classes
+                if is_base_class:
+                    # Extract subdirectory name for base class territory
+                    if '/' in territory or ' ' in territory:
+                        # Already has subdirectory, append "Base Class"
+                        territory = f"{territory}/Base Class"
+                    else:
+                        # Just layer, add subdirectory based on common patterns
+                        territory = f"{layer}/Base Class"
+            
             agents.append({
                 'class_name': node.name,
                 'path': str(rel_path),
                 'top_dir': rel_path.parts[0] if len(rel_path.parts) >= 1 else '',
                 'sub_dir': '/'.join(rel_path.parts[:2]) if len(rel_path.parts) >= 2 else (rel_path.parts[0] if len(rel_path.parts) >= 1 else ''),
                 'layer': layer,
+                'territory': territory,  # NEW: Territory assignment with base class handling
                 'inheritance': list(bases),
                 'key_methods': methods[:10],  # Top 10 methods
                 'has_tools': has_tools,

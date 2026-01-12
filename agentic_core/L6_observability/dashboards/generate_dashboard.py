@@ -291,7 +291,7 @@ class DashboardGenerator:
         
         # L5 SECURITY ZERO-MULTIPLIER
         # If territory contains unhardened L5 agents, health drops to 0
-        l5_agents = [a for a in agents if a.get('layer', '').startswith('L5')]
+        l5_agents = [a for a in agents_list if a.get('layer', '').startswith('L5')]
         unhardened_l5 = [a for a in l5_agents if not a.get('mcp_hardened')]
         
         if unhardened_l5:
