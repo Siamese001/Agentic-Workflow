@@ -18,6 +18,8 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 from collections import defaultdict
 
+# SSOT: Import canonical layer inference (Phase 3 Migration)
+from agentic_core.config.blueprint_sovereign.canonical_truth import get_canonical_layer
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
@@ -70,24 +72,8 @@ HEALING_BASES = {
     'ABC',  # CanonBaseAgent inherits from ABC + HealerMixin
 }
 
-
-def infer_layer(file_path: Path) -> str:
-    """Infer canonical layer from file path."""
-    path_str = str(file_path)
-    if 'L0_maintenance' in path_str or 'L0_' in path_str: return 'L0'
-    if 'L1_cognition' in path_str or 'L1_' in path_str: return 'L1'
-    if 'L2_execution' in path_str or 'L2_' in path_str: return 'L2'
-    if 'L3_orchestration' in path_str or 'L3_' in path_str: return 'L3'
-    if 'L4_state' in path_str or 'L4_' in path_str: return 'L4'
-    if 'L5_safety' in path_str or 'L5_' in path_str: return 'L5'
-    # Extended classification for other directories
-    if 'observability' in path_str: return 'L3'  # Observability is L3-tier
-    if 'utils' in path_str: return 'L2'  # Utils are L2-tier
-    if 'patterns' in path_str: return 'L2'  # Patterns are L2-tier
-    if 'config' in path_str: return 'L1'  # Config is L1-tier
-    if 'prompt_governance' in path_str: return 'L1'  # Prompt governance is L1-tier
-    if 'apps' in path_str: return 'L5'  # Apps layer
-    return 'other'
+# REMOVED: infer_layer() function - migrated to canonical_truth.py (Phase 3)
+# All layer inference now uses get_canonical_layer() from canonical_truth.py
 
 
 def extract_bases(class_node: ast.ClassDef) -> Set[str]:
@@ -113,7 +99,7 @@ def has_method(class_node: ast.ClassDef, method_name: str) -> bool:
 def analyze_agent(class_node: ast.ClassDef, file_path: Path) -> Dict:
     """Analyze a single agent class for testing compliance."""
     bases = extract_bases(class_node)
-    layer = infer_layer(file_path)
+    layer = get_canonical_layer(file_path)
     
     # Check for self-testing
     has_self_test_method = has_method(class_node, '_run_self_tests')

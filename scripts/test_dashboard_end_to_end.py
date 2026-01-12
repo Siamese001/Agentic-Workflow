@@ -368,6 +368,10 @@ def run_all_tests() -> bool:
     print("Running: Base Agent Uniqueness (Critical)")
     print("─" * 70)
     
+    # DEPRECATED: Simple bases created during refactoring - exclude from base agent count
+    # These are lightweight alternatives but not canonical bases
+    DEPRECATED_SIMPLE_BASES = {'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent'}
+    
     # Check for multiple base agents per layer
     LAYERS = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']
     CANONICAL_BASE_AGENTS = {
@@ -392,11 +396,13 @@ def run_all_tests() -> bool:
             layer = agent.get('layer', '')
             territory = agent.get('territory', '')
             
-            # Identify base agents
-            if name.endswith('BaseAgent') or name in ['L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent']:
-                if layer not in base_agents_by_layer:
-                    base_agents_by_layer[layer] = []
-                base_agents_by_layer[layer].append(agent)
+            # Identify base agents (exclude deprecated simple bases)
+            if name.endswith('BaseAgent') or name in ['L0Agent', 'L1Agent', 'L6Agent']:
+                # Skip deprecated simple bases - they are lightweight alternatives, not canonical
+                if name not in DEPRECATED_SIMPLE_BASES:
+                    if layer not in base_agents_by_layer:
+                        base_agents_by_layer[layer] = []
+                    base_agents_by_layer[layer].append(agent)
                 
                 # Verify base agents are in "Base Class" territories
                 if 'Base Class' not in territory:

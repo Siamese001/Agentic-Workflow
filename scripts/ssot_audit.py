@@ -1,9 +1,13 @@
 """
 SSOT Audit Script - Scans approved folders for SSOT violations
 """
-import os
+import sys
 from pathlib import Path
+import json
 from collections import defaultdict
+
+# SSOT: Import canonical layer inference (Phase 3 Migration)
+from agentic_core.config.blueprint_sovereign.canonical_truth import get_canonical_layer
 import ast
 import json
 
@@ -11,6 +15,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
     SCRIPTS_DIR,
     TESTS_DIR,
     DASHBOARD_DIR,
@@ -28,15 +34,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 APPROVED_FOLDERS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR, TESTS_DIR]
 ROOT = Path('.')
 
-# Layer order for gravity checks
-LAYER_ORDER = {'L0': 0, 'L1': 1, 'L2': 2, 'L3': 3, 'L4': 4, 'L5': 5, 'L6': 6}
-
-def get_layer(path_str):
-    """Extract layer from path string."""
-    for layer in LAYER_ORDER:
-        if f'/{layer}_' in path_str or f'\\{layer}_' in path_str or f'{layer}_' in path_str:
-            return layer
-    return None
+# REMOVED: get_layer() function - migrated to canonical_truth.py (Phase 3)
+# All layer inference now uses get_canonical_layer() from canonical_truth.py
 
 def find_duplicates():
     """Find duplicate filenames across approved folders."""
@@ -57,16 +56,19 @@ def find_gravity_violations():
     for py_file in (ROOT / AGENTIC_CORE_DIR).rglob('*.py'):
         if '__pycache__' in str(py_file):
             continue
-        file_layer = get_layer(str(py_file))
-        if not file_layer:
+        file_layer = get_canonical_layer(py_file)
+        if not file_layer or file_layer == 'Unknown':
             continue
         try:
             content = py_file.read_text(encoding='utf-8')
             tree = ast.parse(content)
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom) and node.module:
-                    import_layer = get_layer(node.module)
-                    if import_layer and LAYER_ORDER.get(import_layer, 99) < LAYER_ORDER.get(file_layer, 0):
+                    import_path = node.module.replace('.', '/')
+                    import_layer = get_canonical_layer(import_path)
+                    # SSOT: Use canonical layer order from canonical_truth
+                    layer_order = {'L0': 0, 'L1': 1, 'L2': 2, 'L3': 3, 'L4': 4, 'L5': 5, 'L6': 6}
+                    if import_layer and layer_order.get(import_layer, 99) < layer_order.get(file_layer, 0):
                         violations.append({
                             'file': str(py_file),
                             'file_layer': file_layer,

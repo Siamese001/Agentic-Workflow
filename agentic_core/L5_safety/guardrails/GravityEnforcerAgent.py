@@ -42,6 +42,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     get_validated_project_root,
 )
 
+# SSOT: Import canonical layer inference (Phase 3 Migration)
+from agentic_core.config.blueprint_sovereign.canonical_truth import get_canonical_layer
+
 Logger = logging.getLogger(__name__)
 
 
@@ -95,36 +98,9 @@ class GravityEnforcerAgent(MCPHardenedMixin, HealerMixin):
         self.logger = Logger
         super().__init__()
     
-    def get_layer_from_path(self, file_path: Path) -> Optional[str]:
-        """
-        Extract layer designation from file path.
-        
-        Args:
-            file_path: Path to analyze
-            
-        Returns:
-            Layer string (e.g., 'L0', 'L1') or None if not in a layer
-        """
-        path_str = str(file_path)
-        for layer in self.LAYER_ORDER.keys():
-            if f'/{layer}_' in path_str or f'\\{layer}_' in path_str:
-                return layer
-        return None
-    
-    def get_layer_from_import(self, import_statement: str) -> Optional[str]:
-        """
-        Extract layer designation from import statement.
-        
-        Args:
-            import_statement: Import module path
-            
-        Returns:
-            Layer string or None
-        """
-        for layer in self.LAYER_ORDER.keys():
-            if f'{layer}_' in import_statement:
-                return layer
-        return None
+    # REMOVED: get_layer_from_path() and get_layer_from_import() - migrated to canonical_truth.py (Phase 3)
+    # All layer inference now uses get_canonical_layer() from canonical_truth.py
+    # For import statements, convert dotted path to file path: import_path.replace('.', '/')
     
     def is_upward_import(self, file_layer: str, import_layer: str) -> bool:
         """
@@ -158,9 +134,9 @@ class GravityEnforcerAgent(MCPHardenedMixin, HealerMixin):
         """
         violations = []
         
-        # Get the layer of this file
-        file_layer = self.get_layer_from_path(file_path)
-        if not file_layer:
+        # SSOT: Get the layer of this file using canonical function (Phase 3)
+        file_layer = get_canonical_layer(file_path)
+        if not file_layer or file_layer == 'Unknown':
             return violations  # Not in a layered directory
         
         try:
@@ -174,7 +150,9 @@ class GravityEnforcerAgent(MCPHardenedMixin, HealerMixin):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
                         import_statement = alias.name
-                        import_layer = self.get_layer_from_import(import_statement)
+                        # SSOT: Convert import path to file path for canonical layer detection
+                        import_path = import_statement.replace('.', '/')
+                        import_layer = get_canonical_layer(import_path)
                         
                         if import_layer and self.is_upward_import(file_layer, import_layer):
                             violations.append(GravityViolation(
@@ -189,7 +167,9 @@ class GravityEnforcerAgent(MCPHardenedMixin, HealerMixin):
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
                         import_statement = node.module
-                        import_layer = self.get_layer_from_import(import_statement)
+                        # SSOT: Convert import path to file path for canonical layer detection
+                        import_path = import_statement.replace('.', '/')
+                        import_layer = get_canonical_layer(import_path)
                         
                         if import_layer and self.is_upward_import(file_layer, import_layer):
                             violations.append(GravityViolation(
