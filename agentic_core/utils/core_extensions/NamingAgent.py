@@ -23,6 +23,8 @@ except ImportError:
 
         def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
             """
+        super().heal_repository()
+
             Autonomous healing method (Canon Key 51 compliance).
             
             Args:

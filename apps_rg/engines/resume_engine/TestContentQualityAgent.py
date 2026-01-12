@@ -70,6 +70,8 @@ class TestContentQualityAgent:
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs):
         """Autonomous healing - test class stub."""
+        super().heal_repository()
+
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     @pytest.mark.asyncio

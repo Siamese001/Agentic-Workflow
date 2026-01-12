@@ -266,6 +266,8 @@ class HygieneGuardianAgent(MCPHardenedMixin, HealerMixin):
         Returns:
             Dictionary with healing summary
         """
+        super().heal_repository()
+
         if _call_path is None:
             _call_path = []
         

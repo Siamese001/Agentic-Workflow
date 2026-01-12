@@ -25,6 +25,8 @@ class OrganizationAgent:
         Returns:
             Dict with healing summary
         """
+        super().heal_repository()
+
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient) -> None:

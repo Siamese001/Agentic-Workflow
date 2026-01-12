@@ -57,6 +57,8 @@ class SovereignBaseAgent:
     
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Base heal_repository implementation - subclasses should override."""
+        super().heal_repository()
+
         return {"skipped": 1}
 
 

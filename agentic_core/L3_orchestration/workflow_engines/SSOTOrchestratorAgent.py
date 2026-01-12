@@ -393,6 +393,8 @@ class SSOTOrchestratorAgent(MCPHardenedMixin, HealerMixin):
         Returns:
             Dictionary with orchestration summary
         """
+        super().heal_repository()
+
         if _call_path is None:
             _call_path = []
         

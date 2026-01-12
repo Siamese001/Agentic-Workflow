@@ -25,6 +25,8 @@ class BudgetAgent(SubAtomicAgent):
         Returns:
             Dict with healing summary
         """
+        super().heal_repository()
+
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def execute(self) -> None:
