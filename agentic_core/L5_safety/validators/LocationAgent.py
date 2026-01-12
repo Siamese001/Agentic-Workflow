@@ -29,6 +29,98 @@ import ast
 
 Logger = logging.getLogger(__name__)
 
+# ============================================================================
+# L5 SOVEREIGN STRUCTURAL SSOT (Violation 5 Resolution)
+# ============================================================================
+# Supreme Court function for path compliance - L3/L2 agents MUST delegate here
+# This is the canonical implementation for structural validation
+# ============================================================================
+
+def is_path_compliant(
+    file_path: Union[str, Path],
+    project_root: Optional[Path] = None
+) -> bool:
+    """
+    L5 Sovereign Structural SSOT - Hard-enforcement of path validity.
+    
+    This is the Supreme Court for structural compliance. All L3 and L2 agents
+    that need to validate file paths MUST call this function instead of
+    implementing their own path validation logic.
+    
+    Enforces:
+    1. Path must be within project root
+    2. Root folder must be in SOVEREIGN_REGISTRY (whitelist)
+    3. Depth must not exceed MAX_ALLOWED_DEPTH per root
+    4. No forbidden root folders (legacy_*, old_*)
+    5. No numbered folder prefixes (^\d+_)
+    
+    Args:
+        file_path: Path to validate (str or Path)
+        project_root: Optional project root (auto-detected if None)
+        
+    Returns:
+        True if path is structurally compliant, False otherwise
+        
+    Example:
+        >>> is_path_compliant('agentic_core/L5_safety/validators/LocationAgent.py')
+        True
+        >>> is_path_compliant('legacy_code/old_agent.py')
+        False
+        >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
+        False
+    """
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+        ROOT_WHITELIST,
+        FORBIDDEN_ROOT_FOLDERS,
+        FORBIDDEN_FOLDER_PATTERN,
+        SOVEREIGN_REGISTRY,
+        get_validated_project_root,
+    )
+    
+    # Auto-detect project root if not provided
+    if project_root is None:
+        project_root = get_validated_project_root()
+    
+    # Convert to Path object
+    path = Path(file_path)
+    
+    # 1. Must be within project root
+    try:
+        if not path.is_absolute():
+            path = project_root / path
+        rel_path = path.relative_to(project_root)
+    except (ValueError, RuntimeError):
+        # Path is outside project root
+        return False
+    
+    parts = rel_path.parts
+    if not parts:
+        return False
+    
+    root_folder = parts[0]
+    
+    # 2. Root folder must be whitelisted (in SOVEREIGN_REGISTRY)
+    if root_folder not in ROOT_WHITELIST:
+        return False
+    
+    # 3. Depth restriction check
+    max_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get('depth', 3)
+    if len(parts) > max_depth:
+        return False
+    
+    # 4. Forbidden root folders check
+    if root_folder in FORBIDDEN_ROOT_FOLDERS:
+        return False
+    
+    # 5. Forbidden numbered folder pattern check (^\d+_)
+    for part in parts:
+        if FORBIDDEN_FOLDER_PATTERN.match(part):
+            return False
+    
+    # All checks passed
+    return True
+
+
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,                    # = set(sovereign_registry.keys())
     FORBIDDEN_ROOT_FOLDERS,
@@ -90,6 +182,7 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
 
 
 from agentic_core.bases import L5Agent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 @registers_prompt(
     template_name="file_placement.jinja",

@@ -51,7 +51,13 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L4_STATE_DIR,
     L5_SAFETY_DIR,
     L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
+    get_validated_project_root
+)
+
+# SSOT: Import canonical functions (Phase 3 Migration)
+from agentic_core.config.blueprint_sovereign.canonical_truth import (
+    get_canonical_layer,
+    categorize_agent
 )
 
 # Fix Windows console UnicodeEncodeError when printing warnings/emojis
@@ -132,7 +138,7 @@ def should_exclude_path(path: Path) -> bool:
     if any(pattern in filename_lower for pattern in EXCLUDED_FILENAME_PATTERNS):
         return True
     
-    # Factor 3: Path pattern exclusion (for generated/test directories)
+    # Factor 3: Path pattern exclusion
     if any(pattern in path_str for pattern in EXCLUDED_PATH_PATTERNS):
         return True
     
@@ -365,37 +371,8 @@ def safe_parse(code: str, file_path: Path) -> Optional[ast.AST]:
         return None
 
 
-def infer_layer(file_path: Path) -> str:
-    """Infer canonical layer from file path."""
-    path_str = str(file_path)
-    # Core layers - check specific layers first
-    if 'L0_maintenance' in path_str or 'L0_' in path_str: return 'L0'
-    if 'L1_cognition' in path_str or 'L1_' in path_str: return 'L1'
-    if 'L2_execution' in path_str or 'L2_' in path_str: return 'L2'
-    if 'L3_orchestration' in path_str or 'L3_' in path_str: return 'L3'
-    if 'L4_state' in path_str or 'L4_' in path_str: return 'L4'
-    if 'L5_safety' in path_str or 'L5_' in path_str: return 'L5'
-    if 'L6_observability' in path_str or 'L6_' in path_str: return 'L6'
-    # Apps
-    if 'apps_lic' in path_str or 'apps_rg' in path_str: return 'Apps'
-    # Tests and scripts
-    if 'tests/' in path_str or '/tests/' in path_str: return 'Tests'
-    if 'scripts/' in path_str or '/scripts/' in path_str: return 'Scripts'
-    # agentic_core subfolders -> assign to appropriate layers
-    if 'agentic_core' in path_str:
-        if 'schemas' in path_str: return 'L1'  # Schemas are cognition-tier
-        if 'common' in path_str: return 'L2'  # Common utilities are execution-tier
-        if 'sovereign_clients' in path_str: return 'L2'  # Clients are execution-tier
-        if 'observability' in path_str: return 'L6'  # L6_observability layer
-        if 'utils/core_extensions' in path_str: return 'L2'  # Relocated utils
-        return 'L2'  # Default agentic_core to L2
-    # Data/examples
-    if 'data' in path_str and 'examples' in path_str: return 'examples'
-    # Production routers in data/sdks_mcps
-    if 'data' in path_str and 'sdks_mcps' in path_str and 'multi_provider_router' in path_str: return 'L5'
-    # Fallback for any remaining data files
-    if 'data' in path_str: return 'examples'
-    return 'utils'  # Changed from 'misc' to 'utils'
+# REMOVED: infer_layer() function - migrated to canonical_truth.py (Phase 3)
+# All layer inference now uses get_canonical_layer() from canonical_truth.py
 
 
 def extract_bases(class_node: ast.ClassDef) -> Set[str]:
@@ -603,7 +580,7 @@ def detect_has_tests(class_node: ast.ClassDef, source: str) -> bool:
             return True
     
     # Check for explicit test framework imports with test methods
-    if 'import pytest' in source or 'import unittest' in source:
+    if 'import pytest' in source or 'from pytest' in source:
         # Only count if there are actual test_ methods
         for item in class_node.body:
             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -893,6 +870,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         'ExecutionCanonBaseAgent',
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
         'BaseAgent', 'SovereignBaseAgent',
+        'L6ObservabilityBaseAgent',  # L6 base agent (inherits from ABC)
     }
 
     # Determine if this is an agent candidate
@@ -1208,7 +1186,7 @@ def main():
     for py_file in target_py_files:
         source, tree = parsed_files[py_file]
         rel_path = py_file.relative_to(PROJECT_ROOT)
-        layer = infer_layer(py_file)
+        layer = get_canonical_layer(py_file)
         loc = count_loc(source)
         class_count = sum(1 for n in ast.walk(tree) if isinstance(n, ast.ClassDef))
         
@@ -1231,15 +1209,17 @@ def main():
             # Known higher-level abstract bases that are NOT concrete agents and should be excluded
             # (e.g. shared mixins or root ABCs across the hierarchy).
             #
-            # IMPORTANT: Layer-specific BaseAgents (L1-L5) are intentionally NOT skipped here.
+            # IMPORTANT: Layer-specific BaseAgents (L0-L6) are intentionally NOT skipped here.
             # They are abstract but must be discovered as agents so they can be placed in
             # dedicated "Base Class" territories for consistent compliance tracking.
             # Current layer-specific bases:
-            #   - L1: L1CognitionBaseAgent (or CognitionCanonBaseAgent)
+            #   - L0: L0Agent
+            #   - L1: L1Agent (or L1CognitionBaseAgent)
             #   - L2: L2ExecutionBaseAgent (or ExecutionCanonBaseAgent)
             #   - L3: OrchestrationBaseAgent
             #   - L4: StateBaseAgent
             #   - L5: SafetyBaseAgent
+            #   - L6: L6ObservabilityBaseAgent
             skip_names = {
                 'SubAtomicAgent',
                 'CanonBaseAgent',
@@ -1247,7 +1227,7 @@ def main():
                 'IActionPlane',
                 'ValidationProtocol',
                 'Protocol',
-                'ABC'
+                # NOTE: ABC removed - L6ObservabilityBaseAgent inherits from ABC
             }
             if node.name in skip_names:
                 continue
@@ -1299,9 +1279,12 @@ def main():
             
             # Determine territory (layer + subdirectory)
             # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
+            # DEPRECATED: Exclude simple bases (L2Agent, L3Agent, L4Agent, L5Agent) - use *BaseAgent instead
+            DEPRECATED_SIMPLE_BASES = {'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent'}
             is_base_class = (
-                node.name.endswith('BaseAgent') or 
-                node.name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
+                (node.name.endswith('BaseAgent') or 
+                 node.name in {'L0Agent', 'L1Agent', 'L6Agent'}) and
+                node.name not in DEPRECATED_SIMPLE_BASES
             )
             
             # ASSIGN DETAILED TERRITORIES - SSOT for dashboard
@@ -1372,7 +1355,9 @@ def main():
                     territory = "L0 Maintenance/Core"
             # L6 Observability detailed territories
             elif layer == 'L6':
-                if 'metrics' in path_str or 'Metric' in node.name:
+                if is_base_class:
+                    territory = "L6_Observability/Base Class"
+                elif 'metrics' in path_str or 'Metric' in node.name:
                     territory = "L6_Observability/Metrics"
                 elif 'telemetry' in path_str or 'Telemetry' in node.name:
                     territory = "L6_Observability/Telemetry"
@@ -1388,6 +1373,15 @@ def main():
             else:
                 territory = layer if layer else "Unknown"
             
+            # SSOT: Categorize agent using canonical function (Phase 3 Migration)
+            # Extract base class names for categorization
+            base_class_names = [b.id if isinstance(b, ast.Name) else b.attr if isinstance(b, ast.Attribute) else str(b) for b in node.bases]
+            category = categorize_agent(
+                class_name=node.name,
+                base_classes=base_class_names,
+                docstring=ast.get_docstring(node)
+            )
+            
             agents.append({
                 'class_name': node.name,
                 'path': str(rel_path),
@@ -1395,6 +1389,7 @@ def main():
                 'sub_dir': '/'.join(rel_path.parts[:2]) if len(rel_path.parts) >= 2 else (rel_path.parts[0] if len(rel_path.parts) >= 1 else ''),
                 'layer': layer,
                 'territory': territory,  # NEW: Territory assignment with base class handling
+                'category': category,  # NEW: Agent category from canonical_truth.py (Phase 3)
                 'inheritance': list(bases),
                 'key_methods': methods[:10],  # Top 10 methods
                 'has_tools': has_tools,
