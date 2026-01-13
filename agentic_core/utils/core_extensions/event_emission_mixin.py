@@ -2,6 +2,8 @@ import logging
 import time
 import uuid
 import json
+import asyncio
+import inspect
 from typing import Any, Dict, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
@@ -83,23 +85,64 @@ class EventEmissionMixin:
 
     def _dispatch_to_observability(self, event: SovereignEvent):
         """Internal: Routes the event to the L6 monitoring layer."""
-        try:
-            # Leverage existing Redis connection if available
-            # Note: This requires the agent to also inherit from RedisCacheMixin
-            if hasattr(self, "redis_client") and self.redis_client:
-                event_data = event.model_dump()
+        if not hasattr(self, "redis_client") or not self.redis_client:
+            return
 
-                # Push to a Redis Stream (XADD)
-                # 'sovereign_event_stream' is the global L6 bus
+        async def _dispatch_async() -> None:
+            """Hardened: 3 retries + 5s timeout per attempt."""
+            MAX_RETRIES = 3
+            TIMEOUT_SEC = 5.0
+            base_delay = 0.8
+
+            event_data = event.model_dump()
+            stream_payload = {"event": json.dumps(event_data)}
+
+            for attempt in range(1, MAX_RETRIES + 1):
+                try:
+                    result = self.redis_client.xadd(
+                        "sovereign_event_stream",
+                        stream_payload,
+                        maxlen=10000,
+                    )
+
+                    if inspect.isawaitable(result):
+                        await asyncio.wait_for(result, timeout=TIMEOUT_SEC)
+                    else:
+                        await asyncio.wait_for(asyncio.to_thread(lambda: result), timeout=TIMEOUT_SEC)
+
+                    self._ee_logger.debug(
+                        f"Event dispatched (attempt {attempt}): {event.event_id}"
+                    )
+                    return
+                except asyncio.TimeoutError:
+                    self._ee_logger.warning(
+                        f"Redis dispatch timeout (attempt {attempt}/{MAX_RETRIES})"
+                    )
+                except Exception as e:
+                    self._ee_logger.warning(
+                        f"Redis dispatch failed (attempt {attempt}/{MAX_RETRIES}): {e}"
+                    )
+
+                if attempt < MAX_RETRIES:
+                    await asyncio.sleep(base_delay * (2 ** (attempt - 1)))
+
+            self._ee_logger.error(
+                f"Failed to dispatch event {event.event_id} after {MAX_RETRIES} attempts"
+            )
+
+        try:
+            loop = asyncio.get_running_loop()
+            loop.create_task(_dispatch_async())
+        except RuntimeError:
+            # No running loop; best-effort single attempt without blocking agent execution.
+            try:
                 self.redis_client.xadd(
                     "sovereign_event_stream",
-                    {"event": json.dumps(event_data)},
-                    maxlen=10000  # Prevent infinite stream growth
+                    {"event": json.dumps(event.model_dump())},
+                    maxlen=10000,
                 )
-                self._ee_logger.debug(f"Event dispatched to Redis Stream: {event.event_id}")
-        except Exception as e:
-            # Critical: Dispatching must NEVER crash the core agent logic
-            self._ee_logger.error(f"Redis Dispatch Failed: {e}")
+            except Exception as e:
+                self._ee_logger.error(f"Redis Dispatch Failed: {e}")
 
     @staticmethod
     def observe_execution(event_prefix: str):

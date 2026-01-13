@@ -47,6 +47,9 @@ class RedisCacheMixin:
     _cache_prefix: str = "agent_cache"
     _default_ttl: int = 3600  # 1 hour
     _local_cache: dict = {}
+
+    KEY_NAMESPACE_SALT = "agentic-v1"
+    MAX_KEY_LENGTH = 200
     
     @property
     def redis_enabled(self) -> bool:
@@ -71,7 +74,10 @@ class RedisCacheMixin:
     
     def _make_key(self, key: str) -> str:
         """Generate secure hash-based cache key."""
-        key_hash = hashlib.sha256(key.encode()).hexdigest()[:32]
+        if len(key) > self.MAX_KEY_LENGTH:
+            key = key[: self.MAX_KEY_LENGTH - 32] + hashlib.sha256(key.encode()).hexdigest()[:32]
+        salted = f"{self.KEY_NAMESPACE_SALT}:{self._cache_prefix}:{key}"
+        key_hash = hashlib.sha256(salted.encode()).hexdigest()[:40]
         return f"{self._cache_prefix}:{key_hash}"
     
     async def cache_get(self, key: str) -> Optional[Any]:
@@ -101,6 +107,12 @@ class RedisCacheMixin:
         
         # Local fallback
         value = self._local_cache.get(full_key)
+        if isinstance(value, dict) and "value" in value and "expire_at" in value:
+            if time.time() >= value["expire_at"]:
+                self._local_cache.pop(full_key, None)
+                value = None
+            else:
+                value = value["value"]
         latency = (time.time() - start) * 1000
         if CACHE_METRICS_ENABLED:
             metrics.record("local_get", hit=value is not None, latency_ms=latency)
@@ -125,7 +137,10 @@ class RedisCacheMixin:
         metrics = get_cache_metrics()
         
         # Always store locally first
-        self._local_cache[full_key] = value
+        self._local_cache[full_key] = {
+            "value": value,
+            "expire_at": time.time() + ttl,
+        }
         
         # Try Redis
         if self.redis:
@@ -137,9 +152,10 @@ class RedisCacheMixin:
                 log.debug(f"Cache SET (Redis): {key[:50]}... TTL={ttl}s")
                 return
             except Exception as e:
+                log.debug(f"Redis set suppressed error (local fallback used): {str(e)[:80]}")
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("redis_set")
-                log.debug(f"Redis set failed ({e}) - stored locally only")
+                # Local already contains TTL-enforced entry.
         
         latency = (time.time() - start) * 1000
         if CACHE_METRICS_ENABLED:

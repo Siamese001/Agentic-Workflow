@@ -94,6 +94,12 @@ class MCPHardenedMixin:
         r"DELETE\s+FROM",
         r"<script>",
         r"javascript:",
+        r"asyncio\.create_subprocess",
+        r"concurrent\.futures",
+        r"pickle\.loads",
+        r"yaml\.load.*unsafe",
+        r"requests\.Session",
+        r"__builtins__",
     ]
     
     def __init__(self, *args, **kwargs):
@@ -502,6 +508,14 @@ class MCPHardenedMixin:
             for pattern in self.CODE_INJECTION_PATTERNS:
                 if re.search(pattern, response, re.IGNORECASE):
                     reasons.append(f"Code injection pattern detected: {pattern}")
+
+            if len(response) > 200:
+                if re.search(
+                    r"(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?",
+                    response,
+                ):
+                    if "import" in response or "exec" in response:
+                        reasons.append("Suspicious base64-encoded payload detected")
         
         # 2. Check response size
         response_str = str(response)

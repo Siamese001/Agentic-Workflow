@@ -23,6 +23,7 @@ class BatchOperationMixin:
                             tasks: List[Coroutine], 
                             max_workers: int = 5, 
                             sequential: bool = False) -> List[Any]:
+        # Hardened: overall batch timeout + better failure classification
         """
         Executes a collection of tasks with controlled concurrency.
         
@@ -54,10 +55,16 @@ class BatchOperationMixin:
         # Parallel execution with Semaphore to prevent resource exhaustion
         semaphore = asyncio.Semaphore(max_workers)
 
+        BATCH_TIMEOUT = 120.0
+        TIMEOUT_PER_TASK = 45.0
+
         async def _sem_task(task_coro, index):
             async with semaphore:
                 try:
-                    return await task_coro
+                    return await asyncio.wait_for(task_coro, timeout=TIMEOUT_PER_TASK)
+                except asyncio.TimeoutError:
+                    self._bo_logger.error(f"Task {index} timed out individually")
+                    return asyncio.TimeoutError(f"Task {index} timeout")
                 except Exception as e:
                     self._bo_logger.error(f"Parallel task {index} failed: {e}")
                     return e
@@ -66,12 +73,23 @@ class BatchOperationMixin:
         wrapped_tasks = [_sem_task(t, i) for i, t in enumerate(tasks)]
         
         # Execute all tasks and maintain order
-        results = await asyncio.gather(*wrapped_tasks)
+        try:
+            results = await asyncio.wait_for(
+                asyncio.gather(*wrapped_tasks, return_exceptions=True),
+                timeout=BATCH_TIMEOUT,
+            )
+        except asyncio.TimeoutError:
+            self._bo_logger.critical(f"Entire batch timed out after {BATCH_TIMEOUT}s")
+            results = [asyncio.TimeoutError("Batch level timeout")] * len(tasks)
         
         duration = time.time() - start_time
+        timeout_count = sum(1 for r in results if isinstance(r, asyncio.TimeoutError))
         success_count = sum(1 for r in results if not isinstance(r, Exception))
+        error_types = {type(r).__name__ for r in results if isinstance(r, Exception)}
         self._bo_logger.info(
-            f"Batch completed: {success_count}/{total_tasks} successful in {duration:.2f}s"
+            f"Batch completed: {success_count}/{total_tasks} successful "
+            f"({timeout_count} timeouts) in {duration:.2f}s | "
+            f"Error types: {', '.join(sorted(error_types)) or 'none'}"
         )
         
         return results

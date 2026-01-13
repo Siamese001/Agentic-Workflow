@@ -1,5 +1,7 @@
 import os
 import logging
+import time
+import re
 from typing import Optional, Dict, Any
 from datetime import datetime
 
@@ -22,6 +24,11 @@ class SecretsManagementMixin:
         self._sm_logger = logging.getLogger(self.__class__.__name__)
         # Determine environment context
         self._env_context = os.getenv("SOVEREIGN_ENV", "DEV").upper()
+        self._secret_cache: Dict[str, tuple[str, float]] = {}
+        self._CACHE_TTL = 600
+
+    def _is_valid_secret_key(self, key: str) -> bool:
+        return bool(re.match(r'^[A-Z][A-Z0-9_]{3,63}$', key))
 
     def _audit_access(self, secret_key: str, success: bool):
         """Internal: Log access attempts without revealing the secret value."""
@@ -47,6 +54,17 @@ class SecretsManagementMixin:
         Raises:
             SecretAccessError: If secret is missing and no default provided.
         """
+        if not self._is_valid_secret_key(key):
+            self._audit_access(key, success=False)
+            raise SecretAccessError(f"Invalid secret key format: {key}")
+
+        if key in self._secret_cache:
+            value, expiry = self._secret_cache[key]
+            if time.time() < expiry:
+                self._audit_access(key, success=True)
+                return value
+            del self._secret_cache[key]
+
         # 1. Retrieval Strategy (Env Vars now, extensible to Vault later)
         value = os.getenv(key)
         
@@ -64,6 +82,7 @@ class SecretsManagementMixin:
 
         # 3. Success Audit
         self._audit_access(key, success=True)
+        self._secret_cache[key] = (value, time.time() + self._CACHE_TTL)
         return value
 
     async def rotate_secret(self, key: str) -> bool:
