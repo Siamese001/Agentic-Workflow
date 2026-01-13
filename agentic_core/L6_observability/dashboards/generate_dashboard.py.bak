@@ -7,23 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Autonomy Compliance Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js" 
-            onerror="handlePlotlyLoadError()"></script>
-    <script>
-        // Fallback for offline use - detect if Plotly failed to load
-        function handlePlotlyLoadError() {
-            console.warn('Plotly.js failed to load from CDN. Dashboard will work in limited mode.');
-            window.PLOTLY_OFFLINE = true;
-        }
-        
-        // Check if Plotly loaded after page load
-        window.addEventListener('DOMContentLoaded', function() {
-            if (typeof Plotly === 'undefined') {
-                window.PLOTLY_OFFLINE = true;
-                console.warn('Dashboard running in offline mode - charts disabled');
-            }
-        });
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -633,8 +617,8 @@
     "Total": 268,
     "Compliant": 268,
     "Heal Cap %": 100.0,
-    "Heal Invocation %": 96.6,
-    "Invocation %": 96.6,
+    "Heal Invocation %": 96.7,
+    "Invocation %": 96.7,
     "Hardened %": 94.4,
     "MCP Capable %": 94.4,
     "Test %": 59.7,
@@ -645,14 +629,13 @@
     "Documented %": 89.3,
     "Metadata %": 100.0,
     "Proper Base %": 100.0,
-    "Base Class Inherit %": 100.0,
     "Schema Strictness %": 86.8,
     "Complexity Health": 37.0,
-    "Code Quality Score": 88.1,
+    "Code Quality Score": 88.0,
     "Criticality": 75,
-    "Health": 80.1,
+    "Health": 80.2,
     "Health Breakdown": "Heal:100+Inv:97+Test:60+Obs:100+CC:37",
-    "Risk": "HIGH",
+    "Risk": "MED",
     "Used %": 95.0,
     "Priority": "ALL",
     "IsInfrastructure": false
@@ -1035,177 +1018,90 @@
     "IsInfrastructure": false
   },
   {
-    "Territory": "L1 Cognition/Base Class",
-    "Total": 1,
-    "Compliant": 1,
+    "Territory": "L1 Cognition/Core",
+    "Total": 28,
+    "Compliant": 28,
     "Heal Cap %": 100.0,
-    "Heal Invocation %": 100.0,
-    "Invocation %": 100.0,
-    "Hardened %": 100.0,
-    "MCP Capable %": 100.0,
-    "Test %": 100.0,
+    "Heal Invocation %": 92.9,
+    "Invocation %": 92.9,
+    "Hardened %": 96.4,
+    "MCP Capable %": 96.4,
+    "Test %": 64.3,
     "Observable %": 100.0,
-    "Avg CC": 2.0,
+    "Avg CC": 25.0,
     "Avg LOC": 150,
-    "Typed %": 100.0,
-    "Documented %": 100.0,
+    "Typed %": 91.3,
+    "Documented %": 93.1,
     "Metadata %": 100.0,
     "Proper Base %": 100.0,
     "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 100.0,
-    "Complexity Health": 96.0,
-    "Code Quality Score": 100.0,
+    "Schema Strictness %": 91.3,
+    "Complexity Health": 50.0,
+    "Code Quality Score": 92.2,
     "Criticality": 75,
-    "Health": 99.4,
-    "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:96",
-    "Risk": "LOW",
+    "Health": 82.9,
+    "Health Breakdown": "Heal:100+Inv:93+Test:64+Obs:100+CC:50",
+    "Risk": "HIGH",
     "Used %": 95.0,
     "Priority": 14,
     "IsInfrastructure": false
   },
   {
-    "Territory": "L1 Cognition/Core",
-    "Total": 27,
-    "Compliant": 27,
+    "Territory": "L0 Maintenance/Core",
+    "Total": 10,
+    "Compliant": 10,
     "Heal Cap %": 100.0,
-    "Heal Invocation %": 92.6,
-    "Invocation %": 92.6,
-    "Hardened %": 96.3,
-    "MCP Capable %": 96.3,
-    "Test %": 63.0,
+    "Heal Invocation %": 90.0,
+    "Invocation %": 90.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 10.0,
     "Observable %": 100.0,
-    "Avg CC": 25.9,
+    "Avg CC": 30.0,
     "Avg LOC": 150,
-    "Typed %": 91.0,
-    "Documented %": 92.9,
+    "Typed %": 93.2,
+    "Documented %": 88.0,
     "Metadata %": 100.0,
     "Proper Base %": 100.0,
     "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 91.0,
-    "Complexity Health": 48.2,
-    "Code Quality Score": 92.0,
+    "Schema Strictness %": 93.2,
+    "Complexity Health": 40.0,
+    "Code Quality Score": 90.6,
     "Criticality": 75,
-    "Health": 82.2,
-    "Health Breakdown": "Heal:100+Inv:93+Test:63+Obs:100+CC:48",
+    "Health": 67.5,
+    "Health Breakdown": "Heal:100+Inv:90+Test:10+Obs:100+CC:40",
     "Risk": "HIGH",
     "Used %": 95.0,
     "Priority": 15,
     "IsInfrastructure": false
   },
   {
-    "Territory": "L0 Maintenance/Base Class",
-    "Total": 1,
-    "Compliant": 1,
+    "Territory": "L6_Observability/Metrics",
+    "Total": 3,
+    "Compliant": 3,
     "Heal Cap %": 100.0,
-    "Heal Invocation %": 100.0,
-    "Invocation %": 100.0,
-    "Hardened %": 100.0,
-    "MCP Capable %": 100.0,
-    "Test %": 100.0,
+    "Heal Invocation %": 33.3,
+    "Invocation %": 33.3,
+    "Hardened %": 33.3,
+    "MCP Capable %": 33.3,
+    "Test %": 33.3,
     "Observable %": 100.0,
-    "Avg CC": 4.0,
+    "Avg CC": 28.3,
     "Avg LOC": 150,
-    "Typed %": 100.0,
+    "Typed %": 80.6,
     "Documented %": 100.0,
     "Metadata %": 100.0,
     "Proper Base %": 100.0,
     "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 100.0,
-    "Complexity Health": 92.0,
-    "Code Quality Score": 100.0,
+    "Schema Strictness %": 80.6,
+    "Complexity Health": 43.4,
+    "Code Quality Score": 90.3,
     "Criticality": 75,
-    "Health": 98.8,
-    "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:92",
-    "Risk": "LOW",
+    "Health": 68.2,
+    "Health Breakdown": "Heal:100+Inv:33+Test:33+Obs:100+CC:43",
+    "Risk": "HIGH",
     "Used %": 95.0,
     "Priority": 16,
-    "IsInfrastructure": false
-  },
-  {
-    "Territory": "L0 Maintenance/Core",
-    "Total": 9,
-    "Compliant": 9,
-    "Heal Cap %": 100.0,
-    "Heal Invocation %": 88.9,
-    "Invocation %": 88.9,
-    "Hardened %": 100.0,
-    "MCP Capable %": 100.0,
-    "Test %": 0.0,
-    "Observable %": 100.0,
-    "Avg CC": 32.9,
-    "Avg LOC": 150,
-    "Typed %": 92.5,
-    "Documented %": 86.6,
-    "Metadata %": 100.0,
-    "Proper Base %": 100.0,
-    "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 92.5,
-    "Complexity Health": 34.2,
-    "Code Quality Score": 89.5,
-    "Criticality": 75,
-    "Health": 64.0,
-    "Health Breakdown": "Heal:100+Inv:89+Test:0+Obs:100+CC:34",
-    "Risk": "HIGH",
-    "Used %": 95.0,
-    "Priority": 17,
-    "IsInfrastructure": false
-  },
-  {
-    "Territory": "L6_Observability/Base Class",
-    "Total": 1,
-    "Compliant": 1,
-    "Heal Cap %": 100.0,
-    "Heal Invocation %": 100.0,
-    "Invocation %": 100.0,
-    "Hardened %": 100.0,
-    "MCP Capable %": 100.0,
-    "Test %": 100.0,
-    "Observable %": 100.0,
-    "Avg CC": 62.0,
-    "Avg LOC": 150,
-    "Typed %": 75.0,
-    "Documented %": 100.0,
-    "Metadata %": 100.0,
-    "Proper Base %": 100.0,
-    "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 75.0,
-    "Complexity Health": 0,
-    "Code Quality Score": 87.5,
-    "Criticality": 75,
-    "Health": 85.0,
-    "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:0",
-    "Risk": "HIGH",
-    "Used %": 95.0,
-    "Priority": 18,
-    "IsInfrastructure": true
-  },
-  {
-    "Territory": "L6_Observability/Metrics",
-    "Total": 2,
-    "Compliant": 2,
-    "Heal Cap %": 100.0,
-    "Heal Invocation %": 0.0,
-    "Invocation %": 0.0,
-    "Hardened %": 0.0,
-    "MCP Capable %": 0.0,
-    "Test %": 0.0,
-    "Observable %": 100.0,
-    "Avg CC": 11.5,
-    "Avg LOC": 150,
-    "Typed %": 83.3,
-    "Documented %": 100.0,
-    "Metadata %": 100.0,
-    "Proper Base %": 100.0,
-    "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 83.3,
-    "Complexity Health": 77.0,
-    "Code Quality Score": 91.7,
-    "Criticality": 75,
-    "Health": 61.5,
-    "Health Breakdown": "Heal:100+Inv:0+Test:0+Obs:100+CC:77",
-    "Risk": "MED",
-    "Used %": 95.0,
-    "Priority": 19,
     "IsInfrastructure": true
   },
   {
@@ -1234,7 +1130,7 @@
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:84",
     "Risk": "MED",
     "Used %": 95.0,
-    "Priority": 20,
+    "Priority": 17,
     "IsInfrastructure": true
   },
   {
@@ -1263,7 +1159,7 @@
     "Health Breakdown": "Heal:100+Inv:97+Test:40+Obs:100+CC:60",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 21,
+    "Priority": 18,
     "IsInfrastructure": false
   },
   {
@@ -1292,7 +1188,7 @@
     "Health Breakdown": "Heal:100+Inv:100+Test:29+Obs:100+CC:71",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 22,
+    "Priority": 19,
     "IsInfrastructure": false
   },
   {
@@ -1321,7 +1217,7 @@
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:78",
     "Risk": "MED",
     "Used %": 95.0,
-    "Priority": 23,
+    "Priority": 20,
     "IsInfrastructure": false
   }
 ];
@@ -7917,68 +7813,18 @@
     "agents": []
   },
   "L1 Cognition/Base Class": {
-    "healCap": [
-      100.0
-    ],
-    "invocation": [
-      100.0
-    ],
-    "hardened": [
-      100.0
-    ],
-    "test": [
-      100.0
-    ],
-    "complexityHealth": [
-      96
-    ],
-    "health": [
-      99.2
-    ],
-    "typed": [
-      100.0
-    ],
-    "documented": [
-      100.0
-    ],
-    "schemaStrictness": [
-      100.0
-    ],
-    "properBase": [
-      100.0
-    ],
-    "codeQuality": [
-      100.0
-    ],
-    "agents": [
-      {
-        "name": "L1Agent",
-        "path": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
-        "rel": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
-        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
-        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
-        "class_line": 1,
-        "has_mixin": true,
-        "invocation": "Yes",
-        "has_tests": true,
-        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
-        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
-        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
-        "typed_pct": 100.0,
-        "overall_typed_pct": 100.0,
-        "complexity": 2,
-        "health": 99.2,
-        "healCap": 100.0,
-        "test": 100.0,
-        "complexityHealth": 96,
-        "hardened": 100.0,
-        "documented": 100.0,
-        "schema": 100.0,
-        "base": 100.0,
-        "quality": 100.0,
-        "loc": 32
-      }
-    ]
+    "healCap": [],
+    "invocation": [],
+    "hardened": [],
+    "test": [],
+    "complexityHealth": [],
+    "health": [],
+    "typed": [],
+    "documented": [],
+    "schemaStrictness": [],
+    "properBase": [],
+    "codeQuality": [],
+    "agents": []
   },
   "L1 Cognition/Core": {
     "healCap": [
@@ -8008,9 +7854,11 @@
       100.0,
       100.0,
       100.0,
+      100.0,
       100.0
     ],
     "invocation": [
+      100.0,
       100.0,
       100.0,
       100.0,
@@ -8057,6 +7905,7 @@
       100.0,
       100.0,
       100.0,
+      100.0,
       0.0,
       100.0,
       100.0,
@@ -8085,6 +7934,7 @@
       0.0,
       100.0,
       0.0,
+      100.0,
       100.0,
       100.0,
       100.0,
@@ -8115,6 +7965,7 @@
       0,
       60,
       62,
+      96,
       48,
       0,
       90,
@@ -8144,6 +7995,7 @@
       80.0,
       72.0,
       92.4,
+      99.2,
       89.6,
       80.0,
       98.0,
@@ -8172,6 +8024,7 @@
       62.5,
       90.0,
       75.0,
+      100.0,
       100.0,
       90.0,
       94.7,
@@ -8202,6 +8055,7 @@
       100.0,
       25.0,
       100.0,
+      100.0,
       90.0,
       100.0,
       100.0,
@@ -8231,6 +8085,7 @@
       90.0,
       75.0,
       100.0,
+      100.0,
       90.0,
       94.7,
       100.0,
@@ -8243,6 +8098,7 @@
       100.0
     ],
     "properBase": [
+      100.0,
       100.0,
       100.0,
       100.0,
@@ -8288,6 +8144,7 @@
       71.875,
       95.0,
       68.75,
+      100.0,
       100.0,
       92.5,
       97.35,
@@ -8761,6 +8618,33 @@
         "loc": 100
       },
       {
+        "name": "L1Agent",
+        "path": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+        "rel": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+        "class_line": 1,
+        "has_mixin": true,
+        "invocation": "Yes",
+        "has_tests": true,
+        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
+        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
+        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
+        "typed_pct": 100.0,
+        "overall_typed_pct": 100.0,
+        "complexity": 2,
+        "health": 99.2,
+        "healCap": 100.0,
+        "test": 100.0,
+        "complexityHealth": 96,
+        "hardened": 100.0,
+        "documented": 100.0,
+        "schema": 100.0,
+        "base": 100.0,
+        "quality": 100.0,
+        "loc": 32
+      },
+      {
         "name": "L1CognitionExerciserAgent",
         "path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionExerciserAgent.py",
         "rel": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionExerciserAgent.py",
@@ -9046,70 +8930,6 @@
     "codeQuality": [],
     "agents": []
   },
-  "L0 Maintenance/Base Class": {
-    "healCap": [
-      100.0
-    ],
-    "invocation": [
-      100.0
-    ],
-    "hardened": [
-      100.0
-    ],
-    "test": [
-      100.0
-    ],
-    "complexityHealth": [
-      92
-    ],
-    "health": [
-      98.4
-    ],
-    "typed": [
-      100.0
-    ],
-    "documented": [
-      100.0
-    ],
-    "schemaStrictness": [
-      100.0
-    ],
-    "properBase": [
-      100.0
-    ],
-    "codeQuality": [
-      100.0
-    ],
-    "agents": [
-      {
-        "name": "L0Agent",
-        "path": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
-        "rel": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
-        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
-        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
-        "class_line": 1,
-        "has_mixin": true,
-        "invocation": "Yes",
-        "has_tests": true,
-        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
-        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
-        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
-        "typed_pct": 100.0,
-        "overall_typed_pct": 100.0,
-        "complexity": 4,
-        "health": 98.4,
-        "healCap": 100.0,
-        "test": 100.0,
-        "complexityHealth": 92,
-        "hardened": 100.0,
-        "documented": 100.0,
-        "schema": 100.0,
-        "base": 100.0,
-        "quality": 100.0,
-        "loc": 42
-      }
-    ]
-  },
   "L0 Maintenance/Core": {
     "healCap": [
       100.0,
@@ -9120,11 +8940,13 @@
       100.0,
       100.0,
       100.0,
+      100.0,
       100.0
     ],
     "invocation": [
       100.0,
       0.0,
+      100.0,
       100.0,
       100.0,
       100.0,
@@ -9142,6 +8964,7 @@
       100.0,
       100.0,
       100.0,
+      100.0,
       100.0
     ],
     "test": [
@@ -9150,6 +8973,7 @@
       0.0,
       0.0,
       0.0,
+      100.0,
       0.0,
       0.0,
       0.0,
@@ -9161,6 +8985,7 @@
       98,
       64,
       62,
+      92,
       70,
       46,
       10,
@@ -9172,6 +8997,7 @@
       79.6,
       72.8,
       72.4,
+      98.4,
       74.0,
       69.2,
       62.0,
@@ -9184,6 +9010,7 @@
       83.3,
       80.0,
       100.0,
+      100.0,
       75.0,
       100.0,
       100.0
@@ -9196,6 +9023,7 @@
       40.0,
       100.0,
       100.0,
+      100.0,
       80.0,
       85.7
     ],
@@ -9206,11 +9034,13 @@
       83.3,
       80.0,
       100.0,
+      100.0,
       75.0,
       100.0,
       100.0
     ],
     "properBase": [
+      100.0,
       100.0,
       100.0,
       100.0,
@@ -9227,6 +9057,7 @@
       100.0,
       91.65,
       75.0,
+      100.0,
       100.0,
       87.5,
       95.0,
@@ -9369,6 +9200,33 @@
         "loc": 94
       },
       {
+        "name": "L0Agent",
+        "path": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+        "rel": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+        "class_line": 1,
+        "has_mixin": true,
+        "invocation": "Yes",
+        "has_tests": true,
+        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
+        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
+        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
+        "typed_pct": 100.0,
+        "overall_typed_pct": 100.0,
+        "complexity": 4,
+        "health": 98.4,
+        "healCap": 100.0,
+        "test": 100.0,
+        "complexityHealth": 92,
+        "hardened": 100.0,
+        "documented": 100.0,
+        "schema": 100.0,
+        "base": 100.0,
+        "quality": 100.0,
+        "loc": 42
+      },
+      {
         "name": "MetricsWitnessAgent",
         "path": "agentic_core\\L0_maintenance\\scripts\\MetricsWitnessAgent.py",
         "rel": "agentic_core\\L0_maintenance\\scripts\\MetricsWitnessAgent.py",
@@ -9492,39 +9350,61 @@
     "codeQuality": [],
     "agents": []
   },
-  "L6_Observability/Base Class": {
+  "L6_Observability/Metrics": {
     "healCap": [
+      100.0,
+      100.0,
       100.0
     ],
     "invocation": [
-      100.0
+      100.0,
+      0.0,
+      0.0
     ],
     "hardened": [
-      100.0
+      100.0,
+      0.0,
+      0.0
     ],
     "test": [
-      100.0
+      100.0,
+      0.0,
+      0.0
     ],
     "complexityHealth": [
-      0
+      0,
+      64,
+      90
     ],
     "health": [
-      80.0
+      80.0,
+      52.8,
+      58.0
     ],
     "typed": [
-      75.0
+      75.0,
+      66.7,
+      100.0
     ],
     "documented": [
+      100.0,
+      100.0,
       100.0
     ],
     "schemaStrictness": [
-      75.0
+      75.0,
+      66.7,
+      100.0
     ],
     "properBase": [
+      100.0,
+      100.0,
       100.0
     ],
     "codeQuality": [
-      87.5
+      87.5,
+      83.35,
+      100.0
     ],
     "agents": [
       {
@@ -9553,55 +9433,7 @@
         "base": 100.0,
         "quality": 87.5,
         "loc": 312
-      }
-    ]
-  },
-  "L6_Observability/Metrics": {
-    "healCap": [
-      100.0,
-      100.0
-    ],
-    "invocation": [
-      0.0,
-      0.0
-    ],
-    "hardened": [
-      0.0,
-      0.0
-    ],
-    "test": [
-      0.0,
-      0.0
-    ],
-    "complexityHealth": [
-      64,
-      90
-    ],
-    "health": [
-      52.8,
-      58.0
-    ],
-    "typed": [
-      66.7,
-      100.0
-    ],
-    "documented": [
-      100.0,
-      100.0
-    ],
-    "schemaStrictness": [
-      66.7,
-      100.0
-    ],
-    "properBase": [
-      100.0,
-      100.0
-    ],
-    "codeQuality": [
-      83.35,
-      100.0
-    ],
-    "agents": [
+      },
       {
         "name": "PerformanceAnalystAgent",
         "path": "agentic_core\\L6_observability\\agents\\PerformanceAnalystAgent.py",
@@ -12332,20 +12164,6 @@
 
         
 
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
 
 
 
@@ -13944,43 +13762,32 @@
         }
 
         function renderHealthGauge(totalRow) {
-            if (window.PLOTLY_OFFLINE) {
-                document.getElementById('healthGauge').innerHTML = 
-                    `<div style="text-align:center; padding:60px 20px; color:#6b7280;">
-                        <div style="font-size:48px; font-weight:700; color:#2563eb;">${parseFloat(totalRow['Health']).toFixed(1)}%</div>
-                        <div style="font-size:18px; margin-top:10px;">System Health</div>
-                        <div style="font-size:12px; margin-top:20px; color:#9ca3af;">Charts require internet connection</div>
-                    </div>`;
-                return;
-            }
-            
-            const health = parseFloat(totalRow['Health']) || 0;
-            
+            const health = parseFloat(totalRow.health || totalRow.Health) || 0;
             const data = [{
                 type: 'indicator',
                 mode: 'gauge+number',
                 value: health,
-                title: { text: 'System Health', font: { size: 18, weight: 700 } },
-                number: { suffix: '%', font: { size: 32, weight: 700 } },
+                title: { text: `<b style="font-size:1.8em;">Overall Health Score</b><br><span style="font-size:1em;">Composite autonomy signal • Currently <strong style="color:${health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626'};">${health.toFixed(1)}%</strong></span>` },
                 gauge: {
-                    axis: { range: [0, 100], tickwidth: 1 },
+                    axis: { range: [0, 100] },
                     bar: { color: health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626' },
-                    bgcolor: 'white',
-                    borderwidth: 2,
-                    bordercolor: '#e5e7eb',
                     steps: [
                         { range: [0, 60], color: '#fee2e2' },
                         { range: [60, 80], color: '#fed7aa' },
-                        { range: [80, 100], color: '#dcfce7' }
-                    ]
+                        { range: [80, 100], color: '#bbf7d0' }
+                    ],
+                    threshold: {
+                        line: { color: '#dc2626', width: 4 },
+                        thickness: 0.75,
+                        value: 80
+                    }
                 }
             }];
 
             const layout = {
-                width: 300,
-                height: 250,
-                margin: { t: 40, r: 25, l: 25, b: 25 },
-                paper_bgcolor: 'white',
+                margin: { l: 50, r: 50, t: 20, b: 20 },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
                 font: { color: '#1f2937', size: 14 }
             };
 
