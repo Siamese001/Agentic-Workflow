@@ -14,6 +14,10 @@ class PilotOrchestrator(RateLimitMixin, StateValidationMixin, EventEmissionMixin
 
     _rate_limits = {"orchestrate": {"rate": 10, "per": 60, "burst": 10}}
 
+    def __init__(self, **kwargs):
+        self.name = kwargs.pop("name", self.__class__.__name__)
+        super().__init__(**kwargs)
+
     @ContextPropagationMixin.trace_context
     @StateValidationMixin.validate_state(pre=lambda s: s.is_ready())
     @RateLimitMixin.rate_limit("orchestrate")

@@ -8,6 +8,10 @@ class PilotExecutor(RateLimitMixin, StateValidationMixin, EventEmissionMixin, Co
 
     _rate_limits = {"execute": {"rate": 30, "per": 60, "burst": 30}}
 
+    def __init__(self, **kwargs):
+        self.name = kwargs.pop("name", self.__class__.__name__)
+        super().__init__(**kwargs)
+
     @ContextPropagationMixin.trace_context
     @StateValidationMixin.validate_state(pre=lambda s: s.is_ready())
     @RateLimitMixin.rate_limit("execute")

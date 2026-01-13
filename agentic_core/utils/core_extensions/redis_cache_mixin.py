@@ -18,7 +18,6 @@ from typing import Any, Optional
 
 from agentic_core.config.flags import USE_REDIS_CACHE, CACHE_METRICS_ENABLED, GRACEFUL_DEGRADATION
 from agentic_core.L6_observability.metrics.cache_metrics import get_cache_metrics
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 log = logging.getLogger(__name__)
 

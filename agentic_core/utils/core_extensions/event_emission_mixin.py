@@ -1,6 +1,7 @@
 import logging
 import time
 import uuid
+import json
 from typing import Any, Dict, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
@@ -82,8 +83,23 @@ class EventEmissionMixin:
 
     def _dispatch_to_observability(self, event: SovereignEvent):
         """Internal: Routes the event to the L6 monitoring layer."""
-        # This will be refined in Phase 3 with actual L6 agent integration
-        pass
+        try:
+            # Leverage existing Redis connection if available
+            # Note: This requires the agent to also inherit from RedisCacheMixin
+            if hasattr(self, "redis_client") and self.redis_client:
+                event_data = event.model_dump()
+
+                # Push to a Redis Stream (XADD)
+                # 'sovereign_event_stream' is the global L6 bus
+                self.redis_client.xadd(
+                    "sovereign_event_stream",
+                    {"event": json.dumps(event_data)},
+                    maxlen=10000  # Prevent infinite stream growth
+                )
+                self._ee_logger.debug(f"Event dispatched to Redis Stream: {event.event_id}")
+        except Exception as e:
+            # Critical: Dispatching must NEVER crash the core agent logic
+            self._ee_logger.error(f"Redis Dispatch Failed: {e}")
 
     @staticmethod
     def observe_execution(event_prefix: str):
