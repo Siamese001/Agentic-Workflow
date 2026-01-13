@@ -16,6 +16,7 @@ Opt-out cases:
 FILESYSTEM COMPLIANCE: All file operations use safe_path_join from structure_blueprint
 """
 from ast import parse, unparse
+import ast
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 import logging
@@ -61,6 +62,8 @@ class HealerMixin:
         self._healing_cache: Dict[str, Tuple[float, bool]] = {}  # {type: (ts, success)}
         self._healing_metrics = {"count": 0, "total_time": 0.0, "success_count": 0}
         self._cache_ttl = 300  # 5min suppression (configurable)
+        self._max_heal_depth = 5
+        self._current_heal_depth = 0
 
     def heal(self, violation: Dict[str, Any], anomaly: Optional[AnomalyReport] = None) -> bool:
         """
@@ -100,6 +103,12 @@ class HealerMixin:
         if self._healing_count >= self._max_healing_per_session:
             Logger.warning(f"[HEALING] {self.__class__.__name__}: Budget exhausted")
             return False
+
+        self._current_heal_depth += 1
+        if self._current_heal_depth > self._max_heal_depth:
+            self._current_heal_depth -= 1
+            Logger.critical("Healing recursion depth exceeded")
+            return False
         
         # Prerequisite check - need tools or transformer capability
         if not self._can_heal():
@@ -126,8 +135,21 @@ class HealerMixin:
             if fixed_ast is None:
                 Logger.debug(f"[HEALING] No fix applied for {violation.get('class_name')}")
                 return False
+
+            try:
+                if hasattr(ast, 'validate'):
+                    ast.validate(fixed_ast)
+            except Exception as e:
+                Logger.error(f"Post-heal AST validation failed: {e}")
+                return False
             
             fixed_code = unparse(fixed_ast)
+
+            try:
+                compile(fixed_code, str(file_path), 'exec')
+            except Exception as e:
+                Logger.error(f"Post-heal static compile failed: {e}")
+                return False
             
             # Atomic write
             file_path.write_text(fixed_code, encoding='utf-8')
@@ -162,6 +184,7 @@ class HealerMixin:
                 pass
             return False
         finally:
+            self._current_heal_depth = max(0, self._current_heal_depth - 1)
             # Track metrics
             duration = time.time() - start_time
             self._healing_metrics["count"] += 1

@@ -1,5 +1,6 @@
 import logging
 import inspect
+import asyncio
 import hashlib
 import json
 from functools import wraps
@@ -25,8 +26,20 @@ class StateValidationMixin:
         # Simple in-memory ledger for idempotency (could be backed by Redis in future)
         self._operation_ledger: Dict[str, Any] = {}
 
+    def _run_conditions(self, conditions: List[Callable[..., bool]], result: Any = None) -> None:
+        for condition in conditions:
+            sig = inspect.signature(condition)
+            if len(sig.parameters) == 1:
+                ok = condition(self)
+            else:
+                ok = condition(self, result)
+            if not ok:
+                raise StateValidationError(f"Condition failed: {getattr(condition, '__name__', 'condition')}")
+
     def _generate_op_hash(self, func_name: str, args: tuple, kwargs: dict) -> str:
         """Generates a unique deterministic hash for an operation call."""
+        if len(str(args)) + len(str(kwargs)) > 100_000:
+            return None
         # Convert args/kwargs to sorted JSON string for consistency
         try:
             payload = {
@@ -71,11 +84,14 @@ class StateValidationMixin:
                     try:
                         # Handle single function or list of functions
                         pre_conditions = pre if isinstance(pre, list) else [pre]
-                        for condition in pre_conditions:
-                            if not condition(self):
-                                raise StateValidationError(f"Pre-condition failed for {func.__name__}")
+                        await asyncio.wait_for(
+                            asyncio.to_thread(lambda: self._run_conditions(pre_conditions, None)),
+                            timeout=3.5,
+                        )
+                    except asyncio.TimeoutError:
+                        raise StateValidationError(f"Pre-condition check timeout for {func.__name__}")
                     except Exception as e:
-                        raise StateValidationError(f"Pre-condition error in {func.__name__}: {e}")
+                        raise StateValidationError(f"Pre-condition failed: {e}")
 
                 # 3. Execution
                 result = await func(self, *args, **kwargs)
@@ -94,6 +110,13 @@ class StateValidationMixin:
                 # 5. Cache Result (if idempotent)
                 if idempotent and op_hash:
                     self._operation_ledger[op_hash] = result
+
+                if hasattr(self, 'emit_event'):
+                    self.emit_event(
+                        "state_validation.success" if result is not None else "state_validation.failed",
+                        {"method": func.__name__},
+                        severity="INFO" if result is not None else "WARNING",
+                    )
 
                 return result
             return wrapper
