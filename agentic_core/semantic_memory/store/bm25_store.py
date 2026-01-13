@@ -41,8 +41,9 @@ class Bm25Store:
             doc: Any = self.documents[idx]
             results.append({'source': 'bm25', 'content': doc['text'], 'score': float(score), 'id': doc['id'], 'metadata': doc.get('metadata', {})})
         return results
-Bm25Store: Any = BM25Store()
+
+_bm25_store: Any = Bm25Store()
 
 def get_bm25_store() -> BM25Store:
     """Brief description of functionality and purpose."""
-    return Bm25Store
+    return _bm25_store
