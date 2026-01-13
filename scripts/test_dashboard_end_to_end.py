@@ -552,7 +552,7 @@ def run_all_tests() -> bool:
             dashboard_data_test = json.loads(data_match.group(1))
             
             # Check Table 2 fields exist in dashboard data
-            table2_fields = ['Typed %', 'Documented %', 'Schema Strictness %', 'Proper Base %', 'Code Quality Score']
+            table2_fields = ['Typed %', 'Documented %', 'Schema Strictness %', 'Canonical Inheritance %', 'Code Quality Score']
             
             if dashboard_data_test and len(dashboard_data_test) > 0:
                 total_row = dashboard_data_test[0]
@@ -576,19 +576,19 @@ def run_all_tests() -> bool:
                         print(f"✅ Test 12 PASSED: Table 2 data valid")
                         print(f"   Typed: {typed_pct}%, Documented: {doc_pct}%, Quality: {quality_score}")
                     
-                    # Test 12A: Proper Base % Accuracy (cross-validate with discovery data)
-                    proper_base_pct = total_row.get('Proper Base %', 0)
+                    # Test 12A: Canonical Inheritance % Accuracy (cross-validate with discovery data)
+                    proper_base_pct = total_row.get('Canonical Inheritance %', 0)
                     proper_base_true = sum(1 for a in agents if a.get('proper_base_class', False))
                     expected_proper_base = round((proper_base_true / len(agents)) * 100, 1) if agents else 0
                     tolerance = 1.0  # Allow 1% variance
                     
                     if abs(proper_base_pct - expected_proper_base) > tolerance:
-                        errors.append(f"Test 12A FAILED: Proper Base % mismatch")
+                        errors.append(f"Test 12A FAILED: Canonical Inheritance % mismatch")
                         errors.append(f"  Expected: {expected_proper_base:.1f}% ({proper_base_true}/{len(agents)} agents)")
                         errors.append(f"  Actual: {proper_base_pct}%")
                         errors.append(f"  Difference: {abs(proper_base_pct - expected_proper_base):.1f}%")
                     else:
-                        print(f"✅ Test 12A PASSED: Proper Base % accurate ({proper_base_pct}% vs {expected_proper_base:.1f}% expected)")
+                        print(f"✅ Test 12A PASSED: Canonical Inheritance % accurate ({proper_base_pct}% vs {expected_proper_base:.1f}% expected)")
             else:
                 errors.append("Test 12 FAILED: No dashboard data to validate Table 2")
     
@@ -613,7 +613,7 @@ def run_all_tests() -> bool:
             # Check first 5 territories for accuracy
             for territory_row in dashboard_data_test[1:6]:  # Skip TOTAL
                 territory_name = territory_row.get('Territory', '')
-                dashboard_proper_base = territory_row.get('Proper Base %', 0)
+                dashboard_proper_base = territory_row.get('Canonical Inheritance %', 0)
                 
                 # Find agents in this territory
                 territory_agents = [a for a in agents if a.get('territory') == territory_name]
@@ -626,11 +626,11 @@ def run_all_tests() -> bool:
                         territory_errors.append(f"{territory_name}: Expected {expected_pct}%, Got {dashboard_proper_base}%")
             
             if territory_errors:
-                errors.append(f"Test 12B FAILED: {len(territory_errors)} territories have incorrect Proper Base %")
+                errors.append(f"Test 12B FAILED: {len(territory_errors)} territories have incorrect Canonical Inheritance %")
                 for err in territory_errors[:3]:  # Show first 3
                     errors.append(f"  - {err}")
             else:
-                print(f"✅ Test 12B PASSED: Territory-level Proper Base % accurate (sampled 5 territories)")
+                print(f"✅ Test 12B PASSED: Territory-level Canonical Inheritance % accurate (sampled 5 territories)")
         else:
             errors.append("Test 12B FAILED: Could not extract dashboard data")
     
@@ -785,8 +785,8 @@ def run_all_tests() -> bool:
             ('const dashboardData =', 'dashboardData declaration'),
             ('const realAgentData =', 'realAgentData declaration'),
             ('function loadData()', 'loadData function'),
-            ("row['Base Class Inherit %']", 'Base Class Inherit % JS reference'),
-            ('parseFloat(row[\'Base Class Inherit %\']', 'Base Class Inherit % parsing')
+            ("row['Canonical Inheritance %']", 'Canonical Inheritance % JS reference'),
+            ('parseFloat(row[\'Canonical Inheritance %\']', 'Canonical Inheritance % parsing')
         ]
         
         missing_js = []
@@ -799,11 +799,11 @@ def run_all_tests() -> bool:
         else:
             print(f"✅ Test 15B PASSED: All critical JavaScript elements present")
         
-        # Verify Base Class Inherit % is actually used in rendering
-        if "row['Base Class Inherit %']" not in html_content:
-            errors.append("Test 15C FAILED: Base Class Inherit % not referenced in JavaScript rendering code")
+        # Verify Canonical Inheritance % is actually used in rendering
+        if "row['Canonical Inheritance %']" not in html_content:
+            errors.append("Test 15C FAILED: Canonical Inheritance % not referenced in JavaScript rendering code")
         else:
-            print(f"✅ Test 15C PASSED: Base Class Inherit % properly referenced in JS")
+            print(f"✅ Test 15C PASSED: Canonical Inheritance % properly referenced in JS")
     
     except Exception as e:
         errors.append(f"Test 15 FAILED: Could not validate browser cache/JS: {e}")
@@ -876,16 +876,17 @@ def run_all_tests() -> bool:
         # Get actual territories from dashboard
         dashboard_territories = {row['Territory'] for row in dashboard_data if row['Territory'] != 'TOTAL'}
         
-        # CRITICAL: Check for Base Class territories for each layer (8 total)
+        # CRITICAL: Check for Base Agent territories for each layer (8 total)
+        # Note: These are "Base Agent" territories, not "Base Class" - they contain the canonical base agents
         expected_base_classes = [
-            "Base/Base Class",
-            "L5 Safety/Base Class", 
-            "L4 State/Base Class",
-            "L3 Orchestration/Base Class",
-            "L2 Execution/Base Class",
-            "L1 Cognition/Base Class",
-            "L0 Maintenance/Base Class",
-            "L6_Observability/Base Class"
+            "Base/Root",
+            "L5 Safety/Base Agent", 
+            "L4 State/Base Agent",
+            "L3 Orchestration/Base Agent",
+            "L2 Execution/Base Agent",
+            "L1 Cognition/Base Agent",
+            "L0 Maintenance/Base Agent",
+            "L6 Observability/Base Agent"
         ]
         
         missing_base_classes = []
