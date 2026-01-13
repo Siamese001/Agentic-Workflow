@@ -38,7 +38,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ATSCompatibilityAgent",
@@ -50,9 +51,9 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "ResumeAgent",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "HealerMixin"
+      "ResumeAgent"
     ],
     "key_methods": [
       "execute",
@@ -81,7 +82,8 @@
     },
     "cyclomatic_complexity": 18,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "BrandComplianceAgent",
@@ -122,7 +124,8 @@
     },
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CampaignBalanceAgent",
@@ -134,8 +137,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
       "HealerMixin",
+      "SubatomicTestingMixin",
       "OutreachAgent"
     ],
     "key_methods": [
@@ -164,7 +167,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CampaignPlannerAgent",
@@ -204,7 +208,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CapabilityMonitorAgent",
@@ -216,8 +221,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -250,7 +255,8 @@
     },
     "cyclomatic_complexity": 14,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "ContactValidatorAgent",
@@ -290,7 +296,8 @@
     },
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ContentCleanlinessValidatorAgent",
@@ -332,7 +339,8 @@
     },
     "cyclomatic_complexity": 12,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ContentQualityAgent",
@@ -373,7 +381,8 @@
     },
     "cyclomatic_complexity": 17,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ConvergenceDetectorAgent",
@@ -384,8 +393,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -418,7 +427,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "DeliverabilityAgent",
@@ -458,7 +468,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DispatchOutreachToolsAgent",
@@ -504,7 +515,8 @@
     },
     "cyclomatic_complexity": 19,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DispatchResumeToolsAgent",
@@ -552,7 +564,8 @@
     },
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "FactCheckAgent",
@@ -594,7 +607,8 @@
     },
     "cyclomatic_complexity": 29,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HOP1ProfileAnalysisAgent",
@@ -606,8 +620,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -640,7 +654,8 @@
     },
     "cyclomatic_complexity": 35,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HOP2ResearchAgent",
@@ -652,8 +667,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -689,7 +704,8 @@
     },
     "cyclomatic_complexity": 48,
     "proper_base_class": true,
-    "schema_strictness": 90.9
+    "schema_strictness": 90.9,
+    "has_metadata": true
   },
   {
     "class_name": "HOP3SenderGroundingAgent",
@@ -701,8 +717,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -731,7 +747,8 @@
     },
     "cyclomatic_complexity": 21,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HOP4RoutingAgent",
@@ -743,8 +760,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -773,7 +790,8 @@
     },
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HOP5GenerationAgent",
@@ -785,8 +803,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -822,7 +840,8 @@
     },
     "cyclomatic_complexity": 50,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HOP6ValidationAgent",
@@ -834,8 +853,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -869,7 +888,8 @@
     },
     "cyclomatic_complexity": 55,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HOP7GateDecisionAgent",
@@ -881,8 +901,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -912,7 +932,8 @@
     },
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HOP8QAReportAgent",
@@ -924,8 +945,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -956,7 +977,8 @@
     },
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HOPOrchestratorAgent",
@@ -968,8 +990,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -998,7 +1020,8 @@
     },
     "cyclomatic_complexity": 12,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "IntelligenceLibrarianAgent",
@@ -1010,8 +1033,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1047,7 +1070,8 @@
     },
     "cyclomatic_complexity": 53,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "LeadQualityAgent",
@@ -1086,7 +1110,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "LicHealingOrchestratorAgent",
@@ -1097,8 +1122,8 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -1128,7 +1153,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "LicInternalAgent",
@@ -1175,7 +1201,8 @@
     },
     "cyclomatic_complexity": 38,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "LicOrganizationAgent",
@@ -1218,7 +1245,8 @@
     },
     "cyclomatic_complexity": 12,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "LicRecipientAgent",
@@ -1261,7 +1289,8 @@
     },
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "LicReflectionAgent",
@@ -1301,7 +1330,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "LicS2SupervisorAgent",
@@ -1346,7 +1376,8 @@
     },
     "cyclomatic_complexity": 54,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "LicTemplateOptimizerAgent",
@@ -1386,7 +1417,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "LicWorkflowOrchestratorAgent",
@@ -1398,8 +1430,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1428,7 +1460,8 @@
     },
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "MessageComplianceAgent",
@@ -1468,7 +1501,8 @@
     },
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "MessageDiversityValidatorAgent",
@@ -1510,7 +1544,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "OutreachCapabilityMonitorAgent",
@@ -1555,7 +1590,8 @@
     },
     "cyclomatic_complexity": 13,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "OutreachLearningAgent",
@@ -1567,8 +1603,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
       "HealerMixin",
+      "SubatomicTestingMixin",
       "OutreachAgent"
     ],
     "key_methods": [
@@ -1601,7 +1637,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "OutreachPhase5OrchestratorAgent",
@@ -1648,7 +1685,8 @@
     },
     "cyclomatic_complexity": 12,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "OutreachProactiveAgent",
@@ -1689,7 +1727,8 @@
     },
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "OutreachSignalRouterAgent",
@@ -1731,7 +1770,8 @@
     },
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
-    "schema_strictness": 25.0
+    "schema_strictness": 25.0,
+    "has_metadata": true
   },
   {
     "class_name": "OutreachTestPilotAgent",
@@ -1771,7 +1811,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "OutreachTestPilotDeprecatedAgent",
@@ -1810,7 +1851,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "OutreachValidationExecutorAgent",
@@ -1821,10 +1863,10 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
       "ValidationGateExecutor",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "MCPHardenedMixin",
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1860,7 +1902,8 @@
     },
     "cyclomatic_complexity": 65,
     "proper_base_class": true,
-    "schema_strictness": 92.3
+    "schema_strictness": 92.3,
+    "has_metadata": true
   },
   {
     "class_name": "Phase4OrchestratorAgent",
@@ -1871,8 +1914,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -1903,7 +1946,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "Phase6OrchestratorAgent",
@@ -1914,8 +1958,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -1948,7 +1992,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "Phase7OrchestratorAgent",
@@ -1959,8 +2004,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -1996,7 +2041,8 @@
     },
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "PlaceholderDetectorAgent",
@@ -2037,7 +2083,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ProactiveAgent",
@@ -2080,7 +2127,8 @@
     },
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "ResumeLearningAgent",
@@ -2092,8 +2140,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2128,7 +2176,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "RgHealingOrchestratorAgent",
@@ -2139,8 +2188,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -2170,7 +2219,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "RgReflectionAgent",
@@ -2211,7 +2261,8 @@
     },
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "RgResumeOrchestratorAgent",
@@ -2222,8 +2273,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -2260,7 +2311,8 @@
     },
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "RgStrategicPlannerAgent",
@@ -2300,7 +2352,8 @@
     },
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "RgTemplateOptimizerAgent",
@@ -2341,7 +2394,8 @@
     },
     "cyclomatic_complexity": 12,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SafetyExecutorAgent",
@@ -2381,7 +2435,8 @@
     },
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SectionBalanceAgent",
@@ -2422,7 +2477,8 @@
     },
     "cyclomatic_complexity": 17,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SignalRouterAgent",
@@ -2464,7 +2520,8 @@
     },
     "cyclomatic_complexity": 13,
     "proper_base_class": true,
-    "schema_strictness": 25.0
+    "schema_strictness": 25.0,
+    "has_metadata": true
   },
   {
     "class_name": "StrictDocEnforcerAgent",
@@ -2510,7 +2567,8 @@
     },
     "cyclomatic_complexity": 34,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "TestValidationAgent",
@@ -2558,7 +2616,8 @@
     },
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
-    "schema_strictness": 10.0
+    "schema_strictness": 10.0,
+    "has_metadata": true
   },
   {
     "class_name": "UnifiedOrchestratorAgent",
@@ -2569,8 +2628,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -2603,7 +2662,8 @@
     },
     "cyclomatic_complexity": 14,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ValidationAgent",
@@ -2649,7 +2709,8 @@
     },
     "cyclomatic_complexity": 38,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SovereignBaseAgent",
@@ -2696,7 +2757,8 @@
     },
     "cyclomatic_complexity": 12,
     "proper_base_class": true,
-    "schema_strictness": 90.9
+    "schema_strictness": 90.9,
+    "has_metadata": true
   },
   {
     "class_name": "BootstrapAgent",
@@ -2740,7 +2802,8 @@
     },
     "cyclomatic_complexity": 29,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "FilesystemSSOTReconcilerAgent",
@@ -2753,8 +2816,8 @@
     "inheritance": [
       "SelfDiagnosisMixin",
       "L0Agent",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2790,7 +2853,8 @@
     },
     "cyclomatic_complexity": 114,
     "proper_base_class": true,
-    "schema_strictness": 94.1
+    "schema_strictness": 94.1,
+    "has_metadata": true
   },
   {
     "class_name": "GapClosureArchitectAgent",
@@ -2829,7 +2893,8 @@
     },
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "GospelSyncAgent",
@@ -2872,7 +2937,8 @@
     },
     "cyclomatic_complexity": 18,
     "proper_base_class": true,
-    "schema_strictness": 83.3
+    "schema_strictness": 83.3,
+    "has_metadata": true
   },
   {
     "class_name": "GuardianOrchestratorAgent",
@@ -2885,8 +2951,8 @@
     "inheritance": [
       "SelfDiagnosisMixin",
       "L0Agent",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2922,7 +2988,8 @@
     },
     "cyclomatic_complexity": 19,
     "proper_base_class": true,
-    "schema_strictness": 80.0
+    "schema_strictness": 80.0,
+    "has_metadata": true
   },
   {
     "class_name": "L0Agent",
@@ -2963,7 +3030,8 @@
     },
     "cyclomatic_complexity": 4,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "MetricsWitnessAgent",
@@ -2976,8 +3044,8 @@
     "inheritance": [
       "SelfDiagnosisMixin",
       "L0Agent",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3011,7 +3079,8 @@
     },
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "PreCommitSovereignAgent",
@@ -3056,7 +3125,8 @@
     },
     "cyclomatic_complexity": 27,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "ScriptToAgentClassifierAgent",
@@ -3069,8 +3139,8 @@
     "inheritance": [
       "SelfDiagnosisMixin",
       "L0Agent",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3105,7 +3175,8 @@
     },
     "cyclomatic_complexity": 45,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ScriptsPlanningOrchestratorAgent",
@@ -3149,7 +3220,8 @@
     },
     "cyclomatic_complexity": 28,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "AsyncBlockingValidatorAgent",
@@ -3162,8 +3234,8 @@
     "inheritance": [
       "MCPHardenedMixin",
       "CanonASTValidator",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3193,7 +3265,8 @@
     },
     "cyclomatic_complexity": 12,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "BareExceptValidatorAgent",
@@ -3205,8 +3278,8 @@
     "category": "Validator",
     "inheritance": [
       "CanonASTValidator",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -3234,7 +3307,8 @@
     },
     "cyclomatic_complexity": 4,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "BudgetAgent",
@@ -3277,7 +3351,8 @@
     },
     "cyclomatic_complexity": 22,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CanonValidatorAgent",
@@ -3289,8 +3364,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3326,7 +3401,8 @@
     },
     "cyclomatic_complexity": 59,
     "proper_base_class": true,
-    "schema_strictness": 95.7
+    "schema_strictness": 95.7,
+    "has_metadata": true
   },
   {
     "class_name": "CognitiveContractValidatorAgent",
@@ -3370,7 +3446,8 @@
     },
     "cyclomatic_complexity": 37,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ConsolidatedOrchestratorAgent",
@@ -3416,7 +3493,8 @@
     },
     "cyclomatic_complexity": 43,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "DangerousBuiltinsValidatorAgent",
@@ -3428,8 +3506,8 @@
     "category": "Validator",
     "inheritance": [
       "CanonASTValidator",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "visit_Call",
@@ -3457,7 +3535,8 @@
     },
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DebuggerValidatorAgent",
@@ -3469,8 +3548,8 @@
     "category": "Validator",
     "inheritance": [
       "CanonASTValidator",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "visit_Call",
@@ -3498,7 +3577,8 @@
     },
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DocumentationAgent",
@@ -3510,8 +3590,8 @@
     "category": "GenericAgent",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "execute",
@@ -3542,7 +3622,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "EmptyExceptValidatorAgent",
@@ -3554,8 +3635,8 @@
     "category": "Validator",
     "inheritance": [
       "CanonASTValidator",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -3583,7 +3664,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "EvalExecValidatorAgent",
@@ -3595,8 +3677,8 @@
     "category": "Validator",
     "inheritance": [
       "CanonASTValidator",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "visit_Call",
@@ -3624,7 +3706,8 @@
     },
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ExternalHttpValidatorAgent",
@@ -3636,8 +3719,8 @@
     "category": "Validator",
     "inheritance": [
       "CanonASTValidator",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "visit_Import",
@@ -3666,7 +3749,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "GenerativeGuardAgent",
@@ -3677,9 +3761,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
-      "CanonBaseAgentInterface",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "CanonBaseAgentInterface"
     ],
     "key_methods": [
       "__init__",
@@ -3715,7 +3799,8 @@
     },
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
-    "schema_strictness": 62.5
+    "schema_strictness": 62.5,
+    "has_metadata": true
   },
   {
     "class_name": "GenerativeGuardDeprecatedAgent",
@@ -3726,9 +3811,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
-      "CanonBaseAgentInterface",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "CanonBaseAgentInterface"
     ],
     "key_methods": [
       "heal_repository",
@@ -3764,7 +3849,8 @@
     },
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
-    "schema_strictness": 62.5
+    "schema_strictness": 62.5,
+    "has_metadata": true
   },
   {
     "class_name": "GovernanceAgent",
@@ -3813,7 +3899,8 @@
     },
     "cyclomatic_complexity": 110,
     "proper_base_class": true,
-    "schema_strictness": 90.0
+    "schema_strictness": 90.0,
+    "has_metadata": true
   },
   {
     "class_name": "HealerAgent",
@@ -3824,8 +3911,8 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
-      "CanonBaseAgentInterface",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonBaseAgentInterface"
     ],
     "key_methods": [
       "heal_repository",
@@ -3857,7 +3944,8 @@
     },
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "IntelligentOrchestratorAgent",
@@ -3900,7 +3988,8 @@
     },
     "cyclomatic_complexity": 19,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "L1Agent",
@@ -3940,7 +4029,8 @@
     },
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "L1CognitionExerciserAgent",
@@ -3987,7 +4077,8 @@
     },
     "cyclomatic_complexity": 26,
     "proper_base_class": true,
-    "schema_strictness": 90.0
+    "schema_strictness": 90.0,
+    "has_metadata": true
   },
   {
     "class_name": "PatternEnforcerAgent",
@@ -4036,7 +4127,8 @@
     },
     "cyclomatic_complexity": 84,
     "proper_base_class": true,
-    "schema_strictness": 94.7
+    "schema_strictness": 94.7,
+    "has_metadata": true
   },
   {
     "class_name": "PrintStatementValidatorAgent",
@@ -4048,8 +4140,8 @@
     "category": "Validator",
     "inheritance": [
       "CanonASTValidator",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "visit_Call",
@@ -4077,7 +4169,8 @@
     },
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "PromptRegistryAgent",
@@ -4124,7 +4217,8 @@
     },
     "cyclomatic_complexity": 38,
     "proper_base_class": true,
-    "schema_strictness": 88.9
+    "schema_strictness": 88.9,
+    "has_metadata": true
   },
   {
     "class_name": "ReasoningRouterAgent",
@@ -4168,7 +4262,8 @@
     },
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
-    "schema_strictness": 80.0
+    "schema_strictness": 80.0,
+    "has_metadata": true
   },
   {
     "class_name": "SemanticMapperAgent",
@@ -4208,7 +4303,8 @@
     },
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SovereignCognitivePlaneAgent",
@@ -4219,8 +4315,8 @@
     "territory": "L1 Cognition/Core",
     "category": "Cognition",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ICognitivePlane"
+      "ICognitivePlane",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4253,7 +4349,8 @@
     },
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "SystemArchitectDeprecatedAgent",
@@ -4264,9 +4361,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
-      "CanonBaseAgentInterface",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "CanonBaseAgentInterface"
     ],
     "key_methods": [
       "__init__",
@@ -4302,7 +4399,8 @@
     },
     "cyclomatic_complexity": 47,
     "proper_base_class": true,
-    "schema_strictness": 92.9
+    "schema_strictness": 92.9,
+    "has_metadata": true
   },
   {
     "class_name": "TypeMechanicAgent",
@@ -4350,7 +4448,8 @@
     },
     "cyclomatic_complexity": 42,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "UiValidationAgent",
@@ -4391,7 +4490,8 @@
     },
     "cyclomatic_complexity": 4,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CanonAstValidatorAgent",
@@ -4403,9 +4503,9 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
+      "NodeVisitor",
       "HealerMixin",
-      "NodeVisitor"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4435,7 +4535,8 @@
     },
     "cyclomatic_complexity": 8,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CartographerAgent",
@@ -4447,9 +4548,9 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "HealerMixin"
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "can_run",
@@ -4479,7 +4580,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CodeDeduplicationAgent",
@@ -4491,8 +4593,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "PineconeVectorMixin",
       "HealerMixin",
+      "PineconeVectorMixin",
       "RedisCacheMixin"
     ],
     "key_methods": [
@@ -4529,7 +4631,8 @@
     },
     "cyclomatic_complexity": 153,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CodeJanitorAgent",
@@ -4541,8 +4644,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -4578,7 +4681,8 @@
     },
     "cyclomatic_complexity": 79,
     "proper_base_class": true,
-    "schema_strictness": 84.6
+    "schema_strictness": 84.6,
+    "has_metadata": true
   },
   {
     "class_name": "ContextAwareValidatorAgent",
@@ -4625,7 +4729,8 @@
     },
     "cyclomatic_complexity": 13,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ContextCuratorAgent",
@@ -4673,7 +4778,8 @@
     },
     "cyclomatic_complexity": 64,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "DeadCodeDetectorAgent",
@@ -4721,7 +4827,8 @@
     },
     "cyclomatic_complexity": 45,
     "proper_base_class": true,
-    "schema_strictness": 55.6
+    "schema_strictness": 55.6,
+    "has_metadata": true
   },
   {
     "class_name": "DependencyDiplomatAgent",
@@ -4769,7 +4876,8 @@
     },
     "cyclomatic_complexity": 61,
     "proper_base_class": true,
-    "schema_strictness": 70.0
+    "schema_strictness": 70.0,
+    "has_metadata": true
   },
   {
     "class_name": "DocEnforcerAgent",
@@ -4809,7 +4917,8 @@
     },
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DriftDetectorAgent",
@@ -4851,7 +4960,8 @@
     },
     "cyclomatic_complexity": 13,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DynamicModelRouterAgent",
@@ -4863,8 +4973,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "HealerMixin"
+      "HealerMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -4900,7 +5010,8 @@
     },
     "cyclomatic_complexity": 43,
     "proper_base_class": true,
-    "schema_strictness": 90.9
+    "schema_strictness": 90.9,
+    "has_metadata": true
   },
   {
     "class_name": "DynamicSealAgent",
@@ -4944,7 +5055,8 @@
     },
     "cyclomatic_complexity": 35,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "FallbackManagerAgent",
@@ -4993,7 +5105,8 @@
     },
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "GitAgent",
@@ -5005,8 +5118,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5042,7 +5155,8 @@
     },
     "cyclomatic_complexity": 66,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "GlobalComplianceAggregatorAgent",
@@ -5084,7 +5198,8 @@
     },
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "GravityHealerAgent",
@@ -5096,8 +5211,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -5130,7 +5245,8 @@
     },
     "cyclomatic_complexity": 30,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HistorianAgent",
@@ -5171,7 +5287,8 @@
     },
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
-    "schema_strictness": 33.3
+    "schema_strictness": 33.3,
+    "has_metadata": true
   },
   {
     "class_name": "ImportHealerAgent",
@@ -5217,7 +5334,8 @@
     },
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "IntegrityGateExecutorAgent",
@@ -5265,7 +5383,8 @@
     },
     "cyclomatic_complexity": 37,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "InterfaceBoundaryAgent",
@@ -5308,7 +5427,8 @@
     },
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "L2Agent",
@@ -5320,8 +5440,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -5348,7 +5468,8 @@
     },
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "L2ExecutionBaseAgent",
@@ -5359,8 +5480,8 @@
     "territory": "L2 Execution/Base Class",
     "category": "Validator",
     "inheritance": [
-      "PineconeVectorMixin",
       "SovereignBaseAgent",
+      "PineconeVectorMixin",
       "SubatomicTestingMixin",
       "RedisCacheMixin"
     ],
@@ -5398,7 +5519,8 @@
     },
     "cyclomatic_complexity": 40,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "LLMPromptGovernorAgent",
@@ -5443,7 +5565,8 @@
     },
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "MemoryArchitectAgent",
@@ -5455,8 +5578,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "HealerMixin"
+      "HealerMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -5492,7 +5615,8 @@
     },
     "cyclomatic_complexity": 69,
     "proper_base_class": true,
-    "schema_strictness": 84.6
+    "schema_strictness": 84.6,
+    "has_metadata": true
   },
   {
     "class_name": "MemoryLeakDetectorAgent",
@@ -5539,7 +5663,8 @@
     },
     "cyclomatic_complexity": 74,
     "proper_base_class": true,
-    "schema_strictness": 12.5
+    "schema_strictness": 12.5,
+    "has_metadata": true
   },
   {
     "class_name": "NamingEnforcerAgent",
@@ -5579,7 +5704,8 @@
     },
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "OmniContextAgent",
@@ -5619,7 +5745,8 @@
     },
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "PeerIntelligenceAuditorAgent",
@@ -5665,7 +5792,8 @@
     },
     "cyclomatic_complexity": 34,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ProactiveResourceManagerAgent",
@@ -5714,7 +5842,8 @@
     },
     "cyclomatic_complexity": 68,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "SherlockAgent",
@@ -5727,8 +5856,8 @@
     "inheritance": [
       "MCPHardenedMixin",
       "HealerMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -5762,7 +5891,8 @@
     },
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "SovereignActionPlaneAgent",
@@ -5773,9 +5903,9 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
+      "IActionPlane",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "IActionPlane"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5811,7 +5941,8 @@
     },
     "cyclomatic_complexity": 51,
     "proper_base_class": true,
-    "schema_strictness": 80.0
+    "schema_strictness": 80.0,
+    "has_metadata": true
   },
   {
     "class_name": "SovereignPineconeStoreAgent",
@@ -5859,7 +5990,8 @@
     },
     "cyclomatic_complexity": 26,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SovereignRedisOrchestratorAgent",
@@ -5907,7 +6039,8 @@
     },
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
-    "schema_strictness": 77.8
+    "schema_strictness": 77.8,
+    "has_metadata": true
   },
   {
     "class_name": "SprawlInspectorAgent",
@@ -5950,7 +6083,8 @@
     },
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "StrategistAgent",
@@ -5991,7 +6125,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "StructuralEngineerAgent",
@@ -6003,8 +6138,8 @@
     "category": "Orchestrator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -6039,7 +6174,8 @@
     },
     "cyclomatic_complexity": 52,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SystemArchitectAgent",
@@ -6050,10 +6186,10 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
+      "CanonBaseAgent",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
       "HealerMixin",
-      "CanonBaseAgent"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -6088,7 +6224,8 @@
     },
     "cyclomatic_complexity": 66,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ToolsmithAgent",
@@ -6135,7 +6272,8 @@
     },
     "cyclomatic_complexity": 56,
     "proper_base_class": true,
-    "schema_strictness": 94.1
+    "schema_strictness": 94.1,
+    "has_metadata": true
   },
   {
     "class_name": "TypeEnforcerAgent",
@@ -6175,7 +6313,8 @@
     },
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ActorCriticOrchestratorAgent",
@@ -6220,7 +6359,8 @@
     },
     "cyclomatic_complexity": 21,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "AgentPermissionManagerAgent",
@@ -6266,7 +6406,8 @@
     },
     "cyclomatic_complexity": 30,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "AgentRegistryValidatorAgent",
@@ -6311,7 +6452,8 @@
     },
     "cyclomatic_complexity": 21,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ArchitectureGovernorAgent",
@@ -6355,7 +6497,8 @@
     },
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "AutonomicMonitorAgent",
@@ -6403,7 +6546,8 @@
     },
     "cyclomatic_complexity": 39,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "BenchmarkingAgent",
@@ -6451,7 +6595,8 @@
     },
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
-    "schema_strictness": 35.7
+    "schema_strictness": 35.7,
+    "has_metadata": true
   },
   {
     "class_name": "CachedOrchestratorAgent",
@@ -6499,7 +6644,8 @@
     },
     "cyclomatic_complexity": 17,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "CoordinateObservabilityOperationsAgent",
@@ -6542,7 +6688,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CoverageAgent",
@@ -6589,7 +6736,8 @@
     },
     "cyclomatic_complexity": 27,
     "proper_base_class": true,
-    "schema_strictness": 90.0
+    "schema_strictness": 90.0,
+    "has_metadata": false
   },
   {
     "class_name": "DAGMutatorAgent",
@@ -6600,8 +6748,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6638,7 +6786,8 @@
     },
     "cyclomatic_complexity": 46,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DagEngineAgent",
@@ -6686,7 +6835,8 @@
     },
     "cyclomatic_complexity": 65,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DagExecutorAgent",
@@ -6726,7 +6876,8 @@
     },
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DagRuntimeInspectorAgent",
@@ -6766,7 +6917,8 @@
     },
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DeadlockDetectorAgent",
@@ -6777,8 +6929,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6815,7 +6967,8 @@
     },
     "cyclomatic_complexity": 41,
     "proper_base_class": true,
-    "schema_strictness": 63.6
+    "schema_strictness": 63.6,
+    "has_metadata": true
   },
   {
     "class_name": "FissionManagerAgent",
@@ -6864,7 +7017,8 @@
     },
     "cyclomatic_complexity": 56,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "GeneralExerciserAgent",
@@ -6908,7 +7062,8 @@
     },
     "cyclomatic_complexity": 8,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "GitSafetyHandlerAgent",
@@ -6955,7 +7110,8 @@
     },
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "HallucinationDetectorAgent",
@@ -6997,7 +7153,8 @@
     },
     "cyclomatic_complexity": 4,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HardenedWorkflowOrchestratorAgent",
@@ -7008,8 +7165,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -7040,7 +7197,8 @@
     },
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HierarchyEnforcerAgent",
@@ -7087,7 +7245,8 @@
     },
     "cyclomatic_complexity": 48,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "L3Agent",
@@ -7128,7 +7287,8 @@
     },
     "cyclomatic_complexity": 3,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "McpConnectionManagerAgent",
@@ -7171,7 +7331,8 @@
     },
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "McpRouterAgent",
@@ -7216,7 +7377,8 @@
     },
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "MetaCoverageOptimizerAgent",
@@ -7260,7 +7422,8 @@
     },
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "MetricsAgent",
@@ -7309,7 +7472,8 @@
     },
     "cyclomatic_complexity": 49,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ModelRouterAgent",
@@ -7358,7 +7522,8 @@
     },
     "cyclomatic_complexity": 37,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "NervousSystemAgent",
@@ -7369,11 +7534,11 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "RedisCacheMixin",
       "L3SubatomicTestingMixin",
-      "PineconeVectorMixin"
+      "MCPHardenedMixin",
+      "PineconeVectorMixin",
+      "RedisCacheMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7409,7 +7574,8 @@
     },
     "cyclomatic_complexity": 105,
     "proper_base_class": true,
-    "schema_strictness": 78.6
+    "schema_strictness": 78.6,
+    "has_metadata": true
   },
   {
     "class_name": "NervousSystemPhaseOrchestratorAgent",
@@ -7453,7 +7619,8 @@
     },
     "cyclomatic_complexity": 30,
     "proper_base_class": true,
-    "schema_strictness": 25.0
+    "schema_strictness": 25.0,
+    "has_metadata": true
   },
   {
     "class_name": "OrchestrationBaseAgent",
@@ -7464,9 +7631,9 @@
     "territory": "L3 Orchestration/Base Class",
     "category": "Validator",
     "inheritance": [
+      "SovereignBaseAgent",
       "L3SubatomicTestingMixin",
       "PineconeVectorMixin",
-      "SovereignBaseAgent",
       "RedisCacheMixin"
     ],
     "key_methods": [
@@ -7500,7 +7667,8 @@
     },
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "OrchestratorAgentAndScopeManagerAgent",
@@ -7541,7 +7709,8 @@
     },
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "PPOOrchestratorAgent",
@@ -7586,7 +7755,8 @@
     },
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
-    "schema_strictness": 62.5
+    "schema_strictness": 62.5,
+    "has_metadata": true
   },
   {
     "class_name": "PredictiveCostAuditorAgent",
@@ -7598,8 +7768,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -7635,7 +7805,8 @@
     },
     "cyclomatic_complexity": 63,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "QLearningOrchestratorAgent",
@@ -7681,7 +7852,8 @@
     },
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
-    "schema_strictness": 88.9
+    "schema_strictness": 88.9,
+    "has_metadata": true
   },
   {
     "class_name": "RLOrchestratorAgent",
@@ -7727,7 +7899,8 @@
     },
     "cyclomatic_complexity": 24,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "ReinforceCriticOrchestratorAgent",
@@ -7772,7 +7945,8 @@
     },
     "cyclomatic_complexity": 14,
     "proper_base_class": true,
-    "schema_strictness": 62.5
+    "schema_strictness": 62.5,
+    "has_metadata": true
   },
   {
     "class_name": "ReportingAgent",
@@ -7817,7 +7991,8 @@
     },
     "cyclomatic_complexity": 21,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SSOTOrchestratorAgent",
@@ -7861,7 +8036,8 @@
     },
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "SelfRecoveringOrchestratorAgent",
@@ -7910,7 +8086,8 @@
     },
     "cyclomatic_complexity": 89,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "SemanticGatekeeperAgent",
@@ -7956,7 +8133,8 @@
     },
     "cyclomatic_complexity": 13,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SemanticTerritoryMapperAgent",
@@ -8003,7 +8181,8 @@
     },
     "cyclomatic_complexity": 40,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "SignatureVerifierAgent",
@@ -8046,7 +8225,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SovereignCanonAuditorAgent",
@@ -8058,8 +8238,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8091,7 +8271,8 @@
     },
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SovereignRagOrchestratorAgent",
@@ -8139,7 +8320,8 @@
     },
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
-    "schema_strictness": 40.0
+    "schema_strictness": 40.0,
+    "has_metadata": true
   },
   {
     "class_name": "SubatomicHopAgent",
@@ -8187,7 +8369,8 @@
     },
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "TaskMonitorAgent",
@@ -8229,7 +8412,8 @@
     },
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
-    "schema_strictness": 80.0
+    "schema_strictness": 80.0,
+    "has_metadata": true
   },
   {
     "class_name": "TelemetryAgent",
@@ -8278,7 +8462,8 @@
     },
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
-    "schema_strictness": 91.7
+    "schema_strictness": 91.7,
+    "has_metadata": true
   },
   {
     "class_name": "TerritoryChangeHandlerAgent",
@@ -8290,8 +8475,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
       "FileSystemEventHandler",
+      "HealerMixin",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -8321,7 +8506,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 33.3
+    "schema_strictness": 33.3,
+    "has_metadata": true
   },
   {
     "class_name": "TerritoryHealerAgent",
@@ -8368,7 +8554,8 @@
     },
     "cyclomatic_complexity": 68,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "TestPilotAgent",
@@ -8416,7 +8603,8 @@
     },
     "cyclomatic_complexity": 97,
     "proper_base_class": true,
-    "schema_strictness": 93.3
+    "schema_strictness": 93.3,
+    "has_metadata": true
   },
   {
     "class_name": "TokenBudgetInspectorAgent",
@@ -8456,7 +8644,8 @@
     },
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "TracingAgent",
@@ -8505,7 +8694,8 @@
     },
     "cyclomatic_complexity": 65,
     "proper_base_class": true,
-    "schema_strictness": 81.2
+    "schema_strictness": 81.2,
+    "has_metadata": true
   },
   {
     "class_name": "TrackObservabilityCostAgent",
@@ -8548,7 +8738,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "AutonomousCheckpointManagerAgent",
@@ -8596,7 +8787,8 @@
     },
     "cyclomatic_complexity": 59,
     "proper_base_class": true,
-    "schema_strictness": 70.0
+    "schema_strictness": 70.0,
+    "has_metadata": true
   },
   {
     "class_name": "AutonomousStateGuardianAgent",
@@ -8644,7 +8836,8 @@
     },
     "cyclomatic_complexity": 38,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "CheckpointManagerAgent",
@@ -8689,7 +8882,8 @@
     },
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "FileManagerAgent",
@@ -8733,7 +8927,8 @@
     },
     "cyclomatic_complexity": 30,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "GravityStateAgent",
@@ -8780,7 +8975,8 @@
     },
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "L4Agent",
@@ -8821,7 +9017,8 @@
     },
     "cyclomatic_complexity": 3,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "L4StateExerciserAgent",
@@ -8866,7 +9063,8 @@
     },
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "MemoryManagerAgent",
@@ -8915,7 +9113,8 @@
     },
     "cyclomatic_complexity": 54,
     "proper_base_class": true,
-    "schema_strictness": 93.8
+    "schema_strictness": 93.8,
+    "has_metadata": true
   },
   {
     "class_name": "PineconeSovereignAgent",
@@ -8963,7 +9162,8 @@
     },
     "cyclomatic_complexity": 63,
     "proper_base_class": true,
-    "schema_strictness": 71.4
+    "schema_strictness": 71.4,
+    "has_metadata": true
   },
   {
     "class_name": "RedisSovereignAgent",
@@ -9009,7 +9209,8 @@
     },
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
-    "schema_strictness": 42.9
+    "schema_strictness": 42.9,
+    "has_metadata": true
   },
   {
     "class_name": "SchemaEvolverAgent",
@@ -9021,8 +9222,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -9058,7 +9259,8 @@
     },
     "cyclomatic_complexity": 62,
     "proper_base_class": true,
-    "schema_strictness": 61.5
+    "schema_strictness": 61.5,
+    "has_metadata": true
   },
   {
     "class_name": "StateBaseAgent",
@@ -9069,10 +9271,10 @@
     "territory": "L4 State/Base Class",
     "category": "State",
     "inheritance": [
-      "PineconeVectorMixin",
       "SovereignBaseAgent",
-      "RedisCacheMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "PineconeVectorMixin",
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "recall",
@@ -9108,7 +9310,8 @@
     },
     "cyclomatic_complexity": 47,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SubAtomicRegistryAgent",
@@ -9155,7 +9358,8 @@
     },
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "ValidationContextManagerAgent",
@@ -9202,7 +9406,8 @@
     },
     "cyclomatic_complexity": 28,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "AdversarialProbeAgent",
@@ -9250,7 +9455,8 @@
     },
     "cyclomatic_complexity": 24,
     "proper_base_class": true,
-    "schema_strictness": 90.0
+    "schema_strictness": 90.0,
+    "has_metadata": true
   },
   {
     "class_name": "AdversarialRedTeamerAgent",
@@ -9262,8 +9468,8 @@
     "category": "Guardian",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -9299,7 +9505,8 @@
     },
     "cyclomatic_complexity": 44,
     "proper_base_class": true,
-    "schema_strictness": 87.5
+    "schema_strictness": 87.5,
+    "has_metadata": true
   },
   {
     "class_name": "AutonomousThreatEvolutionAgent",
@@ -9348,7 +9555,8 @@
     },
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
-    "schema_strictness": 55.6
+    "schema_strictness": 55.6,
+    "has_metadata": true
   },
   {
     "class_name": "AutonomyGuardianAgent",
@@ -9360,8 +9568,8 @@
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",
-      "PineconeVectorMixin",
       "HealerMixin",
+      "PineconeVectorMixin",
       "RedisCacheMixin"
     ],
     "key_methods": [
@@ -9397,7 +9605,8 @@
     },
     "cyclomatic_complexity": 75,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "BaseClassEnforcerAgent",
@@ -9440,7 +9649,8 @@
     },
     "cyclomatic_complexity": 27,
     "proper_base_class": true,
-    "schema_strictness": 83.3
+    "schema_strictness": 83.3,
+    "has_metadata": true
   },
   {
     "class_name": "BiasAuditorAgent",
@@ -9485,7 +9695,8 @@
     },
     "cyclomatic_complexity": 18,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "CodeFormatterAgent",
@@ -9527,7 +9738,8 @@
     },
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "CodeSSOTEnforcerAgent",
@@ -9576,7 +9788,8 @@
     },
     "cyclomatic_complexity": 56,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ComplianceOrchestratorAgent",
@@ -9624,7 +9837,8 @@
     },
     "cyclomatic_complexity": 179,
     "proper_base_class": true,
-    "schema_strictness": 89.5
+    "schema_strictness": 89.5,
+    "has_metadata": true
   },
   {
     "class_name": "CompositeGuardrailAgent",
@@ -9668,7 +9882,8 @@
     },
     "cyclomatic_complexity": 18,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "CostGovernorAgent",
@@ -9710,7 +9925,8 @@
     },
     "cyclomatic_complexity": 8,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "DependencyPruningAgent",
@@ -9754,7 +9970,8 @@
     },
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "DocstringComplianceAgent",
@@ -9797,7 +10014,8 @@
     },
     "cyclomatic_complexity": 22,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "DuplicateCodeDetectorAgent",
@@ -9846,7 +10064,8 @@
     },
     "cyclomatic_complexity": 64,
     "proper_base_class": true,
-    "schema_strictness": 83.3
+    "schema_strictness": 83.3,
+    "has_metadata": true
   },
   {
     "class_name": "FileCleanupAgent",
@@ -9893,7 +10112,8 @@
     },
     "cyclomatic_complexity": 42,
     "proper_base_class": true,
-    "schema_strictness": 85.7
+    "schema_strictness": 85.7,
+    "has_metadata": true
   },
   {
     "class_name": "FilesystemAgent",
@@ -9939,7 +10159,8 @@
     },
     "cyclomatic_complexity": 51,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "GitHygieneAgent",
@@ -9985,7 +10206,8 @@
     },
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
-    "schema_strictness": 83.3
+    "schema_strictness": 83.3,
+    "has_metadata": true
   },
   {
     "class_name": "GravityEnforcerAgent",
@@ -10029,7 +10251,8 @@
     },
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "GravityLeakRepairAgent",
@@ -10073,7 +10296,8 @@
     },
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HallucinationHunterAgent",
@@ -10085,8 +10309,8 @@
     "category": "Analyzer",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -10122,7 +10346,8 @@
     },
     "cyclomatic_complexity": 57,
     "proper_base_class": true,
-    "schema_strictness": 16.7
+    "schema_strictness": 16.7,
+    "has_metadata": true
   },
   {
     "class_name": "HealValidatorAgent",
@@ -10169,7 +10394,8 @@
     },
     "cyclomatic_complexity": 35,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HierarchyAgent",
@@ -10218,7 +10444,8 @@
     },
     "cyclomatic_complexity": 139,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HierarchyHealerAgent",
@@ -10263,7 +10490,8 @@
     },
     "cyclomatic_complexity": 78,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "HygieneGuardianAgent",
@@ -10308,7 +10536,8 @@
     },
     "cyclomatic_complexity": 46,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ImportAgent",
@@ -10319,9 +10548,9 @@
     "territory": "L5 Safety/Gravity",
     "category": "Validator",
     "inheritance": [
+      "L4SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L4SubatomicTestingMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10357,7 +10586,8 @@
     },
     "cyclomatic_complexity": 115,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "ImportLockAgent",
@@ -10368,8 +10598,8 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "MetaPathFinder"
+      "MetaPathFinder",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -10405,7 +10635,8 @@
     },
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
-    "schema_strictness": 90.0
+    "schema_strictness": 90.0,
+    "has_metadata": true
   },
   {
     "class_name": "InferenceTypeHintAgent",
@@ -10448,7 +10679,8 @@
     },
     "cyclomatic_complexity": 29,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "InputValidatorAgent",
@@ -10497,7 +10729,8 @@
     },
     "cyclomatic_complexity": 89,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "L5Agent",
@@ -10538,7 +10771,8 @@
     },
     "cyclomatic_complexity": 3,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "L5IntegrityGateExecutorAgent",
@@ -10587,7 +10821,8 @@
     },
     "cyclomatic_complexity": 77,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "L5SafetyExerciserAgent",
@@ -10634,7 +10869,8 @@
     },
     "cyclomatic_complexity": 25,
     "proper_base_class": true,
-    "schema_strictness": 90.0
+    "schema_strictness": 90.0,
+    "has_metadata": true
   },
   {
     "class_name": "LocationAgent",
@@ -10682,7 +10918,8 @@
     },
     "cyclomatic_complexity": 433,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "MCPGuardianAgent",
@@ -10728,7 +10965,8 @@
     },
     "cyclomatic_complexity": 35,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "MethodChangeDetectorAgent",
@@ -10770,7 +11008,8 @@
     },
     "cyclomatic_complexity": 17,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "MultiProviderRouterAgent",
@@ -10817,7 +11056,8 @@
     },
     "cyclomatic_complexity": 99,
     "proper_base_class": true,
-    "schema_strictness": 70.6
+    "schema_strictness": 70.6,
+    "has_metadata": true
   },
   {
     "class_name": "NamingAgent",
@@ -10866,7 +11106,8 @@
     },
     "cyclomatic_complexity": 359,
     "proper_base_class": true,
-    "schema_strictness": 98.0
+    "schema_strictness": 98.0,
+    "has_metadata": true
   },
   {
     "class_name": "NamingLawHealerAgent",
@@ -10915,7 +11156,8 @@
     },
     "cyclomatic_complexity": 48,
     "proper_base_class": true,
-    "schema_strictness": 90.0
+    "schema_strictness": 90.0,
+    "has_metadata": true
   },
   {
     "class_name": "NamingNormalizationAgent",
@@ -10960,7 +11202,8 @@
     },
     "cyclomatic_complexity": 26,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "NeuralAutoImmuneAgent",
@@ -10971,12 +11214,12 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin",
       "AdaptiveExecutionMixin",
+      "SubatomicTestingMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "MCPHardenedMixin",
+      "AutonomyMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11012,7 +11255,8 @@
     },
     "cyclomatic_complexity": 49,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "PascalSovereigntyEnforcerAgent",
@@ -11023,10 +11267,10 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
       "ASTEnforcementMixin",
-      "SubatomicTestingMixin",
-      "CanonBaseAgent"
+      "MCPHardenedMixin",
+      "CanonBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11062,7 +11306,8 @@
     },
     "cyclomatic_complexity": 67,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "PolicyNeuralAutoImmuneAgent",
@@ -11103,7 +11348,8 @@
     },
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": false
   },
   {
     "class_name": "PythonFileSovereigntyEnforcerAgent",
@@ -11147,7 +11393,8 @@
     },
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "RedSentinelAgent",
@@ -11194,7 +11441,8 @@
     },
     "cyclomatic_complexity": 37,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "RedTeamAgent",
@@ -11237,7 +11485,8 @@
     },
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "RegressionOracleAgent",
@@ -11283,7 +11532,8 @@
     },
     "cyclomatic_complexity": 50,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "SafetyBaseAgent",
@@ -11294,9 +11544,9 @@
     "territory": "L5 Safety/Base Class",
     "category": "Validator",
     "inheritance": [
+      "SovereignBaseAgent",
       "MCPHardenedMixin",
       "PineconeVectorMixin",
-      "SovereignBaseAgent",
       "RedisCacheMixin"
     ],
     "key_methods": [
@@ -11333,7 +11583,8 @@
     },
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
-    "schema_strictness": 90.0
+    "schema_strictness": 90.0,
+    "has_metadata": true
   },
   {
     "class_name": "SafetyInspectorAgent",
@@ -11377,7 +11628,8 @@
     },
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "SecureCheckpointManagerAgent",
@@ -11426,7 +11678,8 @@
     },
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
-    "schema_strictness": 88.9
+    "schema_strictness": 88.9,
+    "has_metadata": true
   },
   {
     "class_name": "SecureConfigManagerAgent",
@@ -11475,7 +11728,8 @@
     },
     "cyclomatic_complexity": 67,
     "proper_base_class": true,
-    "schema_strictness": 95.0
+    "schema_strictness": 95.0,
+    "has_metadata": true
   },
   {
     "class_name": "SelfUpdatingSafetyEngineAgent",
@@ -11524,7 +11778,8 @@
     },
     "cyclomatic_complexity": 64,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "StructuralHealerAgent",
@@ -11573,7 +11828,8 @@
     },
     "cyclomatic_complexity": 243,
     "proper_base_class": true,
-    "schema_strictness": 97.1
+    "schema_strictness": 97.1,
+    "has_metadata": true
   },
   {
     "class_name": "SyntaxValidatorAgent",
@@ -11617,7 +11873,8 @@
     },
     "cyclomatic_complexity": 29,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "TestCoverageGuardianAgent",
@@ -11665,7 +11922,8 @@
     },
     "cyclomatic_complexity": 67,
     "proper_base_class": true,
-    "schema_strictness": 80.0
+    "schema_strictness": 80.0,
+    "has_metadata": true
   },
   {
     "class_name": "TestSovereigntyAgent",
@@ -11677,8 +11935,8 @@
     "category": "GenericAgent",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11714,7 +11972,8 @@
     },
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
-    "schema_strictness": 90.0
+    "schema_strictness": 90.0,
+    "has_metadata": true
   },
   {
     "class_name": "TypeHintEnforcementAgent",
@@ -11756,7 +12015,8 @@
     },
     "cyclomatic_complexity": 8,
     "proper_base_class": true,
-    "schema_strictness": 0.0
+    "schema_strictness": 0.0,
+    "has_metadata": true
   },
   {
     "class_name": "TypeHintFixerAgent",
@@ -11768,8 +12028,8 @@
     "category": "Healer",
     "inheritance": [
       "NodeTransformer",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11800,7 +12060,8 @@
     },
     "cyclomatic_complexity": 14,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "UnusedCleanupAgent",
@@ -11842,7 +12103,8 @@
     },
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "L6ObservabilityBaseAgent",
@@ -11853,12 +12115,12 @@
     "territory": "L6_Observability/Base Class",
     "category": "Analyzer",
     "inheritance": [
-      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "SovereignBaseAgent",
-      "RedisCacheMixin",
+      "MCPHardenedMixin",
+      "ABC",
       "PineconeVectorMixin",
-      "ABC"
+      "RedisCacheMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "__post_init__",
@@ -11894,7 +12156,8 @@
     },
     "cyclomatic_complexity": 62,
     "proper_base_class": true,
-    "schema_strictness": 75.0
+    "schema_strictness": 75.0,
+    "has_metadata": true
   },
   {
     "class_name": "PerformanceAnalystAgent",
@@ -11937,7 +12200,8 @@
     },
     "cyclomatic_complexity": 18,
     "proper_base_class": true,
-    "schema_strictness": 66.7
+    "schema_strictness": 66.7,
+    "has_metadata": true
   },
   {
     "class_name": "RuntimeTelemetryAgent",
@@ -11979,7 +12243,8 @@
     },
     "cyclomatic_complexity": 8,
     "proper_base_class": true,
-    "schema_strictness": 80.0
+    "schema_strictness": 80.0,
+    "has_metadata": true
   },
   {
     "class_name": "StrategicObservationAgent",
@@ -12020,7 +12285,8 @@
     },
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
-    "schema_strictness": 100.0
+    "schema_strictness": 100.0,
+    "has_metadata": true
   },
   {
     "class_name": "StateValidatorAgent",
@@ -12060,7 +12326,8 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   },
   {
     "class_name": "StateValidatorDeprecatedAgent",
@@ -12100,6 +12367,7 @@
     },
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
-    "schema_strictness": 50.0
+    "schema_strictness": 50.0,
+    "has_metadata": true
   }
 ]

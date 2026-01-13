@@ -7,7 +7,23 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Autonomy Compliance Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js" 
+            onerror="handlePlotlyLoadError()"></script>
+    <script>
+        // Fallback for offline use - detect if Plotly failed to load
+        function handlePlotlyLoadError() {
+            console.warn('Plotly.js failed to load from CDN. Dashboard will work in limited mode.');
+            window.PLOTLY_OFFLINE = true;
+        }
+        
+        // Check if Plotly loaded after page load
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof Plotly === 'undefined') {
+                window.PLOTLY_OFFLINE = true;
+                console.warn('Dashboard running in offline mode - charts disabled');
+            }
+        });
+    </script>
     <style>
         * {
             margin: 0;
@@ -617,31 +633,32 @@
     "Total": 268,
     "Compliant": 268,
     "Heal Cap %": 100.0,
-    "Heal Invocation %": 96.7,
-    "Invocation %": 96.7,
+    "Heal Invocation %": 96.6,
+    "Invocation %": 96.6,
     "Hardened %": 94.4,
     "MCP Capable %": 94.4,
     "Test %": 59.7,
     "Observable %": 100.0,
     "Avg CC": 33.9,
-    "Avg LOC": 150,
+    "Avg LOC": 163.2,
     "Typed %": 86.8,
     "Documented %": 89.3,
     "Metadata %": 100.0,
     "Proper Base %": 100.0,
+    "Base Class Inherit %": 100.0,
     "Schema Strictness %": 86.8,
     "Complexity Health": 37.0,
-    "Code Quality Score": 88.0,
-    "Criticality": 75,
-    "Health": 80.2,
+    "Code Quality Score": 88.1,
+    "Criticality": 73.8,
+    "Health": 80.1,
     "Health Breakdown": "Heal:100+Inv:97+Test:60+Obs:100+CC:37",
-    "Risk": "MED",
+    "Risk": "HIGH",
     "Used %": 95.0,
     "Priority": "ALL",
     "IsInfrastructure": false
   },
   {
-    "Territory": "Base/Base Class",
+    "Territory": "Base/Root",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -652,7 +669,7 @@
     "Test %": 0.0,
     "Observable %": 100.0,
     "Avg CC": 12.0,
-    "Avg LOC": 150,
+    "Avg LOC": 33.0,
     "Typed %": 90.9,
     "Documented %": 90.9,
     "Metadata %": 100.0,
@@ -661,7 +678,7 @@
     "Schema Strictness %": 90.9,
     "Complexity Health": 76.0,
     "Code Quality Score": 90.9,
-    "Criticality": 75,
+    "Criticality": 95,
     "Health": 71.4,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:76",
     "Risk": "MED",
@@ -670,7 +687,94 @@
     "IsInfrastructure": false
   },
   {
-    "Territory": "L5 Safety/Base Class",
+    "Territory": "L6 Observability/Base Agent",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 62.0,
+    "Avg LOC": 312.0,
+    "Typed %": 75.0,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Base Class Inherit %": 100.0,
+    "Schema Strictness %": 75.0,
+    "Complexity Health": 0,
+    "Code Quality Score": 87.5,
+    "Criticality": 95,
+    "Health": 85.0,
+    "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:0",
+    "Risk": "HIGH",
+    "Used %": 95.0,
+    "Priority": 2,
+    "IsInfrastructure": true
+  },
+  {
+    "Territory": "L6 Observability/Metrics",
+    "Total": 2,
+    "Compliant": 2,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 0.0,
+    "Invocation %": 0.0,
+    "Hardened %": 0.0,
+    "MCP Capable %": 0.0,
+    "Test %": 0.0,
+    "Observable %": 100.0,
+    "Avg CC": 11.5,
+    "Avg LOC": 71.0,
+    "Typed %": 83.3,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Base Class Inherit %": 100.0,
+    "Schema Strictness %": 83.3,
+    "Complexity Health": 77.0,
+    "Code Quality Score": 91.7,
+    "Criticality": 30,
+    "Health": 61.5,
+    "Health Breakdown": "Heal:100+Inv:0+Test:0+Obs:100+CC:77",
+    "Risk": "MED",
+    "Used %": 95.0,
+    "Priority": 3,
+    "IsInfrastructure": true
+  },
+  {
+    "Territory": "L6 Observability/Infrastructure",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 0.0,
+    "Observable %": 100.0,
+    "Avg CC": 8.0,
+    "Avg LOC": 58.0,
+    "Typed %": 80.0,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Base Class Inherit %": 100.0,
+    "Schema Strictness %": 80.0,
+    "Complexity Health": 84.0,
+    "Code Quality Score": 90.0,
+    "Criticality": 30,
+    "Health": 72.6,
+    "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:84",
+    "Risk": "MED",
+    "Used %": 95.0,
+    "Priority": 4,
+    "IsInfrastructure": true
+  },
+  {
+    "Territory": "L5 Safety/Base Agent",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -681,7 +785,7 @@
     "Test %": 100.0,
     "Observable %": 100.0,
     "Avg CC": 36.0,
-    "Avg LOC": 150,
+    "Avg LOC": 160.0,
     "Typed %": 90.0,
     "Documented %": 90.0,
     "Metadata %": 100.0,
@@ -690,12 +794,12 @@
     "Schema Strictness %": 90.0,
     "Complexity Health": 28.0,
     "Code Quality Score": 90.0,
-    "Criticality": 75,
+    "Criticality": 100,
     "Health": 89.2,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:28",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 2,
+    "Priority": 5,
     "IsInfrastructure": false
   },
   {
@@ -710,7 +814,7 @@
     "Test %": 65.2,
     "Observable %": 100.0,
     "Avg CC": 71.5,
-    "Avg LOC": 150,
+    "Avg LOC": 258.6,
     "Typed %": 84.5,
     "Documented %": 89.3,
     "Metadata %": 100.0,
@@ -719,12 +823,12 @@
     "Schema Strictness %": 84.5,
     "Complexity Health": 0,
     "Code Quality Score": 86.9,
-    "Criticality": 75,
+    "Criticality": 100,
     "Health": 75.9,
     "Health Breakdown": "Heal:100+Inv:96+Test:65+Obs:100+CC:0",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 3,
+    "Priority": 6,
     "IsInfrastructure": false
   },
   {
@@ -739,7 +843,7 @@
     "Test %": 85.7,
     "Observable %": 100.0,
     "Avg CC": 54.2,
-    "Avg LOC": 150,
+    "Avg LOC": 234.2,
     "Typed %": 81.9,
     "Documented %": 87.5,
     "Metadata %": 100.0,
@@ -748,12 +852,12 @@
     "Schema Strictness %": 81.9,
     "Complexity Health": 0,
     "Code Quality Score": 84.7,
-    "Criticality": 75,
+    "Criticality": 100,
     "Health": 81.1,
     "Health Breakdown": "Heal:100+Inv:96+Test:86+Obs:100+CC:0",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 4,
+    "Priority": 7,
     "IsInfrastructure": false
   },
   {
@@ -768,7 +872,7 @@
     "Test %": 0.0,
     "Observable %": 100.0,
     "Avg CC": 58.0,
-    "Avg LOC": 150,
+    "Avg LOC": 268.0,
     "Typed %": 100.0,
     "Documented %": 97.9,
     "Metadata %": 100.0,
@@ -777,12 +881,12 @@
     "Schema Strictness %": 100.0,
     "Complexity Health": 0,
     "Code Quality Score": 99.0,
-    "Criticality": 75,
+    "Criticality": 100,
     "Health": 60.0,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:0",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 5,
+    "Priority": 8,
     "IsInfrastructure": false
   },
   {
@@ -797,7 +901,7 @@
     "Test %": 100.0,
     "Observable %": 100.0,
     "Avg CC": 22.0,
-    "Avg LOC": 150,
+    "Avg LOC": 123.0,
     "Typed %": 95.0,
     "Documented %": 95.0,
     "Metadata %": 100.0,
@@ -806,16 +910,16 @@
     "Schema Strictness %": 95.0,
     "Complexity Health": 56.0,
     "Code Quality Score": 95.0,
-    "Criticality": 75,
+    "Criticality": 100,
     "Health": 93.4,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:56",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 6,
+    "Priority": 9,
     "IsInfrastructure": false
   },
   {
-    "Territory": "L4 State/Base Class",
+    "Territory": "L4 State/Base Agent",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -826,7 +930,7 @@
     "Test %": 0.0,
     "Observable %": 100.0,
     "Avg CC": 47.0,
-    "Avg LOC": 150,
+    "Avg LOC": 374.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Metadata %": 100.0,
@@ -835,12 +939,12 @@
     "Schema Strictness %": 100.0,
     "Complexity Health": 6.0,
     "Code Quality Score": 100.0,
-    "Criticality": 75,
+    "Criticality": 95,
     "Health": 60.9,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:6",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 7,
+    "Priority": 10,
     "IsInfrastructure": false
   },
   {
@@ -855,7 +959,7 @@
     "Test %": 91.7,
     "Observable %": 100.0,
     "Avg CC": 36.9,
-    "Avg LOC": 150,
+    "Avg LOC": 164.4,
     "Typed %": 77.3,
     "Documented %": 91.4,
     "Metadata %": 100.0,
@@ -864,12 +968,12 @@
     "Schema Strictness %": 77.3,
     "Complexity Health": 26.2,
     "Code Quality Score": 84.3,
-    "Criticality": 75,
+    "Criticality": 85,
     "Health": 86.9,
     "Health Breakdown": "Heal:100+Inv:100+Test:92+Obs:100+CC:26",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 8,
+    "Priority": 11,
     "IsInfrastructure": false
   },
   {
@@ -884,7 +988,7 @@
     "Test %": 100.0,
     "Observable %": 100.0,
     "Avg CC": 30.0,
-    "Avg LOC": 150,
+    "Avg LOC": 139.0,
     "Typed %": 85.7,
     "Documented %": 100.0,
     "Metadata %": 100.0,
@@ -893,16 +997,16 @@
     "Schema Strictness %": 85.7,
     "Complexity Health": 40.0,
     "Code Quality Score": 92.8,
-    "Criticality": 75,
+    "Criticality": 85,
     "Health": 91.0,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:40",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 9,
+    "Priority": 12,
     "IsInfrastructure": false
   },
   {
-    "Territory": "L3 Orchestration/Base Class",
+    "Territory": "L3 Orchestration/Base Agent",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -913,7 +1017,7 @@
     "Test %": 0.0,
     "Observable %": 100.0,
     "Avg CC": 33.0,
-    "Avg LOC": 150,
+    "Avg LOC": 247.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Metadata %": 100.0,
@@ -922,12 +1026,12 @@
     "Schema Strictness %": 100.0,
     "Complexity Health": 34.0,
     "Code Quality Score": 100.0,
-    "Criticality": 75,
+    "Criticality": 95,
     "Health": 65.1,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:34",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 10,
+    "Priority": 13,
     "IsInfrastructure": false
   },
   {
@@ -942,7 +1046,7 @@
     "Test %": 84.3,
     "Observable %": 100.0,
     "Avg CC": 29.7,
-    "Avg LOC": 150,
+    "Avg LOC": 149.8,
     "Typed %": 84.2,
     "Documented %": 87.9,
     "Metadata %": 100.0,
@@ -956,11 +1060,11 @@
     "Health Breakdown": "Heal:100+Inv:100+Test:84+Obs:100+CC:41",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 11,
+    "Priority": 14,
     "IsInfrastructure": false
   },
   {
-    "Territory": "L2 Execution/Base Class",
+    "Territory": "L2 Execution/Base Agent",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -971,7 +1075,7 @@
     "Test %": 100.0,
     "Observable %": 100.0,
     "Avg CC": 40.0,
-    "Avg LOC": 150,
+    "Avg LOC": 168.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Metadata %": 100.0,
@@ -980,12 +1084,12 @@
     "Schema Strictness %": 100.0,
     "Complexity Health": 20.0,
     "Code Quality Score": 100.0,
-    "Criticality": 75,
+    "Criticality": 95,
     "Health": 88.0,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:20",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 12,
+    "Priority": 15,
     "IsInfrastructure": false
   },
   {
@@ -1000,7 +1104,7 @@
     "Test %": 52.6,
     "Observable %": 100.0,
     "Avg CC": 35.4,
-    "Avg LOC": 150,
+    "Avg LOC": 149.7,
     "Typed %": 86.7,
     "Documented %": 86.5,
     "Metadata %": 100.0,
@@ -1009,103 +1113,16 @@
     "Schema Strictness %": 86.7,
     "Complexity Health": 29.2,
     "Code Quality Score": 86.6,
-    "Criticality": 75,
+    "Criticality": 60,
     "Health": 77.3,
     "Health Breakdown": "Heal:100+Inv:97+Test:53+Obs:100+CC:29",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 13,
-    "IsInfrastructure": false
-  },
-  {
-    "Territory": "L1 Cognition/Core",
-    "Total": 28,
-    "Compliant": 28,
-    "Heal Cap %": 100.0,
-    "Heal Invocation %": 92.9,
-    "Invocation %": 92.9,
-    "Hardened %": 96.4,
-    "MCP Capable %": 96.4,
-    "Test %": 64.3,
-    "Observable %": 100.0,
-    "Avg CC": 25.0,
-    "Avg LOC": 150,
-    "Typed %": 91.3,
-    "Documented %": 93.1,
-    "Metadata %": 100.0,
-    "Proper Base %": 100.0,
-    "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 91.3,
-    "Complexity Health": 50.0,
-    "Code Quality Score": 92.2,
-    "Criticality": 75,
-    "Health": 82.9,
-    "Health Breakdown": "Heal:100+Inv:93+Test:64+Obs:100+CC:50",
-    "Risk": "HIGH",
-    "Used %": 95.0,
-    "Priority": 14,
-    "IsInfrastructure": false
-  },
-  {
-    "Territory": "L0 Maintenance/Core",
-    "Total": 10,
-    "Compliant": 10,
-    "Heal Cap %": 100.0,
-    "Heal Invocation %": 90.0,
-    "Invocation %": 90.0,
-    "Hardened %": 100.0,
-    "MCP Capable %": 100.0,
-    "Test %": 10.0,
-    "Observable %": 100.0,
-    "Avg CC": 30.0,
-    "Avg LOC": 150,
-    "Typed %": 93.2,
-    "Documented %": 88.0,
-    "Metadata %": 100.0,
-    "Proper Base %": 100.0,
-    "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 93.2,
-    "Complexity Health": 40.0,
-    "Code Quality Score": 90.6,
-    "Criticality": 75,
-    "Health": 67.5,
-    "Health Breakdown": "Heal:100+Inv:90+Test:10+Obs:100+CC:40",
-    "Risk": "HIGH",
-    "Used %": 95.0,
-    "Priority": 15,
-    "IsInfrastructure": false
-  },
-  {
-    "Territory": "L6_Observability/Metrics",
-    "Total": 3,
-    "Compliant": 3,
-    "Heal Cap %": 100.0,
-    "Heal Invocation %": 33.3,
-    "Invocation %": 33.3,
-    "Hardened %": 33.3,
-    "MCP Capable %": 33.3,
-    "Test %": 33.3,
-    "Observable %": 100.0,
-    "Avg CC": 28.3,
-    "Avg LOC": 150,
-    "Typed %": 80.6,
-    "Documented %": 100.0,
-    "Metadata %": 100.0,
-    "Proper Base %": 100.0,
-    "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 80.6,
-    "Complexity Health": 43.4,
-    "Code Quality Score": 90.3,
-    "Criticality": 75,
-    "Health": 68.2,
-    "Health Breakdown": "Heal:100+Inv:33+Test:33+Obs:100+CC:43",
-    "Risk": "HIGH",
-    "Used %": 95.0,
     "Priority": 16,
-    "IsInfrastructure": true
+    "IsInfrastructure": false
   },
   {
-    "Territory": "L6_Observability/Telemetry",
+    "Territory": "L1 Cognition/Base Agent",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -1113,25 +1130,112 @@
     "Invocation %": 100.0,
     "Hardened %": 100.0,
     "MCP Capable %": 100.0,
-    "Test %": 0.0,
+    "Test %": 100.0,
     "Observable %": 100.0,
-    "Avg CC": 8.0,
-    "Avg LOC": 150,
-    "Typed %": 80.0,
+    "Avg CC": 2.0,
+    "Avg LOC": 32.0,
+    "Typed %": 100.0,
     "Documented %": 100.0,
     "Metadata %": 100.0,
     "Proper Base %": 100.0,
     "Base Class Inherit %": 100.0,
-    "Schema Strictness %": 80.0,
-    "Complexity Health": 84.0,
-    "Code Quality Score": 90.0,
-    "Criticality": 75,
-    "Health": 72.6,
-    "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:84",
-    "Risk": "MED",
+    "Schema Strictness %": 100.0,
+    "Complexity Health": 96.0,
+    "Code Quality Score": 100.0,
+    "Criticality": 95,
+    "Health": 99.4,
+    "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:96",
+    "Risk": "LOW",
     "Used %": 95.0,
     "Priority": 17,
-    "IsInfrastructure": true
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L1 Cognition/Core",
+    "Total": 27,
+    "Compliant": 27,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 92.6,
+    "Invocation %": 92.6,
+    "Hardened %": 96.3,
+    "MCP Capable %": 96.3,
+    "Test %": 63.0,
+    "Observable %": 100.0,
+    "Avg CC": 25.9,
+    "Avg LOC": 108.7,
+    "Typed %": 91.0,
+    "Documented %": 92.9,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Base Class Inherit %": 100.0,
+    "Schema Strictness %": 91.0,
+    "Complexity Health": 48.2,
+    "Code Quality Score": 92.0,
+    "Criticality": 50,
+    "Health": 82.2,
+    "Health Breakdown": "Heal:100+Inv:93+Test:63+Obs:100+CC:48",
+    "Risk": "HIGH",
+    "Used %": 95.0,
+    "Priority": 18,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L0 Maintenance/Base Agent",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 100.0,
+    "Invocation %": 100.0,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 100.0,
+    "Observable %": 100.0,
+    "Avg CC": 4.0,
+    "Avg LOC": 42.0,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Base Class Inherit %": 100.0,
+    "Schema Strictness %": 100.0,
+    "Complexity Health": 92.0,
+    "Code Quality Score": 100.0,
+    "Criticality": 95,
+    "Health": 98.8,
+    "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:92",
+    "Risk": "LOW",
+    "Used %": 95.0,
+    "Priority": 19,
+    "IsInfrastructure": false
+  },
+  {
+    "Territory": "L0 Maintenance/Core",
+    "Total": 9,
+    "Compliant": 9,
+    "Heal Cap %": 100.0,
+    "Heal Invocation %": 88.9,
+    "Invocation %": 88.9,
+    "Hardened %": 100.0,
+    "MCP Capable %": 100.0,
+    "Test %": 0.0,
+    "Observable %": 100.0,
+    "Avg CC": 32.9,
+    "Avg LOC": 175.2,
+    "Typed %": 92.5,
+    "Documented %": 86.6,
+    "Metadata %": 100.0,
+    "Proper Base %": 100.0,
+    "Base Class Inherit %": 100.0,
+    "Schema Strictness %": 92.5,
+    "Complexity Health": 34.2,
+    "Code Quality Score": 89.5,
+    "Criticality": 40,
+    "Health": 64.0,
+    "Health Breakdown": "Heal:100+Inv:89+Test:0+Obs:100+CC:34",
+    "Risk": "HIGH",
+    "Used %": 95.0,
+    "Priority": 20,
+    "IsInfrastructure": false
   },
   {
     "Territory": "Apps Lic",
@@ -1145,7 +1249,7 @@
     "Test %": 40.5,
     "Observable %": 100.0,
     "Avg CC": 19.9,
-    "Avg LOC": 150,
+    "Avg LOC": 118.5,
     "Typed %": 93.9,
     "Documented %": 90.5,
     "Metadata %": 100.0,
@@ -1154,12 +1258,12 @@
     "Schema Strictness %": 93.9,
     "Complexity Health": 60.2,
     "Code Quality Score": 92.2,
-    "Criticality": 75,
+    "Criticality": 70,
     "Health": 78.9,
     "Health Breakdown": "Heal:100+Inv:97+Test:40+Obs:100+CC:60",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 18,
+    "Priority": 21,
     "IsInfrastructure": false
   },
   {
@@ -1174,7 +1278,7 @@
     "Test %": 29.2,
     "Observable %": 100.0,
     "Avg CC": 14.6,
-    "Avg LOC": 150,
+    "Avg LOC": 173.1,
     "Typed %": 86.4,
     "Documented %": 85.4,
     "Metadata %": 100.0,
@@ -1183,12 +1287,12 @@
     "Schema Strictness %": 86.4,
     "Complexity Health": 70.8,
     "Code Quality Score": 85.9,
-    "Criticality": 75,
+    "Criticality": 70,
     "Health": 77.9,
     "Health Breakdown": "Heal:100+Inv:100+Test:29+Obs:100+CC:71",
     "Risk": "HIGH",
     "Used %": 95.0,
-    "Priority": 19,
+    "Priority": 22,
     "IsInfrastructure": false
   },
   {
@@ -1203,7 +1307,7 @@
     "Test %": 0.0,
     "Observable %": 100.0,
     "Avg CC": 11.0,
-    "Avg LOC": 150,
+    "Avg LOC": 57.5,
     "Typed %": 50.0,
     "Documented %": 100.0,
     "Metadata %": 100.0,
@@ -1212,19 +1316,19 @@
     "Schema Strictness %": 50.0,
     "Complexity Health": 78.0,
     "Code Quality Score": 75.0,
-    "Criticality": 75,
+    "Criticality": 70,
     "Health": 71.7,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:78",
     "Risk": "MED",
     "Used %": 95.0,
-    "Priority": 20,
+    "Priority": 23,
     "IsInfrastructure": false
   }
 ];
 
         // Real per-agent data (replaces generateMockAgentData)
         const realAgentData = {
-  "Base/Base Class": {
+  "Base/Root": {
     "healCap": [
       100.0
     ],
@@ -1288,7 +1392,279 @@
       }
     ]
   },
-  "L5 Safety/Base Class": {
+  "Base/Mixins": {
+    "healCap": [],
+    "invocation": [],
+    "hardened": [],
+    "test": [],
+    "complexityHealth": [],
+    "health": [],
+    "typed": [],
+    "documented": [],
+    "schemaStrictness": [],
+    "properBase": [],
+    "codeQuality": [],
+    "agents": []
+  },
+  "L6 Observability/Base Agent": {
+    "healCap": [
+      100.0
+    ],
+    "invocation": [
+      100.0
+    ],
+    "hardened": [
+      100.0
+    ],
+    "test": [
+      100.0
+    ],
+    "complexityHealth": [
+      0
+    ],
+    "health": [
+      80.0
+    ],
+    "typed": [
+      75.0
+    ],
+    "documented": [
+      100.0
+    ],
+    "schemaStrictness": [
+      75.0
+    ],
+    "properBase": [
+      100.0
+    ],
+    "codeQuality": [
+      87.5
+    ],
+    "agents": [
+      {
+        "name": "L6ObservabilityBaseAgent",
+        "path": "agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
+        "rel": "agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
+        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
+        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
+        "class_line": 1,
+        "has_mixin": true,
+        "invocation": "Yes",
+        "has_tests": true,
+        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
+        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
+        "typing_summary": "Init: \u2717 | Methods: 75% | Returns: 37%",
+        "typed_pct": 75.0,
+        "overall_typed_pct": 75.0,
+        "complexity": 62,
+        "health": 80.0,
+        "healCap": 100.0,
+        "test": 100.0,
+        "complexityHealth": 0,
+        "hardened": 100.0,
+        "documented": 100.0,
+        "schema": 75.0,
+        "base": 100.0,
+        "quality": 87.5,
+        "loc": 312
+      }
+    ]
+  },
+  "L6 Observability/Metrics": {
+    "healCap": [
+      100.0,
+      100.0
+    ],
+    "invocation": [
+      0.0,
+      0.0
+    ],
+    "hardened": [
+      0.0,
+      0.0
+    ],
+    "test": [
+      0.0,
+      0.0
+    ],
+    "complexityHealth": [
+      64,
+      90
+    ],
+    "health": [
+      52.8,
+      58.0
+    ],
+    "typed": [
+      66.7,
+      100.0
+    ],
+    "documented": [
+      100.0,
+      100.0
+    ],
+    "schemaStrictness": [
+      66.7,
+      100.0
+    ],
+    "properBase": [
+      100.0,
+      100.0
+    ],
+    "codeQuality": [
+      83.35,
+      100.0
+    ],
+    "agents": [
+      {
+        "name": "PerformanceAnalystAgent",
+        "path": "agentic_core\\L6_observability\\agents\\PerformanceAnalystAgent.py",
+        "rel": "agentic_core\\L6_observability\\agents\\PerformanceAnalystAgent.py",
+        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\PerformanceAnalystAgent.py",
+        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\PerformanceAnalystAgent.py",
+        "class_line": 1,
+        "has_mixin": true,
+        "invocation": "Inherited",
+        "has_tests": false,
+        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
+        "mcp_summary": "Shield: \u2717 | @hardened: \u2717 | Safe: \u2713",
+        "typing_summary": "Init: \u2717 | Methods: 66% | Returns: 33%",
+        "typed_pct": 66.7,
+        "overall_typed_pct": 66.7,
+        "complexity": 18,
+        "health": 52.8,
+        "healCap": 100.0,
+        "test": 0.0,
+        "complexityHealth": 64,
+        "hardened": 0.0,
+        "documented": 100.0,
+        "schema": 66.7,
+        "base": 100.0,
+        "quality": 83.35,
+        "loc": 116
+      },
+      {
+        "name": "StrategicObservationAgent",
+        "path": "agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
+        "rel": "agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
+        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
+        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
+        "class_line": 1,
+        "has_mixin": true,
+        "invocation": "Inherited",
+        "has_tests": false,
+        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
+        "mcp_summary": "Shield: \u2717 | @hardened: \u2717 | Safe: \u2713",
+        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
+        "typed_pct": 100.0,
+        "overall_typed_pct": 100.0,
+        "complexity": 5,
+        "health": 58.0,
+        "healCap": 100.0,
+        "test": 0.0,
+        "complexityHealth": 90,
+        "hardened": 0.0,
+        "documented": 100.0,
+        "schema": 100.0,
+        "base": 100.0,
+        "quality": 100.0,
+        "loc": 26
+      }
+    ]
+  },
+  "L6 Observability/Tracing": {
+    "healCap": [],
+    "invocation": [],
+    "hardened": [],
+    "test": [],
+    "complexityHealth": [],
+    "health": [],
+    "typed": [],
+    "documented": [],
+    "schemaStrictness": [],
+    "properBase": [],
+    "codeQuality": [],
+    "agents": []
+  },
+  "L6 Observability/Compliance": {
+    "healCap": [],
+    "invocation": [],
+    "hardened": [],
+    "test": [],
+    "complexityHealth": [],
+    "health": [],
+    "typed": [],
+    "documented": [],
+    "schemaStrictness": [],
+    "properBase": [],
+    "codeQuality": [],
+    "agents": []
+  },
+  "L6 Observability/Infrastructure": {
+    "healCap": [
+      100.0
+    ],
+    "invocation": [
+      100.0
+    ],
+    "hardened": [
+      100.0
+    ],
+    "test": [
+      0.0
+    ],
+    "complexityHealth": [
+      84
+    ],
+    "health": [
+      76.8
+    ],
+    "typed": [
+      80.0
+    ],
+    "documented": [
+      100.0
+    ],
+    "schemaStrictness": [
+      80.0
+    ],
+    "properBase": [
+      100.0
+    ],
+    "codeQuality": [
+      90.0
+    ],
+    "agents": [
+      {
+        "name": "RuntimeTelemetryAgent",
+        "path": "agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
+        "rel": "agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
+        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
+        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
+        "class_line": 1,
+        "has_mixin": true,
+        "invocation": "Yes",
+        "has_tests": false,
+        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
+        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
+        "typing_summary": "Init: \u2717 | Methods: 80% | Returns: 40%",
+        "typed_pct": 80.0,
+        "overall_typed_pct": 80.0,
+        "complexity": 8,
+        "health": 76.8,
+        "healCap": 100.0,
+        "test": 0.0,
+        "complexityHealth": 84,
+        "hardened": 100.0,
+        "documented": 100.0,
+        "schema": 80.0,
+        "base": 100.0,
+        "quality": 90.0,
+        "loc": 58
+      }
+    ]
+  },
+  "L5 Safety/Base Agent": {
     "healCap": [
       100.0
     ],
@@ -3584,7 +3960,7 @@
       }
     ]
   },
-  "L4 State/Base Class": {
+  "L4 State/Base Agent": {
     "healCap": [
       100.0
     ],
@@ -4208,7 +4584,7 @@
     "codeQuality": [],
     "agents": []
   },
-  "L3 Orchestration/Base Class": {
+  "L3 Orchestration/Base Agent": {
     "healCap": [
       100.0
     ],
@@ -6264,7 +6640,7 @@
     "codeQuality": [],
     "agents": []
   },
-  "L2 Execution/Base Class": {
+  "L2 Execution/Base Agent": {
     "healCap": [
       100.0
     ],
@@ -7812,23 +8188,72 @@
     "codeQuality": [],
     "agents": []
   },
-  "L1 Cognition/Base Class": {
-    "healCap": [],
-    "invocation": [],
-    "hardened": [],
-    "test": [],
-    "complexityHealth": [],
-    "health": [],
-    "typed": [],
-    "documented": [],
-    "schemaStrictness": [],
-    "properBase": [],
-    "codeQuality": [],
-    "agents": []
+  "L1 Cognition/Base Agent": {
+    "healCap": [
+      100.0
+    ],
+    "invocation": [
+      100.0
+    ],
+    "hardened": [
+      100.0
+    ],
+    "test": [
+      100.0
+    ],
+    "complexityHealth": [
+      96
+    ],
+    "health": [
+      99.2
+    ],
+    "typed": [
+      100.0
+    ],
+    "documented": [
+      100.0
+    ],
+    "schemaStrictness": [
+      100.0
+    ],
+    "properBase": [
+      100.0
+    ],
+    "codeQuality": [
+      100.0
+    ],
+    "agents": [
+      {
+        "name": "L1Agent",
+        "path": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+        "rel": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+        "class_line": 1,
+        "has_mixin": true,
+        "invocation": "Yes",
+        "has_tests": true,
+        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
+        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
+        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
+        "typed_pct": 100.0,
+        "overall_typed_pct": 100.0,
+        "complexity": 2,
+        "health": 99.2,
+        "healCap": 100.0,
+        "test": 100.0,
+        "complexityHealth": 96,
+        "hardened": 100.0,
+        "documented": 100.0,
+        "schema": 100.0,
+        "base": 100.0,
+        "quality": 100.0,
+        "loc": 32
+      }
+    ]
   },
   "L1 Cognition/Core": {
     "healCap": [
-      100.0,
       100.0,
       100.0,
       100.0,
@@ -7878,7 +8303,6 @@
       100.0,
       100.0,
       100.0,
-      100.0,
       0.0,
       100.0,
       100.0,
@@ -7888,7 +8312,6 @@
       100.0
     ],
     "hardened": [
-      100.0,
       100.0,
       100.0,
       100.0,
@@ -7938,7 +8361,6 @@
       100.0,
       100.0,
       100.0,
-      100.0,
       0.0,
       100.0,
       0.0,
@@ -7965,7 +8387,6 @@
       0,
       60,
       62,
-      96,
       48,
       0,
       90,
@@ -7995,7 +8416,6 @@
       80.0,
       72.0,
       92.4,
-      99.2,
       89.6,
       80.0,
       98.0,
@@ -8024,7 +8444,6 @@
       62.5,
       90.0,
       75.0,
-      100.0,
       100.0,
       90.0,
       94.7,
@@ -8055,7 +8474,6 @@
       100.0,
       25.0,
       100.0,
-      100.0,
       90.0,
       100.0,
       100.0,
@@ -8085,7 +8503,6 @@
       90.0,
       75.0,
       100.0,
-      100.0,
       90.0,
       94.7,
       100.0,
@@ -8098,7 +8515,6 @@
       100.0
     ],
     "properBase": [
-      100.0,
       100.0,
       100.0,
       100.0,
@@ -8144,7 +8560,6 @@
       71.875,
       95.0,
       68.75,
-      100.0,
       100.0,
       92.5,
       97.35,
@@ -8618,33 +9033,6 @@
         "loc": 100
       },
       {
-        "name": "L1Agent",
-        "path": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
-        "rel": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
-        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
-        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
-        "class_line": 1,
-        "has_mixin": true,
-        "invocation": "Yes",
-        "has_tests": true,
-        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
-        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
-        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
-        "typed_pct": 100.0,
-        "overall_typed_pct": 100.0,
-        "complexity": 2,
-        "health": 99.2,
-        "healCap": 100.0,
-        "test": 100.0,
-        "complexityHealth": 96,
-        "hardened": 100.0,
-        "documented": 100.0,
-        "schema": 100.0,
-        "base": 100.0,
-        "quality": 100.0,
-        "loc": 32
-      },
-      {
         "name": "L1CognitionExerciserAgent",
         "path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionExerciserAgent.py",
         "rel": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionExerciserAgent.py",
@@ -8930,9 +9318,72 @@
     "codeQuality": [],
     "agents": []
   },
+  "L0 Maintenance/Base Agent": {
+    "healCap": [
+      100.0
+    ],
+    "invocation": [
+      100.0
+    ],
+    "hardened": [
+      100.0
+    ],
+    "test": [
+      100.0
+    ],
+    "complexityHealth": [
+      92
+    ],
+    "health": [
+      98.4
+    ],
+    "typed": [
+      100.0
+    ],
+    "documented": [
+      100.0
+    ],
+    "schemaStrictness": [
+      100.0
+    ],
+    "properBase": [
+      100.0
+    ],
+    "codeQuality": [
+      100.0
+    ],
+    "agents": [
+      {
+        "name": "L0Agent",
+        "path": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+        "rel": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+        "class_line": 1,
+        "has_mixin": true,
+        "invocation": "Yes",
+        "has_tests": true,
+        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
+        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
+        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
+        "typed_pct": 100.0,
+        "overall_typed_pct": 100.0,
+        "complexity": 4,
+        "health": 98.4,
+        "healCap": 100.0,
+        "test": 100.0,
+        "complexityHealth": 92,
+        "hardened": 100.0,
+        "documented": 100.0,
+        "schema": 100.0,
+        "base": 100.0,
+        "quality": 100.0,
+        "loc": 42
+      }
+    ]
+  },
   "L0 Maintenance/Core": {
     "healCap": [
-      100.0,
       100.0,
       100.0,
       100.0,
@@ -8952,11 +9403,9 @@
       100.0,
       100.0,
       100.0,
-      100.0,
       100.0
     ],
     "hardened": [
-      100.0,
       100.0,
       100.0,
       100.0,
@@ -8973,7 +9422,6 @@
       0.0,
       0.0,
       0.0,
-      100.0,
       0.0,
       0.0,
       0.0,
@@ -8985,7 +9433,6 @@
       98,
       64,
       62,
-      92,
       70,
       46,
       10,
@@ -8997,7 +9444,6 @@
       79.6,
       72.8,
       72.4,
-      98.4,
       74.0,
       69.2,
       62.0,
@@ -9009,7 +9455,6 @@
       100.0,
       83.3,
       80.0,
-      100.0,
       100.0,
       75.0,
       100.0,
@@ -9023,7 +9468,6 @@
       40.0,
       100.0,
       100.0,
-      100.0,
       80.0,
       85.7
     ],
@@ -9034,13 +9478,11 @@
       83.3,
       80.0,
       100.0,
-      100.0,
       75.0,
       100.0,
       100.0
     ],
     "properBase": [
-      100.0,
       100.0,
       100.0,
       100.0,
@@ -9057,7 +9499,6 @@
       100.0,
       91.65,
       75.0,
-      100.0,
       100.0,
       87.5,
       95.0,
@@ -9200,33 +9641,6 @@
         "loc": 94
       },
       {
-        "name": "L0Agent",
-        "path": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
-        "rel": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
-        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
-        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
-        "class_line": 1,
-        "has_mixin": true,
-        "invocation": "Yes",
-        "has_tests": true,
-        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
-        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
-        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
-        "typed_pct": 100.0,
-        "overall_typed_pct": 100.0,
-        "complexity": 4,
-        "health": 98.4,
-        "healCap": 100.0,
-        "test": 100.0,
-        "complexityHealth": 92,
-        "hardened": 100.0,
-        "documented": 100.0,
-        "schema": 100.0,
-        "base": 100.0,
-        "quality": 100.0,
-        "loc": 42
-      },
-      {
         "name": "MetricsWitnessAgent",
         "path": "agentic_core\\L0_maintenance\\scripts\\MetricsWitnessAgent.py",
         "rel": "agentic_core\\L0_maintenance\\scripts\\MetricsWitnessAgent.py",
@@ -9337,238 +9751,6 @@
     ]
   },
   "L0 Maintenance/Infrastructure": {
-    "healCap": [],
-    "invocation": [],
-    "hardened": [],
-    "test": [],
-    "complexityHealth": [],
-    "health": [],
-    "typed": [],
-    "documented": [],
-    "schemaStrictness": [],
-    "properBase": [],
-    "codeQuality": [],
-    "agents": []
-  },
-  "L6_Observability/Metrics": {
-    "healCap": [
-      100.0,
-      100.0,
-      100.0
-    ],
-    "invocation": [
-      100.0,
-      0.0,
-      0.0
-    ],
-    "hardened": [
-      100.0,
-      0.0,
-      0.0
-    ],
-    "test": [
-      100.0,
-      0.0,
-      0.0
-    ],
-    "complexityHealth": [
-      0,
-      64,
-      90
-    ],
-    "health": [
-      80.0,
-      52.8,
-      58.0
-    ],
-    "typed": [
-      75.0,
-      66.7,
-      100.0
-    ],
-    "documented": [
-      100.0,
-      100.0,
-      100.0
-    ],
-    "schemaStrictness": [
-      75.0,
-      66.7,
-      100.0
-    ],
-    "properBase": [
-      100.0,
-      100.0,
-      100.0
-    ],
-    "codeQuality": [
-      87.5,
-      83.35,
-      100.0
-    ],
-    "agents": [
-      {
-        "name": "L6ObservabilityBaseAgent",
-        "path": "agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
-        "rel": "agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
-        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
-        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
-        "class_line": 1,
-        "has_mixin": true,
-        "invocation": "Yes",
-        "has_tests": true,
-        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
-        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
-        "typing_summary": "Init: \u2717 | Methods: 75% | Returns: 37%",
-        "typed_pct": 75.0,
-        "overall_typed_pct": 75.0,
-        "complexity": 62,
-        "health": 80.0,
-        "healCap": 100.0,
-        "test": 100.0,
-        "complexityHealth": 0,
-        "hardened": 100.0,
-        "documented": 100.0,
-        "schema": 75.0,
-        "base": 100.0,
-        "quality": 87.5,
-        "loc": 312
-      },
-      {
-        "name": "PerformanceAnalystAgent",
-        "path": "agentic_core\\L6_observability\\agents\\PerformanceAnalystAgent.py",
-        "rel": "agentic_core\\L6_observability\\agents\\PerformanceAnalystAgent.py",
-        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\PerformanceAnalystAgent.py",
-        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\PerformanceAnalystAgent.py",
-        "class_line": 1,
-        "has_mixin": true,
-        "invocation": "Inherited",
-        "has_tests": false,
-        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
-        "mcp_summary": "Shield: \u2717 | @hardened: \u2717 | Safe: \u2713",
-        "typing_summary": "Init: \u2717 | Methods: 66% | Returns: 33%",
-        "typed_pct": 66.7,
-        "overall_typed_pct": 66.7,
-        "complexity": 18,
-        "health": 52.8,
-        "healCap": 100.0,
-        "test": 0.0,
-        "complexityHealth": 64,
-        "hardened": 0.0,
-        "documented": 100.0,
-        "schema": 66.7,
-        "base": 100.0,
-        "quality": 83.35,
-        "loc": 116
-      },
-      {
-        "name": "StrategicObservationAgent",
-        "path": "agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
-        "rel": "agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
-        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
-        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\StrategicObservationAgent.py",
-        "class_line": 1,
-        "has_mixin": true,
-        "invocation": "Inherited",
-        "has_tests": false,
-        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
-        "mcp_summary": "Shield: \u2717 | @hardened: \u2717 | Safe: \u2713",
-        "typing_summary": "Init: \u2717 | Methods: 100% | Returns: 50%",
-        "typed_pct": 100.0,
-        "overall_typed_pct": 100.0,
-        "complexity": 5,
-        "health": 58.0,
-        "healCap": 100.0,
-        "test": 0.0,
-        "complexityHealth": 90,
-        "hardened": 0.0,
-        "documented": 100.0,
-        "schema": 100.0,
-        "base": 100.0,
-        "quality": 100.0,
-        "loc": 26
-      }
-    ]
-  },
-  "L6_Observability/Telemetry": {
-    "healCap": [
-      100.0
-    ],
-    "invocation": [
-      100.0
-    ],
-    "hardened": [
-      100.0
-    ],
-    "test": [
-      0.0
-    ],
-    "complexityHealth": [
-      84
-    ],
-    "health": [
-      76.8
-    ],
-    "typed": [
-      80.0
-    ],
-    "documented": [
-      100.0
-    ],
-    "schemaStrictness": [
-      80.0
-    ],
-    "properBase": [
-      100.0
-    ],
-    "codeQuality": [
-      90.0
-    ],
-    "agents": [
-      {
-        "name": "RuntimeTelemetryAgent",
-        "path": "agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
-        "rel": "agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
-        "abs_file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
-        "abs_class": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\agents\\RuntimeTelemetryAgent.py",
-        "class_line": 1,
-        "has_mixin": true,
-        "invocation": "Yes",
-        "has_tests": false,
-        "obs_summary": "Logging: \u2713 | Metrics: \u2713 | Tracing: \u2717",
-        "mcp_summary": "Shield: \u2713 | @hardened: \u2717 | Safe: \u2713",
-        "typing_summary": "Init: \u2717 | Methods: 80% | Returns: 40%",
-        "typed_pct": 80.0,
-        "overall_typed_pct": 80.0,
-        "complexity": 8,
-        "health": 76.8,
-        "healCap": 100.0,
-        "test": 0.0,
-        "complexityHealth": 84,
-        "hardened": 100.0,
-        "documented": 100.0,
-        "schema": 80.0,
-        "base": 100.0,
-        "quality": 90.0,
-        "loc": 58
-      }
-    ]
-  },
-  "L6_Observability/Tracing": {
-    "healCap": [],
-    "invocation": [],
-    "hardened": [],
-    "test": [],
-    "complexityHealth": [],
-    "health": [],
-    "typed": [],
-    "documented": [],
-    "schemaStrictness": [],
-    "properBase": [],
-    "codeQuality": [],
-    "agents": []
-  },
-  "L6_Observability/Compliance": {
     "healCap": [],
     "invocation": [],
     "hardened": [],
@@ -12056,117 +12238,7 @@
   }
 };
 
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-
-
-
+        // Real per-agent data (replaces generateMockAgentData)
         const recommendationsData = [
   {
     "priority": 1,
@@ -13762,32 +13834,43 @@
         }
 
         function renderHealthGauge(totalRow) {
-            const health = parseFloat(totalRow.health || totalRow.Health) || 0;
+            if (window.PLOTLY_OFFLINE) {
+                document.getElementById('healthGauge').innerHTML = 
+                    `<div style="text-align:center; padding:60px 20px; color:#6b7280;">
+                        <div style="font-size:48px; font-weight:700; color:#2563eb;">${parseFloat(totalRow['Health']).toFixed(1)}%</div>
+                        <div style="font-size:18px; margin-top:10px;">System Health</div>
+                        <div style="font-size:12px; margin-top:20px; color:#9ca3af;">Charts require internet connection</div>
+                    </div>`;
+                return;
+            }
+            
+            const health = parseFloat(totalRow['Health']) || 0;
+            
             const data = [{
                 type: 'indicator',
                 mode: 'gauge+number',
                 value: health,
-                title: { text: `<b style="font-size:1.8em;">Overall Health Score</b><br><span style="font-size:1em;">Composite autonomy signal • Currently <strong style="color:${health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626'};">${health.toFixed(1)}%</strong></span>` },
+                title: { text: 'System Health', font: { size: 18, weight: 700 } },
+                number: { suffix: '%', font: { size: 32, weight: 700 } },
                 gauge: {
-                    axis: { range: [0, 100] },
+                    axis: { range: [0, 100], tickwidth: 1 },
                     bar: { color: health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626' },
+                    bgcolor: 'white',
+                    borderwidth: 2,
+                    bordercolor: '#e5e7eb',
                     steps: [
                         { range: [0, 60], color: '#fee2e2' },
                         { range: [60, 80], color: '#fed7aa' },
-                        { range: [80, 100], color: '#bbf7d0' }
-                    ],
-                    threshold: {
-                        line: { color: '#dc2626', width: 4 },
-                        thickness: 0.75,
-                        value: 80
-                    }
+                        { range: [80, 100], color: '#dcfce7' }
+                    ]
                 }
             }];
 
             const layout = {
-                margin: { l: 50, r: 50, t: 20, b: 20 },
-                paper_bgcolor: 'transparent',
-                plot_bgcolor: 'transparent',
+                width: 300,
+                height: 250,
+                margin: { t: 40, r: 25, l: 25, b: 25 },
+                paper_bgcolor: 'white',
                 font: { color: '#1f2937', size: 14 }
             };
 
