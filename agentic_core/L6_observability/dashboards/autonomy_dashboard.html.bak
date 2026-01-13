@@ -510,6 +510,14 @@
                         <div class="kpi-label">⏱️ API Latency (Pinecone)</div>
                         <div class="kpi-value" id="pineconeLatency">--ms</div>
                     </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">🧠 Meta-Learning Experiences</div>
+                        <div class="kpi-value" id="exp-count">--</div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">🔎 Patterns Extracted</div>
+                        <div class="kpi-value" id="pattern-count">--</div>
+                    </div>
                 </div>
                 <div class="chart-card" style="margin-top: 20px;">
                     <div class="chart-header">
@@ -643,7 +651,7 @@
     "Avg LOC": 163.2,
     "Typed %": 86.8,
     "Documented %": 89.3,
-    "Metadata %": 100.0,
+    "Metadata %": 99.2,
     "Proper Base %": 100.0,
     "Base Class Inherit %": 100.0,
     "Schema Strictness %": 86.8,
@@ -653,7 +661,7 @@
     "Health": 80.1,
     "Health Breakdown": "Heal:100+Inv:97+Test:60+Obs:100+CC:37",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": "ALL",
     "IsInfrastructure": false
   },
@@ -682,7 +690,7 @@
     "Health": 71.4,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:76",
     "Risk": "MED",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 1,
     "IsInfrastructure": false
   },
@@ -711,7 +719,7 @@
     "Health": 85.0,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:0",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 2,
     "IsInfrastructure": true
   },
@@ -740,7 +748,7 @@
     "Health": 61.5,
     "Health Breakdown": "Heal:100+Inv:0+Test:0+Obs:100+CC:77",
     "Risk": "MED",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 3,
     "IsInfrastructure": true
   },
@@ -769,7 +777,7 @@
     "Health": 72.6,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:84",
     "Risk": "MED",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 4,
     "IsInfrastructure": true
   },
@@ -798,7 +806,7 @@
     "Health": 89.2,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:28",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 5,
     "IsInfrastructure": false
   },
@@ -827,7 +835,7 @@
     "Health": 75.9,
     "Health Breakdown": "Heal:100+Inv:96+Test:65+Obs:100+CC:0",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 6,
     "IsInfrastructure": false
   },
@@ -846,7 +854,7 @@
     "Avg LOC": 234.2,
     "Typed %": 81.9,
     "Documented %": 87.5,
-    "Metadata %": 100.0,
+    "Metadata %": 96.4,
     "Proper Base %": 100.0,
     "Base Class Inherit %": 100.0,
     "Schema Strictness %": 81.9,
@@ -856,7 +864,7 @@
     "Health": 81.1,
     "Health Breakdown": "Heal:100+Inv:96+Test:86+Obs:100+CC:0",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 7,
     "IsInfrastructure": false
   },
@@ -885,7 +893,7 @@
     "Health": 60.0,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:0",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 8,
     "IsInfrastructure": false
   },
@@ -914,7 +922,7 @@
     "Health": 93.4,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:56",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 9,
     "IsInfrastructure": false
   },
@@ -943,7 +951,7 @@
     "Health": 60.9,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:6",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 10,
     "IsInfrastructure": false
   },
@@ -972,7 +980,7 @@
     "Health": 86.9,
     "Health Breakdown": "Heal:100+Inv:100+Test:92+Obs:100+CC:26",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 11,
     "IsInfrastructure": false
   },
@@ -1001,7 +1009,7 @@
     "Health": 91.0,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:40",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 12,
     "IsInfrastructure": false
   },
@@ -1030,7 +1038,7 @@
     "Health": 65.1,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:34",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 13,
     "IsInfrastructure": false
   },
@@ -1049,7 +1057,7 @@
     "Avg LOC": 149.8,
     "Typed %": 84.2,
     "Documented %": 87.9,
-    "Metadata %": 100.0,
+    "Metadata %": 98.0,
     "Proper Base %": 100.0,
     "Base Class Inherit %": 100.0,
     "Schema Strictness %": 84.2,
@@ -1059,7 +1067,7 @@
     "Health": 87.2,
     "Health Breakdown": "Heal:100+Inv:100+Test:84+Obs:100+CC:41",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 14,
     "IsInfrastructure": false
   },
@@ -1088,7 +1096,7 @@
     "Health": 88.0,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:20",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 15,
     "IsInfrastructure": false
   },
@@ -1117,7 +1125,7 @@
     "Health": 77.3,
     "Health Breakdown": "Heal:100+Inv:97+Test:53+Obs:100+CC:29",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 16,
     "IsInfrastructure": false
   },
@@ -1146,7 +1154,7 @@
     "Health": 99.4,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:96",
     "Risk": "LOW",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 17,
     "IsInfrastructure": false
   },
@@ -1175,7 +1183,7 @@
     "Health": 82.2,
     "Health Breakdown": "Heal:100+Inv:93+Test:63+Obs:100+CC:48",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 18,
     "IsInfrastructure": false
   },
@@ -1204,7 +1212,7 @@
     "Health": 98.8,
     "Health Breakdown": "Heal:100+Inv:100+Test:100+Obs:100+CC:92",
     "Risk": "LOW",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 19,
     "IsInfrastructure": false
   },
@@ -1233,7 +1241,7 @@
     "Health": 64.0,
     "Health Breakdown": "Heal:100+Inv:89+Test:0+Obs:100+CC:34",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 20,
     "IsInfrastructure": false
   },
@@ -1262,7 +1270,7 @@
     "Health": 78.9,
     "Health Breakdown": "Heal:100+Inv:97+Test:40+Obs:100+CC:60",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 21,
     "IsInfrastructure": false
   },
@@ -1291,7 +1299,7 @@
     "Health": 77.9,
     "Health Breakdown": "Heal:100+Inv:100+Test:29+Obs:100+CC:71",
     "Risk": "HIGH",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 22,
     "IsInfrastructure": false
   },
@@ -1320,7 +1328,7 @@
     "Health": 71.7,
     "Health Breakdown": "Heal:100+Inv:100+Test:0+Obs:100+CC:78",
     "Risk": "MED",
-    "Used %": 95.0,
+    "Used %": 0.0,
     "Priority": 23,
     "IsInfrastructure": false
   }
@@ -13094,12 +13102,41 @@
         }
 
         // Phase 4.9: Live Tactical Poller
-        // DISABLED: API polling disabled - no backend API server running
         async function updateRuntime() {
-            // Disabled - would poll /api/redis endpoints which don't exist in simple HTTP server
-            // Re-enable when backend API server is available
+            try {
+                const [metaResp, latencyResp, logsResp] = await Promise.all([
+                    fetch('http://localhost:8081/api/meta-learning/activity'),
+                    fetch('http://localhost:8081/api/metrics/latency'),
+                    fetch('http://localhost:8081/api/redis/logs?limit=80')
+                ]);
+
+                const meta = await metaResp.json();
+                const latency = await latencyResp.json();
+                const logs = await logsResp.json();
+
+                const expEl = document.getElementById('exp-count');
+                const patternEl = document.getElementById('pattern-count');
+                const geminiLatencyEl = document.getElementById('geminiLatency');
+                const pineconeLatencyEl = document.getElementById('pineconeLatency');
+                const liveLogEl = document.getElementById('liveLog');
+
+                if (expEl) expEl.textContent = meta.total_experiences;
+                if (patternEl) patternEl.textContent = meta.patterns_extracted;
+
+                if (geminiLatencyEl) geminiLatencyEl.textContent = (latency.gemini_embeddings ?? '--') + 'ms';
+                if (pineconeLatencyEl) pineconeLatencyEl.textContent = (latency.pinecone ?? '--') + 'ms';
+
+                if (liveLogEl && logs && Array.isArray(logs.logs)) {
+                    liveLogEl.textContent = logs.logs.join('\n');
+                    liveLogEl.scrollTop = liveLogEl.scrollHeight;
+                }
+
+                console.log('Dashboard updated from Live API');
+            } catch (e) {
+                console.warn('Live polling failed, check API server status');
+            }
         }
-        // setInterval(updateRuntime, 1000); // DISABLED - no API server
+        setInterval(updateRuntime, 2000); // Polling every 2 seconds
         
         // Initialize semantic retrieval metrics
         function initializeSemanticMetrics() {
