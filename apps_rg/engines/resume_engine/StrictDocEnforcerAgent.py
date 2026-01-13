@@ -274,7 +274,7 @@ class DependencyArbiter:
         }
 
 
-class StrictDocEnforcerAgent:
+class StrictDocEnforcerAgent(MCPHardenedMixin, HealerMixin):
     """
     Enforces type contract compliance in docstrings.
 

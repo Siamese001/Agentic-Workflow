@@ -33,13 +33,10 @@ All rows must have these exact fields:
 - Test %, Observable %
 - Avg CC, Avg LOC
 - Typed %, Documented %
-- Metadata %, Base Class Inherit %, Schema Strictness %
+- Metadata %, Proper Base %, Schema Strictness %
 - Complexity Health, Code Quality Score
 - Criticality, Health, Health Breakdown, Risk
 - Used %, Priority
-
-SSOT IMPORTS:
-- Health calculation uses canonical_truth.calculate_health_score()
 """
 import json
 import re
@@ -66,18 +63,16 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
-    get_validated_project_root
+    get_validated_project_root,
 )
-
-# SSOT: Import canonical health calculation (Violation 4 fix)
-from agentic_core.config.blueprint_sovereign.canonical_truth import calculate_health_score
 
 # Fix UTF-8 encoding for Windows console (emoji support)
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-# FIXED TERRITORY ORDER - NEVER CHANGE THIS (29 detailed territories)
+# FIXED TERRITORY ORDER - NEVER CHANGE THIS (31 detailed territories)
 TERRITORY_ORDER = [
+    "Base/Base Class",
     "L5 Safety/Base Class",
     "L5 Safety/Validators",
     "L5 Safety/Guardrails",
@@ -97,6 +92,7 @@ TERRITORY_ORDER = [
     "L1 Cognition/Base Class",
     "L1 Cognition/Core",
     "L1 Cognition/Specialized",
+    "L0 Maintenance/Base Class",
     "L0 Maintenance/Core",
     "L0 Maintenance/Infrastructure",
     "L6_Observability/Base Class",
@@ -117,7 +113,7 @@ REQUIRED_FIELDS = [
     "Test %", "Observable %",
     "Avg CC", "Avg LOC",
     "Typed %", "Documented %",
-    "Metadata %", "Base Class Inherit %", "Schema Strictness %",
+    "Metadata %", "Proper Base %", "Base Class Inherit %", "Schema Strictness %",
     "Complexity Health", "Code Quality Score",
     "Criticality", "Health", "Health Breakdown", "Risk",
     "Used %", "Priority", "IsInfrastructure"
@@ -154,12 +150,100 @@ class DashboardGenerator:
             return False
     
     def group_agents_by_territory(self) -> Dict[str, List[Dict]]:
-        """Group agents by territory field from discovery JSON (SSOT)."""
+        """Group agents by FIXED detailed territory structure with subcategories."""
         territories = defaultdict(list)
         
         for agent in self.agents:
-            # USE THE TERRITORY FROM DISCOVERY JSON - IT IS THE SSOT
-            territory = agent.get('territory', 'Unknown')
+            layer = agent.get('layer', '')
+            sub_dir = agent.get('sub_dir', '')
+            path = agent.get('path', '').replace('\\', '/')
+            class_name = agent.get('class_name', '')
+            
+            # Map to FIXED detailed territory names with subcategories
+            if APPS_LIC_DIR in sub_dir:
+                territory = "Apps Lic"
+            elif APPS_RG_DIR in sub_dir:
+                territory = "Apps Rg"
+            elif APPS_SHARED_DIR in sub_dir:
+                territory = "Apps Shared"
+            elif layer.startswith('L5'):
+                # L5 Safety subcategories based on actual paths
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L5 Safety/Base Class"
+                elif '/validators' in path or 'validators/' in path:
+                    territory = "L5 Safety/Validators"
+                elif '/red_team' in path or 'red_teaming/' in path:
+                    territory = "L5 Safety/Red Teaming"
+                elif '/gravity' in path or 'Gravity' in class_name:
+                    territory = "L5 Safety/Gravity"
+                else:
+                    # Default: guardrails
+                    territory = "L5 Safety/Guardrails"
+            elif layer.startswith('L4'):
+                # L4 State subcategories
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L4 State/Base Class"
+                elif '/filesystem' in path or '/infrastructure' in path:
+                    territory = "L4 State/Infrastructure"
+                elif '/adapters' in path or 'Adapter' in class_name:
+                    territory = "L4 State/Specialized"
+                else:
+                    territory = "L4 State/Core"
+            elif layer.startswith('L3'):
+                # L3 Orchestration subcategories
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L3 Orchestration/Base Class"
+                elif '/infrastructure' in path:
+                    territory = "L3 Orchestration/Infrastructure"
+                elif '/adapters' in path or 'Adapter' in class_name:
+                    territory = "L3 Orchestration/Specialized"
+                else:
+                    territory = "L3 Orchestration/Core"
+            elif layer.startswith('L2'):
+                # L2 Execution subcategories
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L2 Execution/Base Class"
+                elif '/adapters' in path or 'Adapter' in class_name:
+                    territory = "L2 Execution/Specialized"
+                else:
+                    territory = "L2 Execution/Core"
+            elif layer.startswith('L1'):
+                # L1 Cognition subcategories - CHECK BASE FIRST (includes L1Agent)
+                if 'BaseAgent' in class_name or class_name == 'L1Agent' or 'base_class' in path.lower():
+                    territory = "L1 Cognition/Base Class"
+                elif '/adapters' in path or 'Adapter' in class_name:
+                    territory = "L1 Cognition/Specialized"
+                else:
+                    territory = "L1 Cognition/Core"
+            elif layer.startswith('L0'):
+                # L0 Maintenance subcategories - CHECK BASE FIRST (includes L0Agent)
+                if 'BaseAgent' in class_name or class_name == 'L0Agent' or 'base_class' in path.lower():
+                    territory = "L0 Maintenance/Base Class"
+                elif '/infrastructure' in path or 'Infrastructure' in class_name:
+                    territory = "L0 Maintenance/Infrastructure"
+                else:
+                    territory = "L0 Maintenance/Core"
+            elif 'L6_observability' in path or 'L6_Observability' in path or layer.startswith('L6'):
+                # L6 Observability subcategories - CHECK BASEAGENT FIRST!
+                if 'BaseAgent' in class_name or 'base_class' in path.lower():
+                    territory = "L6_Observability/Base Class"
+                elif '/metrics' in path or 'Metric' in class_name:
+                    territory = "L6_Observability/Metrics"
+                elif '/telemetry' in path or 'Telemetry' in class_name:
+                    territory = "L6_Observability/Telemetry"
+                elif '/tracing' in path or 'Tracing' in class_name or 'Trace' in class_name:
+                    territory = "L6_Observability/Tracing"
+                elif '/compliance' in path or 'Compliance' in class_name:
+                    territory = "L6_Observability/Compliance"
+                else:
+                    territory = "L6_Observability/Metrics"  # Default L6
+            elif layer == 'Base' or 'SovereignBaseAgent' in class_name:
+                # Base layer - SovereignBaseAgent
+                territory = "Base/Base Class"
+            else:
+                # Fallback - should not happen
+                territory = "Unknown"
+            
             territories[territory].append(agent)
         
         return territories
@@ -199,14 +283,20 @@ class DashboardGenerator:
         complexity_health = round(max(0, 100 - (avg_cc * 2)), 1)
         code_quality = round((typed_pct + doc_pct) / 2, 1)
         
-        # SSOT: Use canonical health calculation (Violation 4 fix)
-        # Weights: 30% Heal, 10% Invocation, 25% Test, 20% Observability, 15% Complexity
-        base_health = calculate_health_score(
-            heal_cap=heal_cap_pct,
-            invoc=heal_inv_pct,
-            test_cov=test_pct,
-            obs=obs_pct,
-            comp_health=complexity_health
+        # GOSPEL-WEIGHTED HEALTH SCORE (replaces even weighting)
+        # Weights reflect architectural priorities:
+        # - 30% Heal Capability (core of autonomy)
+        # - 10% Invocation (proves healing works)
+        # - 25% Test Coverage (defense against regression)
+        # - 20% Observability (prevents Ghost Agents)
+        # - 15% Complexity Health (technical debt indicator)
+        base_health = round(
+            (heal_cap_pct * 0.30) + 
+            (heal_inv_pct * 0.10) + 
+            (test_pct * 0.25) + 
+            (obs_pct * 0.20) + 
+            (complexity_health * 0.15),
+            1
         )
         
         # L5 SECURITY ZERO-MULTIPLIER
@@ -220,7 +310,7 @@ class DashboardGenerator:
             health = base_health
         risk = "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW"
         
-        # Calculate proper base class percentage
+        # Calculate proper base class percentage from actual agent data
         proper_base_count = sum(1 for a in agents_list if a.get('proper_base_class', False))
         proper_base_pct = round((proper_base_count / total * 100), 1) if total > 0 else 0.0
         
@@ -261,7 +351,8 @@ class DashboardGenerator:
             "Typed %": metrics["typed_pct"],
             "Documented %": metrics["doc_pct"],
             "Metadata %": 100.0,
-            "Base Class Inherit %": metrics["proper_base_pct"],
+            "Proper Base %": metrics["proper_base_pct"],
+            "Base Class Inherit %": metrics["proper_base_pct"],  # Alias for JS rendering
             "Schema Strictness %": metrics["typed_pct"],
             "Complexity Health": metrics["complexity_health"],
             "Code Quality Score": metrics["code_quality"],
@@ -284,32 +375,56 @@ class DashboardGenerator:
         def weighted_avg(key):
             return round(sum(r[key] * r["Total"] for r in rows) / total_agents, 1)
         
-        health = weighted_avg("Health")
+        heal_cap_pct = weighted_avg("Heal Cap %")
+        heal_inv_pct = weighted_avg("Heal Invocation %")
+        test_pct = weighted_avg("Test %")
+        obs_pct = weighted_avg("Observable %")
+        typed_pct = weighted_avg("Typed %")
+        doc_pct = weighted_avg("Documented %")
+        hardened_pct = weighted_avg("Hardened %")
+        mcp_pct = weighted_avg("MCP Capable %")
+        proper_base_pct = weighted_avg("Proper Base %")
+        
+        avg_cc = round(sum(r["Avg CC"] * r["Total"] for r in rows) / total_agents, 1)
+        complexity_health = round(sum(r["Complexity Health"] * r["Total"] for r in rows) / total_agents, 1)
+        code_quality = round(sum(r["Code Quality Score"] * r["Total"] for r in rows) / total_agents, 1)
+        
+        health = round(
+            (heal_cap_pct * 0.30) + 
+            (heal_inv_pct * 0.10) + 
+            (test_pct * 0.25) + 
+            (obs_pct * 0.20) + 
+            (complexity_health * 0.15),
+            1
+        )
+        
+        risk = "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW"
         
         return {
             "Territory": "TOTAL",
             "Total": total_agents,
             "Compliant": sum(r["Compliant"] for r in rows),
-            "Heal Cap %": weighted_avg("Heal Cap %"),
-            "Heal Invocation %": weighted_avg("Heal Invocation %"),
-            "Invocation %": weighted_avg("Invocation %"),
-            "Hardened %": weighted_avg("Hardened %"),
-            "MCP Capable %": weighted_avg("MCP Capable %"),
-            "Test %": weighted_avg("Test %"),
-            "Observable %": weighted_avg("Observable %"),
-            "Avg CC": weighted_avg("Avg CC"),
+            "Heal Cap %": heal_cap_pct,
+            "Heal Invocation %": heal_inv_pct,
+            "Invocation %": heal_inv_pct,
+            "Hardened %": hardened_pct,
+            "MCP Capable %": mcp_pct,
+            "Test %": test_pct,
+            "Observable %": obs_pct,
+            "Avg CC": avg_cc,
             "Avg LOC": 150,
-            "Typed %": weighted_avg("Typed %"),
-            "Documented %": weighted_avg("Documented %"),
+            "Typed %": typed_pct,
+            "Documented %": doc_pct,
             "Metadata %": 100.0,
-            "Base Class Inherit %": weighted_avg("Base Class Inherit %"),
-            "Schema Strictness %": weighted_avg("Schema Strictness %"),
-            "Complexity Health": weighted_avg("Complexity Health"),
-            "Code Quality Score": weighted_avg("Code Quality Score"),
+            "Proper Base %": proper_base_pct,
+            "Base Class Inherit %": proper_base_pct,
+            "Schema Strictness %": typed_pct,
+            "Complexity Health": complexity_health,
+            "Code Quality Score": code_quality,
             "Criticality": 75,
             "Health": health,
-            "Health Breakdown": f"Heal:{weighted_avg('Heal Cap %'):.0f}+Inv:{weighted_avg('Heal Invocation %'):.0f}+Test:{weighted_avg('Test %'):.0f}+Obs:{weighted_avg('Observable %'):.0f}+CC:{weighted_avg('Complexity Health'):.0f}",
-            "Risk": "HIGH" if health < 70 else "MED" if health < 85 else "LOW",
+            "Health Breakdown": f"Heal:{heal_cap_pct:.0f}+Inv:{heal_inv_pct:.0f}+Test:{test_pct:.0f}+Obs:{obs_pct:.0f}+CC:{complexity_health:.0f}",
+            "Risk": risk,
             "Used %": 95.0,
             "Priority": "ALL",
             "IsInfrastructure": False
@@ -404,11 +519,6 @@ class DashboardGenerator:
                 abs_path = str(self.project_root / agent.get('path', ''))
                 rel_path = agent.get('path', '')
                 
-                # Get base class inheritance info for drill-down
-                proper_base = agent.get('proper_base_class', False)
-                inheritance = agent.get('inheritance', [])
-                base_class_name = inheritance[0] if inheritance else 'None'
-                
                 # Observability summary
                 obs = agent.get('observability', {})
                 obs_summary = f"Logging: {'✓' if obs.get('logging') else '✗'} | Metrics: {'✓' if obs.get('metrics') else '✗'} | Tracing: {'✓' if obs.get('tracing') else '✗'}"
@@ -421,7 +531,7 @@ class DashboardGenerator:
                 
                 agent_objects.append({
                     'name': agent.get('class_name', 'Unknown'),
-                    'path': rel_path,
+                    'path': agent.get('path', ''),
                     'rel': rel_path,
                     'abs_file': abs_path,
                     'abs_class': abs_path,
@@ -444,10 +554,7 @@ class DashboardGenerator:
                     'schema': schema,
                     'base': base,
                     'quality': quality,
-                    'loc': agent.get('loc', 0),
-                    'proper_base_class': proper_base,
-                    'base_class_name': base_class_name,
-                    'has_base_violation': not proper_base
+                    'loc': agent.get('loc', 0)
                 })
             
             per_agent_data[territory_name] = {
@@ -672,40 +779,6 @@ class DashboardGenerator:
             print(f"❌ ERROR updating dashboard HTML: {e}")
             return False
     
-    def generate_strategic_observations(self, data: List[Dict]) -> Dict:
-        """Generate strategic observations using StrategicObservationAgent."""
-        try:
-            import asyncio
-            import sys
-            sys.path.insert(0, str(self.project_root))
-            from agentic_core.L6_observability.agents.StrategicObservationAgent import StrategicObservationAgent
-            
-            print("\n🔍 Generating strategic observations...")
-            agent = StrategicObservationAgent()
-            
-            # Prepare data for agent
-            total_row = data[0] if data else {}
-            territory_data = data[1:] if len(data) > 1 else []
-            
-            # Run agent analysis
-            observations = asyncio.run(agent.generate_observations({
-                'total_row': total_row,
-                'territory_data': territory_data,
-                'dashboard_data': data
-            }))
-            
-            print(f"✅ Generated strategic observations")
-            return observations
-            
-        except Exception as e:
-            print(f"⚠️  Strategic observations generation failed: {e}")
-            print(f"   Continuing with default observations")
-            return {
-                "summary": "Dashboard data generated successfully",
-                "critical_path_status": "Nominal",
-                "detected_drift": False
-            }
-    
     def run(self) -> bool:
         """Execute complete dashboard generation pipeline."""
         print("=" * 70)
@@ -731,9 +804,6 @@ class DashboardGenerator:
         if not self.validate_dashboard_data(data):
             return False
         
-        # Step 3b: Generate strategic observations (MANDATORY)
-        observations = self.generate_strategic_observations(data)
-        
         # Step 4: Update HTML with both aggregate and per-agent data
         print("\n💾 Updating dashboard HTML...")
         if not self.update_dashboard_html(data, per_agent_data):
@@ -748,7 +818,6 @@ class DashboardGenerator:
         print(f"Heal Cap %: {total_row['Heal Cap %']}%")
         print(f"Health: {total_row['Health']}%")
         print(f"Territories: {len(data) - 1}")
-        print(f"Strategic Observations: {observations.get('summary', 'N/A')}")
         print(f"Per-agent data: {len(per_agent_data)} territories")
         print("=" * 70)
         
