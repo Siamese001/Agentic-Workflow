@@ -1,0 +1,105 @@
+import logging
+import time
+import uuid
+from typing import Any, Dict, Optional
+from datetime import datetime
+from pydantic import BaseModel, Field
+
+class SovereignEvent(BaseModel):
+    """Standardized schema for all agentic events (Report 4.3)."""
+    event_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    event_type: str
+    source_agent: str
+    severity: str = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+    payload: Dict[str, Any] = {}
+    trace_id: Optional[str] = None
+
+class EventEmissionMixin:
+    """
+    Phase 2 Observability Infrastructure: Event Emission (Report 4.3).
+    
+    Standardizes how agents broadcast internal state changes to L6.
+    Features:
+    - Structured Event Schema (Pydantic)
+    - Automatic Source Attribution
+    - Severity-based Filtering
+    - Trace ID correlation support
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._ee_logger = logging.getLogger(self.__class__.__name__)
+        # Buffer for potential batch emission (Report 4.6)
+        self._event_buffer = []
+
+    def emit_event(self, 
+                   event_type: str, 
+                   payload: Optional[Dict[str, Any]] = None, 
+                   severity: str = "INFO",
+                   trace_id: Optional[str] = None) -> SovereignEvent:
+        """
+        Broadmosts a structured event for L6 monitoring.
+        
+        Args:
+            event_type: Category of the event (e.g., 'healing.success')
+            payload: Data associated with the event
+            severity: Impact level (INFO to CRITICAL)
+            trace_id: ID for cross-agent request correlation
+            
+        Returns:
+            SovereignEvent: The emitted event object
+        """
+        event = SovereignEvent(
+            event_type=event_type,
+            source_agent=self.__class__.__name__,
+            severity=severity.upper(),
+            payload=payload or {},
+            trace_id=trace_id
+        )
+
+        # 1. Standard Logging Integration
+        log_level = getattr(logging, event.severity, logging.INFO)
+        self._ee_logger.log(log_level, f"EVENT [{event.event_type}]: {event.payload}")
+
+        # 2. L6 Observability Hook (Placeholder for L6 Central Dispatch)
+        # In production, this would send to a centralized event bus or Redis stream
+        self._dispatch_to_observability(event)
+        
+        return event
+
+    def _dispatch_to_observability(self, event: SovereignEvent):
+        """Internal: Routes the event to the L6 monitoring layer."""
+        # This will be refined in Phase 3 with actual L6 agent integration
+        pass
+
+    @staticmethod
+    def observe_execution(event_prefix: str):
+        """Decorator to automatically emit start/end events for a method."""
+        def decorator(func):
+            from functools import wraps
+            @wraps(func)
+            async def wrapper(self, *args, **kwargs):
+                if not isinstance(self, EventEmissionMixin):
+                    return await func(self, *args, **kwargs)
+
+                self.emit_event(f"{event_prefix}.started", {"args": str(args)})
+                start_time = time.time()
+                
+                try:
+                    result = await func(self, *args, **kwargs)
+                    duration = time.time() - start_time
+                    self.emit_event(
+                        f"{event_prefix}.completed", 
+                        {"duration": round(duration, 4), "success": True}
+                    )
+                    return result
+                except Exception as e:
+                    self.emit_event(
+                        f"{event_prefix}.failed", 
+                        {"error": str(e), "success": False},
+                        severity="ERROR"
+                    )
+                    raise e
+            return wrapper
+        return decorator
