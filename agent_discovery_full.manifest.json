@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-13T13:06:02.230336Z",
-  "scan_duration_seconds": 19.61,
+  "generated_at": "2026-01-13T15:56:32.308003Z",
+  "scan_duration_seconds": 21.1,
   "agent_count": 268,
-  "content_hash": "sha256:302bce920d71ea93d9fab1987a7a0a194e9bd7f19bb3ecab60fb4486958ca874",
+  "content_hash": "sha256:7465f1f21c7723aa566a2fc50cd3cc6ea5273b9e4ccb820667bee74eb708010d",
   "layer_breakdown": {
     "Apps": 61,
     "Base": 1,
@@ -39,6 +39,8 @@
     "find_l5_validator_issue.py": "1c707fd8fa2a6b3dfe6f266e4ea5c90c",
     "find_missing_agent.py": "078aaaf56307b9a7238d9c30ac16382d",
     "find_remaining_agents.py": "240b5cb0d4327aeb66de0bd7f8c26cb6",
+    "fix_build_total_row.py": "35164e66d3ce7bb797866a751f585a82",
+    "fix_total_row.py": "36e4bcb88e4bc353d54bb2bb8a0bc345",
     "identify_duplicates.py": "889df1298d33102d78ae30ae84df5ca0",
     "identify_orphans.py": "a0c466c7c98e4095a4b14840b55df859",
     "identify_phase2_duplicates.py": "2f2c2b2a9e9f3a84d73c55dc5cad3b9c",
@@ -50,6 +52,7 @@
     "test_json_serialization.py": "92f1effa6497902f16cad3164ba3330f",
     "test_l6_discovery.py": "587d040be9dc82ecde9adaafcded98bc",
     "test_l6_final.py": "ae1fa23af53d81c07827296cc89f8108",
+    "verify_criticality.py": "6ea5d16e2628c03fae5069cf72c4c154",
     "verify_l6_base_class.py": "ceff51b0b94ef81b732a4b7728fd3b78",
     "verify_phase1.py": "47e5303ae281306191901ca1fc31f1a0",
     "verify_proper_base_complete.py": "21dea344cf1f9eb94a7efff9ae3b868f",
@@ -932,7 +935,7 @@
     "agentic_core/L6_observability/agents/RuntimeTelemetryAgent.py": "b752566235c5af081c6d2fbe5ca16c94",
     "agentic_core/L6_observability/agents/StrategicObservationAgent.py": "8ea30585571af06b7477d6e12ebcbc4b",
     "agentic_core/L6_observability/dashboards/data_generator.py": "d156de6e7d580edfa44f338ab7eee286",
-    "agentic_core/L6_observability/dashboards/generate_dashboard.py": "7a14b1f46864a88e8bcccd96c130d790",
+    "agentic_core/L6_observability/dashboards/generate_dashboard.py": "c71dc0f2a50730e1a799d3d5025df05a",
     "agentic_core/L6_observability/dashboards/run_dashboard_pipeline.py": "bee05d64ff676bef452dab121f091d1a",
     "agentic_core/L6_observability/dashboards/serve_dashboard.py": "38aa56d7f0df5a6098945aea3eee5a29",
     "agentic_core/L6_observability/dashboards/simple_server.py": "d41d8cd98f00b204e9800998ecf8427e",
@@ -1462,7 +1465,7 @@
     "scripts/fix_remaining_mcp_gaps.py": "642426b693bea969dfcf6b6ea4fb6733",
     "scripts/fix_testing_observability.py": "5708b8fc5aed676958af07b6bd2e141e",
     "scripts/full_agent_capability_audit.py": "d2caad79192e8492878063882dde27b6",
-    "scripts/full_agent_discovery.py": "e4b8996440de4c50ab3031b026a18d88",
+    "scripts/full_agent_discovery.py": "f9039742fbbdde3444d25015f72fea2a",
     "scripts/generate_agent_duplicates_table.py": "65c2a540b0406b9dd07a20ae7ade4558",
     "scripts/generate_agent_report.py": "342335642afc5c8270d2f99bf753d3e0",
     "scripts/generate_agent_table_simple.py": "e05c78eb25c09907223885dd300326a1",
@@ -1583,6 +1586,6 @@
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63",
     "scripts/refactor/verify_integrity.py": "2bfe5aaf42a32e5a9c880b33b8b95217"
   },
-  "hashed_file_count": 1559,
+  "hashed_file_count": 1562,
   "hash_errors": 0
 }

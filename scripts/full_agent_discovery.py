@@ -697,6 +697,16 @@ def calculate_schema_strictness(class_node: ast.ClassDef) -> float:
     return calculate_typing_coverage(class_node)
 
 
+def detect_agent_metadata(class_node: ast.ClassDef) -> bool:
+    """Phase 3: Detect if agent class has sufficient metadata (Finding #2).
+    
+    Checks for the presence of a class-level docstring.
+    Agents with comprehensive docstrings enable better discovery and understanding.
+    """
+    docstring = ast.get_docstring(class_node)
+    return bool(docstring and docstring.strip())
+
+
 def detect_observability(class_node: ast.ClassDef, source: str) -> dict:
     """Detect observability indicators (logging, metrics, tracing)."""
     obs = {'logging': False, 'metrics': False, 'tracing': False}
@@ -1348,6 +1358,10 @@ def main():
             # NEW PHASE 4 SIGNALS
             proper_base_class = check_proper_base(node, layer)
             schema_strictness = calculate_schema_strictness(node)
+            # PHASE 3: Metadata detection
+            has_metadata = detect_agent_metadata(node)
+            # PHASE 3: Usage detection (simplified - agents with proper base are considered "in use")
+            is_used = proper_base_class or has_healing or mcp_hardened
             
             # Determine territory (layer + subdirectory)
             # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
@@ -1497,6 +1511,7 @@ def main():
                 'cyclomatic_complexity': cyclomatic_complexity,
                 'proper_base_class': proper_base_class,  # Gravity signal
                 'schema_strictness': schema_strictness,  # Hardened signal
+                'has_metadata': has_metadata,  # PHASE 3: Metadata compliance
             })
     
     if incremental_mode:

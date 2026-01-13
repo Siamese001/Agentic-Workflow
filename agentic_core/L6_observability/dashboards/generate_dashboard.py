@@ -254,6 +254,14 @@ class DashboardGenerator:
         typed_pct_sum = sum(a.get('typed_pct', 0) for a in agents_list)
         doc_pct_sum = sum(a.get('documented_pct', 0) for a in agents_list)
         
+        # PHASE 1 FIX: Calculate from real data (Finding #1 and #3)
+        loc_sum = sum(a.get('loc', 0) for a in agents_list)
+        schema_sum = sum(a.get('schema_strictness', 0) for a in agents_list)
+        
+        # PHASE 3 FIX: Calculate metadata and usage from real data (Finding #2 and #5)
+        metadata_count = sum(1 for a in agents_list if a.get('has_metadata', False))
+        used_count = sum(1 for a in agents_list if a.get('is_used', False))
+        
         # MCP Hardened - from actual agent data (not hardcoded!)
         mcp_hardened = sum(1 for a in agents_list if a.get('mcp_hardened'))
         
@@ -265,6 +273,14 @@ class DashboardGenerator:
         typed_pct = round(typed_pct_sum / total, 1)
         doc_pct = round(doc_pct_sum / total, 1)
         avg_cc = round(cc_sum / total, 1)
+        
+        # PHASE 1 FIX: Use real data instead of hardcoded values
+        avg_loc = round(loc_sum / total, 1)
+        schema_pct = round(schema_sum / total, 1)
+        
+        # PHASE 3 FIX: Use real data instead of hardcoded values
+        metadata_pct = round(metadata_count / total * 100, 1)
+        used_pct = round(used_count / total * 100, 1)
         
         # Hardened % and MCP Capable % - REAL calculation from mcp_hardened field
         hardened_pct = round(mcp_hardened / total * 100, 1)
@@ -313,8 +329,12 @@ class DashboardGenerator:
             "test_pct": test_pct,
             "obs_pct": obs_pct,
             "avg_cc": avg_cc,
+            "avg_loc": avg_loc,  # PHASE 1 FIX: Real data from 'loc' field
             "typed_pct": typed_pct,
             "doc_pct": doc_pct,
+            "schema_pct": schema_pct,  # PHASE 1 FIX: Real data from 'schema_strictness' field
+            "metadata_pct": metadata_pct,  # PHASE 3 FIX: Real data from 'has_metadata' field
+            "used_pct": used_pct,  # PHASE 3 FIX: Real data from 'is_used' field
             "complexity_health": complexity_health,
             "code_quality": code_quality,
             "health": health,
@@ -323,6 +343,29 @@ class DashboardGenerator:
             "mcp_pct": mcp_pct,
             "proper_base_pct": proper_base_pct
         }
+    
+    def calculate_layer_criticality(self, territory_name: str) -> int:
+        """
+        Calculate criticality based on architectural layer (Finding #4).
+        Weights reflect the risk impact of failure in that specific layer.
+        """
+        # Normalized weights based on L0-L6 hierarchy
+        LAYER_WEIGHTS = {
+            'L5': 100,  # Safety - Absolute critical path
+            'Base': 95, # Foundation - Global impact
+            'L4': 85,   # State/SSOT - Data integrity
+            'L3': 75,   # Orchestration - Workflow control
+            'Apps': 70, # Applications - User facing
+            'L2': 60,   # Execution - Task workers
+            'L1': 50,   # Cognition - AI reasoning
+            'L0': 40,   # Maintenance - Supporting tools
+            'L6': 30,   # Observability - Monitoring
+        }
+        
+        for layer, score in LAYER_WEIGHTS.items():
+            if layer in territory_name:
+                return score
+        return 50  # Default for unknown territories
     
     def build_territory_row(self, territory_name: str, metrics: Dict[str, Any], priority: int, is_infrastructure: bool = False) -> Dict[str, Any]:
         """Build a territory row with FIXED field schema."""
@@ -338,20 +381,20 @@ class DashboardGenerator:
             "Test %": metrics["test_pct"],
             "Observable %": metrics["obs_pct"],
             "Avg CC": metrics["avg_cc"],
-            "Avg LOC": 150,  # Placeholder
+            "Avg LOC": metrics["avg_loc"],  # PHASE 1 FIX: Real data from 'loc' field
             "Typed %": metrics["typed_pct"],
             "Documented %": metrics["doc_pct"],
-            "Metadata %": 100.0,
+            "Metadata %": metrics["metadata_pct"],  # PHASE 3 FIX: Real data from 'has_metadata' field
             "Proper Base %": metrics["proper_base_pct"],
             "Base Class Inherit %": metrics["proper_base_pct"],  # Alias for JS rendering
-            "Schema Strictness %": metrics["typed_pct"],
+            "Schema Strictness %": metrics["schema_pct"],  # PHASE 1 FIX: Real data from 'schema_strictness' field
             "Complexity Health": metrics["complexity_health"],
             "Code Quality Score": metrics["code_quality"],
-            "Criticality": 75,
+            "Criticality": self.calculate_layer_criticality(territory_name),  # PHASE 2 FIX: Layer-based weight
             "Health": metrics["health"],
             "Health Breakdown": f"Heal:{metrics['heal_cap_pct']:.0f}+Inv:{metrics['heal_inv_pct']:.0f}+Test:{metrics['test_pct']:.0f}+Obs:{metrics['obs_pct']:.0f}+CC:{metrics['complexity_health']:.0f}",
             "Risk": metrics["risk"],
-            "Used %": 95.0,
+            "Used %": metrics["used_pct"],  # PHASE 3 FIX: Real data from 'is_used' field
             "Priority": priority,
             "IsInfrastructure": is_infrastructure
         }
@@ -377,6 +420,11 @@ class DashboardGenerator:
         proper_base_pct = weighted_avg("Proper Base %")
         
         avg_cc = round(sum(r["Avg CC"] * r["Total"] for r in rows) / total_agents, 1)
+        avg_loc = round(sum(r["Avg LOC"] * r["Total"] for r in rows) / total_agents, 1)  # PHASE 1 FIX
+        schema_pct = weighted_avg("Schema Strictness %")  # PHASE 1 FIX
+        metadata_pct = weighted_avg("Metadata %")  # PHASE 3 FIX
+        used_pct = weighted_avg("Used %")  # PHASE 3 FIX
+        avg_criticality = round(sum(r["Criticality"] * r["Total"] for r in rows) / total_agents, 1)  # PHASE 2 FIX
         complexity_health = round(sum(r["Complexity Health"] * r["Total"] for r in rows) / total_agents, 1)
         code_quality = round(sum(r["Code Quality Score"] * r["Total"] for r in rows) / total_agents, 1)
         
@@ -403,20 +451,20 @@ class DashboardGenerator:
             "Test %": test_pct,
             "Observable %": obs_pct,
             "Avg CC": avg_cc,
-            "Avg LOC": 150,
+            "Avg LOC": avg_loc,  # PHASE 1 FIX: Real data
             "Typed %": typed_pct,
             "Documented %": doc_pct,
-            "Metadata %": 100.0,
+            "Metadata %": metadata_pct,  # PHASE 3 FIX: Real data
             "Proper Base %": proper_base_pct,
             "Base Class Inherit %": proper_base_pct,
-            "Schema Strictness %": typed_pct,
+            "Schema Strictness %": schema_pct,  # PHASE 1 FIX: Real data
             "Complexity Health": complexity_health,
             "Code Quality Score": code_quality,
-            "Criticality": 75,
+            "Criticality": avg_criticality,  # PHASE 2 FIX: Weighted average from territories
             "Health": health,
             "Health Breakdown": f"Heal:{heal_cap_pct:.0f}+Inv:{heal_inv_pct:.0f}+Test:{test_pct:.0f}+Obs:{obs_pct:.0f}+CC:{complexity_health:.0f}",
             "Risk": risk,
-            "Used %": 95.0,
+            "Used %": used_pct,  # PHASE 3 FIX: Real data
             "Priority": "ALL",
             "IsInfrastructure": False
         }
