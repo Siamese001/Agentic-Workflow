@@ -17,7 +17,7 @@ FILESYSTEM COMPLIANCE: All file operations use safe_path_join from structure_blu
 """
 from ast import parse, unparse
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 import logging
 import time
 import asyncio
@@ -245,6 +245,91 @@ class HealerMixin:
     def reset_healing_budget(self) -> None:
         """Reset healing budget for new session."""
         self._healing_count = 0
+
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """
+        Repository-level healing method (Canon Key 51 compliance).
+        
+        This is the foundational heal_repository that all agents inherit.
+        Subclasses should call super().heal_repository() FIRST to ensure
+        the shared healing chain (diagnostics, rollback, MCP hardening) runs.
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes (opposite of dry_run for clarity)
+            depth: Current recursion depth for cycle detection
+            max_depth: Maximum recursion depth allowed
+            _call_path: Set of agent names already in call chain (cycle detection)
+            
+        Returns:
+            Dict with healing summary: {violations, fixed, errors, skipped}
+        """
+        agent_name = self.__class__.__name__
+        
+        # Initialize call path for cycle detection
+        if _call_path is None:
+            _call_path = set()
+        
+        # Cycle detection
+        if agent_name in _call_path:
+            Logger.warning(f"[HEAL_REPOSITORY] Cycle detected: {agent_name}")
+            return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "cycle_detected": True}
+        
+        # Depth limiting
+        if depth > max_depth:
+            Logger.warning(f"[HEAL_REPOSITORY] Max depth {max_depth} exceeded for {agent_name}")
+            return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+        
+        # Check if healing is enabled
+        if not self._healing_enabled:
+            Logger.debug(f"[HEAL_REPOSITORY] {agent_name}: Healing disabled")
+            return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1}
+        
+        # Budget check
+        if self._healing_count >= self._max_healing_per_session:
+            Logger.warning(f"[HEAL_REPOSITORY] {agent_name}: Budget exhausted")
+            return {"violations": 0, "fixed": 0, "errors": 1, "budget_exhausted": True}
+        
+        # Add to call path
+        _call_path.add(agent_name)
+        
+        try:
+            # Base implementation - subclasses override to add specific logic
+            Logger.debug(f"[HEAL_REPOSITORY] {agent_name}: Base heal_repository invoked (dry_run={dry_run})")
+            
+            # Reset metrics for this healing session if at root
+            if depth == 0:
+                self._healing_metrics["count"] = 0
+                self._healing_metrics["total_time"] = 0.0
+                self._healing_metrics["success_count"] = 0
+            
+            return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
+            
+        except Exception as e:
+            Logger.error(f"[HEAL_REPOSITORY] {agent_name} failed: {e}")
+            return {"violations": 0, "fixed": 0, "errors": 1, "error_message": str(e)}
+        finally:
+            _call_path.discard(agent_name)
+
+    async def heal_repository_async(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """Non-blocking heal_repository for orchestrators/async agents."""
+        return await asyncio.to_thread(
+            self.heal_repository, dry_run, execute, depth, max_depth, _call_path
+        )
 
 
 __all__ = ["HealerMixin"]

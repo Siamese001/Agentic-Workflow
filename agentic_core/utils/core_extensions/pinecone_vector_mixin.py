@@ -10,13 +10,13 @@ Features:
 """
 from __future__ import annotations
 import hashlib
+import asyncio
 import logging
 import time
 from typing import Any, Dict, List, Optional
 
 from agentic_core.config.flags import USE_PINECONE, CACHE_METRICS_ENABLED, GRACEFUL_DEGRADATION
 from agentic_core.L6_observability.metrics.cache_metrics import get_cache_metrics
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 log = logging.getLogger(__name__)
 
@@ -43,6 +43,12 @@ class PineconeVectorMixin:
     _index_name: str = "sovereign-agents-v1"
     _namespace: str = "agent_patterns"
     _local_vectors: dict = {}
+
+    EXPECTED_DIMENSION = 1536
+    MAX_QUERY_TOP_K = 50
+    QUERY_TIMEOUT = 12.0
+
+    circuit_breaker = None
     
     @property
     def pinecone_enabled(self) -> bool:
@@ -86,15 +92,35 @@ class PineconeVectorMixin:
         """
         start = time.time()
         metrics = get_cache_metrics()
-        
-        if self.pinecone:
+
+        if len(embedding) != self.EXPECTED_DIMENSION:
+            raise ValueError(
+                f"Invalid embedding dimension: {len(embedding)} != {self.EXPECTED_DIMENSION}"
+            )
+
+        top_k = min(top_k, self.MAX_QUERY_TOP_K)
+
+        local_only = False
+
+        if hasattr(self, "circuit_breaker") and self.circuit_breaker:
             try:
-                results = await self.pinecone.query(
-                    vector=embedding,
-                    top_k=top_k,
-                    namespace=self._namespace,
-                    filter=metadata_filter,
-                    include_metadata=include_metadata
+                if hasattr(self.circuit_breaker, "can_execute") and not self.circuit_breaker.can_execute():
+                    log.warning("Pinecone circuit open -> fallback to local immediately")
+                    local_only = True
+            except Exception:
+                pass
+        
+        if self.pinecone and not local_only:
+            try:
+                results = await asyncio.wait_for(
+                    self.pinecone.query(
+                        vector=embedding,
+                        top_k=top_k,
+                        namespace=self._namespace,
+                        filter=metadata_filter,
+                        include_metadata=include_metadata,
+                    ),
+                    timeout=self.QUERY_TIMEOUT,
                 )
                 latency = (time.time() - start) * 1000
                 hit = len(results.get("matches", [])) > 0
@@ -103,6 +129,8 @@ class PineconeVectorMixin:
                 log.debug(f"Vector search returned {len(results.get('matches', []))} results")
                 return results.get("matches", [])
             except Exception as e:
+                latency = (time.time() - start) * 1000
+                log.warning(f"Pinecone query failed after {latency:.0f}ms: {e}")
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("pinecone_search")
                 log.debug(f"Pinecone search failed ({e}) - returning empty")

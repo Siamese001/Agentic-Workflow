@@ -1,5 +1,8 @@
 import time
+import asyncio
 import logging
+import json
+import hashlib
 from typing import Dict, Optional, Any, Tuple
 from functools import wraps
 
@@ -33,8 +36,19 @@ class RateLimitMixin:
         # Default limits if not defined in child class
         if not hasattr(self, "_rate_limits"):
             self._rate_limits: Dict[str, Dict[str, float]] = {}
+
+        self._violation_count: Dict[str, int] = {}
+        self._redis = None
+        try:
+            from agentic_core.L4_state.ValidationContext.caching_redis_mcp_client import get_redis_client
+            self._redis = get_redis_client()
+        except Exception:
+            self._redis = None
             
         self._rl_logger = logging.getLogger(self.__class__.__name__)
+
+    def _sanitize_key(self, key: str) -> str:
+        return hashlib.sha256(key.encode()).hexdigest()[:32]
 
     def configure_rate_limit(self, key: str, rate: int, per: int = 60, burst: Optional[int] = None):
         """
@@ -77,6 +91,33 @@ class RateLimitMixin:
         }
         return current_tokens
 
+    async def _load_state_from_redis(self, key: str) -> None:
+        if not self._redis:
+            return
+        try:
+            skey = self._sanitize_key(key)
+            data = self._redis.get(f"rate_limit:{skey}")
+            if asyncio.iscoroutine(data) or asyncio.isfuture(data):
+                data = await data
+            if data:
+                state = json.loads(data)
+                if isinstance(state, dict) and "tokens" in state and "last_updated" in state:
+                    self._bucket_state[key] = state
+        except Exception:
+            return
+
+    async def _save_state_to_redis(self, key: str) -> None:
+        if not self._redis:
+            return
+        try:
+            skey = self._sanitize_key(key)
+            payload = json.dumps(self._bucket_state[key])
+            result = self._redis.set(f"rate_limit:{skey}", payload, ex=3600)
+            if asyncio.iscoroutine(result) or asyncio.isfuture(result):
+                await result
+        except Exception:
+            return
+
     async def check_rate_limit(self, key: str, consume: int = 1, raise_exc: bool = True) -> bool:
         """
         Check if an operation is allowed. Consumes tokens if successful.
@@ -92,18 +133,32 @@ class RateLimitMixin:
         if key not in self._rate_limits:
             return True
 
+        if key not in self._bucket_state and self._redis:
+            await self._load_state_from_redis(key)
+
         current_tokens = self._get_tokens(key)
         
         if current_tokens >= consume:
             # Consume tokens
             self._bucket_state[key]["tokens"] -= consume
+            self._violation_count[key] = 0
+
+            if self._redis:
+                asyncio.create_task(self._save_state_to_redis(key))
             return True
         else:
+            self._violation_count[key] = self._violation_count.get(key, 0) + 1
             # Calculate wait time
             config = self._rate_limits[key]
             refill_rate = config["rate"] / config["per"]
             needed = consume - current_tokens
             wait_time = needed / refill_rate
+
+            if self._violation_count[key] >= 5:
+                wait_time *= 1.5 ** (self._violation_count[key] - 4)
+                self._rl_logger.warning(
+                    f"Rate limit short-circuit: {key} - {self._violation_count[key]} violations"
+                )
             
             msg = f"Rate limit hit for '{key}'. Allowed: {config['rate']}/{config['per']}s. Wait: {wait_time:.2f}s"
             
