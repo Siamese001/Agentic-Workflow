@@ -1635,7 +1635,97 @@ def main():
     log.info(f"[SAVED] {OUTPUT_JSON}")
     log.info(f"[SAVED] {MANIFEST_JSON}")
     log.info("=" * 80)
+    
+    # ========================================================================
+    # PHASE 3.3: COMPLIANCE GATE - Exit with error if critical issues found
+    # ========================================================================
+    return agents, parse_errors
+
+
+def check_compliance_gate(agents: List[Dict], parse_errors: List[str]) -> int:
+    """
+    Phase 3.3 Compliance Gate: Validate agent discovery for critical issues.
+    Returns 0 if compliant, 1 if issues found.
+    """
+    log = logging.getLogger(__name__)
+    
+    log.info("=" * 80)
+    log.info("PHASE 3.3: COMPLIANCE GATE")
+    log.info("=" * 80)
+    
+    issues = []
+    
+    # Check 1: Duplicate agent names
+    name_counts = defaultdict(int)
+    for agent in agents:
+        name_counts[agent['class_name']] += 1
+    
+    duplicates = {name: count for name, count in name_counts.items() if count > 1}
+    if duplicates:
+        issues.append(f"Duplicate agent names: {len(duplicates)}")
+        for name, count in list(duplicates.items())[:5]:
+            log.warning(f"  - {name}: {count} instances")
+    
+    # Check 2: Unknown layers
+    valid_layers = {'Base', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Apps', 'Utils'}
+    unknown_layers = set()
+    for agent in agents:
+        layer = agent.get('layer', '')
+        if layer and layer not in valid_layers:
+            unknown_layers.add(layer)
+    
+    if unknown_layers:
+        issues.append(f"Unknown layers: {len(unknown_layers)}")
+        for layer in list(unknown_layers)[:5]:
+            log.warning(f"  - {layer}")
+    
+    # Check 3: Orphaned agents (no proper base class)
+    proper_bases = {
+        'SovereignBaseAgent',
+        'L0Agent',
+        'L1Agent',
+        'L2ExecutionBaseAgent',
+        'OrchestrationBaseAgent',
+        'StateBaseAgent',
+        'SafetyBaseAgent',
+        'L6ObservabilityBaseAgent'
+    }
+    
+    orphans = []
+    for agent in agents:
+        inheritance = agent.get('inheritance', [])
+        has_proper_base = any(base in proper_bases for base in inheritance)
+        if not has_proper_base and agent.get('layer') not in ['Apps', 'Utils']:
+            orphans.append(agent['class_name'])
+    
+    # Note: Apps agents inheriting from mixins is a known architectural pattern
+    # Only flag core layer agents (L0-L6) as orphans
+    if orphans:
+        issues.append(f"Core layer orphaned agents: {len(orphans)}")
+        for name in orphans[:5]:
+            log.warning(f"  - {name}")
+    
+    # Check 4: Parse errors
+    if len(parse_errors) > 10:
+        issues.append(f"Excessive parse errors: {len(parse_errors)}")
+    
+    # Report compliance status
+    log.info("=" * 80)
+    if issues:
+        log.warning(f"❌ COMPLIANCE FAILURE: {len(issues)} issue categories detected")
+        for issue in issues:
+            log.warning(f"  - {issue}")
+        log.info("=" * 80)
+        return 1
+    else:
+        log.info(f"✅ COMPLIANCE PASSED: All {len(agents)} agents are standardized")
+        log.info("=" * 80)
+        return 0
 
 
 if __name__ == '__main__':
-    main()
+    agents, parse_errors = main()
+    
+    # Phase 3.3: Run compliance gate
+    exit_code = check_compliance_gate(agents, parse_errors)
+    sys.exit(exit_code)

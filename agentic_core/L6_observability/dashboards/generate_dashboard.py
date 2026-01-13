@@ -12,6 +12,7 @@ This script:
 3. Generates dashboard rows with FIXED field schema
 4. Updates autonomy_dashboard.html with new data
 5. Validates output against wireframe requirements
+6. Creates fully self-contained HTML that works offline via file://
 
 FIXED TERRITORY STRUCTURE (NEVER CHANGES):
 - TOTAL (always first row)
