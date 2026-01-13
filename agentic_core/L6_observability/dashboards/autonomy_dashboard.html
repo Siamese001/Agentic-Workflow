@@ -7,7 +7,23 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Autonomy Compliance Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js" 
+            onerror="handlePlotlyLoadError()"></script>
+    <script>
+        // Fallback for offline use - detect if Plotly failed to load
+        function handlePlotlyLoadError() {
+            console.warn('Plotly.js failed to load from CDN. Dashboard will work in limited mode.');
+            window.PLOTLY_OFFLINE = true;
+        }
+        
+        // Check if Plotly loaded after page load
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof Plotly === 'undefined') {
+                window.PLOTLY_OFFLINE = true;
+                console.warn('Dashboard running in offline mode - charts disabled');
+            }
+        });
+    </script>
     <style>
         * {
             margin: 0;
@@ -12326,6 +12342,8 @@
 
         
 
+        
+
 
 
 
@@ -13924,32 +13942,43 @@
         }
 
         function renderHealthGauge(totalRow) {
-            const health = parseFloat(totalRow.health || totalRow.Health) || 0;
+            if (window.PLOTLY_OFFLINE) {
+                document.getElementById('healthGauge').innerHTML = 
+                    `<div style="text-align:center; padding:60px 20px; color:#6b7280;">
+                        <div style="font-size:48px; font-weight:700; color:#2563eb;">${parseFloat(totalRow['Health']).toFixed(1)}%</div>
+                        <div style="font-size:18px; margin-top:10px;">System Health</div>
+                        <div style="font-size:12px; margin-top:20px; color:#9ca3af;">Charts require internet connection</div>
+                    </div>`;
+                return;
+            }
+            
+            const health = parseFloat(totalRow['Health']) || 0;
+            
             const data = [{
                 type: 'indicator',
                 mode: 'gauge+number',
                 value: health,
-                title: { text: `<b style="font-size:1.8em;">Overall Health Score</b><br><span style="font-size:1em;">Composite autonomy signal • Currently <strong style="color:${health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626'};">${health.toFixed(1)}%</strong></span>` },
+                title: { text: 'System Health', font: { size: 18, weight: 700 } },
+                number: { suffix: '%', font: { size: 32, weight: 700 } },
                 gauge: {
-                    axis: { range: [0, 100] },
+                    axis: { range: [0, 100], tickwidth: 1 },
                     bar: { color: health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626' },
+                    bgcolor: 'white',
+                    borderwidth: 2,
+                    bordercolor: '#e5e7eb',
                     steps: [
                         { range: [0, 60], color: '#fee2e2' },
                         { range: [60, 80], color: '#fed7aa' },
-                        { range: [80, 100], color: '#bbf7d0' }
-                    ],
-                    threshold: {
-                        line: { color: '#dc2626', width: 4 },
-                        thickness: 0.75,
-                        value: 80
-                    }
+                        { range: [80, 100], color: '#dcfce7' }
+                    ]
                 }
             }];
 
             const layout = {
-                margin: { l: 50, r: 50, t: 20, b: 20 },
-                paper_bgcolor: 'transparent',
-                plot_bgcolor: 'transparent',
+                width: 300,
+                height: 250,
+                margin: { t: 40, r: 25, l: 25, b: 25 },
+                paper_bgcolor: 'white',
                 font: { color: '#1f2937', size: 14 }
             };
 
