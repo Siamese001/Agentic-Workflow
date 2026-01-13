@@ -80,7 +80,7 @@ REQUIRED_FIELDS = [
     "Test %", "Observable %",
     "Avg CC", "Avg LOC",
     "Typed %", "Documented %",
-    "Metadata %", "Proper Base %", "Base Class Inherit %", "Schema Strictness %",
+    "Metadata %", "Canonical Inheritance %", "Schema Strictness %",
     "Complexity Health", "Code Quality Score",
     "Criticality", "Health", "Health Breakdown", "Risk",
     "Used %", "Priority", "IsInfrastructure"
@@ -385,8 +385,7 @@ class DashboardGenerator:
             "Typed %": metrics["typed_pct"],
             "Documented %": metrics["doc_pct"],
             "Metadata %": metrics["metadata_pct"],  # PHASE 3 FIX: Real data from 'has_metadata' field
-            "Proper Base %": metrics["proper_base_pct"],
-            "Base Class Inherit %": metrics["proper_base_pct"],  # Alias for JS rendering
+            "Canonical Inheritance %": metrics["proper_base_pct"],
             "Schema Strictness %": metrics["schema_pct"],  # PHASE 1 FIX: Real data from 'schema_strictness' field
             "Complexity Health": metrics["complexity_health"],
             "Code Quality Score": metrics["code_quality"],
@@ -417,7 +416,7 @@ class DashboardGenerator:
         doc_pct = weighted_avg("Documented %")
         hardened_pct = weighted_avg("Hardened %")
         mcp_pct = weighted_avg("MCP Capable %")
-        proper_base_pct = weighted_avg("Proper Base %")
+        proper_base_pct = weighted_avg("Canonical Inheritance %")
         
         avg_cc = round(sum(r["Avg CC"] * r["Total"] for r in rows) / total_agents, 1)
         avg_loc = round(sum(r["Avg LOC"] * r["Total"] for r in rows) / total_agents, 1)  # PHASE 1 FIX
@@ -455,8 +454,7 @@ class DashboardGenerator:
             "Typed %": typed_pct,
             "Documented %": doc_pct,
             "Metadata %": metadata_pct,  # PHASE 3 FIX: Real data
-            "Proper Base %": proper_base_pct,
-            "Base Class Inherit %": proper_base_pct,
+            "Canonical Inheritance %": proper_base_pct,
             "Schema Strictness %": schema_pct,  # PHASE 1 FIX: Real data
             "Complexity Health": complexity_health,
             "Code Quality Score": code_quality,
