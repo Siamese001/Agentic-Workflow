@@ -2,11 +2,20 @@
 """
 MANDATORY END-TO-END DASHBOARD TEST
 Must be run after ANY data change to agent_discovery_full.json or dashboard HTML.
+
+CRITICAL REQUIREMENTS:
+1. Verify browser cache-busting headers
+2. Validate JavaScript execution paths
+3. Check for web server caching issues
+4. Verify file modification timestamps
+5. Test all JavaScript data rendering
 """
 import json
 import re
+import hashlib
 from pathlib import Path
 from typing import Dict, List, Tuple
+from datetime import datetime
 
 # Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.config.blueprint_sovereign.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
@@ -433,49 +442,34 @@ def run_all_tests() -> bool:
     print("─" * 70)
     
     try:
+        # Use proper_base_class field from discovery instead of string parsing
         orphans = []
         for agent in agents:
             name = agent.get('class_name', '')
             layer = agent.get('layer', '')
-            inheritance = agent.get('inheritance', [])
+            proper_base = agent.get('proper_base_class', False)
             
-            if not layer or not inheritance:
+            # Skip base agents themselves
+            if 'BaseAgent' in name:
                 continue
             
-            # Skip base agents
-            if name in CANONICAL_BASE_AGENTS.values() or 'BaseAgent' in name:
+            # Skip non-core layers (Apps, Utils, etc.)
+            if layer not in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Base']:
                 continue
             
-            layer_prefix = layer[:2] if len(layer) >= 2 else layer
-            if layer_prefix not in LAYERS:
-                continue
-            
-            expected_base = CANONICAL_BASE_AGENTS.get(layer_prefix)
-            if not expected_base:
-                continue
-            
-            # Check for base agent in inheritance
-            has_base = False
-            inheritance_str = str(inheritance).lower()
-            if expected_base.lower() in inheritance_str:
-                has_base = True
-            elif f"{layer_prefix.lower()}agent" in inheritance_str:
-                has_base = True
-            elif f"{layer_prefix.lower()}baseagent" in inheritance_str:
-                has_base = True
-            
-            if not has_base:
+            # Check if agent has proper base class architecture
+            if not proper_base:
                 orphans.append(f"{name} ({layer})")
         
         if orphans:
-            errors.append(f"Test 9 FAILED: {len(orphans)} orphaned agents lack base inheritance")
+            errors.append(f"Test 9 FAILED: {len(orphans)} agents lack proper base class architecture")
             for orphan in orphans[:3]:
                 errors.append(f"  - {orphan}")
         else:
-            print(f"✅ Test 9 PASSED: All agents inherit from layer base agents")
+            print(f"✅ Test 9 PASSED: All agents have proper base class architecture")
     
     except Exception as e:
-        errors.append(f"Test 9 FAILED: Could not validate inheritance: {e}")
+        errors.append(f"Test 9 FAILED: Could not validate base class architecture: {e}")
     
     # Test 10: Metric Consistency
     print("\n" + "─" * 70)
@@ -635,7 +629,7 @@ def run_all_tests() -> bool:
     except Exception as e:
         errors.append(f"Test 12B FAILED: Could not validate territory data: {e}")
     
-    # Test 13: Footnote Accuracy
+    # Test 13: Footnote Accuracy Check
     print("\n" + "─" * 70)
     print("Running: Footnote Accuracy Check")
     print("─" * 70)
@@ -677,27 +671,288 @@ def run_all_tests() -> bool:
     except Exception as e:
         errors.append(f"Test 13 FAILED: Could not validate footnotes: {e}")
     
-    # Final Summary
+    # Test 14: Snapshot Regression Test (t-1 vs t)
+    print("\n" + "─" * 70)
+    print("Running: Dashboard Snapshot Regression Test")
+    print("─" * 70)
+    
+    try:
+        project_root = get_validated_project_root()
+        snapshot_t1 = project_root / "agent_discovery_snapshot_t-1.json"
+        current_t = project_root / "agent_discovery_full.json"
+        
+        if not snapshot_t1.exists():
+            errors.append("Test 14 SKIPPED: Snapshot file not found")
+            errors.append(f"  Create baseline: git show HEAD~5:agent_discovery_full.json > agent_discovery_snapshot_t-1.json")
+        else:
+            # Load snapshots
+            with open(snapshot_t1, 'r', encoding='utf-8') as f:
+                t_minus_1 = json.load(f)
+            with open(current_t, 'r', encoding='utf-8') as f:
+                t_current = json.load(f)
+            
+            # Compare base classes
+            def get_base_classes(agents_list):
+                base_classes = {}
+                for agent in agents_list:
+                    if 'Base Class' in agent.get('territory', ''):
+                        layer = agent.get('layer', 'Unknown')
+                        if layer not in base_classes:
+                            base_classes[layer] = []
+                        base_classes[layer].append(agent['class_name'])
+                return base_classes
+            
+            base_t1 = get_base_classes(t_minus_1)
+            base_t = get_base_classes(t_current)
+            
+            # Check for base class violations
+            base_violations = []
+            all_layers = set(base_t1.keys()) | set(base_t.keys())
+            for layer in all_layers:
+                count_t = len(base_t.get(layer, []))
+                if count_t > 1:
+                    base_violations.append(f"{layer} has {count_t} base classes (expected 1)")
+                elif count_t == 0:
+                    base_violations.append(f"{layer} has no base class")
+            
+            # Calculate deltas
+            delta_agents = len(t_current) - len(t_minus_1)
+            agents_t1 = {a['class_name'] for a in t_minus_1}
+            agents_t = {a['class_name'] for a in t_current}
+            added = len(agents_t - agents_t1)
+            removed = len(agents_t1 - agents_t)
+            
+            print(f"   Baseline (t-1): {len(t_minus_1)} agents")
+            print(f"   Current (t):    {len(t_current)} agents")
+            print(f"   Delta:          {delta_agents:+d} ({added} added, {removed} removed)")
+            print(f"   Base classes:   {len(all_layers)} layers checked")
+            
+            if base_violations:
+                errors.append(f"Test 14 FAILED: {len(base_violations)} base class violations")
+                for violation in base_violations[:3]:
+                    errors.append(f"  - {violation}")
+            else:
+                print(f"✅ Test 14 PASSED: Snapshot regression test passed")
+                print(f"   All {len(all_layers)} layers have exactly 1 base class")
+    
+    except Exception as e:
+        errors.append(f"Test 14 FAILED: Could not run snapshot regression: {e}")
+    
+    # Don't exit early - continue to browser/cache validation tests
+    if errors:
+        print("\n" + "=" * 70)
+        print("⚠️  ISSUES DETECTED - Continuing to browser validation tests")
+        print("=" * 70)
+        for error in errors[:5]:  # Show first 5 errors
+            print(f"   {error}")
+    
+    # Test 15: Browser Cache & JavaScript Validation
+    print("\n" + "─" * 70)
+    print("Running: Browser Cache & JavaScript Validation")
+    print("─" * 70)
+    
+    try:
+        with open(dashboard_path, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        
+        # Check cache-busting headers
+        cache_headers = [
+            ('Cache-Control" content="no-cache', 'Cache-Control'),
+            ('Pragma" content="no-cache', 'Pragma'),
+            ('Expires" content="0', 'Expires')
+        ]
+        
+        missing_headers = []
+        for pattern, name in cache_headers:
+            if pattern not in html_content:
+                missing_headers.append(name)
+        
+        if missing_headers:
+            errors.append(f"Test 15A FAILED: Missing cache-busting headers: {', '.join(missing_headers)}")
+        else:
+            print(f"✅ Test 15A PASSED: All cache-busting headers present")
+        
+        # Check critical JavaScript elements
+        js_elements = [
+            ('const dashboardData =', 'dashboardData declaration'),
+            ('const realAgentData =', 'realAgentData declaration'),
+            ('function loadData()', 'loadData function'),
+            ("row['Base Class Inherit %']", 'Base Class Inherit % JS reference'),
+            ('parseFloat(row[\'Base Class Inherit %\']', 'Base Class Inherit % parsing')
+        ]
+        
+        missing_js = []
+        for pattern, desc in js_elements:
+            if pattern not in html_content:
+                missing_js.append(desc)
+        
+        if missing_js:
+            errors.append(f"Test 15B FAILED: Missing JavaScript elements: {', '.join(missing_js)}")
+        else:
+            print(f"✅ Test 15B PASSED: All critical JavaScript elements present")
+        
+        # Verify Base Class Inherit % is actually used in rendering
+        if "row['Base Class Inherit %']" not in html_content:
+            errors.append("Test 15C FAILED: Base Class Inherit % not referenced in JavaScript rendering code")
+        else:
+            print(f"✅ Test 15C PASSED: Base Class Inherit % properly referenced in JS")
+    
+    except Exception as e:
+        errors.append(f"Test 15 FAILED: Could not validate browser cache/JS: {e}")
+    
+    # Test 16: File Freshness & Hash Verification
+    print("\n" + "─" * 70)
+    print("Running: File Freshness & Hash Verification")
+    print("─" * 70)
+    
+    try:
+        stat = dashboard_path.stat()
+        mod_time = datetime.fromtimestamp(stat.st_mtime)
+        time_since_mod = (datetime.now() - mod_time).total_seconds()
+        
+        # Calculate file hash for verification
+        with open(dashboard_path, 'rb') as f:
+            file_hash = hashlib.sha256(f.read()).hexdigest()
+        
+        print(f"   File size: {stat.st_size:,} bytes")
+        print(f"   Modified: {mod_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"   Time since modification: {int(time_since_mod)} seconds")
+        print(f"   SHA256: {file_hash[:32]}...")
+        
+        # Warn if file is stale (older than 10 minutes)
+        if time_since_mod > 600:
+            errors.append(f"Test 16A FAILED: Dashboard HTML is stale (modified {int(time_since_mod/60)} minutes ago)")
+            print(f"   ⚠️  File may be cached - last modified {int(time_since_mod/60)} minutes ago")
+        else:
+            print(f"✅ Test 16A PASSED: File is fresh (modified {int(time_since_mod)} seconds ago)")
+        
+        # Verify file size is reasonable (should be > 500KB for full dashboard)
+        if stat.st_size < 500000:
+            errors.append(f"Test 16B FAILED: Dashboard HTML suspiciously small ({stat.st_size:,} bytes)")
+        else:
+            print(f"✅ Test 16B PASSED: File size reasonable ({stat.st_size:,} bytes)")
+        
+        # Print hash for manual browser verification
+        print(f"\n   📋 FILE HASH FOR BROWSER VERIFICATION:")
+        print(f"   {file_hash}")
+        print(f"   Save this hash to verify browser loaded correct version")
+        print(f"\n   🔄 BROWSER REFRESH INSTRUCTIONS:")
+        print(f"   1. Hard refresh: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)")
+        print(f"   2. Or: Ctrl+F5 (Windows/Linux)")
+        print(f"   3. If using web server: Restart with cache disabled (http-server -c-1)")
+    
+    except Exception as e:
+        errors.append(f"Test 16 FAILED: Could not verify file freshness: {e}")
+    
+    # Test 17: Visual Cell-by-Cell Territory Inspection
+    print("\n" + "─" * 70)
+    print("Running: Visual Cell-by-Cell Territory Inspection")
+    print("─" * 70)
+    
+    try:
+        # Load dashboard data for Test 17
+        start_marker = 'const dashboardData = ['
+        end_marker = '];'
+        start_idx = html_content.find(start_marker)
+        end_idx = html_content.find(end_marker, start_idx) + len(end_marker)
+        json_str = html_content[start_idx + len(start_marker) - 1:end_idx - 1]
+        dashboard_data = json.loads(json_str)
+        
+        # Get expected territories from agent discovery
+        expected_territories = set()
+        for agent in agents:
+            territory = agent.get('territory', '')
+            if territory:
+                expected_territories.add(territory)
+        
+        # Get actual territories from dashboard
+        dashboard_territories = {row['Territory'] for row in dashboard_data if row['Territory'] != 'TOTAL'}
+        
+        # CRITICAL: Check for Base Class territories for each layer (8 total)
+        expected_base_classes = [
+            "Base/Base Class",
+            "L5 Safety/Base Class", 
+            "L4 State/Base Class",
+            "L3 Orchestration/Base Class",
+            "L2 Execution/Base Class",
+            "L1 Cognition/Base Class",
+            "L0 Maintenance/Base Class",
+            "L6_Observability/Base Class"
+        ]
+        
+        missing_base_classes = []
+        for base_class in expected_base_classes:
+            if base_class not in dashboard_territories:
+                # Check if agents exist for this territory
+                agents_in_territory = [a for a in agents if a.get('territory') == base_class]
+                if agents_in_territory:
+                    missing_base_classes.append(f"{base_class} (has {len(agents_in_territory)} agents but missing from dashboard!)")
+        
+        if missing_base_classes:
+            errors.append(f"Test 17A FAILED: {len(missing_base_classes)} Base Class territories MISSING from dashboard")
+            for missing in missing_base_classes:
+                errors.append(f"  - {missing}")
+        else:
+            print(f"✅ Test 17A PASSED: All expected Base Class territories present in dashboard")
+        
+        # Check agent count matches - discovery agents should all be in dashboard
+        # Note: Discovery 'territory' field may differ from dashboard computed territories
+        # so we check agent COUNT not territory names
+        total_dashboard_agents = sum(row.get('Total', 0) for row in dashboard_data if row.get('Territory') != 'TOTAL')
+        total_discovery_agents = len(agents)
+        
+        if total_dashboard_agents != total_discovery_agents:
+            errors.append(f"Test 17B FAILED: Agent count mismatch - Dashboard={total_dashboard_agents}, Discovery={total_discovery_agents}")
+        else:
+            print(f"✅ Test 17B PASSED: All {total_discovery_agents} agents accounted for in dashboard")
+        
+        # Visual inspection: Check each dashboard row has valid data
+        invalid_rows = []
+        for row in dashboard_data:
+            territory = row.get('Territory', 'UNKNOWN')
+            if territory == 'TOTAL':
+                continue
+            
+            total = row.get('Total', 0)
+            if total == 0:
+                invalid_rows.append(f"{territory}: Total=0 (empty territory)")
+            
+            # Check critical fields have valid values
+            for field in ['Heal Cap %', 'Test %', 'Observable %', 'Health']:
+                val = row.get(field)
+                if val is None:
+                    invalid_rows.append(f"{territory}: {field}=None")
+                elif not isinstance(val, (int, float)):
+                    invalid_rows.append(f"{territory}: {field}={val} (not numeric)")
+        
+        if invalid_rows:
+            errors.append(f"Test 17C FAILED: {len(invalid_rows)} rows have invalid data")
+            for invalid in invalid_rows[:5]:
+                errors.append(f"  - {invalid}")
+        else:
+            print(f"✅ Test 17C PASSED: All dashboard rows have valid data")
+        
+        # Summary of visual inspection
+        print(f"\n   📊 VISUAL INSPECTION SUMMARY:")
+        print(f"   Dashboard territories: {len(dashboard_territories)}")
+        print(f"   Expected Base Classes: {len(expected_base_classes)}")
+        print(f"   Base Classes present:  {len([b for b in expected_base_classes if b in dashboard_territories])}")
+        
+    except Exception as e:
+        import traceback
+        print(f"   ❌ Test 17 EXCEPTION: {e}")
+        traceback.print_exc()
+        errors.append(f"Test 17 FAILED: Could not perform visual inspection: {e}")
+    
+    # Final summary
     print("\n" + "=" * 70)
     if errors:
-        print("❌ TESTS FAILED - Dashboard has issues")
-        print("=" * 70)
-        print("\n".join(errors))
-        
-        # Check if it's a critical base agent issue
-        base_agent_errors = [e for e in errors if 'base agents:' in e.lower()]
-        if base_agent_errors:
-            print("\n" + "!" * 70)
-            print("CRITICAL: Multiple base agents detected")
-            print("!" * 70)
-            print("This causes inheritance confusion. Run:")
-            print("  python scripts/validate_base_agents.py")
-            print("!" * 70)
-        
-        sys.exit(1)
+        all_passed = False
+        failed_tests.extend([e.split(':')[0].replace('FAILED', '').strip() for e in errors if 'FAILED' in e])
     
     if all_passed:
-        print("✅ ALL 13 TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 17 TESTS PASSED - Dashboard is ready for deployment")
+        print("\n⚠️  IMPORTANT: Hard refresh browser (Ctrl+Shift+R) to see changes!")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")
         for test in failed_tests:

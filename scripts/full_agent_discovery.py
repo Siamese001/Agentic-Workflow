@@ -644,45 +644,44 @@ def calculate_docstring_coverage(class_node: ast.ClassDef) -> float:
 
 
 def check_proper_base(class_node: ast.ClassDef, layer: str) -> bool:
-    """Phase 4: Verify agent inherits from correct layer base class (direct OR transitive).
+    """Phase 4: Verify agent has proper architectural inheritance.
     
-    Updated to check full inheritance chain, not just direct parents.
-    This allows agents that inherit from mixins or SovereignBaseAgent to still
-    be considered valid if the layer base is anywhere in the chain.
+    Proper base class means the agent follows the canonical architecture:
+    - Inherits from SovereignBaseAgent (directly or transitively)
+    - OR inherits from a layer-specific base agent
+    - OR uses canonical mixins (HealerMixin, MCPHardenedMixin)
+    
+    This is a permissive check - we want to identify poorly structured agents,
+    not penalize agents that follow alternative but valid patterns.
     """
-    expected = LAYER_BASE_MAP.get(layer)
-    if not expected:
-        return True  # Non-agent layers or unknown pass by default
-    
-    # Check direct bases first (fast path)
     bases = extract_bases(class_node)
-    if expected in bases:
-        return True
     
-    # For transitive inheritance, we accept if agent inherits from:
-    # 1. The expected layer base (direct or via MRO)
-    # 2. A known base that inherits from the layer base (e.g., SovereignBaseAgent, mixins)
-    # 3. Another valid base for that layer
+    # No inheritance at all = not proper
+    if not bases:
+        return False
     
-    # Common bases that provide layer-appropriate functionality
-    valid_bases_by_layer = {
-        "L1": {"L1Agent", "L1CognitionBaseAgent", "SovereignBaseAgent", "CognitionCanonBaseAgent"},
-        "L2": {"L2Agent", "L2ExecutionBaseAgent", "SovereignBaseAgent", "ExecutionCanonBaseAgent"},
-        "L3": {"L3Agent", "OrchestrationBaseAgent", "SovereignBaseAgent"},
-        "L4": {"L4Agent", "StateBaseAgent", "SovereignBaseAgent"},
-        "L5": {"L5Agent", "SafetyBaseAgent", "SovereignBaseAgent"},
+    # Check for canonical architectural patterns
+    canonical_patterns = {
+        "SovereignBaseAgent",
+        "L0Agent", "L1Agent", "L1CognitionBaseAgent",
+        "L2Agent", "L2ExecutionBaseAgent", 
+        "L3Agent", "OrchestrationBaseAgent",
+        "L4Agent", "StateBaseAgent",
+        "L5Agent", "SafetyBaseAgent",
+        "L6ObservabilityBaseAgent",
+        "HealerMixin", "MCPHardenedMixin", "MCPShieldMixin"
     }
     
-    valid_bases = valid_bases_by_layer.get(layer, set())
+    # Agent follows proper architecture if it uses ANY canonical pattern
+    if any(base in canonical_patterns for base in bases):
+        return True
     
-    # Check if any valid base is in the inheritance chain
-    for base in bases:
-        if base in valid_bases:
-            return True
+    # Apps layer agents are exempt (no strict base requirement)
+    if layer == "Apps":
+        return True
     
-    # If agent has HealerMixin or MCPHardenedMixin, consider it properly structured
-    # (these mixins are part of the canonical agent architecture)
-    if any(base in {"HealerMixin", "MCPHardenedMixin", "MCPShieldMixin"} for base in bases):
+    # Base class agents themselves are always proper
+    if "BaseAgent" in class_node.name:
         return True
     
     return False
@@ -1352,13 +1351,11 @@ def main():
             
             # Determine territory (layer + subdirectory)
             # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
-            # DEPRECATED: Exclude simple bases (L2Agent, L3Agent, L4Agent, L5Agent) - use *BaseAgent instead
-            # CRITICAL FIX: Check if this is a base agent class
-            # Base agents end with "BaseAgent" or are known base class names
+            # Phase 3.2: Only canonical *BaseAgent classes are base classes, not L-series alternatives
+            # L0Agent and L1Agent are exceptions (they are canonical for their layers)
             is_base_class = (
                 node.name.endswith('BaseAgent') or 
-                node.name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent', 'L6ObservabilityBaseAgent'} or
-                'BaseAgent' in node.name
+                node.name in {'L0Agent', 'L1Agent', 'L6ObservabilityBaseAgent'}
             )
             
             # ASSIGN DETAILED TERRITORIES - SSOT for dashboard

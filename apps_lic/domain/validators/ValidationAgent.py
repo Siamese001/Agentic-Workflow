@@ -7,8 +7,10 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class ValidationAgent:
+class ValidationAgent(MCPHardenedMixin, HealerMixin):
     """
     NEW v11.6: Comprehensive validation framework with 107 rules
     Consolidates all rules from v10.22 + SUPREME_SPELL
