@@ -535,6 +535,10 @@ class MCPHardenedMixin:
             reasons=reasons,
             sanitized_output=sanitized
         )
+
+    def mcp_validate(self, response: Any) -> MCPValidationResult:
+        """Backward-compatible alias for MCP response validation."""
+        return self.validate_mcp_response(response)
     
     def _get_depth(self, obj: Any, current_depth: int = 0) -> int:
         """Get maximum depth of nested structure."""
