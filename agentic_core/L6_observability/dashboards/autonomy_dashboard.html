@@ -510,6 +510,14 @@
                         <div class="kpi-label">⏱️ API Latency (Pinecone)</div>
                         <div class="kpi-value" id="pineconeLatency">--ms</div>
                     </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">🧠 Meta-Learning Experiences</div>
+                        <div class="kpi-value" id="exp-count">--</div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">🔎 Patterns Extracted</div>
+                        <div class="kpi-value" id="pattern-count">--</div>
+                    </div>
                 </div>
                 <div class="chart-card" style="margin-top: 20px;">
                     <div class="chart-header">
@@ -13094,12 +13102,41 @@
         }
 
         // Phase 4.9: Live Tactical Poller
-        // DISABLED: API polling disabled - no backend API server running
         async function updateRuntime() {
-            // Disabled - would poll /api/redis endpoints which don't exist in simple HTTP server
-            // Re-enable when backend API server is available
+            try {
+                const [metaResp, latencyResp, logsResp] = await Promise.all([
+                    fetch('http://localhost:8081/api/meta-learning/activity'),
+                    fetch('http://localhost:8081/api/metrics/latency'),
+                    fetch('http://localhost:8081/api/redis/logs?limit=80')
+                ]);
+
+                const meta = await metaResp.json();
+                const latency = await latencyResp.json();
+                const logs = await logsResp.json();
+
+                const expEl = document.getElementById('exp-count');
+                const patternEl = document.getElementById('pattern-count');
+                const geminiLatencyEl = document.getElementById('geminiLatency');
+                const pineconeLatencyEl = document.getElementById('pineconeLatency');
+                const liveLogEl = document.getElementById('liveLog');
+
+                if (expEl) expEl.textContent = meta.total_experiences;
+                if (patternEl) patternEl.textContent = meta.patterns_extracted;
+
+                if (geminiLatencyEl) geminiLatencyEl.textContent = (latency.gemini_embeddings ?? '--') + 'ms';
+                if (pineconeLatencyEl) pineconeLatencyEl.textContent = (latency.pinecone ?? '--') + 'ms';
+
+                if (liveLogEl && logs && Array.isArray(logs.logs)) {
+                    liveLogEl.textContent = logs.logs.join('\n');
+                    liveLogEl.scrollTop = liveLogEl.scrollHeight;
+                }
+
+                console.log('Dashboard updated from Live API');
+            } catch (e) {
+                console.warn('Live polling failed, check API server status');
+            }
         }
-        // setInterval(updateRuntime, 1000); // DISABLED - no API server
+        setInterval(updateRuntime, 2000); // Polling every 2 seconds
         
         // Initialize semantic retrieval metrics
         function initializeSemanticMetrics() {
