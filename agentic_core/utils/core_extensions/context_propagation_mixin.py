@@ -1,5 +1,6 @@
 import logging
 import uuid
+import weakref
 import contextvars
 from typing import Any, Dict, Optional
 from functools import wraps
@@ -38,6 +39,11 @@ class ContextPropagationMixin:
         }
 
     @staticmethod
+    def _validate_context():
+        if trace_id_var.get() is None:
+            raise RuntimeError("Missing trace context in critical path")
+
+    @staticmethod
     def trace_context(func):
         """Decorator to ensure trace context is captured and logged."""
         @wraps(func)
@@ -50,6 +56,12 @@ class ContextPropagationMixin:
             old_span = span_id_var.get()
             new_span = str(uuid.uuid4())[:8]
             span_id_var.set(new_span)
+
+            if weakref.getweakrefcount(self) > 10:
+                self._cp_logger.warning("Potential context leak detected")
+
+            if func.__name__.startswith("_critical"):
+                ContextPropagationMixin._validate_context()
             
             self._cp_logger.debug(f"Entering {func.__name__} [Trace: {trace_id_var.get()}, Span: {new_span}]")
             

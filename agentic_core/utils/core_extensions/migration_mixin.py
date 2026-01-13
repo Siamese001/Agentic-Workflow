@@ -1,4 +1,6 @@
 import logging
+import asyncio
+import inspect
 from typing import Any, Dict, List, Optional, Callable
 from pydantic import BaseModel, Field
 from datetime import datetime
@@ -32,6 +34,8 @@ class MigrationMixin:
         return self._schema_version
 
     async def migrate_data(self, data: Dict[str, Any], from_version: str) -> Dict[str, Any]:
+        """Hardened: rollback snapshot + post-migration validation."""
+        original_data = data.copy()
         """
         Orchestrates the migration of data from an older version to current.
         
@@ -64,9 +68,11 @@ class MigrationMixin:
                 self._mm_logger.error(error_msg)
                 raise MigrationError(error_msg)
 
+            pre_step_snapshot = data.copy()
+            old_v = current_v
+
             try:
                 data = await migration_func(data)
-                old_v = current_v
                 # Concrete agents must update the 'version' key in their logic or 
                 # we assume the migration function handled the logic.
                 # Here we assume the migration function returns data for the NEXT version.
@@ -77,8 +83,21 @@ class MigrationMixin:
                     "to": current_v,
                     "timestamp": datetime.utcnow().isoformat()
                 })
+
+                if hasattr(self, '_validate_after_migration_step'):
+                    hook = getattr(self, '_validate_after_migration_step')
+                    hook_result = hook(data, current_v)
+                    if inspect.isawaitable(hook_result):
+                        await hook_result
             except Exception as e:
-                self._mm_logger.error(f"Migration failed at step {current_v}: {e}")
+                self._mm_logger.error(f"Rollback triggered at {old_v}: {e}")
+                data = pre_step_snapshot
+                if hasattr(self, 'emit_event'):
+                    self.emit_event(
+                        "migration.rollback",
+                        {"from_version": old_v, "to_version": current_v, "error": str(e)},
+                        severity="ERROR",
+                    )
                 raise MigrationError(f"Step {current_v} failed: {e}")
 
         self._mm_logger.info(f"Migration successful. Final version: {current_v}")
