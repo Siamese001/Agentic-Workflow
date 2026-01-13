@@ -11,14 +11,23 @@ Subfolders:
 - agents/: Observability-related agents (RuntimeTelemetryAgent, etc.)
 """
 
-from agentic_core.L6_observability.L6ObservabilityBaseAgent import (
-    L6ObservabilityBaseAgent,
-    AgentPerformanceMetrics,
-    CritiqueReport
-)
-
 __all__ = [
     "L6ObservabilityBaseAgent",
     "AgentPerformanceMetrics",
-    "CritiqueReport"
+    "CritiqueReport",
 ]
+
+
+def __getattr__(name: str):
+    if name in __all__:
+        from agentic_core.L6_observability.L6ObservabilityBaseAgent import (
+            L6ObservabilityBaseAgent,
+            AgentPerformanceMetrics,
+            CritiqueReport,
+        )
+        return {
+            "L6ObservabilityBaseAgent": L6ObservabilityBaseAgent,
+            "AgentPerformanceMetrics": AgentPerformanceMetrics,
+            "CritiqueReport": CritiqueReport,
+        }[name]
+    raise AttributeError(name)
