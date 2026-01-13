@@ -4,6 +4,7 @@ import uuid
 from typing import Any, Dict, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
+from .context_propagation_mixin import trace_id_var, span_id_var
 
 class SovereignEvent(BaseModel):
     """Standardized schema for all agentic events (Report 4.3)."""
@@ -50,12 +51,23 @@ class EventEmissionMixin:
         Returns:
             SovereignEvent: The emitted event object
         """
+        # Resolve trace_id: Provided arg > contextvar > None
+        active_trace = trace_id or trace_id_var.get()
+        active_span = span_id_var.get()
+
+        # Add trace/span context to payload for deeper visibility
+        event_payload = payload or {}
+        if active_trace and "trace_id" not in event_payload:
+            event_payload["trace_id"] = active_trace
+        if active_span and "span_id" not in event_payload:
+            event_payload["span_id"] = active_span
+
         event = SovereignEvent(
             event_type=event_type,
             source_agent=self.__class__.__name__,
             severity=severity.upper(),
-            payload=payload or {},
-            trace_id=trace_id
+            payload=event_payload,
+            trace_id=active_trace
         )
 
         # 1. Standard Logging Integration
