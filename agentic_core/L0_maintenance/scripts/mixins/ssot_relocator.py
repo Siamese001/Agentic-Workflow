@@ -14,10 +14,11 @@ Provides automated remediation for:
 """
 
 from __future__ import annotations
+import re
 import shutil
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set
 from datetime import datetime
 from dataclasses import dataclass
 
@@ -37,6 +38,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+
+# Define ARCHIVES_DIR if not in structure_blueprint
+try:
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import ARCHIVES_DIR
+except ImportError:
+    ARCHIVES_DIR = Path("archives")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -81,13 +88,21 @@ class EnforcementReport:
 
 class SSOTRelocator:
     """
-    Automated SSOT violation remediation.
+    Automated SSOT violation remediation with multi-layer safety checks.
     
     Provides reusable methods for fixing violations detected by UnifiedSSOTValidator:
     - relocate_orphans(): Move drift violations to archives
     - enforce_hierarchy(): Flatten folders exceeding depth limits
     - relocate_agents(): Move agents to correct layers
+    
+    Safety Features:
+    - Protected path whitelist (knowledge, coordinators, L0_maintenance, SSOT)
+    - Active dependency scanning before archival
+    - Dry-run mode by default
     """
+    
+    # Protected paths that should never be archived
+    PROTECTED_PATHS: Set[str] = {"knowledge", "coordinators", "L0_maintenance", "SSOT", "bases"}
     
     def __init__(
         self,
@@ -347,7 +362,12 @@ class SSOTRelocator:
         action: str = 'MOVED'
     ) -> RelocationResult:
         """
-        Relocate an entire folder with safety checks.
+        Relocate an entire folder with multi-layer safety checks.
+        
+        Safety Layers:
+        1. Whitelist Protection: Blocks protected system paths
+        2. Active Dependency Scan: Checks for active imports
+        3. Standard validation: Existence and conflict checks
         
         Args:
             source: Source folder path
@@ -364,7 +384,31 @@ class SSOTRelocator:
             action=action
         )
         
-        # Safety checks
+        # Layer 1: Whitelist Protection
+        folder_name = source.name
+        normalized_path = str(source.relative_to(self.project_root)).replace("\\", "/").lower()
+        
+        if any(protected.lower() in normalized_path for protected in self.PROTECTED_PATHS):
+            result.error = f"[SAFETY_BLOCK] Protected system path: {folder_name}"
+            result.action = 'BLOCKED'
+            logger.warning(f"[SAFETY_BLOCK] Refusing to archive protected path: {source}")
+            return result
+        
+        # Layer 2: Active Dependency Scan (HARD BLOCKER - applies to ALL actions)
+        if self._is_active_dependency(folder_name):
+            result.error = (
+                f"[SAFETY_BLOCK] Active imports detected for '{folder_name}'. "
+                f"Cannot relocate folders with active dependencies. "
+                f"Required steps: (1) Deprecate all imports, (2) Update dependent code, (3) Verify no imports remain, (4) Then archive."
+            )
+            result.action = 'BLOCKED'
+            logger.error(
+                f"[SAFETY_BLOCK] HARD BLOCK: '{folder_name}' has active imports in the codebase. "
+                f"Relocation denied. Imports must be deprecated and removed before archival."
+            )
+            return result
+        
+        # Layer 3: Standard Safety checks
         if not source.exists():
             result.error = "Source folder does not exist"
             result.action = 'SKIPPED'
@@ -451,6 +495,52 @@ class SSOTRelocator:
                 logger.error(f"Failed to flatten {result.source}: {e}")
         
         return result
+    
+    def _is_active_dependency(self, module_name: str) -> bool:
+        """
+        Scan the entire workspace for Python files importing the specified module.
+        
+        Args:
+            module_name: Name of the module/folder to check for imports
+            
+        Returns:
+            True if active imports are found, False otherwise
+        """
+        # Search patterns for typical Python imports
+        # Match both direct imports and full path imports
+        escaped_name = re.escape(module_name)
+        patterns = [
+            # Direct import: import knowledge
+            re.compile(rf"^\s*import\s+{escaped_name}\b", re.MULTILINE),
+            # From import: from knowledge import ...
+            re.compile(rf"^\s*from\s+{escaped_name}\b.*import", re.MULTILINE),
+            # Full path import: from agentic_core.knowledge import ...
+            re.compile(rf"^\s*from\s+\S*\.{escaped_name}\b.*import", re.MULTILINE),
+            # Full path import: import agentic_core.knowledge
+            re.compile(rf"^\s*import\s+\S*\.{escaped_name}\b", re.MULTILINE),
+            # Nested path: from agentic_core.knowledge.something import ...
+            re.compile(rf"^\s*from\s+\S*\.{escaped_name}\.\S+.*import", re.MULTILINE),
+        ]
+        
+        root_dir = self.project_root
+        checked_files = 0
+        for py_file in root_dir.rglob("*.py"):
+            # Skip the archive folder itself
+            if "archives" in py_file.parts:
+                continue
+            
+            checked_files += 1
+            try:
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
+                for pat in patterns:
+                    if pat.search(content):
+                        logger.debug(f"[DEP_FOUND] {module_name} is imported by {py_file}")
+                        return True
+            except Exception:
+                continue
+        
+        logger.debug(f"[DEP_SCAN] Checked {checked_files} files for '{module_name}', no imports found")
+        return False
     
     def _cleanup_empty_dirs(self, directory: Path) -> None:
         """

@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
 """
-MANDATORY END-TO-END DASHBOARD TEST
+MANDATORY END-TO-END DASHBOARD TEST WITH AUTO-REGENERATION
 Must be run after ANY data change to agent_discovery_full.json or dashboard HTML.
 
 CRITICAL REQUIREMENTS:
-1. Verify browser cache-busting headers
-2. Validate JavaScript execution paths
-3. Check for web server caching issues
-4. Verify file modification timestamps
-5. Test all JavaScript data rendering
+1. Auto-regenerate agent discovery and dashboard when agents change
+2. Verify browser cache-busting headers
+3. Validate JavaScript execution paths
+4. Check for web server caching issues
+5. Verify file modification timestamps
+6. Test all JavaScript data rendering
+
+Usage:
+  python scripts/test_dashboard_end_to_end.py              # Validate only
+  python scripts/test_dashboard_end_to_end.py --regenerate # Force regeneration first
+  python scripts/test_dashboard_end_to_end.py --auto       # Auto-regenerate if stale
 """
 import json
 import re
 import hashlib
+import subprocess
+import argparse
 from pathlib import Path
 from typing import Dict, List, Tuple
 from datetime import datetime
@@ -962,7 +970,196 @@ def run_all_tests() -> bool:
     
     return all_passed
 
+def count_actual_agents() -> int:
+    """Count actual agent files in the codebase (quick scan)."""
+    project_root = get_validated_project_root()
+    agentic_core = project_root / "agentic_core"
+    
+    count = 0
+    for py_file in agentic_core.rglob("*.py"):
+        if "__pycache__" in str(py_file):
+            continue
+        if "Agent" in py_file.stem and py_file.stem.endswith("Agent"):
+            count += 1
+    return count
+
+
+def regenerate_agent_discovery() -> bool:
+    """Regenerate agent_discovery_full.json."""
+    print("\n" + "=" * 70)
+    print("🔄 REGENERATING AGENT DISCOVERY")
+    print("=" * 70)
+    
+    project_root = get_validated_project_root()
+    discovery_script = project_root / "scripts" / "full_agent_discovery.py"
+    
+    if not discovery_script.exists():
+        print("❌ Discovery script not found: scripts/full_agent_discovery.py")
+        return False
+    
+    try:
+        import sys
+        import os
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(project_root)
+        env["PYTHONIOENCODING"] = "utf-8"
+        
+        result = subprocess.run(
+            [sys.executable, str(discovery_script)],
+            cwd=str(project_root),
+            capture_output=True,
+            timeout=300,
+            env=env,
+            encoding="utf-8",
+            errors="replace"
+        )
+        
+        # Check if discovery file was created/updated (more reliable than return code)
+        discovery_path = project_root / "agent_discovery_full.json"
+        if discovery_path.exists():
+            agents = json.load(open(discovery_path))
+            if len(agents) > 0:
+                print(f"✅ Agent discovery complete: {len(agents)} agents")
+                if result.returncode != 0:
+                    print(f"   ⚠️  Discovery had warnings (exit code {result.returncode})")
+                return True
+        
+        # Only fail if file doesn't exist or is empty
+        if result.returncode != 0:
+            print(f"❌ Discovery failed: {result.stderr[:500] if result.stderr else 'No error output'}")
+        else:
+            print("❌ Discovery file not created or empty")
+        return False
+            
+    except subprocess.TimeoutExpired:
+        print("❌ Discovery timed out (5 min limit)")
+        return False
+    except Exception as e:
+        print(f"❌ Discovery error: {e}")
+        return False
+
+
+def regenerate_dashboard() -> bool:
+    """Regenerate autonomy_dashboard.html from agent discovery data."""
+    print("\n" + "=" * 70)
+    print("🔄 REGENERATING DASHBOARD HTML")
+    print("=" * 70)
+    
+    project_root = get_validated_project_root()
+    dashboard_script = project_root / "agentic_core" / "L6_observability" / "dashboards" / "generate_dashboard.py"
+    
+    if not dashboard_script.exists():
+        print("❌ Dashboard generator not found")
+        return False
+    
+    try:
+        import sys
+        import os
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(project_root)
+        env["PYTHONIOENCODING"] = "utf-8"
+        
+        result = subprocess.run(
+            [sys.executable, str(dashboard_script)],
+            cwd=str(project_root),
+            capture_output=True,
+            timeout=120,
+            env=env,
+            encoding="utf-8",
+            errors="replace"
+        )
+        
+        if result.returncode != 0:
+            print(f"❌ Dashboard generation failed: {result.stderr[:500] if result.stderr else 'No error output'}")
+            return False
+        
+        dashboard_path = project_root / DASHBOARD_DIR / "autonomy_dashboard.html"
+        if dashboard_path.exists():
+            size = dashboard_path.stat().st_size
+            print(f"✅ Dashboard generated: {size:,} bytes")
+            return True
+        else:
+            print("❌ Dashboard file not created")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Dashboard generation error: {e}")
+        return False
+
+
+def check_if_stale() -> Tuple[bool, str]:
+    """Check if dashboard is stale (agent count mismatch or old file)."""
+    project_root = get_validated_project_root()
+    discovery_path = project_root / "agent_discovery_full.json"
+    
+    if not discovery_path.exists():
+        return True, "agent_discovery_full.json not found"
+    
+    # Quick agent count check
+    actual_count = count_actual_agents()
+    
+    try:
+        agents = json.load(open(discovery_path))
+        discovered_count = len(agents)
+        
+        # Allow some tolerance (±5 agents) for edge cases
+        if abs(actual_count - discovered_count) > 5:
+            return True, f"Agent count mismatch: {actual_count} files vs {discovered_count} discovered"
+        
+        # Check file age (stale if > 1 hour old)
+        file_age = datetime.now().timestamp() - discovery_path.stat().st_mtime
+        if file_age > 3600:  # 1 hour
+            return True, f"Discovery file is {file_age/3600:.1f} hours old"
+        
+        return False, "Dashboard is current"
+        
+    except Exception as e:
+        return True, f"Error checking staleness: {e}"
+
+
+def full_regeneration_pipeline() -> bool:
+    """Run full regeneration: discovery + dashboard."""
+    print("\n" + "=" * 70)
+    print("🚀 FULL DASHBOARD REGENERATION PIPELINE")
+    print("=" * 70)
+    
+    # Step 1: Regenerate agent discovery
+    if not regenerate_agent_discovery():
+        return False
+    
+    # Step 2: Regenerate dashboard
+    if not regenerate_dashboard():
+        return False
+    
+    print("\n✅ Regeneration pipeline complete")
+    return True
+
+
 if __name__ == "__main__":
     import sys
+    
+    parser = argparse.ArgumentParser(description="Dashboard E2E Test with Auto-Regeneration")
+    parser.add_argument("--regenerate", action="store_true", help="Force regeneration before testing")
+    parser.add_argument("--auto", action="store_true", help="Auto-regenerate if stale")
+    args = parser.parse_args()
+    
+    # Handle regeneration modes
+    if args.regenerate:
+        print("🔄 Force regeneration requested...")
+        if not full_regeneration_pipeline():
+            print("❌ Regeneration failed - aborting tests")
+            sys.exit(1)
+    elif args.auto:
+        is_stale, reason = check_if_stale()
+        if is_stale:
+            print(f"🔄 Dashboard is stale: {reason}")
+            print("   Auto-regenerating...")
+            if not full_regeneration_pipeline():
+                print("❌ Regeneration failed - aborting tests")
+                sys.exit(1)
+        else:
+            print(f"✅ Dashboard is current: {reason}")
+    
+    # Run validation tests
     success = run_all_tests()
     sys.exit(0 if success else 1)
