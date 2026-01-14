@@ -21,15 +21,28 @@ import re
 import hashlib
 import subprocess
 import argparse
+import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
 from datetime import datetime
 
+# Add project root to path for imports
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
 # Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.config.blueprint_sovereign.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
 
-# SSOT: Import canonical health calculation (Violation 4 fix)
-from agentic_core.config.blueprint_sovereign.canonical_truth import calculate_health_score
+# SSOT: Import all metric definitions from single source
+from scripts.dashboard_ssot_definitions import (
+    FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS, FIELD_MCP_HARDENED,
+    FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
+    FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
+    calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
+    calc_typed_pct, calc_documented_pct, calc_schema_strictness_pct,
+    calc_canonical_inheritance_pct, calc_avg_cc, calc_complexity_health,
+    calc_health_score, calc_code_quality_score, is_l0_territory, safe_numeric
+)
 
 def test_agent_discovery_integrity() -> Tuple[bool, List[str]]:
     """Test 1: Verify agent_discovery_full.json integrity."""
@@ -214,20 +227,16 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
             errors.append(f"❌ Agent count mismatch: Dashboard={dashboard_total}, Actual={actual_total}")
             return False, errors
         
-        # Check heal capability
-        actual_healed = sum(1 for a in agents if a.get('has_healing'))
+        # Check heal capability using SSOT field name
+        actual_healed = sum(1 for a in agents if a.get(FIELD_HAS_HEALING))
         heal_cap = total_row['Heal Cap %']
         heal_inv = total_row['Heal Invocation %']
         test = total_row['Test %']
         obs = total_row['Observable %']
         complexity = total_row['Complexity Health']
-        # SSOT: Use canonical health calculation (Violation 4 fix)
-        expected_health = calculate_health_score(
-            heal_cap=heal_cap,
-            invoc=heal_inv,
-            test_cov=test,
-            obs=obs,
-            comp_health=complexity
+        # SSOT: Use dashboard_ssot_definitions health calculation
+        expected_health = calc_health_score(
+            heal_cap, heal_inv, test, obs, complexity, is_l0=False
         )
         actual_heal_pct = total_row['Health']
         
@@ -489,10 +498,10 @@ def run_all_tests() -> bool:
     try:
         inconsistencies = []
         
-        # Check heal invocation vs capability
-        agents_with_healing = [a for a in agents if a.get('has_healing')]
+        # Check heal invocation vs capability using SSOT field names
+        agents_with_healing = [a for a in agents if a.get(FIELD_HAS_HEALING)]
         heal_capable = len(agents_with_healing)
-        heal_invoked = sum(1 for a in agents_with_healing if a.get('invocation') == 'Yes')
+        heal_invoked = sum(1 for a in agents_with_healing if a.get(FIELD_INVOCATION) == 'Yes')
         
         if heal_invoked > heal_capable:
             inconsistencies.append(f"Invocation ({heal_invoked}) > Capability ({heal_capable})")
@@ -524,7 +533,7 @@ def run_all_tests() -> bool:
     
     try:
         l5_agents = [a for a in agents if a.get('layer', '').startswith('L5')]
-        unhardened_l5 = [a for a in l5_agents if not a.get('mcp_hardened')]
+        unhardened_l5 = [a for a in l5_agents if not a.get(FIELD_MCP_HARDENED)]
         
         if unhardened_l5:
             errors.append(f"Test 11 FAILED: {len(unhardened_l5)}/{len(l5_agents)} L5 agents NOT MCP hardened (SECURITY VIOLATION)")
@@ -580,13 +589,13 @@ def run_all_tests() -> bool:
                     
                     # Test 12A: Canonical Inheritance % Accuracy (cross-validate with discovery data)
                     proper_base_pct = total_row.get('Canonical Inheritance %', 0)
-                    proper_base_true = sum(1 for a in agents if a.get('proper_base_class', False))
-                    expected_proper_base = round((proper_base_true / len(agents)) * 100, 1) if agents else 0
+                    # Use SSOT function
+                    expected_proper_base = calc_canonical_inheritance_pct(agents)
                     tolerance = 1.0  # Allow 1% variance
                     
                     if abs(proper_base_pct - expected_proper_base) > tolerance:
                         errors.append(f"Test 12A FAILED: Canonical Inheritance % mismatch")
-                        errors.append(f"  Expected: {expected_proper_base:.1f}% ({proper_base_true}/{len(agents)} agents)")
+                        errors.append(f"  Expected: {expected_proper_base:.1f}% (from SSOT calculation)")
                         errors.append(f"  Actual: {proper_base_pct}%")
                         errors.append(f"  Difference: {abs(proper_base_pct - expected_proper_base):.1f}%")
                     else:
@@ -621,8 +630,8 @@ def run_all_tests() -> bool:
                 territory_agents = [a for a in agents if a.get('territory') == territory_name]
                 
                 if territory_agents:
-                    proper_base_count = sum(1 for a in territory_agents if a.get('proper_base_class', False))
-                    expected_pct = round((proper_base_count / len(territory_agents)) * 100, 1)
+                    # Use SSOT function
+                    expected_pct = calc_canonical_inheritance_pct(territory_agents)
                     
                     if abs(dashboard_proper_base - expected_pct) > 1.0:
                         territory_errors.append(f"{territory_name}: Expected {expected_pct}%, Got {dashboard_proper_base}%")
@@ -980,12 +989,12 @@ def run_all_tests() -> bool:
         with open(discovery_path, 'r', encoding='utf-8') as f:
             agents = json.load(f)
         
-        # Calculate expected values from discovery
+        # Calculate expected values from discovery using SSOT functions
         total_agents = len(agents)
-        expected_typed = round(sum(a.get('typed_pct', 0) for a in agents) / total_agents, 1) if total_agents else 0
-        expected_documented = round(sum(a.get('documented_pct', 0) for a in agents) / total_agents, 1) if total_agents else 0
-        expected_schema = round(sum(a.get('schema_strictness', 0) for a in agents) / total_agents, 1) if total_agents else 0
-        expected_proper_base = round(sum(1 for a in agents if a.get('proper_base_class', False)) / total_agents * 100, 1) if total_agents else 0
+        expected_typed = calc_typed_pct(agents)
+        expected_documented = calc_documented_pct(agents)
+        expected_schema = calc_schema_strictness_pct(agents)
+        expected_proper_base = calc_canonical_inheritance_pct(agents)
         
         # Get dashboard values
         dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
@@ -1107,17 +1116,17 @@ def run_all_tests() -> bool:
         total_agents = len(agents)
         
         # Calculate ALL expected values from discovery (SSOT)
-        # IMPORTANT: Must match regenerate_dashboard_full.py calculations exactly
+        # IMPORTANT: Use SSOT functions to match regenerate_dashboard_full.py exactly
         expected_metrics = {
             'Total': total_agents,
-            'Heal Cap %': round(sum(1 for a in agents if a.get('has_healing', False)) / total_agents * 100, 1) if total_agents else 0,
-            'Invocation %': round(sum(1 for a in agents if a.get('invocation') == 'Yes') / total_agents * 100, 1) if total_agents else 0,
-            'Test %': round(sum(1 for a in agents if a.get('has_tests', False)) / total_agents * 100, 1) if total_agents else 0,  # Uses has_tests, not testing
-            'Hardened %': round(sum(1 for a in agents if a.get('mcp_hardened', False)) / total_agents * 100, 1) if total_agents else 0,
-            'Typed %': round(sum(a.get('typed_pct', 0) for a in agents) / total_agents, 1) if total_agents else 0,
-            'Documented %': round(sum(a.get('documented_pct', 0) for a in agents) / total_agents, 1) if total_agents else 0,
-            'Schema Strictness %': round(sum(a.get('schema_strictness', 0) for a in agents) / total_agents, 1) if total_agents else 0,
-            'Canonical Inheritance %': round(sum(1 for a in agents if a.get('proper_base_class', False)) / total_agents * 100, 1) if total_agents else 0,
+            'Heal Cap %': calc_heal_cap_pct(agents),
+            'Invocation %': calc_invocation_pct(agents),
+            'Test %': calc_test_pct(agents),
+            'Hardened %': calc_hardened_pct(agents),
+            'Typed %': calc_typed_pct(agents),
+            'Documented %': calc_documented_pct(agents),
+            'Schema Strictness %': calc_schema_strictness_pct(agents),
+            'Canonical Inheritance %': calc_canonical_inheritance_pct(agents),
         }
         
         # Get dashboard TOTAL row values
