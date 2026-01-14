@@ -48,6 +48,11 @@ class HealerMixin:
     
     Subclasses should override apply_fix() to implement specific transformers.
     Set _healing_enabled = False to opt-out for justified cases.
+    
+    MRO HARDENING:
+    - Uses cooperative multiple inheritance via **kwargs
+    - Always calls super().__init__(**kwargs) to propagate up the chain
+    - Private attributes use _healer_ prefix to avoid collisions
     """
     
     # Default ON - opt-out only where justified
@@ -57,13 +62,20 @@ class HealerMixin:
     _healing_count: int = 0
     _max_healing_per_session: int = 50
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._healing_cache: Dict[str, Tuple[float, bool]] = {}  # {type: (ts, success)}
-        self._healing_metrics = {"count": 0, "total_time": 0.0, "success_count": 0}
-        self._cache_ttl = 300  # 5min suppression (configurable)
-        self._max_heal_depth = 5
-        self._current_heal_depth = 0
+    def __init__(self, **kwargs):
+        """
+        Initialize healing infrastructure with cooperative inheritance.
+        
+        MRO HARDENING: Passes **kwargs up the chain to ensure all
+        mixins in the MRO are properly initialized.
+        """
+        super().__init__(**kwargs)
+        # Private prefix _healer_ to avoid attribute collisions
+        self._healer_cache: Dict[str, Tuple[float, bool]] = {}  # {type: (ts, success)}
+        self._healer_metrics = {"count": 0, "total_time": 0.0, "success_count": 0}
+        self._healer_cache_ttl = 300  # 5min suppression (configurable)
+        self._healer_max_depth = 5
+        self._healer_current_depth = 0
 
     def heal(self, violation: Dict[str, Any], anomaly: Optional[AnomalyReport] = None) -> bool:
         """
@@ -86,9 +98,9 @@ class HealerMixin:
             return False
         
         # 1. Cache short-circuit (zero-cost repeat suppression)
-        if anomaly and anomaly.type in self._healing_cache:
-            cached_ts, cached_success = self._healing_cache[anomaly.type]
-            if time.time() - cached_ts < self._cache_ttl:
+        if anomaly and anomaly.type in self._healer_cache:
+            cached_ts, cached_success = self._healer_cache[anomaly.type]
+            if time.time() - cached_ts < self._healer_cache_ttl:
                 return cached_success
         
         # 2. Severity optimization (skip heavy MCP audit for LOW)
@@ -104,9 +116,9 @@ class HealerMixin:
             Logger.warning(f"[HEALING] {self.__class__.__name__}: Budget exhausted")
             return False
 
-        self._current_heal_depth += 1
-        if self._current_heal_depth > self._max_heal_depth:
-            self._current_heal_depth -= 1
+        self._healer_current_depth += 1
+        if self._healer_current_depth > self._healer_max_depth:
+            self._healer_current_depth -= 1
             Logger.critical("Healing recursion depth exceeded")
             return False
         
@@ -184,24 +196,24 @@ class HealerMixin:
                 pass
             return False
         finally:
-            self._current_heal_depth = max(0, self._current_heal_depth - 1)
+            self._healer_current_depth = max(0, self._healer_current_depth - 1)
             # Track metrics
             duration = time.time() - start_time
-            self._healing_metrics["count"] += 1
-            self._healing_metrics["total_time"] += duration
+            self._healer_metrics["count"] += 1
+            self._healer_metrics["total_time"] += duration
             if success:
-                self._healing_metrics["success_count"] += 1
+                self._healer_metrics["success_count"] += 1
             # Cache result for repeat suppression
             if anomaly:
-                self._healing_cache[anomaly.type] = (time.time(), success)
+                self._healer_cache[anomaly.type] = (time.time(), success)
             # Optional audited emit (zero-loss safe)
-            if hasattr(self, "_mcp_audit") and self._healing_metrics["count"] > 0:
-                avg_time = self._healing_metrics["total_time"] / self._healing_metrics["count"]
+            if hasattr(self, "_mcp_audit") and self._healer_metrics["count"] > 0:
+                avg_time = self._healer_metrics["total_time"] / self._healer_metrics["count"]
                 self._mcp_audit("healing_metrics", payload={
                     "duration": duration,
                     "success": success,
                     "avg_time": avg_time,
-                    "success_rate": self._healing_metrics["success_count"] / self._healing_metrics["count"]
+                    "success_rate": self._healer_metrics["success_count"] / self._healer_metrics["count"]
                 })
 
     async def heal_async(self, violation: Dict[str, Any], anomaly: Optional[AnomalyReport] = None) -> bool:
@@ -210,11 +222,11 @@ class HealerMixin:
 
     def get_healing_metrics(self) -> Dict[str, Any]:
         """Zero-loss observable — for diagnostics/metrics agents."""
-        count = self._healing_metrics["count"]
+        count = self._healer_metrics["count"]
         return {
             "count": count,
-            "avg_time": (self._healing_metrics["total_time"] / count) if count else 0,
-            "success_rate": (self._healing_metrics["success_count"] / count) if count else 1.0
+            "avg_time": (self._healer_metrics["total_time"] / count) if count else 0,
+            "success_rate": (self._healer_metrics["success_count"] / count) if count else 1.0
         }
 
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
@@ -329,9 +341,9 @@ class HealerMixin:
             
             # Reset metrics for this healing session if at root
             if depth == 0:
-                self._healing_metrics["count"] = 0
-                self._healing_metrics["total_time"] = 0.0
-                self._healing_metrics["success_count"] = 0
+                self._healer_metrics["count"] = 0
+                self._healer_metrics["total_time"] = 0.0
+                self._healer_metrics["success_count"] = 0
             
             return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
             

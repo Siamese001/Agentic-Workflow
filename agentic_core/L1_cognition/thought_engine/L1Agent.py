@@ -7,13 +7,18 @@ Capabilities:
 - L1SubatomicTestingMixin: Thought validation testing
 
 L1 agents handle cognition - thinking, reasoning, understanding.
+
+MRO HARDENING:
+- Inheritance order: Mixins FIRST, SovereignBaseAgent LAST
+- All mixins use cooperative super().__init__(**kwargs)
+- SovereignBaseAgent terminates the MRO chain
 """
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -35,9 +40,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 @dataclass
-class L1Agent(HealerMixin, MCPHardenedMixin):
+class L1Agent(HealerMixin, MCPHardenedMixin, SovereignBaseAgent):
     """
     Consolidated base for L1 Cognition agents.
+    
+    MRO HARDENING:
+    - HealerMixin: First (specialized capability)
+    - MCPHardenedMixin: Second (universal protocol)
+    - SovereignBaseAgent: Last (root termination)
     
     Guaranteed Capabilities:
     - heal_repository(): Self-repair method
@@ -50,14 +60,18 @@ class L1Agent(HealerMixin, MCPHardenedMixin):
     name: str = "L1Agent"
     layer: str = "L1"
     
-    def heal_repository(self, dry_run: bool = True) -> Dict[str, Any]:
-        """Override in subclass to implement healing logic."""
-        super().heal_repository(dry_run)
-        return {"status": "not_implemented", "agent": self.name}
+    def __post_init__(self):
+        """Cooperative MRO initialization."""
+        # Dataclass fields are set, now initialize mixins via MRO chain
+        super().__init__(name=self.name)
+    
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, Any]:
+        """Invoke shared healing chain then allow subclass override."""
+        if _call_path is None:
+            _call_path = set()
+        result = super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        return result
     
     def _run_self_tests(self) -> Dict[str, Any]:
         """Override in subclass to implement self-tests."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
-        return {"status": "not_implemented", TESTS_DIR: 0}
+        return {"status": "not_implemented", "tests": 0}
