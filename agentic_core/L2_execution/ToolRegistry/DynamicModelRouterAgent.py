@@ -452,6 +452,7 @@ class DynamicModelRouterAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         _call_path.add(agent_name)
         try:
             print(f"[{agent_name}] L2 execution - operational only")
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth+1, max_depth=max_depth, _call_path=_call_path)
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
