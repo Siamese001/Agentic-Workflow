@@ -62,10 +62,15 @@ class StrategicRecommendationAgent(MCPHardenedMixin, HealerMixin):
         Returns:
             Structured prompt for LLM to generate recommendations
         """
-        # Identify key gaps (handle None values gracefully)
+        # Identify key gaps (handle None and "N/A" values gracefully)
         def safe_get(row: Dict, key: str, default: float = 0) -> float:
             val = row.get(key, default)
-            return val if val is not None else default
+            if val is None or val == "N/A":
+                return default
+            try:
+                return float(val)
+            except (ValueError, TypeError):
+                return default
         
         low_invocation = [r['Territory'] for r in dashboard_data 
                         if safe_get(r, 'Invocation %', 0) < 50 and r.get('Territory') != 'TOTAL']

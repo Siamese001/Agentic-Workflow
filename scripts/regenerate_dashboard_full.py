@@ -337,9 +337,9 @@ def generate_strategic_recommendations(dashboard_data: List[Dict]) -> Dict[str, 
 
 def inject_strategic_observations(content: str, recommendations: Dict[str, Any]) -> str:
     """
-    Inject strategic recommendations into dashboard HTML.
+    Inject strategic observations and recommendations into dashboard HTML.
     
-    Updates the strategicRecommendationsData JavaScript variable.
+    Updates both strategicObservationsData and recommendationsData JavaScript variables.
     """
     # Build the recommendations data structure for JavaScript
     recs_data = []
@@ -360,6 +360,28 @@ def inject_strategic_observations(content: str, recommendations: Dict[str, Any])
             "impact": "HIGH" if i <= 3 else "MEDIUM" if i <= 7 else "LOW",
             "effort": "MEDIUM"
         })
+    
+    # Build the observations data structure
+    obs_data = {
+        "macro_observations": recommendations.get('macro_observations', []),
+        "metric_observations": recommendations.get('metric_observations', [])
+    }
+    
+    # Find and replace strategicObservationsData
+    obs_marker_start = 'const strategicObservationsData = {'
+    obs_marker_end = '};'
+    obs_start_idx = content.find(obs_marker_start)
+    
+    if obs_start_idx == -1:
+        # Add before recommendationsData
+        recs_idx = content.find('const recommendationsData = [')
+        if recs_idx != -1:
+            new_obs = f'const strategicObservationsData = {json.dumps(obs_data, indent=2)};\n\n        '
+            content = content[:recs_idx] + new_obs + content[recs_idx:]
+    else:
+        obs_end_idx = content.find(obs_marker_end, obs_start_idx) + len(obs_marker_end)
+        new_obs = f'const strategicObservationsData = {json.dumps(obs_data, indent=2)};'
+        content = content[:obs_start_idx] + new_obs + content[obs_end_idx:]
     
     # Find and replace recommendationsData
     marker_start = 'const recommendationsData = ['
