@@ -41,9 +41,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 from agentic_core.utils.mixins import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+# MCPHardenedMixin is now in SovereignBaseAgent - DO NOT import here
 
-# NEW: Root inheritance
+# Root inheritance (includes MCPHardenedMixin)
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
@@ -75,7 +75,9 @@ class L2ExecutionBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeVecto
     - SubatomicTestingMixin: First (L2-specific testing)
     - RedisCacheMixin: Second (caching infrastructure)
     - PineconeVectorMixin: Third (vector infrastructure)
-    - SovereignBaseAgent: Last (root termination)
+    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    
+    MRO: SubatomicTestingMixin -> RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
     
     Features:
     - Async execution (mandatory)

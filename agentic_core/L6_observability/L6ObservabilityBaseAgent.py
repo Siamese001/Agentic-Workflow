@@ -30,7 +30,7 @@ from abc import ABC, abstractmethod
 import json
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+# MCPHardenedMixin is now in SovereignBaseAgent - DO NOT import here
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.mixins.subatomic_testing_mixin import SubatomicTestingMixin
@@ -69,17 +69,18 @@ class CritiqueReport:
 
 
 @dataclass
-class L6ObservabilityBaseAgent(MCPHardenedMixin, SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent, ABC):
+class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent, ABC):
     """
     Base class for L6 Observability agents - The Skeptical Analysts.
     
     MRO HARDENING:
-    - MCPHardenedMixin: First (security protocol)
-    - SubatomicTestingMixin: Second (L6-specific testing)
-    - RedisCacheMixin: Third (caching infrastructure)
-    - PineconeVectorMixin: Fourth (vector infrastructure)
-    - SovereignBaseAgent: Last (root termination)
-    - ABC: Abstract base (no __init__)
+    - SubatomicTestingMixin: First (L6-specific testing)
+    - RedisCacheMixin: Second (caching infrastructure)
+    - PineconeVectorMixin: Third (vector infrastructure)
+    - SovereignBaseAgent: Fourth (root - includes MCPHardenedMixin)
+    - ABC: Last (abstract base - no __init__)
+    
+    MRO: SubatomicTestingMixin -> RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> ABC -> object
     
     L6 agents are critical evaluators that run asynchronously or on schedule
     to provide unbiased, data-driven performance analysis of L1-L5 agents.

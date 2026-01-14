@@ -359,7 +359,9 @@ class OrchestrationBaseAgent(L3SubatomicTestingMixin, RedisCacheMixin, PineconeV
     - L3SubatomicTestingMixin: First (L3-specific testing)
     - RedisCacheMixin: Second (caching infrastructure)
     - PineconeVectorMixin: Third (vector infrastructure)
-    - SovereignBaseAgent: Last (root termination)
+    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    
+    MRO: L3SubatomicTestingMixin -> RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
     
     L3 Table Decision:
     - Basic Self-Testing: YES (plan validation)
