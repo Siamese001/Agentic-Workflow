@@ -40,9 +40,17 @@ class SovereignBaseAgent(MCPHardenedMixin):
         Initialize sovereign agent with MCP hardening.
         
         The root stops the super() chain or passes to MCPHardenedMixin.
+        
+        MRO AUDITOR: Sets _sovereign_initialized sentinel for propagation verification.
         """
-        # Initialize MCPHardenedMixin via cooperative inheritance
-        super().__init__()
+        # 1. Cooperative super() call (propagate to MCPHardenedMixin if it has __post_init__)
+        if hasattr(super(), "__post_init__"):
+            super().__post_init__()
+        
+        # 2. Set Sentinel for MRO Auditor - verifies initialization chain reached root
+        self._sovereign_initialized = True
+        
+        # 3. Core sovereign initialization logic
         self._initialize_sovereign_state()
     
     def _initialize_sovereign_state(self):
