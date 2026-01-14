@@ -432,7 +432,9 @@ class StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMix
     - L4SubatomicTestingMixin: First (L4-specific testing)
     - RedisCacheMixin: Second (caching infrastructure)
     - PineconeVectorMixin: Third (vector infrastructure)
-    - SovereignBaseAgent: Last (root termination)
+    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    
+    MRO: L4SubatomicTestingMixin -> RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
     
     L4 Table Decision:
     - Basic Self-Testing: YES (state consistency, idempotency)
