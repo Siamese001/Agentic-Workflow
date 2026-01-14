@@ -119,4 +119,5 @@ class SovereignCognitivePlaneAgent(ICognitivePlane, MCPHardenedMixin):
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """Autonomous healing implementation as per Canon Key 51."""
+        super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations": 0, "fixed": 0, "errors": 0}
