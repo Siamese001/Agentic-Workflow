@@ -8,6 +8,7 @@ This updates:
 3. Strategic Observations (via StrategicRecommendationAgent)
 
 NO HARDCODING - all values calculated from discovery data.
+Uses dashboard_ssot_definitions.py as SINGLE SOURCE OF TRUTH for all calculations.
 """
 import json
 import sys
@@ -21,6 +22,19 @@ DASHBOARD_PATH = PROJECT_ROOT / 'agentic_core' / 'L6_observability' / 'dashboard
 
 # Add project root to path for imports
 sys.path.insert(0, str(PROJECT_ROOT))
+
+# Import SSOT definitions
+from scripts.dashboard_ssot_definitions import (
+    FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS, FIELD_MCP_HARDENED,
+    FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS, 
+    FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
+    calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
+    calc_typed_pct, calc_documented_pct, calc_schema_strictness_pct,
+    calc_canonical_inheritance_pct, calc_avg_cc, calc_complexity_health,
+    calc_health_score, calc_code_quality_score, is_l0_territory,
+    get_heal_cap_display, get_invocation_display, sort_dashboard_data,
+    get_territory_sort_key
+)
 
 # Territory name mapping (discovery -> dashboard)
 TERRITORY_MAPPING = {
@@ -40,8 +54,8 @@ TERRITORY_MAPPING = {
 
 
 def calculate_code_quality(typed: float, documented: float, schema: float, base: float) -> float:
-    """Calculate Code Quality Score using canonical formula."""
-    return round(typed * 0.30 + documented * 0.30 + schema * 0.25 + base * 0.15, 2)
+    """Calculate Code Quality Score using SSOT formula."""
+    return calc_code_quality_score(typed, documented, schema, base)
 
 
 def build_real_agent_data(agents: List[Dict], territory_mapping: Dict[str, str]) -> Dict[str, Any]:
@@ -71,33 +85,30 @@ def build_real_agent_data(agents: List[Dict], territory_mapping: Dict[str, str])
         agents_data = []
         
         for agent in agent_list:
-            # Extract metrics from discovery
-            has_healing = 100.0 if agent.get('has_healing', False) else 0.0
-            has_invocation = 100.0 if agent.get('invocation') == 'Yes' else 0.0
-            is_hardened = 100.0 if agent.get('mcp_hardened', False) else 0.0
-            has_tests = 100.0 if agent.get('has_tests', False) else 0.0
+            # Extract metrics from discovery using SSOT field names
+            has_healing = 100.0 if agent.get(FIELD_HAS_HEALING, False) else 0.0
+            has_invocation = 100.0 if agent.get(FIELD_INVOCATION) == 'Yes' else 0.0
+            is_hardened = 100.0 if agent.get(FIELD_MCP_HARDENED, False) else 0.0
+            has_tests = 100.0 if agent.get(FIELD_HAS_TESTS, False) else 0.0
             
-            # Complexity health = 100 - (CC * 2)
-            cc = agent.get('cyclomatic_complexity', 0)
-            comp_health = max(0, 100 - cc * 2)
+            # Complexity health using SSOT calculation
+            cc = agent.get(FIELD_CYCLOMATIC_COMPLEXITY, 0)
+            comp_health = calc_complexity_health(cc)
             
-            # Get actual percentages from discovery
-            typed_pct = agent.get('typed_pct', 0.0)
-            doc_pct = agent.get('documented_pct', 0.0)
-            schema_pct = agent.get('schema_strictness', 0.0)
-            base_pct = 100.0 if agent.get('proper_base_class', False) else 0.0
+            # Get actual percentages from discovery using SSOT field names
+            typed_pct = agent.get(FIELD_TYPED_PCT, 0.0)
+            doc_pct = agent.get(FIELD_DOCUMENTED_PCT, 0.0)
+            schema_pct = agent.get(FIELD_SCHEMA_STRICTNESS, 0.0)
+            base_pct = 100.0 if agent.get(FIELD_PROPER_BASE_CLASS, False) else 0.0
             
             # Calculate code quality
             quality = calculate_code_quality(typed_pct, doc_pct, schema_pct, base_pct)
             
-            # Calculate health score
-            agent_health = round(
-                has_healing * 0.30 +
-                has_invocation * 0.10 +
-                has_tests * 0.25 +
-                (100.0 if agent.get('observability', {}).get('logging', False) else 0.0) * 0.20 +
-                comp_health * 0.15,
-                1
+            # Calculate health score using SSOT formula
+            observable = 100.0 if agent.get('observability', {}).get('logging', False) else 0.0
+            agent_health = calc_health_score(
+                has_healing, has_invocation, has_tests, observable, comp_health,
+                is_l0=is_l0_territory(territory)
             )
             
             # Add to arrays
@@ -115,7 +126,7 @@ def build_real_agent_data(agents: List[Dict], territory_mapping: Dict[str, str])
             
             # Build agent detail
             obs = agent.get('observability', {})
-            has_proper_base = agent.get('proper_base_class', False)
+            has_proper_base = agent.get(FIELD_PROPER_BASE_CLASS, False)
             inheritance_list = agent.get('inheritance', [])
             base_class_name = inheritance_list[-1] if inheritance_list else 'Unknown'
             
@@ -126,11 +137,11 @@ def build_real_agent_data(agents: List[Dict], territory_mapping: Dict[str, str])
                 "abs_file": str(PROJECT_ROOT / agent.get('path', '')),
                 "abs_class": str(PROJECT_ROOT / agent.get('path', '')),
                 "class_line": 1,
-                "has_mixin": agent.get('has_healing', False),
-                "invocation": agent.get('invocation', 'No'),
-                "has_tests": agent.get('has_tests', False),
+                "has_mixin": agent.get(FIELD_HAS_HEALING, False),
+                "invocation": agent.get(FIELD_INVOCATION, 'No'),
+                "has_tests": agent.get(FIELD_HAS_TESTS, False),
                 "obs_summary": f"Logging: {'✓' if obs.get('logging') else '✗'} | Metrics: {'✓' if obs.get('metrics') else '✗'} | Tracing: {'✓' if obs.get('tracing') else '✗'}",
-                "mcp_summary": f"Shield: {'✓' if agent.get('mcp_hardened') else '✗'} | @hardened: ✗ | Safe: ✓",
+                "mcp_summary": f"Shield: {'✓' if agent.get(FIELD_MCP_HARDENED) else '✗'} | @hardened: ✗ | Safe: ✓",
                 "typing_summary": f"Typed: {typed_pct:.0f}%",
                 "typed_pct": typed_pct,
                 "overall_typed_pct": typed_pct,
@@ -179,34 +190,25 @@ def build_dashboard_data(agents: List[Dict], territory_mapping: Dict[str, str]) 
     
     dashboard_data = []
     
-    # Build TOTAL row first
+    # Build TOTAL row first - using SSOT calculation functions
     total_agents = len(agents)
-    total_healing = sum(1 for a in agents if a.get('has_healing', False))
-    total_invocation = sum(1 for a in agents if a.get('invocation') == 'Yes')
-    total_tests = sum(1 for a in agents if a.get('has_tests', False))
-    total_hardened = sum(1 for a in agents if a.get('mcp_hardened', False))
-    total_proper_base = sum(1 for a in agents if a.get('proper_base_class', False))
     
-    avg_typed = sum(a.get('typed_pct', 0) for a in agents) / total_agents if total_agents else 0
-    avg_documented = sum(a.get('documented_pct', 0) for a in agents) / total_agents if total_agents else 0
-    avg_schema = sum(a.get('schema_strictness', 0) for a in agents) / total_agents if total_agents else 0
-    avg_cc = sum(a.get('cyclomatic_complexity', 0) for a in agents) / total_agents if total_agents else 0
+    # Use SSOT functions for all metric calculations
+    heal_cap_pct = calc_heal_cap_pct(agents)
+    invocation_pct = calc_invocation_pct(agents)
+    test_pct = calc_test_pct(agents)
+    hardened_pct = calc_hardened_pct(agents)
+    proper_base_pct = calc_canonical_inheritance_pct(agents)
+    avg_typed = calc_typed_pct(agents)
+    avg_documented = calc_documented_pct(agents)
+    avg_schema = calc_schema_strictness_pct(agents)
+    avg_cc = calc_avg_cc(agents)
+    complexity_health = calc_complexity_health(avg_cc)
     
-    heal_cap_pct = round(total_healing / total_agents * 100, 1) if total_agents else 0
-    invocation_pct = round(total_invocation / total_agents * 100, 1) if total_agents else 0
-    test_pct = round(total_tests / total_agents * 100, 1) if total_agents else 0
-    hardened_pct = round(total_hardened / total_agents * 100, 1) if total_agents else 0
-    proper_base_pct = round(total_proper_base / total_agents * 100, 1) if total_agents else 0
-    complexity_health = round(max(0, 100 - avg_cc * 2), 1)
-    
-    # Calculate health score
-    health = round(
-        heal_cap_pct * 0.30 +
-        invocation_pct * 0.10 +
-        test_pct * 0.25 +
-        50 * 0.20 +  # Observable placeholder
-        complexity_health * 0.15,
-        1
+    # Calculate health score using SSOT formula
+    health = calc_health_score(
+        heal_cap_pct, invocation_pct, test_pct, 50.0, complexity_health,
+        is_l0=False
     )
     
     code_quality = calculate_code_quality(avg_typed, avg_documented, avg_schema, proper_base_pct)
@@ -235,51 +237,36 @@ def build_dashboard_data(agents: List[Dict], territory_mapping: Dict[str, str]) 
     }
     dashboard_data.append(total_row)
     
-    # Build territory rows
-    for territory, agent_list in sorted(territory_agents.items()):
+    # Build territory rows using SSOT functions
+    for territory, agent_list in sorted(territory_agents.items(), key=lambda x: get_territory_sort_key(x[0])):
         count = len(agent_list)
         if count == 0:
             continue
         
-        # L0 is infrastructure/scripts layer - healing N/A
-        is_l0 = 'L0' in territory
+        # L0 is infrastructure/scripts layer - healing N/A (SSOT definition)
+        is_l0 = is_l0_territory(territory)
         
-        t_healing = sum(1 for a in agent_list if a.get('has_healing', False))
-        t_invocation = sum(1 for a in agent_list if a.get('invocation') == 'Yes')
-        t_tests = sum(1 for a in agent_list if a.get('has_tests', False))
-        t_hardened = sum(1 for a in agent_list if a.get('mcp_hardened', False))
-        t_proper_base = sum(1 for a in agent_list if a.get('proper_base_class', False))
+        # Use SSOT functions for all calculations
+        t_heal_cap_pct_val = calc_heal_cap_pct(agent_list, is_l0)
+        t_invocation_pct_val = calc_invocation_pct(agent_list, is_l0)
+        t_test_pct = calc_test_pct(agent_list)
+        t_hardened_pct = calc_hardened_pct(agent_list)
+        t_proper_base_pct = calc_canonical_inheritance_pct(agent_list)
+        t_typed = calc_typed_pct(agent_list)
+        t_documented = calc_documented_pct(agent_list)
+        t_schema = calc_schema_strictness_pct(agent_list)
+        t_cc = calc_avg_cc(agent_list)
+        t_complexity_health = calc_complexity_health(t_cc)
         
-        t_typed = sum(a.get('typed_pct', 0) for a in agent_list) / count
-        t_documented = sum(a.get('documented_pct', 0) for a in agent_list) / count
-        t_schema = sum(a.get('schema_strictness', 0) for a in agent_list) / count
-        t_cc = sum(a.get('cyclomatic_complexity', 0) for a in agent_list) / count
+        # Use SSOT display functions for L0 N/A handling
+        t_heal_cap_pct = get_heal_cap_display(t_heal_cap_pct_val, is_l0)
+        t_invocation_pct = get_invocation_display(t_invocation_pct_val, is_l0)
         
-        # L0: Heal Cap N/A (infrastructure layer focuses on stability, not self-healing)
-        t_heal_cap_pct = "N/A" if is_l0 else round(t_healing / count * 100, 1)
-        t_invocation_pct = "N/A" if is_l0 else round(t_invocation / count * 100, 1)
-        t_test_pct = round(t_tests / count * 100, 1)
-        t_hardened_pct = round(t_hardened / count * 100, 1)
-        t_proper_base_pct = round(t_proper_base / count * 100, 1)
-        t_complexity_health = round(max(0, 100 - t_cc * 2), 1)
-        
-        # L0: Health calculation excludes healing metrics (use test + complexity + hardening)
-        if is_l0:
-            t_health = round(
-                t_test_pct * 0.40 +
-                t_hardened_pct * 0.30 +
-                t_complexity_health * 0.30,
-                1
-            )
-        else:
-            t_health = round(
-                t_heal_cap_pct * 0.30 +
-                t_invocation_pct * 0.10 +
-                t_test_pct * 0.25 +
-                50 * 0.20 +
-                t_complexity_health * 0.15,
-                1
-            )
+        # Use SSOT health calculation
+        t_health = calc_health_score(
+            t_heal_cap_pct_val, t_invocation_pct_val, t_test_pct, 50.0, t_complexity_health,
+            is_l0=is_l0
+        )
         
         t_code_quality = calculate_code_quality(t_typed, t_documented, t_schema, t_proper_base_pct)
         
@@ -307,7 +294,8 @@ def build_dashboard_data(agents: List[Dict], territory_mapping: Dict[str, str]) 
         }
         dashboard_data.append(territory_row)
     
-    return dashboard_data
+    # Apply SSOT sorting: Base/Root first, TOTAL last
+    return sort_dashboard_data(dashboard_data)
 
 
 def generate_strategic_recommendations(dashboard_data: List[Dict]) -> Dict[str, Any]:
