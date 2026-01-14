@@ -5,25 +5,25 @@
 ### Symptom
 Test 8 in E2E suite reports multiple base agents per layer:
 ```
-Test 8 FAILED: L1 has 2 base agents: ['L1Agent', 'L1CognitionBaseAgent']
+Test 8 FAILED: L1 has 2 base agents: ['L1CognitionBaseAgent', 'L1CognitionBaseAgent']
 Test 8 FAILED: L2 has 3 base agents: ['L2Agent', 'L2ExecutionBaseAgent', 'SovereignBaseAgent']
-Test 8 FAILED: L3 has 2 base agents: ['L3Agent', 'OrchestrationBaseAgent']
-Test 8 FAILED: L4 has 2 base agents: ['L4Agent', 'StateBaseAgent']
-Test 8 FAILED: L5 has 2 base agents: ['L5Agent', 'SafetyBaseAgent']
+Test 8 FAILED: L3 has 2 base agents: ['L3Agent', 'L3OrchestrationBaseAgent']
+Test 8 FAILED: L4 has 2 base agents: ['L4Agent', 'L4StateBaseAgent']
+Test 8 FAILED: L5 has 2 base agents: ['L5Agent', 'L5SafetyBaseAgent']
 ```
 
 ### Root Cause
 **Discovery script is correctly finding multiple base classes per layer, but Test 8 expects exactly 1.**
 
 The issue is NOT with discovery - it's with the **test expectation**. Multiple base classes exist:
-- **L1:** `L1Agent` (canonical) + `L1CognitionBaseAgent` (layer-specific)
+- **L1:** `L1CognitionBaseAgent` (canonical) + `L1CognitionBaseAgent` (layer-specific)
 - **L2:** `L2Agent` (canonical) + `L2ExecutionBaseAgent` (layer-specific) + `SovereignBaseAgent` (cross-layer)
-- **L3:** `L3Agent` (canonical) + `OrchestrationBaseAgent` (layer-specific)
-- **L4:** `L4Agent` (canonical) + `StateBaseAgent` (layer-specific)
-- **L5:** `L5Agent` (canonical) + `SafetyBaseAgent` (layer-specific)
+- **L3:** `L3Agent` (canonical) + `L3OrchestrationBaseAgent` (layer-specific)
+- **L4:** `L4Agent` (canonical) + `L4StateBaseAgent` (layer-specific)
+- **L5:** `L5Agent` (canonical) + `L5SafetyBaseAgent` (layer-specific)
 
 ### Analysis
-1. **Canonical base agents:** `L0Agent`, `L1Agent`, `L2Agent`, etc. (simple naming)
+1. **Canonical base agents:** `L0MaintenanceBaseAgent`, `L1CognitionBaseAgent`, `L2Agent`, etc. (simple naming)
 2. **Layer-specific base agents:** `L1CognitionBaseAgent`, `L2ExecutionBaseAgent`, etc. (descriptive naming)
 3. **Cross-layer base:** `SovereignBaseAgent` (used across multiple layers)
 

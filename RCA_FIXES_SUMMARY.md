@@ -14,7 +14,7 @@ Successfully completed Root Cause Analysis (RCA) and implemented fixes for two c
 
 ### Root Cause
 **NOT A BUG** - Multiple base classes legitimately exist per layer by architectural design:
-- **Canonical bases:** `L0Agent`, `L1Agent`, `L2Agent`, etc. (simple naming)
+- **Canonical bases:** `L0MaintenanceBaseAgent`, `L1CognitionBaseAgent`, `L2Agent`, etc. (simple naming)
 - **Layer-specific bases:** `L1CognitionBaseAgent`, `L2ExecutionBaseAgent`, etc. (descriptive naming)
 - **Cross-layer base:** `SovereignBaseAgent` (used across multiple layers)
 
@@ -28,7 +28,7 @@ Successfully completed Root Cause Analysis (RCA) and implemented fixes for two c
    ```python
    is_base_class = (
        node.name.endswith('BaseAgent') or 
-       node.name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
+       node.name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
    )
    
    # Override territory for base classes
@@ -130,7 +130,7 @@ Base Class territories: ✅ CREATED
 
 ### Base Agents by Layer
 - **L0:** 1 base agent
-- **L1:** 2 base agents (L1Agent, L1CognitionBaseAgent)
+- **L1:** 2 base agents (L1CognitionBaseAgent, L1CognitionBaseAgent)
 - **L2:** 3 base agents (L2Agent, L2ExecutionBaseAgent, SovereignBaseAgent)
 - **L3:** 2 base agents
 - **L4:** 2 base agents

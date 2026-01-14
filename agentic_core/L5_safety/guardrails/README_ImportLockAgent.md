@@ -109,7 +109,7 @@ Respects intentional dynamic imports:
 # These modules are allowed to use dynamic L5 imports
 _intentional_exceptions = [
     "agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent",
-    "agentic_core.L3_orchestration.workflow_engines.OrchestrationBaseAgent"
+    "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent"
 ]
 ```
 

@@ -35,7 +35,7 @@ class L1CognitionBaseAgent(SovereignBaseAgent):
 ```
 
 ### 2. L3 Orchestration Base Agent - UPDATED ✅
-**File:** `agentic_core/L3_orchestration/workflow_engines/OrchestrationBaseAgent.py`
+**File:** `agentic_core/L3_orchestration/workflow_engines/L3OrchestrationBaseAgent.py`
 
 **Changes:**
 - ✅ Removed `CanonBaseAgent` import
@@ -47,16 +47,16 @@ class L1CognitionBaseAgent(SovereignBaseAgent):
 **Key Updates:**
 ```python
 # Before
-class OrchestrationBaseAgent(CanonBaseAgent, L3SubatomicTestingMixin, HealerMixin):
+class L3OrchestrationBaseAgent(CanonBaseAgent, L3SubatomicTestingMixin, HealerMixin):
     print(f"[SUBATOMIC L3] {Severity.value} | {event_type}")
 
 # After
-class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin):
+class L3OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin):
     self.log_info(f"SUBATOMIC L3 {Severity.value} | {event_type}")
 ```
 
 ### 3. L4 State Base Agent - UPDATED ✅
-**File:** `agentic_core/L4_state/ValidationContext/StateBaseAgent.py`
+**File:** `agentic_core/L4_state/ValidationContext/L4StateBaseAgent.py`
 
 **Changes:**
 - ✅ Removed `CanonBaseAgent` import
@@ -68,17 +68,17 @@ class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin):
 ```python
 # Before
 from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
-class StateBaseAgent(CanonBaseAgent, L4SubatomicTestingMixin, HealerMixin):
+class L4StateBaseAgent(CanonBaseAgent, L4SubatomicTestingMixin, HealerMixin):
     print(f"[{agent_name}] L4 state - operational only")
 
 # After
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-class StateBaseAgent(SovereignBaseAgent, L4SubatomicTestingMixin):
+class L4StateBaseAgent(SovereignBaseAgent, L4SubatomicTestingMixin):
     self.log_info("L4 state - operational only")
 ```
 
 ### 4. L5 Safety Base Agent - UPDATED ✅
-**File:** `agentic_core/L5_safety/guardrails/SafetyBaseAgent.py`
+**File:** `agentic_core/L5_safety/guardrails/L5SafetyBaseAgent.py`
 
 **Changes:**
 - ✅ Removed `HealerMixin` import
@@ -91,13 +91,13 @@ class StateBaseAgent(SovereignBaseAgent, L4SubatomicTestingMixin):
 **Key Updates:**
 ```python
 # Before
-class SafetyBaseAgent(HealerMixin):
+class L5SafetyBaseAgent(HealerMixin):
     def __init__(self, project_root=None, ctx=None):
         self.name = self.__class__.__name__
     print(f"[{agent_name}] L5 safety - operational only")
 
 # After
-class SafetyBaseAgent(SovereignBaseAgent):
+class L5SafetyBaseAgent(SovereignBaseAgent):
     def __init__(self, project_root=None, ctx=None, **kwargs):
         super().__init__(ctx=ctx or kwargs.get("ctx"))
     self.log_info("L5 safety - operational only")
@@ -139,13 +139,13 @@ SovereignBaseAgent (root - Phase 3)
     ├── L1CognitionBaseAgent (Phase 4)
     │   └── L1 validation agents
     │
-    ├── L3OrchestrationBaseAgent (Phase 4)
+    ├── L3L3OrchestrationBaseAgent (Phase 4)
     │   └── L3 orchestration agents
     │
-    ├── L4StateBaseAgent (Phase 4)
+    ├── L4L4StateBaseAgent (Phase 4)
     │   └── L4 state agents
     │
-    ├── L5SafetyBaseAgent (Phase 4)
+    ├── L5L5SafetyBaseAgent (Phase 4)
     │   └── L5 safety agents
     │
     └── L0MaintenanceBaseAgent (Phase 4)
@@ -159,9 +159,9 @@ SovereignBaseAgent (root - Phase 3)
 | Layer | File | Print Statements | Replacement |
 |-------|------|------------------|-------------|
 | L1 | L1CognitionBaseAgent.py | 5 | `self.log_info/warning/error()` |
-| L3 | OrchestrationBaseAgent.py | 2 | `self.log_info()` |
-| L4 | StateBaseAgent.py | 1 | `self.log_info()` |
-| L5 | SafetyBaseAgent.py | 1 | `self.log_info()` |
+| L3 | L3OrchestrationBaseAgent.py | 2 | `self.log_info()` |
+| L4 | L4StateBaseAgent.py | 1 | `self.log_info()` |
+| L5 | L5SafetyBaseAgent.py | 1 | `self.log_info()` |
 | L0 | MaintenanceBaseAgent.py | 2 | `self.log_info()` |
 | **TOTAL** | **5 files** | **11 print statements** | **Real logging** |
 
@@ -173,9 +173,9 @@ SovereignBaseAgent (root - Phase 3)
 - ✅ `agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py` (NEW - renamed from CognitionCanonBaseAgent)
 
 ### Modified
-- ✅ `agentic_core/L3_orchestration/workflow_engines/OrchestrationBaseAgent.py`
-- ✅ `agentic_core/L4_state/ValidationContext/StateBaseAgent.py`
-- ✅ `agentic_core/L5_safety/guardrails/SafetyBaseAgent.py`
+- ✅ `agentic_core/L3_orchestration/workflow_engines/L3OrchestrationBaseAgent.py`
+- ✅ `agentic_core/L4_state/ValidationContext/L4StateBaseAgent.py`
+- ✅ `agentic_core/L5_safety/guardrails/L5SafetyBaseAgent.py`
 - ✅ `agentic_core/L0_maintenance/scripts/MaintenanceBaseAgent.py`
 
 ### Deprecated (kept for backward compatibility)
@@ -216,9 +216,9 @@ SovereignBaseAgent (root - Phase 3)
 ## Verification Checklist
 
 - ✅ L1CognitionBaseAgent created with SovereignBaseAgent inheritance
-- ✅ L3OrchestrationBaseAgent updated to inherit from SovereignBaseAgent
-- ✅ L4StateBaseAgent updated to inherit from SovereignBaseAgent
-- ✅ L5SafetyBaseAgent updated to inherit from SovereignBaseAgent
+- ✅ L3L3OrchestrationBaseAgent updated to inherit from SovereignBaseAgent
+- ✅ L4L4StateBaseAgent updated to inherit from SovereignBaseAgent
+- ✅ L5L5SafetyBaseAgent updated to inherit from SovereignBaseAgent
 - ✅ L0MaintenanceBaseAgent updated to inherit from SovereignBaseAgent
 - ✅ All print statements replaced with real logging methods
 - ✅ All duplicate HealerMixin/ABC removed

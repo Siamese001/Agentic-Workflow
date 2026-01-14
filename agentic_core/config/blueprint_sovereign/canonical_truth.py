@@ -262,7 +262,7 @@ def categorize_agent(
         'Validator'
         >>> categorize_agent("TerritoryHealerAgent")
         'Healer'
-        >>> categorize_agent("WorkflowEngine", ["OrchestrationBaseAgent"])
+        >>> categorize_agent("WorkflowEngine", ["L3OrchestrationBaseAgent"])
         'Orchestrator'
     """
     # Build comprehensive search string

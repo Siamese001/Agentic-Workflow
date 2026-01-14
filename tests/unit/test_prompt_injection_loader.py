@@ -13,10 +13,10 @@ class TestPromptInjectionDetectorAgent:
         assert PromptInjectionDetectorAgent is not None
 
     def test_agent_inherits_from_safety_base(self):
-        """Test agent inherits from SafetyBaseAgent."""
+        """Test agent inherits from L5SafetyBaseAgent."""
         from agentic_core.L5_safety.guardrails.PromptInjectionDetectorAgent import PromptInjectionDetectorAgent
-        from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
-        assert issubclass(PromptInjectionDetectorAgent, SafetyBaseAgent)
+        from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
+        assert issubclass(PromptInjectionDetectorAgent, L5SafetyBaseAgent)
 
 
 class TestInputValidationGuardrail:

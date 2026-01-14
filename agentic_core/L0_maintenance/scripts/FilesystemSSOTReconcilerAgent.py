@@ -66,7 +66,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from dataclasses import dataclass
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
+from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
@@ -109,12 +109,12 @@ class ReconciliationViolation:
             _call_path.discard(agent_name)
 
 
-class FilesystemSSOTReconcilerAgent(L0Agent, AutonomyMixin,
+class FilesystemSSOTReconcilerAgent(L0MaintenanceBaseAgent, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin):
     """Filesystem-level SSOT enforcer - treats blueprint as the Gospel.
     
-    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     
     Enforces the SSOT blueprint by aligning the filesystem:
     - Creation: Ensures all folders in sovereign_registry exist.

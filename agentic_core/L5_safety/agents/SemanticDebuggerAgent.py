@@ -9,14 +9,14 @@ to find known healing patterns and fixes.
 from typing import Dict, Any, List
 import logging
 
-from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
+from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
 from agentic_core.utils.core_extensions.CognitiveRecoveryMixin import CognitiveRecoveryMixin
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SemanticDebuggerAgent(SafetyBaseAgent, CognitiveRecoveryMixin):
+class SemanticDebuggerAgent(L5SafetyBaseAgent, CognitiveRecoveryMixin):
     """
     L5 Safety Agent responsible for performing Just-In-Time Root Cause Analysis (RCA).
 

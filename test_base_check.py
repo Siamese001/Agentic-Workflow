@@ -7,14 +7,14 @@ with open('agent_discovery_full.json', 'r') as f:
 
 # Sample agents that SHOULD have proper base
 test_agents = [
-    'L1Agent',
+    'L1CognitionBaseAgent',
     'L2Agent', 
     'L3Agent',
     'L4Agent',
     'L5Agent',
     'L6Agent',
-    'SafetyBaseAgent',
-    'OrchestrationBaseAgent',
+    'L5SafetyBaseAgent',
+    'L3OrchestrationBaseAgent',
     'L2ExecutionBaseAgent'
 ]
 

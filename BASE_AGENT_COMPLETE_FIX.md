@@ -27,7 +27,7 @@ Added deprecation filter:
 ```python
 DEPRECATED_SIMPLE_BASES = {'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent'}
 
-if name.endswith('BaseAgent') or name in ['L0Agent', 'L1Agent', 'L6Agent']:
+if name.endswith('BaseAgent') or name in ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6Agent']:
     if name not in DEPRECATED_SIMPLE_BASES:
         # Count as canonical base agent
 ```
@@ -40,7 +40,7 @@ Updated base class detection:
 DEPRECATED_SIMPLE_BASES = {'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent'}
 is_base_class = (
     (node.name.endswith('BaseAgent') or 
-     node.name in {'L0Agent', 'L1Agent', 'L6Agent'}) and
+     node.name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6Agent'}) and
     node.name not in DEPRECATED_SIMPLE_BASES
 )
 ```
@@ -53,12 +53,12 @@ is_base_class = (
 **Result:**
 ```
 Base Class territories: 6 agents
-L0: ['L0Agent']
-L1: ['L1Agent']
+L0: ['L0MaintenanceBaseAgent']
+L1: ['L1CognitionBaseAgent']
 L2: ['L2ExecutionBaseAgent']
-L3: ['OrchestrationBaseAgent']
-L4: ['StateBaseAgent']
-L5: ['SafetyBaseAgent']
+L3: ['L3OrchestrationBaseAgent']
+L4: ['L4StateBaseAgent']
+L5: ['L5SafetyBaseAgent']
 ```
 
 ✅ Only canonical bases in Base Class territories
@@ -78,12 +78,12 @@ L5: ['SafetyBaseAgent']
 ### E2E Test 8: Base Agent Uniqueness ✅
 ```
 Found 7 base agents across 7 layers
-L0: 1 base agents - L0Agent ✅
-L1: 1 base agents - L1Agent ✅
+L0: 1 base agents - L0MaintenanceBaseAgent ✅
+L1: 1 base agents - L1CognitionBaseAgent ✅
 L2: 1 base agents - L2ExecutionBaseAgent ✅
-L3: 1 base agents - OrchestrationBaseAgent ✅
-L4: 1 base agents - StateBaseAgent ✅
-L5: 1 base agents - SafetyBaseAgent ✅
+L3: 1 base agents - L3OrchestrationBaseAgent ✅
+L4: 1 base agents - L4StateBaseAgent ✅
+L5: 1 base agents - L5SafetyBaseAgent ✅
 Unknown: 1 base agents - SovereignBaseAgent ✅
 ```
 
@@ -92,12 +92,12 @@ Unknown: 1 base agents - SovereignBaseAgent ✅
 ### Dashboard Visual Verification ✅
 
 **Base Class Territories (Expected: 1 agent each):**
-- L0 Maintenance/Base Class: 1 agent (L0Agent)
-- L1 Cognition/Base Class: 1 agent (L1Agent)
+- L0 Maintenance/Base Class: 1 agent (L0MaintenanceBaseAgent)
+- L1 Cognition/Base Class: 1 agent (L1CognitionBaseAgent)
 - L2 Execution/Base Class: 1 agent (L2ExecutionBaseAgent)
-- L3 Orchestration/Base Class: 1 agent (OrchestrationBaseAgent)
-- L4 State/Base Class: 1 agent (StateBaseAgent)
-- L5 Safety/Base Class: 1 agent (SafetyBaseAgent)
+- L3 Orchestration/Base Class: 1 agent (L3OrchestrationBaseAgent)
+- L4 State/Base Class: 1 agent (L4StateBaseAgent)
+- L5 Safety/Base Class: 1 agent (L5SafetyBaseAgent)
 
 **Deprecated Bases (No longer in Base Class territories):**
 - L2Agent: Now in L2 Execution/Core (regular agent)
@@ -113,21 +113,21 @@ Unknown: 1 base agents - SovereignBaseAgent ✅
 
 | Layer | Canonical Base | Features |
 |-------|---------------|----------|
-| L0 | L0Agent | HealerMixin + MCPHardenedMixin |
-| L1 | L1Agent | HealerMixin + MCPHardenedMixin |
+| L0 | L0MaintenanceBaseAgent | HealerMixin + MCPHardenedMixin |
+| L1 | L1CognitionBaseAgent | HealerMixin + MCPHardenedMixin |
 | L2 | **L2ExecutionBaseAgent** | SovereignBaseAgent + Redis + Pinecone |
-| L3 | **OrchestrationBaseAgent** | SovereignBaseAgent + Redis + Pinecone |
-| L4 | **StateBaseAgent** | SovereignBaseAgent + Redis + Pinecone |
-| L5 | **SafetyBaseAgent** | SovereignBaseAgent + Redis + Pinecone |
+| L3 | **L3OrchestrationBaseAgent** | SovereignBaseAgent + Redis + Pinecone |
+| L4 | **L4StateBaseAgent** | SovereignBaseAgent + Redis + Pinecone |
+| L5 | **L5SafetyBaseAgent** | SovereignBaseAgent + Redis + Pinecone |
 
 ### Deprecated Bases (Do Not Use)
 
 | Deprecated | Replacement | Status |
 |-----------|-------------|--------|
 | L2Agent | L2ExecutionBaseAgent | ⚠️ Lightweight alternative (deprecated) |
-| L3Agent | OrchestrationBaseAgent | ⚠️ Lightweight alternative (deprecated) |
-| L4Agent | StateBaseAgent | ⚠️ Lightweight alternative (deprecated) |
-| L5Agent | SafetyBaseAgent | ⚠️ Lightweight alternative (deprecated) |
+| L3Agent | L3OrchestrationBaseAgent | ⚠️ Lightweight alternative (deprecated) |
+| L4Agent | L4StateBaseAgent | ⚠️ Lightweight alternative (deprecated) |
+| L5Agent | L5SafetyBaseAgent | ⚠️ Lightweight alternative (deprecated) |
 
 ---
 

@@ -11,7 +11,7 @@ from pathlib import Path
 import logging
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
+from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 
 # Sovereign Hardening Mixins – Phase 35
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
@@ -20,7 +20,7 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 
 
 @dataclass
-class MetricsWitnessAgent(L0Agent, AutonomyMixin,
+class MetricsWitnessAgent(L0MaintenanceBaseAgent, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """
@@ -28,7 +28,7 @@ class MetricsWitnessAgent(L0Agent, AutonomyMixin,
     Provides audit-ready (score, issues) tuples for Structural SSOT and Healing Resilience dimensions.
     Zero external dependencies beyond MetricsAgent.
     
-    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     Now hardened with:
       - Proactive Metric recalculation on suspected drift

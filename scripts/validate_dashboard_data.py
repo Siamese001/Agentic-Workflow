@@ -32,8 +32,8 @@ data = json.load(open(discovery_path))
 
 LAYERS = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']
 CANONICAL_BASE_AGENTS = {
-    'L0': 'L0Agent',
-    'L1': 'L1Agent', 
+    'L0': 'L0MaintenanceBaseAgent',
+    'L1': 'L1CognitionBaseAgent', 
     'L2': 'L2Agent',
     'L3': 'L3Agent',
     'L4': 'L4Agent',
@@ -249,7 +249,7 @@ class DataValidator:
                 naming_issues.append(f"{name}: Does not start with uppercase")
             
             # Should not have underscores (use PascalCase)
-            if '_' in name and name not in ['L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent']:
+            if '_' in name and name not in ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent']:
                 self.warnings.append(f"{name}: Contains underscore (prefer PascalCase)")
         
         if naming_issues:

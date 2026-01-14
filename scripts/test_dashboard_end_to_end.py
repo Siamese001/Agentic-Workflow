@@ -393,8 +393,8 @@ def run_all_tests() -> bool:
     # Check for multiple base agents per layer
     LAYERS = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']
     CANONICAL_BASE_AGENTS = {
-        'L0': 'L0Agent',
-        'L1': 'L1Agent',
+        'L0': 'L0MaintenanceBaseAgent',
+        'L1': 'L1CognitionBaseAgent',
         'L2': 'L2Agent',
         'L3': 'L3Agent',
         'L4': 'L4Agent',
@@ -416,7 +416,7 @@ def run_all_tests() -> bool:
             territory = agent.get('territory', '')
             
             # Identify base agents (exclude deprecated simple bases)
-            if name.endswith('BaseAgent') or name in ['L0Agent', 'L1Agent', 'L6Agent']:
+            if name.endswith('BaseAgent') or name in ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6Agent']:
                 # Skip deprecated simple bases - they are lightweight alternatives, not canonical
                 if name not in DEPRECATED_SIMPLE_BASES:
                     if layer not in base_agents_by_layer:
@@ -962,12 +962,132 @@ def run_all_tests() -> bool:
         print(f"   Dashboard territories: {len(dashboard_territories)}")
         print(f"   Expected Base Classes: {len(expected_base_classes)}")
         print(f"   Base Classes present:  {len([b for b in expected_base_classes if b in dashboard_territories])}")
-        
+    
     except Exception as e:
         import traceback
         print(f"   ❌ Test 17 EXCEPTION: {e}")
         traceback.print_exc()
         errors.append(f"Test 17 FAILED: Could not perform visual inspection: {e}")
+    
+    # Test 18: No Hardcoded Values - Dashboard values must match discovery
+    print("\n" + "─" * 70)
+    print("Running: No Hardcoded Values Check")
+    print("─" * 70)
+    
+    try:
+        # Load discovery data
+        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
+        with open(discovery_path, 'r', encoding='utf-8') as f:
+            agents = json.load(f)
+        
+        # Calculate expected values from discovery
+        total_agents = len(agents)
+        expected_typed = round(sum(a.get('typed_pct', 0) for a in agents) / total_agents, 1) if total_agents else 0
+        expected_documented = round(sum(a.get('documented_pct', 0) for a in agents) / total_agents, 1) if total_agents else 0
+        expected_schema = round(sum(a.get('schema_strictness', 0) for a in agents) / total_agents, 1) if total_agents else 0
+        expected_proper_base = round(sum(1 for a in agents if a.get('proper_base_class', False)) / total_agents * 100, 1) if total_agents else 0
+        
+        # Get dashboard values
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        
+        if data_match:
+            dashboard_data_check = json.loads(data_match.group(1))
+            total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
+            
+            if total_row:
+                dashboard_typed = total_row.get('Typed %', 0)
+                dashboard_documented = total_row.get('Documented %', 0)
+                dashboard_schema = total_row.get('Schema Strictness %', 0)
+                dashboard_proper_base = total_row.get('Canonical Inheritance %', 0)
+                
+                hardcoded_issues = []
+                tolerance = 2.0  # Allow 2% variance for rounding
+                
+                if abs(dashboard_typed - expected_typed) > tolerance:
+                    hardcoded_issues.append(f"Typed %: Dashboard={dashboard_typed}, Expected={expected_typed}")
+                if abs(dashboard_documented - expected_documented) > tolerance:
+                    hardcoded_issues.append(f"Documented %: Dashboard={dashboard_documented}, Expected={expected_documented}")
+                if abs(dashboard_schema - expected_schema) > tolerance:
+                    hardcoded_issues.append(f"Schema Strictness %: Dashboard={dashboard_schema}, Expected={expected_schema}")
+                if abs(dashboard_proper_base - expected_proper_base) > tolerance:
+                    hardcoded_issues.append(f"Canonical Inheritance %: Dashboard={dashboard_proper_base}, Expected={expected_proper_base}")
+                
+                if hardcoded_issues:
+                    errors.append(f"Test 18 FAILED: {len(hardcoded_issues)} values appear hardcoded (don't match discovery)")
+                    for issue in hardcoded_issues:
+                        errors.append(f"  - {issue}")
+                else:
+                    print(f"✅ Test 18 PASSED: All dashboard values match discovery data (no hardcoding)")
+                    print(f"   Typed: {dashboard_typed}% (expected {expected_typed}%)")
+                    print(f"   Documented: {dashboard_documented}% (expected {expected_documented}%)")
+                    print(f"   Schema: {dashboard_schema}% (expected {expected_schema}%)")
+                    print(f"   Canonical: {dashboard_proper_base}% (expected {expected_proper_base}%)")
+            else:
+                errors.append("Test 18 FAILED: Could not find TOTAL row in dashboard data")
+        else:
+            errors.append("Test 18 FAILED: Could not extract dashboard data")
+    
+    except Exception as e:
+        errors.append(f"Test 18 FAILED: Could not validate hardcoding: {e}")
+    
+    # Test 19: Strategic Observations & Recommendations Check
+    print("\n" + "─" * 70)
+    print("Running: Strategic Observations & Recommendations Check")
+    print("─" * 70)
+    
+    try:
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        
+        # Check for Strategic Observations section
+        strategic_section_exists = '📋 Strategic Observations & Prioritized Actions' in html_content
+        macro_div_exists = 'id="macroObservations"' in html_content
+        metric_div_exists = 'id="metricObservations"' in html_content
+        render_function_exists = 'function renderStrategicObservations' in html_content
+        render_called = 'renderStrategicObservations(totalRow, territoryData)' in html_content
+        
+        # Check for recommendationsData (generated by StrategicRecommendationAgent)
+        recs_data_match = re.search(r'const recommendationsData = (\[.*?\]);', html_content, re.DOTALL)
+        has_recommendations_data = recs_data_match is not None
+        recommendations_count = 0
+        if has_recommendations_data:
+            try:
+                recs_data = json.loads(recs_data_match.group(1))
+                recommendations_count = len(recs_data)
+            except:
+                pass
+        
+        issues = []
+        if not strategic_section_exists:
+            issues.append("Strategic Observations section header missing")
+        if not macro_div_exists:
+            issues.append("macroObservations div missing")
+        if not metric_div_exists:
+            issues.append("metricObservations div missing")
+        if not render_function_exists:
+            issues.append("renderStrategicObservations function missing")
+        if not render_called:
+            issues.append("renderStrategicObservations not called in loadData")
+        if not has_recommendations_data:
+            issues.append("recommendationsData not found (StrategicRecommendationAgent not integrated)")
+        
+        if issues:
+            errors.append(f"Test 19 FAILED: {len(issues)} Strategic Observations issues")
+            for issue in issues:
+                errors.append(f"  - {issue}")
+        else:
+            print(f"✅ Test 19 PASSED: Strategic Observations & Recommendations configured")
+            print(f"   ✓ Section header present")
+            print(f"   ✓ Macro observations container present")
+            print(f"   ✓ Metric observations container present")
+            print(f"   ✓ Render function defined")
+            print(f"   ✓ Render function called in loadData")
+            print(f"   ✓ recommendationsData present ({recommendations_count} recommendations from StrategicRecommendationAgent)")
+    
+    except Exception as e:
+        errors.append(f"Test 19 FAILED: Could not validate Strategic Observations: {e}")
     
     # Final summary
     print("\n" + "=" * 70)
@@ -976,7 +1096,7 @@ def run_all_tests() -> bool:
         failed_tests.extend([e.split(':')[0].replace('FAILED', '').strip() for e in errors if 'FAILED' in e])
     
     if all_passed:
-        print("✅ ALL 17 TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 19 TESTS PASSED - Dashboard is ready for deployment")
         print("\n⚠️  IMPORTANT: Hard refresh browser (Ctrl+Shift+R) to see changes!")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")

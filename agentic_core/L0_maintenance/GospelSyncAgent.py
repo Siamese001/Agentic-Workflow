@@ -14,18 +14,18 @@ import os
 from pathlib import Path
 from typing import Dict, List, Set, Any
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
+from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.config.blueprint_sovereign.structure_blueprint import STRUCTURE_BLUEPRINT
 
 
 @dataclass
-class GospelSyncAgent(L0Agent):
+class GospelSyncAgent(L0MaintenanceBaseAgent):
     """
     THE SSOT GUARDIAN
     Ensures the 'World as it Is' (Filesystem) matches the 'World as it Should Be' (Blueprint).
     Detects heretical files and missing canonical files to protect Toxic Hubs.
     
-    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     """
 
 

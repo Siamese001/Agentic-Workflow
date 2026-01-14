@@ -38,9 +38,9 @@ LAYER_BASE_MAP = {
     "L0": "MaintenanceBaseAgent",
     "L1": "L1CognitionBaseAgent",
     "L2": "L2ExecutionBaseAgent",
-    "L3": "OrchestrationBaseAgent",
-    "L4": "StateBaseAgent",
-    "L5": "SafetyBaseAgent",
+    "L3": "L3OrchestrationBaseAgent",
+    "L4": "L4StateBaseAgent",
+    "L5": "L5SafetyBaseAgent",
 }
 
 # Root project path - adjust if hook runs from different cwd

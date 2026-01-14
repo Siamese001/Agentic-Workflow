@@ -45,7 +45,7 @@
 3. Update all imports in apps_rg/ and apps_lic/
 4. Leave core agents unchanged (they are the canonical versions)
 
-## L0 Agents Needing L0Agent Inheritance
+## L0 Agents Needing L0MaintenanceBaseAgent Inheritance
 Based on grep results, these L0 agents currently inherit from other bases:
 1. BootstrapAgent - currently inherits from HealerMixin, L0DelegationTestingMixin, MCPHardenedMixin
 2. MaintenanceBaseAgent - currently inherits from SovereignBaseAgent

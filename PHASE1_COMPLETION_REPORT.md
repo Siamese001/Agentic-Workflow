@@ -13,12 +13,12 @@
 
 **Before:**
 ```python
-node.name in {'L0Agent', 'L1Agent', 'L6Agent', 'L6ObservabilityBaseAgent'}
+node.name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6Agent', 'L6ObservabilityBaseAgent'}
 ```
 
 **After:**
 ```python
-node.name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent', 'L6ObservabilityBaseAgent'}
+node.name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent', 'L6ObservabilityBaseAgent'}
 ```
 
 **Impact:** L2-L5 base agents now correctly categorized in "Base Class" territories instead of "Core" territories.
@@ -78,7 +78,7 @@ class L5SafetyExerciserAgent(MCPHardenedMixin):
 ### **4. L0 Inheritance Cleanup** ⏸️ **DEFERRED**
 
 **Reason:** 
-- 10 L0 agents need inheritance refactoring (e.g., `BootstrapAgent` → inherit from `L0Agent`)
+- 10 L0 agents need inheritance refactoring (e.g., `BootstrapAgent` → inherit from `L0MaintenanceBaseAgent`)
 - Requires broader analysis of L0 architecture
 - Not critical for Phase 1 security/discovery objectives
 - **Recommended for Phase 2**
@@ -148,7 +148,7 @@ From `AGENT_DISCOVERY_INCONSISTENCIES_REPORT.md`:
 2. **196 agents (69%)** missing expected layer base inheritance
 3. **31 orphaned agents** with no inheritance
 4. **4 agents** in "Unknown" territories
-5. **L0 agents** (10) need to inherit from `L0Agent` instead of `SovereignBaseAgent`
+5. **L0 agents** (10) need to inherit from `L0MaintenanceBaseAgent` instead of `SovereignBaseAgent`
 
 ---
 
@@ -157,7 +157,7 @@ From `AGENT_DISCOVERY_INCONSISTENCIES_REPORT.md`:
 **Phase 2 Recommended Actions:**
 1. Resolve 12 duplicate agent names (rename or consolidate)
 2. Fix top 20 inheritance issues (highest impact agents)
-3. Refactor L0 agents to inherit from `L0Agent`
+3. Refactor L0 agents to inherit from `L0MaintenanceBaseAgent`
 4. Categorize 4 "Unknown" territory agents
 5. Review 31 orphaned agents for proper inheritance
 

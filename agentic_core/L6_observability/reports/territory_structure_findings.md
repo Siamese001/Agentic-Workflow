@@ -21,9 +21,9 @@ Analysis of the autonomy dashboard reveals **significant structural inconsistenc
 **Evidence**:
 - **L1 Cognition/Base Class**: 1 agent (`L1CognitionBaseAgent.py`) ✅ Reported
 - **L2 Execution/Base Class**: 1 agent (`L2ExecutionBaseAgent.py`) ✅ Reported
-- **L3 Orchestration**: Has `OrchestrationBaseAgent.py` ❌ NOT reported as separate territory
-- **L4 State**: Has `StateBaseAgent.py` ❌ NOT reported as separate territory
-- **L5 Safety**: Has `SafetyBaseAgent.py` ❌ NOT reported as separate territory
+- **L3 Orchestration**: Has `L3OrchestrationBaseAgent.py` ❌ NOT reported as separate territory
+- **L4 State**: Has `L4StateBaseAgent.py` ❌ NOT reported as separate territory
+- **L5 Safety**: Has `L5SafetyBaseAgent.py` ❌ NOT reported as separate territory
 
 **Root Cause**: The L3, L4, and L5 base class agents are **not being discovered** by the agent discovery system (`agent_discovery_full.json`). They exist in the codebase but are not being classified as agents, likely because:
 1. They may be abstract base classes without concrete implementations
@@ -123,7 +123,7 @@ L0 Maintenance (2 territories):
 **Approach**: Ensure L3, L4, and L5 base class agents are discovered and reported as separate territories.
 
 **Actions Required**:
-1. **Fix Agent Discovery**: Investigate why `OrchestrationBaseAgent`, `StateBaseAgent`, and `SafetyBaseAgent` are not being discovered
+1. **Fix Agent Discovery**: Investigate why `L3OrchestrationBaseAgent`, `L4StateBaseAgent`, and `L5SafetyBaseAgent` are not being discovered
    - Check if they're marked as abstract and excluded
    - Verify they match agent detection criteria
    - Update discovery logic if needed

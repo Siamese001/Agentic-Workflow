@@ -13,7 +13,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
-from agentic_core.bases import L0Agent
+from agentic_core.bases import L0MaintenanceBaseAgent
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -33,7 +33,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class HygieneValidatorAgent(L0Agent, MCPHardenedMixin):
+class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     """
     Detects 'Rot' within the system:
     1. Dead Code (Orphaned files that are never imported)

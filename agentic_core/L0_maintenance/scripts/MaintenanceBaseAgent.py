@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
+from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
@@ -175,10 +175,10 @@ class L0DelegationMixin(MCPHardenedMixin):
 
 
 @dataclass
-class MaintenanceBaseAgent(L0Agent, L0DelegationMixin, RedisCacheMixin, PineconeVectorMixin):
+class MaintenanceBaseAgent(L0MaintenanceBaseAgent, L0DelegationMixin, RedisCacheMixin, PineconeVectorMixin):
     """Base class for L0 Maintenance agents with delegation-only testing.
     
-    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     HARDENED: Now with Redis caching + Pinecone vector support.
     
     NOTE: _healing_enabled = False for L0 boot isolation safety.

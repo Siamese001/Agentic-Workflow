@@ -126,29 +126,29 @@ def generate_layer_tests():
     
     generator = TestGenerator(PROJECT_ROOT / "tests" / "unit" / "layer_bases")
     
-    # L0Agent
+    # L0MaintenanceBaseAgent
     try:
-        from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
-        tests = generator.generate_agent_tests(L0Agent, "agentic_core.L0_maintenance.scripts.L0Agent")
+        from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+        tests = generator.generate_agent_tests(L0MaintenanceBaseAgent, "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent")
         generator.write_test_file(
             "l0_agent",
             tests,
-            ["from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent"]
+            ["from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent"]
         )
     except Exception as e:
-        print(f"⚠️  Could not generate L0Agent tests: {e}")
+        print(f"⚠️  Could not generate L0MaintenanceBaseAgent tests: {e}")
     
-    # SafetyBaseAgent
+    # L5SafetyBaseAgent
     try:
-        from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
-        tests = generator.generate_agent_tests(SafetyBaseAgent, "agentic_core.L5_safety.guardrails.SafetyBaseAgent")
+        from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
+        tests = generator.generate_agent_tests(L5SafetyBaseAgent, "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent")
         generator.write_test_file(
             "safety_base_agent",
             tests,
-            ["from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent"]
+            ["from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent"]
         )
     except Exception as e:
-        print(f"⚠️  Could not generate SafetyBaseAgent tests: {e}")
+        print(f"⚠️  Could not generate L5SafetyBaseAgent tests: {e}")
     
     print(f"\n✅ Generated {len(generator.generated_tests)} test files")
 

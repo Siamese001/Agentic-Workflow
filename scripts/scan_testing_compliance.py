@@ -46,9 +46,9 @@ DISCOVERY_SCRIPT = PROJECT_ROOT / SCRIPTS_DIR / 'full_agent_discovery.py'
 SELF_TESTING_BASES = {
     'SubAtomicAgent',  # L2
     'SubatomicTestingMixin',  # L2
-    'OrchestrationBaseAgent',  # L3
+    'L3OrchestrationBaseAgent',  # L3
     'L3SubatomicTestingMixin',  # L3
-    'StateBaseAgent',  # L4
+    'L4StateBaseAgent',  # L4
     'L4SubatomicTestingMixin',  # L4
     'CanonBaseAgent',  # Has testing
 }
@@ -62,9 +62,9 @@ DELEGATION_BASES = {
 HEALING_BASES = {
     'HealerMixin',
     'SubAtomicAgent',  # L2 - has HealerMixin
-    'OrchestrationBaseAgent',  # L3 - has HealerMixin
-    'StateBaseAgent',  # L4 - has HealerMixin
-    'SafetyBaseAgent',  # L5 - has HealerMixin
+    'L3OrchestrationBaseAgent',  # L3 - has HealerMixin
+    'L4StateBaseAgent',  # L4 - has HealerMixin
+    'L5SafetyBaseAgent',  # L5 - has HealerMixin
     'CanonBaseAgent',  # Parent - child bases have HealerMixin
     'L3SubatomicTestingMixin',  # L3 agents inherit healing via base
     'L4SubatomicTestingMixin',  # L4 agents inherit healing via base
@@ -203,7 +203,7 @@ def main():
                 # Pattern 3: Inherits from agent bases
                 bases = extract_bases(node)
                 if bases & {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent', 
-                           'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+                           'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
                            'HealerMixin', 'SubatomicTestingMixin', 'L3SubatomicTestingMixin',
                            'L4SubatomicTestingMixin', 'AutonomyMixin', 'AdaptiveExecutionMixin'}:
                     is_agent = True
@@ -217,7 +217,7 @@ def main():
                 
                 # Skip known base classes (not concrete agents)
                 skip_bases = {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent', 
-                             'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+                             'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
                              'IActionPlane', 'ValidationProtocol'}
                 if node.name in skip_bases:
                     continue

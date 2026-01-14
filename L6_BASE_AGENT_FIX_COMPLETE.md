@@ -50,7 +50,7 @@ Added base agent identification at the very top of `is_agent_class()` function:
 
 ```python
 # LAYER 0: BASE AGENT IDENTIFICATION (Highest Priority)
-is_l_series_base = name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
+is_l_series_base = name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
 is_suffix_base = name.endswith('BaseAgent')
 is_base_agent = is_l_series_base or is_suffix_base
 ```
@@ -61,7 +61,7 @@ Modified the ABC exclusion logic to allow base agents:
 
 ```python
 # 1c. Non-agent base classes (Protocol, ABC, etc.)
-# EXCEPTION: Base agents (L0Agent-L6Agent, *BaseAgent) can inherit from ABC
+# EXCEPTION: Base agents (L0MaintenanceBaseAgent-L6Agent, *BaseAgent) can inherit from ABC
 if bases & non_agent_bases:
     # Allow base agents to inherit from ABC (e.g., L6ObservabilityBaseAgent)
     if not is_base_agent:

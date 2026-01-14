@@ -149,7 +149,7 @@ class L6Agent(HealerMixin, MCPHardenedMixin):
 
 ### Option 2: Rename L6ObservabilityBaseAgent
 Rename to match L0-L5 pattern:
-- L0Agent, L1Agent → L6Agent
+- L0MaintenanceBaseAgent, L1CognitionBaseAgent → L6Agent
 - Keep L6ObservabilityBaseAgent as alias
 
 ### Option 3: Force Include in Discovery
@@ -157,7 +157,7 @@ Add L6ObservabilityBaseAgent to agent_bases set:
 ```python
 agent_bases = {
     'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-    'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+    'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
     'L6ObservabilityBaseAgent',  # FORCE INCLUDE
     'SovereignBaseAgent',
 }

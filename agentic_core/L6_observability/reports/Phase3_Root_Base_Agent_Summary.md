@@ -140,9 +140,9 @@ To complete the full agent hierarchy (all layers inherit from Sovereign):
 
 ### Required Layer Base Classes to Update
 1. **L1 Cognition** - `L1_cognition/thought_engine/CognitionCanonBaseAgent.py`
-2. **L3 Orchestration** - `L3_orchestration/workflow_engines/OrchestrationBaseAgent.py`
-3. **L4 State** - `L4_state/ValidationContext/StateBaseAgent.py`
-4. **L5 Safety** - `L5_safety/guardrails/SafetyBaseAgent.py`
+2. **L3 Orchestration** - `L3_orchestration/workflow_engines/L3OrchestrationBaseAgent.py`
+3. **L4 State** - `L4_state/ValidationContext/L4StateBaseAgent.py`
+4. **L5 Safety** - `L5_safety/guardrails/L5SafetyBaseAgent.py`
 5. **L0 Maintenance** - `L0_maintenance/scripts/MaintenanceBaseAgent.py` (if exists)
 
 ### For Each Layer Base, Apply:

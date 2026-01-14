@@ -106,7 +106,7 @@ class ImportLockAgent(MCPHardenedMixin, MetaPathFinder):
         # These correspond to the 4 intentional exceptions documented in Sprint 4
         self._intentional_exceptions = [
             "agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent",
-            "agentic_core.L3_orchestration.workflow_engines.OrchestrationBaseAgent",
+            "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent",
         ]
         
         # Modules that are always allowed (foundational)

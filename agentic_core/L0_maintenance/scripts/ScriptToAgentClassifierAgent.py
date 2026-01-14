@@ -32,17 +32,17 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
+from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 
 
-class ScriptToAgentClassifierAgent(L0Agent, AutonomyMixin,
+class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """
     Sovereign classifier for script vs agent constitutional compliance.
     Uses static analysis (AST) + heuristics aligned with semantic_l2_registry.
     
-    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     Now hardened with:
       - Proactive reclassification of low-confidence files

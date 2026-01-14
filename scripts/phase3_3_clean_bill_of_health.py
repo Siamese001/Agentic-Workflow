@@ -56,12 +56,12 @@ def generate_clean_bill_of_health():
     print("🏗️  BASE CLASS INHERITANCE:")
     proper_bases = {
         'SovereignBaseAgent',
-        'L0Agent',
-        'L1Agent',
+        'L0MaintenanceBaseAgent',
+        'L1CognitionBaseAgent',
         'L2ExecutionBaseAgent',
-        'OrchestrationBaseAgent',
-        'StateBaseAgent',
-        'SafetyBaseAgent',
+        'L3OrchestrationBaseAgent',
+        'L4StateBaseAgent',
+        'L5SafetyBaseAgent',
         'L6ObservabilityBaseAgent'
     }
     

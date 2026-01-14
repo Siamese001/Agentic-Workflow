@@ -147,8 +147,8 @@ def annotate_dynamic_imports():
             print(f"✅ Annotated: NervousSystemAgent.py")
             files_annotated += 1
     
-    # OrchestrationBaseAgent.py - already has dynamic import in method
-    orchestration_base = REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines" / "OrchestrationBaseAgent.py"
+    # L3OrchestrationBaseAgent.py - already has dynamic import in method
+    orchestration_base = REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines" / "L3OrchestrationBaseAgent.py"
     if orchestration_base.exists():
         content = orchestration_base.read_text(encoding='utf-8')
         
@@ -165,7 +165,7 @@ def annotate_dynamic_imports():
             
             new_content = '\n'.join(new_lines)
             orchestration_base.write_text(new_content, encoding='utf-8')
-            print(f"✅ Annotated: OrchestrationBaseAgent.py")
+            print(f"✅ Annotated: L3OrchestrationBaseAgent.py")
             files_annotated += 1
     
     return files_annotated

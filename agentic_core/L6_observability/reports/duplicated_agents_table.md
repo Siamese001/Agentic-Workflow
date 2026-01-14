@@ -110,7 +110,7 @@
 | NamingNormalizationAgent | `agentic_core\utils\core_extensions\NamingNormalizationAgent.py` | `agentic_core\utils\core_extensions\NamingNormalizationAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | NervousSystemAgent | `agentic_core\L3_orchestration\workflow_engines\NervousSystemAgent.py` | `agentic_core\L3_orchestration\workflow_engines\NervousSystemAgent.py` | **DELETE** | 4/4 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | NeuralAutoImmuneAgent | `agentic_core\L5_safety\guardrails\NeuralAutoImmuneAgent.py` | `agentic_core\L5_safety\guardrails\NeuralAutoImmuneAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
-| OrchestrationBaseAgent | `agentic_core\L3_orchestration\workflow_engines\OrchestrationBaseAgent.py` | `agentic_core\L3_orchestration\workflow_engines\OrchestrationBaseAgent.py` | **DELETE** | 2/2 | Exact or structural duplicate — likely copy-paste or migration artifact |
+| L3OrchestrationBaseAgent | `agentic_core\L3_orchestration\workflow_engines\L3OrchestrationBaseAgent.py` | `agentic_core\L3_orchestration\workflow_engines\L3OrchestrationBaseAgent.py` | **DELETE** | 2/2 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | OutreachAgent | `apps_lic\engines\outreach_engine\autonomous\OutreachAgent.py` | `apps_lic\engines\outreach_engine\autonomous\OutreachAgent.py` | **DELETE** | 4/4 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | P1CoreSemanticTerritoryMapperAgent | `agentic_core\L3_orchestration\workflow_engines\P1CoreSemanticTerritoryMapperAgent.py` | `agentic_core\L3_orchestration\workflow_engines\P1CoreSemanticTerritoryMapperAgent.py` | **DELETE** | 4/4 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | P1CoreTerritoryHealerAgent | `agentic_core\L3_orchestration\workflow_engines\P1CoreTerritoryHealerAgent.py` | `agentic_core\L3_orchestration\workflow_engines\P1CoreTerritoryHealerAgent.py` | **DELETE** | 4/4 | Exact or structural duplicate — likely copy-paste or migration artifact |
@@ -134,7 +134,7 @@
 | ReportingAgent | `agentic_core\observability\compliance\ReportingAgent.py` | `agentic_core\observability\compliance\ReportingAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | ResumeAgent | `apps_rg\engines\resume_engine\autonomous\ResumeAgent.py` | `apps_rg\engines\resume_engine\autonomous\ResumeAgent.py` | **DELETE** | 4/4 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | ResumeOrchestratorAgent | `agentic_core\L3_orchestration\workflow_engines\ResumeOrchestratorAgent.py` | `agentic_core\L3_orchestration\workflow_engines\ResumeOrchestratorAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
-| SafetyBaseAgent | `agentic_core\L5_safety\guardrails\SafetyBaseAgent.py` | `agentic_core\L5_safety\guardrails\SafetyBaseAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
+| L5SafetyBaseAgent | `agentic_core\L5_safety\guardrails\L5SafetyBaseAgent.py` | `agentic_core\L5_safety\guardrails\L5SafetyBaseAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | SchemaEvolverAgent | `agentic_core\L4_state\ValidationContext\SchemaEvolverAgent.py` | `agentic_core\L4_state\ValidationContext\SchemaEvolverAgent.py` | **DELETE** | 2/2 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | SecureCheckpointManagerAgent | `agentic_core\L5_safety\guardrails\SecureCheckpointManagerAgent.py` | `agentic_core\L5_safety\guardrails\SecureCheckpointManagerAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | SecureConfigManagerAgent | `agentic_core\L5_safety\guardrails\SecureConfigManagerAgent.py` | `agentic_core\L5_safety\guardrails\SecureConfigManagerAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
@@ -150,7 +150,7 @@
 | SovereignRagOrchestratorAgent | `agentic_core\L3_orchestration\workflow_engines\SovereignRagOrchestratorAgent.py` | `agentic_core\L3_orchestration\workflow_engines\SovereignRagOrchestratorAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | SovereignRedisOrchestratorAgent | `agentic_core\L2_execution\ToolRegistry\SovereignRedisOrchestratorAgent.py` | `agentic_core\L2_execution\ToolRegistry\SovereignRedisOrchestratorAgent.py` | **DELETE** | 3/3 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | SpiffeManagerAgent | `agentic_core\L1_cognition\thought_engine\SpiffeManagerAgent.py` | `agentic_core\L1_cognition\thought_engine\SpiffeManagerAgent.py` | **DELETE** | 1/1 | Exact or structural duplicate — likely copy-paste or migration artifact |
-| StateBaseAgent | `agentic_core\L4_state\ValidationContext\StateBaseAgent.py` | `agentic_core\L4_state\ValidationContext\StateBaseAgent.py` | **DELETE** | 2/2 | Exact or structural duplicate — likely copy-paste or migration artifact |
+| L4StateBaseAgent | `agentic_core\L4_state\ValidationContext\L4StateBaseAgent.py` | `agentic_core\L4_state\ValidationContext\L4StateBaseAgent.py` | **DELETE** | 2/2 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | StateManagerAgent | `apps_shared\utils\StateManagerAgent.py` | `apps_shared\utils\StateManagerAgent.py` | **DELETE** | 4/4 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | StrategicRecommendationAgent | `agentic_core\L3_orchestration\strategic_recommendation\StrategicRecommendationAgent.py` | `agentic_core\L3_orchestration\strategic_recommendation\StrategicRecommendationAgent.py` | **DELETE** | 2/2 | Exact or structural duplicate — likely copy-paste or migration artifact |
 | StructuralEngineerAgent | `agentic_core\L2_execution\ToolRegistry\StructuralEngineerAgent.py` | `agentic_core\L2_execution\ToolRegistry\StructuralEngineerAgent.py` | **DELETE** | 2/2 | Exact or structural duplicate — likely copy-paste or migration artifact |
@@ -312,7 +312,7 @@ git rm "agentic_core\utils\core_extensions\NamingLawHealerAgent.py"
 git rm "agentic_core\utils\core_extensions\NamingNormalizationAgent.py"
 git rm "agentic_core\L3_orchestration\workflow_engines\NervousSystemAgent.py"
 git rm "agentic_core\L5_safety\guardrails\NeuralAutoImmuneAgent.py"
-git rm "agentic_core\L3_orchestration\workflow_engines\OrchestrationBaseAgent.py"
+git rm "agentic_core\L3_orchestration\workflow_engines\L3OrchestrationBaseAgent.py"
 git rm "apps_lic\engines\outreach_engine\autonomous\OutreachAgent.py"
 git rm "agentic_core\L3_orchestration\workflow_engines\P1CoreSemanticTerritoryMapperAgent.py"
 git rm "agentic_core\L3_orchestration\workflow_engines\P1CoreTerritoryHealerAgent.py"
@@ -336,7 +336,7 @@ git rm "agentic_core\L3_orchestration\workflow_engines\ReinforceCriticOrchestrat
 git rm "agentic_core\observability\compliance\ReportingAgent.py"
 git rm "apps_rg\engines\resume_engine\autonomous\ResumeAgent.py"
 git rm "agentic_core\L3_orchestration\workflow_engines\ResumeOrchestratorAgent.py"
-git rm "agentic_core\L5_safety\guardrails\SafetyBaseAgent.py"
+git rm "agentic_core\L5_safety\guardrails\L5SafetyBaseAgent.py"
 git rm "agentic_core\L4_state\ValidationContext\SchemaEvolverAgent.py"
 git rm "agentic_core\L5_safety\guardrails\SecureCheckpointManagerAgent.py"
 git rm "agentic_core\L5_safety\guardrails\SecureConfigManagerAgent.py"
@@ -352,7 +352,7 @@ git rm "agentic_core\L4_state\ValidationContext\SovereignPineconeStoreAgent.py"
 git rm "agentic_core\L3_orchestration\workflow_engines\SovereignRagOrchestratorAgent.py"
 git rm "agentic_core\L2_execution\ToolRegistry\SovereignRedisOrchestratorAgent.py"
 git rm "agentic_core\L1_cognition\thought_engine\SpiffeManagerAgent.py"
-git rm "agentic_core\L4_state\ValidationContext\StateBaseAgent.py"
+git rm "agentic_core\L4_state\ValidationContext\L4StateBaseAgent.py"
 git rm "apps_shared\utils\StateManagerAgent.py"
 git rm "agentic_core\L3_orchestration\strategic_recommendation\StrategicRecommendationAgent.py"
 git rm "agentic_core\L2_execution\ToolRegistry\StructuralEngineerAgent.py"

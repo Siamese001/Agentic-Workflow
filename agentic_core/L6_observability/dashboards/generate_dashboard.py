@@ -187,16 +187,16 @@ class DashboardGenerator:
                 else:
                     territory = "L2 Execution/Core"
             elif layer.startswith('L1'):
-                # L1 Cognition subcategories - CHECK BASE FIRST (includes L1Agent)
-                if 'BaseAgent' in class_name or class_name == 'L1Agent' or 'base_agent' in path.lower() or 'base_class' in path.lower():
+                # L1 Cognition subcategories - CHECK BASE FIRST (includes L1CognitionBaseAgent)
+                if 'BaseAgent' in class_name or class_name == 'L1CognitionBaseAgent' or 'base_agent' in path.lower() or 'base_class' in path.lower():
                     territory = "L1 Cognition/Base Agent"
                 elif '/adapters' in path or 'Adapter' in class_name:
                     territory = "L1 Cognition/Specialized"
                 else:
                     territory = "L1 Cognition/Core"
             elif layer.startswith('L0'):
-                # L0 Maintenance subcategories - CHECK BASE FIRST (includes L0Agent)
-                if 'BaseAgent' in class_name or class_name == 'L0Agent' or 'base_agent' in path.lower() or 'base_class' in path.lower():
+                # L0 Maintenance subcategories - CHECK BASE FIRST (includes L0MaintenanceBaseAgent)
+                if 'BaseAgent' in class_name or class_name == 'L0MaintenanceBaseAgent' or 'base_agent' in path.lower() or 'base_class' in path.lower():
                     territory = "L0 Maintenance/Base Agent"
                 elif '/infrastructure' in path or 'Infrastructure' in class_name:
                     territory = "L0 Maintenance/Infrastructure"

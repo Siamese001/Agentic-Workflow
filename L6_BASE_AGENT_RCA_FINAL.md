@@ -81,8 +81,8 @@ The `is_agent_class()` function checks:
 **CRITICAL BUG FOUND:**
 ```python
 agent_bases = {
-    'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
-    'L2ExecutionBaseAgent', 'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+    'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
+    'L2ExecutionBaseAgent', 'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
     'ExecutionCanonBaseAgent',
     'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
     'BaseAgent', 'SovereignBaseAgent',
@@ -99,10 +99,10 @@ if name in agent_bases:
 ```
 
 **But wait... other base agents ARE discovered:**
-- L0Agent ✅ discovered
-- L1Agent ✅ discovered  
+- L0MaintenanceBaseAgent ✅ discovered
+- L1CognitionBaseAgent ✅ discovered  
 - L2ExecutionBaseAgent ✅ discovered
-- SafetyBaseAgent ✅ discovered
+- L5SafetyBaseAgent ✅ discovered
 
 **Why are they discovered but L6ObservabilityBaseAgent is not?**
 
@@ -160,8 +160,8 @@ But the exclusion happens FIRST, so L6ObservabilityBaseAgent never reaches the r
 **Option 1: Remove from agent_bases**
 ```python
 agent_bases = {
-    'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
-    'L2ExecutionBaseAgent', 'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+    'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
+    'L2ExecutionBaseAgent', 'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
     'ExecutionCanonBaseAgent',
     'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
     'BaseAgent', 'SovereignBaseAgent',
@@ -190,8 +190,8 @@ The `is_base_agent` logic at line 914 already handles this correctly.
 ```python
 # In full_agent_discovery.py, line 867-874
 agent_bases = {
-    'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
-    'L2ExecutionBaseAgent', 'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+    'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
+    'L2ExecutionBaseAgent', 'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
     'ExecutionCanonBaseAgent',
     'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
     'BaseAgent', 'SovereignBaseAgent',

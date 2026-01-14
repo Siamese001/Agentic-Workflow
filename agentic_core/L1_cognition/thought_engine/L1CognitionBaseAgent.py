@@ -21,7 +21,7 @@ logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO').upper())
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class L1CognitionBaseAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMixin, MCPHardenedMixin):
+class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """L1 Cognition base class - unified under SovereignBaseAgent.
     
     HARDENED: Now with Redis caching + Pinecone vector support.
@@ -59,7 +59,6 @@ class L1CognitionBaseAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMi
         
         # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
         import importlib
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
         _struct_mod = importlib.import_module('agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent')
         StructuralEngineerAgent = getattr(_struct_mod, 'StructuralEngineerAgent')
         arch = SystemArchitect(ctx)

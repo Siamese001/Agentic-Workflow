@@ -41,7 +41,7 @@ The discovery script's `is_base_class` check at line 1297-1301 only includes:
 ```python
 is_base_class = (
     node.name.endswith('BaseAgent') or 
-    node.name in {'L0Agent', 'L1Agent', 'L6Agent', 'L6ObservabilityBaseAgent'} or
+    node.name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6Agent', 'L6ObservabilityBaseAgent'} or
     'BaseAgent' in node.name
 )
 ```
@@ -53,7 +53,7 @@ Update `scripts/full_agent_discovery.py` line 1299:
 ```python
 is_base_class = (
     node.name.endswith('BaseAgent') or 
-    node.name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent', 'L6ObservabilityBaseAgent'} or
+    node.name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent', 'L6ObservabilityBaseAgent'} or
     'BaseAgent' in node.name
 )
 ```
@@ -143,12 +143,12 @@ These agents either:
 
 | Layer | Expected Base Classes | Agents Missing | Example Agents |
 |-------|----------------------|----------------|----------------|
-| L0 | `L0Agent` | ~10 | BootstrapAgent, FilesystemSSOTReconcilerAgent |
-| L1 | `L1Agent`, `L1CognitionBaseAgent` | ~25 | Various cognition agents |
+| L0 | `L0MaintenanceBaseAgent` | ~10 | BootstrapAgent, FilesystemSSOTReconcilerAgent |
+| L1 | `L1CognitionBaseAgent`, `L1CognitionBaseAgent` | ~25 | Various cognition agents |
 | L2 | `L2Agent`, `L2ExecutionBaseAgent` | ~40 | Various execution agents |
-| L3 | `L3Agent`, `OrchestrationBaseAgent` | ~50 | Various orchestration agents |
-| L4 | `L4Agent`, `StateBaseAgent` | ~12 | Various state agents |
-| L5 | `L5Agent`, `SafetyBaseAgent` | ~55 | Various safety agents |
+| L3 | `L3Agent`, `L3OrchestrationBaseAgent` | ~50 | Various orchestration agents |
+| L4 | `L4Agent`, `L4StateBaseAgent` | ~12 | Various state agents |
+| L5 | `L5Agent`, `L5SafetyBaseAgent` | ~55 | Various safety agents |
 | L6 | `L6Agent`, `L6ObservabilityBaseAgent` | 0 (all correct now) | ✅ Fixed |
 
 ### **Sample L0 Agents Missing Base Inheritance:**
@@ -177,7 +177,7 @@ Agents were created without proper inheritance from layer base classes, likely d
 
 ### **Recommended Fix:**
 **Phased approach:**
-1. **Phase 1 (Quick Win):** Update L0 agents (10 agents) to inherit from L0Agent
+1. **Phase 1 (Quick Win):** Update L0 agents (10 agents) to inherit from L0MaintenanceBaseAgent
 2. **Phase 2:** Update L1-L2 agents (~65 agents)
 3. **Phase 3:** Update L3-L5 agents (~117 agents)
 4. **Phase 4:** Validate all agents have proper inheritance chain
@@ -189,7 +189,7 @@ class BootstrapAgent(SovereignBaseAgent):
     ...
 
 # After
-class BootstrapAgent(L0Agent):
+class BootstrapAgent(L0MaintenanceBaseAgent):
     ...
 ```
 
@@ -219,7 +219,7 @@ Update both agents to include MCPHardenedMixin:
 ```python
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class CompositeGuardrailAgent(SafetyBaseAgent, MCPHardenedMixin):
+class CompositeGuardrailAgent(L5SafetyBaseAgent, MCPHardenedMixin):
     ...
 ```
 

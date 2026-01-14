@@ -13,7 +13,7 @@ from datetime import datetime
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
+from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 
 # Sovereign Hardening Mixins – Phase 33
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
@@ -22,14 +22,14 @@ from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
-class RgHealingOrchestratorAgent(L0Agent, AutonomyMixin,
+class RgHealingOrchestratorAgent(L0MaintenanceBaseAgent, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """
     Sovereign healing engine orchestrator.
     Coordinates diagnosis, strategy selection, transactional application, and audit logging.
     
-    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     Now hardened with:
       - Proactive initiation (AutonomyMixin)

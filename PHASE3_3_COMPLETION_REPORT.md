@@ -38,12 +38,12 @@ Phase 3.3 successfully completed the final transition from "Clean-Up" mode to **
 ### Base Class Hierarchy
 ```
 SovereignBaseAgent (Root)
-├─ L0Agent (1 agent + 9 descendants)
-├─ L1Agent (1 agent + 27 descendants)
+├─ L0MaintenanceBaseAgent (1 agent + 9 descendants)
+├─ L1CognitionBaseAgent (1 agent + 27 descendants)
 ├─ L2ExecutionBaseAgent (1 agent + 38 descendants)
-├─ OrchestrationBaseAgent (1 agent + 51 descendants)
-├─ StateBaseAgent (1 agent + 13 descendants)
-├─ SafetyBaseAgent (1 agent + 56 descendants)
+├─ L3OrchestrationBaseAgent (1 agent + 51 descendants)
+├─ L4StateBaseAgent (1 agent + 13 descendants)
+├─ L5SafetyBaseAgent (1 agent + 56 descendants)
 └─ L6ObservabilityBaseAgent (1 agent + 3 descendants)
 ```
 
@@ -143,12 +143,12 @@ The audit confirmed that **apps_lic** and **apps_rg** agents intentionally use m
 
 ### Core Layer Compliance
 All core layer agents (L0-L6) properly inherit from their respective base classes:
-- **L0:** `L0Agent` → `SovereignBaseAgent`
-- **L1:** `L1Agent` → `SovereignBaseAgent`
+- **L0:** `L0MaintenanceBaseAgent` → `SovereignBaseAgent`
+- **L1:** `L1CognitionBaseAgent` → `SovereignBaseAgent`
 - **L2:** `L2ExecutionBaseAgent` → `SovereignBaseAgent`
-- **L3:** `OrchestrationBaseAgent` → `SovereignBaseAgent`
-- **L4:** `StateBaseAgent` → `SovereignBaseAgent`
-- **L5:** `SafetyBaseAgent` → `SovereignBaseAgent`
+- **L3:** `L3OrchestrationBaseAgent` → `SovereignBaseAgent`
+- **L4:** `L4StateBaseAgent` → `SovereignBaseAgent`
+- **L5:** `L5SafetyBaseAgent` → `SovereignBaseAgent`
 - **L6:** `L6ObservabilityBaseAgent` → `SovereignBaseAgent`
 
 ---

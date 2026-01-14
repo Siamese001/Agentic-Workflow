@@ -2,13 +2,15 @@
 """
 Regenerate FULL dashboard data from agent_discovery_full.json.
 
-This updates BOTH:
+This updates:
 1. dashboardData (Table 1 territory summaries)
 2. realAgentData (Table 2 per-agent metrics)
+3. Strategic Observations (via StrategicRecommendationAgent)
 
 NO HARDCODING - all values calculated from discovery data.
 """
 import json
+import sys
 from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Any
@@ -16,6 +18,9 @@ from typing import Dict, List, Any
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
 DASHBOARD_PATH = PROJECT_ROOT / 'agentic_core' / 'L6_observability' / 'dashboards' / 'autonomy_dashboard.html'
+
+# Add project root to path for imports
+sys.path.insert(0, str(PROJECT_ROOT))
 
 # Territory name mapping (discovery -> dashboard)
 TERRITORY_MAPPING = {
@@ -110,6 +115,10 @@ def build_real_agent_data(agents: List[Dict], territory_mapping: Dict[str, str])
             
             # Build agent detail
             obs = agent.get('observability', {})
+            has_proper_base = agent.get('proper_base_class', False)
+            inheritance_list = agent.get('inheritance', [])
+            base_class_name = inheritance_list[-1] if inheritance_list else 'Unknown'
+            
             agents_data.append({
                 "name": agent.get('class_name', 'Unknown'),
                 "path": agent.get('path', ''),
@@ -134,8 +143,11 @@ def build_real_agent_data(agents: List[Dict], territory_mapping: Dict[str, str])
                 "documented": doc_pct,
                 "schema": schema_pct,
                 "base": base_pct,
+                "proper_base_class": has_proper_base,  # Boolean for drill-down display
+                "base_class_name": base_class_name,  # Name of base class for display
+                "has_base_violation": not has_proper_base,  # For row highlighting
                 "quality": quality,
-                "loc": 50  # Placeholder
+                "loc": agent.get('loc', 50)
             })
         
         real_agent_data[territory] = {
@@ -285,6 +297,76 @@ def build_dashboard_data(agents: List[Dict], territory_mapping: Dict[str, str]) 
     return dashboard_data
 
 
+def generate_strategic_recommendations(dashboard_data: List[Dict]) -> Dict[str, Any]:
+    """
+    Generate strategic recommendations using StrategicRecommendationAgent.
+    
+    Args:
+        dashboard_data: List of territory metrics
+        
+    Returns:
+        Dict with 'review' and 'recommendations' keys
+    """
+    try:
+        from agentic_core.L3_orchestration.strategic_recommendation.StrategicRecommendationAgent import StrategicRecommendationAgent
+        
+        agent = StrategicRecommendationAgent(project_root=PROJECT_ROOT)
+        result = agent.run(dashboard_data)
+        return result
+    except Exception as e:
+        print(f"  ⚠️  StrategicRecommendationAgent failed: {e}")
+        # Return fallback
+        return {
+            "review": "Strategic analysis unavailable - agent initialization failed.",
+            "recommendations": []
+        }
+
+
+def inject_strategic_observations(content: str, recommendations: Dict[str, Any]) -> str:
+    """
+    Inject strategic recommendations into dashboard HTML.
+    
+    Updates the strategicRecommendationsData JavaScript variable.
+    """
+    # Build the recommendations data structure for JavaScript
+    recs_data = []
+    for i, rec in enumerate(recommendations.get('recommendations', []), 1):
+        # Parse recommendation format: "1. Title<br>Details..."
+        if '<br>' in rec:
+            parts = rec.split('<br>', 1)
+            title = parts[0].lstrip('0123456789. ')
+            description = parts[1] if len(parts) > 1 else ''
+        else:
+            title = rec.lstrip('0123456789. ')
+            description = ''
+        
+        recs_data.append({
+            "priority": i,
+            "title": title,
+            "description": description,
+            "impact": "HIGH" if i <= 3 else "MEDIUM" if i <= 7 else "LOW",
+            "effort": "MEDIUM"
+        })
+    
+    # Find and replace recommendationsData
+    marker_start = 'const recommendationsData = ['
+    marker_end = '];'
+    
+    start_idx = content.find(marker_start)
+    if start_idx == -1:
+        # If not found, try to add it before dashboardData
+        dd_idx = content.find('const dashboardData = [')
+        if dd_idx != -1:
+            new_recs = f'const recommendationsData = {json.dumps(recs_data, indent=2)};\n\n        '
+            content = content[:dd_idx] + new_recs + content[dd_idx:]
+    else:
+        end_idx = content.find(marker_end, start_idx) + len(marker_end)
+        new_recs = f'const recommendationsData = {json.dumps(recs_data, indent=2)};'
+        content = content[:start_idx] + new_recs + content[end_idx:]
+    
+    return content
+
+
 def main():
     print("=" * 70)
     print("FULL Dashboard Regeneration from agent_discovery_full.json")
@@ -307,6 +389,13 @@ def main():
     dashboard_data = build_dashboard_data(agents, TERRITORY_MAPPING)
     print(f"  Created {len(dashboard_data)} territory rows (including TOTAL)")
     
+    # Generate strategic recommendations via StrategicRecommendationAgent
+    print("\nGenerating strategic recommendations via StrategicRecommendationAgent...")
+    strategic_recs = generate_strategic_recommendations(dashboard_data)
+    print(f"  Generated {len(strategic_recs.get('recommendations', []))} recommendations")
+    if strategic_recs.get('review'):
+        print(f"  Review: {strategic_recs['review'][:100]}...")
+    
     # Load dashboard HTML
     content = DASHBOARD_PATH.read_text(encoding='utf-8')
     
@@ -324,6 +413,10 @@ def main():
     new_real_agent_data = 'const realAgentData = ' + json.dumps(real_agent_data, indent=2) + ';'
     content = content[:rad_start] + new_real_agent_data + content[rad_end:]
     
+    # Inject strategic recommendations
+    print("Injecting strategic recommendations...")
+    content = inject_strategic_observations(content, strategic_recs)
+    
     # Write updated dashboard
     DASHBOARD_PATH.write_text(content, encoding='utf-8')
     
@@ -331,6 +424,7 @@ def main():
     print("✅ Dashboard fully regenerated from discovery data!")
     print("   - dashboardData: Territory summaries updated")
     print("   - realAgentData: Per-agent metrics updated")
+    print("   - recommendationsData: Strategic recommendations updated")
     print("=" * 70)
     
     return 0

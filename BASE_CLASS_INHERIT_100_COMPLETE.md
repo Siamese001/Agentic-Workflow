@@ -21,7 +21,7 @@
 
 **Solution Applied:**
 - Updated `check_proper_base()` in `scripts/full_agent_discovery.py` to accept:
-  - Direct layer base inheritance (e.g., L3 → `OrchestrationBaseAgent`)
+  - Direct layer base inheritance (e.g., L3 → `L3OrchestrationBaseAgent`)
   - Transitive inheritance (e.g., L3 → `SovereignBaseAgent` → valid)
   - Mixin-based architecture (`HealerMixin`, `MCPHardenedMixin`, `MCPShieldMixin`)
 
@@ -29,11 +29,11 @@
 ```python
 # Added valid_bases_by_layer mapping
 valid_bases_by_layer = {
-    "L1": {"L1Agent", "L1CognitionBaseAgent", "SovereignBaseAgent", "CognitionCanonBaseAgent"},
+    "L1": {"L1CognitionBaseAgent", "L1CognitionBaseAgent", "SovereignBaseAgent", "CognitionCanonBaseAgent"},
     "L2": {"L2Agent", "L2ExecutionBaseAgent", "SovereignBaseAgent", "ExecutionCanonBaseAgent"},
-    "L3": {"L3Agent", "OrchestrationBaseAgent", "SovereignBaseAgent"},
-    "L4": {"L4Agent", "StateBaseAgent", "SovereignBaseAgent"},
-    "L5": {"L5Agent", "SafetyBaseAgent", "SovereignBaseAgent"},
+    "L3": {"L3Agent", "L3OrchestrationBaseAgent", "SovereignBaseAgent"},
+    "L4": {"L4Agent", "L4StateBaseAgent", "SovereignBaseAgent"},
+    "L5": {"L5Agent", "L5SafetyBaseAgent", "SovereignBaseAgent"},
 }
 ```
 

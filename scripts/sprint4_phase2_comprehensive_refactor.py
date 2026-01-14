@@ -216,7 +216,7 @@ def refactor_l3_orchestration_files():
     
     # L3→L5 violations (remaining after Phase 1)
     for filename in ["NervousSystemAgent.py", "autonomous_sovereign_core.py", 
-                     "OrchestrationBaseAgent.py"]:
+                     "L3OrchestrationBaseAgent.py"]:
         file_path = l3_dir / filename
         if file_path.exists():
             content = file_path.read_text(encoding='utf-8')
@@ -268,7 +268,7 @@ def refactor_l4_state_files():
     # L4→L5 violations
     for filename in ["filesystem_mcp_sovereign.py", "memory_sovereign_mcp.py",
                      "PineconeSovereignAgent.py", "semantic_cache_sovereign.py",
-                     "StateBaseAgent.py", "_LegacyCanonValidatorAgent.py"]:
+                     "L4StateBaseAgent.py", "_LegacyCanonValidatorAgent.py"]:
         file_path = l4_dir / filename
         if file_path.exists():
             content = file_path.read_text(encoding='utf-8')

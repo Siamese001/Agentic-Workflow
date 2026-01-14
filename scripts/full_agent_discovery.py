@@ -159,9 +159,9 @@ def should_exclude_path(path: Path) -> bool:
 LAYER_BASE_MAP = {
     "L1": "L1CognitionBaseAgent",
     "L2": "L2ExecutionBaseAgent",
-    "L3": "OrchestrationBaseAgent",
-    "L4": "StateBaseAgent",
-    "L5": "SafetyBaseAgent",
+    "L3": "L3OrchestrationBaseAgent",
+    "L4": "L4StateBaseAgent",
+    "L5": "L5SafetyBaseAgent",
 }
 
 
@@ -342,13 +342,13 @@ HEALING_BASES = {
     'ExecutionCanonBaseAgent',
     'SubatomicTestingMixin',  # Often co-inherited with HealerMixin
     # L3 bases
-    'OrchestrationBaseAgent',
+    'L3OrchestrationBaseAgent',
     'L3SubatomicTestingMixin',
     # L4 bases
-    'StateBaseAgent',
+    'L4StateBaseAgent',
     'L4SubatomicTestingMixin',
     # L5 bases
-    'SafetyBaseAgent',
+    'L5SafetyBaseAgent',
     # Common agent bases that have HealerMixin in their MRO
     'ASTEnforcementMixin',  # Used by L5 validators
 }
@@ -356,9 +356,9 @@ HEALING_BASES = {
 SELF_TESTING_BASES = {
     'SubAtomicAgent',
     'SubatomicTestingMixin',
-    'OrchestrationBaseAgent',
+    'L3OrchestrationBaseAgent',
     'L3SubatomicTestingMixin',
-    'StateBaseAgent',
+    'L4StateBaseAgent',
     'L4SubatomicTestingMixin',
     'CanonBaseAgent',
 }
@@ -663,11 +663,11 @@ def check_proper_base(class_node: ast.ClassDef, layer: str) -> bool:
     # Check for canonical architectural patterns
     canonical_patterns = {
         "SovereignBaseAgent",
-        "L0Agent", "L1Agent", "L1CognitionBaseAgent",
+        "L0MaintenanceBaseAgent", "L1CognitionBaseAgent", "L1CognitionBaseAgent",
         "L2Agent", "L2ExecutionBaseAgent", 
-        "L3Agent", "OrchestrationBaseAgent",
-        "L4Agent", "StateBaseAgent",
-        "L5Agent", "SafetyBaseAgent",
+        "L3Agent", "L3OrchestrationBaseAgent",
+        "L4Agent", "L4StateBaseAgent",
+        "L5Agent", "L5SafetyBaseAgent",
         "L6ObservabilityBaseAgent",
         "HealerMixin", "MCPHardenedMixin", "MCPShieldMixin"
     }
@@ -802,8 +802,8 @@ def detect_observability(class_node: ast.ClassDef, source: str) -> dict:
         obs['metrics'] = True
     
     # Layer base agents include observability
-    base_agents = ['L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent',
-                   'SafetyBaseAgent', 'StateBaseAgent', 'OrchestrationBaseAgent']
+    base_agents = ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent',
+                   'L5SafetyBaseAgent', 'L4StateBaseAgent', 'L3OrchestrationBaseAgent']
     for base in base_agents:
         if base in source:
             obs['logging'] = True
@@ -906,8 +906,8 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     # LAYER 0: BASE AGENT IDENTIFICATION (Highest Priority)
     # =========================================================================
     # Identify base agents FIRST before any exclusion logic
-    # This ensures L0Agent-L6Agent and *BaseAgent classes are always discoverable
-    is_l_series_base = name in {'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
+    # This ensures L0MaintenanceBaseAgent-L6Agent and *BaseAgent classes are always discoverable
+    is_l_series_base = name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
     is_suffix_base = name.endswith('BaseAgent')
     is_base_agent = is_l_series_base or is_suffix_base
     
@@ -927,7 +927,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
         return False
     
     # 1c. Non-agent base classes (Protocol, ABC, etc.)
-    # EXCEPTION: Base agents (L0Agent-L6Agent, *BaseAgent) can inherit from ABC
+    # EXCEPTION: Base agents (L0MaintenanceBaseAgent-L6Agent, *BaseAgent) can inherit from ABC
     non_agent_bases = {
         'Protocol', 'ABC',
         'BaseModel', 'TypedDict',
@@ -994,14 +994,14 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional
     
     # Known agent base classes
     agent_bases = {
-        'L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
-        'L2ExecutionBaseAgent', 'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+        'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
+        'L2ExecutionBaseAgent', 'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
         'ExecutionCanonBaseAgent',
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
         'BaseAgent', 'SovereignBaseAgent',
     }
     
-    # Allow L-series (L0Agent, etc) and *BaseAgent classes to pass through even if in agent_bases
+    # Allow L-series (L0MaintenanceBaseAgent, etc) and *BaseAgent classes to pass through even if in agent_bases
     if name in agent_bases and not is_base_agent:
         log.debug(f"TRACE: {name} excluded - strictly a base class without discovery flag")
         return False
@@ -1353,12 +1353,12 @@ def main():
             # They are abstract but must be discovered as agents so they can be placed in
             # dedicated "Base Class" territories for consistent compliance tracking.
             # Current layer-specific bases:
-            #   - L0: L0Agent
-            #   - L1: L1Agent (or L1CognitionBaseAgent)
+            #   - L0: L0MaintenanceBaseAgent
+            #   - L1: L1CognitionBaseAgent (or L1CognitionBaseAgent)
             #   - L2: L2ExecutionBaseAgent (or ExecutionCanonBaseAgent)
-            #   - L3: OrchestrationBaseAgent
-            #   - L4: StateBaseAgent
-            #   - L5: SafetyBaseAgent
+            #   - L3: L3OrchestrationBaseAgent
+            #   - L4: L4StateBaseAgent
+            #   - L5: L5SafetyBaseAgent
             #   - L6: L6ObservabilityBaseAgent
             skip_names = {
                 'SubAtomicAgent',
@@ -1430,10 +1430,10 @@ def main():
             # Determine territory (layer + subdirectory)
             # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
             # Phase 3.2: Only canonical *BaseAgent classes are base classes, not L-series alternatives
-            # L0Agent and L1Agent are exceptions (they are canonical for their layers)
+            # L0MaintenanceBaseAgent and L1CognitionBaseAgent are exceptions (they are canonical for their layers)
             is_base_class = (
                 node.name.endswith('BaseAgent') or 
-                node.name in {'L0Agent', 'L1Agent', 'L6ObservabilityBaseAgent'}
+                node.name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6ObservabilityBaseAgent'}
             )
             
             # ASSIGN DETAILED TERRITORIES - SSOT for dashboard
@@ -1761,12 +1761,12 @@ def check_compliance_gate(agents: List[Dict], parse_errors: List[str]) -> int:
     # Check 3: Orphaned agents (no proper base class)
     proper_bases = {
         'SovereignBaseAgent',
-        'L0Agent',
-        'L1Agent',
+        'L0MaintenanceBaseAgent',
+        'L1CognitionBaseAgent',
         'L2ExecutionBaseAgent',
-        'OrchestrationBaseAgent',
-        'StateBaseAgent',
-        'SafetyBaseAgent',
+        'L3OrchestrationBaseAgent',
+        'L4StateBaseAgent',
+        'L5SafetyBaseAgent',
         'L6ObservabilityBaseAgent'
     }
     

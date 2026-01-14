@@ -1,4 +1,4 @@
-"""OrchestrationBaseAgent — L3 Base with Subatomic Testing Framework (Jan 01, 2026)
+"""L3OrchestrationBaseAgent — L3 Base with Subatomic Testing Framework (Jan 01, 2026)
 
 L3 Orchestration agents produce composed workflows (plans, delegation sequences, routing).
 Subatomic CRITIQUE hop includes:
@@ -355,7 +355,7 @@ def test_artifact_exists():
 
 
 @dataclass
-class OrchestrationBaseAgent(L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class L3OrchestrationBaseAgent(L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Base class for L3 Orchestration agents with subatomic testing.
     
     MRO HARDENING:

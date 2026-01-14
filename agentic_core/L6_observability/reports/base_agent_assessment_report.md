@@ -30,9 +30,9 @@
 | **CanonBaseAgent** | `L2_execution/ToolRegistry/ExecutionCanonBaseAgent.py` | L2 | Canon validation agents | HealerMixin, ABC | ~50 agents |
 | **SubAtomicAgent** | `L2_execution/tool_registry/base.py` | L2 | Validation agents with async | SubatomicTestingMixin, HealerMixin | ~80 agents |
 | **CognitionCanonBaseAgent** | `L1_cognition/thought_engine/CognitionCanonBaseAgent.py` | L1 | Thought engine agents | HealerMixin | ~50 agents |
-| **OrchestrationBaseAgent** | `L3_orchestration/workflow_engines/OrchestrationBaseAgent.py` | L3 | Workflow orchestration | CanonBaseAgent, L3SubatomicTestingMixin, HealerMixin | ~62 agents |
-| **StateBaseAgent** | `L4_state/ValidationContext/StateBaseAgent.py` | L4 | State management | CanonBaseAgent, L4SubatomicTestingMixin, HealerMixin | ~21 agents |
-| **SafetyBaseAgent** | `L5_safety/guardrails/SafetyBaseAgent.py` | L5 | Safety guardrails | HealerMixin | ~37 agents |
+| **L3OrchestrationBaseAgent** | `L3_orchestration/workflow_engines/L3OrchestrationBaseAgent.py` | L3 | Workflow orchestration | CanonBaseAgent, L3SubatomicTestingMixin, HealerMixin | ~62 agents |
+| **L4StateBaseAgent** | `L4_state/ValidationContext/L4StateBaseAgent.py` | L4 | State management | CanonBaseAgent, L4SubatomicTestingMixin, HealerMixin | ~21 agents |
+| **L5SafetyBaseAgent** | `L5_safety/guardrails/L5SafetyBaseAgent.py` | L5 | Safety guardrails | HealerMixin | ~37 agents |
 | **MaintenanceBaseAgent** | `L0_maintenance/scripts/MaintenanceBaseAgent.py` | L0 | System maintenance | (Unknown - not analyzed) | ~24 agents |
 
 ### **Stub Base Agents (Technical Debt - 4 Locations)**
@@ -64,8 +64,8 @@ Factory Floor Layout:
 - Assembly Line A (L2): Workers trained with "ExecutionCanonBaseAgent" manual
 - Assembly Line B (L2): Workers trained with "SubAtomicAgent" manual (different!)
 - Quality Control (L5): 4 workers using photocopied "stub" manual (outdated!)
-- Shipping (L3): Workers trained with "OrchestrationBaseAgent" manual
-- Warehouse (L4): Workers trained with "StateBaseAgent" manual
+- Shipping (L3): Workers trained with "L3OrchestrationBaseAgent" manual
+- Warehouse (L4): Workers trained with "L4StateBaseAgent" manual
 
 Problem: No factory-wide standard operating procedure!
 ```
@@ -96,7 +96,7 @@ Problem: No factory-wide standard operating procedure!
 
 ### **L5 Safety (Stub Crisis)**
 
-**Critical Issue:** 4 agents using local stub instead of `SafetyBaseAgent`
+**Critical Issue:** 4 agents using local stub instead of `L5SafetyBaseAgent`
 
 **Current Stub:**
 ```python
@@ -107,9 +107,9 @@ class BaseAgent(HealerMixin):
         self.debug_mode = debug_mode
 ```
 
-**Proper Base (SafetyBaseAgent):**
+**Proper Base (L5SafetyBaseAgent):**
 ```python
-class SafetyBaseAgent(HealerMixin):
+class L5SafetyBaseAgent(HealerMixin):
     """Base class for L5 Safety agents with healing capability.
     
     Provides:
@@ -122,20 +122,20 @@ class SafetyBaseAgent(HealerMixin):
 **Migration Path:**
 ```diff
 - from local_stub import BaseAgent
-+ from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
++ from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
 
 - class BiasDetectorAgent(HealerMixin, BaseAgent):
-+ class BiasDetectorAgent(SafetyBaseAgent):
++ class BiasDetectorAgent(L5SafetyBaseAgent):
 ```
 
 ---
 
 ### **L3 Orchestration (Well-Structured)**
 
-**OrchestrationBaseAgent** - Best practice example:
+**L3OrchestrationBaseAgent** - Best practice example:
 ```python
 @dataclass
-class OrchestrationBaseAgent(CanonBaseAgent, L3SubatomicTestingMixin, HealerMixin):
+class L3OrchestrationBaseAgent(CanonBaseAgent, L3SubatomicTestingMixin, HealerMixin):
     """Base class for L3 Orchestration agents with subatomic testing.
     
     L3 Table Decision:
@@ -180,13 +180,13 @@ class BiasDetectorAgent(HealerMixin, BaseAgent):  # HealerMixin first
 
 **Pattern B (Inherited HealerMixin):**
 ```python
-class OrchestrationBaseAgent(CanonBaseAgent, L3SubatomicTestingMixin, HealerMixin):  # HealerMixin last
+class L3OrchestrationBaseAgent(CanonBaseAgent, L3SubatomicTestingMixin, HealerMixin):  # HealerMixin last
 ```
 
 **Pattern C (Through Base):**
 ```python
-class SafetyBaseAgent(HealerMixin):  # Base provides HealerMixin
-class BiasDetectorAgent(SafetyBaseAgent):  # Implicit HealerMixin
+class L5SafetyBaseAgent(HealerMixin):  # Base provides HealerMixin
+class BiasDetectorAgent(L5SafetyBaseAgent):  # Implicit HealerMixin
 ```
 
 **Recommendation:** Standardize on Pattern C - base classes provide HealerMixin
@@ -213,7 +213,7 @@ class SubAtomicAgent(SubatomicTestingMixin, HealerMixin):
 
 **Pattern C (Minimal):**
 ```python
-class SafetyBaseAgent(HealerMixin):
+class L5SafetyBaseAgent(HealerMixin):
     def __init__(self):
         super().__init__()
 ```
@@ -250,7 +250,7 @@ def get_validation_keys(self) -> List[int]:
 **Priority: CRITICAL - Fix L5 Safety Stubs**
 
 **Tasks:**
-1. ✅ Migrate 4 L5 Guardrail agents from stub to `SafetyBaseAgent`
+1. ✅ Migrate 4 L5 Guardrail agents from stub to `L5SafetyBaseAgent`
    - BiasDetectorAgent
    - PromptInjectionDetectorAgent
    - PIISanitizerAgent
@@ -258,12 +258,12 @@ def get_validation_keys(self) -> List[int]:
 
 2. ✅ Delete local stub definitions after migration
 
-3. ✅ Add unit tests to verify SafetyBaseAgent inheritance
+3. ✅ Add unit tests to verify L5SafetyBaseAgent inheritance
 
 **Validation:**
 ```bash
 python canon_validator_agentic_v2_thin.py --agent BiasDetectorAgent --execute
-# Should show: "Inherits from SafetyBaseAgent ✓"
+# Should show: "Inherits from L5SafetyBaseAgent ✓"
 ```
 
 ---
@@ -317,9 +317,9 @@ SovereignBaseAgent (NEW - Root)
 ├── L0MaintenanceBaseAgent
 ├── L1CognitionBaseAgent
 ├── L2ExecutionBaseAgent (unified)
-├── L3OrchestrationBaseAgent
-├── L4StateBaseAgent
-└── L5SafetyBaseAgent
+├── L3L3OrchestrationBaseAgent
+├── L4L4StateBaseAgent
+└── L5L5SafetyBaseAgent
 ```
 
 **SovereignBaseAgent (Root):**
@@ -352,7 +352,7 @@ class L2ExecutionBaseAgent(SovereignBaseAgent, SubatomicTestingMixin):
     """L2 adds: Subatomic testing, tool execution."""
     pass
 
-class L5SafetyBaseAgent(SovereignBaseAgent, MCPHardenedMixin):
+class L5L5SafetyBaseAgent(SovereignBaseAgent, MCPHardenedMixin):
     """L5 adds: MCP hardening, safety guardrails."""
     pass
 ```
@@ -419,7 +419,7 @@ def _check_base_class_compliance(self, agent_path):
 
 ### **Phase 1 (Week 1)**
 - ✅ 0 stub base agents remaining (currently 4)
-- ✅ 100% L5 Safety agents using SafetyBaseAgent
+- ✅ 100% L5 Safety agents using L5SafetyBaseAgent
 
 ### **Phase 2-3 (Weeks 2-5)**
 - ✅ 1 unified L2 base class (currently 2)
@@ -459,9 +459,9 @@ Result: Consistent worker training across entire factory!
 ├── 50 using CanonBaseAgent (L2)
 ├── 80 using SubAtomicAgent (L2)
 ├── 50 using CognitionCanonBaseAgent (L1)
-├── 62 using OrchestrationBaseAgent (L3)
-├── 21 using StateBaseAgent (L4)
-├── 37 using SafetyBaseAgent (L5)
+├── 62 using L3OrchestrationBaseAgent (L3)
+├── 21 using L4StateBaseAgent (L4)
+├── 37 using L5SafetyBaseAgent (L5)
 ├── 4 using STUB BaseAgent (L5) ❌
 └── 131 using HealerMixin directly (no base) ⚠️
 ```
@@ -473,9 +473,9 @@ Result: Consistent worker training across entire factory!
     ├── L0: MaintenanceBaseAgent (24 agents)
     ├── L1: CognitionBaseAgent (100 agents)
     ├── L2: ExecutionBaseAgent (130 agents)
-    ├── L3: OrchestrationBaseAgent (62 agents)
-    ├── L4: StateBaseAgent (21 agents)
-    └── L5: SafetyBaseAgent (98 agents)
+    ├── L3: L3OrchestrationBaseAgent (62 agents)
+    ├── L4: L4StateBaseAgent (21 agents)
+    └── L5: L5SafetyBaseAgent (98 agents)
 ```
 
 ---
@@ -483,7 +483,7 @@ Result: Consistent worker training across entire factory!
 ## 🚀 Immediate Action Items
 
 ### **This Week**
-1. **Fix L5 Stub Crisis** - Migrate 4 agents to SafetyBaseAgent
+1. **Fix L5 Stub Crisis** - Migrate 4 agents to L5SafetyBaseAgent
 2. **Document Current State** - Audit all 435 agents for base class usage
 3. **Create Migration Guide** - Step-by-step for each layer
 
@@ -501,7 +501,7 @@ Result: Consistent worker training across entire factory!
 
 ## 📚 Appendix: Base Class Feature Matrix
 
-| **Feature** | **CanonBaseAgent** | **SubAtomicAgent** | **SafetyBaseAgent** | **Target: SovereignBaseAgent** |
+| **Feature** | **CanonBaseAgent** | **SubAtomicAgent** | **L5SafetyBaseAgent** | **Target: SovereignBaseAgent** |
 |-------------|-------------------|-------------------|---------------------|-------------------------------|
 | HealerMixin | ✅ | ✅ | ✅ | ✅ Mandatory |
 | Async Support | ❌ | ✅ | ❌ | ✅ Mandatory |

@@ -36,12 +36,12 @@
 | Layer | t-1 Count | t Count | t-1 Agents | t Agents | Status |
 |-------|-----------|---------|------------|----------|--------|
 | **Base** | 0 | 1 | - | `SovereignBaseAgent` | ✅ Root base added |
-| **L0** | 1 | 1 | `L0Agent` | `L0Agent` | ✅ Unchanged |
-| **L1** | 1 | 1 | `L1Agent` | `L1Agent` | ✅ Unchanged |
+| **L0** | 1 | 1 | `L0MaintenanceBaseAgent` | `L0MaintenanceBaseAgent` | ✅ Unchanged |
+| **L1** | 1 | 1 | `L1CognitionBaseAgent` | `L1CognitionBaseAgent` | ✅ Unchanged |
 | **L2** | 1 | 1 | `L2ExecutionBaseAgent` | `L2ExecutionBaseAgent` | ✅ Unchanged |
-| **L3** | 1 | 1 | `OrchestrationBaseAgent` | `OrchestrationBaseAgent` | ✅ Unchanged |
-| **L4** | 1 | 1 | `StateBaseAgent` | `StateBaseAgent` | ✅ Unchanged |
-| **L5** | 1 | 1 | `SafetyBaseAgent` | `SafetyBaseAgent` | ✅ Unchanged |
+| **L3** | 1 | 1 | `L3OrchestrationBaseAgent` | `L3OrchestrationBaseAgent` | ✅ Unchanged |
+| **L4** | 1 | 1 | `L4StateBaseAgent` | `L4StateBaseAgent` | ✅ Unchanged |
+| **L5** | 1 | 1 | `L5SafetyBaseAgent` | `L5SafetyBaseAgent` | ✅ Unchanged |
 | **L6** | 1 | 1 | `L6ObservabilityBaseAgent` | `L6ObservabilityBaseAgent` | ✅ Unchanged |
 
 **✅ VALIDATION PASSED:** All layers maintain exactly 1 canonical base class.
@@ -126,7 +126,7 @@
 
 ### ⚠️ Potential Issues
 1. **L4 State/Base Class:** Shows 2 agents in current report (needs verification)
-   - Expected: 1 (`StateBaseAgent`)
+   - Expected: 1 (`L4StateBaseAgent`)
    - Actual: May include deprecated `L4Agent`
 
 ---

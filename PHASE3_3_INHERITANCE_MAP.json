@@ -341,7 +341,7 @@
       "bases": []
     },
     {
-      "name": "L0Agent",
+      "name": "L0MaintenanceBaseAgent",
       "layer": "L0",
       "bases": []
     },
@@ -451,7 +451,7 @@
       "bases": []
     },
     {
-      "name": "L1Agent",
+      "name": "L1CognitionBaseAgent",
       "layer": "L1",
       "bases": []
     },
@@ -841,7 +841,7 @@
       "bases": []
     },
     {
-      "name": "OrchestrationBaseAgent",
+      "name": "L3OrchestrationBaseAgent",
       "layer": "L3",
       "bases": []
     },
@@ -1016,7 +1016,7 @@
       "bases": []
     },
     {
-      "name": "StateBaseAgent",
+      "name": "L4StateBaseAgent",
       "layer": "L4",
       "bases": []
     },
@@ -1256,7 +1256,7 @@
       "bases": []
     },
     {
-      "name": "SafetyBaseAgent",
+      "name": "L5SafetyBaseAgent",
       "layer": "L5",
       "bases": []
     },

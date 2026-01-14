@@ -195,14 +195,14 @@ def test_all_agents_mro_compliance():
     
     This should be run as part of CI/CD to catch MRO violations early.
     """
-    from agentic_core.L1_cognition.thought_engine.L1Agent import L1Agent
+    from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
     
-    # Test L1Agent as example
-    agent = L1Agent(name="TestL1Agent")
+    # Test L1CognitionBaseAgent as example
+    agent = L1CognitionBaseAgent(name="TestL1CognitionBaseAgent")
     auditor = MROAuditor()
     
     # Check 1: Static order
-    errors = auditor.audit_class_hierarchy(L1Agent)
+    errors = auditor.audit_class_hierarchy(L1CognitionBaseAgent)
     assert not errors, f"MRO Order Violations: {errors}"
     
     # Check 2: Dynamic propagation

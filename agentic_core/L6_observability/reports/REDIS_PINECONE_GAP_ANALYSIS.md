@@ -238,12 +238,12 @@ class PineconeVectorMixin:
 ```
 
 **Files to modify:**
-- `L0Agent` base class
-- `L1Agent` base class  
+- `L0MaintenanceBaseAgent` base class
+- `L1CognitionBaseAgent` base class  
 - `L2ExecutionBaseAgent`
-- `L3OrchestrationBaseAgent`
-- `L4StateBaseAgent`
-- `L5SafetyBaseAgent`
+- `L3L3OrchestrationBaseAgent`
+- `L4L4StateBaseAgent`
+- `L5L5SafetyBaseAgent`
 
 #### 1.3 Add Metrics Collection
 
@@ -622,8 +622,8 @@ async def cache_get(self, key: str) -> Optional[Any]:
 
 ### Priority 2: Update Base Classes (1 day)
 - [ ] Add mixins to `L2ExecutionBaseAgent`
-- [ ] Add mixins to `OrchestrationBaseAgent`
-- [ ] Add mixins to `SafetyBaseAgent`
+- [ ] Add mixins to `L3OrchestrationBaseAgent`
+- [ ] Add mixins to `L5SafetyBaseAgent`
 
 ### Priority 3: Critical Agent Integration (2 days)
 - [ ] Integrate `CanonValidatorAgent` with AST caching

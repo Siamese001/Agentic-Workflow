@@ -5,7 +5,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 import json
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class
+from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 base class
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -27,7 +27,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)
-# Reason: SafetyBaseAgent provides real logging (log_info, log_warning,
+# Reason: L5SafetyBaseAgent provides real logging (log_info, log_warning,
 #         log_error) and standardized initialization.
 # ------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ async def _format_prompt_with_defaults(template, data, budget_manager, goal_stat
     return template
 
 
-class ConstitutionalReviewerAgent(SafetyBaseAgent, MCPHardenedMixin):
+class ConstitutionalReviewerAgent(L5SafetyBaseAgent, MCPHardenedMixin):
     """Performs final constitutional review of the output."""
 
     @track_metrics("run_constitutional_review")

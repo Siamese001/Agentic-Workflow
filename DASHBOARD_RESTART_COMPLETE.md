@@ -18,9 +18,9 @@
 - **All base agents in correct "Base Class" territories** ✅
 
 ### Base Agents by Layer
-- **L0:** 1 base agent - `L0Agent`
-- **L2:** 8 base agents - `L1Agent`, `L2Agent`, `L2ExecutionBaseAgent`, `L3Agent`, `L4Agent`, `OrchestrationBaseAgent`, `SovereignBaseAgent`, `StateBaseAgent`
-- **L5:** 2 base agents - `L5Agent`, `SafetyBaseAgent`
+- **L0:** 1 base agent - `L0MaintenanceBaseAgent`
+- **L2:** 8 base agents - `L1CognitionBaseAgent`, `L2Agent`, `L2ExecutionBaseAgent`, `L3Agent`, `L4Agent`, `L3OrchestrationBaseAgent`, `SovereignBaseAgent`, `L4StateBaseAgent`
+- **L5:** 2 base agents - `L5Agent`, `L5SafetyBaseAgent`
 
 **Note:** L6ObservabilityBaseAgent is now discovered and included in the agent count (281 total agents).
 

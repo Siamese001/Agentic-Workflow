@@ -80,13 +80,13 @@ class TestL4StateIntegration:
     """Test L4 State layer integration."""
     
     def test_state_base_agent_methods(self):
-        """Test StateBaseAgent has required methods."""
+        """Test L4StateBaseAgent has required methods."""
         try:
-            from agentic_core.L4_state.bases.StateBaseAgent import StateBaseAgent
+            from agentic_core.L4_state.bases.L4StateBaseAgent import L4StateBaseAgent
             # Verify class has expected interface
-            assert hasattr(StateBaseAgent, '__init__')
+            assert hasattr(L4StateBaseAgent, '__init__')
         except ImportError as e:
-            pytest.skip(f"StateBaseAgent not available: {e}")
+            pytest.skip(f"L4StateBaseAgent not available: {e}")
 
 
 class TestL1CognitionIntegration:

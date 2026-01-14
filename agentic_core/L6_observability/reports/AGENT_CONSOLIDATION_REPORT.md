@@ -52,7 +52,7 @@
 - `HardenedWorkflowOrchestratorAgent`
 - `NervousSystemAgent`
 - `NervousSystemPhaseOrchestratorAgent`
-- `OrchestrationBaseAgent`
+- `L3OrchestrationBaseAgent`
 - `OrchestrationHandshake`
 - `PPOOrchestratorAgent`
 - `QLearningOrchestratorAgent`
