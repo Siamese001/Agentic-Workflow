@@ -76,6 +76,71 @@
             margin-right: 2px;
         }
 
+        /* Custom tooltip styles for multi-line high-signal tooltips */
+        .metric-cell {
+            position: relative;
+            cursor: help;
+        }
+        
+        .metric-cell .custom-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            z-index: 9999;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-family: 'Consolas', 'Monaco', monospace;
+            white-space: pre-line;
+            min-width: 320px;
+            max-width: 420px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            text-align: left;
+            line-height: 1.5;
+            pointer-events: none;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+        
+        .metric-cell:hover .custom-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .metric-cell .custom-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: #1f2937;
+        }
+        
+        /* Tooltip positioning for cells near edges */
+        .metric-cell.tooltip-left .custom-tooltip {
+            left: 0;
+            transform: translateX(0);
+        }
+        .metric-cell.tooltip-left .custom-tooltip::after {
+            left: 20px;
+            transform: translateX(0);
+        }
+        .metric-cell.tooltip-right .custom-tooltip {
+            left: auto;
+            right: 0;
+            transform: translateX(0);
+        }
+        .metric-cell.tooltip-right .custom-tooltip::after {
+            left: auto;
+            right: 20px;
+            transform: translateX(0);
+        }
+
         .refresh-controls {
             position: fixed;
             top: 20px;
@@ -12778,14 +12843,20 @@
         // ============================================
         
         // Compute min, max, average, and standard deviation for a set of values
+        // Filters out "N/A" strings (used for L0 healing metrics)
         function computeDistributionStats(values) {
             if (!values || values.length === 0) {
                 return { min: 0, max: 0, avg: 0, stdDev: 0, range: 0 };
             }
-            const min = Math.min(...values);
-            const max = Math.max(...values);
-            const avg = values.reduce((a, b) => a + b, 0) / values.length;
-            const variance = values.reduce((sum, v) => sum + Math.pow(v - avg, 2), 0) / values.length;
+            // Filter out "N/A" strings and non-numeric values
+            const numericValues = values.filter(v => v !== "N/A" && typeof v === 'number' && !isNaN(v));
+            if (numericValues.length === 0) {
+                return { min: 0, max: 0, avg: 0, stdDev: 0, range: 0 };
+            }
+            const min = Math.min(...numericValues);
+            const max = Math.max(...numericValues);
+            const avg = numericValues.reduce((a, b) => a + b, 0) / numericValues.length;
+            const variance = numericValues.reduce((sum, v) => sum + Math.pow(v - avg, 2), 0) / numericValues.length;
             const stdDev = Math.sqrt(variance);
             const range = max - min;
             return { min, max, avg, stdDev, range };
@@ -12793,7 +12864,15 @@
 
         // Format distribution stats for display in table cells
         // Shows: "75.2% (45-100, σ=18.3)"
+        // Handles "N/A" values (used for L0 healing metrics)
         function formatDistributionCell(avg, stats, showStdDev = true) {
+            // Handle "N/A" values for L0 territories
+            if (avg === "N/A") {
+                return `<span style="color:#6b7280; font-style:italic;">N/A</span>`;
+            }
+            if (typeof avg !== 'number' || isNaN(avg)) {
+                return `<span style="color:#6b7280;">--</span>`;
+            }
             if (!stats || stats.min === stats.max) {
                 return `${avg.toFixed(1)}%`;
             }
@@ -12806,7 +12885,9 @@
 
         // Get color based on WORST case (min value) instead of average
         // This ensures outliers are visible in the color coding
+        // Handles "N/A" values (used for L0 healing metrics)
         function getWorstCaseColor(minValue) {
+            if (minValue === "N/A" || typeof minValue !== 'number' || isNaN(minValue)) return '#6b7280';  // Gray for N/A
             if (minValue >= 85) return '#065f46';  // Dark green
             if (minValue >= 75) return '#047857';  // Green
             if (minValue >= 60) return '#65a30d';  // Yellow-green
@@ -13070,6 +13151,92 @@
             };
             
             return { agent: realAgent, value: minValue };
+        }
+        
+        // Get all problem agents below threshold for a territory's metric (for tooltips)
+        // Returns list of {name, value} for agents below the threshold
+        function getProblemAgentsForMetric(territory, metricKey, threshold = 50) {
+            const agentData = globalAgentData[territory];
+            if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
+                return [];
+            }
+            
+            const values = agentData[metricKey];
+            const agents = agentData.agents || [];
+            const problemAgents = [];
+            
+            for (let i = 0; i < values.length; i++) {
+                if (values[i] < threshold) {
+                    const agent = agents[i] || { name: `Agent_${i + 1}` };
+                    problemAgents.push({
+                        name: agent.name,
+                        value: values[i]
+                    });
+                }
+            }
+            
+            // Sort by value ascending (worst first)
+            problemAgents.sort((a, b) => a.value - b.value);
+            return problemAgents;
+        }
+        
+        // Format HIGH-SIGNAL tooltip with actionable intelligence
+        // Shows: distribution stats, worst offenders with file paths, remediation priority
+        function formatProblemAgentsTooltip(territory, metricKey, metricLabel, threshold = 50) {
+            const agentData = globalAgentData[territory];
+            if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
+                return `${metricLabel}: No agent data available`;
+            }
+            
+            const values = agentData[metricKey];
+            const agents = agentData.agents || [];
+            const stats = computeDistributionStats(values);
+            
+            // Build comprehensive tooltip
+            let tooltip = `📊 ${metricLabel} Distribution\n`;
+            tooltip += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+            tooltip += `Avg: ${stats.avg.toFixed(1)}% | Range: ${stats.min.toFixed(0)}-${stats.max.toFixed(0)}%\n`;
+            tooltip += `StdDev: ${stats.stdDev.toFixed(1)} | Agents: ${stats.count}\n`;
+            
+            // Find problem agents (below threshold)
+            const problems = [];
+            for (let i = 0; i < values.length; i++) {
+                if (values[i] < threshold) {
+                    const agent = agents[i] || { name: `Agent_${i + 1}`, path: 'unknown' };
+                    problems.push({ name: agent.name, value: values[i], path: agent.path });
+                }
+            }
+            problems.sort((a, b) => a.value - b.value);
+            
+            if (problems.length === 0) {
+                tooltip += `\n✅ All ${stats.count} agents meet threshold (≥${threshold}%)`;
+                return tooltip;
+            }
+            
+            // Calculate remediation effort
+            const criticalCount = problems.filter(p => p.value === 0).length;
+            const warningCount = problems.length - criticalCount;
+            const avgDeficit = problems.reduce((sum, p) => sum + (threshold - p.value), 0) / problems.length;
+            
+            tooltip += `\n⚠️ ${problems.length} agent(s) below ${threshold}% threshold\n`;
+            if (criticalCount > 0) {
+                tooltip += `🔴 Critical (0%): ${criticalCount} | `;
+            }
+            tooltip += `🟡 Warning: ${warningCount}\n`;
+            tooltip += `Avg deficit: ${avgDeficit.toFixed(1)} points to threshold\n`;
+            
+            tooltip += `\n🔧 TOP REMEDIATION TARGETS:\n`;
+            const topProblems = problems.slice(0, 3);
+            topProblems.forEach((p, idx) => {
+                const shortPath = p.path ? p.path.split('/').slice(-2).join('/') : 'path unknown';
+                tooltip += `${idx + 1}. ${p.name} (${p.value.toFixed(0)}%) → ${shortPath}\n`;
+            });
+            
+            if (problems.length > 3) {
+                tooltip += `   ... +${problems.length - 3} more agents need attention`;
+            }
+            
+            return tooltip;
         }
 
         // ============================================
@@ -13693,13 +13860,16 @@
                 });
             }
 
-            // Sort territories: TOTAL first, then by outliers or layer
+            // Sort territories: Base/Root FIRST (SovereignBaseAgent), TOTAL LAST, then by layer
             const sortedData = [...filteredData].sort((a, b) => {
                 const aTerritory = a.Territory || '';
                 const bTerritory = b.Territory || '';
-                // TOTAL always first
-                if (aTerritory === 'TOTAL') return -1;
-                if (bTerritory === 'TOTAL') return 1;
+                // Base/Root (SovereignBaseAgent) always FIRST
+                if (aTerritory === 'Base/Root') return -1;
+                if (bTerritory === 'Base/Root') return 1;
+                // TOTAL always LAST
+                if (aTerritory === 'TOTAL') return 1;
+                if (bTerritory === 'TOTAL') return -1;
                 
                 // PHASE 5: Sort by outlier count if enabled
                 if (filterState.sortByOutliers) {
@@ -13708,12 +13878,13 @@
                     if (aOutliers !== bOutliers) return bOutliers - aOutliers; // Higher outliers first
                 }
                 
-                // Default: L6→L5→L4→L3→L2→L1, then non-L territories at bottom
+                // Default: L6→L5→L4→L3→L2→L1→L0, then Apps at bottom
                 const aMatch = aTerritory.match(/^L(\d)/);
                 const bMatch = bTerritory.match(/^L(\d)/);
+                // Use -1 for non-L territories so they sort AFTER L0 in descending order
                 const aLayer = aMatch ? parseInt(aMatch[1]) : -1;
                 const bLayer = bMatch ? parseInt(bMatch[1]) : -1;
-                if (aLayer !== bLayer) return bLayer - aLayer;
+                if (aLayer !== bLayer) return bLayer - aLayer; // Descending order (6,5,4,3,2,1,0,-1)
                 return aTerritory.localeCompare(bTerritory);
             });
             territoryData = sortedData;
@@ -13751,13 +13922,12 @@
                             <tr style="background:var(--primary); color:white;">
                                 <th style="padding:16px; text-align:left; font-weight:600;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Total number of agents in this territory"># Agents</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list">Heal Capability %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Heal Invocation %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with security hardening around MCP — Protection against dangerous operations (NOT about using MCP capabilities)">MCP Hardened %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures">Test Coverage %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Complexity Health % — Inverted complexity (100 - CC×2), higher is better (target ≥80%)">Complexity Health %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Composite health score: (Heal Cap + Invocation + Tests + Observability + Inverted CC) / 5">Health Score</th>
-                                <th style="padding:16px; text-align:center; font-weight:600; background:#7c3aed;" title="Worst performing agent by Health Score - Click to open in VS Code">⚠️ Worst Agent</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list. Hover cells for problem agents.">Heal Capability %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol. Hover cells for problem agents.">Heal Invocation %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with security hardening around MCP — Protection against dangerous operations. Hover cells for problem agents.">MCP Hardened %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures. Hover cells for problem agents.">Test Coverage %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Complexity Health % — Inverted complexity (100 - CC×2), higher is better (target ≥80%). Hover cells for problem agents.">Complexity Health %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Composite health score (weighted average) - no distribution stats needed">Health Score</th>
                             </tr>
                         </thead>
                         <tbody>`;
@@ -13766,7 +13936,12 @@
             const totalRow = dashboardData.find(row => row.Territory === 'TOTAL');
             if (totalRow) {
                 // 7-color gradient: Deep Red → Red → Orange → Yellow → Yellow-Green → Light Green → Green
+                // Handles "N/A" values for L0 territories
                 const getGradientBg = (value, target = 80) => {
+                    // Handle "N/A" values for L0 territories
+                    if (value === "N/A" || typeof value !== 'number' || isNaN(value)) {
+                        return 'rgba(107, 114, 128, 0.1)';  // Light gray for N/A
+                    }
                     const normalized = Math.max(0, Math.min(100, value)) / 100;
                     let r, g, b;
                     
@@ -13877,19 +14052,20 @@
                             <div style="color:${getWorstCaseColor(totalRow['Complexity Health'] || 0)};">${formatDistributionCell(totalRow['Complexity Health'] || 0, complexityStats)}${formatOutlierBadge(complexityOutliers.atZero, complexityOutliers.belowThreshold, 30)}</div>
                             ${generateSparkline([30, 32, 33, 34, totalRow['Complexity Health'] || 0], '#dc2626', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow.Health)}; font-weight:800; font-size:1.05em; border-right:1px solid #e5e7eb;">
-                            <div style="color:${getWorstCaseColor(totalRow.Health)};">${formatDistributionCell(totalRow.Health, healthStats)}${formatOutlierBadge(healthOutliers.atZero, healthOutliers.belowThreshold, 60)}</div>
-                            ${generateSparkline([72, 74, 75, 76, totalRow.Health], '#16a34a', true)}
-                        </td>
-                        <td style="padding:14px; text-align:center; background:rgba(124, 58, 237, 0.1); font-weight:600;">
-                            <span style="color:#7c3aed; font-size:0.85em; text-transform:uppercase; letter-spacing:0.5px;">Remediation Circuit Active</span>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(totalRow.Health)}; font-weight:800; font-size:1.05em;">
+                            <div style="color:${getWorstCaseColor(totalRow.Health)};">${totalRow.Health.toFixed(1)}%</div>
                         </td>
                     </tr>`;
             }
             
             territoryData.forEach((row, index) => {
                 // PHASE 4: Non-linear Intensity Gradient (Floor-based) - 7-color gradient
+                // Handles "N/A" values for L0 territories
                 const getGradientBg = (value, target = 80) => {
+                    // Handle "N/A" values for L0 territories
+                    if (value === "N/A" || typeof value !== 'number' || isNaN(value)) {
+                        return 'rgba(107, 114, 128, 0.1)';  // Light gray for N/A
+                    }
                     const normalized = Math.max(0, Math.min(100, value)) / 100;
                     let r, g, b;
                     
@@ -13968,33 +14144,31 @@
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s; ${rowBorderStyle}" 
                         onmouseover="this.style.background='#f0f9ff'" 
                         onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'" 
-                        onclick="openDrillModal('${row.Territory}')" 
-                        title="Click to view detailed per-agent diagnostics for ${row.Territory}">
-                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
+                        onclick="openDrillModal('${row.Territory}')">
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);" title="Click to drill down">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(healCapMin)}; border-right:1px solid #e5e7eb;">
+                        <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(healCapMin)}; border-right:1px solid #e5e7eb;">
                             <span style="color:${getWorstCaseColor(healCapMin)};">${formatDistributionCell(row['Heal Cap %'], healCapTerritoryStats, true)}${formatOutlierBadge(healCapTerritoryOutliers.atZero, healCapTerritoryOutliers.belowThreshold, 50)}</span>
+                            <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'healCap', 'Heal Cap %', 50)}</div>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(invocationMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                        <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(invocationMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
                             <span style="color:${invocationColor};">${formatDistributionCell(row['Invocation %'], invocationTerritoryStats, true)}${formatOutlierBadge(invocationTerritoryOutliers.atZero, invocationTerritoryOutliers.belowThreshold, 50)}</span>
+                            <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'invocation', 'Invocation %', 50)}</div>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(hardenedMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                        <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(hardenedMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
                             <span style="color:${hardenedColor};">${formatDistributionCell(row['Hardened %'] || 0, hardenedTerritoryStats, true)}${formatOutlierBadge(hardenedTerritoryOutliers.atZero, hardenedTerritoryOutliers.belowThreshold, 50)}</span>
+                            <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'hardened', 'Hardened %', 50)}</div>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(testMin)}; border-right:1px solid #e5e7eb;">
+                        <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(testMin)}; border-right:1px solid #e5e7eb;">
                             <span style="color:${testColor};">${formatDistributionCell(row['Test %'], testTerritoryStats, true)}${formatOutlierBadge(testTerritoryOutliers.atZero, testTerritoryOutliers.belowThreshold, 50)}</span>
+                            <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'test', 'Test %', 50)}</div>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(complexityMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
+                        <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(complexityMin)}; font-weight:600; border-right:1px solid #e5e7eb;">
                             <span style="color:${ccHealthColor};">${formatDistributionCell(row['Complexity Health'] || 0, complexityTerritoryStats, true)}${formatOutlierBadge(complexityTerritoryOutliers.atZero, complexityTerritoryOutliers.belowThreshold, 30)}</span>
+                            <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'complexityHealth', 'Complexity Health %', 30)}</div>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(healthMin)}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            <span style="color:${healthColor};">${formatDistributionCell(row.Health, healthTerritoryStats, true)}${formatOutlierBadge(healthTerritoryOutliers.atZero, healthTerritoryOutliers.belowThreshold, 60)}</span>
-                        </td>
-                        <td style="padding:12px; text-align:center; background:rgba(124, 58, 237, 0.05);">
-                            ${(() => {
-                                const worstHealth = getWorstPerformerForMetric(row.Territory, 'health', 60);
-                                return formatWorstPerformerLink(worstHealth.agent, worstHealth.value, 60);
-                            })()}
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row.Health)}; font-weight:700;" title="Health Score: Weighted average">
+                            <span style="color:${healthColor};">${typeof row.Health === 'number' ? row.Health.toFixed(1) : row.Health}%</span>
                         </td>
                     </tr>`;
             });
@@ -14051,13 +14225,16 @@
                 });
             }
             
-            // Sort territories: TOTAL first, then by outliers or layer
+            // Sort territories: Base/Root FIRST (SovereignBaseAgent), TOTAL LAST, then by layer
             const sortedData = [...filteredData].sort((a, b) => {
                 const aTerritory = a.Territory || '';
                 const bTerritory = b.Territory || '';
-                // TOTAL always first
-                if (aTerritory === 'TOTAL') return -1;
-                if (bTerritory === 'TOTAL') return 1;
+                // Base/Root (SovereignBaseAgent) always FIRST
+                if (aTerritory === 'Base/Root') return -1;
+                if (bTerritory === 'Base/Root') return 1;
+                // TOTAL always LAST
+                if (aTerritory === 'TOTAL') return 1;
+                if (bTerritory === 'TOTAL') return -1;
                 
                 // PHASE 5: Sort by outlier count if enabled
                 if (filterState.sortByOutliers) {
@@ -14066,12 +14243,13 @@
                     if (aOutliers !== bOutliers) return bOutliers - aOutliers; // Higher outliers first
                 }
                 
-                // Default: L6→L5→L4→L3→L2→L1, then non-L territories at bottom
+                // Default: L6→L5→L4→L3→L2→L1→L0, then Apps at bottom
                 const aMatch = aTerritory.match(/^L(\d)/);
                 const bMatch = bTerritory.match(/^L(\d)/);
+                // Use -1 for non-L territories so they sort AFTER L0 in descending order
                 const aLayer = aMatch ? parseInt(aMatch[1]) : -1;
                 const bLayer = bMatch ? parseInt(bMatch[1]) : -1;
-                if (aLayer !== bLayer) return bLayer - aLayer;
+                if (aLayer !== bLayer) return bLayer - aLayer; // Descending order (6,5,4,3,2,1,0,-1)
                 return aTerritory.localeCompare(bTerritory);
             });
             territoryData = sortedData;
@@ -14093,18 +14271,22 @@
                             <tr style="background:var(--primary); color:white;">
                                 <th style="padding:16px; text-align:left; font-weight:600;">Territory</th>
                                 <th style="padding:16px; text-align:center; font-weight:600;" title="Number of agents in this territory"># Agents</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% of codebase with type hints">Typed %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with docstrings">Documented %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with strict Pydantic/dataclass schema validation">Schema Strictness %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="% following canonical architectural inheritance">Canonical Inheritance %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;" title="Composite code quality score">Code Quality Score</th>
-                                <th style="padding:16px; text-align:center; font-weight:600; background:#7c3aed;" title="Worst performing agent by Code Quality Score - Click to open in VS Code">⚠️ Worst Agent</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% of codebase with type hints. Hover cells for problem agents.">Typed %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with docstrings. Hover cells for problem agents.">Documented %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% with strict Pydantic/dataclass schema validation. Hover cells for problem agents.">Schema Strictness %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% following canonical architectural inheritance. Hover cells for problem agents.">Canonical Inheritance %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Composite code quality score (weighted average) - no distribution stats needed">Code Quality Score</th>
                             </tr>
                         </thead>
                         <tbody>`;
             
             // Helper function for gradient background
+            // Handles "N/A" values for L0 territories
             const getGradientBg = (value) => {
+                // Handle "N/A" values for L0 territories
+                if (value === "N/A" || typeof value !== 'number' || isNaN(value)) {
+                    return 'rgba(107, 114, 128, 0.1)';  // Light gray for N/A
+                }
                 const normalized = Math.max(0, Math.min(100, value)) / 100;
                 let r, g, b;
                 
@@ -14203,12 +14385,8 @@
                             ${formatDistributionCell(properBase, baseStats)}${formatOutlierBadge(baseOutliers.atZero, baseOutliers.belowThreshold, 50)}
                             ${generateSparkline(allBase.slice(-10), '#2563eb', true)}
                         </td>
-                        <td style="padding:14px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:800; font-size:1.05em; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(codeQuality, qualityStats)}${formatOutlierBadge(qualityOutliers.atZero, qualityOutliers.belowThreshold, 60)}
-                            ${generateSparkline(allQuality.slice(-10), '#2563eb', true)}
-                        </td>
-                        <td style="padding:14px; text-align:center; background:rgba(124, 58, 237, 0.1); font-weight:600;">
-                            <span style="color:#6b7280; font-size:0.85em;">See territory rows</span>
+                        <td style="padding:14px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:800; font-size:1.05em;">
+                            <div>${codeQuality.toFixed(1)}%</div>
                         </td>
                     </tr>`;
             }
@@ -14254,30 +14432,27 @@
                     <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s; ${rowBorderStyle}" 
                         onmouseover="this.style.background='#f0f9ff'" 
                         onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'"
-                        onclick="openDrillModal('${row.Territory}')"
-                        title="Click to view detailed per-agent diagnostics for ${row.Territory}">
-                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
+                        onclick="openDrillModal('${row.Territory}')">
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);" title="Click to drill down">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(typedColorVal)}; border-right:1px solid #e5e7eb;">
+                        <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(typedColorVal)}; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(typed, typedStats, true)}${formatOutlierBadge(typedTerritoryOutliers.atZero, typedTerritoryOutliers.belowThreshold, 50)}
+                            <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'typed', 'Typed %', 50)}</div>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(documentedColorVal)}; border-right:1px solid #e5e7eb;">
+                        <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(documentedColorVal)}; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(documented, documentedStats, true)}${formatOutlierBadge(documentedTerritoryOutliers.atZero, documentedTerritoryOutliers.belowThreshold, 50)}
+                            <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'documented', 'Documented %', 50)}</div>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(schemaColorVal)}; border-right:1px solid #e5e7eb;">
+                        <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(schemaColorVal)}; border-right:1px solid #e5e7eb;">
                             ${formatDistributionCell(schemaStrictness, schemaStats, true)}${formatOutlierBadge(schemaTerritoryOutliers.atZero, schemaTerritoryOutliers.belowThreshold, 80)}
+                            <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'schemaStrictness', 'Schema Strictness %', 80)}</div>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${row.Territory.includes('Base Agent') || row.Territory.includes('Base/Root') ? '#f3f4f6' : getGradientBg(baseColorVal)}; border-right:1px solid #e5e7eb;">
-                            ${row.Territory.includes('Base Agent') || row.Territory.includes('Base/Root') ? '<span style="color:#6b7280; font-style:italic;">N/A</span>' : formatDistributionCell(properBase, baseStats, true) + formatOutlierBadge(baseTerritoryOutliers.atZero, baseTerritoryOutliers.belowThreshold, 50)}
+                        <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(baseColorVal)}; border-right:1px solid #e5e7eb;">
+                            ${formatDistributionCell(properBase, baseStats, true)}${formatOutlierBadge(baseTerritoryOutliers.atZero, baseTerritoryOutliers.belowThreshold, 50)}
+                            <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'properBase', 'Canonical Inheritance %', 50)}</div>
                         </td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(qualityColorVal)}; color:${qualityColor}; font-weight:700; border-right:1px solid #e5e7eb;">
-                            ${formatDistributionCell(codeQuality, qualityStats, true)}${formatOutlierBadge(qualityTerritoryOutliers.atZero, qualityTerritoryOutliers.belowThreshold, 60)}
-                        </td>
-                        <td style="padding:12px; text-align:center; background:rgba(124, 58, 237, 0.05);">
-                            ${(() => {
-                                const worstQuality = getWorstPerformerForMetric(row.Territory, 'codeQuality', 60);
-                                return formatWorstPerformerLink(worstQuality.agent, worstQuality.value, 60);
-                            })()}
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(codeQuality)}; color:${qualityColor}; font-weight:700;" title="Code Quality Score: Weighted average">
+                            <span>${codeQuality.toFixed(1)}%</span>
                         </td>
                     </tr>`;
             });
@@ -15039,14 +15214,16 @@
             const agents = territoryAgentData ? territoryAgentData.agents : [];
 
             document.getElementById('modalTitle').textContent = `${territoryName} Territory Drill-Down`;
-            document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Health ${row.Health.toFixed(1)}% • Invocation ${row['Invocation %'].toFixed(1)}%`;
+            // Helper to safely format values that might be "N/A"
+            const safeFormat = (val) => val === "N/A" ? "N/A" : (typeof val === 'number' ? val.toFixed(1) + '%' : val);
+            document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Health ${safeFormat(row.Health)} • Invocation ${safeFormat(row['Invocation %'])}`;
 
             // Health Metrics Section
             let content = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">';
             content += '<div style="background:#f0fdf4; padding:15px; border-radius:8px; border-left:4px solid #16a34a;">';
             content += '<strong style="font-size:1.1em; color:#166534;">🏥 Health Metrics</strong><ul style="margin-top:10px; list-style:none; padding:0;">';
-            content += `<li style="margin:5px 0;">Healing Capability: <strong>${row['Heal Cap %'].toFixed(1)}%</strong></li>`;
-            content += `<li style="margin:5px 0;">Healing Invocation: <strong>${row['Invocation %'].toFixed(1)}%</strong></li>`;
+            content += `<li style="margin:5px 0;">Healing Capability: <strong>${safeFormat(row['Heal Cap %'])}</strong></li>`;
+            content += `<li style="margin:5px 0;">Healing Invocation: <strong>${safeFormat(row['Invocation %'])}</strong></li>`;
             content += `<li style="margin:5px 0;">MCP Hardened: <strong>${(row['Hardened %'] || 0).toFixed(1)}%</strong></li>`;
             content += `<li style="margin:5px 0;">Test Coverage: <strong>${row['Test %'].toFixed(1)}%</strong></li>`;
             content += `<li style="margin:5px 0;">Avg Complexity: <strong>${row['Avg CC'].toFixed(1)}</strong> (Health: ${row['Complexity Health'].toFixed(1)}%)</li>`;
