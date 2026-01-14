@@ -69,9 +69,17 @@ class CritiqueReport:
 
 
 @dataclass
-class L6ObservabilityBaseAgent(SovereignBaseAgent, MCPHardenedMixin, SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, ABC):
+class L6ObservabilityBaseAgent(MCPHardenedMixin, SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent, ABC):
     """
     Base class for L6 Observability agents - The Skeptical Analysts.
+    
+    MRO HARDENING:
+    - MCPHardenedMixin: First (security protocol)
+    - SubatomicTestingMixin: Second (L6-specific testing)
+    - RedisCacheMixin: Third (caching infrastructure)
+    - PineconeVectorMixin: Fourth (vector infrastructure)
+    - SovereignBaseAgent: Last (root termination)
+    - ABC: Abstract base (no __init__)
     
     L6 agents are critical evaluators that run asynchronously or on schedule
     to provide unbiased, data-driven performance analysis of L1-L5 agents.

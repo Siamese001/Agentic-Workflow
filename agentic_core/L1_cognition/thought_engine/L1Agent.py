@@ -3,15 +3,15 @@ L1Agent - Consolidated Base for L1 Cognition Agents
 
 Capabilities:
 - HealerMixin: heal_repository() for self-repair
-- MCPHardenedMixin: Hardened MCP with retry/timeout
+- MCPHardenedMixin: Hardened MCP via SovereignBaseAgent (root injection)
 - L1SubatomicTestingMixin: Thought validation testing
 
 L1 agents handle cognition - thinking, reasoning, understanding.
 
 MRO HARDENING:
-- Inheritance order: Mixins FIRST, SovereignBaseAgent LAST
-- All mixins use cooperative super().__init__(**kwargs)
-- SovereignBaseAgent terminates the MRO chain
+- Inheritance order: Specialized Mixins -> SovereignBaseAgent (includes MCP)
+- MCPHardenedMixin is now in SovereignBaseAgent - DO NOT add it here
+- MRO: HealerMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
 """
 from __future__ import annotations
 from dataclasses import dataclass
@@ -19,7 +19,6 @@ from typing import Any, Dict
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -40,18 +39,19 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 @dataclass
-class L1Agent(HealerMixin, MCPHardenedMixin, SovereignBaseAgent):
+class L1Agent(HealerMixin, SovereignBaseAgent):
     """
     Consolidated base for L1 Cognition agents.
     
     MRO HARDENING:
-    - HealerMixin: First (specialized capability)
-    - MCPHardenedMixin: Second (universal protocol)
-    - SovereignBaseAgent: Last (root termination)
+    - HealerMixin: First (specialized layer capability)
+    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    
+    MRO: HealerMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
     
     Guaranteed Capabilities:
     - heal_repository(): Self-repair method
-    - _hardened_call(): MCP operations with retry/timeout
+    - _hardened_call(): MCP operations via SovereignBaseAgent
     
     L1 Table Decision:
     - Basic Self-Testing: YES (thought validation)
@@ -62,8 +62,7 @@ class L1Agent(HealerMixin, MCPHardenedMixin, SovereignBaseAgent):
     
     def __post_init__(self):
         """Cooperative MRO initialization."""
-        # Dataclass fields are set, now initialize mixins via MRO chain
-        super().__init__(name=self.name)
+        super().__post_init__()
     
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""

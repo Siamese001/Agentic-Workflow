@@ -9,9 +9,9 @@ Table Decision (L5 Safety):
 - Healing Capability: YES (via HealerMixin)
 
 MRO HARDENING:
-- Inheritance order: Mixins FIRST, SovereignBaseAgent LAST
-- All mixins use cooperative super().__init__(**kwargs)
-- SovereignBaseAgent terminates the MRO chain
+- Inheritance order: Infra Mixins -> SovereignBaseAgent (includes MCP)
+- MCPHardenedMixin is now in SovereignBaseAgent - DO NOT add it here
+- MRO: RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
 """
 from typing import Any, Dict, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
@@ -19,7 +19,6 @@ import logging
 import re
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
@@ -27,18 +26,19 @@ Logger = logging.getLogger(__name__)
 
 
 # NOT_AN_AGENT — Base class for L5 agents, not a true agent itself
-class SafetyBaseAgent(MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Base class for L5 Safety agents with healing capability.
     
     MRO HARDENING:
-    - MCPHardenedMixin: First (security protocol)
-    - RedisCacheMixin: Second (caching infrastructure)
-    - PineconeVectorMixin: Third (vector infrastructure)
-    - SovereignBaseAgent: Last (root termination)
+    - RedisCacheMixin: First (caching infrastructure)
+    - PineconeVectorMixin: Second (vector infrastructure)
+    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    
+    MRO: RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
     
     Provides:
     - Default-on healing via SovereignBaseAgent
-    - MCP hardening via MCPHardenedMixin
+    - MCP hardening via SovereignBaseAgent (root injection)
     - Redis caching (RedisCacheMixin) - with graceful degradation
     - Pinecone vectors (PineconeVectorMixin) - with graceful degradation
     - Real logging (log_info/warning/error)

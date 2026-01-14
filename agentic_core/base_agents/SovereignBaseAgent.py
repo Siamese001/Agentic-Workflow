@@ -1,38 +1,55 @@
 """
-SovereignBaseAgent - Base class for sovereign agents.
+SovereignBaseAgent - Sovereign Single Source of Truth (SSOT) Root.
 
 Provides foundational capabilities for agents with sovereign authority.
+MCPHardenedMixin is now global to ALL agents via root injection.
 
 MRO HARDENING:
 - This is the ROOT of the agent hierarchy
-- All mixins should call super().__init__(**kwargs) to propagate up
-- SovereignBaseAgent is LAST in MRO before object
-- Uses cooperative multiple inheritance pattern
+- MCPHardenedMixin is injected HERE so all agents get MCP hardening
+- Layer bases add specialized mixins BEFORE SovereignBaseAgent
+- MRO Flow: Specialized -> Layer -> SovereignBaseAgent -> MCPHardenedMixin -> object
 """
+from dataclasses import dataclass
 from typing import Any, Dict, Optional
 import logging
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 logger = logging.getLogger(__name__)
 
 
-class SovereignBaseAgent:
+@dataclass
+class SovereignBaseAgent(MCPHardenedMixin):
     """
-    Base class for sovereign agents with elevated authority.
+    Sovereign Single Source of Truth (SSOT) Root.
     
-    MRO HARDENING: This class is the ROOT of the hierarchy.
-    - Does NOT inherit from mixins (mixins are added by layer bases)
-    - Terminates the super().__init__() chain cleanly
-    - All kwargs are consumed here to prevent TypeError
+    MCPHardenedMixin is now global to all agents via root injection.
+    This ensures EVERY agent in the L0-L6 hierarchy has MCP hardening.
+    
+    MRO HARDENING:
+    - SovereignBaseAgent inherits from MCPHardenedMixin
+    - Layer bases inherit from SovereignBaseAgent (+ specialized mixins)
+    - Concrete agents inherit from layer bases (+ more specialized mixins)
+    - MRO: Specialized -> Layer -> SovereignBaseAgent -> MCPHardenedMixin -> object
     """
+    name: str = "SovereignAgent"
     
-    def __init__(self, name: str = "SovereignAgent", **kwargs):
-        # Consume remaining kwargs to terminate MRO chain cleanly
-        # Any unrecognized kwargs are stored in _config
-        super().__init__()  # Terminates at object
-        self.name = name
-        self._config = kwargs
+    def __post_init__(self):
+        """
+        Initialize sovereign agent with MCP hardening.
+        
+        The root stops the super() chain or passes to MCPHardenedMixin.
+        """
+        # Initialize MCPHardenedMixin via cooperative inheritance
+        super().__init__()
+        self._initialize_sovereign_state()
+    
+    def _initialize_sovereign_state(self):
+        """Initialize sovereign-specific state."""
+        self._config: Dict[str, Any] = {}
         self._state: Dict[str, Any] = {}
-        self._authority_level = kwargs.pop('authority_level', 'standard')
+        self._authority_level = 'standard'
     
     def execute(self, *args, **kwargs) -> Any:
         """Execute the agent's main function."""

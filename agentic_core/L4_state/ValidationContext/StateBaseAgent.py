@@ -425,10 +425,14 @@ def test_artifact_exists():
 
 
 @dataclass
-class StateBaseAgent(SovereignBaseAgent, L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
+class StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Base class for L4 State agents with subatomic testing.
     
-    HARDENED: Now with Redis caching + Pinecone vector support.
+    MRO HARDENING:
+    - L4SubatomicTestingMixin: First (L4-specific testing)
+    - RedisCacheMixin: Second (caching infrastructure)
+    - PineconeVectorMixin: Third (vector infrastructure)
+    - SovereignBaseAgent: Last (root termination)
     
     L4 Table Decision:
     - Basic Self-Testing: YES (state consistency, idempotency)
