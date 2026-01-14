@@ -68,10 +68,14 @@ def get_subatomic_engine(gemini_client: Any) -> Any:
 
 # Unified Base Class
 @dataclass
-class L2ExecutionBaseAgent(SovereignBaseAgent, SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
+class L2ExecutionBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Unified L2 base class - replaces CanonBaseAgent + SubAtomicAgent.
     
-    HARDENED: Now with Redis caching + Pinecone vector support.
+    MRO HARDENING:
+    - SubatomicTestingMixin: First (L2-specific testing)
+    - RedisCacheMixin: Second (caching infrastructure)
+    - PineconeVectorMixin: Third (vector infrastructure)
+    - SovereignBaseAgent: Last (root termination)
     
     Features:
     - Async execution (mandatory)
@@ -98,9 +102,9 @@ class L2ExecutionBaseAgent(SovereignBaseAgent, SubatomicTestingMixin, RedisCache
     BANNED_IMPORTS: List[str] = field(default_factory=lambda: ['base', 'context', 'L3_orchestration', 'ConversationalRepair'], init=False)
 
     def __post_init__(self) -> None:
-        """Shared initialization logic."""
-        # Call root for name + universal setup
-        super().__post_init__()
+        """Shared initialization logic with cooperative MRO."""
+        # Initialize MRO chain - mixins first, then SovereignBaseAgent
+        super().__init__(name=self.__class__.__name__)
         
         self.role = re.sub('(?<!^)(?=[A-Z])', '_', self.name).lower()
         

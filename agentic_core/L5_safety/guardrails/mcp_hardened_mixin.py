@@ -61,6 +61,11 @@ class MCPHardenedMixin:
     - Safe MCP call with validation and sandboxing
     - Response validation (code injection, resource limits)
     - Audit trail logging
+    
+    MRO HARDENING:
+    - Uses cooperative multiple inheritance via **kwargs
+    - Always calls super().__init__(**kwargs) to propagate up the chain
+    - Private attributes use _mcp_ prefix to avoid collisions
     """
 
     MAX_RETRIES: int = 3
@@ -102,10 +107,16 @@ class MCPHardenedMixin:
         r"__builtins__",
     ]
     
-    def __init__(self, *args, **kwargs):
-        """Initialize MCP hardening."""
-        super().__init__(*args, **kwargs)
-        self._audit_log: List[MCPAuditEntry] = []
+    def __init__(self, **kwargs):
+        """
+        Initialize MCP hardening with cooperative inheritance.
+        
+        MRO HARDENING: Passes **kwargs up the chain to ensure all
+        mixins in the MRO are properly initialized.
+        """
+        super().__init__(**kwargs)
+        # Private prefix _mcp_ to avoid attribute collisions
+        self._mcp_audit_log: List[MCPAuditEntry] = []
         self._mcp_call_count: int = 0
         self._mcp_success_count: int = 0
         self._mcp_failure_count: int = 0
@@ -610,7 +621,7 @@ class MCPHardenedMixin:
             metadata=metadata or {}
         )
         
-        self._audit_log.append(entry)
+        self._mcp_audit_log.append(entry)
         
         # Emit event for observability
         self._emit_sovereign_event("MCP_AUDIT", {
@@ -626,7 +637,7 @@ class MCPHardenedMixin:
     
     def get_audit_log(self, limit: int = 100) -> List[MCPAuditEntry]:
         """Get recent audit log entries."""
-        return self._audit_log[-limit:]
+        return self._mcp_audit_log[-limit:]
     
     def get_mcp_statistics(self) -> Dict[str, Any]:
         """Get MCP call statistics."""
@@ -635,5 +646,5 @@ class MCPHardenedMixin:
             "successful_calls": self._mcp_success_count,
             "failed_calls": self._mcp_failure_count,
             "success_rate": (self._mcp_success_count / self._mcp_call_count * 100) if self._mcp_call_count > 0 else 0,
-            "audit_log_size": len(self._audit_log)
+            "audit_log_size": len(self._mcp_audit_log)
         }

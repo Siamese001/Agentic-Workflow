@@ -7,15 +7,20 @@ Capabilities:
 - L0DelegationTestingMixin: Delegates testing to higher layers (boot-time safety)
 
 L0 agents run at boot time, so they delegate testing rather than self-test.
+
+MRO HARDENING:
+- Inheritance order: Mixins FIRST, SovereignBaseAgent LAST
+- All mixins use cooperative super().__init__(**kwargs)
+- SovereignBaseAgent terminates the MRO chain
 """
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L0_maintenance.scripts.l0_delegation_testing_mixin import L0DelegationTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L0_maintenance.scripts.l0_delegation_testing_mixin import L0DelegationTestingMixin
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -36,9 +41,15 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 @dataclass
-class L0Agent(HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin):
+class L0Agent(HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin, SovereignBaseAgent):
     """
     Consolidated base for L0 Maintenance agents.
+    
+    MRO HARDENING:
+    - HealerMixin: First (specialized capability)
+    - MCPHardenedMixin: Second (universal protocol)
+    - L0DelegationTestingMixin: Third (L0-specific testing)
+    - SovereignBaseAgent: Last (root termination)
     
     Guaranteed Capabilities:
     - heal_repository(): Self-repair method
@@ -52,12 +63,16 @@ class L0Agent(HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin):
     name: str = "L0Agent"
     layer: str = "L0"
     
+    def __post_init__(self):
+        """Cooperative MRO initialization."""
+        super().__init__(name=self.name)
+    
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         if _call_path is None:
             _call_path = set()
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
-        return {"status": "not_implemented", "agent": self.name}
+        result = super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        return result
 
     def _run_self_tests(self) -> dict:
         """Run internal self-tests."""

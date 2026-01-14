@@ -7,6 +7,11 @@ This base provides default-on healing via HealerMixin.
 Table Decision (L5 Safety):
 - Basic Self-Testing: YES (via _run_self_tests)
 - Healing Capability: YES (via HealerMixin)
+
+MRO HARDENING:
+- Inheritance order: Mixins FIRST, SovereignBaseAgent LAST
+- All mixins use cooperative super().__init__(**kwargs)
+- SovereignBaseAgent terminates the MRO chain
 """
 from typing import Any, Dict, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
@@ -22,10 +27,14 @@ Logger = logging.getLogger(__name__)
 
 
 # NOT_AN_AGENT — Base class for L5 agents, not a true agent itself
-class SafetyBaseAgent(SovereignBaseAgent, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
+class SafetyBaseAgent(MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Base class for L5 Safety agents with healing capability.
     
-    HARDENED: Now with Redis caching + Pinecone vector support.
+    MRO HARDENING:
+    - MCPHardenedMixin: First (security protocol)
+    - RedisCacheMixin: Second (caching infrastructure)
+    - PineconeVectorMixin: Third (vector infrastructure)
+    - SovereignBaseAgent: Last (root termination)
     
     Provides:
     - Default-on healing via SovereignBaseAgent
@@ -71,8 +80,15 @@ class SafetyBaseAgent(SovereignBaseAgent, MCPHardenedMixin, RedisCacheMixin, Pin
     ]
     
     def __init__(self, project_root=None, ctx=None, **kwargs):
-        super().__init__(ctx=ctx or kwargs.get("ctx"))  # Root handles name
+        """
+        Initialize with cooperative MRO inheritance.
+        
+        MRO HARDENING: Passes **kwargs up the chain to ensure all
+        mixins in the MRO are properly initialized.
+        """
+        super().__init__(**kwargs)  # Propagate up MRO chain
         self.project_root = project_root
+        self._l5_ctx = ctx
     
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L5 compliance."""
