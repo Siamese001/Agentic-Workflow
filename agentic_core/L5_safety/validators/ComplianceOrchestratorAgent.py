@@ -185,7 +185,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
                     return True
                 # Pattern 4: Inherits from agent bases
                 agent_bases = {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-                    'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+                    'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
                     'HealerMixin', 'SubatomicTestingMixin', 'ExecutionCanonBaseAgent',
                     'CognitionCanonBaseAgent', 'MCPHardenedMixin', 'BaseAgent'}
                 if bases & agent_bases:
@@ -222,7 +222,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
                         if is_agent_class(node, bases):
                             # Skip base classes themselves
                             if node.name not in {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-                                'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent', 'ABC', 'Protocol'}:
+                                'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent', 'ABC', 'Protocol'}:
                                 has_agent_class = True
                                 ast_agent_count += 1
                 if has_agent_class:

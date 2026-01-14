@@ -1,4 +1,4 @@
-"""StateBaseAgent — L4 Base with Subatomic Testing Framework (Jan 01, 2026)
+"""L4StateBaseAgent — L4 Base with Subatomic Testing Framework (Jan 01, 2026)
 
 L4 State agents manage long-term memory, persistence, and reflection.
 Subatomic CRITIQUE hop includes:
@@ -425,7 +425,7 @@ def test_artifact_exists():
 
 
 @dataclass
-class StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Base class for L4 State agents with subatomic testing.
     
     MRO HARDENING:

@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Dict, Any, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class
+from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 base class
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -26,7 +26,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)
-# Reason: SafetyBaseAgent provides real logging and initialization.
+# Reason: L5SafetyBaseAgent provides real logging and initialization.
 # ------------------------------------------------------------------
 
 class BaseModel:
@@ -48,7 +48,7 @@ async def _format_prompt_with_defaults(template, data, budget_manager, goal_stat
     return template
 
 
-class PromptInjectionDetectorAgent(SafetyBaseAgent, MCPHardenedMixin):
+class PromptInjectionDetectorAgent(L5SafetyBaseAgent, MCPHardenedMixin):
     """Detects prompt-injection attacks."""
 
     class PIDetectionOutput(BaseModel):

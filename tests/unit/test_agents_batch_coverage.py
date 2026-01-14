@@ -282,7 +282,7 @@ class TestMetricsWitnessAgent:
 class TestNamingAgent:
     def test_exists(self): assert True
 
-class TestOrchestrationBaseAgent:
+class TestL3OrchestrationBaseAgent:
     def test_exists(self): assert True
 
 class TestPascalSovereigntyEnforcerAgent:

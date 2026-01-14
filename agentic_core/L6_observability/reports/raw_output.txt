@@ -2348,9 +2348,9 @@
     "rationale": "Keep canonical: has HealerMixin, has MCPHardenedMixin, has docstrings, has type hints"
   },
   {
-    "agent_class": "OrchestrationBaseAgent",
+    "agent_class": "L3OrchestrationBaseAgent",
     "duplicate_type": "exact",
-    "canonical_file": "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationBaseAgent.py",
+    "canonical_file": "agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBaseAgent.py",
     "canonical_quality": {
       "has_docstrings": true,
       "has_type_hints": true,
@@ -2364,7 +2364,7 @@
     },
     "duplicates": [
       {
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationBaseAgent.py",
+        "path": "agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBaseAgent.py",
         "priority": 20,
         "quality": {
           "has_docstrings": true,
@@ -2380,7 +2380,7 @@
       }
     ],
     "action": "DELETE",
-    "rationale": "Keep canonical: has MCPHardenedMixin, has docstrings, has type hints | Remove OrchestrationBaseAgent.py: syntax errors: Missing SubatomicTestingMixin import"
+    "rationale": "Keep canonical: has MCPHardenedMixin, has docstrings, has type hints | Remove L3OrchestrationBaseAgent.py: syntax errors: Missing SubatomicTestingMixin import"
   },
   {
     "agent_class": "SemanticTerritoryMapperAgent",
@@ -3254,9 +3254,9 @@
     "rationale": "Keep canonical: has HealerMixin, has MCPHardenedMixin, has docstrings, has type hints"
   },
   {
-    "agent_class": "StateBaseAgent",
+    "agent_class": "L4StateBaseAgent",
     "duplicate_type": "exact",
-    "canonical_file": "agentic_core\\L4_state\\ValidationContext\\StateBaseAgent.py",
+    "canonical_file": "agentic_core\\L4_state\\ValidationContext\\L4StateBaseAgent.py",
     "canonical_quality": {
       "has_docstrings": true,
       "has_type_hints": true,
@@ -3270,7 +3270,7 @@
     },
     "duplicates": [
       {
-        "path": "agentic_core\\L4_state\\ValidationContext\\StateBaseAgent.py",
+        "path": "agentic_core\\L4_state\\ValidationContext\\L4StateBaseAgent.py",
         "priority": 20,
         "quality": {
           "has_docstrings": true,
@@ -3286,7 +3286,7 @@
       }
     ],
     "action": "DELETE",
-    "rationale": "Keep canonical: has MCPHardenedMixin, has docstrings, has type hints | Remove StateBaseAgent.py: syntax errors: Missing SubatomicTestingMixin import"
+    "rationale": "Keep canonical: has MCPHardenedMixin, has docstrings, has type hints | Remove L4StateBaseAgent.py: syntax errors: Missing SubatomicTestingMixin import"
   },
   {
     "agent_class": "SubAtomicRegistryAgent",
@@ -4278,9 +4278,9 @@
     "rationale": "Keep canonical: has HealerMixin, has MCPHardenedMixin, has docstrings, has type hints | Remove RedSentinelAgent.py: syntax errors: Missing SubatomicTestingMixin import"
   },
   {
-    "agent_class": "SafetyBaseAgent",
+    "agent_class": "L5SafetyBaseAgent",
     "duplicate_type": "exact",
-    "canonical_file": "agentic_core\\L5_safety\\guardrails\\SafetyBaseAgent.py",
+    "canonical_file": "agentic_core\\L5_safety\\guardrails\\L5SafetyBaseAgent.py",
     "canonical_quality": {
       "has_docstrings": true,
       "has_type_hints": true,
@@ -4292,7 +4292,7 @@
     },
     "duplicates": [
       {
-        "path": "agentic_core\\L5_safety\\guardrails\\SafetyBaseAgent.py",
+        "path": "agentic_core\\L5_safety\\guardrails\\L5SafetyBaseAgent.py",
         "priority": 20,
         "quality": {
           "has_docstrings": true,
@@ -5911,7 +5911,7 @@
     "rationale": "Keep canonical: has HealerMixin, has MCPHardenedMixin, has docstrings, has type hints | Remove GlobalComplianceAggregatorAgent.py: syntax errors: Missing SubatomicTestingMixin import"
   },
   {
-    "agent_class": "L0Agent",
+    "agent_class": "L0MaintenanceBaseAgent",
     "duplicate_type": "exact",
     "canonical_file": "agentic_core\\utils\\core_extensions\\l0_agent.py",
     "canonical_quality": {
@@ -5942,7 +5942,7 @@
     "rationale": "Keep canonical: has HealerMixin, has MCPHardenedMixin, has docstrings, has type hints"
   },
   {
-    "agent_class": "L1Agent",
+    "agent_class": "L1CognitionBaseAgent",
     "duplicate_type": "exact",
     "canonical_file": "agentic_core\\utils\\core_extensions\\l1_agent.py",
     "canonical_quality": {

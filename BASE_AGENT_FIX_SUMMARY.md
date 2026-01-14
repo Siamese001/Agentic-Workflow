@@ -10,9 +10,9 @@
 
 Dashboard E2E Test 8 was detecting **2 base agents per layer** for L2-L5:
 - L2: L2Agent + L2ExecutionBaseAgent
-- L3: L3Agent + OrchestrationBaseAgent  
-- L4: L4Agent + StateBaseAgent
-- L5: L5Agent + SafetyBaseAgent
+- L3: L3Agent + L3OrchestrationBaseAgent  
+- L4: L4Agent + L4StateBaseAgent
+- L5: L5Agent + L5SafetyBaseAgent
 
 **Root Cause:** Historical refactoring created duplicate base agent classes without deprecating originals.
 
@@ -30,10 +30,10 @@ DEPRECATED_SIMPLE_BASES = {'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent'}
 **Updated base agent detection:**
 ```python
 # OLD: Counted all agents ending with 'BaseAgent' or named L*Agent
-if name.endswith('BaseAgent') or name in ['L0Agent', 'L1Agent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent']:
+if name.endswith('BaseAgent') or name in ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent']:
 
 # NEW: Excludes deprecated simple bases
-if name.endswith('BaseAgent') or name in ['L0Agent', 'L1Agent', 'L6Agent']:
+if name.endswith('BaseAgent') or name in ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6Agent']:
     if name not in DEPRECATED_SIMPLE_BASES:
         # Count as canonical base agent
 ```
@@ -65,23 +65,23 @@ This class will be removed in a future version.
 
 ### Before Fix:
 ```
-L0: 1 base agents - L0Agent
-L1: 1 base agents - L1Agent
+L0: 1 base agents - L0MaintenanceBaseAgent
+L1: 1 base agents - L1CognitionBaseAgent
 L2: 2 base agents - L2Agent, L2ExecutionBaseAgent ❌
-L3: 2 base agents - L3Agent, OrchestrationBaseAgent ❌
-L4: 2 base agents - L4Agent, StateBaseAgent ❌
-L5: 2 base agents - L5Agent, SafetyBaseAgent ❌
+L3: 2 base agents - L3Agent, L3OrchestrationBaseAgent ❌
+L4: 2 base agents - L4Agent, L4StateBaseAgent ❌
+L5: 2 base agents - L5Agent, L5SafetyBaseAgent ❌
 Unknown: 1 base agents - SovereignBaseAgent
 ```
 
 ### After Fix:
 ```
-L0: 1 base agents - L0Agent ✅
-L1: 1 base agents - L1Agent ✅
+L0: 1 base agents - L0MaintenanceBaseAgent ✅
+L1: 1 base agents - L1CognitionBaseAgent ✅
 L2: 1 base agents - L2ExecutionBaseAgent ✅
-L3: 1 base agents - OrchestrationBaseAgent ✅
-L4: 1 base agents - StateBaseAgent ✅
-L5: 1 base agents - SafetyBaseAgent ✅
+L3: 1 base agents - L3OrchestrationBaseAgent ✅
+L4: 1 base agents - L4StateBaseAgent ✅
+L5: 1 base agents - L5SafetyBaseAgent ✅
 Unknown: 1 base agents - SovereignBaseAgent ✅
 ```
 
@@ -93,12 +93,12 @@ Unknown: 1 base agents - SovereignBaseAgent ✅
 
 | Layer | Canonical Base Agent | Location |
 |-------|---------------------|----------|
-| L0 | L0Agent | agentic_core/L0_maintenance/ |
-| L1 | L1Agent | agentic_core/L1_cognition/ |
+| L0 | L0MaintenanceBaseAgent | agentic_core/L0_maintenance/ |
+| L1 | L1CognitionBaseAgent | agentic_core/L1_cognition/ |
 | L2 | L2ExecutionBaseAgent | agentic_core/L2_execution/ToolRegistry/ |
-| L3 | OrchestrationBaseAgent | agentic_core/L3_orchestration/workflow_engines/ |
-| L4 | StateBaseAgent | agentic_core/L4_state/ValidationContext/ |
-| L5 | SafetyBaseAgent | agentic_core/L5_safety/guardrails/ |
+| L3 | L3OrchestrationBaseAgent | agentic_core/L3_orchestration/workflow_engines/ |
+| L4 | L4StateBaseAgent | agentic_core/L4_state/ValidationContext/ |
+| L5 | L5SafetyBaseAgent | agentic_core/L5_safety/guardrails/ |
 | Root | SovereignBaseAgent | agentic_core/base_agents/ |
 
 ---
@@ -108,9 +108,9 @@ Unknown: 1 base agents - SovereignBaseAgent ✅
 | Deprecated Class | Use Instead | Status |
 |-----------------|-------------|--------|
 | L2Agent | L2ExecutionBaseAgent | ⚠️ Deprecated |
-| L3Agent | OrchestrationBaseAgent | ⚠️ Deprecated |
-| L4Agent | StateBaseAgent | ⚠️ Deprecated |
-| L5Agent | SafetyBaseAgent | ⚠️ Deprecated |
+| L3Agent | L3OrchestrationBaseAgent | ⚠️ Deprecated |
+| L4Agent | L4StateBaseAgent | ⚠️ Deprecated |
+| L5Agent | L5SafetyBaseAgent | ⚠️ Deprecated |
 
 ---
 
@@ -126,18 +126,18 @@ class MyExecutor(L2ExecutionBaseAgent):
     pass
 
 # L3 Orchestration
-from agentic_core.L3_orchestration.workflow_engines.OrchestrationBaseAgent import OrchestrationBaseAgent
-class MyOrchestrator(OrchestrationBaseAgent):
+from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
+class MyOrchestrator(L3OrchestrationBaseAgent):
     pass
 
 # L4 State
-from agentic_core.L4_state.ValidationContext.StateBaseAgent import StateBaseAgent
-class MyStateManager(StateBaseAgent):
+from agentic_core.L4_state.ValidationContext.L4StateBaseAgent import L4StateBaseAgent
+class MyStateManager(L4StateBaseAgent):
     pass
 
 # L5 Safety
-from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
-class MyValidator(SafetyBaseAgent):
+from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
+class MyValidator(L5SafetyBaseAgent):
     pass
 ```
 

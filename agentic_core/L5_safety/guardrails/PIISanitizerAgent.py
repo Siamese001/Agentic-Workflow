@@ -6,7 +6,7 @@ import re
 from typing import Any, Dict
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class
+from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 base class
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -28,7 +28,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)
-# Reason: SafetyBaseAgent provides real log_info and initialization.
+# Reason: L5SafetyBaseAgent provides real log_info and initialization.
 # ------------------------------------------------------------------
 
 def track_metrics(name):
@@ -38,7 +38,7 @@ def track_metrics(name):
     return decorator
 
 
-class PIISanitizerAgent(SafetyBaseAgent, MCPHardenedMixin):
+class PIISanitizerAgent(L5SafetyBaseAgent, MCPHardenedMixin):
     """Performs local PII detection using regex heuristics."""
 
     PII_PATTERNS = {

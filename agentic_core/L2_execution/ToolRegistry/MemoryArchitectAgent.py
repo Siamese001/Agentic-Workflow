@@ -20,7 +20,7 @@ GOLD STANDARD UPGRADE (2026-01-02):
 - Structured Violation dataclass with severity levels
 - PineconeAgent integration for semantic pattern storage
 - RedisAgent integration for episodic memory caching
-- StateBaseAgent integration for blackboard state management
+- L4StateBaseAgent integration for blackboard state management
 - Post-heal validation confirming pattern inoculation
 - Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW
 - cleanup_violations with multi-stage pattern healing
@@ -29,7 +29,7 @@ GOLD STANDARD UPGRADE (2026-01-02):
 DOMAIN-SPECIFIC INTEGRATIONS (Memory Coordination):
 - PineconeAgent: Store/retrieve semantic healing patterns
 - RedisAgent: Cache episodic healing events
-- StateBaseAgent: Monitor blackboard for healing triggers
+- L4StateBaseAgent: Monitor blackboard for healing triggers
 """
 import ast
 import difflib

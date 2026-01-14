@@ -183,9 +183,9 @@
       }
     },
     {
-      "name": "L0Agent",
-      "module": "agentic_core.L0_maintenance.scripts.L0Agent",
-      "file": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+      "name": "L0MaintenanceBaseAgent",
+      "module": "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent",
+      "file": "agentic_core\\L0_maintenance\\scripts\\L0MaintenanceBaseAgent.py",
       "layer": "L0",
       "methods": {
         "__init__": false,
@@ -198,7 +198,7 @@
       "loc": 42,
       "fingerprint": "93cc7674bd3e4e63",
       "line": 39,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\L0MaintenanceBaseAgent.py",
       "usages": {
         "real": 0,
         "string_ref": 6,
@@ -858,9 +858,9 @@
       }
     },
     {
-      "name": "L1Agent",
-      "module": "agentic_core.L1_cognition.thought_engine.L1Agent",
-      "file": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+      "name": "L1CognitionBaseAgent",
+      "module": "agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py",
       "layer": "L1",
       "methods": {
         "__init__": false,
@@ -873,7 +873,7 @@
       "loc": 32,
       "fingerprint": "774278756638734c",
       "line": 38,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py",
       "usages": {
         "real": 0,
         "string_ref": 6,
@@ -3014,9 +3014,9 @@
       }
     },
     {
-      "name": "OrchestrationBaseAgent",
-      "module": "agentic_core.L3_orchestration.workflow_engines.OrchestrationBaseAgent",
-      "file": "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationBaseAgent.py",
+      "name": "L3OrchestrationBaseAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBaseAgent.py",
       "layer": "L3",
       "methods": {
         "__init__": false,
@@ -3029,7 +3029,7 @@
       "loc": 247,
       "fingerprint": "be45429633e0eae5",
       "line": 355,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationBaseAgent.py",
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBaseAgent.py",
       "usages": {
         "real": 0,
         "string_ref": 22,
@@ -3898,9 +3898,9 @@
       }
     },
     {
-      "name": "StateBaseAgent",
-      "module": "agentic_core.L4_state.ValidationContext.StateBaseAgent",
-      "file": "agentic_core\\L4_state\\ValidationContext\\StateBaseAgent.py",
+      "name": "L4StateBaseAgent",
+      "module": "agentic_core.L4_state.ValidationContext.L4StateBaseAgent",
+      "file": "agentic_core\\L4_state\\ValidationContext\\L4StateBaseAgent.py",
       "layer": "L4",
       "methods": {
         "__init__": false,
@@ -3913,7 +3913,7 @@
       "loc": 374,
       "fingerprint": "c6ffce141c3ee9dc",
       "line": 428,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\ValidationContext\\StateBaseAgent.py",
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\ValidationContext\\L4StateBaseAgent.py",
       "usages": {
         "real": 0,
         "string_ref": 19,
@@ -5280,9 +5280,9 @@
       }
     },
     {
-      "name": "SafetyBaseAgent",
-      "module": "agentic_core.L5_safety.guardrails.SafetyBaseAgent",
-      "file": "agentic_core\\L5_safety\\guardrails\\SafetyBaseAgent.py",
+      "name": "L5SafetyBaseAgent",
+      "module": "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\L5SafetyBaseAgent.py",
       "layer": "L5",
       "methods": {
         "__init__": true,
@@ -5295,7 +5295,7 @@
       "loc": 160,
       "fingerprint": "54d30935e65655c7",
       "line": 25,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\SafetyBaseAgent.py",
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\L5SafetyBaseAgent.py",
       "usages": {
         "real": 0,
         "string_ref": 30,
@@ -5496,12 +5496,12 @@
         "real": 6,
         "string_ref": 41,
         "files": [
-          "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationBaseAgent.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBaseAgent.py",
           "agentic_core\\L2_execution\\ToolRegistry\\ExecutionCanonBaseAgent.py",
           "tests\\integration\\test_agent_integration_comprehensive.py",
           "agentic_core\\L0_maintenance\\scripts\\MaintenanceBaseAgent.py",
           "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
-          "agentic_core\\L4_state\\ValidationContext\\StateBaseAgent.py"
+          "agentic_core\\L4_state\\ValidationContext\\L4StateBaseAgent.py"
         ]
       }
     },
@@ -5848,7 +5848,7 @@
   ],
   "suspect_agents": [
     "BootstrapAgent",
-    "L0Agent",
+    "L0MaintenanceBaseAgent",
     "MaintenanceBaseAgent",
     "SafeSystemCommandExecutorAgent",
     "ScriptsPlanningOrchestratorAgent",
@@ -5865,7 +5865,7 @@
     "GenerativeGuardAgent",
     "GenerativeGuardDeprecatedAgent",
     "IntelligentOrchestratorAgent",
-    "L1Agent",
+    "L1CognitionBaseAgent",
     "L1CognitionBaseAgent",
     "L1CognitionExerciserAgent",
     "PrintStatementValidatorAgent",
@@ -5923,7 +5923,7 @@
     "MetaCoverageOptimizerAgent",
     "MockAgent",
     "ModelRouterAgent",
-    "OrchestrationBaseAgent",
+    "L3OrchestrationBaseAgent",
     "OrchestrationHandshakeAgent",
     "PPOOrchestratorAgent",
     "PredictiveCostAuditorAgent",
@@ -5949,7 +5949,7 @@
     "L4StateExerciserAgent",
     "MemoryManagerAgent",
     "SchemaEvolverAgent",
-    "StateBaseAgent",
+    "L4StateBaseAgent",
     "SubAtomicRegistryAgent",
     "ValidationContextManagerAgent",
     "AdversarialRedTeamerAgent",
@@ -5975,7 +5975,7 @@
     "NeuralAutoImmuneAgent",
     "PromptInjectionDetectorAgent",
     "RegressionOracleAgent",
-    "SafetyBaseAgent",
+    "L5SafetyBaseAgent",
     "SecureCheckpointManagerAgent",
     "SecureConfigManagerAgent",
     "SelfUpdatingSafetyEngineAgent",

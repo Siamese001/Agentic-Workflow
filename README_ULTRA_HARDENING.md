@@ -45,14 +45,14 @@ ACTION REQUIRED:
 ## 🔄 IN PROGRESS: Check 8 Ultra-Hardening
 
 ### Current Implementation Gap
-**Weakness:** Accepts ANY base agent pattern (L1Agent, L1CognitionBaseAgent, etc.)
+**Weakness:** Accepts ANY base agent pattern (L1CognitionBaseAgent, L1CognitionBaseAgent, etc.)
 
 **Security Risk:** Agents can bypass layer hierarchy by inheriting from wrong layer base
 
 ### Ultra-Hardening Design
 
 **Enforcement Rules:**
-1. **Exact Canonical Match:** L1 agents MUST inherit from `L1Agent` (not L1CognitionBaseAgent)
+1. **Exact Canonical Match:** L1 agents MUST inherit from `L1CognitionBaseAgent` (not L1CognitionBaseAgent)
 2. **Hierarchy Bypass Detection:** Flag if agent inherits from WRONG layer base (e.g., L1 agent inheriting from L2Agent)
 3. **Deprecation Warnings:** Flag deprecated alternative bases for migration
 
@@ -218,7 +218,7 @@ Check 8: Orphaned Agents (Exact Base Inheritance)
    ❌ 1 agent bypasses layer hierarchy
 
 ERRORS:
-  • HierarchyBypassAgent (L1): HIERARCHY BYPASS - inherits from L2Agent instead of L1Agent
+  • HierarchyBypassAgent (L1): HIERARCHY BYPASS - inherits from L2Agent instead of L1CognitionBaseAgent
 ```
 
 **Status:** ⚠️ Pending implementation of exact base matching

@@ -36,7 +36,7 @@ class TestConstitutionalLogic:
         assert ConstitutionalReviewerAgent is not None
 
     def test_constitutional_reviewer_inherits_safety_base(self):
-        """Test ConstitutionalReviewerAgent inherits from SafetyBaseAgent."""
+        """Test ConstitutionalReviewerAgent inherits from L5SafetyBaseAgent."""
         from agentic_core.L5_safety.guardrails.ConstitutionalReviewerAgent import ConstitutionalReviewerAgent
-        from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
-        assert issubclass(ConstitutionalReviewerAgent, SafetyBaseAgent)
+        from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
+        assert issubclass(ConstitutionalReviewerAgent, L5SafetyBaseAgent)

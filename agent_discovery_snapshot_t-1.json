@@ -3193,8 +3193,8 @@
     "schema_strictness": 66.7
   },
   {
-    "class_name": "L0Agent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\L0Agent.py",
+    "class_name": "L0MaintenanceBaseAgent",
+    "path": "agentic_core\\L0_maintenance\\scripts\\L0MaintenanceBaseAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L0_maintenance",
     "layer": "L0",
@@ -4217,8 +4217,8 @@
     "schema_strictness": 100.0
   },
   {
-    "class_name": "L1Agent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\L1Agent.py",
+    "class_name": "L1CognitionBaseAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L1_cognition",
     "layer": "L1",
@@ -7974,8 +7974,8 @@
     "schema_strictness": 25.0
   },
   {
-    "class_name": "OrchestrationBaseAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationBaseAgent.py",
+    "class_name": "L3OrchestrationBaseAgent",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBaseAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L3_orchestration",
     "layer": "L3",
@@ -9603,8 +9603,8 @@
     "schema_strictness": 61.5
   },
   {
-    "class_name": "StateBaseAgent",
-    "path": "agentic_core\\L4_state\\ValidationContext\\StateBaseAgent.py",
+    "class_name": "L4StateBaseAgent",
+    "path": "agentic_core\\L4_state\\ValidationContext\\L4StateBaseAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L4_state",
     "layer": "L4",
@@ -11824,8 +11824,8 @@
     "schema_strictness": 66.7
   },
   {
-    "class_name": "SafetyBaseAgent",
-    "path": "agentic_core\\L5_safety\\guardrails\\SafetyBaseAgent.py",
+    "class_name": "L5SafetyBaseAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\L5SafetyBaseAgent.py",
     "top_dir": "agentic_core",
     "sub_dir": "agentic_core/L5_safety",
     "layer": "L5",

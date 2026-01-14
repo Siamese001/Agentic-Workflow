@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class (same directory → relative import)
+from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 base class (same directory → relative import)
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -26,7 +26,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)
-# Reason: SafetyBaseAgent is the canonical L5 base class. It already inherits
+# Reason: L5SafetyBaseAgent is the canonical L5 base class. It already inherits
 #         HealerMixin and provides standardized initialization, logging,
 #         and safety utilities. The stub only had pass-through logs.
 # ------------------------------------------------------------------
@@ -42,7 +42,7 @@ def detect_bias(context, text, workflow_id=""):
     return {"bias_detected": False, "score": 0.0, "patterns": []}
 
 
-class BiasDetectorAgent(SafetyBaseAgent, MCPHardenedMixin):
+class BiasDetectorAgent(L5SafetyBaseAgent, MCPHardenedMixin):
     """Runs local bias detection with dynamic constitution rules."""
     
     def __init__(self, context: Any = None, **kwargs):
@@ -53,12 +53,12 @@ class BiasDetectorAgent(SafetyBaseAgent, MCPHardenedMixin):
     @track_metrics("run_bias_detector")
     def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         """Run bias detection on the provided text."""
-        # log_info now comes from SafetyBaseAgent (real implementation)
+        # log_info now comes from L5SafetyBaseAgent (real implementation)
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         result = detect_bias(self.context, text, workflow_id)
 
         if workflow_id:
-            # log_feedback now comes from SafetyBaseAgent (real implementation)
+            # log_feedback now comes from L5SafetyBaseAgent (real implementation)
             self.log_feedback(
                 workflow_id,
                 "bias_detection",

@@ -15,7 +15,7 @@ Detects agents that don't inherit from their layer's canonical base agent, indic
 ```python
 For each non-base agent:
   - Extract layer (L0-L6)
-  - Check if inherits from canonical base (L0Agent, L1Agent, etc.)
+  - Check if inherits from canonical base (L0MaintenanceBaseAgent, L1CognitionBaseAgent, etc.)
   - OR alternative patterns (L1CognitionBaseAgent, etc.)
   - Flag as ORPHANED if no base agent found in inheritance chain
 ```
@@ -29,7 +29,7 @@ For each non-base agent:
 ### Example Violations
 ```
 CognitiveContractValidatorAgent (L1): No base agent in inheritance
-  → Should inherit from L1Agent or L1CognitionBaseAgent
+  → Should inherit from L1CognitionBaseAgent or L1CognitionBaseAgent
 
 UtilityHelperAgent (L2): No base agent in inheritance  
   → Should inherit from L2Agent or L2ExecutionBaseAgent

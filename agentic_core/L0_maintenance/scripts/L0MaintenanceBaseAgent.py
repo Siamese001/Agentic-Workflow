@@ -1,5 +1,5 @@
 """
-L0Agent - Consolidated Base for L0 Maintenance Agents
+L0MaintenanceBaseAgent - Consolidated Base for L0 Maintenance Agents
 
 Capabilities:
 - HealerMixin: heal_repository() for self-repair
@@ -40,7 +40,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 @dataclass
-class L0Agent(HealerMixin, L0DelegationTestingMixin, SovereignBaseAgent):
+class L0MaintenanceBaseAgent(HealerMixin, L0DelegationTestingMixin, SovereignBaseAgent):
     """
     Consolidated base for L0 Maintenance agents.
     
@@ -60,7 +60,7 @@ class L0Agent(HealerMixin, L0DelegationTestingMixin, SovereignBaseAgent):
     - Basic Self-Testing: NO (boot-time stability)
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
-    name: str = "L0Agent"
+    name: str = "L0MaintenanceBaseAgent"
     layer: str = "L0"
     
     def __post_init__(self):

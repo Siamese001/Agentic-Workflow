@@ -13,9 +13,9 @@ class TestSafetyProperties:
         assert agentic_core.L5_safety is not None
 
     def test_safety_base_agent_importable(self):
-        """Test SafetyBaseAgent can be imported."""
-        from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
-        assert SafetyBaseAgent is not None
+        """Test L5SafetyBaseAgent can be imported."""
+        from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
+        assert L5SafetyBaseAgent is not None
 
     def test_bias_detector_importable(self):
         """Test BiasDetectorAgent can be imported."""

@@ -4,8 +4,8 @@ BaseClassEnforcerAgent - Enforces one-base-class-per-layer best practice.
 
 Best Practice:
 - Each agent in L0-L5 layer directories SHOULD inherit from its canonical layer base:
-  - L0_maintenance agents → L0Agent
-  - L1_cognition agents → L1Agent
+  - L0_maintenance agents → L0MaintenanceBaseAgent
+  - L1_cognition agents → L1CognitionBaseAgent
   - L2_execution agents → L2Agent
   - L3_orchestration agents → L3Agent
   - L4_state agents → L4Agent
@@ -53,7 +53,7 @@ class BaseClassEnforcerAgent(L5Agent):
     Enforces one-base-class-per-layer inheritance pattern.
     
     Validates that agents in layer directories inherit from their
-    canonical layer base class (L0Agent, L1Agent, etc.).
+    canonical layer base class (L0MaintenanceBaseAgent, L1CognitionBaseAgent, etc.).
     """
     name: str = "BaseClassEnforcerAgent"
     layer: str = "L5"
@@ -61,8 +61,8 @@ class BaseClassEnforcerAgent(L5Agent):
     
     # Canonical layer bases
     LAYER_BASES: Dict[str, str] = field(default_factory=lambda: {
-        'L0': 'L0Agent',
-        'L1': 'L1Agent',
+        'L0': 'L0MaintenanceBaseAgent',
+        'L1': 'L1CognitionBaseAgent',
         'L2': 'L2Agent',
         'L3': 'L3Agent',
         'L4': 'L4Agent',
@@ -81,8 +81,8 @@ class BaseClassEnforcerAgent(L5Agent):
     
     # Import statement for each layer base
     LAYER_IMPORTS: Dict[str, str] = field(default_factory=lambda: {
-        'L0': 'from agentic_core.bases import L0Agent',
-        'L1': 'from agentic_core.bases import L1Agent',
+        'L0': 'from agentic_core.bases import L0MaintenanceBaseAgent',
+        'L1': 'from agentic_core.bases import L1CognitionBaseAgent',
         'L2': 'from agentic_core.bases import L2Agent',
         'L3': 'from agentic_core.bases import L3Agent',
         'L4': 'from agentic_core.bases import L4Agent',

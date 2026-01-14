@@ -24,12 +24,12 @@ def build_inheritance_tree(agents: List[Dict]) -> Dict:
     
     # Layer base agents
     layer_bases = {
-        'L0Agent': 'L0',
-        'L1Agent': 'L1',
+        'L0MaintenanceBaseAgent': 'L0',
+        'L1CognitionBaseAgent': 'L1',
         'L2ExecutionBaseAgent': 'L2',
-        'OrchestrationBaseAgent': 'L3',
-        'StateBaseAgent': 'L4',
-        'SafetyBaseAgent': 'L5',
+        'L3OrchestrationBaseAgent': 'L3',
+        'L4StateBaseAgent': 'L4',
+        'L5SafetyBaseAgent': 'L5',
         'L6ObservabilityBaseAgent': 'L6'
     }
     
@@ -150,12 +150,12 @@ def generate_report(agents: List[Dict]):
     
     proper_bases = {
         'SovereignBaseAgent',
-        'L0Agent',
-        'L1Agent', 
+        'L0MaintenanceBaseAgent',
+        'L1CognitionBaseAgent', 
         'L2ExecutionBaseAgent',
-        'OrchestrationBaseAgent',
-        'StateBaseAgent',
-        'SafetyBaseAgent',
+        'L3OrchestrationBaseAgent',
+        'L4StateBaseAgent',
+        'L5SafetyBaseAgent',
         'L6ObservabilityBaseAgent'
     }
     

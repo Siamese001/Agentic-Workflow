@@ -11,12 +11,12 @@
 The dashboard E2E test suite is detecting **2 base agents per layer** for L2-L5:
 
 ```
-L0: 1 base agent  - L0Agent ✅
-L1: 1 base agent  - L1Agent ✅
+L0: 1 base agent  - L0MaintenanceBaseAgent ✅
+L1: 1 base agent  - L1CognitionBaseAgent ✅
 L2: 2 base agents - L2Agent, L2ExecutionBaseAgent ❌
-L3: 2 base agents - L3Agent, OrchestrationBaseAgent ❌
-L4: 2 base agents - L4Agent, StateBaseAgent ❌
-L5: 2 base agents - L5Agent, SafetyBaseAgent ❌
+L3: 2 base agents - L3Agent, L3OrchestrationBaseAgent ❌
+L4: 2 base agents - L4Agent, L4StateBaseAgent ❌
+L5: 2 base agents - L5Agent, L5SafetyBaseAgent ❌
 Unknown: 1 base agent - SovereignBaseAgent ⚠️
 ```
 
@@ -34,9 +34,9 @@ The codebase underwent multiple base agent refactoring phases:
 1. **Original Design:** Single base agent per layer (L2Agent, L3Agent, etc.)
 2. **Phase 2-3 Refactoring:** Created "ExecutionBaseAgent" pattern
    - `L2ExecutionBaseAgent` - Heavyweight with Gemini + subatomic features
-   - `OrchestrationBaseAgent` - L3 orchestration base
-   - `StateBaseAgent` - L4 state base
-   - `SafetyBaseAgent` - L5 safety base
+   - `L3OrchestrationBaseAgent` - L3 orchestration base
+   - `L4StateBaseAgent` - L4 state base
+   - `L5SafetyBaseAgent` - L5 safety base
 
 3. **Phase 4 Unification:** Attempted to consolidate but left both classes
 
@@ -48,15 +48,15 @@ The codebase underwent multiple base agent refactoring phases:
 
 **L3 Layer:**
 - `L3Agent.py` - Simple base (HealerMixin + MCPHardenedMixin)
-- `OrchestrationBaseAgent.py` - Complex base (SovereignBaseAgent + L3SubatomicTestingMixin + Redis + Pinecone)
+- `L3OrchestrationBaseAgent.py` - Complex base (SovereignBaseAgent + L3SubatomicTestingMixin + Redis + Pinecone)
 
 **L4 Layer:**
 - `L4Agent.py` - Simple base (HealerMixin + MCPHardenedMixin)
-- `StateBaseAgent.py` - Complex base (SovereignBaseAgent + L4SubatomicTestingMixin + Redis + Pinecone)
+- `L4StateBaseAgent.py` - Complex base (SovereignBaseAgent + L4SubatomicTestingMixin + Redis + Pinecone)
 
 **L5 Layer:**
 - `L5Agent.py` - Simple base (HealerMixin + MCPHardenedMixin)
-- `SafetyBaseAgent.py` - Complex base (SovereignBaseAgent + MCPHardenedMixin + Redis + Pinecone)
+- `L5SafetyBaseAgent.py` - Complex base (SovereignBaseAgent + MCPHardenedMixin + Redis + Pinecone)
 
 ---
 
@@ -224,7 +224,7 @@ The codebase underwent multiple base agent refactoring phases:
 DEPRECATED_BASES = {'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent'}
 
 # When detecting base agents:
-if name.endswith('BaseAgent') or name in ['L0Agent', 'L1Agent', 'L6Agent']:
+if name.endswith('BaseAgent') or name in ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6Agent']:
     # Exclude deprecated simple bases
     if name not in DEPRECATED_BASES:
         # Count as canonical base agent
@@ -237,7 +237,7 @@ if name.endswith('BaseAgent') or name in ['L0Agent', 'L1Agent', 'L6Agent']:
 ### Test 1: Discovery Verification
 ```bash
 python scripts/full_agent_discovery.py
-python -c "import json; agents = json.load(open('agent_discovery_full.json')); bases = [a for a in agents if a['class_name'].endswith('BaseAgent') or a['class_name'] in ['L0Agent', 'L1Agent']]; print('Base agents:', len(bases)); [print(f\"{a['layer']}: {a['class_name']}\") for a in bases]"
+python -c "import json; agents = json.load(open('agent_discovery_full.json')); bases = [a for a in agents if a['class_name'].endswith('BaseAgent') or a['class_name'] in ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent']]; print('Base agents:', len(bases)); [print(f\"{a['layer']}: {a['class_name']}\") for a in bases]"
 ```
 
 **Expected:** 1 base agent per layer (7 total: L0-L6)

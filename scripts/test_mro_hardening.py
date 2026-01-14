@@ -33,9 +33,9 @@ def test_root_end_guarantee():
     from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     
     test_cases = [
-        ("L0Agent", "agentic_core.L0_maintenance.scripts.L0Agent", "L0Agent"),
-        ("SafetyBaseAgent", "agentic_core.L5_safety.guardrails.SafetyBaseAgent", "SafetyBaseAgent"),
-        ("OrchestrationBaseAgent", "agentic_core.L3_orchestration.workflow_engines.OrchestrationBaseAgent", "OrchestrationBaseAgent"),
+        ("L0MaintenanceBaseAgent", "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent", "L0MaintenanceBaseAgent"),
+        ("L5SafetyBaseAgent", "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent", "L5SafetyBaseAgent"),
+        ("L3OrchestrationBaseAgent", "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent", "L3OrchestrationBaseAgent"),
     ]
     
     all_passed = True
@@ -109,13 +109,13 @@ def test_initialization_chain():
             print(f"     InitTrackerMixin.__post_init__ called (count={init_counter['count']})")
             super().__post_init__()
     
-    # Test with SafetyBaseAgent
+    # Test with L5SafetyBaseAgent
     try:
-        from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
+        from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
         from dataclasses import dataclass
         
         @dataclass
-        class TestAgent(InitTrackerMixin, SafetyBaseAgent):
+        class TestAgent(InitTrackerMixin, L5SafetyBaseAgent):
             """Test agent to verify initialization chain."""
             pass
         
@@ -174,8 +174,8 @@ def test_shadowing_audit():
     ]
     
     test_cases = [
-        ("SafetyBaseAgent", "agentic_core.L5_safety.guardrails.SafetyBaseAgent", "SafetyBaseAgent"),
-        ("OrchestrationBaseAgent", "agentic_core.L3_orchestration.workflow_engines.OrchestrationBaseAgent", "OrchestrationBaseAgent"),
+        ("L5SafetyBaseAgent", "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent", "L5SafetyBaseAgent"),
+        ("L3OrchestrationBaseAgent", "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent", "L3OrchestrationBaseAgent"),
     ]
     
     from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

@@ -27,8 +27,8 @@ agents = json.loads(Path(AGENT_DISCOVERY_JSON).read_text(encoding='utf-8'))
 
 # Canonical layer bases
 LAYER_BASES = {
-    'L0': 'L0Agent',
-    'L1': 'L1Agent', 
+    'L0': 'L0MaintenanceBaseAgent',
+    'L1': 'L1CognitionBaseAgent', 
     'L2': 'L2Agent',
     'L3': 'L3Agent',
     'L4': 'L4Agent',

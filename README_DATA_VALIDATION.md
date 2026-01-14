@@ -14,11 +14,11 @@ Comprehensive data validation framework that ensures dashboard data quality befo
 
 | Layer | Canonical | Duplicates | Status |
 |-------|-----------|------------|--------|
-| L1 | L1Agent 👑 | L1CognitionBaseAgent 🔴 | ❌ 2 base agents |
+| L1 | L1CognitionBaseAgent 👑 | L1CognitionBaseAgent 🔴 | ❌ 2 base agents |
 | L2 | L2Agent 👑 | L2ExecutionBaseAgent 🔴, SovereignBaseAgent 🔴 | ❌ 3 base agents |
-| L3 | L3Agent 👑 | OrchestrationBaseAgent 🔴 | ❌ 2 base agents |
-| L4 | L4Agent 👑 | StateBaseAgent 🔴 | ❌ 2 base agents |
-| L5 | L5Agent 👑 | SafetyBaseAgent 🔴 | ❌ 2 base agents |
+| L3 | L3Agent 👑 | L3OrchestrationBaseAgent 🔴 | ❌ 2 base agents |
+| L4 | L4Agent 👑 | L4StateBaseAgent 🔴 | ❌ 2 base agents |
+| L5 | L5Agent 👑 | L5SafetyBaseAgent 🔴 | ❌ 2 base agents |
 | L6 | None | None | ⚠️  No base agent |
 
 **Impact:**
@@ -28,7 +28,7 @@ Comprehensive data validation framework that ensures dashboard data quality befo
 - May lead to inconsistent behavior
 
 **Recommendation:**
-Keep canonical (L1Agent, L2Agent, etc.), deprecate duplicates
+Keep canonical (L1CognitionBaseAgent, L2Agent, etc.), deprecate duplicates
 
 ---
 
@@ -39,7 +39,7 @@ Keep canonical (L1Agent, L2Agent, etc.), deprecate duplicates
 
 **Checks:**
 - Base agent count per layer (must be 0 or 1)
-- Canonical naming (L0Agent, L1Agent, etc.)
+- Canonical naming (L0MaintenanceBaseAgent, L1CognitionBaseAgent, etc.)
 - Path consistency (base_class directories)
 
 **Usage:**
@@ -152,7 +152,7 @@ Added to `test_dashboard_end_to_end.py`:
 ──────────────────────────────────────────────────────────────────────
 Running: Base Agent Uniqueness (Critical)
 ──────────────────────────────────────────────────────────────────────
-❌ Test 8 FAILED: L1 has 2 base agents: ['L1Agent', 'L1CognitionBaseAgent']
+❌ Test 8 FAILED: L1 has 2 base agents: ['L1CognitionBaseAgent', 'L1CognitionBaseAgent']
 ❌ Test 8 FAILED: L2 has 3 base agents: ['L2Agent', 'L2ExecutionBaseAgent', 'SovereignBaseAgent']
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -183,11 +183,11 @@ This causes inheritance confusion. Run:
 
 **1. Duplicate Base Agents (5 layers)**
 ```
-L1: L1Agent (canonical) + L1CognitionBaseAgent (duplicate)
+L1: L1CognitionBaseAgent (canonical) + L1CognitionBaseAgent (duplicate)
 L2: L2Agent (canonical) + L2ExecutionBaseAgent + SovereignBaseAgent (duplicates)
-L3: L3Agent (canonical) + OrchestrationBaseAgent (duplicate)
-L4: L4Agent (canonical) + StateBaseAgent (duplicate)
-L5: L5Agent (canonical) + SafetyBaseAgent (duplicate)
+L3: L3Agent (canonical) + L3OrchestrationBaseAgent (duplicate)
+L4: L4Agent (canonical) + L4StateBaseAgent (duplicate)
+L5: L5Agent (canonical) + L5SafetyBaseAgent (duplicate)
 ```
 
 **2. High Complexity Agents (5 agents)**
@@ -230,12 +230,12 @@ OmniContextAgent: 9 LOC
    python scripts/validate_base_agents.py
    
    # Manually deprecate or consolidate:
-   # - L1CognitionBaseAgent → use L1Agent
+   # - L1CognitionBaseAgent → use L1CognitionBaseAgent
    # - L2ExecutionBaseAgent → use L2Agent
    # - SovereignBaseAgent → use L2Agent or move to correct layer
-   # - OrchestrationBaseAgent → use L3Agent
-   # - StateBaseAgent → use L4Agent
-   # - SafetyBaseAgent → use L5Agent
+   # - L3OrchestrationBaseAgent → use L3Agent
+   # - L4StateBaseAgent → use L4Agent
+   # - L5SafetyBaseAgent → use L5Agent
    ```
 
 2. **Create L6ObservabilityBaseAgent**

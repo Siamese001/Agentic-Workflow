@@ -9,7 +9,7 @@ Single entry point for all workflow orchestration, replacing 8 core engines:
 - DagEngineAgent
 - SelfRecoveringOrchestratorAgent
 - WorkflowFissionManagerAgent
-- OrchestrationBaseAgent
+- L3OrchestrationBaseAgent
 """
 
 from __future__ import annotations

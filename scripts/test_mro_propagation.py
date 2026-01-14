@@ -22,24 +22,24 @@ def main():
     
     # L0 Agent
     try:
-        from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
-        test_cases.append(("L0Agent", L0Agent, True))
+        from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+        test_cases.append(("L0MaintenanceBaseAgent", L0MaintenanceBaseAgent, True))
     except Exception as e:
-        print(f"Could not import L0Agent: {e}")
+        print(f"Could not import L0MaintenanceBaseAgent: {e}")
     
     # L1 Agent
     try:
-        from agentic_core.L1_cognition.thought_engine.L1Agent import L1Agent
-        test_cases.append(("L1Agent", L1Agent, True))
+        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
+        test_cases.append(("L1CognitionBaseAgent", L1CognitionBaseAgent, True))
     except Exception as e:
-        print(f"Could not import L1Agent: {e}")
+        print(f"Could not import L1CognitionBaseAgent: {e}")
     
-    # SafetyBaseAgent
+    # L5SafetyBaseAgent
     try:
-        from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
-        test_cases.append(("SafetyBaseAgent", SafetyBaseAgent, False))
+        from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
+        test_cases.append(("L5SafetyBaseAgent", L5SafetyBaseAgent, False))
     except Exception as e:
-        print(f"Could not import SafetyBaseAgent: {e}")
+        print(f"Could not import L5SafetyBaseAgent: {e}")
     
     print(f"\nTesting {len(test_cases)} agents\n")
     

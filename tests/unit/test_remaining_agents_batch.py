@@ -288,13 +288,13 @@ class TestIntelligenceLibrarianAgent:
 class TestIntelligentOrchestratorAgent:
     def test_class_exists(self): assert True
 
-class TestL0Agent:
+class TestL0MaintenanceBaseAgent:
     def test_class_exists(self): assert True
 
 class TestL0DelegationMixin:
     def test_class_exists(self): assert True
 
-class TestL1Agent:
+class TestL1CognitionBaseAgent:
     def test_class_exists(self): assert True
 
 class TestL2Agent:

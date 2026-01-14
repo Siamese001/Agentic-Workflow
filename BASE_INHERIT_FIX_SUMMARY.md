@@ -17,7 +17,7 @@
 **Problem:** `check_proper_base()` function only checked **direct** inheritance, but most agents inherit through mixins or SovereignBaseAgent
 
 **Solution:** Updated function to accept:
-- Direct layer base inheritance (e.g., L3 → OrchestrationBaseAgent)
+- Direct layer base inheritance (e.g., L3 → L3OrchestrationBaseAgent)
 - Transitive inheritance (e.g., L3 → SovereignBaseAgent → valid)
 - Mixin-based architecture (HealerMixin, MCPHardenedMixin)
 
@@ -62,8 +62,8 @@
 Each agent needs to inherit from appropriate base:
 - **L1** → `L1CognitionBaseAgent` or `SovereignBaseAgent`
 - **L2** → `L2ExecutionBaseAgent` or `SovereignBaseAgent`
-- **L3** → `OrchestrationBaseAgent` or `SovereignBaseAgent`
-- **L4** → `StateBaseAgent` or `SovereignBaseAgent`
+- **L3** → `L3OrchestrationBaseAgent` or `SovereignBaseAgent`
+- **L4** → `L4StateBaseAgent` or `SovereignBaseAgent`
 
 Once fixed:
 1. Regenerate discovery

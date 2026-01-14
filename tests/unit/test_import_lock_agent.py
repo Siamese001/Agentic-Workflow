@@ -107,7 +107,7 @@ class TestImportLockAgentBasics:
         ) is True
         
         assert agent._is_intentional_exception(
-            "agentic_core.L3_orchestration.workflow_engines.OrchestrationBaseAgent"
+            "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent"
         ) is True
         
         assert agent._is_intentional_exception(

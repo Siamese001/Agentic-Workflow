@@ -61,7 +61,7 @@ class TestBaseClassCounts:
         agent_count = int(l5_base_row.get('Total', 0))
         assert agent_count == 1, (
             f"L5 Safety should have exactly 1 base class agent, but found {agent_count}.\n"
-            f"Expected: SafetyBaseAgent.py only\n"
+            f"Expected: L5SafetyBaseAgent.py only\n"
             f"Possible issue: BaseClassEnforcerAgent or other agents incorrectly classified as base_class"
         )
     
@@ -96,22 +96,22 @@ class TestBaseClassCounts:
                         )
     
     def test_safety_base_agent_classified_correctly(self):
-        """Test that SafetyBaseAgent is correctly classified as base_class."""
+        """Test that L5SafetyBaseAgent is correctly classified as base_class."""
         if not DISCOVERY_JSON_PATH.exists():
             pytest.skip("Discovery JSON not found")
         
         data = json.loads(DISCOVERY_JSON_PATH.read_text(encoding='utf-8'))
         
-        # Find SafetyBaseAgent
-        safety_base_path = next((k for k in data.keys() if 'SafetyBaseAgent' in k), None)
+        # Find L5SafetyBaseAgent
+        safety_base_path = next((k for k in data.keys() if 'L5SafetyBaseAgent' in k), None)
         
         assert safety_base_path is not None, (
-            "SafetyBaseAgent not found in discovery data.\n"
-            "Expected: agentic_core/L5_safety/guardrails/SafetyBaseAgent.py"
+            "L5SafetyBaseAgent not found in discovery data.\n"
+            "Expected: agentic_core/L5_safety/guardrails/L5SafetyBaseAgent.py"
         )
         
         assert 'L5_safety' in safety_base_path, (
-            f"SafetyBaseAgent should be in L5_safety directory: {safety_base_path}"
+            f"L5SafetyBaseAgent should be in L5_safety directory: {safety_base_path}"
         )
     
     def test_all_layers_have_base_class_territory(self):

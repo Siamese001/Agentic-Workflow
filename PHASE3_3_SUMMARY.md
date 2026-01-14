@@ -106,12 +106,12 @@ Base                        1 agent
 
 ```
 SovereignBaseAgent (Root)
-├─ L0Agent (10 descendants)
-├─ L1Agent (28 descendants)
+├─ L0MaintenanceBaseAgent (10 descendants)
+├─ L1CognitionBaseAgent (28 descendants)
 ├─ L2ExecutionBaseAgent (39 descendants)
-├─ OrchestrationBaseAgent (52 descendants)
-├─ StateBaseAgent (14 descendants)
-├─ SafetyBaseAgent (57 descendants)
+├─ L3OrchestrationBaseAgent (52 descendants)
+├─ L4StateBaseAgent (14 descendants)
+├─ L5SafetyBaseAgent (57 descendants)
 └─ L6ObservabilityBaseAgent (4 descendants)
 ```
 

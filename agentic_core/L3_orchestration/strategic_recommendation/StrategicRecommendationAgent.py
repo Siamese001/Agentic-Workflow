@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 """
 Strategic Recommendation Agent
 L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
@@ -14,6 +13,7 @@ Purpose:
 - Integrated into report generator → injects into autonomy_dashboard.html
 """
 from __future__ import annotations
+from dataclasses import dataclass
 
 import json
 import logging
@@ -61,18 +61,30 @@ class StrategicRecommendationAgent(MCPHardenedMixin, HealerMixin):
         Returns:
             Structured prompt for LLM to generate recommendations
         """
-        # Identify key gaps
+        # Identify key gaps (handle None values gracefully)
+        def safe_get(row: Dict, key: str, default: float = 0) -> float:
+            val = row.get(key, default)
+            return val if val is not None else default
+        
         low_invocation = [r['Territory'] for r in dashboard_data 
-                        if r.get('Invocation %', 0) < 50 and r['Territory'] != 'TOTAL']
+                        if safe_get(r, 'Invocation %', 0) < 50 and r.get('Territory') != 'TOTAL']
         low_mcp = [r['Territory'] for r in dashboard_data 
-                 if r.get('Hardened %', 0) < 50 and r['Territory'] != 'TOTAL']
+                 if safe_get(r, 'Hardened %', 0) < 50 and r.get('Territory') != 'TOTAL']
         low_tests = [r['Territory'] for r in dashboard_data 
-                   if r.get('Test %', 0) < 80 and r['Territory'] != 'TOTAL']
+                   if safe_get(r, 'Test %', 0) < 80 and r.get('Territory') != 'TOTAL']
         high_complexity = [r['Territory'] for r in dashboard_data 
-                         if r.get('Avg CC', 0) > 15 and r['Territory'] != 'TOTAL']
+                         if safe_get(r, 'Avg CC', 0) > 15 and r.get('Territory') != 'TOTAL']
         
         # Get total row
-        total_row = next((r for r in dashboard_data if r['Territory'] == 'TOTAL'), {})
+        total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), {})
+        
+        # Extract values with None handling
+        health = safe_get(total_row, 'Health', 0)
+        total_agents = total_row.get('Total', 0) or 0
+        heal_cap = safe_get(total_row, 'Heal Cap %', 0)
+        invocation = safe_get(total_row, 'Invocation %', 0)
+        hardened = safe_get(total_row, 'Hardened %', 0)
+        test_cov = safe_get(total_row, 'Test %', 0)
         
         prompt = f"""
 You are a senior agentic systems architect reviewing autonomy metrics.
@@ -85,12 +97,12 @@ Key signals:
 - Low MCP hardening (<50%) in: {', '.join(low_mcp[:5]) or 'none'}
 - Low test coverage (<80%) in: {', '.join(low_tests[:5]) or 'none'}
 - High complexity (>15 CC) in: {', '.join(high_complexity[:5]) or 'none'}
-- Overall Health: {total_row.get('Health', 0):.1f}%
-- Total Agents: {total_row.get('Total', 0)}
-- Healing Capability: {total_row.get('Heal Cap %', 0):.1f}%
-- Invocation: {total_row.get('Invocation %', 0):.1f}%
-- MCP Hardened: {total_row.get('Hardened %', 0):.1f}%
-- Test Coverage: {total_row.get('Test %', 0):.1f}%
+- Overall Health: {health:.1f}%
+- Total Agents: {total_agents}
+- Healing Capability: {heal_cap:.1f}%
+- Invocation: {invocation:.1f}%
+- MCP Hardened: {hardened:.1f}%
+- Test Coverage: {test_cov:.1f}%
 
 Output strict JSON:
 {{"review": "paragraph text", "recommendations": ["1. Title<br>Details...", "2. Title<br>Details...", ...]}}
@@ -147,18 +159,24 @@ Output strict JSON:
         Returns:
             Dict with review and recommendations
         """
-        total_row = next((r for r in dashboard_data if r['Territory'] == 'TOTAL'), {})
+        # Helper for None-safe value extraction
+        def safe_val(row: Dict, key: str, default: float = 0) -> float:
+            val = row.get(key, default)
+            return val if val is not None else default
+        
+        total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), {})
         recommendations = []
         
-        # Analyze key metrics
-        health = total_row.get('Health', 0)
-        invocation = total_row.get('Invocation %', 0)
-        mcp_hardened = total_row.get('Hardened %', 0)
-        test_coverage = total_row.get('Test %', 0)
-        heal_cap = total_row.get('Heal Cap %', 0)
+        # Analyze key metrics (handle None values)
+        health = safe_val(total_row, 'Health', 0)
+        invocation = safe_val(total_row, 'Invocation %', 0)
+        mcp_hardened = safe_val(total_row, 'Hardened %', 0)
+        test_coverage = safe_val(total_row, 'Test %', 0)
+        heal_cap = safe_val(total_row, 'Heal Cap %', 0)
+        total_agents = total_row.get('Total', 0) or 0
         
         # Generate review
-        review = f"Portfolio health at {health:.1f}% with {total_row.get('Total', 0)} agents. "
+        review = f"Portfolio health at {health:.1f}% with {total_agents} agents. "
         
         if invocation < 60:
             review += f"Critical invocation gap at {invocation:.1f}% (target 100%) indicates healing protocols are not being actively used. "

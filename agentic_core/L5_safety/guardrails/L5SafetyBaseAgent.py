@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""SafetyBaseAgent — L5 Base with Healing Capability (Phase 3)
+"""L5SafetyBaseAgent — L5 Base with Healing Capability (Phase 3)
 
 L5 Safety agents perform validation, enforcement, and compliance checking.
 This base provides default-on healing via HealerMixin.
@@ -26,7 +26,7 @@ Logger = logging.getLogger(__name__)
 
 
 # NOT_AN_AGENT — Base class for L5 agents, not a true agent itself
-class SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Base class for L5 Safety agents with healing capability.
     
     MRO HARDENING:
@@ -288,4 +288,4 @@ class SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
             _call_path.discard(agent_name)
 
 
-__all__ = ["SafetyBaseAgent"]
+__all__ = ["L5SafetyBaseAgent"]

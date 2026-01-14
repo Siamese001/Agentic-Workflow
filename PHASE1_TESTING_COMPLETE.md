@@ -213,7 +213,7 @@ class SecurityValidatorAgent(
     RateLimitMixin,           # Prevent abuse
     StateValidationMixin,     # Ensure consistency
     SecretsManagementMixin,   # Secure credentials
-    SafetyBaseAgent
+    L5SafetyBaseAgent
 ):
     _rate_limits = {
         "validate": {"rate": 100, "per": 60, "burst": 150}

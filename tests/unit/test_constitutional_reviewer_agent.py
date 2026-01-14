@@ -22,7 +22,7 @@ class TestConstitutionalReviewerAgentImport:
         assert hasattr(ConstitutionalReviewerAgent, 'heal_repository')
 
     def test_agent_inherits_from_safety_base(self):
-        """Test agent inherits from SafetyBaseAgent."""
+        """Test agent inherits from L5SafetyBaseAgent."""
         from agentic_core.L5_safety.guardrails.ConstitutionalReviewerAgent import ConstitutionalReviewerAgent
-        from agentic_core.L5_safety.guardrails.SafetyBaseAgent import SafetyBaseAgent
-        assert issubclass(ConstitutionalReviewerAgent, SafetyBaseAgent)
+        from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
+        assert issubclass(ConstitutionalReviewerAgent, L5SafetyBaseAgent)

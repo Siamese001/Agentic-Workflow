@@ -62,7 +62,7 @@ async def test_toxicity_weighted_triage():
             'audit_fail_count': 1
         },
         {
-            'path': 'agentic_core/L5_safety/guardrails/SafetyBaseAgent.py',
+            'path': 'agentic_core/L5_safety/guardrails/L5SafetyBaseAgent.py',
             'type': 'upward_leak', 
             'impact_score': 650,  # High impact (core hub, fan-in=259)
             'fan_in': 259,
@@ -86,7 +86,7 @@ async def test_toxicity_weighted_triage():
         print(f"  - {v['path']} (impact={v['impact_score']})")
     
     print("\nExpected order (by impact_score DESC):")
-    print("  1. L5 SafetyBaseAgent (impact=650)")
+    print("  1. L5 L5SafetyBaseAgent (impact=650)")
     print("  2. L3 mid_tier_agent (impact=200)")
     print("  3. L1 peripheral_agent (impact=50)")
     
@@ -99,7 +99,7 @@ async def test_toxicity_weighted_triage():
     
     # Validate order - check first 3 items (first round)
     expected_order = [
-        'agentic_core/L5_safety/guardrails/SafetyBaseAgent.py',
+        'agentic_core/L5_safety/guardrails/L5SafetyBaseAgent.py',
         'agentic_core/L3_orchestration/mid_tier_agent.py',
         'agentic_core/L1_cognition/peripheral_agent.py'
     ]

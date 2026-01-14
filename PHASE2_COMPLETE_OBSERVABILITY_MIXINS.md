@@ -191,7 +191,7 @@ class SecurityValidatorAgent(
     StateValidationMixin,     # Ensure state consistency
     SecretsManagementMixin,   # Secure API keys
     EventEmissionMixin,       # Emit validation events
-    SafetyBaseAgent
+    L5SafetyBaseAgent
 ):
     _rate_limits = {"validate": {"rate": 100, "per": 60, "burst": 150}}
     

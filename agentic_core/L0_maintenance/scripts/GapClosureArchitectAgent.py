@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
+from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -31,10 +31,10 @@ class CompetenciesOutput:
     industry_first_compliant: bool
     _metadata: Dict[str, Any]
 
-class GapClosureArchitectAgent(L0Agent, Agent):
+class GapClosureArchitectAgent(L0MaintenanceBaseAgent, Agent):
     """Gap Closure Architect agent for leadership competencies.
     
-    Inherits from L0Agent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     This agent generates competencies with strict constraints:
     - Count: Exactly 6 competencies (ZERO TOLERANCE)
