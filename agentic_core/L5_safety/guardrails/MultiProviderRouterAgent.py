@@ -321,35 +321,21 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
          providers: Optional[List[Provider]],
          strategy: str) -> List[Provider]:
         """Select providers based on strategy and health."""
-        if providers:
-            candidate_providers = [p for p in providers if p in self.clients]
-        else:
-            candidate_providers = list(self.clients.keys())
-
-        # Filter by health status
+        candidate_providers = [p for p in providers if p in self.clients] if providers else list(self.clients.keys())
         healthy_providers = [p for p in candidate_providers if self._is_provider_available(p)]
-
         if not healthy_providers:
-            return candidate_providers  # Return all if none healthy
+            return candidate_providers
+        return self._apply_strategy(healthy_providers, strategy)
 
-        # Sort by strategy
-        if strategy == "priority":
-            return sorted(healthy_providers, key=lambda p: self._get_provider_config(p).priority)
-
-        elif strategy == "round_robin":
-            return sorted(healthy_providers, key=lambda p: (self.request_count + list(healthy_providers).index(p)) % len(healthy_providers))
-
-        elif strategy == "weighted":
-            # Weighted random selection
-            weights = [self._get_provider_config(p).weight for p in healthy_providers]
-            return random.choices(healthy_providers, weights=weights, k=len(healthy_providers))
-
-        elif strategy == "fastest":
-            # Sort by average latency
-            return sorted(healthy_providers, key=lambda p: self.usage_stats[p]["avg_latency"])
-
-        else:
-            return healthy_providers
+    def _apply_strategy(self, providers: List[Provider], strategy: str) -> List[Provider]:
+        """Apply selection strategy using dispatch table."""
+        strategy_dispatch = {
+            "priority": lambda ps: sorted(ps, key=lambda p: self._get_provider_config(p).priority),
+            "round_robin": lambda ps: sorted(ps, key=lambda p: (self.request_count + list(ps).index(p)) % len(ps)),
+            "weighted": lambda ps: random.choices(ps, weights=[self._get_provider_config(p).weight for p in ps], k=len(ps)),
+            "fastest": lambda ps: sorted(ps, key=lambda p: self.usage_stats[p]["avg_latency"]),
+        }
+        return strategy_dispatch.get(strategy, lambda ps: ps)(providers)
 
     def _distribute_batch_requests(self,
          requests: List[Dict[str,
@@ -388,42 +374,31 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
         return distribution
 
-    def _call_provider(self,
-         provider: Provider,
-         messages: List[Dict[str,
-         object]],
-         **kwargs: Dict[str,
-         object]) -> Any:
-        """Call the specific provider with appropriate format."""
-        client = self.clients[provider]
+    # Role prefixes for Vertex prompt conversion
+    VERTEX_ROLE_PREFIX = {"system": "System", "user": "User", "assistant": "Assistant"}
 
-        if provider == Provider.OPENAI:
-            return client.chat_completion(messages=messages, **kwargs)
+    def _call_provider(self, provider: Provider, messages: List[Dict[str, object]], **kwargs: Dict[str, object]) -> Any:
+        """Call the specific provider with appropriate format using dispatch."""
+        dispatch = {
+            Provider.OPENAI: self._call_openai,
+            Provider.ANTHROPIC: self._call_anthropic,
+            Provider.GOOGLE_VERTEX: self._call_vertex,
+        }
+        return dispatch[provider](messages, **kwargs)
 
-        elif provider == Provider.ANTHROPIC:
-            # Convert messages to Anthropic format
-            anthropic_messages = []
-            for msg in messages:
-                anthropic_msg = {
-                    "role": msg["role"],
-                    "content": [{"type": "text", "text": msg["content"]}]
-                }
-                anthropic_messages.append(anthropic_msg)
+    def _call_openai(self, messages: List[Dict[str, object]], **kwargs) -> Any:
+        """Call OpenAI provider."""
+        return self.clients[Provider.OPENAI].chat_completion(messages=messages, **kwargs)
 
-            return client.message(messages=anthropic_messages, **kwargs)
+    def _call_anthropic(self, messages: List[Dict[str, object]], **kwargs) -> Any:
+        """Call Anthropic provider with message format conversion."""
+        anthropic_messages = [{"role": m["role"], "content": [{"type": "text", "text": m["content"]}]} for m in messages]
+        return self.clients[Provider.ANTHROPIC].message(messages=anthropic_messages, **kwargs)
 
-        elif provider == Provider.GOOGLE_VERTEX:
-            # Convert to single prompt for Vertex
-            prompt = ""
-            for msg in messages:
-                if msg["role"] == "system":
-                    prompt += f"System: {msg['content']}\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n\n"
-                elif msg["role"] == "user":
-                    prompt += f"User: {msg['content']}\n\n"
-                elif msg["role"] == "assistant":
-                    prompt += f"Assistant: {msg['content']}\n\n"
-
-            return client.generate_content(prompt=prompt.strip(), **kwargs)
+    def _call_vertex(self, messages: List[Dict[str, object]], **kwargs) -> Any:
+        """Call Google Vertex provider with prompt conversion."""
+        prompt = "\n\n".join(f"{self.VERTEX_ROLE_PREFIX.get(m['role'], 'User')}: {m['content']}" for m in messages)
+        return self.clients[Provider.GOOGLE_VERTEX].generate_content(prompt=prompt.strip(), **kwargs)
 
     def _is_provider_available(self, provider: Provider) -> bool:
         """Check if provider is available (healthy and circuit not open)."""

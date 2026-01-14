@@ -393,43 +393,24 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         })
     
     def _detect_layer(self, file_path: Path) -> str:
-        """
-        Detect which layer a file belongs to based on its path.
-        Returns layer name (e.g., 'L1_cognition', 'L2_execution') or 'unknown'.
-        """
+        """Detect which layer a file belongs to based on its path."""
         try:
-            rel_path = file_path.relative_to(self.project_root)
-            parts = rel_path.parts
-            
-            # Check if file is in agentic_core structure
-            if len(parts) >= 2 and parts[0] == 'agentic_core':
-                layer_part = parts[1]
-                # Validate it's a recognized layer
-                if layer_part.startswith('L') and layer_part[1].isdigit():
-                    return layer_part
-            
-            return 'unknown'
+            parts = file_path.relative_to(self.project_root).parts
+            if len(parts) >= 2 and parts[0] == 'agentic_core' and parts[1].startswith('L') and parts[1][1].isdigit():
+                return parts[1]
         except (ValueError, IndexError):
-            return 'unknown'
+            pass
+        return 'unknown'
     
     def _get_layer_directory(self, file_path: Path) -> Optional[Path]:
-        """
-        Get the layer directory for a file (e.g., agentic_core/L5_safety).
-        Returns None if file is not in a recognized layer.
-        """
-        layer = self._detect_layer(file_path)
-        if layer == 'unknown':
+        """Get the layer directory for a file (e.g., agentic_core/L5_safety)."""
+        if self._detect_layer(file_path) == 'unknown':
             return None
-        
         try:
-            rel_path = file_path.relative_to(self.project_root)
-            parts = rel_path.parts
-            if len(parts) >= 2 and parts[0] == 'agentic_core':
-                return self.project_root / parts[0] / parts[1]
+            parts = file_path.relative_to(self.project_root).parts
+            return self.project_root / parts[0] / parts[1] if len(parts) >= 2 else None
         except ValueError:
-            pass
-        
-        return None
+            return None
 
     def _backup_file(self, file_path: Path) -> Path:
         """Standardized backup procedure for all L5 mutations."""
