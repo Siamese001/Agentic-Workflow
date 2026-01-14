@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 RedisSovereignAgent - Eternal Sovereign Gateway to Redis
@@ -20,6 +21,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent
+@dataclass
 class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
     """
     Sovereign Redis controller — hardened, monitored, eternal.
@@ -75,9 +77,10 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
         return True
 
     def get_client(self) -> redis.Redis:
+        """Execute get_client operation."""
         return self.client
 
-    def invalidate_file_cache(self, file_path: Path):
+    def invalidate_file_cache(self, file_path: Path) -> Any:
         """Wipes old embeddings if the file has evolved"""
         try:
             content = file_path.read_bytes()
@@ -90,7 +93,7 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
         except Exception:
             pass 
 
-    def invalidate_by_path(self, file_path: Path):
+    def invalidate_by_path(self, file_path: Path) -> Any:
         """
         Invalidate cache by exact file path (for moves/deletes).
         Ensures no 'ghost' embeddings remain for a path that no longer exists.
@@ -108,8 +111,8 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
             # Non-critical, don't break the healer
             print(f"   [!] Cache invalidation failed for {file_path}: {e}") 
 
-    async def execute(self, ctx=None):
-                    
+    async def execute(self, ctx=None) -> Any:
+        """Execute execute operation."""
         info = self.client.info()
         mem = info.get("used_memory_human", "0B")
         print(f"   [OK] RedisSovereignAgent: Healthy. Memory: {mem}")

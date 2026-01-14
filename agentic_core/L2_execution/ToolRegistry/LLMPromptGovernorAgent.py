@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from dataclasses import dataclass
 """
 LLMPromptGovernorAgent - Hardened Prompt Governor for LLM Safety
 
@@ -25,6 +26,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class LLMPromptGovernorAgent(SovereignBaseAgent):
     """
     Centralized prompt governance for all LLM interactions.

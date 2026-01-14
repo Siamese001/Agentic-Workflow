@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -11,6 +12,7 @@ _logger = logging.getLogger(__name__)
 from typing import Optional
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
+@dataclass
 class SafetyExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Executes resume safety validation with optimal model selection.

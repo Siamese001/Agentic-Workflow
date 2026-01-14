@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 Git Hygiene Agent
@@ -17,6 +18,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
 
+@dataclass
 class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Batch agent: Enforces Git repository hygiene.

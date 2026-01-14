@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 GenerativeGuardDeprecatedAgent - Extracted from CanonHealerAgent.py
 Deprecated guard logic preserved for backward compatibility.
@@ -19,6 +20,7 @@ EXCLUDED_DIRS = {'__pycache__', '.git', 'node_modules', 'venv', '.venv'}
 
 
 # Legacy class removed - use GenerativeGuardAgent instead
+@dataclass
 class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
@@ -61,11 +63,11 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
-                    
+        """Execute get_capabilities operation."""
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
-                    
+        """Execute validate_state operation."""
         return self.impl.validate_state()
 
     async def _execute_guard(self):

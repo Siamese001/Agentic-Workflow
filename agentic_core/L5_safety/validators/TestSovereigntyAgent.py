@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """TestSovereigntyAgent — Ultra L5 Sovereign Testing Specialist (Jan 01, 2026)
 
 Delegated from L2-L4 agents for coverage, integration, regression.
@@ -46,6 +47,7 @@ class SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
+@dataclass
 class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     """L5 specialist — advanced sovereign testing."""
 

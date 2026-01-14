@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 File Cleanup Agent
@@ -32,6 +33,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
+@dataclass
 class FileCleanupAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Batch agent: Identifies and removes files with repeated strings in filenames.

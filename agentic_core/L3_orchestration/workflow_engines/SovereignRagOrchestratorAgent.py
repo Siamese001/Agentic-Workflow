@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System
 Adapts parameters based on performance with persistent configuration
@@ -44,6 +45,7 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         _call_path.discard(agent_name)
 
 
+@dataclass
 class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Brief description of functionality and purpose."""
 

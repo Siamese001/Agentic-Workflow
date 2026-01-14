@@ -5,6 +5,7 @@ from __future__ import annotations
 # SSOT Integration: Used by SovereignPromptRenderer and mission logging
 
 import json
+from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 import hashlib
@@ -48,6 +49,7 @@ def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
         return True, "Bootstrap"
 
 # NAMING FIXED: PromptRegistry → PromptRegistryAgent
+@dataclass
 class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
     """
     Sovereign registry for all prompt templates and meta-prompts.
@@ -326,7 +328,7 @@ def registers_prompt(
     territory: str = "templates",
     active: bool = True,
     content: Optional[str] = None,
-):
+) -> Any:
     """
     Decorator for agents to declare their prompt template dependencies.
     
@@ -341,7 +343,8 @@ def registers_prompt(
     - Agent-driven prompt discovery (no hardcoded lists)
     - Optional content hashing for version control
     """
-    def decorator(cls):
+    def decorator(cls) -> Any:
+        """Execute decorator operation."""
         # Register at import time (safe due to deduplication)
         registry = get_prompt_registry()
         registry.register_prompt(

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 L5 Safety: HealValidatorAgent
 Post-LLM output validation pipeline for healed code.
@@ -76,6 +77,7 @@ BANDIT_HIGH_SEVERITY_PATTERNS = [
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class HealValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Multi-stage validator for LLM-healed code.

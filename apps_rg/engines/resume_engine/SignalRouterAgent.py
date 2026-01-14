@@ -376,6 +376,6 @@ class AutomaticRollback:
 
         return True
 
-    def reset(self):
+    def reset(self) -> Any:
         """Reset rollback counter."""
         self.rollback_count = 0

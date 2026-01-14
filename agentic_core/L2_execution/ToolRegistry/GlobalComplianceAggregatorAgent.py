@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 GlobalComplianceAggregatorAgent - Naming/Compliance Framework Agent
@@ -15,6 +16,7 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class GlobalComplianceAggregatorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Naming/Compliance: Global Compliance Aggregation"""
     

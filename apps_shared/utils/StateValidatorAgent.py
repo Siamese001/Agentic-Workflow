@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 StateValidatorAgent - Validates state files against expected schemas.
 
@@ -11,6 +12,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
+@dataclass
 class StateValidatorAgent(HealerMixin, MCPHardenedMixin):
     """
     Validates state files against expected schemas.

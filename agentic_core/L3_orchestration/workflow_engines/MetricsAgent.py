@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 MetricsAgent: Sovereign Observability Metrics Collector
 
@@ -36,6 +37,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     MetricsAgent: Sovereign quantitative state and alert governor.

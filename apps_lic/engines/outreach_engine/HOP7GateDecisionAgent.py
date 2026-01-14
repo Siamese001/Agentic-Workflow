@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP-7: Gate Decision Agent - Make the 'Slow Loop' decision."""
 
 __version__ = "13.1"
@@ -14,6 +15,7 @@ from apps_lic.domain.lic_models import FactualGapError, FailureClassifierAgent
 from apps_shared.utils.state_manager import StateManager
 
 
+@dataclass
 class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: HOP-7 - Gate Decision Agent (MCP Hardened)

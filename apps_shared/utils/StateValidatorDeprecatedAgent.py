@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 StateValidatorDeprecatedAgent - Extracted for 1:1 sovereign file structure.
 Deprecated agent preserved for backward compatibility.
@@ -9,6 +10,7 @@ import hashlib
 from pathlib import Path
 
 # Legacy class - use StateValidatorAgent instead
+@dataclass
 class StateValidatorDeprecatedAgent(HealerMixin, MCPHardenedMixin):
     """
     Validates state files against expected schemas

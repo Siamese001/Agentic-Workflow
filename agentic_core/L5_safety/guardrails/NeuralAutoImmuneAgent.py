@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 NeuralAutoImmuneAgent - Eternal Sovereign Self-Defense System
 """
@@ -20,6 +21,7 @@ from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,

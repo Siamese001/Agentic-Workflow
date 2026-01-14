@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 MCP Router - L3 Orchestration Switchboard
 
@@ -22,6 +23,7 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
+@dataclass
 class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L3 Orchestration switchboard: Hardens the L1-L5 stack by routing

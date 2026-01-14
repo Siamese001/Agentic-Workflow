@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 L4 State: Autonomous State Guardian
 Monitors and self-repairs state corruption with mirrored redundancy and state locking.
@@ -25,6 +26,7 @@ Logger = logging.getLogger(__name__)
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+@dataclass
 class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
     """
     L4 State Guardian that autonomously monitors and repairs state corruption.
@@ -68,13 +70,13 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
         assert hasattr(self, 'is_recovering'), "Missing is_recovering"
         return True
     
-    def awaken(self):
+    def awaken(self) -> Any:
         """L4: Explicitly activate the eternal guardianship"""
         if not self._guard_task:
             self._guard_task = asyncio.create_task(self.eternal_state_guardianship())
             Logger.info("L4 Eternal state guardianship awakened")
     
-    def load_meta_state(self):
+    def load_meta_state(self) -> Any:
         """Load manifest with mirrored redundancy"""
         if self.state_manifest_path.exists():
             try:
@@ -98,7 +100,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
         else:
             Logger.info("L4 META: No existing manifest, starting fresh")
     
-    def save_meta_state(self):
+    def save_meta_state(self) -> Any:
         """Save manifest with mirrored redundancy"""
         try:
             data = {
@@ -143,7 +145,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
         
         return corrupt_ids
     
-    async def initiate_self_repair(self, corrupt_ids: List[str]):
+    async def initiate_self_repair(self, corrupt_ids: List[str]) -> Any:
         """L4: Sovereign recovery with State Lock"""
         self.is_recovering = True
         Logger.info(f"L4 SELF-REPAIR: Recovering {len(corrupt_ids)} states...")
@@ -221,7 +223,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
         finally:
             _call_path.discard(agent_name)
     
-    async def eternal_state_guardianship(self):
+    async def eternal_state_guardianship(self) -> Any:
         """L4: Continuous state monitoring and self-repair loop"""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

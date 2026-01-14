@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 dispatch_outreach_tools.py - Execution Module
 
@@ -17,6 +18,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+@dataclass
 class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
     """Executor for outreach domain."""
 

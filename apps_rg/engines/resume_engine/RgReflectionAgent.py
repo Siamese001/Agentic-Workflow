@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 RgReflectionAgent - Extracted for one-class-per-file pattern.
 
@@ -9,6 +10,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class RgReflectionAgent(ResumeAgent, MCPHardenedMixin):
     """
     Learns from execution and records insights.

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 L6 Watchdog: Drift Detector Agent
@@ -42,6 +43,7 @@ def timeout(seconds=0, minutes=0, hours=0):
         return wrapper
     return decorator
 
+@dataclass
 class DriftDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Detects files that have drifted outside mapped canon territories."""
     

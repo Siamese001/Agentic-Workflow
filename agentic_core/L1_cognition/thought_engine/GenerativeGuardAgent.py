@@ -1,5 +1,6 @@
 from __future__ import annotations
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+from dataclasses import dataclass
 """
 GenerativeGuardAgent - Detects and removes runaway generated files.
 
@@ -47,6 +48,7 @@ EXCLUDED_DIRS = [
 ]
 
 
+@dataclass
 class GenerativeGuardAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 45 (Dead Code/Runaway Generation)

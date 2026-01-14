@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 CachedOrchestratorAgent - Eternal L3 Orchestration with Redis Sovereign Cache
@@ -21,6 +22,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
 # NAMING FIXED: CachedOrchestratorAgent → CachedOrchestratorAgent
+@dataclass
 class CachedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Sovereign L3 orchestration base — Redis cache for all decisions and state.
@@ -68,15 +70,15 @@ class CachedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         key = self._get_cache_key(category, identifier)
         return self.get(key)
 
-    def store_decision(self, category: str, identifier: str, decision: Dict, ttl: int = 3600):
+    def store_decision(self, category: str, identifier: str, decision: Dict, ttl: int = 3600) -> Any:
         """Save the result of a reasoning step."""
         key = self._get_cache_key(category, identifier)
         try:
             self.redis.set(key, json.dumps(decision), ex=ttl)
         except Exception: pass
 
-    def cache_fission_decision(self, file_path: Path, decision: Dict):
-                    
+    def cache_fission_decision(self, file_path: Path, decision: Dict) -> Any:
+        """Execute cache_fission_decision operation."""
         rel = str(file_path.relative_to(self.root))
         key = f"{self.prefix_fission}:{hashlib.sha256(rel.encode()).hexdigest()}"
         try:
@@ -84,7 +86,7 @@ class CachedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         except: pass
 
     def get_cached_fission(self, file_path: Path) -> Optional[Dict]:
-                    
+        """Execute get_cached_fission operation."""
         rel = str(file_path.relative_to(self.root))
         key = f"{self.prefix_fission}:{hashlib.sha256(rel.encode()).hexdigest()}"
         try:
@@ -92,15 +94,15 @@ class CachedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
             return json.loads(data) if data else None
         except: return None
 
-    def cache_routing_decision(self, Task: str, delegation: Dict):
-                    
+    def cache_routing_decision(self, Task: str, delegation: Dict) -> Any:
+        """Execute cache_routing_decision operation."""
         key = f"{self.prefix_routing}:{hashlib.sha256(Task.encode()).hexdigest()}"
         try:
             self.redis.set(key, json.dumps(delegation), ex=3600) # 1 hour
         except: pass
 
     def get_cached_routing(self, Task: str) -> Optional[Dict]:
-                    
+        """Execute get_cached_routing operation."""
         key = f"{self.prefix_routing}:{hashlib.sha256(Task.encode()).hexdigest()}"
         try:
             data = self.redis.get(key)

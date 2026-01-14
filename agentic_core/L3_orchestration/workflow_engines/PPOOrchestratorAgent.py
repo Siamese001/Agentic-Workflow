@@ -18,6 +18,7 @@ from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent import NervousSystemAgent
 from agentic_core.L3_orchestration.unified_workflow_engine import UnifiedWorkflowEngine
+from dataclasses import dataclass
 
 log = logging.getLogger(__name__)
 
@@ -41,11 +42,13 @@ class PPOActorCritic(nn.Module):
         self.actor = nn.Linear(128, n_actions)
         self.critic = nn.Linear(128, 1)
 
-    def forward(self, x):
+    def forward(self, x) -> Any:
+        """Execute forward operation."""
         shared = self.shared(x)
         return self.actor(shared), self.critic(shared).squeeze()
 
 
+@dataclass
 class PPOOrchestratorAgent(SovereignBaseAgent):
     """
     DEPRECATED: Use UnifiedWorkflowEngine instead.
@@ -113,14 +116,14 @@ class PPOOrchestratorAgent(SovereignBaseAgent):
         self.buffer.append((state, action_idx, log_prob.item(), 0.0, value.item()))  # reward placeholder
         return selected
 
-    def store_reward(self, reward: float):
+    def store_reward(self, reward: float) -> Any:
         """Store reward for last transition."""
         if self.buffer:
             # Update last transition reward
             s, a, lp, _, v = self.buffer[-1]
             self.buffer[-1] = (s, a, lp, reward, v)
 
-    def update_ppo(self):
+    def update_ppo(self) -> Any:
         """PPO update with clipped objective and advantage normalization."""
         if len(self.buffer) < self.batch_size:
             return

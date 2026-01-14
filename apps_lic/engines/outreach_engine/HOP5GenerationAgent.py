@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP-5: Generation Agent - N-candidate generation only."""
 
 __version__ = "13.1"
@@ -19,6 +20,7 @@ from apps_lic.engines.outreach_engine.tools.code_interpreter import CodeInterpre
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: Generation Agent - N-candidate generation only (MCP Hardened)

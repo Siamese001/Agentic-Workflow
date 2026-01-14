@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 StrategistAgent - Extracted for one-class-per-file pattern.
 
@@ -10,19 +11,20 @@ from __future__ import annotations
 import asyncio
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class StrategistAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     ROLE: Proactive Architecture. Identifies code smells and proposes refactors.
     """
     def can_run(self) -> bool:
-                    
+        """Execute can_run operation."""
         results = getattr(self.ctx, "results", {})
         if not results:
             return False
         return all(r.get("passed", False) for r in results.values())
 
     async def execute(self) -> None:
-                    
+        """Execute execute operation."""
         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing architectural patterns...")
         await asyncio.sleep(0)
         # Placeholder for strategic analysis logic

@@ -2,6 +2,7 @@ from __future__ import annotations
 """Implementation for AutonomicMonitorAgent."""
 import logging
 import time
+from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Protocol
 from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import AlertSeverity, HealthAlert, HealthMetrics, HealthStatus
 
@@ -18,6 +19,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Autonomic immune system for agent health monitoring.
 

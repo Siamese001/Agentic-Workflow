@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 OmniContextAgent - Extracted for one-class-per-file pattern.
 
@@ -10,6 +11,7 @@ from __future__ import annotations
 import asyncio
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class OmniContextAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.

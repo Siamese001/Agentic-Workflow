@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP-2: Research Agent - Vector-store-first with fallback RAG."""
 
 __version__ = "13.1"
@@ -17,6 +18,7 @@ from apps_shared.utils.vector_memory import VectorMemoryStore
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: Research Agent - Vector-store-first with fallback RAG (MCP Hardened)

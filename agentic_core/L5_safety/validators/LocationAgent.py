@@ -1979,7 +1979,8 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
                         continue
 
                     # Sort to prioritize keeping the "primary" (no suffix or lowest number)
-                    def sort_key(p_str: str):
+                    def sort_key(p_str: str) -> Any:
+                        """Execute sort_key operation."""
                         match = re.search(r'_(\d+)(?=\.py$)', str(p_str))
                         return int(match.group(1)) if match else 0
 

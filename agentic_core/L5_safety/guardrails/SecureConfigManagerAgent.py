@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """Secure Configuration Management - Handles secrets, keys, and config validation.
 
 This module provides secure configuration management with encrypted key storage,
@@ -27,6 +28,7 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Manages secure configuration with encrypted storage."""
     

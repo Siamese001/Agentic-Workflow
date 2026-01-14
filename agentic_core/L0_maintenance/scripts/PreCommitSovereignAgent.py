@@ -305,7 +305,7 @@ if __name__ == "__main__":
             return False
 
 
-def main():
+def main() -> Any:
     """CLI entry point for the Pre-Commit Sovereign Agent."""
     import argparse
     

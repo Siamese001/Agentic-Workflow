@@ -176,7 +176,7 @@ class DynamicModelRouterAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
             ModelTier.DEEP_THINK: 0.3  # Higher for creative solutions
         }
     
-    async def execute(self):
+    async def execute(self) -> Any:
         """
         Execute model routing analysis.
         
@@ -264,8 +264,8 @@ class DynamicModelRouterAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         """Calculate maximum nesting depth."""
         max_depth = 0
         
-        def visit(node, depth=0):
-                                    
+        def visit(node, depth=0) -> Any:
+            """Execute visit operation."""
             nonlocal max_depth
             max_depth = max(max_depth, depth)
             
@@ -470,5 +470,6 @@ def get_model_router(ctx) -> DynamicModelRouterAgent:
         _model_router = DynamicModelRouterAgent(ctx)
     return _model_router
 
-def get_dynamic_model_routerAgent(ctx):
+def get_dynamic_model_routerAgent(ctx) -> Any:
+    """Execute get_dynamic_model_routerAgent operation."""
     return _model_router

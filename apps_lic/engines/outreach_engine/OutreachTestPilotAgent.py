@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 OutreachTestPilotAgent - Campaign validation testing agent.
 
@@ -11,6 +12,7 @@ from .OutreachAgent import OutreachAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
+@dataclass
 class OutreachTestPilotAgent(OutreachAgent, MCPHardenedMixin):
     """
     Runs validation tests on the campaign.

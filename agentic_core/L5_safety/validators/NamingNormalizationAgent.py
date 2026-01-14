@@ -59,7 +59,7 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1)
         return s2.lower()
 
-    def timeout(seconds=0, minutes=0, hours=0):
+    def timeout(seconds=0, minutes=0, hours=0) -> Any:
         """
         Add a signal-based timeout to any function.
         Usage:
@@ -72,8 +72,10 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         """
         limit = seconds + 60 * minutes + 3600 * hours
 
-        def decorator(func):
-            def wrapper(*args, **kwargs):
+        def decorator(func) -> Any:
+            """Execute decorator operation."""
+            def wrapper(*args, **kwargs) -> Any:
+                """Execute wrapper operation."""
                 import asyncio
                 try:
                     loop = asyncio.get_event_loop()

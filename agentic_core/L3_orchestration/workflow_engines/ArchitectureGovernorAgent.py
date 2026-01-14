@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 ArchitectureGovernor - L3 Orchestration Framework Agent
 Validates and enforces architectural patterns across the codebase.
@@ -15,6 +16,7 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 Logger: Any = logging.getLogger(__name__)
 layer_dirs: Any = set(SOVEREIGN_REGISTRY['agentic_core']['subfolders'])
 
+@dataclass
 class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     L3 Orchestration: Architecture Pattern Enforcement

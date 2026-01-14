@@ -71,7 +71,7 @@ class OutreachLearningLoop:
         input_context: str,
         output_result: str,
         confidence: float = 0.8,
-    ):
+    ) -> Any:
         """Record a successful outreach pattern."""
         example_id = hashlib.sha256(
             f"{TaskType}:{input_context}:{output_result}".encode()
@@ -94,7 +94,7 @@ class OutreachLearningLoop:
         TaskType: str,
         input_context: str,
         error: str,
-    ):
+    ) -> Any:
         """Record a failed outreach attempt."""
         example_id = hashlib.sha256(
             f"{TaskType}:{input_context}:{error}".encode()
@@ -236,7 +236,7 @@ class OutreachMemoryPersistence:
         except Exception:
             pass
 
-    def store(self, key: str, value: Any):
+    def store(self, key: str, value: Any) -> Any:
         """Store a value in memory."""
         self._memory[key] = {
             "value": value,
@@ -255,7 +255,7 @@ class OutreachMemoryPersistence:
         """List all memory keys."""
         return list(self._memory.keys())
 
-    def clear(self):
+    def clear(self) -> Any:
         """Clear all memory."""
         self._memory = {}
         self._save()
@@ -275,6 +275,7 @@ class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
         self.memory = OutreachMemoryPersistence()
 
     async def execute(self) -> None:
+        """Execute execute operation."""
         print(f"   [{self.name}] Analyzing patterns...")
 
         # Score leads
@@ -315,7 +316,7 @@ class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
         self.record_result(True, f"Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}")
         print(f"   [{self.name}] ✅ Analysis complete")
 
-    def inject_instruction(self, instruction: str, priority: int = 5):
+    def inject_instruction(self, instruction: str, priority: int = 5) -> Any:
         """Inject an instruction into the context."""
         self.ctx.inject_instruction(instruction, priority)
 
@@ -325,7 +326,7 @@ class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
         input_context: str,
         output_result: str,
         confidence: float = 0.8,
-    ):
+    ) -> Any:
         """Record a successful pattern."""
         await self.learning_loop.record_success(
             TaskType, input_context, output_result, confidence
@@ -336,7 +337,7 @@ class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
         TaskType: str,
         input_context: str,
         error: str,
-    ):
+    ) -> Any:
         """Record a failed pattern."""
         await self.learning_loop.record_failure(TaskType, input_context, error)
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP Orchestrator Agent - Example orchestrator showing HOP execution pattern."""
 
 __version__ = "13.1"
@@ -19,6 +20,7 @@ from .HOP4RoutingAgent import HOP4RoutingAgent
 from .HOP7GateDecisionAgent import HOP7GateDecisionAgent
 
 
+@dataclass
 class HOPOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.0: Example orchestrator showing HOP execution pattern

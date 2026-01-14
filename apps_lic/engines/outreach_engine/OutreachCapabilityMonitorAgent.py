@@ -202,7 +202,7 @@ class OutreachProactiveScheduler:
         }
         return sorted(pending, key=lambda t: priority_order.get(t.priority, 5))
 
-    def mark_executed(self, task_id: str, result: str = "completed"):
+    def mark_executed(self, task_id: str, result: str = "completed") -> Any:
         """Mark a Task as executed."""
         for Task in self._tasks:
             if Task.task_id == task_id:
@@ -229,7 +229,7 @@ class OutreachPredictiveHandoff:
         self._request_counter = 0
         self._capability_profiles: Dict[str, OutreachCapabilityProfile] = {}
 
-    def register_capability(self, profile: OutreachCapabilityProfile):
+    def register_capability(self, profile: OutreachCapabilityProfile) -> Any:
         """Register an agent's capability profile."""
         self._capability_profiles[profile.agent_name] = profile
 
@@ -346,7 +346,7 @@ class OutreachPredictiveHandoff:
         """Get all pending handoff requests."""
         return self._handoff_requests
 
-    def clear_handoffs(self):
+    def clear_handoffs(self) -> Any:
         """Clear all handoff requests."""
         self._handoff_requests.clear()
 
@@ -368,7 +368,7 @@ class OutreachCapabilityMonitorAgent(HealerMixin, MCPHardenedMixin):
         success: bool,
         duration_ms: float,
         leads_processed: int = 0,
-    ):
+    ) -> Any:
         """Record an agent execution."""
         self._execution_history.append({
             "agent_name": agent_name,

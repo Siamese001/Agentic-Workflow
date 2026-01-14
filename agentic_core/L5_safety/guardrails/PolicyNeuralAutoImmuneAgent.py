@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 PolicyNeuralAutoImmuneAgent - Policy-Specific Extension
@@ -8,7 +9,7 @@ Simplified policy-focused variant that extends the base NeuralAutoImmuneAgent.
 """
 
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
@@ -18,12 +19,15 @@ from agentic_core.L5_safety.guardrails.NeuralAutoImmuneAgent import NeuralAutoIm
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
+@dataclass
 class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, MCPHardenedMixin):
+    """PolicyNeuralAutoImmuneAgent agent for autonomous operations."""
     def __init__(self, project_root: Path) -> None:
         self.redis = RedisSovereignAgent(project_root).get_client()
         self.threshold = 5
 
-    def detect_breaches(self):
+    def detect_breaches(self) -> Any:
+        """Execute detect_breaches operation."""
         # Scans L5 Redis for repeated non-compliance in 30-min windows
         # Issues lockdown key: l5_lockdown:territory
         return {"lockdowns_issued": {}}

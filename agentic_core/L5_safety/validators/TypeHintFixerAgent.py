@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 TypeHintFixerAgent - Extracted for one-class-per-file pattern.
 
@@ -9,6 +10,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer, MCPHardenedMixin):
     """
     AST transformer that adds Missing type hints to public symbols.
@@ -21,7 +23,7 @@ class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer, MCPHardenedMixin):
         self.fallback_var = fallback_var
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
-                    
+        """Execute visit_FunctionDef operation."""
         if node.name.startswith("_"):
             return node  # Skip private symbols per hierarchy laws
 
@@ -40,11 +42,11 @@ class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer, MCPHardenedMixin):
         return node
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AsyncFunctionDef:
-                    
+        """Execute visit_AsyncFunctionDef operation."""
         return self.visit_FunctionDef(node)
 
     def visit_Assign(self, node: ast.Assign) -> ast.Assign | ast.AnnAssign:
-                    
+        """Execute visit_Assign operation."""
         # Module-level public assignments without annotation
         if len(node.targets) == 1:
             target = node.targets[0]

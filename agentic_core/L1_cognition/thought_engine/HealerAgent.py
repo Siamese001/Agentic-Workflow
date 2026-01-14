@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 HealerAgent - Extracted from CanonHealerAgent.py
 Primary self-healing agent for agentic repository maintenance.
@@ -23,6 +24,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
+@dataclass
 class HealerAgent(HealerMixin, CanonBaseAgentInterface):
     """
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -61,11 +63,11 @@ class HealerAgent(HealerMixin, CanonBaseAgentInterface):
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
-                    
+        """Execute get_capabilities operation."""
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
-                    
+        """Execute validate_state operation."""
         return self.impl.validate_state()
 
     async def _execute_healing(self):

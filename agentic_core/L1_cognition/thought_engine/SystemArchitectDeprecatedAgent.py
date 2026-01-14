@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 SystemArchitectDeprecatedAgent - Extracted from CanonHealerAgent.py
 Legacy system architect logic preserved for backward compatibility.
@@ -17,6 +18,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 
 # Legacy class removed - use SystemArchitectAgent instead
+@dataclass
 class SystemArchitectDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)
@@ -36,11 +38,11 @@ class SystemArchitectDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
-                    
+        """Execute get_capabilities operation."""
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
-                    
+        """Execute validate_state operation."""
         return self.impl.validate_state()
 
     async def _execute_validation(self):

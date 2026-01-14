@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Canon Key Validators using AST-based validation.
 Replaces regex/string matching with proper AST analysis to eliminate false positives.
@@ -11,6 +12,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class PrintStatementValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 2: Detects print() statements using AST.

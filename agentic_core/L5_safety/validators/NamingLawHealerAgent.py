@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 [DEPRECATED - 2026-01-02] Naming Law Healer Agent - File Identity Standardizer
@@ -20,7 +21,7 @@ import warnings
 import json
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Any
 
 # Emit deprecation warning on import
 warnings.warn(
@@ -38,6 +39,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
+@dataclass
 class NamingLawHealerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     L1 Cognition: High-Signal Naming Law Healer — Key 49 Sovereign Enforcement
@@ -94,7 +96,7 @@ Current date: December 24, 2025
         self.reasoning_steps = []
         self.scratchpad = ""
         
-    async def execute(self, file_path: str = None):
+    async def execute(self, file_path: str = None) -> Any:
         """
         Execute the naming law healing pass.
         Can operate in batch mode (all files) or per-file mode with cognitive reasoning.

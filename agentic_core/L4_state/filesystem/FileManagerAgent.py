@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 FileManagerAgent - Filesystem Operations & Healing
 
@@ -33,17 +34,20 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 Logger = logging.getLogger(__name__)
 
 
-def timeout(seconds: int):
+def timeout(seconds: int) -> Any:
     """Timeout decorator for long-running operations."""
-    def decorator(func):
+    def decorator(func) -> Any:
+        """Execute decorator operation."""
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs) -> Any:
+            """Execute wrapper operation."""
             # Simplified timeout - in production would use signal/threading
             return func(*args, **kwargs)
         return wrapper
     return decorator
 
 
+@dataclass
 class FileManagerAgent(SovereignBaseAgent):
     """Filesystem operations agent with parent chain healing."""
 

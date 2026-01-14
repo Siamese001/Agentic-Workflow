@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 MetricsWitness – Phase 14 (Dec 30, 2025)
 PascalCase agent responsible for translating raw L6 MetricsAgent data into Sovereign Audit scores.
@@ -18,6 +19,7 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
+@dataclass
 class MetricsWitnessAgent(L0Agent, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):

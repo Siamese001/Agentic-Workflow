@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """Secure Checkpoint Manager - Protected persistence with encryption and integrity.
 
 This module provides a secure Checkpoint implementation that encrypts data at rest,
@@ -31,6 +32,7 @@ class CheckpointIntegrityError(Exception):
     pass
 
 
+@dataclass
 class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Manages secure Checkpoint persistence with encryption and integrity checks."""
     

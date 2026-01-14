@@ -410,7 +410,7 @@ class NervousSystemPhaseExecution:
 
             # Create a simple mock agent that has execute method
             class MockAgent(HealerMixin):
-                                                    
+                """MockAgent agent for autonomous operations."""
                 def __init__(self, name, phase) -> None:
                     self.name = name
                     self.phase = phase
@@ -421,6 +421,7 @@ class NervousSystemPhaseExecution:
                     return True
 
                 async def execute(self) -> None:
+                    """Execute execute operation."""
                     # Simulate agent execution
                     return {
                         "passed": True,
@@ -636,7 +637,7 @@ class NervousSystemPhaseExecution:
         execution_trace: List[Dict],
         results: Dict[str, Any],
         signals: set,
-    ):
+    ) -> Any:
         """Execute a phase in parallel (from SwarmScheduler)."""
         # Check circuit breaker before executing phase
         if self._phase_failure_counts.get(phase_name, 0) >= 3:
@@ -665,8 +666,8 @@ class NervousSystemPhaseExecution:
         for agent in agents:
             if hasattr(agent, 'execute'):
                 # Create wrapper for each agent to handle context and prerequisites
-                async def execute_agent_with_context(agent):
-                                                                    
+                async def execute_agent_with_context(agent) -> Any:
+                    """Execute execute_agent_with_context operation."""
                     # Check prerequisite conditions if agent supports it
                     if hasattr(agent, 'check_prerequisites'):
                         prereq_result = await agent.check_prerequisites(context)
@@ -728,7 +729,7 @@ class NervousSystemPhaseExecution:
         context: ExecutionContext,
         execution_trace: List[Dict[str, Any]],
         signals: set,
-    ):
+    ) -> Any:
         """
         Execute agents forced by telepathic instructions.
 
@@ -941,7 +942,7 @@ class NervousSystemPhaseOrchestratorAgent(HealerMixin):
     ) -> bool:
         """Helper to run a single phase with common logic."""
         def should_skip_phase_local(phase_name: str) -> bool:
-                                    
+            """Execute should_skip_phase_local operation."""
             if not resume_phase:
                 return False
             phase_order = [

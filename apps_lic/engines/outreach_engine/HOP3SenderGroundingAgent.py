@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP-3: Sender Grounding Agent - Extract sender capabilities from knowledge base."""
 
 __version__ = "13.1"
@@ -15,6 +16,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from apps_shared.utils.state_manager import StateManager
 
 
+@dataclass
 class HOP3SenderGroundingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: HOP-3 - Sender Grounding Extraction (MCP Hardened)

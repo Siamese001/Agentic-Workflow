@@ -75,6 +75,7 @@ AGENT_REGISTRY: Dict[str, List[Dict[str, Any]]] = {
 
 @dataclass
 class PlacementResult:
+    """PlacementResult agent for autonomous operations."""
     full_path: str
     l1_folder: str
     l2_subfolder: Optional[str]
@@ -359,6 +360,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return self.get_placement_guidance_v2(content_preview)
 
     def get_placement_guidance_v2(self, content: str, file_path: Path = None) -> PlacementResult:
+        """Execute get_placement_guidance_v2 operation."""
         classes, functions, imports = self._extract_ast_symbols(content)
         decorators = self._extract_decorators(content)
         base_classes = self._extract_base_classes(content)
@@ -1728,6 +1730,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
 
     def validate_current_placement(self, file_path: Path) -> Tuple[bool, PlacementResult]:
+        """Execute validate_current_placement operation."""
         try:
             content = file_path.read_text(encoding='utf-8', errors='ignore')
         except Exception:
@@ -1756,6 +1759,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return True, suggested
 
     def move_to_canonical_location(self, file_path: Path, dry_run: bool = True) -> Dict[str, Any]:
+        """Execute move_to_canonical_location operation."""
         result = {
             'old_path': str(file_path),
             'new_path': None,

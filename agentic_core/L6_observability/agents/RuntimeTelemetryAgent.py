@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 RUNTIME TELEMETRY AGENT
@@ -17,6 +18,7 @@ from typing import Dict, List, Any, Callable, Tuple
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
+@dataclass
 class RuntimeTelemetryAgent(MCPHardenedMixin):
     """
     THE PERFORMANCE GUARDIAN
@@ -107,6 +109,7 @@ class RuntimeTelemetryAgent(MCPHardenedMixin):
 if __name__ == "__main__":
     # Self-test logic for immediate verification in Windsurf
     class MockSovereignAgent:
+        """MockSovereignAgent agent for autonomous operations."""
         def __init__(self):
             time.sleep(0.05)  # Simulate 50ms startup
 

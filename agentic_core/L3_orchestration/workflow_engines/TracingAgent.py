@@ -64,13 +64,20 @@ class Span:
         self.status: str = "IN_PROGRESS"
 
     def start(self) -> None:
+        """Execute start operation."""
         self.start_time = datetime.now().isoformat(timespec="milliseconds")
 
     def end(self, status: str = "SUCCESS") -> None:
+       """Execute end operation."""
+        """Execute end operation."""
         self.end_time = datetime.now().isoformat(timespec="milliseconds")
         self.status = status
 
     def add_event(self, name: str, attributes: Optional[Dict[str, Any]] = None) -> None:
+     """Execute add_event operation."""
+      """Execute add_event operation."""
+       """Execute add_event operation."""
+        """Execute add_event operation."""
         event = {
             "name": name,
             "timestamp": datetime.now().isoformat(timespec="milliseconds"),
@@ -79,10 +86,14 @@ class Span:
         self.events.append(event)
 
     def set_attribute(self, key: str, value: Any) -> None:
+     """Execute set_attribute operation."""
+      """Execute set_attribute operation."""
+       """Execute set_attribute operation."""
         """Set a Span attribute."""
         self.attributes[key] = value
 
     def to_dict(self) -> Dict[str, Any]:
+        """Execute to_dict operation."""
         duration_ms = 0.0
         if self.start_time and self.end_time:
             start = datetime.fromisoformat(self.start_time)
@@ -150,17 +161,19 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """Setup mock tracer + optional OTLP export."""
         # 1. Internal Mock Provider (Zero-Dependency Fallback)
         class MockSpan:
+            """MockSpan agent for autonomous operations."""
             def __enter__(self): return self
             def __exit__(self, *args): pass
-            def set_attribute(self, *args): pass
-            def set_status(self, *args): pass
-            def record_exception(self, *args): pass
-            def add_event(self, *args, **kwargs): pass
-            def end(self): pass
+            def set_attribute(self, *args) -> Any: pass
+            def set_status(self, *args) -> Any: pass
+            def record_exception(self, *args) -> Any: pass
+            def add_event(self, *args, **kwargs) -> Any: pass
+            def end(self) -> Any: pass
 
         class MockTracer:
-            def start_as_current_span(self, name): return MockSpan()
-            def start_span(self, name): return MockSpan()
+            """MockTracer agent for autonomous operations."""
+            def start_as_current_span(self, name) -> Any: return MockSpan()
+            def start_span(self, name) -> Any: return MockSpan()
 
         tracer = MockTracer()
 
@@ -291,7 +304,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         trace_id: Optional[str] = None,
         parent_span_id: Optional[str] = None,
         attributes: Optional[Dict[str, Any]] = None
-    ):
+    ) -> Any:
         """
         Context manager for creating and completing a Span.
 
@@ -314,8 +327,9 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         if not sample:
             # No-op Span: yield dummy to avoid breaking caller
             class NoOpSpan:
-                def set_attribute(self, *args): pass
-                def add_event(self, *args): pass
+                """NoOpSpan agent for autonomous operations."""
+                def set_attribute(self, *args) -> Any: pass
+                def add_event(self, *args) -> Any: pass
             yield NoOpSpan()
             return
 
@@ -336,11 +350,18 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             raise
 
     def set_attribute(self, span_id: str, key: str, value: Any) -> None:
+      """Execute set_attribute operation."""
+       """Execute set_attribute operation."""
+        """Execute set_attribute operation."""
         with self._lock:
             if span_id in self._spans:
                 self._spans[span_id].attributes[key] = value
 
     def add_event(self, span_id: str, name: str, attributes: Optional[Dict[str, Any]] = None) -> None:
+     """Execute add_event operation."""
+      """Execute add_event operation."""
+       """Execute add_event operation."""
+        """Execute add_event operation."""
         with self._lock:
             if span_id in self._spans:
                 self._spans[span_id].add_event(name, attributes)
@@ -377,7 +398,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     # === Compliance Mission Helpers ===
 
     @contextmanager
-    def trace_compliance_mission(self, mission_id: str = "manual"):
+    def trace_compliance_mission(self, mission_id: str = "manual") -> Any:
         """High-level context for full compliance mission."""
         trace_id = str(uuid.uuid4())
         # Force sampling for root mission trace

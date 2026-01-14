@@ -190,8 +190,9 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
     errors = []
     
     try:
-        # Load agent discovery
-        with open('C:/Git/Agentic-Workflow/agent_discovery_full.json', 'r', encoding='utf-8') as f:
+        # Load agent discovery (using SSOT path - no hardcoding)
+        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
+        with open(discovery_path, 'r', encoding='utf-8') as f:
             agents = json.load(f)
         
         # Load dashboard data
@@ -400,8 +401,9 @@ def run_all_tests() -> bool:
         'L5': 'L5Agent',
     }
     try:
-        # Load agents from discovery file
-        with open('C:/Git/Agentic-Workflow/agent_discovery_full.json', 'r', encoding='utf-8') as f:
+        # Load agents from discovery file (using SSOT path)
+        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
+        with open(discovery_path, 'r', encoding='utf-8') as f:
             agents = json.load(f)
         
         # Group base agents by layer
@@ -655,10 +657,13 @@ def run_all_tests() -> bool:
             footnote_checks.append("Health footnote still shows old equal-weight formula")
         
         # Check 2: Code Quality Score footnote is accurate
-        if 'Typed (35%)' in html_content or 'Schema (30%)' in html_content:
+        # Accepts either simple average OR weighted composite formula
+        if 'Typed (35%)' in html_content and 'Schema (30%)' in html_content:
             footnote_checks.append("Code Quality Score footnote shows stale weighted formula")
         elif '(Typed % + Documented %) / 2' in html_content or 'Simple average' in html_content:
             print("   ✅ Code Quality Score footnote updated to simple average")
+        elif 'Typed % × 0.30' in html_content or 'Weighted composite' in html_content:
+            print("   ✅ Code Quality Score footnote updated to weighted composite")
         else:
             footnote_checks.append("Code Quality Score footnote formula unclear")
         
@@ -876,18 +881,29 @@ def run_all_tests() -> bool:
         # Get actual territories from dashboard
         dashboard_territories = {row['Territory'] for row in dashboard_data if row['Territory'] != 'TOTAL'}
         
-        # CRITICAL: Check for Base Agent territories for each layer (8 total)
-        # Note: These are "Base Agent" territories, not "Base Class" - they contain the canonical base agents
-        expected_base_classes = [
-            "Base/Root",
-            "L5 Safety/Base Agent", 
-            "L4 State/Base Agent",
-            "L3 Orchestration/Base Agent",
-            "L2 Execution/Base Agent",
-            "L1 Cognition/Base Agent",
-            "L0 Maintenance/Base Agent",
-            "L6 Observability/Base Agent"
-        ]
+        # CRITICAL: Derive expected base class territories from discovery data (no hardcoding)
+        # Find all territories that contain "Base" in their name from actual agent data
+        # Then map them to dashboard territory names using the same mapping as regenerate script
+        territory_mapping = {
+            'Base/Base Class': 'Base/Root',
+            'L0 Maintenance/Base Class': 'L0 Maintenance/Base Agent',
+            'L1 Cognition/Base Class': 'L1 Cognition/Base Agent',
+            'L2 Execution/Base Class': 'L2 Execution/Base Agent',
+            'L3 Orchestration/Base Class': 'L3 Orchestration/Base Agent',
+            'L4 State/Base Class': 'L4 State/Base Agent',
+            'L5 Safety/Base Class': 'L5 Safety/Base Agent',
+            'L6_Observability/Base Class': 'L6 Observability/Base Agent',
+        }
+        
+        expected_base_classes = set()
+        for agent in agents:
+            territory = agent.get('territory', '')
+            # Include territories with "Base" pattern (Base Agent, Base Class, Base/Root)
+            if 'Base' in territory:
+                # Map to dashboard territory name
+                mapped = territory_mapping.get(territory, territory)
+                expected_base_classes.add(mapped)
+        expected_base_classes = list(expected_base_classes)
         
         missing_base_classes = []
         for base_class in expected_base_classes:

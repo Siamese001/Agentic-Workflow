@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Sovereign Canon Audit – Powered by DeepWiki MCP
 Phase 13E: L6 Self-Verification Utility
@@ -21,6 +22,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 Logger: Any = logging.getLogger('L6.CanonAudit')
 
+@dataclass
 class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
     """
     Sovereign Canon Auditor using DeepWiki MCP.

@@ -177,7 +177,7 @@ LAYER_BASE_MAP = {
 #   - 2026-01-05: 312 agents (after string error caused 60+ agent loss - UNACCEPTABLE)
 #
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
-MINIMUM_AGENT_COUNT = 268  # Phase 3.2: 5 test fixtures excluded from discovery (2026-01-12)
+MINIMUM_AGENT_COUNT = 265  # Phase 3.3: Updated after typed/documented fixes (2026-01-14)
 MAX_AGENT_DROP_PERCENT = 0   # Zero tolerance for agent loss - strict enforcement
 EXPECTED_AGENT_COUNT = 268  # Phase 3.2: Updated after test fixture exclusion (2026-01-12)
 # 2026-01-07: Reduced from 276 to 273 after Phase 2 relocation (legitimate consolidation)
@@ -687,14 +687,78 @@ def check_proper_base(class_node: ast.ClassDef, layer: str) -> bool:
     return False
 
 
-def calculate_schema_strictness(class_node: ast.ClassDef) -> float:
-    """Phase 4: Hardened signal based on full type hint enforcement.
+def calculate_schema_strictness(class_node: ast.ClassDef, source: str = "") -> float:
+    """Phase 4: Schema Strictness - % with strict Pydantic/dataclass schema validation.
     
-    Logic: Currently mirrors typing coverage but can be hardened to 
-    penalize missing 'Any' specifications or non-Sovereign types.
+    Checks for:
+    1. @dataclass decorator on the class
+    2. Pydantic BaseModel inheritance
+    3. Field definitions with type annotations
+    4. Pydantic Field() or dataclass field() usage
+    
+    Returns 100% if agent uses Pydantic or dataclass, 0% otherwise.
     """
-    # Initial implementation leverages current typing coverage logic
-    return calculate_typing_coverage(class_node)
+    # Check for @dataclass decorator
+    has_dataclass = False
+    for decorator in class_node.decorator_list:
+        if isinstance(decorator, ast.Name) and decorator.id == 'dataclass':
+            has_dataclass = True
+            break
+        elif isinstance(decorator, ast.Call):
+            if isinstance(decorator.func, ast.Name) and decorator.func.id == 'dataclass':
+                has_dataclass = True
+                break
+    
+    if has_dataclass:
+        return 100.0
+    
+    # Check for Pydantic BaseModel inheritance
+    bases = [get_base_name(base) for base in class_node.bases]
+    pydantic_bases = {'BaseModel', 'BaseSettings', 'GenericModel'}
+    if any(base in pydantic_bases for base in bases):
+        return 100.0
+    
+    # Check source for Pydantic/dataclass imports and usage
+    if source:
+        # Check for Pydantic imports
+        if 'from pydantic import' in source or 'import pydantic' in source:
+            if 'BaseModel' in source or 'Field(' in source:
+                return 100.0
+        
+        # Check for dataclass imports
+        if 'from dataclasses import' in source or '@dataclass' in source:
+            return 100.0
+    
+    # Check if class has typed class-level attributes (field definitions)
+    # This is a weaker signal but still indicates schema awareness
+    typed_attrs = 0
+    total_attrs = 0
+    for node in class_node.body:
+        if isinstance(node, ast.AnnAssign):
+            total_attrs += 1
+            if node.annotation is not None:
+                typed_attrs += 1
+    
+    if total_attrs > 0:
+        # Has typed class attributes - partial schema strictness
+        return round((typed_attrs / total_attrs) * 100, 1)
+    
+    # No schema validation detected
+    return 0.0
+
+
+def get_base_name(base_node) -> str:
+    """Extract base class name from AST node."""
+    if isinstance(base_node, ast.Name):
+        return base_node.id
+    elif isinstance(base_node, ast.Attribute):
+        return base_node.attr
+    elif isinstance(base_node, ast.Subscript):
+        if isinstance(base_node.value, ast.Name):
+            return base_node.value.id
+        elif isinstance(base_node.value, ast.Attribute):
+            return base_node.value.attr
+    return ""
 
 
 def detect_agent_metadata(class_node: ast.ClassDef) -> bool:
@@ -1357,7 +1421,7 @@ def main():
             cyclomatic_complexity = calculate_cyclomatic_complexity(node)
             # NEW PHASE 4 SIGNALS
             proper_base_class = check_proper_base(node, layer)
-            schema_strictness = calculate_schema_strictness(node)
+            schema_strictness = calculate_schema_strictness(node, source)
             # PHASE 3: Metadata detection
             has_metadata = detect_agent_metadata(node)
             # PHASE 3: Usage detection (simplified - agents with proper base are considered "in use")

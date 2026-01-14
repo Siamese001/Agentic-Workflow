@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 import re
@@ -37,7 +38,7 @@ class IntegrityGateResult:
         self.violations: List[Violation] = []
 
     def add_violation(self, reason: ValidationRejectionReason, message: str) -> None:
-                    
+        """Execute add_violation operation."""
         self.passed = False
         self.violations.append(Violation(reason, message))
 
@@ -121,6 +122,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+@dataclass
 class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
     """Executor for integrity gate validation.
 

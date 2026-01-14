@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP-8: QA Report Agent - Persistent markdown report generation."""
 
 __version__ = "13.1"
@@ -15,6 +16,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from apps_shared.utils.state_manager import StateManager
 
 
+@dataclass
 class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: QA Report Agent - Persistent markdown report generation (MCP Hardened)

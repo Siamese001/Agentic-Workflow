@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 ConvergenceDetectorAgent - Extracted for one-class-per-file pattern.
 
@@ -12,6 +13,7 @@ from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin i
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
+@dataclass
 class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Detects when the system has converged (Resume Generator app-specific)."""
 
@@ -19,7 +21,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
         self.ctx = ctx
         self.history: List[Set[str]] = []
 
-    def record_state(self):
+    def record_state(self) -> Any:
         """Record current signal state."""
         self.history.append(set(self.ctx.signals))
 

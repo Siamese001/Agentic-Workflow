@@ -1,5 +1,6 @@
 from __future__ import annotations
 import asyncio
+from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 import datetime
@@ -18,19 +19,20 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+@dataclass
 class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     ROLE: Memory & Embedding. Maps the codebase into semantic space.
     """
     def can_run(self) -> bool:
-                    
+        """Execute can_run operation."""
         # Explicit validation and defaults
         modified_files = getattr(self.ctx, "modified_files", [])
         pinecone_available = getattr(self.ctx, "pinecone_available", False)
         return len(modified_files) > 0 and pinecone_available
 
     async def execute(self) -> None:
-                    
+        """Execute execute operation."""
         print(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space...")
         await asyncio.sleep(0)
 

@@ -1,3 +1,5 @@
+from typing import Any
+from dataclasses import dataclass
 """
 DeadlockDetectorAgent - Extracted for one-class-per-file pattern.
 
@@ -10,6 +12,7 @@ from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Detects potential deadlocks in asyncio tasks.
@@ -67,7 +70,7 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
         
         return False
 
-    def start_monitoring(self):
+    def start_monitoring(self) -> Any:
         """Start the background monitoring Task."""
         if not self.enabled or self.monitor_task:
             return
@@ -75,7 +78,7 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
         self.monitor_task = asyncio.create_task(self._monitor_loop())
         LOGGER.info("Deadlock monitoring started")
 
-    def stop_monitoring(self):
+    def stop_monitoring(self) -> Any:
         """Stop the background monitoring Task."""
         if self.monitor_task:
             self.monitor_task.cancel()
@@ -106,7 +109,7 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
         LOGGER.debug(f"Registered Task for monitoring: {task_id}")
         return task_id
 
-    def heartbeat(self, task_id: str):
+    def heartbeat(self, task_id: str) -> Any:
         """
         Send heartbeat for a monitored Task.
 

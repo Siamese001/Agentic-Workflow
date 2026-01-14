@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 🚀 PHASE 5: THIN WRAPPER - Hardened Workflow Orchestrator
 
@@ -25,6 +26,7 @@ from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin i
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Thin wrapper for Hardened Workflow Orchestrator.

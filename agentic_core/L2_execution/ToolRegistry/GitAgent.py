@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 GitAgent - L6 GitOps & Remote Synchronization
 CANONICAL: True - Standalone extraction 2026-01-06 (from infrastructure.py)
@@ -31,6 +32,7 @@ try:
 except ImportError:
     CachedStateLedger = None
 
+@dataclass
 class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Agent for managing git operations and remote synchronization.

@@ -57,13 +57,13 @@ class HistorianAgent(SovereignBaseAgent):
         # Use env var for log path for better environment isolation
         self.log_file = os.getenv("HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md")
     async def execute(self) -> None:
-                    
+        """Execute execute operation."""
         # The Historian is usually called directly via record_event,
         # but can run as an agent to flush/summary logs.
         pass
 
-    def record_event(self, agent: str, status: str, details: str):
-                    
+    def record_event(self, agent: str, status: str, details: str) -> Any:
+        """Execute record_event operation."""
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
 
@@ -98,8 +98,9 @@ if WATCHDOG_AVAILABLE:
             self.loop = loop
             self.cooldown = 0.0
 
-        def on_modified(self, event):
-                                    
+        def on_modified(self, event) -> Any:
+           """Execute on_modified operation."""
+            """Execute on_modified operation."""
             if event.is_directory: return
             if any(x in event.src_path for x in EXCLUDED_DIRS): return
             if not event.src_path.endswith('.py'): return
@@ -120,6 +121,7 @@ else:
             self.ctx = context
             self.loop = loop
 
-        def on_modified(self, event):
-                                    
+        def on_modified(self, event) -> Any:
+           """Execute on_modified operation."""
+            """Execute on_modified operation."""
             pass

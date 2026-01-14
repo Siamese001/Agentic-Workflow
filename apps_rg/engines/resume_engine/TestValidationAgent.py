@@ -1,4 +1,6 @@
 from __future__ import annotations
+from typing import Any
+from dataclasses import dataclass
 """
 Unit Tests for Phase 5: Observability & Telemetry Components
 
@@ -37,13 +39,13 @@ from ..observability import (
 
 
 @pytest.fixture
-def ctx():
+def ctx() -> Any:
     """Create a fresh context for each test."""
     return ResumeEngineContext()
 
 
 @pytest.fixture
-def valid_resume():
+def valid_resume() -> Any:
     """Create a valid resume for testing."""
     return {
         "summary": "Experienced software engineer with 10+ years building scalable systems. Led teams of 5-10 engineers and delivered projects that increased revenue by 25%.",
@@ -59,7 +61,7 @@ def valid_resume():
 
 
 @pytest.fixture
-def invalid_resume():
+def invalid_resume() -> Any:
     """Create an invalid resume for testing."""
     return {
         "summary": "I helped with stuff.",
@@ -73,7 +75,7 @@ def invalid_resume():
 class TestTraceLevel:
     """Tests for TraceLevel enum."""
 
-    def test_trace_levels(self):
+    def test_trace_levels(self) -> Any:
         """Test trace level values."""
         assert TraceLevel.MINIMAL.value == "minimal"
         assert TraceLevel.STANDARD.value == "standard"
@@ -84,7 +86,7 @@ class TestTraceLevel:
 class TestMetricType:
     """Tests for MetricType enum."""
 
-    def test_metric_types(self):
+    def test_metric_types(self) -> Any:
         """Test Metric type values."""
         assert MetricType.COUNTER.value == "counter"
         assert MetricType.GAUGE.value == "gauge"
@@ -95,7 +97,7 @@ class TestMetricType:
 class TestValidationSeverity:
     """Tests for ValidationSeverity enum."""
 
-    def test_severity_levels(self):
+    def test_severity_levels(self) -> Any:
         """Test Severity level values."""
         assert ValidationSeverity.INFO.value == "info"
         assert ValidationSeverity.WARNING.value == "warning"
@@ -106,7 +108,7 @@ class TestValidationSeverity:
 class TestTraceStep:
     """Tests for TraceStep dataclass."""
 
-    def test_create_step(self):
+    def test_create_step(self) -> Any:
         """Test creating a trace step."""
         step = TraceStep(
             step_id="step_1",
@@ -124,7 +126,7 @@ class TestTraceStep:
 class TestExecutionTrace:
     """Tests for ExecutionTrace dataclass."""
 
-    def test_create_trace(self):
+    def test_create_trace(self) -> Any:
         """Test creating an execution trace."""
         trace = ExecutionTrace(
             trace_id="trace_123",
@@ -141,7 +143,7 @@ class TestExecutionTrace:
 class TestMetric:
     """Tests for Metric dataclass."""
 
-    def test_create_metric(self):
+    def test_create_metric(self) -> Any:
         """Test creating a Metric."""
         Metric = Metric(
             name="test_metric",
@@ -157,7 +159,7 @@ class TestMetric:
 class TestValidationIssue:
     """Tests for ValidationIssue dataclass."""
 
-    def test_create_issue(self):
+    def test_create_issue(self) -> Any:
         """Test creating a validation issue."""
         issue = ValidationIssue(
             rule_id="TEST_RULE",
@@ -175,14 +177,14 @@ class TestValidationIssue:
 class TestExecutionTracer:
     """Tests for ExecutionTracer class."""
 
-    def test_init(self, ctx):
+    def test_init(self, ctx) -> Any:
         """Test ExecutionTracer initialization."""
         tracer = ExecutionTracer(ctx)
 
         assert tracer.ctx == ctx
         assert tracer.level == TraceLevel.STANDARD
 
-    def test_start_trace(self, ctx):
+    def test_start_trace(self, ctx) -> Any:
         """Test starting a trace."""
         tracer = ExecutionTracer(ctx)
 
@@ -191,7 +193,7 @@ class TestExecutionTracer:
         assert trace_id is not None
         assert len(trace_id) == 16
 
-    def test_start_step(self, ctx):
+    def test_start_step(self, ctx) -> Any:
         """Test starting a step."""
         tracer = ExecutionTracer(ctx)
         tracer.start_trace("mission_1")
@@ -200,7 +202,7 @@ class TestExecutionTracer:
 
         assert step_id == "step_1"
 
-    def test_end_step(self, ctx):
+    def test_end_step(self, ctx) -> Any:
         """Test ending a step."""
         tracer = ExecutionTracer(ctx)
         tracer.start_trace("mission_1")
@@ -212,7 +214,7 @@ class TestExecutionTracer:
         assert trace.steps[0].success is True
         assert trace.steps[0].duration_ms is not None
 
-    def test_end_step_with_error(self, ctx):
+    def test_end_step_with_error(self, ctx) -> Any:
         """Test ending a step with error."""
         tracer = ExecutionTracer(ctx)
         tracer.start_trace("mission_1")
@@ -224,7 +226,7 @@ class TestExecutionTracer:
         assert trace.steps[0].success is False
         assert trace.steps[0].error == "Test error"
 
-    def test_end_trace(self, ctx):
+    def test_end_trace(self, ctx) -> Any:
         """Test ending a trace."""
         tracer = ExecutionTracer(ctx)
         tracer.start_trace("mission_1")
@@ -236,7 +238,7 @@ class TestExecutionTracer:
         assert trace.success is True
         assert trace.end_time is not None
 
-    def test_get_trace(self, ctx):
+    def test_get_trace(self, ctx) -> Any:
         """Test getting a trace by ID."""
         tracer = ExecutionTracer(ctx)
         trace_id = tracer.start_trace("mission_1")
@@ -247,7 +249,7 @@ class TestExecutionTracer:
         assert trace is not None
         assert trace.trace_id == trace_id
 
-    def test_get_all_traces(self, ctx):
+    def test_get_all_traces(self, ctx) -> Any:
         """Test getting all traces."""
         tracer = ExecutionTracer(ctx)
 
@@ -260,7 +262,7 @@ class TestExecutionTracer:
 
         assert len(traces) == 2
 
-    def test_get_stats(self, ctx):
+    def test_get_stats(self, ctx) -> Any:
         """Test getting tracer statistics."""
         tracer = ExecutionTracer(ctx)
         tracer.start_trace("mission_1")
@@ -276,13 +278,13 @@ class TestExecutionTracer:
 class TestMetricsCollector:
     """Tests for MetricsCollector class."""
 
-    def test_init(self, ctx):
+    def test_init(self, ctx) -> Any:
         """Test MetricsCollector initialization."""
         collector = MetricsCollector(ctx)
 
         assert collector.ctx == ctx
 
-    def test_increment(self, ctx):
+    def test_increment(self, ctx) -> Any:
         """Test incrementing a counter."""
         collector = MetricsCollector(ctx)
 
@@ -291,7 +293,7 @@ class TestMetricsCollector:
 
         assert collector.get_counter("test_counter") == 2
 
-    def test_increment_with_value(self, ctx):
+    def test_increment_with_value(self, ctx) -> Any:
         """Test incrementing with custom value."""
         collector = MetricsCollector(ctx)
 
@@ -299,7 +301,7 @@ class TestMetricsCollector:
 
         assert collector.get_counter("test_counter") == 5
 
-    def test_gauge(self, ctx):
+    def test_gauge(self, ctx) -> Any:
         """Test setting a gauge."""
         collector = MetricsCollector(ctx)
 
@@ -307,7 +309,7 @@ class TestMetricsCollector:
 
         assert collector.get_gauge("test_gauge") == 42
 
-    def test_histogram(self, ctx):
+    def test_histogram(self, ctx) -> Any:
         """Test recording a histogram value."""
         collector = MetricsCollector(ctx)
 
@@ -317,7 +319,7 @@ class TestMetricsCollector:
         assert len(metrics) == 1
         assert metrics[0].value == 100
 
-    def test_timer(self, ctx):
+    def test_timer(self, ctx) -> Any:
         """Test recording a timer value."""
         collector = MetricsCollector(ctx)
 
@@ -327,7 +329,7 @@ class TestMetricsCollector:
         assert len(metrics) == 1
         assert metrics[0].value == 500
 
-    def test_get_metrics_by_type(self, ctx):
+    def test_get_metrics_by_type(self, ctx) -> Any:
         """Test getting metrics by type."""
         collector = MetricsCollector(ctx)
 
@@ -340,7 +342,7 @@ class TestMetricsCollector:
         assert len(counters) == 1
         assert len(gauges) == 1
 
-    def test_reset(self, ctx):
+    def test_reset(self, ctx) -> Any:
         """Test resetting metrics."""
         collector = MetricsCollector(ctx)
 
@@ -349,7 +351,7 @@ class TestMetricsCollector:
 
         assert collector.get_counter("test") == 0
 
-    def test_get_stats(self, ctx):
+    def test_get_stats(self, ctx) -> Any:
         """Test getting collector statistics."""
         collector = MetricsCollector(ctx)
 
@@ -362,6 +364,7 @@ class TestMetricsCollector:
         assert stats["gauges"] == 1
 
 
+@dataclass
 class TestValidationAgent(MCPHardenedMixin, HealerMixin):
     """Tests for ValidationAgent class."""
 
@@ -381,13 +384,13 @@ class TestValidationAgent(MCPHardenedMixin, HealerMixin):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def test_init(self, ctx):
+    def test_init(self, ctx) -> Any:
         """Test ValidationAgent initialization."""
         validator = ValidationAgent(ctx)
 
         assert validator.ctx == ctx
 
-    def test_validate_valid_resume(self, ctx, valid_resume):
+    def test_validate_valid_resume(self, ctx, valid_resume) -> Any:
         """Test validating a valid resume."""
         validator = ValidationAgent(ctx)
 
@@ -397,7 +400,7 @@ class TestValidationAgent(MCPHardenedMixin, HealerMixin):
         errors = [i for i in issues if i.Severity == ValidationSeverity.ERROR]
         assert len(errors) == 0
 
-    def test_validate_invalid_resume(self, ctx, invalid_resume):
+    def test_validate_invalid_resume(self, ctx, invalid_resume) -> Any:
         """Test validating an invalid resume."""
         validator = ValidationAgent(ctx)
 
@@ -406,7 +409,7 @@ class TestValidationAgent(MCPHardenedMixin, HealerMixin):
         # Invalid resume should have issues
         assert len(issues) > 0
 
-    def test_validate_empty_summary(self, ctx):
+    def test_validate_empty_summary(self, ctx) -> Any:
         """Test validating empty summary."""
         validator = ValidationAgent(ctx)
 
@@ -415,7 +418,7 @@ class TestValidationAgent(MCPHardenedMixin, HealerMixin):
         error_issues = [i for i in issues if i.rule_id == "SUMMARY_EMPTY"]
         assert len(error_issues) == 1
 
-    def test_validate_short_summary(self, ctx):
+    def test_validate_short_summary(self, ctx) -> Any:
         """Test validating short summary."""
         validator = ValidationAgent(ctx)
 
@@ -424,7 +427,7 @@ class TestValidationAgent(MCPHardenedMixin, HealerMixin):
         short_issues = [i for i in issues if i.rule_id == "SUMMARY_TOO_SHORT"]
         assert len(short_issues) == 1
 
-    def test_validate_weak_language(self, ctx):
+    def test_validate_weak_language(self, ctx) -> Any:
         """Test detecting weak language."""
         validator = ValidationAgent(ctx)
 
@@ -435,7 +438,7 @@ class TestValidationAgent(MCPHardenedMixin, HealerMixin):
         weak_issues = [i for i in issues if i.rule_id == "SUMMARY_WEAK_LANGUAGE"]
         assert len(weak_issues) >= 1
 
-    def test_validate_empty_experience(self, ctx):
+    def test_validate_empty_experience(self, ctx) -> Any:
         """Test validating empty experience."""
         validator = ValidationAgent(ctx)
 
@@ -444,7 +447,7 @@ class TestValidationAgent(MCPHardenedMixin, HealerMixin):
         error_issues = [i for i in issues if i.rule_id == "EXPERIENCE_EMPTY"]
         assert len(error_issues) == 1
 
-    def test_get_issues_by_severity(self, ctx, invalid_resume):
+    def test_get_issues_by_severity(self, ctx, invalid_resume) -> Any:
         """Test getting issues by Severity."""
         validator = ValidationAgent(ctx)
         validator.validate_resume(invalid_resume)
@@ -453,7 +456,7 @@ class TestValidationAgent(MCPHardenedMixin, HealerMixin):
 
         assert all(i.Severity == ValidationSeverity.ERROR for i in errors)
 
-    def test_get_stats(self, ctx, invalid_resume):
+    def test_get_stats(self, ctx, invalid_resume) -> Any:
         """Test getting validation statistics."""
         validator = ValidationAgent(ctx)
         validator.validate_resume(invalid_resume)
@@ -466,7 +469,7 @@ class TestValidationAgent(MCPHardenedMixin, HealerMixin):
 class TestAuditReporter:
     """Tests for AuditReporter class."""
 
-    def test_init(self, ctx):
+    def test_init(self, ctx) -> Any:
         """Test AuditReporter initialization."""
         tracer = ExecutionTracer(ctx)
         metrics = MetricsCollector(ctx)
@@ -476,7 +479,7 @@ class TestAuditReporter:
 
         assert reporter.ctx == ctx
 
-    def test_generate_report(self, ctx, valid_resume):
+    def test_generate_report(self, ctx, valid_resume) -> Any:
         """Test generating an audit report."""
         tracer = ExecutionTracer(ctx)
         metrics = MetricsCollector(ctx)
@@ -496,7 +499,7 @@ class TestAuditReporter:
         assert report.mission_id == "mission_1"
         assert "total_traces" in report.summary
 
-    def test_export_report_json(self, ctx, tmp_path):
+    def test_export_report_json(self, ctx, tmp_path) -> Any:
         """Test exporting report to JSON."""
         tracer = ExecutionTracer(ctx)
         metrics = MetricsCollector(ctx)
@@ -512,7 +515,7 @@ class TestAuditReporter:
         content = json.loads(Path(result).read_text())
         assert "report_id" in content
 
-    def test_export_report_markdown(self, ctx, tmp_path):
+    def test_export_report_markdown(self, ctx, tmp_path) -> Any:
         """Test exporting report to Markdown."""
         tracer = ExecutionTracer(ctx)
         metrics = MetricsCollector(ctx)
@@ -528,7 +531,7 @@ class TestAuditReporter:
         content = Path(result).read_text()
         assert "# Audit Report" in content
 
-    def test_get_stats(self, ctx):
+    def test_get_stats(self, ctx) -> Any:
         """Test getting reporter statistics."""
         tracer = ExecutionTracer(ctx)
         metrics = MetricsCollector(ctx)
@@ -545,13 +548,13 @@ class TestAuditReporter:
 class TestTelemetryExporter:
     """Tests for TelemetryExporter class."""
 
-    def test_init(self, ctx):
+    def test_init(self, ctx) -> Any:
         """Test TelemetryExporter initialization."""
         exporter = TelemetryExporter(ctx)
 
         assert exporter.ctx == ctx
 
-    def test_export_traces_json(self, ctx):
+    def test_export_traces_json(self, ctx) -> Any:
         """Test exporting traces to JSON."""
         exporter = TelemetryExporter(ctx)
 
@@ -569,7 +572,7 @@ class TestTelemetryExporter:
         assert len(data) == 1
         assert data[0]["trace_id"] == "trace_1"
 
-    def test_export_traces_otlp(self, ctx):
+    def test_export_traces_otlp(self, ctx) -> Any:
         """Test exporting traces to OTLP format."""
         exporter = TelemetryExporter(ctx)
 
@@ -595,7 +598,7 @@ class TestTelemetryExporter:
         data = json.loads(result)
         assert "resourceSpans" in data
 
-    def test_export_metrics_json(self, ctx):
+    def test_export_metrics_json(self, ctx) -> Any:
         """Test exporting metrics to JSON."""
         exporter = TelemetryExporter(ctx)
 
@@ -609,7 +612,7 @@ class TestTelemetryExporter:
         assert len(data) == 1
         assert data[0]["name"] == "test_metric"
 
-    def test_export_metrics_prometheus(self, ctx):
+    def test_export_metrics_prometheus(self, ctx) -> Any:
         """Test exporting metrics to Prometheus format."""
         exporter = TelemetryExporter(ctx)
 
@@ -621,7 +624,7 @@ class TestTelemetryExporter:
 
         assert "test_metric 42" in result
 
-    def test_get_stats(self, ctx):
+    def test_get_stats(self, ctx) -> Any:
         """Test getting exporter statistics."""
         exporter = TelemetryExporter(ctx)
 
@@ -636,7 +639,7 @@ class TestTelemetryExporter:
 class TestPhase5Orchestrator(HealerMixin):
     """Tests for Phase5Orchestrator class."""
 
-    def test_init(self, ctx):
+    def test_init(self, ctx) -> Any:
         """Test Phase5Orchestrator initialization."""
         orchestrator = Phase5Orchestrator(ctx)
 
@@ -647,7 +650,7 @@ class TestPhase5Orchestrator(HealerMixin):
         assert orchestrator.reporter is not None
         assert orchestrator.exporter is not None
 
-    def test_start_mission(self, ctx):
+    def test_start_mission(self, ctx) -> Any:
         """Test starting a mission."""
         orchestrator = Phase5Orchestrator(ctx)
 
@@ -656,7 +659,7 @@ class TestPhase5Orchestrator(HealerMixin):
         assert trace_id is not None
         assert orchestrator.metrics.get_counter("missions.started") == 1
 
-    def test_end_mission_success(self, ctx):
+    def test_end_mission_success(self, ctx) -> Any:
         """Test ending a successful mission."""
         orchestrator = Phase5Orchestrator(ctx)
         orchestrator.start_mission("mission_1")
@@ -667,7 +670,7 @@ class TestPhase5Orchestrator(HealerMixin):
         assert trace.success is True
         assert orchestrator.metrics.get_counter("missions.succeeded") == 1
 
-    def test_end_mission_failure(self, ctx):
+    def test_end_mission_failure(self, ctx) -> Any:
         """Test ending a failed mission."""
         orchestrator = Phase5Orchestrator(ctx)
         orchestrator.start_mission("mission_1")
@@ -677,7 +680,7 @@ class TestPhase5Orchestrator(HealerMixin):
         assert trace.success is False
         assert orchestrator.metrics.get_counter("missions.failed") == 1
 
-    def test_track_agent(self, ctx):
+    def test_track_agent(self, ctx) -> Any:
         """Test tracking an agent."""
         orchestrator = Phase5Orchestrator(ctx)
         orchestrator.start_mission("mission_1")
@@ -686,7 +689,7 @@ class TestPhase5Orchestrator(HealerMixin):
 
         assert step_id is not None
 
-    def test_complete_agent(self, ctx):
+    def test_complete_agent(self, ctx) -> Any:
         """Test completing agent tracking."""
         orchestrator = Phase5Orchestrator(ctx)
         orchestrator.start_mission("mission_1")
@@ -697,7 +700,7 @@ class TestPhase5Orchestrator(HealerMixin):
         trace = orchestrator.end_mission()
         assert trace.steps[0].success is True
 
-    def test_validate_resume(self, ctx, valid_resume):
+    def test_validate_resume(self, ctx, valid_resume) -> Any:
         """Test validating a resume."""
         orchestrator = Phase5Orchestrator(ctx)
 
@@ -705,7 +708,7 @@ class TestPhase5Orchestrator(HealerMixin):
 
         assert isinstance(issues, list)
 
-    def test_generate_report(self, ctx):
+    def test_generate_report(self, ctx) -> Any:
         """Test generating a report."""
         orchestrator = Phase5Orchestrator(ctx)
         orchestrator.start_mission("mission_1")
@@ -716,7 +719,7 @@ class TestPhase5Orchestrator(HealerMixin):
         assert report is not None
         assert report.mission_id == "mission_1"
 
-    def test_export_telemetry(self, ctx):
+    def test_export_telemetry(self, ctx) -> Any:
         """Test exporting telemetry."""
         orchestrator = Phase5Orchestrator(ctx)
         orchestrator.start_mission("mission_1")
@@ -728,7 +731,7 @@ class TestPhase5Orchestrator(HealerMixin):
         assert "traces" in telemetry
         assert "metrics" in telemetry
 
-    def test_get_comprehensive_stats(self, ctx):
+    def test_get_comprehensive_stats(self, ctx) -> Any:
         """Test getting comprehensive statistics."""
         orchestrator = Phase5Orchestrator(ctx)
 

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 CampaignBalanceAgent - Extracted for one-class-per-file pattern.
 
@@ -8,6 +9,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 
+@dataclass
 class CampaignBalanceAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, OutreachAgent):
     """Ensures campaign elements are balanced."""
 

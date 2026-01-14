@@ -231,7 +231,7 @@ class LearningLoop:
         output_result: str,
         confidence: float = 1.0,
         metadata: Optional[Dict[str, Any]] = None,
-    ):
+    ) -> Any:
         """
         Record a successful fix for future learning.
 
@@ -580,7 +580,7 @@ class InstructionInjector:
                 return True
         return False
 
-    def clear(self, source: Optional[str] = None):
+    def clear(self, source: Optional[str] = None) -> Any:
         """Clear instructions, optionally filtered by source."""
         if source:
             self._instructions = [
@@ -695,7 +695,7 @@ class MemoryPersistence:
         file_id: str,
         content: str,
         passed: bool,
-    ):
+    ) -> Any:
         """
         Record a validation result.
 
@@ -737,7 +737,7 @@ class MemoryPersistence:
         """Check if a file is flapping (unstable validation)."""
         return file_id in self.state.flapping_files
 
-    def clear_flapping(self, file_id: str):
+    def clear_flapping(self, file_id: str) -> Any:
         """Clear flapping status for a file."""
         self.state.flapping_files.discard(file_id)
         self._save()
@@ -751,7 +751,7 @@ class MemoryPersistence:
             "last_updated": self.state.last_updated,
         }
 
-    def reset(self):
+    def reset(self) -> Any:
         """Reset all memory state."""
         self.state = MemoryState()
         self._save()
@@ -811,7 +811,7 @@ class ResumeLearningAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         input_context: str,
         output_result: str,
         confidence: float = 1.0,
-    ):
+    ) -> Any:
         """Record a successful operation for future learning."""
         await self.learning_loop.record_success(
             TaskType=TaskType,
@@ -847,7 +847,7 @@ class ResumeLearningAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         section_id: str,
         content: str,
         passed: bool,
-    ):
+    ) -> Any:
         """Record section validation result."""
         self.memory.record_validation(section_id, content, passed)
 

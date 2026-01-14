@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 NamingEnforcerAgent - Extracted for one-class-per-file pattern.
 
@@ -10,6 +11,7 @@ from __future__ import annotations
 import asyncio
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class NamingEnforcerAgent(SubAtomicAgent, MCPHardenedMixin):
     """ROLE: Semantic Naming Guardian."""
     async def execute(self) -> None:

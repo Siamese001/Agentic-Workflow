@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.distributions import Categorical
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 import numpy as np
 import time
 
@@ -17,6 +17,7 @@ from agentic_core.L6_observability.metrics.shared_counters import counters
 from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.L3_orchestration.unified_workflow_engine import UnifiedWorkflowEngine
+from dataclasses import dataclass
 
 log = logging.getLogger(__name__)
 
@@ -40,11 +41,13 @@ class ActorCriticNet(nn.Module):
         self.actor = nn.Linear(64, n_actions)
         self.critic = nn.Linear(64, 1)
 
-    def forward(self, x):
+    def forward(self, x) -> Any:
+        """Execute forward operation."""
         shared = self.shared(x)
         return self.actor(shared), self.critic(shared)
 
 
+@dataclass
 class ActorCriticOrchestratorAgent(SovereignBaseAgent):
     """
     DEPRECATED: Use UnifiedWorkflowEngine instead.

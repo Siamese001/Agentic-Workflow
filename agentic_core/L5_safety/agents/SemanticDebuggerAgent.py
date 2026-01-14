@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 SemanticDebuggerAgent — L5 Safety Agent for Just-In-Time RCA
 
@@ -14,6 +15,7 @@ from agentic_core.utils.core_extensions.CognitiveRecoveryMixin import CognitiveR
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class SemanticDebuggerAgent(SafetyBaseAgent, CognitiveRecoveryMixin):
     """
     L5 Safety Agent responsible for performing Just-In-Time Root Cause Analysis (RCA).

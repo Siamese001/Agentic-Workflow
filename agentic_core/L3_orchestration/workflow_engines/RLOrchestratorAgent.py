@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.distributions import Categorical
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 import numpy as np
 import time
 from collections import deque
@@ -15,6 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import get_vali
 from agentic_core.L6_observability.metrics.shared_counters import counters
 from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.runtime.shared_runtime import log_event
+from dataclasses import dataclass
 
 
 class PPOActorCritic(nn.Module):
@@ -30,11 +31,13 @@ class PPOActorCritic(nn.Module):
         self.policy = nn.Linear(128, n_actions)
         self.value = nn.Linear(128, 1)
 
-    def forward(self, x):
+    def forward(self, x) -> Any:
+        """Execute forward operation."""
         shared = self.shared(x)
         return self.policy(shared), self.value(shared)
 
 
+@dataclass
 class RLOrchestratorAgent(SovereignBaseAgent):
     """
     Sub-atomic learned orchestrator: PPO policy for layer/agent selection maximizing long-term coverage entropy.
@@ -103,7 +106,7 @@ class RLOrchestratorAgent(SovereignBaseAgent):
         log_event("rl_route", {"layer": selected_layer, "action_idx": action_idx})
         return selected
 
-    def store_transition(self, state: np.ndarray, action: int, log_prob: float, reward: float, done: bool):
+    def store_transition(self, state: np.ndarray, action: int, log_prob: float, reward: float, done: bool) -> Any:
         """Store transition in buffer."""
         self.buffer.append((state, action, log_prob, reward, done))
 
@@ -112,7 +115,7 @@ class RLOrchestratorAgent(SovereignBaseAgent):
         delta = current_entropy - self.last_entropy
         return delta * 10.0  # Scale reward
 
-    def update_policy(self, recent_reward: float = 0.0):
+    def update_policy(self, recent_reward: float = 0.0) -> Any:
         """Periodic PPO update on buffer."""
         if len(self.buffer) < 10:
             return

@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
@@ -12,6 +13,7 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 Logger = logging.getLogger(__name__)
 
 # NAMING FIXED: HallucinationDetectorAgent → HallucinationDetectorAgent
+@dataclass
 class HallucinationDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Stub implementation of hallucination detector."""
 

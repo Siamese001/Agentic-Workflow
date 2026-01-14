@@ -495,7 +495,8 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
     def _start_health_monitoring(self):
         """Start background health monitoring thread."""
-        def health_check():
+        def health_check() -> Any:
+            """Execute health_check operation."""
             while True:
                 time.sleep(self.config.health_check_interval)
                 self._perform_health_checks()

@@ -1,3 +1,5 @@
+from typing import Any
+from dataclasses import dataclass
 """
 ProactiveAgent - Extracted for one-class-per-file pattern.
 
@@ -9,6 +11,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class ProactiveAgent(ResumeAgent, MCPHardenedMixin):
     """
     Agent that proactively identifies and executes tasks.
@@ -21,16 +24,17 @@ class ProactiveAgent(ResumeAgent, MCPHardenedMixin):
         self.handoff = PredictiveHandoff(ctx)
         self.monitor = CapabilityMonitorAgent(ctx)
 
-    def record_result(self, passed: bool, details: str = ""):
+    def record_result(self, passed: bool, details: str = "") -> Any:
         """Record the agent's result."""
         self.ctx.record_result(self.name, passed, details)
 
-    def add_signal(self, signal: str):
+    def add_signal(self, signal: str) -> Any:
         """Add a signal to the context."""
         self.ctx.add_signal(signal)
         print(f"   [{self.name}] 📡 Signal: {signal}")
 
     async def execute(self) -> None:
+        """Execute execute operation."""
         print(f"   [{self.name}] Running proactive analysis...")
 
         # Identify tasks

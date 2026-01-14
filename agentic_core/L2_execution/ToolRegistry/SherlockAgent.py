@@ -1,5 +1,6 @@
 from __future__ import annotations
 import asyncio
+from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 import os
@@ -31,6 +32,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
@@ -60,10 +62,10 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
         return False
 
     def can_run(self) -> bool:
-                    
+        """Execute can_run operation."""
         return self.triggered and self.last_failure is not None
 
-    def trigger_investigation(self, modified_file: str, test_file: str, traceback: str):
+    def trigger_investigation(self, modified_file: str, test_file: str, traceback: str) -> Any:
         """Manually trigger an investigation from another agent (TestPilot)."""
         self.triggered = True
         self.last_failure = {
@@ -73,7 +75,7 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
         }
 
     async def execute(self) -> None:
-                    
+        """Execute execute operation."""
         print(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
         # Replaced blocking calls with async sleep
         await asyncio.sleep(0)

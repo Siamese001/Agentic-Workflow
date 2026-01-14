@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 PineconeSovereignAgent - Eternal Sovereign Gateway to Pinecone
@@ -29,6 +30,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
     """
     Sovereign Pinecone controller — zero drift, eternal readiness.
@@ -226,7 +228,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
             include_metadata=True
         ).to_dict()
 
-    def purge_ghost_vector(self, file_path: Path):
+    def purge_ghost_vector(self, file_path: Path) -> Any:
         """Surgical strike to remove stale vector data"""
         file_id = f"file_{str(file_path.relative_to(Path('.').resolve())).replace('/', '_')}"
         try:
@@ -234,7 +236,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
         except Exception:
             pass
 
-    async def bootstrap_territory_vectors(self):
+    async def bootstrap_territory_vectors(self) -> Any:
         """
         Syncs the index with the structure_blueprint.py constants.
         Safe to run multiple times (uses upsert).
@@ -255,7 +257,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
             self.index.upsert(vectors=vectors)
             print(f"   [OK] PineconeSovereignAgent: Bootstrapped {len(vectors)} territories")
 
-    async def upsert_sovereign_chunks(self, chunks: List[Dict], namespace: str = "canon"):
+    async def upsert_sovereign_chunks(self, chunks: List[Dict], namespace: str = "canon") -> Any:
         """
         L4: Secure, idempotent upsert into the vector memory
         """
@@ -278,7 +280,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
         for i in range(0, len(vectors), 100):
             self.index.upsert(vectors=vectors[i:i+100], namespace=namespace)
     
-    async def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str] = None):
+    async def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str] = None) -> Any:
         """Upsert single file — used during healing"""
         content = file_path.read_text(encoding="utf-8", errors="ignore")
         emb = await self.get_embedding(content)
@@ -400,7 +402,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
             "sample_quality": sample_quality
         }
 
-    async def execute(self, ctx=None):
+    async def execute(self, ctx=None) -> Any:
         """
         Health check for the validator loop.
         Reports index status and vector count with quality metrics.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Dict, Any, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeouts
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 Unused Cleanup Agent
@@ -13,6 +14,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
 
+@dataclass
 class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Atomic agent: Removes unused imports and variables using autoflake.
@@ -22,7 +24,7 @@ class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.project_root = Path(project_root)
         self.ctx = ctx
 
-    async def execute(self, file_path: str):
+    async def execute(self, file_path: str) -> Any:
         """Remove unused imports and variables from a single file."""
         file = Path(file_path)
         if not file.exists():

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """Constitutional Overseer for validating ActionRequests.
 
 Validates actions against forbidden commands and safety rules.
@@ -124,6 +125,7 @@ class ConstitutionalOverseer:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L5 Safety Inspector with Socratic Judge for false positive mitigation.

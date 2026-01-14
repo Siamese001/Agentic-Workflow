@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Memory Manager - JSON Persistence for Canon Validator State
 
@@ -16,6 +17,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Manages JSON-based persistence for validation state.

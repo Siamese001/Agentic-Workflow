@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 Import Healer - Fixes broken imports after file relocations
@@ -7,13 +8,14 @@ Prevents import breakage when enforcing strict depth policies
 import ast
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set, Tuple, Any
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
+@dataclass
 class ImportHealerAgent(HealerMixin, MCPHardenedMixin):
     """
     Automatically fixes import statements when files are moved.
@@ -24,7 +26,7 @@ class ImportHealerAgent(HealerMixin, MCPHardenedMixin):
         self.project_root = project_root
         self.relocation_map: Dict[str, str] = {}  # old_path -> new_path
     
-    def register_relocation(self, old_path: str, new_path: str):
+    def register_relocation(self, old_path: str, new_path: str) -> Any:
         """Track a file relocation for import healing."""
         self.relocation_map[old_path] = new_path
     
@@ -119,7 +121,8 @@ class ImportHealerAgent(HealerMixin, MCPHardenedMixin):
             # Pattern: from ..something import ...
             relative_import_pattern = r'from (\.+)(\w+)? import'
             
-            def fix_relative(match):
+            def fix_relative(match) -> Any:
+                """Execute fix_relative operation."""
                 dots = match.group(1)
                 module = match.group(2) or ''
                 num_dots = len(dots)

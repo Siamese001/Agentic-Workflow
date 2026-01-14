@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 PatternEnforcerAgent - Extracted from canon_agents_pattern.py
 Enforces coding patterns and best practices across Python files.
@@ -25,6 +26,7 @@ Logger: Any = logging.getLogger(__name__)
 
 
 # NOT_AN_AGENT — legacy L1 class, true agent is PatternEnforcerAgent in L2 — excluded from discovery
+@dataclass
 class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Enforces coding patterns and best practices across Python files.

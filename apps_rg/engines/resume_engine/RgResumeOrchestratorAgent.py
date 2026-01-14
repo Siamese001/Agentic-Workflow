@@ -9,6 +9,7 @@ from shared.configuration.config import ContentConstraintsConfig
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
+from dataclasses import dataclass
 
 _logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ _logger = logging.getLogger(__name__)
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class RgResumeOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrate the multi-hop resume generation workflow (Resume Generator app-specific)."""
 

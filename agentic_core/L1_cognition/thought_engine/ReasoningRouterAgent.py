@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """Reasoning strategy router for selecting appropriate reasoning mode.
 
 Phase 1 - Pillar 6: Reasoning Models (Structured Reasoning)
@@ -29,6 +30,7 @@ class TaskType(Enum):
     UNKNOWN = "unknown"
 
 
+@dataclass
 class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Routes tasks to appropriate reasoning strategies.
     

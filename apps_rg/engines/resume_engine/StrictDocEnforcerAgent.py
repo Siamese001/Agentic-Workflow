@@ -836,7 +836,7 @@ class PredictiveBudgetManager:
 
         return prediction
 
-    def record_cost(self, cost: float):
+    def record_cost(self, cost: float) -> Any:
         """Record actual cost incurred."""
         self._current_cost += cost
 
@@ -852,7 +852,7 @@ class PredictiveBudgetManager:
         """Get current cost."""
         return self._current_cost
 
-    def reset(self):
+    def reset(self) -> Any:
         """Reset cost tracking."""
         self._current_cost = 0.0
         self._predictions.clear()

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 Semantic Territory Mapper Agent - Intelligent Brain
@@ -25,6 +26,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
     """
     The Intelligent Brain that maps files to semantic territories

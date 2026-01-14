@@ -5,9 +5,11 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
+from dataclasses import dataclass
 
 Logger: Any = logging.getLogger(__name__)
 
+@dataclass
 class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Dynamic model router for cost-optimized LLM selection.
 

@@ -34,6 +34,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, Tuple
 from collections import defaultdict
 import sys
+from dataclasses import dataclass
 
 Logger = logging.getLogger(__name__)
 
@@ -47,6 +48,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     """
     L5 Sovereign Compliance Orchestrator
@@ -152,7 +154,8 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
             # Fallback: inline the is_agent_class function
             EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv'}
             
-            def extract_bases(class_node):
+            def extract_bases(class_node) -> Any:
+                """Execute extract_bases operation."""
                 bases = set()
                 for base in class_node.bases:
                     if isinstance(base, ast.Name):
@@ -161,7 +164,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
                         bases.add(base.attr)
                 return bases
             
-            def is_agent_class(class_node, bases):
+            def is_agent_class(class_node, bases) -> Any:
                 """Comprehensive agent detection - matches full_agent_discovery.py (240 target)."""
                 name = class_node.name
                 # Skip test/mock patterns unless they have Agent in name
@@ -780,7 +783,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     # Optional Extensions (Tracing, Metrics) - Stubbed for future use
     # ===================================================================
 
-    def initialize_tracing(self):
+    def initialize_tracing(self) -> Any:
         """Placeholder for OpenTelemetry integration."""
         try:
             from opentelemetry import trace
@@ -790,7 +793,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
         except ImportError:
             print("   [INFO] opentelemetry not available - tracing disabled")
 
-    def initialize_metrics(self):
+    def initialize_metrics(self) -> Any:
         """Placeholder for Prometheus metrics agent integration."""
         # Future: load MetricsAgent and expose
         pass

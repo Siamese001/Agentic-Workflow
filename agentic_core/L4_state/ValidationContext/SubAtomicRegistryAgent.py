@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 SubAtomicRegistry - Live Semantic Index of Every Method
@@ -29,6 +30,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeoutList
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+@dataclass
 class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
     """
     Sovereign method registry — live, hybrid-indexed, eternal.
@@ -74,7 +76,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
             except Exception: continue
         return methods
 
-    def rebuild_registry(self):
+    def rebuild_registry(self) -> Any:
         """Eternal rebuild — full method index + Redis cache warm"""
         print("   [REBUILD] SubAtomicRegistry: Indexing all methods...")
         methods = self.extract_methods()
@@ -123,7 +125,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
 
         return results
 
-    def find_and_invoke(self, task_description: str, *args, **kwargs):
+    def find_and_invoke(self, task_description: str, *args, **kwargs) -> Any:
         """The ultimate sovereign loop: Find it, then do it."""
         matches = self.find_method(task_description, top_k=1)
         if not matches:
@@ -154,8 +156,8 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
             print(f"   [ERROR] Failed to invoke {method_meta['method']}: {e}")
             raise
 
-    async def execute(self, ctx=None):
-                    
+    async def execute(self, ctx=None) -> Any:
+        """Execute execute operation."""
         count = len(self.extract_methods())
         print(f"   [OK] SubAtomicRegistry: {count} methods online and searchable.")
         if ctx:

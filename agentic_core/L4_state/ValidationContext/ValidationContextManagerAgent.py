@@ -29,6 +29,7 @@ Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class ValidationContext:
+    """ValidationContext agent for autonomous operations."""
     modified_files: Set[Path] = field(default_factory=set)
     signals: List[str] = field(default_factory=list)
     file_hashes: Dict[str, str] = field(default_factory=dict)

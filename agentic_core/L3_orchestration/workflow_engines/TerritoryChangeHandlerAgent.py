@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 Autonomous RAG Daemon - L3 Self-Monitoring RAG System
@@ -8,7 +9,7 @@ Watches for territory changes and triggers reindexing with debouncing
 import asyncio
 import time
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
@@ -36,6 +37,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NAMING FIXED: TerritoryChangeHandlerAgent → TerritoryChangeHandlerAgent
+@dataclass
 class TerritoryChangeHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, FileSystemEventHandler, HealerMixin):
     """L0-L3: Watch for territory healing/ingestion changes with debouncing"""
     def __init__(self, daemon) -> None:
@@ -44,8 +46,8 @@ class TerritoryChangeHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, FileS
         self.debounce_seconds = 10
         super().__init__()
 
-    def on_modified(self, event):
-                    
+    def on_modified(self, event) -> Any:
+        """Execute on_modified operation."""
         if event.is_directory:
             return
         if event.src_path.endswith((".py", ".json", ".yaml", ".md", ".txt")):
@@ -97,7 +99,7 @@ class AutonomousRagDaemon:
         self.observer = Observer()
         self.handler = TerritoryChangeHandlerAgent(self)
         
-    async def start(self):
+    async def start(self) -> Any:
         """Start the autonomous daemon"""
         print("[DAEMON] Starting Autonomous RAG Daemon...")
         
@@ -111,7 +113,7 @@ class AutonomousRagDaemon:
         asyncio.create_task(self.periodic_reindex())
         
         print("[DAEMON] Autonomous RAG Daemon online")
-    async def health_check(self):
+    async def health_check(self) -> Any:
         """L5: Sovereign validation – testing the Canon against reality"""
         while self.running:
             await asyncio.sleep(self.health_check_interval)
@@ -140,13 +142,13 @@ class AutonomousRagDaemon:
             except Exception as e:
                 print(f"[!] Health check failed: {e}")
     
-    async def periodic_reindex(self):
+    async def periodic_reindex(self) -> Any:
         """Periodic full reindexing"""
         while self.running:
             await asyncio.sleep(self.reindex_interval)
             await self.trigger_reindex()
     
-    async def trigger_reindex(self):
+    async def trigger_reindex(self) -> Any:
         """Trigger a full reindex of the canon"""
         print("[DAEMON] Triggering reindex...")
         try:
@@ -155,7 +157,7 @@ class AutonomousRagDaemon:
         except Exception as e:
             print(f"[!] Reindex failed: {e}")
     
-    async def stop(self):
+    async def stop(self) -> Any:
         """Stop the daemon"""
         print("[DAEMON] Stopping Autonomous RAG Daemon...")
         self.running = False

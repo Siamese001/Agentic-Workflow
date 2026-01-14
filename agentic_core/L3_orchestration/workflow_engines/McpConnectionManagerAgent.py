@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Sovereign MCP Connection Manager – Phase 16E (Dec 27, 2025)
 Canonical SSOT for all MCP connections across L0-L6
@@ -13,6 +14,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 
+@dataclass
 class McpConnectionManagerAgent(MCPHardenedMixin):
     """Sovereign MCP Connection Manager — single source of truth"""
 

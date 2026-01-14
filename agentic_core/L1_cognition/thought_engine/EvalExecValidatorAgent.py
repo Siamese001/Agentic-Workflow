@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 EvalExecValidatorAgent - Extracted for one-class-per-file pattern.
 
@@ -18,6 +19,7 @@ MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class EvalExecValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 6: Detects eval() and exec() calls using AST.

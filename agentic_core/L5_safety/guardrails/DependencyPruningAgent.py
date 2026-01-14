@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 Dependency Pruning Agent
@@ -15,6 +16,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
+@dataclass
 class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Batch agent: Detects and removes unused Python dependencies from requirements.txt.

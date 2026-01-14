@@ -27,6 +27,7 @@ PERFORMANCE_DEGRADATION_THRESHOLD = 0.5  # 50% slower than average
 
 # NAMING FIXED: BenchmarkResult → BenchmarkResult
 class BenchmarkResult:
+    """BenchmarkResult agent for autonomous operations."""
     pass
 
 BenchmarkSuite = type("BenchmarkSuite", (), {"name": "", "add_result": lambda s,r: None, "is_degraded": lambda s: False, "stats": {"avg_ms": 0, "count": 0}, "get_summary": lambda s: {}})
@@ -65,7 +66,7 @@ class BenchmarkSuite:
             "std_dev": 0.0
         }
 
-    def add_result(self, result: BenchmarkResult):
+    def add_result(self, result: BenchmarkResult) -> Any:
         """Add a benchmark result."""
         self.results.append(result)
 
@@ -159,7 +160,7 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
 
         Logger.info("BenchmarkingAgent initialized")
 
-    def benchmark(self, name: str, metadata: Dict = None):
+    def benchmark(self, name: str, metadata: Dict = None) -> Any:
         """
         Decorator to benchmark a function.
 
@@ -171,15 +172,17 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
             Decorated function
         """
         def decorator(func: Callable) -> Callable:
-                                    
+           """Execute decorator operation."""
+            """Execute decorator operation."""
             @wraps(func)
-            def wrapper(*args, **kwargs):
-                                                    
+            def wrapper(*args, **kwargs) -> Any:
+               """Execute wrapper operation."""
+                """Execute wrapper operation."""
                 return self.time_function(name, func, metadata, *args, **kwargs)
             return wrapper
         return decorator
 
-    def benchmark_async(self, name: str, metadata: Dict = None):
+    def benchmark_async(self, name: str, metadata: Dict = None) -> Any:
         """
         Decorator to benchmark an async function.
 
@@ -191,15 +194,17 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
             Decorated function
         """
         def decorator(func: Callable) -> Callable:
-                                    
+           """Execute decorator operation."""
+            """Execute decorator operation."""
             @wraps(func)
-            async def wrapper(*args, **kwargs):
-                                                    
+            async def wrapper(*args, **kwargs) -> Any:
+               """Execute wrapper operation."""
+                """Execute wrapper operation."""
                 return await self.time_function_async(name, func, metadata, *args, **kwargs)
             return wrapper
         return decorator
 
-    def start_timer(self, name: str):
+    def start_timer(self, name: str) -> Any:
         """
         Start a manual timer.
 
@@ -233,7 +238,7 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
 
         return duration_ms
 
-    def time_function(self, name: str, func: Callable, metadata: Dict = None, *args, **kwargs):
+    def time_function(self, name: str, func: Callable, metadata: Dict = None, *args, **kwargs) -> Any:
         """
         Time a function execution.
 
@@ -258,7 +263,7 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
 
         return result
 
-    async def time_function_async(self, name: str, func: Callable, metadata: Dict = None, *args, **kwargs):
+    async def time_function_async(self, name: str, func: Callable, metadata: Dict = None, *args, **kwargs) -> Any:
         """
         Time an async function execution.
 
@@ -283,7 +288,7 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
 
         return result
 
-    def record_result(self, name: str, duration_ms: float, metadata: Dict = None):
+    def record_result(self, name: str, duration_ms: float, metadata: Dict = None) -> Any:
         """
         Record a benchmark result.
 
@@ -386,13 +391,13 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
             "faster": name1 if ratio < 1 else name2
         }
 
-    def reset_benchmark(self, name: str):
+    def reset_benchmark(self, name: str) -> Any:
         """Reset all data for a benchmark."""
         if name in self.suites:
             del self.suites[name]
             Logger.info(f"Reset benchmark: {name}")
 
-    def reset_all(self):
+    def reset_all(self) -> Any:
         """Reset all benchmark data."""
         self.suites.clear()
         self.active_benchmarks.clear()
@@ -432,20 +437,20 @@ def get_benchmarking_agent() -> "BenchmarkingAgent":
 # Aliases for discovery
 BenchmarkContext = benchmark_context_manager = type("benchmark_context_manager", (), {})
 
-def initialize_benchmarking():
+def initialize_benchmarking() -> Any:
     """Initialize the BenchmarkingAgent system."""
     get_benchmarking_agent()
     Logger.info("BenchmarkingAgent system initialized")
 
 
 # Convenience functions
-def benchmark(name: str, metadata: Dict = None):
+def benchmark(name: str, metadata: Dict = None) -> Any:
     """Decorator to benchmark a function."""
     agent = get_benchmarking_agent()
     return agent.benchmark(name, metadata)
 
 
-def benchmark_async(name: str, metadata: Dict = None):
+def benchmark_async(name: str, metadata: Dict = None) -> Any:
     """Decorator to benchmark an async function."""
     agent = get_benchmarking_agent()
     return agent.benchmark_async(name, metadata)

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 DebuggerValidatorAgent - Extracted for one-class-per-file pattern.
 
@@ -18,6 +19,7 @@ MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class DebuggerValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 3: Detects breakpoint() and pdb.set_trace() using AST.
