@@ -440,43 +440,49 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
         if not self.filename_duplicates:
             print('   [OK] No duplicate filenames requiring action.')
 
+    # Content-based target directory mapping (reduces CC)
+    CONTENT_DIR_MAPPING = [
+        (['safety', 'guardrail', 'mcp', 'pii', 'bias', 'redteam'], f'{AGENTIC_CORE_DIR}/L5_safety/guardrails'),
+        (['outreach', 'lic', 'message', 'contact', 'cold'], 'apps_lic/engines/outreach_engine'),
+        (['resume', 'rg', 'cv', 'job', 'ranking'], 'apps_rg/engines/resume_engine'),
+        (['thought', 'cognition', 'reasoning', 'score'], f'{AGENTIC_CORE_DIR}/L1_cognition/thought_engine'),
+        (['metric', 'observability', 'tracing'], f'{AGENTIC_CORE_DIR}/observability/metrics'),
+    ]
+
     def _suggest_unique_name(self, file_path: Path, project_root: Path) -> Path:
         """Primary: NamingAgent if available; Fallback: content heuristics."""
         if NAMING_AGENT_AVAILABLE:
             try:
                 naming = get_naming_agent(project_root)
-                # Use NamingAgent for validation if available
                 proposed = file_path.name
-                # Fallback to heuristic if NamingAgent doesn't provide suggestion
             except Exception as e:
                 self.errors.append(f'NamingAgent call failed: {e}')
         
-        # Heuristic fallback based on content
         try:
             preview = file_path.read_text(encoding='utf-8', errors='ignore')[:2048].lower()
-            if any(k in preview for k in ['safety', 'guardrail', 'mcp', 'pii', 'bias', 'redteam']):
-                target_dir = project_root / AGENTIC_CORE_DIR / 'L5_safety' / 'guardrails'
-            elif any(k in preview for k in ['outreach', 'lic', 'message', 'contact', 'cold']):
-                target_dir = project_root / APPS_LIC_DIR / 'engines' / 'outreach_engine'
-            elif any(k in preview for k in ['resume', 'rg', 'cv', 'job', 'ranking']):
-                target_dir = project_root / APPS_RG_DIR / 'engines' / 'resume_engine'
-            elif any(k in preview for k in ['thought', 'cognition', 'reasoning', 'score']):
-                target_dir = project_root / AGENTIC_CORE_DIR / 'L1_cognition' / 'thought_engine'
-            elif any(k in preview for k in ['metric', 'observability', 'tracing']):
-                target_dir = project_root / AGENTIC_CORE_DIR / 'observability' / 'metrics'
-            else:
-                target_dir = project_root / AGENTIC_CORE_DIR / 'utils' / 'deduplicated'
+            target_dir = self._get_target_dir_from_content(preview, project_root)
             target_dir.mkdir(parents=True, exist_ok=True)
-            new_path = target_dir / file_path.name
-            stem, suffix = file_path.stem, file_path.suffix
-            counter = 1
-            while new_path.exists():
-                new_path = target_dir / f'{stem}_v{counter}{suffix}'
-                counter += 1
-            return new_path
+            return self._get_unique_path(target_dir, file_path)
         except Exception as e:
             self.errors.append(f'Uniqueness suggestion failed for {file_path}: {e}')
             return file_path.with_name(f'UNIQUE_{file_path.name}')
+
+    def _get_target_dir_from_content(self, preview: str, project_root: Path) -> Path:
+        """Determine target directory from content keywords using lookup table."""
+        for keywords, rel_path in self.CONTENT_DIR_MAPPING:
+            if any(k in preview for k in keywords):
+                return project_root / rel_path
+        return project_root / AGENTIC_CORE_DIR / 'utils' / 'deduplicated'
+
+    def _get_unique_path(self, target_dir: Path, file_path: Path) -> Path:
+        """Generate unique path with collision handling."""
+        new_path = target_dir / file_path.name
+        stem, suffix = file_path.stem, file_path.suffix
+        counter = 1
+        while new_path.exists():
+            new_path = target_dir / f'{stem}_v{counter}{suffix}'
+            counter += 1
+        return new_path
 
     def resolve_duplicates_safely(self, project_root: Path, dry_run: bool = True) -> None:
         """Central resolution: identical files → consolidate; divergent filenames → rename."""

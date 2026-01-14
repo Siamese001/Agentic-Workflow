@@ -216,76 +216,69 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         return validated_value
     
     def _validate_type(self, value: Any, rule: ValidationRule) -> Any:
-        """Validate value type.
-        
-        Args:
-            value: Value to validate
-            rule: Validation rule
-            
-        Returns:
-            Value converted to correct type
-            
-        Raises:
-            InputValidationError: If type conversion fails
-        """
+        """Validate value type using dispatch table."""
+        type_converters = {
+            ValidationType.STRING: self._convert_string,
+            ValidationType.INTEGER: self._convert_integer,
+            ValidationType.FLOAT: self._convert_float,
+            ValidationType.BOOLEAN: self._convert_boolean,
+            ValidationType.LIST: self._convert_list,
+            ValidationType.DICT: self._convert_dict,
+            ValidationType.DATETIME: self._convert_datetime,
+            ValidationType.JSON: self._convert_json,
+            ValidationType.XML: self._convert_xml,
+        }
         try:
-            if rule.validation_type == ValidationType.STRING:
-                return str(value)
-            elif rule.validation_type == ValidationType.INTEGER:
-                return int(value)
-            elif rule.validation_type == ValidationType.FLOAT:
-                return float(value)
-            elif rule.validation_type == ValidationType.BOOLEAN:
-                if isinstance(value, str):
-                    return value.lower() in ('true', '1', 'yes', 'on')
-                return bool(value)
-            elif rule.validation_type == ValidationType.LIST:
-                if isinstance(value, str):
-                    # Try to parse as JSON
-                    return json.loads(value)
-                elif not isinstance(value, list):
-                    return [value]
-                return value
-            elif rule.validation_type == ValidationType.DICT:
-                if isinstance(value, str):
-                    # Try to parse as JSON
-                    parsed = json.loads(value)
-                    if not isinstance(parsed, dict):
-                        raise ValueError("Not a dictionary")
-                    return parsed
-                elif not isinstance(value, dict):
-                    raise ValueError("Not a dictionary")
-                return value
-            elif rule.validation_type == ValidationType.DATETIME:
-                if isinstance(value, str):
-                    # Try ISO format first
-                    try:
-                        return datetime.fromisoformat(value)
-                    except Exception:
-                        # Try timestamp
-                        return datetime.fromtimestamp(float(value))
-                elif isinstance(value, (int, float)):
-                    return datetime.fromtimestamp(value)
-                return value
-            elif rule.validation_type == ValidationType.JSON:
-                if isinstance(value, str):
-                    parsed = json.loads(value)
-                else:
-                    parsed = value
-                # Validate it's valid JSON
-                json.dumps(parsed)
-                return parsed
-            elif rule.validation_type == ValidationType.XML:
-                if isinstance(value, str):
-                    # Parse XML to ensure it's valid
-                    root = ET.fromstring(value)
-                    return value
-                raise ValueError("XML must be a string")
-            else:
-                return value
-                
+            converter = type_converters.get(rule.validation_type)
+            return converter(value) if converter else value
         except (ValueError, TypeError, json.JSONDecodeError, ET.ParseError) as e:
             raise InputValidationError("type", f"Invalid type conversion: {e}")
+
+    def _convert_string(self, value: Any) -> str:
+        return str(value)
+
+    def _convert_integer(self, value: Any) -> int:
+        return int(value)
+
+    def _convert_float(self, value: Any) -> float:
+        return float(value)
+
+    def _convert_boolean(self, value: Any) -> bool:
+        return value.lower() in ('true', '1', 'yes', 'on') if isinstance(value, str) else bool(value)
+
+    def _convert_list(self, value: Any) -> list:
+        if isinstance(value, str):
+            return json.loads(value)
+        return value if isinstance(value, list) else [value]
+
+    def _convert_dict(self, value: Any) -> dict:
+        if isinstance(value, str):
+            parsed = json.loads(value)
+            if not isinstance(parsed, dict):
+                raise ValueError("Not a dictionary")
+            return parsed
+        if not isinstance(value, dict):
+            raise ValueError("Not a dictionary")
+        return value
+
+    def _convert_datetime(self, value: Any) -> datetime:
+        if isinstance(value, str):
+            try:
+                return datetime.fromisoformat(value)
+            except Exception:
+                return datetime.fromtimestamp(float(value))
+        return datetime.fromtimestamp(value) if isinstance(value, (int, float)) else value
+
+    def _convert_json(self, value: Any) -> Any:
+        parsed = json.loads(value) if isinstance(value, str) else value
+        json.dumps(parsed)  # Validate it's valid JSON
+        return parsed
+
+    def _convert_xml(self, value: Any) -> str:
+        if not isinstance(value, str):
+            raise ValueError("XML must be a string")
+        ET.fromstring(value)  # Parse to ensure valid
+        return value
     
     def _validate_json_schema(self, value: Any, schema: Dict[str, Any]) -> None:
         """Validate JSON against schema.

@@ -259,31 +259,26 @@ class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeV
         self.log_info(f"Generated {len(critiques)} critique reports")
         return critiques
     
+    def _check_metric(self, score: float, critical_msg: str, warning_msg: str) -> tuple:
+        """Helper to check a metric against thresholds. Returns (critical_issue, warning)."""
+        if score < self.CRITIQUE_THRESHOLD_CRITICAL:
+            return (critical_msg, None)
+        if score < self.CRITIQUE_THRESHOLD_WARNING:
+            return (None, warning_msg)
+        return (None, None)
+
     async def _critique_single_agent(self, metric: AgentPerformanceMetrics) -> CritiqueReport:
-        """
-        Critique a single agent with skeptical, data-driven analysis.
+        """Critique a single agent with skeptical, data-driven analysis."""
+        critical_issues, warnings, recommendations, data_points, scores = [], [], [], {}, []
         
-        Args:
-            metric: Performance metrics for the agent
-            
-        Returns:
-            CritiqueReport with grade, issues, and recommendations
-        """
-        critical_issues = []
-        warnings = []
-        recommendations = []
-        data_points = {}
-        
-        # Calculate composite score (equally weighted components)
-        scores = []
-        
-        # 1. Test Coverage (typed_pct is proxy)
+        # 1. Test Coverage
         test_score = metric.test_coverage
         data_points['test_coverage'] = f"{test_score*100:.1f}%"
-        if test_score < self.CRITIQUE_THRESHOLD_CRITICAL:
-            critical_issues.append(f"Test coverage critically low: {test_score*100:.1f}% (minimum: 60%)")
-        elif test_score < self.CRITIQUE_THRESHOLD_WARNING:
-            warnings.append(f"Test coverage below standard: {test_score*100:.1f}% (target: 80%)")
+        crit, warn = self._check_metric(test_score, 
+            f"Test coverage critically low: {test_score*100:.1f}% (minimum: 60%)",
+            f"Test coverage below standard: {test_score*100:.1f}% (target: 80%)")
+        if crit: critical_issues.append(crit)
+        if warn: warnings.append(warn)
         scores.append(test_score)
         
         # 2. MCP Hardening
@@ -293,18 +288,19 @@ class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeV
             critical_issues.append("Agent lacks MCP hardening - security vulnerability")
         scores.append(mcp_score)
         
-        # 3. Complexity Health (lower is better, inverted)
+        # 3. Complexity Health
         complexity_health = max(0, 100 - metric.complexity_score * 2) / 100.0
         data_points['complexity'] = metric.complexity_score
         data_points['complexity_health'] = f"{complexity_health*100:.1f}%"
-        if complexity_health < self.CRITIQUE_THRESHOLD_CRITICAL:
-            critical_issues.append(f"Complexity unacceptable: {metric.complexity_score} (should be <10)")
-        elif complexity_health < self.CRITIQUE_THRESHOLD_WARNING:
-            warnings.append(f"Complexity concerning: {metric.complexity_score} (target: <5)")
+        crit, warn = self._check_metric(complexity_health,
+            f"Complexity unacceptable: {metric.complexity_score} (should be <10)",
+            f"Complexity concerning: {metric.complexity_score} (target: <5)")
+        if crit: critical_issues.append(crit)
+        if warn: warnings.append(warn)
         scores.append(complexity_health)
         
         # 4. Healing Capability
-        heal_score = metric.success_rate  # 1.0 if has_healing
+        heal_score = metric.success_rate
         data_points['has_healing'] = heal_score == 1.0
         if heal_score < 1.0:
             critical_issues.append("Agent lacks autonomous healing capability")
@@ -317,23 +313,13 @@ class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeV
             warnings.append("Agent has healing but never invokes it")
         scores.append(invocation_score)
         
-        # Calculate overall score (strict average, no curve)
+        # Calculate overall score and grade
         overall_score = sum(scores) / len(scores) if scores else 0.0
         data_points['overall_score'] = f"{overall_score*100:.1f}%"
-        
-        # Assign grade (data-driven, no adjustments)
         grade = self._assign_grade(overall_score)
+        commentary = self._generate_skeptical_commentary(metric.agent_name, grade, overall_score, critical_issues, warnings)
         
-        # Generate skeptical commentary
-        commentary = self._generate_skeptical_commentary(
-            metric.agent_name,
-            grade,
-            overall_score,
-            critical_issues,
-            warnings
-        )
-        
-        # Add recommendations based on failures
+        # Add recommendations
         if critical_issues:
             recommendations.append("IMMEDIATE ACTION REQUIRED: Address all critical issues before next release")
         if warnings:
@@ -352,6 +338,23 @@ class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeV
             skeptical_commentary=commentary
         )
     
+    # Commentary templates (reduces CC by using lookup tables)
+    GRADE_COMMENTARY = {
+        'A': "{name} meets expectations ({score:.1f}%). ",
+        'B': "{name} performs adequately ({score:.1f}%), but room for improvement exists. ",
+        'C': "{name} barely passes ({score:.1f}%). Mediocrity is not acceptable. ",
+        'D': "{name} performs poorly ({score:.1f}%). This is unacceptable. ",
+        'F': "{name} fails basic standards ({score:.1f}%). Complete rework required. "
+    }
+    
+    GRADE_VERDICT = {
+        'A': "Approved for production with minor reservations.",
+        'B': "Approved for production with minor reservations.",
+        'C': "Conditional approval - must improve before next release.",
+        'D': "BLOCKED from production until major defects resolved.",
+        'F': "BLOCKED from production until major defects resolved."
+    }
+    
     def _assign_grade(self, score: float) -> str:
         """Assign letter grade based on score (no curve, strict thresholds)."""
         for grade, threshold in sorted(self.GRADE_THRESHOLDS.items(), key=lambda x: -x[1]):
@@ -367,42 +370,16 @@ class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeV
         critical_issues: List[str],
         warnings: List[str]
     ) -> str:
-        """
-        Generate harsh but fair commentary with skeptical tone.
+        """Generate harsh but fair commentary with skeptical tone."""
+        parts = [self.GRADE_COMMENTARY.get(grade, self.GRADE_COMMENTARY['F']).format(name=agent_name, score=score*100)]
         
-        PERSONALITY: No sugar-coating, direct critique, data-focused.
-        """
-        commentary_parts = []
-        
-        # Opening statement (skeptical tone)
-        if grade == 'A':
-            commentary_parts.append(f"{agent_name} meets expectations ({score*100:.1f}%). ")
-        elif grade == 'B':
-            commentary_parts.append(f"{agent_name} performs adequately ({score*100:.1f}%), but room for improvement exists. ")
-        elif grade == 'C':
-            commentary_parts.append(f"{agent_name} barely passes ({score*100:.1f}%). Mediocrity is not acceptable. ")
-        elif grade == 'D':
-            commentary_parts.append(f"{agent_name} performs poorly ({score*100:.1f}%). This is unacceptable. ")
-        else:  # F
-            commentary_parts.append(f"{agent_name} fails basic standards ({score*100:.1f}%). Complete rework required. ")
-        
-        # Critical issues (no mercy)
         if critical_issues:
-            commentary_parts.append(f"CRITICAL FAILURES: {len(critical_issues)} issues demand immediate attention. ")
-        
-        # Warnings (still harsh)
+            parts.append(f"CRITICAL FAILURES: {len(critical_issues)} issues demand immediate attention. ")
         if warnings:
-            commentary_parts.append(f"WARNING: {len(warnings)} deficiencies below team standards. ")
+            parts.append(f"WARNING: {len(warnings)} deficiencies below team standards. ")
         
-        # Final verdict (data-driven conclusion)
-        if grade in ['A', 'B']:
-            commentary_parts.append("Approved for production with minor reservations.")
-        elif grade == 'C':
-            commentary_parts.append("Conditional approval - must improve before next release.")
-        else:
-            commentary_parts.append("BLOCKED from production until major defects resolved.")
-        
-        return ''.join(commentary_parts)
+        parts.append(self.GRADE_VERDICT.get(grade, self.GRADE_VERDICT['F']))
+        return ''.join(parts)
     
     async def _store_analysis_results(
         self,

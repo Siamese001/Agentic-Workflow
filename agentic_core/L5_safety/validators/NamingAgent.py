@@ -511,29 +511,25 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                         bases.append(base.attr)
         return bases
 
+    # Placement keyword mapping (reduces CC by using lookup table)
+    PLACEMENT_KEYWORDS = {
+        'agentic_core/L1_cognition/planning': ['planner', 'strategy', 'reasoning', 'mission'],
+        'agentic_core/L1_cognition/thought_engine': ['thought', 'node', 'react', 'chain'],
+        'agentic_core/L3_orchestration/workflow_engines': ['router', 'orchestrator', 'workflow', 'coordinate'],
+        'agentic_core/L3_orchestration/fission_logic': ['fission', 'split', 'parallel'],
+        'agentic_core/L4_state/memory': ['pinecone', 'redis', 'vector', 'embedding'],
+        'agentic_core/L5_safety/guardrails': ['guardrail', 'safety', 'heal'],
+        'agentic_core/L5_safety/validators': ['validator', 'enforce', 'compliance'],
+        'agentic_core/prompt_governance/templates': ['prompt', 'template'],
+        'agentic_core/schemas/models': ['schema', 'pydantic'],
+    }
+
     def _legacy_placement_fallback(self, content_preview: str) -> str:
-        """Legacy placement fallback."""
+        """Legacy placement fallback using keyword lookup."""
         lower_preview = content_preview.lower()
-        
-        if any(k in lower_preview for k in ['planner', 'strategy', 'reasoning', 'mission']):
-            return 'agentic_core/L1_cognition/planning'
-        if any(k in lower_preview for k in ['thought', 'node', 'react', 'chain']):
-            return 'agentic_core/L1_cognition/thought_engine'
-        if any(k in lower_preview for k in ['router', 'orchestrator', 'workflow', 'coordinate']):
-            return 'agentic_core/L3_orchestration/workflow_engines'
-        if any(k in lower_preview for k in ['fission', 'split', 'parallel']):
-            return 'agentic_core/L3_orchestration/fission_logic'
-        if any(k in lower_preview for k in ['pinecone', 'redis', 'vector', 'embedding']):
-            return 'agentic_core/L4_state/memory'
-        if any(k in lower_preview for k in ['guardrail', 'safety', 'heal']):
-            return 'agentic_core/L5_safety/guardrails'
-        if any(k in lower_preview for k in ['validator', 'enforce', 'compliance']):
-            return 'agentic_core/L5_safety/validators'
-        if 'prompt' in lower_preview or 'template' in lower_preview:
-            return 'agentic_core/prompt_governance/templates'
-        if 'schema' in lower_preview or 'pydantic' in lower_preview:
-            return 'agentic_core/schemas/models'
-        
+        for path, keywords in self.PLACEMENT_KEYWORDS.items():
+            if any(k in lower_preview for k in keywords):
+                return path
         return 'agentic_core/L1_cognition/thought_engine'
 
     def _count_words_in_name(self, name: str) -> int:
@@ -665,19 +661,18 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         return True, f"Valid {file_type} naming: {file_name}"
 
+    # Basic naming validation rules (reduces CC)
+    BASIC_NAMING_RULES = [
+        (lambda s, n: '-' in s, "contains hyphens (use underscores)"),
+        (lambda s, n: ' ' in n, "contains spaces"),
+    ]
+
     def _validate_basic_naming(self, file_path: Path) -> Tuple[bool, str]:
-        """Basic naming validation for unknown file types."""
-        file_name = file_path.name
-        stem = file_path.stem
-        
-        # No hyphens in filenames
-        if '-' in stem:
-            return False, f"NAMING VIOLATION: '{file_name}' contains hyphens (use underscores)"
-        
-        # No spaces
-        if ' ' in file_name:
-            return False, f"NAMING VIOLATION: '{file_name}' contains spaces"
-        
+        """Basic naming validation using rule table."""
+        file_name, stem = file_path.name, file_path.stem
+        for check, msg in self.BASIC_NAMING_RULES:
+            if check(stem, file_name):
+                return False, f"NAMING VIOLATION: '{file_name}' {msg}"
         return True, f"Basic naming compliant: {file_name}"
 
     def _validate_python_file(self, file_path: Path, file_type: str, convention: Dict) -> Tuple[bool, str]:

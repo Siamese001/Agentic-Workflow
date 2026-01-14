@@ -495,33 +495,37 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
         return True, "OK"
 
+    # Healing strategy dispatch table (reduces CC by eliminating if/elif chains)
+    HEALING_STRATEGIES = {
+        "APP-SPECIFIC IN CORE VIOLATION": "_heal_app_specific_violation",
+        "AST DOMAIN VIOLATION": "_heal_app_specific_violation",
+        "TERRITORY MISMATCH VIOLATION": "_heal_territory_mismatch",
+        "TERRITORY ALIGNMENT WEAK": "_heal_territory_mismatch",
+        "BROKEN BACKUP FILE": "_heal_broken_backup",
+    }
+
     def _apply_healing_strategy(
         self, file_path: Path, msg: str, archives_root: Path, dry_run: bool,
         affected_paths: List[Path], import_touched_paths: List[Path]
     ) -> Dict[str, Any]:
         """Apply appropriate healing strategy based on violation message."""
-        # === APP-SPECIFIC / AST DOMAIN LEAK HEALING ===
-        if "APP-SPECIFIC IN CORE VIOLATION" in msg or "AST DOMAIN VIOLATION" in msg:
-            return self._heal_app_specific_violation(
-                file_path, msg, dry_run, affected_paths, import_touched_paths
-            )
+        # Check dispatch table for matching strategy
+        for pattern, method_name in self.HEALING_STRATEGIES.items():
+            if pattern in msg:
+                method = getattr(self, method_name)
+                if method_name == "_heal_broken_backup":
+                    return method(file_path, dry_run, affected_paths)
+                return method(file_path, msg, dry_run, affected_paths, import_touched_paths)
+        
+        # Fallback to archiving
+        return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
-        # === TERRITORY MISMATCH HEALING ===
-        elif "TERRITORY MISMATCH VIOLATION" in msg or "TERRITORY ALIGNMENT WEAK" in msg:
-            return self._heal_territory_mismatch(
-                file_path, msg, dry_run, affected_paths, import_touched_paths
-            )
-
-        # === BROKEN BACKUP DELETE ===
-        elif "BROKEN BACKUP FILE" in msg:
-            result = self.safe_delete(file_path, dry_run=dry_run)
-            if result.get("applied") and not dry_run:
-                affected_paths.append(file_path)
-            return result
-
-        # === FALLBACK ARCHIVING (Legacy behavior) ===
-        else:
-            return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
+    def _heal_broken_backup(self, file_path: Path, dry_run: bool, affected_paths: List[Path]) -> Dict[str, Any]:
+        """Heal broken backup files by deletion."""
+        result = self.safe_delete(file_path, dry_run=dry_run)
+        if result.get("applied") and not dry_run:
+            affected_paths.append(file_path)
+        return result
 
     def _heal_app_specific_violation(
         self, file_path: Path, msg: str, dry_run: bool,
@@ -562,21 +566,24 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         else:
             return {"action_taken": "SKIPPED: Could not parse target territory"}
 
+    # Archive subfolder mapping (reduces CC)
+    ARCHIVE_SUBFOLDERS = {
+        "VOID VIOLATION": "void_violations",
+        "GRAVITY": "void_violations",
+        "DEPTH VIOLATION": "depth_violations",
+        "LAYER PREFIX VIOLATION": "naming_violations",
+    }
+
     def _heal_via_archiving(
         self, file_path: Path, msg: str, archives_root: Path, 
         dry_run: bool, affected_paths: List[Path]
     ) -> Dict[str, Any]:
         """Heal violations by archiving to appropriate subfolder."""
-        if "VOID VIOLATION" in msg or "GRAVITY" in msg:
-            target_subdir = archives_root / "void_violations"
-        elif "DEPTH VIOLATION" in msg:
-            target_subdir = archives_root / "depth_violations"
-        elif "LAYER PREFIX VIOLATION" in msg:
-            target_subdir = archives_root / "naming_violations"
-        else:
-            target_subdir = archives_root / "location_violations"
-            
-        target_path = target_subdir / file_path.name
+        subfolder = next(
+            (sf for pattern, sf in self.ARCHIVE_SUBFOLDERS.items() if pattern in msg),
+            "location_violations"
+        )
+        target_path = archives_root / subfolder / file_path.name
         move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
         if "MOVED" in move_result.get("action_taken", ""):
             move_result["action_taken"] = move_result["action_taken"].replace("MOVED", "ARCHIVED")
@@ -611,17 +618,12 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
     def _validate_depth_requirements(self, parts: tuple, root_folder: str, rel_path: Path) -> Tuple[bool, str]:
         """Validate depth requirements from sovereign registry."""
         expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth")
-        actual_depth = len(parts) - 1  # exclude filename
-
+        actual_depth = len(parts) - 1
         if expected_depth is not None and actual_depth != expected_depth:
             reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
             return False, f"{reason} VIOLATION ({root_folder}): depth {actual_depth} != {expected_depth}"
-
-        # Special strict depth for agentic_core (Canon Key 3/12 hardening)
-        if root_folder == "agentic_core":
-            if len(parts) != 4:
-                return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} has {len(parts)} parts (expected exactly 4: root/L1/L2/file.py)"
-                
+        if root_folder == "agentic_core" and len(parts) != 4:
+            return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} has {len(parts)} parts (expected exactly 4)"
         return True, "OK"
 
     def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> Tuple[bool, str]:
@@ -1148,64 +1150,59 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         return final_scores["app_rg"], final_scores["app_lic"], final_scores["territories"]
 
     def _collect_ast_increments(self, tree: ast.AST) -> dict:
-        """Phase 1: Pure AST walk — collect raw risk increments (CC ~25)."""
-        increments = {
-            "app_rg": 0.0,
-            "app_lic": 0.0,
-            "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
-        }
-
+        """Phase 1: Pure AST walk — collect raw risk increments."""
+        increments = {"app_rg": 0.0, "app_lic": 0.0, "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}}
+        
         for node in ast.walk(tree):
-            # Class/Function names — full weight
             if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
-                name = node.name.lower()
-                if any(t in name for t in APP_RG_AST_TERMS):
-                    increments["app_rg"] += 1.0
-                if any(t in name for t in APP_LIC_AST_TERMS):
-                    increments["app_lic"] += 1.0
-                for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                    for terms in cats.values():
-                        if any(t in name for t in terms):
-                            increments["territories"][terr] += 1.0
-
-            # Arguments — medium weight
+                self._score_identifier(node.name.lower(), 1.0, increments)
             elif isinstance(node, ast.arguments):
-                for arg in node.args + getattr(node, "kwonlyargs", []) + getattr(node, "posonlyargs", []):
-                    if arg.arg and arg.arg not in {"self", "cls"}:
-                        a = arg.arg.lower()
-                        if any(t in a for t in APP_RG_VARIABLE_TERMS):
-                            increments["app_rg"] += VARIABLE_HIT_WEIGHT
-                        if any(t in a for t in APP_LIC_VARIABLE_TERMS):
-                            increments["app_lic"] += VARIABLE_HIT_WEIGHT
-                        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                            for terms in cats.values():
-                                if any(t in a for t in terms):
-                                    increments["territories"][terr] += VARIABLE_HIT_WEIGHT
-
-            # Assignment targets — medium weight
+                self._score_arguments(node, increments)
             elif isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        v = target.id.lower()
-                        if any(t in v for t in APP_RG_VARIABLE_TERMS):
-                            increments["app_rg"] += VARIABLE_HIT_WEIGHT
-                        if any(t in v for t in APP_LIC_VARIABLE_TERMS):
-                            increments["app_lic"] += VARIABLE_HIT_WEIGHT
-                        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                            for terms in cats.values():
-                                if any(t in v for t in terms):
-                                    increments["territories"][terr] += VARIABLE_HIT_WEIGHT
-
-            # String literals — low weight
+                self._score_assignments(node, increments)
             elif isinstance(node, ast.Constant) and isinstance(node.value, str) and len(node.value) > 8:
-                text = node.value.lower()
-                increments["app_rg"] += sum(1 for t in APP_RG_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-                increments["app_lic"] += sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-                for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                    for terms in cats.values():
-                        increments["territories"][terr] += sum(1 for t in terms if t in text) * STRING_HIT_WEIGHT
-
+                self._score_string(node.value.lower(), increments)
         return increments
+
+    def _score_identifier(self, name: str, weight: float, increments: dict) -> None:
+        """Score an identifier against app/territory terms."""
+        if any(t in name for t in APP_RG_AST_TERMS):
+            increments["app_rg"] += weight
+        if any(t in name for t in APP_LIC_AST_TERMS):
+            increments["app_lic"] += weight
+        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
+            if any(t in name for terms in cats.values() for t in terms):
+                increments["territories"][terr] += weight
+
+    def _score_arguments(self, node: ast.arguments, increments: dict) -> None:
+        """Score function arguments."""
+        all_args = node.args + getattr(node, "kwonlyargs", []) + getattr(node, "posonlyargs", [])
+        for arg in all_args:
+            if arg.arg and arg.arg not in {"self", "cls"}:
+                self._score_variable(arg.arg.lower(), increments)
+
+    def _score_assignments(self, node: ast.Assign, increments: dict) -> None:
+        """Score assignment targets."""
+        for target in node.targets:
+            if isinstance(target, ast.Name):
+                self._score_variable(target.id.lower(), increments)
+
+    def _score_variable(self, name: str, increments: dict) -> None:
+        """Score a variable name."""
+        if any(t in name for t in APP_RG_VARIABLE_TERMS):
+            increments["app_rg"] += VARIABLE_HIT_WEIGHT
+        if any(t in name for t in APP_LIC_VARIABLE_TERMS):
+            increments["app_lic"] += VARIABLE_HIT_WEIGHT
+        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
+            if any(t in name for terms in cats.values() for t in terms):
+                increments["territories"][terr] += VARIABLE_HIT_WEIGHT
+
+    def _score_string(self, text: str, increments: dict) -> None:
+        """Score a string literal."""
+        increments["app_rg"] += sum(1 for t in APP_RG_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
+        increments["app_lic"] += sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
+        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
+            increments["territories"][terr] += sum(1 for terms in cats.values() for t in terms if t in text) * STRING_HIT_WEIGHT
 
     def _aggregate_ast_increments(self, initial_scores: dict, increments: dict) -> dict:
         """Phase 2: Simple aggregation (CC ~5)."""
