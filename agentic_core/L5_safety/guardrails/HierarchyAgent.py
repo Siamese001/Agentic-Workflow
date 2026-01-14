@@ -326,77 +326,44 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         return results
     
+    def _enforce_depth_for_root(self, root_key: str, root_check: callable, archive_subdir: str, label: str) -> int:
+        """Generic depth enforcement using dispatch pattern."""
+        expected_depth = SOVEREIGN_REGISTRY.get(root_key, {}).get("depth", 2)
+        archived, violations = 0, 0
+        for file_path in self.project_root.rglob("*"):
+            if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
+                continue
+            rel = file_path.relative_to(self.project_root)
+            if not root_check(rel.parts[0]):
+                continue
+            depth = len(rel.parts)
+            if depth != expected_depth:
+                violations += 1
+                Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {expected_depth}")
+                if self.healing_enabled:
+                    archived += self._archive_depth_violation(file_path, rel, depth, expected_depth, archive_subdir, label)
+        return violations if not self.healing_enabled else archived
+
+    def _archive_depth_violation(self, file_path: Path, rel: Path, depth: int, expected: int, subdir: str, label: str) -> int:
+        """Archive a file for depth violation."""
+        try:
+            archive_path = self.archive_root / subdir / rel
+            archive_path.parent.mkdir(parents=True, exist_ok=True)
+            header = f"# {label} DEPTH VIOLATION — {time.strftime('%Y-%m-%d %H:%M:%S')}\n# {rel} was depth {depth}, MUST be {expected}.\n\n"
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
+            archive_path.write_text(header + content, encoding="utf-8")
+            file_path.unlink()
+            return 1
+        except Exception:
+            return 0
+
     def _enforce_apps_depth(self) -> int:
-        """Enforce apps_* depth rule (depth 2). Detection-First."""
-        apps_exact_depth = SOVEREIGN_REGISTRY.get("apps_rg", {}).get("depth", 2)
-        archived = 0
-        violations = 0
-        
-        for file_path in self.project_root.rglob("*"):
-            if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
-                continue
-            
-            rel = file_path.relative_to(self.project_root)
-            if not rel.parts[0].startswith("apps_"):
-                continue
-            
-            depth = len(rel.parts)
-            if depth != apps_exact_depth:
-                violations += 1
-                Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {apps_exact_depth}")
-                
-                if self.healing_enabled:
-                    try:
-                        archive_path = self.archive_root / "apps_depth" / rel
-                        archive_path.parent.mkdir(parents=True, exist_ok=True)
-                        
-                        header = f"# APPS DEPTH VIOLATION — {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-                        header += f"# {rel} was depth {depth}, but apps_* MUST be exactly {apps_exact_depth}.\n\n"
-                        
-                        content = file_path.read_text(encoding="utf-8", errors="ignore")
-                        archive_path.write_text(header + content, encoding="utf-8")
-                        file_path.unlink()
-                        archived += 1
-                    except Exception:
-                        pass
-        
-        return violations if not self.healing_enabled else archived
-    
+        """Enforce apps_* depth rule using generic handler."""
+        return self._enforce_depth_for_root("apps_rg", lambda r: r.startswith("apps_"), "apps_depth", "APPS")
+
     def _enforce_tests_depth(self) -> int:
-        """Enforce tests depth rule (depth 2). Detection-First."""
-        tests_exact_depth = SOVEREIGN_REGISTRY.get("tests", {}).get("depth", 2)
-        archived = 0
-        violations = 0
-        
-        for file_path in self.project_root.rglob("*"):
-            if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
-                continue
-            
-            rel = file_path.relative_to(self.project_root)
-            if rel.parts[0] != "tests":
-                continue
-            
-            depth = len(rel.parts)
-            if depth != tests_exact_depth:
-                violations += 1
-                Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {tests_exact_depth}")
-                
-                if self.healing_enabled:
-                    try:
-                        archive_path = self.archive_root / "tests_depth" / rel
-                        archive_path.parent.mkdir(parents=True, exist_ok=True)
-                        
-                        header = f"# TESTS DEPTH VIOLATION — {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-                        header += f"# {rel} was depth {depth}, but tests MUST be exactly {tests_exact_depth}.\n\n"
-                        
-                        content = file_path.read_text(encoding="utf-8", errors="ignore")
-                        archive_path.write_text(header + content, encoding="utf-8")
-                        file_path.unlink()
-                        archived += 1
-                    except Exception:
-                        pass
-        
-        return violations if not self.healing_enabled else archived
+        """Enforce tests depth rule using generic handler."""
+        return self._enforce_depth_for_root("tests", lambda r: r == "tests", "tests_depth", "TESTS")
     
     def _enforce_universal_depth(self) -> int:
         """Enforce universal depth for non-Python files in agentic_core (depth 3). Detection-First."""
