@@ -352,10 +352,14 @@ def test_artifact_exists():
 
 
 @dataclass
-class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
+class OrchestrationBaseAgent(L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Base class for L3 Orchestration agents with subatomic testing.
     
-    HARDENED: Now with Redis caching + Pinecone vector support.
+    MRO HARDENING:
+    - L3SubatomicTestingMixin: First (L3-specific testing)
+    - RedisCacheMixin: Second (caching infrastructure)
+    - PineconeVectorMixin: Third (vector infrastructure)
+    - SovereignBaseAgent: Last (root termination)
     
     L3 Table Decision:
     - Basic Self-Testing: YES (plan validation)
