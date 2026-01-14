@@ -1408,7 +1408,17 @@ def main():
             # Check for external resource touch (Phase 5 validation)
             external_markers = ['pinecone', 'redis', 'git', 'subprocess', 'requests.', 'httpx', 'aiohttp', 'http://', 'https://']
             external_touch = any(marker in source.lower() for marker in external_markers)
-            mcp_hardened = 'mcphardenedmixin' in source.lower() or 'mcp_hardened_mixin' in source.lower()
+            # MCP hardening detection - MRO-aware (check direct import OR inheritance from hardened base)
+            mcp_hardened_bases = {
+                'SovereignBaseAgent', 'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent',
+                'L2ExecutionBaseAgent', 'L3OrchestrationBaseAgent', 'L4StateBaseAgent',
+                'L5SafetyBaseAgent', 'L6ObservabilityBaseAgent', 'MCPHardenedMixin'
+            }
+            mcp_hardened = (
+                'mcphardenedmixin' in source.lower() or 
+                'mcp_hardened_mixin' in source.lower() or
+                bool(bases & mcp_hardened_bases)  # Inherits from MCP-hardened base
+            )
             
             # Detect invocation status (SSOT - checks CLASS method, not module functions)
             invocation = detect_invocation_status(node)

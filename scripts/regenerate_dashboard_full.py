@@ -241,6 +241,9 @@ def build_dashboard_data(agents: List[Dict], territory_mapping: Dict[str, str]) 
         if count == 0:
             continue
         
+        # L0 is infrastructure/scripts layer - healing N/A
+        is_l0 = 'L0' in territory
+        
         t_healing = sum(1 for a in agent_list if a.get('has_healing', False))
         t_invocation = sum(1 for a in agent_list if a.get('invocation') == 'Yes')
         t_tests = sum(1 for a in agent_list if a.get('has_tests', False))
@@ -252,21 +255,31 @@ def build_dashboard_data(agents: List[Dict], territory_mapping: Dict[str, str]) 
         t_schema = sum(a.get('schema_strictness', 0) for a in agent_list) / count
         t_cc = sum(a.get('cyclomatic_complexity', 0) for a in agent_list) / count
         
-        t_heal_cap_pct = round(t_healing / count * 100, 1)
-        t_invocation_pct = round(t_invocation / count * 100, 1)
+        # L0: Heal Cap N/A (infrastructure layer focuses on stability, not self-healing)
+        t_heal_cap_pct = "N/A" if is_l0 else round(t_healing / count * 100, 1)
+        t_invocation_pct = "N/A" if is_l0 else round(t_invocation / count * 100, 1)
         t_test_pct = round(t_tests / count * 100, 1)
         t_hardened_pct = round(t_hardened / count * 100, 1)
         t_proper_base_pct = round(t_proper_base / count * 100, 1)
         t_complexity_health = round(max(0, 100 - t_cc * 2), 1)
         
-        t_health = round(
-            t_heal_cap_pct * 0.30 +
-            t_invocation_pct * 0.10 +
-            t_test_pct * 0.25 +
-            50 * 0.20 +
-            t_complexity_health * 0.15,
-            1
-        )
+        # L0: Health calculation excludes healing metrics (use test + complexity + hardening)
+        if is_l0:
+            t_health = round(
+                t_test_pct * 0.40 +
+                t_hardened_pct * 0.30 +
+                t_complexity_health * 0.30,
+                1
+            )
+        else:
+            t_health = round(
+                t_heal_cap_pct * 0.30 +
+                t_invocation_pct * 0.10 +
+                t_test_pct * 0.25 +
+                50 * 0.20 +
+                t_complexity_health * 0.15,
+                1
+            )
         
         t_code_quality = calculate_code_quality(t_typed, t_documented, t_schema, t_proper_base_pct)
         

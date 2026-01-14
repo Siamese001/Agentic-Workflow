@@ -942,13 +942,13 @@ def run_all_tests() -> bool:
             if total == 0:
                 invalid_rows.append(f"{territory}: Total=0 (empty territory)")
             
-            # Check critical fields have valid values
+            # Check critical fields have valid values (allow "N/A" for L0 healing metrics)
             for field in ['Heal Cap %', 'Test %', 'Observable %', 'Health']:
                 val = row.get(field)
                 if val is None:
                     invalid_rows.append(f"{territory}: {field}=None")
-                elif not isinstance(val, (int, float)):
-                    invalid_rows.append(f"{territory}: {field}={val} (not numeric)")
+                elif val != "N/A" and not isinstance(val, (int, float)):
+                    invalid_rows.append(f"{territory}: {field}={val} (not numeric or N/A)")
         
         if invalid_rows:
             errors.append(f"Test 17C FAILED: {len(invalid_rows)} rows have invalid data")
