@@ -61,8 +61,9 @@ class WorkflowMutation:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.CognitiveRecoveryMixin import CognitiveRecoveryMixin
 
-class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, CognitiveRecoveryMixin):
     """
     Orchestrator that automatically recovers from workflow failures.
     
@@ -72,6 +73,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
     - Intelligent retry with backoff
     - Alternative path routing
     - Failure pattern learning
+    - Semantic root cause analysis via CognitiveRecoveryMixin
     """
 
     def __init__(self) -> None:
@@ -88,6 +90,20 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         self.probation_list: Dict[str, Dict[str, int]] = {}
         self._mutation_task = None
         Logger.info('Self-Recovering Orchestrator initialized')
+
+    def attempt_cognitive_recovery(self, error: Exception) -> bool:
+        """
+        Wrapper to trigger the Cognitive Brain when standard heuristics fail.
+        Returns True if a known fix pattern was found and logged.
+        """
+        Logger.info(f"Initiating Cognitive Recovery for: {type(error).__name__}")
+        advice = self.perform_cognitive_rca(error)
+        
+        if advice:
+            Logger.info("🧠 Cognitive Memory found a potential fix strategy.")
+            # Future: Auto-apply the fix. For now, we log the RCA.
+            return True
+        return False
 
     def awaken_mutation_engine(self) -> Any:
         """Explicitly start the L3 evolution cycle"""
@@ -192,7 +208,33 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                 return True
             except Exception as e:
                 Logger.warning(f'Node {node_id} attempt {attempt + 1} failed: {e}')
+                
+                # On final retry failure, attempt cognitive recovery
                 if attempt == max_retries - 1:
+                    Logger.info(f"All retries exhausted for {node_id}. Attempting cognitive recovery...")
+                    
+                    # Tier 1 & 2: Standard Heuristics/HealerMixin
+                    healed = False
+                    if hasattr(self, 'heal_repository'):
+                        try:
+                            heal_result = self.heal_repository(dry_run=False, execute=True)
+                            healed = heal_result.get('fixed', 0) > 0
+                            if healed:
+                                Logger.info(f"HealerMixin fixed {heal_result.get('fixed', 0)} issues")
+                        except Exception as heal_error:
+                            Logger.warning(f"Healing attempt failed: {heal_error}")
+                    
+                    # Tier 3: NEW Cognitive Recovery (Semantic Brain)
+                    known_fix_found = self.attempt_cognitive_recovery(e)
+                    
+                    if known_fix_found:
+                        Logger.warning("Cognitive recovery identified a known fix. Proceeding with semantic-guided retry.")
+                        # Future: apply specific fix based on advice
+                        # For now, we've logged the RCA and can retry if healing succeeded
+                        if healed:
+                            Logger.info("Attempting one more retry after healing + cognitive guidance...")
+                            continue  # One bonus retry after cognitive recovery
+                    
                     return False
         return False
 
