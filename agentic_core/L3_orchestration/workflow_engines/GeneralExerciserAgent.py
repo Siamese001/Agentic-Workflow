@@ -20,7 +20,8 @@ class GeneralExerciserAgent(SovereignBaseAgent):
     Auto-registered via blueprint EXERCISER_REGISTRY.
     """
 
-    def __init__(self, target_layer: str):
+    def __init__(self, target_layer: str) -> None:
+        """Initialize the instance."""
         self.name = f"GeneralExerciserAgent_{target_layer}"
         self.target_layer = target_layer
         self.project_root = get_validated_project_root()

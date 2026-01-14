@@ -8,6 +8,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from typing import Any, Dict, List, Optional
 import ast
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
@@ -30,7 +31,7 @@ class RegressionOracleAgent(SubAtomicAgent, MCPHardenedMixin):
     6. Emit REGRESSION_CHECK_PASS signal
     """
 
-    def __init__(self, ctx) -> None:
+    def __init__(self, ctx: Any) -> None:
         """
         Initialize Regression Oracle.
         
@@ -94,7 +95,7 @@ class RegressionOracleAgent(SubAtomicAgent, MCPHardenedMixin):
             await self._process_modified_file(file_path)
         self.test_runner.report_results(self.generated_tests)
 
-    async def _process_modified_file(self, file_path: str):
+    async def _process_modified_file(self, file_path: str) -> Any:
         """Process a modified file and generate tests."""
         Logger.info(f'   Analyzing {file_path}...')
         changes = self.change_detector.detect_method_changes(file_path)
@@ -107,7 +108,7 @@ class RegressionOracleAgent(SubAtomicAgent, MCPHardenedMixin):
                 passed, error_msg = await self.test_runner.run_and_correct_test(change, test_file, test_code)
                 self.generated_tests.append(GeneratedTest(test_file=str(test_file), test_name=f'test_{change.method_name}', test_code=test_code, target_method=change.method_name, edge_cases=edge_cases, passed=passed, error_message=error_msg))
 
-    def _emit_regression_check_pass(self, file_path: str, method_name: str):
+    def _emit_regression_check_pass(self, file_path: str, method_name: str) -> Any:
         """Emit REGRESSION_CHECK_PASS signal to blackboard."""
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals.add(f'REGRESSION_CHECK_PASS:{file_path}:{method_name}')

@@ -122,7 +122,7 @@ class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeV
     last_execution: Optional[datetime] = None
     async_mode: bool = True
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Initialize L6 analyst with skeptical defaults."""
         super().__init__()
         if not hasattr(self, 'name'):

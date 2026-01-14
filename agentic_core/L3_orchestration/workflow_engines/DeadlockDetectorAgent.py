@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, Optional, Set
 from dataclasses import dataclass
 """
 DeadlockDetectorAgent - Extracted for one-class-per-file pattern.
@@ -119,14 +119,14 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
         if task_id in self.monitored_tasks:
             self.monitored_tasks[task_id].update_heartbeat()
 
-    def _task_done(self, task_id: str):
+    def _task_done(self, task_id: str) -> Any:
         """Handle Task completion."""
         if task_id in self.monitored_tasks:
             monitor = self.monitored_tasks[task_id]
             monitor.status = "COMPLETED" if monitor.Task.cancelled() else "DONE"
             LOGGER.debug(f"Task completed: {task_id}")
 
-    async def _monitor_loop(self):
+    async def _monitor_loop(self) -> Any:
         """Main monitoring loop."""
         while True:
             try:
@@ -137,7 +137,7 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
             except Exception as e:
                 LOGGER.error(f"Error in monitor loop: {e}")
 
-    async def _check_tasks(self):
+    async def _check_tasks(self) -> Any:
         """Check all monitored tasks for timeouts."""
         current_time = time.time()
 
@@ -167,7 +167,7 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
                         f"{elapsed:.1f}s without heartbeat"
                     )
 
-    async def _alert_deadlock(self, task_id: str, monitor: TaskMonitorAgent, elapsed: float):
+    async def _alert_deadlock(self, task_id: str, monitor: TaskMonitorAgent, elapsed: float) -> Any:
         """Alert about a potential deadlock."""
         if task_id in self.alerted_tasks:
             return  # Already alerted

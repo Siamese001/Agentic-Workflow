@@ -34,6 +34,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
     """
     
     def __init__(self, project_root: Path, ctx=None) -> None:
+        """Initialize the instance."""
         self.project_root = project_root
         self.ctx = ctx
         
@@ -60,7 +61,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         assert hasattr(self, 'pinecone'), "Missing pinecone"
         return True
             
-    def _seed_territory_examples(self):
+    def _seed_territory_examples(self) -> Any:
         """Seed the index with known territory examples for reference."""
         print(f"   [*] Seeding territory examples...")
         vectors = []

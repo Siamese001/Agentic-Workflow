@@ -18,6 +18,7 @@ class CostGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
 
     def __init__(self, config: Dict[str, Any]) -> None:
+        """Initialize the instance."""
         self.config = config
         self.limit = config.get('budget_limit', 10.0)
         self.spend = 0.0

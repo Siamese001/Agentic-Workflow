@@ -24,7 +24,7 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     """
     PROMPT_TEMPLATE: Any = '\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nAdd precise Python type hints to the following function/method.\n\nRules:\n- Use concrete types when possible (List[str], Dict[str, int], etc.)\n- Use from __future__ import annotations if needed\n- Preserve all existing code, comments, and formatting\n- Only modify type annotations (parameters and return)\n- If uncertain, use Any from typing\n\nOutput ONLY the fully annotated function (no explanations, no markdown).\n\nFUNCTION:\n{code}\n'
 
-    def __init__(self, ctx, project_root=None) -> None:
+    def __init__(self, ctx: Any, project_root=None) -> None:
         """Initialize with mandatory ctx for sovereign operation."""
         if ctx is None:
             raise ValueError("ctx is mandatory for InferenceTypeHintAgent (sovereign agent)")

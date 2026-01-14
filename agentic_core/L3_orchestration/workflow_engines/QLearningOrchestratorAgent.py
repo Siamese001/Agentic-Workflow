@@ -37,7 +37,8 @@ class QLearningOrchestratorAgent(SovereignBaseAgent):
     This class now wraps UnifiedWorkflowEngine for backward compatibility.
     """
 
-    def __init__(self, layers: List[str], bins: int = 3, fallback_orchestrator=None):
+    def __init__(self, layers: List[str], bins: int = 3, fallback_orchestrator=None) -> None:
+        """Initialize the instance."""
         log.warning("QLearningOrchestratorAgent is deprecated - migrating to UnifiedWorkflowEngine")
         self.name = "QLearningOrchestratorAgent"
         self.project_root = get_validated_project_root()

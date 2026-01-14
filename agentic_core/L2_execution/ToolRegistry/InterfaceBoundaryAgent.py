@@ -61,7 +61,8 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, root_dir: str = ".", complexity_threshold: int = 15):
+    def __init__(self, root_dir: str = ".", complexity_threshold: int = 15) -> None:
+        """Initialize the instance."""
         self.root = Path(root_dir)
         self.threshold = complexity_threshold
         self.violations: List[Dict] = []

@@ -8,6 +8,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from typing import Any, Dict, List, Optional
 import asyncio
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
@@ -238,11 +239,13 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         return True
 
     @property
-    def _iteration(self):
+    def _iteration(self) -> Any:
+        """Iteration."""
         return self._iteration_val[0]
 
     @_iteration.setter
-    def _iteration(self, value):
+    def _iteration(self, value) -> Any:
+        """Iteration."""
         self._iteration_val[0] = value
 
     async def run_mission(self, max_phases: Optional[int] = None) -> ExecutionResult:

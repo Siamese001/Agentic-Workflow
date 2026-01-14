@@ -74,7 +74,7 @@ class RoutingDecision:
         assert self.thinking_budget > 0, "thinking_budget must be positive"
         return True
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Run self-tests after dataclass initialization."""
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
@@ -101,7 +101,7 @@ class ComplexityProfile:
         assert self.total_lines >= 0, "total_lines must be non-negative"
         return True
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Run self-tests after dataclass initialization."""
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
@@ -131,7 +131,7 @@ class DynamicModelRouterAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     - Routing decisions logged to L4 ledger
     """
     
-    def __init__(self, ctx):
+    def __init__(self, ctx: Any) -> None:
         """
         Initialize Dynamic Model Router.
         
@@ -460,7 +460,7 @@ class DynamicModelRouterAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
 # Singleton instance
 _model_router = None
 
-def get_model_router(ctx) -> DynamicModelRouterAgent:
+def get_model_router(ctx: Any) -> DynamicModelRouterAgent:
     """Get or create global Model Router instance."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
@@ -470,6 +470,6 @@ def get_model_router(ctx) -> DynamicModelRouterAgent:
         _model_router = DynamicModelRouterAgent(ctx)
     return _model_router
 
-def get_dynamic_model_routerAgent(ctx) -> Any:
+def get_dynamic_model_routerAgent(ctx: Any) -> Any:
     """Execute get_dynamic_model_routerAgent operation."""
     return _model_router

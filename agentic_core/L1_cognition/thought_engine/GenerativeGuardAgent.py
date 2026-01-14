@@ -61,7 +61,8 @@ class GenerativeGuardAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixi
     - *_temp*.py
     """
 
-    def __init__(self, ctx: Any = None):
+    def __init__(self, ctx: Any = None) -> None:
+        """Initialize the instance."""
         self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
@@ -86,7 +87,7 @@ class GenerativeGuardAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixi
         """Validate agent state."""
         return self.ctx is not None
 
-    async def _execute_guard(self):
+    async def _execute_guard(self) -> Any:
         """Scan for and optionally purge runaway generated files."""
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
         violations = []
@@ -104,7 +105,7 @@ class GenerativeGuardAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixi
             self.ctx.report(self.name, 45, True, [])
             self.ctx.signals.add("GENERATIVE_CLEAN")
 
-    def _purge_single_file(self, file_path: str):
+    def _purge_single_file(self, file_path: str) -> Any:
         """Helper to attempt purging a single file and report."""
         try:
             os.remove(file_path)
@@ -112,7 +113,7 @@ class GenerativeGuardAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixi
         except OSError as e:
             print(f"         [X] Failed to delete {file_path}: {e}", file=sys.stderr)
 
-    def _process_found_violations(self, violations: List[str]):
+    def _process_found_violations(self, violations: List[str]) -> Any:
         """Helper to process and optionally purge detected runaway files."""
         print(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
         self.ctx.report(self.name, 45, False, violations)

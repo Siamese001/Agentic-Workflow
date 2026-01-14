@@ -61,6 +61,7 @@ class ScriptsPlanningOrchestratorAgent(L0MaintenanceBaseAgent):
     """
 
     def __init__(self, config: Optional[ScriptsPlanningConfig]=None) -> None:
+        """Initialize the instance."""
         self.config = config or ScriptsPlanningConfig()
         self.Logger = logging.getLogger(self.__class__.__name__)
         self.Logger.setLevel(self.config.log_level)

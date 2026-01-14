@@ -25,6 +25,7 @@ class Violation:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, reason: ValidationRejectionReason, message: str) -> None:
+        """Initialize the instance."""
         self.reason = reason
         self.message = message
 
@@ -33,6 +34,7 @@ class IntegrityGateResult:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, passed: bool, depth_score: float) -> None:
+        """Initialize the instance."""
         self.passed = passed
         self.depth_score = depth_score
         self.violations: List[Violation] = []
@@ -48,6 +50,7 @@ class FinancialProofPoint:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, metric_name: str, value: str, source_citation: str = None) -> None:
+        """Initialize the instance."""
         self.metric_name = metric_name
         self.value = value
         self.source_citation = source_citation
@@ -57,6 +60,7 @@ class KeyTechnology:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, technology_name: str, implementation_details: str, source_citation: str = None) -> None:
+        """Initialize the instance."""
         self.technology_name = technology_name
         self.implementation_details = implementation_details
         self.source_citation = source_citation
@@ -66,6 +70,7 @@ class KeyExecutive:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, name: str) -> None:
+        """Initialize the instance."""
         self.name = name
 
 # NAMING FIXED: StrategicLayer → StrategicLayer
@@ -73,6 +78,7 @@ class StrategicLayer:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, core_thesis: str, strategic_initiatives: List[str], financial_proof_points: List[FinancialProofPoint]) -> None:
+        """Initialize the instance."""
         self.core_thesis = core_thesis
         self.strategic_initiatives = strategic_initiatives
         self.financial_proof_points = financial_proof_points
@@ -82,6 +88,7 @@ class TechnicalLayer:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, implementation_summary: str, key_technologies: List[KeyTechnology]) -> None:
+        """Initialize the instance."""
         self.implementation_summary = implementation_summary
         self.key_technologies = key_technologies
 
@@ -90,6 +97,7 @@ class LeadershipLayer:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, key_executives: List[KeyExecutive]) -> None:
+        """Initialize the instance."""
         self.key_executives = key_executives
 
 # NAMING FIXED: CitationMap → CitationMap
@@ -143,6 +151,7 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
         "service", "API", "database", "network", "protocol"
     }
     def __init__(self, min_depth_score: float = 0.7) -> None:
+        """Initialize the instance."""
         self.min_depth_score = min_depth_score
 
     def _run_self_tests(self) -> bool:
@@ -274,6 +283,7 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
             )
 
     def _calculate_depth_score(self, research_output: DeepResearchOutput) -> float:
+        """Calculate depth score."""
         SCORES = []
 
         financial_score = min(
@@ -305,6 +315,7 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
         return sum(SCORES) / len(SCORES)
 
     def _has_specific_value(self, value: str) -> bool:
+        """Has specific value."""
         number_pattern = r'\d+\.?\d*[KMBT%]?'
         return bool(re.search(number_pattern, value))
 

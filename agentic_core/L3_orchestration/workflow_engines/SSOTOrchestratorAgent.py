@@ -102,7 +102,7 @@ class SSOTOrchestratorAgent(MCPHardenedMixin, HealerMixin):
             'CodeSSOTEnforcerAgent'
         ]
     
-    def _get_agent(self, agent_name: str):
+    def _get_agent(self, agent_name: str) -> Any:
         """
         Lazy-load agent instances.
         

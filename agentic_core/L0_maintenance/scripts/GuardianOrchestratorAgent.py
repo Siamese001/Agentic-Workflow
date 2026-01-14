@@ -39,6 +39,7 @@ class GuardianOrchestratorAgent(L0MaintenanceBaseAgent, AutonomyMixin,
     """
 
     def __init__(self, target_path: Path | str) -> None:
+        """Initialize the instance."""
         self.target_path = Path(target_path)
         self.Logger = logging.getLogger(__name__)
         
@@ -53,7 +54,7 @@ class GuardianOrchestratorAgent(L0MaintenanceBaseAgent, AutonomyMixin,
 
         self._load_guardians()
 
-    def _load_guardians(self):
+    def _load_guardians(self) -> Any:
         """Lazy load guardians with constitutional graceful degradation."""
         # DDD Alignment Guardian
         try:
@@ -93,6 +94,7 @@ class GuardianOrchestratorAgent(L0MaintenanceBaseAgent, AutonomyMixin,
 
     # === AdaptiveExecutionMixin Overrides ===
     async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+        """Execute conservative."""
         self.Logger.info("Conservative mode: running only high-impact guardians")
         # Only run DDD guardian — most critical for sovereignty
         return {
@@ -100,6 +102,7 @@ class GuardianOrchestratorAgent(L0MaintenanceBaseAgent, AutonomyMixin,
         }
 
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+        """Execute minimal."""
         self.Logger.warning("Minimal mode: skipping guardian execution to preserve resources")
         return {
             "status": "skipped",

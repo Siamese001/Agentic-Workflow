@@ -207,6 +207,7 @@ class NervousSystemResultReporting:
     """Handles mission result generation and reporting."""
 
     def __init__(self, config: OrchestratorConfig, Logger: logging.Logger) -> None:
+        """Initialize the instance."""
         self.config = config
         self.Logger = Logger
 
@@ -216,7 +217,7 @@ class NervousSystemResultReporting:
             return False
         return all(r.get("passed", False) for r in results.values())
 
-    def _generate_mission_report(self, results: Dict[str, Any], state: Dict[str, Any]):
+    def _generate_mission_report(self, results: Dict[str, Any], state: Dict[str, Any]) -> Any:
         """Generate final mission report (from SwarmScheduler)."""
         self.Logger.info("Generating mission report")
 
@@ -317,6 +318,7 @@ class NervousSystemStateManagement:
     """Handles state persistence and retrieval for the NervousSystem."""
 
     def __init__(self, Logger: logging.Logger) -> None:
+        """Initialize the instance."""
         self.Logger = Logger
 
     def get_state(self, iteration: int, state: Dict[str, Any], config: OrchestratorConfig) -> Dict[str, Any]:
@@ -411,7 +413,8 @@ class NervousSystemPhaseExecution:
             # Create a simple mock agent that has execute method
             class MockAgent(HealerMixin):
                 """MockAgent agent for autonomous operations."""
-                def __init__(self, name, phase) -> None:
+                def __init__(self, name: str, phase) -> None:
+                    """Initialize the instance."""
                     self.name = name
                     self.phase = phase
 
@@ -544,7 +547,7 @@ class NervousSystemPhaseExecution:
 
         return reconciled
 
-    async def _rate_limited_retry(self, func, max_retries: int = 5, base_delay: float = 2.0):
+    async def _rate_limited_retry(self, func: Any, max_retries: int = 5, base_delay: float = 2.0) -> Any:
         """Decorator to handle rate limiting with exponential backoff (from SwarmScheduler)."""
         for attempt in range(max_retries):
             try:
@@ -792,6 +795,7 @@ class NervousSystemArchitectureGovernance:
     """Handles architecture validation and impact analysis."""
 
     def __init__(self, ArchitectureGovernor: ArchitectureGovernor, Logger: logging.Logger) -> None:
+        """Initialize the instance."""
         self.ArchitectureGovernor = ArchitectureGovernor
         self.Logger = Logger
 
@@ -850,6 +854,7 @@ class NervousSystemInterventionManager:
     """Manages human intervention requests and approvals."""
 
     def __init__(self, InterventionServer: InterventionServer, Logger: logging.Logger) -> None:
+        """Initialize the instance."""
         self.InterventionServer = InterventionServer
         self.Logger = Logger
 
@@ -925,11 +930,13 @@ class NervousSystemPhaseOrchestratorAgent(HealerMixin):
         self.Logger = Logger
 
     @property
-    def _iteration(self):
+    def _iteration(self) -> Any:
+        """Iteration."""
         return self._iteration_ref[0]
 
     @_iteration.setter
-    def _iteration(self, value):
+    def _iteration(self, value) -> Any:
+        """Iteration."""
         self._iteration_ref[0] = value
 
     async def _process_phase(

@@ -36,7 +36,8 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
     ctx: ValidationContext
     debug_mode: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        """Post-initialization setup."""
         self.name = "AdversarialProbeAgent"
         self.attack_patterns = [
             "adversarial_examples",

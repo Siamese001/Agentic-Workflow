@@ -57,6 +57,7 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.root = project_root.resolve()
         self.logger = Logger
 

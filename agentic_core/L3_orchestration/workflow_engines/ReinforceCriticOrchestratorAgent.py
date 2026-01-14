@@ -20,7 +20,8 @@ from dataclasses import dataclass
 
 class PolicyCriticNet(nn.Module):
     """Separate policy + critic heads on shared body."""
-    def __init__(self, input_dim: int, n_actions: int):
+    def __init__(self, input_dim: int, n_actions: int) -> None:
+        """Initialize the instance."""
         super().__init__()
         self.shared = nn.Sequential(
             nn.Linear(input_dim, 64),
@@ -45,7 +46,8 @@ class ReinforceCriticOrchestratorAgent(SovereignBaseAgent):
     Episode accumulation → batch update.
     """
 
-    def __init__(self, layers: List[str]):
+    def __init__(self, layers: List[str]) -> None:
+        """Initialize the instance."""
         self.name = "ReinforceCriticOrchestratorAgent"
         self.project_root = get_validated_project_root()
         self.layers = layers

@@ -89,7 +89,7 @@ class HealingSuccess:
         assert isinstance(self.before_metrics, dict), "before_metrics must be dict"
         return True
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 @dataclass
@@ -115,7 +115,7 @@ class DistilledPattern:
         assert isinstance(self.transformation_steps, list), "transformation_steps must be list"
         return True
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 class HealingDiffAnalyzer:
@@ -197,7 +197,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     - Rollback on corruption
     """
 
-    def __init__(self, ctx) -> None:
+    def __init__(self, ctx: Any) -> None:
         """
         Initialize Memory Architect.
         
@@ -285,7 +285,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         content = f'{success.file_path}:{success.key_id}:{success.after_code}'
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
-    async def _harvest_success(self, success: HealingSuccess):
+    async def _harvest_success(self, success: HealingSuccess) -> Any:
         """
         Harvest a successful healing operation and distill into pattern.
         
@@ -363,7 +363,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         improvement = (before_lines - after_lines) / before_lines * 100 if before_lines > 0 else 0
         return DistilledPattern(pattern_id=pattern_id, pattern_type='flattening' if success.key_id == 41 else 'size_reduction', source_file=success.file_path, key_id=success.key_id, trigger_condition='method > 40 lines OR nesting > 3', transformation_steps=['Identify complex nested blocks', 'Extract into private helper methods', 'Verify nesting ≤ 3 after extraction'], before_metrics=success.before_metrics, after_metrics=success.after_metrics, improvement_percentage=improvement, generalized_rule='Extract nested logic into focused helper methods', code_examples={'added_functions': diff_analysis['added_functions'], 'modified_functions': [m['function'] for m in diff_analysis['modified_functions']]}, timestamp=success.timestamp)
 
-    async def _inoculate_pattern(self, pattern: DistilledPattern):
+    async def _inoculate_pattern(self, pattern: DistilledPattern) -> Any:
         """
         Stage 4: Inoculation - Deep Brain Write
         
@@ -392,7 +392,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         text_parts = [f"# {pattern.pattern_type.replace('_', ' ').title()} Pattern", f'', f'Source: {pattern.source_file}', f'Key: {pattern.key_id}', f'', f'## Trigger', pattern.trigger_condition, f'', f'## Rule', pattern.generalized_rule, f'', f'## Transformation Steps', *[f'{i}. {step}' for i, step in enumerate(pattern.transformation_steps, 1)], f'', f'## Results', f"- Line reduction: {pattern.before_metrics.get('lines', 0)} → {pattern.after_metrics.get('lines', 0)}", f"- Nesting reduction: {pattern.before_metrics.get('nesting', 0)} → {pattern.after_metrics.get('nesting', 0)}", f'- Improvement: {pattern.improvement_percentage:.1f}%', f'', f'## Examples', f"Added functions: {', '.join(pattern.code_examples.get('added_functions', []))}", f"Modified functions: {', '.join(pattern.code_examples.get('modified_functions', []))}"]
         return '\n'.join(text_parts)
 
-    def _store_pattern_locally(self, pattern: DistilledPattern):
+    def _store_pattern_locally(self, pattern: DistilledPattern) -> Any:
         """Store pattern locally when Pinecone is unavailable."""
         patterns_dir = Path('agentic_core/patterns/harvested')
         patterns_dir.mkdir(parents=True, exist_ok=True)

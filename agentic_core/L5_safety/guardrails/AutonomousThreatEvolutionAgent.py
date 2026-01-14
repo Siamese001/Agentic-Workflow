@@ -43,6 +43,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """L5: Self-healing security agent"""
     def __init__(self, SafetyEngine=None) -> None:
+        """Initialize the instance."""
         self.safety = SafetyEngine
         # Use relative pathing to stay within the AGENTIC_CORE_DIR root gravity
         self.log_path = Path("observability/logs/threat_detections.json")
@@ -64,7 +65,7 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
                 print(f"   [L5 ERROR] Evolution cycle failed: {e}")
             await asyncio.sleep(self.evolution_interval)
 
-    async def _perform_evolution_cycle(self):
+    async def _perform_evolution_cycle(self) -> Any:
         """Internal logic to analyze and adapt"""
         recent = self._load_recent_detections(hours=24)
         if len(recent) > 10 and self.safety:
@@ -77,6 +78,7 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
                         print(f"   [L5] Evolution: New rule {rule_id} deployed.")
 
     def _load_recent_detections(self, hours: int) -> List[Dict]:
+        """Load recent detections."""
         if not self.log_path.exists():
             return []
         try:

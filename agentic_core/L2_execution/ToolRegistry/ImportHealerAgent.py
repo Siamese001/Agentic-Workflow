@@ -23,6 +23,7 @@ class ImportHealerAgent(HealerMixin, MCPHardenedMixin):
     """
     
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.project_root = project_root
         self.relocation_map: Dict[str, str] = {}  # old_path -> new_path
     

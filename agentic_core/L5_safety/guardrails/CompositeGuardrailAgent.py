@@ -42,7 +42,7 @@ class GuardrailResult(Enum):
 class Guardrail(ABC):
     """Base guardrail interface - sub-atomic enforcement."""
     
-    def __init__(self, name: str, enabled: bool = True):
+    def __init__(self, name: str, enabled: bool = True) -> None:
         """Initialize guardrail."""
         self.name = name
         self.enabled = enabled
@@ -70,7 +70,7 @@ class Guardrail(ABC):
 class RateLimitGuardrail(Guardrail):
     """Rate limiting guardrail - consolidated from multiple rate limiters."""
     
-    def __init__(self, max_calls: int = 100, window_seconds: int = 60):
+    def __init__(self, max_calls: int = 100, window_seconds: int = 60) -> None:
         """Initialize rate limit guardrail."""
         super().__init__("RateLimit")
         self.max_calls = max_calls
@@ -97,7 +97,7 @@ class RateLimitGuardrail(Guardrail):
 class MutationGuardrail(Guardrail):
     """Mutation blocking guardrail - prevents unauthorized modifications."""
     
-    def __init__(self, protected_fields: Optional[List[str]] = None):
+    def __init__(self, protected_fields: Optional[List[str]] = None) -> None:
         """Initialize mutation guardrail."""
         super().__init__("MutationBlock")
         self.protected_fields = protected_fields or ["id", "created_at", "owner"]
@@ -122,7 +122,7 @@ class MutationGuardrail(Guardrail):
 class ContentFilterGuardrail(Guardrail):
     """Content filtering guardrail - blocks malicious/inappropriate content."""
     
-    def __init__(self, blocked_patterns: Optional[List[str]] = None):
+    def __init__(self, blocked_patterns: Optional[List[str]] = None) -> None:
         """Initialize content filter."""
         super().__init__("ContentFilter")
         self.blocked_patterns = blocked_patterns or ["<script>", "DROP TABLE", "exec("]
@@ -148,7 +148,7 @@ class ContentFilterGuardrail(Guardrail):
 class CircuitBreakerGuardrail(Guardrail):
     """Circuit breaker guardrail - prevents cascading failures."""
     
-    def __init__(self, failure_threshold: int = 5, reset_timeout: int = 60):
+    def __init__(self, failure_threshold: int = 5, reset_timeout: int = 60) -> None:
         """Initialize circuit breaker."""
         super().__init__("CircuitBreaker")
         self.failure_threshold = failure_threshold
@@ -181,7 +181,7 @@ class CircuitBreakerGuardrail(Guardrail):
 class PIIAirlockGuardrail(Guardrail):
     """PII airlock guardrail - detects and masks personally identifiable information."""
     
-    def __init__(self, pii_patterns: Optional[List[str]] = None):
+    def __init__(self, pii_patterns: Optional[List[str]] = None) -> None:
         """Initialize PII airlock."""
         super().__init__("PIIAirlock")
         self.pii_patterns = pii_patterns or ["email", "phone", "ssn", "credit_card"]
@@ -232,7 +232,7 @@ class AuthenticationGuardrail(Guardrail):
 class AuthorizationGuardrail(Guardrail):
     """Authorization guardrail - validates user permissions."""
     
-    def __init__(self, required_permissions: Optional[List[str]] = None):
+    def __init__(self, required_permissions: Optional[List[str]] = None) -> None:
         """Initialize authorization guardrail."""
         super().__init__("Authorization")
         self.required_permissions = required_permissions or ["read", "write"]
@@ -265,7 +265,7 @@ class CompositeGuardrailAgent(MCPHardenedMixin):
     Replaces 35+ scattered guardrails with single consolidated agent.
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize composite guardrail with all 21 canonical guardrails."""
         self.guardrails: List[Guardrail] = [
             RateLimitGuardrail(max_calls=100, window_seconds=60),

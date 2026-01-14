@@ -27,7 +27,8 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
     Enforces exhaustive territory compliance by detecting intra-territory strays.
     """
     
-    def __init__(self, project_root: Path, ctx) -> None:
+    def __init__(self, project_root: Path, ctx: Any) -> None:
+        """Initialize the instance."""
         self.root = project_root
         self.ctx = ctx
         

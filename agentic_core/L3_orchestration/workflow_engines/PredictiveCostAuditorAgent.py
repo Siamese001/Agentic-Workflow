@@ -89,7 +89,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
     - Cost optimization strategies
     """
 
-    def __init__(self, ctx) -> None:
+    def __init__(self, ctx: Any) -> None:
         """
         Initialize Predictive Cost Auditor.
         
@@ -119,7 +119,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
             self.ctx.cost_reports = []
         self.ctx.cost_reports.append(report)
 
-    def _load_healing_history(self):
+    def _load_healing_history(self) -> Any:
         """Load healing history from context."""
         if not hasattr(self.ctx, 'healing_history'):
             Logger.warning('   No healing history available')
@@ -131,7 +131,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
                 metrics = HealingMetrics(file_path=file_path, attempt_number=data.get('round', 1), tokens_used=data.get('tokens_used', 0), success=data.get('status') == 'PASS', key_id=key_id, timestamp=data.get('timestamp', datetime.now(timezone.utc).isoformat()), model_used=data.get('model', 'unknown'))
                 self.healing_history[file_path].append(metrics)
 
-    def _audit_files(self):
+    def _audit_files(self) -> Any:
         """Audit each file for cost efficiency."""
         for file_path, metrics_list in self.healing_history.items():
             audit = self._audit_single_file(file_path, metrics_list)
@@ -208,7 +208,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
             recommendations.append('[OK] Healing efficiency is optimal')
         return recommendations
 
-    def _display_report(self, report: CostReport):
+    def _display_report(self, report: CostReport) -> Any:
         """Display cost report."""
         Logger.info(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
         Logger.info('💰 PREDICTIVE COST AUDIT REPORT')

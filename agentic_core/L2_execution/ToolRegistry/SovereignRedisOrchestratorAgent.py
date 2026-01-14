@@ -27,6 +27,7 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
     '''Brief description of functionality and purpose.'''
     
     def __init__(self) -> None:
+        """Initialize the instance."""
         self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         self.connection: Optional[redis.Redis] = None
         # BOUNDED FALLBACK: Max 1000 items to prevent MemoryError

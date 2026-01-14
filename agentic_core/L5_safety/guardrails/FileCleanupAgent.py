@@ -40,7 +40,8 @@ class FileCleanupAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     Detects patterns like 'word_word', 'word_word_word', etc.
     """
 
-    def __init__(self, project_root: Path, ctx, dry_run: bool = True) -> None:
+    def __init__(self, project_root: Path, ctx: Any, dry_run: bool = True) -> None:
+        """Initialize the instance."""
         self.project_root = Path(project_root)
         self.ctx = ctx
         self.dry_run = dry_run
@@ -260,7 +261,7 @@ class FileCleanupAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             _call_path.discard(agent_name)
 
 
-def get_file_cleanup_agent(project_root: Path, ctx, dry_run=True) -> Any:
+def get_file_cleanup_agent(project_root: Path, ctx: Any, dry_run=True) -> Any:
     """Factory function"""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()

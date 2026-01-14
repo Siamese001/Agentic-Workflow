@@ -79,7 +79,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         r'DAN\s+mode',
     ]
     
-    def __init__(self, project_root=None, ctx=None, **kwargs):
+    def __init__(self, project_root=None, ctx=None, **kwargs) -> None:
         """
         Initialize with cooperative MRO inheritance.
         

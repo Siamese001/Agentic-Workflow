@@ -37,6 +37,7 @@ class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
     """Brief description of functionality and purpose."""
 
     def __init__(self, target_path=AGENTIC_CORE_DIR) -> None:
+        """Initialize the instance."""
         self.root = Path(target_path)
         self.MAX_BREADTH = 7
         self.MIN_FILES = 3

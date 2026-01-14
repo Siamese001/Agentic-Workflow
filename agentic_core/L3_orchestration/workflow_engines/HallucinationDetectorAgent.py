@@ -18,6 +18,7 @@ class HallucinationDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
     """Stub implementation of hallucination detector."""
 
     def __init__(self: Any, config: Dict[str, Any]) -> None:
+        """Initialize the instance."""
         self.config = config or {}
 
     def check(self: Any, text: str, context: Dict[str, Any]) -> Dict[str, Any]:

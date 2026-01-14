@@ -46,6 +46,7 @@ class BootstrapAgent(L0MaintenanceBaseAgent):
     """
 
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
 
     def verify_neural_link(self) -> bool:

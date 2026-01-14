@@ -36,7 +36,7 @@ Logger = logging.getLogger(__name__)
 
 def timeout(seconds: int) -> Any:
     """Timeout decorator for long-running operations."""
-    def decorator(func) -> Any:
+    def decorator(func: Any) -> Any:
         """Execute decorator operation."""
         @wraps(func)
         def wrapper(*args, **kwargs) -> Any:
@@ -51,7 +51,7 @@ def timeout(seconds: int) -> Any:
 class FileManagerAgent(SovereignBaseAgent):
     """Filesystem operations agent with parent chain healing."""
 
-    def __init__(self, project_root: Optional[Path] = None):
+    def __init__(self, project_root: Optional[Path] = None) -> None:
         """Initialize FileManagerAgent."""
         self.project_root = project_root or Path.cwd()
         self.backup_dir = self.project_root / '.backups'

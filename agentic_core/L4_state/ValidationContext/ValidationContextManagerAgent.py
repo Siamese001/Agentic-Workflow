@@ -46,7 +46,7 @@ class ValidationContext:
     project_root: Optional[Path] = field(default=None, init=False)
     session_id: Optional[str] = field(default=None, init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Initialize ledger if project_root and session_id are available."""
         if self.project_root and self.session_id:
             self.ledger = CachedStateLedger(self.project_root, self.session_id)
@@ -202,7 +202,7 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         self._save_memory()
         LOGGER.info(f'Completed cycle {self.current_context.cycle_id} with status {status}')
 
-    def _save_memory(self):
+    def _save_memory(self) -> Any:
         """Save context memory to files."""
         if self.current_context:
             self.current_context.save_to_file(self.current_context_file)

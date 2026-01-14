@@ -140,7 +140,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         self.active_healings = max(0, self.active_healings - 1)
         Logger.debug(f'Active healings: {self.active_healings}')
 
-    def _record_metrics(self):
+    def _record_metrics(self) -> Any:
         """Record current resource metrics."""
         success_rate = 0.0
         if self.success_history:
@@ -150,7 +150,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         metrics = ResourceMetrics(timestamp=datetime.now(), healing_attempts=self.global_healing_count, success_rate=success_rate, avg_rounds_per_heal=avg_rounds, files_in_queue=len(self.healing_queue), estimated_time_remaining=len(self.healing_queue) * avg_rounds * 2.0, budget_utilization=budget_utilization)
         self.metrics_history.append(metrics)
 
-    def _check_and_adjust_thresholds(self):
+    def _check_and_adjust_thresholds(self) -> Any:
         """Automatically adjust thresholds based on performance."""
         if datetime.now() - self._last_adjustment < timedelta(minutes=5):
             return

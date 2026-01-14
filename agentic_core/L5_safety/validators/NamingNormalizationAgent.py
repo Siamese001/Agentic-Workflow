@@ -16,7 +16,7 @@ import warnings
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict, Optional
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
@@ -45,6 +45,7 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     CAMEL_OR_PASCAL: Any = re.compile('^[A-Z][a-zA-Z0-9]*$|^[a-z]+([A-Z][a-z]+)+')
 
     def __init__(self, ctx=None, project_root=None) -> None:
+        """Initialize the instance."""
         self.ctx = ctx
         self.project_root = project_root
 
@@ -72,7 +73,7 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         """
         limit = seconds + 60 * minutes + 3600 * hours
 
-        def decorator(func) -> Any:
+        def decorator(func: Any) -> Any:
             """Execute decorator operation."""
             def wrapper(*args, **kwargs) -> Any:
                 """Execute wrapper operation."""

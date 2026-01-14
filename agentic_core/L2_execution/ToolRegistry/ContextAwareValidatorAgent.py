@@ -31,6 +31,7 @@ class ContextAwareValidatorAgent(HealerMixin, MCPHardenedMixin):
     """
 
     def __init__(self) -> None:
+        """Initialize the instance."""
         self.Logger = logging.getLogger(f"{self.__class__.__name__}.Context")
 
     async def validate_with_context(self, target: Path, rule: str) -> Dict[str, Any]:

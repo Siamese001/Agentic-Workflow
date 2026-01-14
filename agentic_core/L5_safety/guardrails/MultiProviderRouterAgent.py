@@ -50,6 +50,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
     """Production router with intelligent provider selection and failover."""
 
     def __init__(self, config: Optional[RouterConfig] = None) -> None:
+        """Initialize the instance."""
         self.config = config or self._default_config()
         self.clients = {}
         self.health_status = {}
@@ -95,7 +96,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             enable_failover=True
         )
 
-    def _initialize_clients(self):
+    def _initialize_clients(self) -> Any:
         """Initialize all enabled provider clients."""
         for provider_config in self.config.providers:
             if not provider_config.enabled:
@@ -451,7 +452,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
                 return config
         raise ValueError(f"No configuration found for provider {provider}")
 
-    def _update_success_stats(self, provider: Provider, latency: float, response):
+    def _update_success_stats(self, provider: Provider, latency: float, response) -> Any:
         """Update provider success statistics."""
         with self._lock:
             stats = self.usage_stats[provider]
@@ -473,7 +474,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             self.health_status[provider]["consecutive_failures"] = 0
             self.health_status[provider]["healthy"] = True
 
-    def _update_failure_stats(self, provider: Provider, error: Exception):
+    def _update_failure_stats(self, provider: Provider, error: Exception) -> Any:
         """Update provider failure statistics."""
         with self._lock:
             stats = self.usage_stats[provider]
@@ -493,7 +494,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             if self.health_status[provider]["consecutive_failures"] >= 3:
                 self.health_status[provider]["healthy"] = False
 
-    def _start_health_monitoring(self):
+    def _start_health_monitoring(self) -> Any:
         """Start background health monitoring thread."""
         def health_check() -> Any:
             """Execute health_check operation."""
@@ -504,7 +505,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         thread = threading.Thread(target=health_check, daemon=True)
         thread.start()
 
-    def _perform_health_checks(self):
+    def _perform_health_checks(self) -> Any:
         """Perform health checks on all providers."""
         for provider in self.clients:
             try:

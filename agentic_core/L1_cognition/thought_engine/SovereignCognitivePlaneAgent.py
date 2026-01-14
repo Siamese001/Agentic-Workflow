@@ -38,7 +38,7 @@ class AgentInfo(HealerMixin):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, name: str, phase: str, capabilities: List[str]):
+    def __init__(self, name: str, phase: str, capabilities: List[str]) -> None:
         self.name = name
         self.phase = phase
         self.capabilities = capabilities
@@ -61,7 +61,7 @@ def _run_self_tests() -> dict:
 class SovereignCognitivePlaneAgent(ICognitivePlane, MCPHardenedMixin):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
-    def __init__(self, enable_streaming: bool=True, streamer_factory: Optional[callable]=None):
+    def __init__(self, enable_streaming: bool=True, streamer_factory: Optional[callable]=None) -> None:
         """
         Initialize with sovereign agents.
 
@@ -96,7 +96,7 @@ class SovereignCognitivePlaneAgent(ICognitivePlane, MCPHardenedMixin):
         if self._streamer:
             await self._streamer.stop_streamer()
 
-    def _initialize_agents(self):
+    def _initialize_agents(self) -> Any:
         """Initialize agents in memory."""
         for agent in SOVEREIGN_AGENTS:
             self._agents[agent.name] = agent

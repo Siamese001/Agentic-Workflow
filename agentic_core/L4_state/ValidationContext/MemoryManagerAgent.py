@@ -289,7 +289,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             safe = safe[:200]
         return safe
 
-    def _atomic_write(self, file_path: Path, data: Any):
+    def _atomic_write(self, file_path: Path, data: Any) -> Any:
         """
         Atomically write data to file with backup.
         

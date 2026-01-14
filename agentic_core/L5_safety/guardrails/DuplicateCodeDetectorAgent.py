@@ -93,6 +93,7 @@ class DuplicateCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
     EXCLUDE_DIRS = {ARCHIVES_DIR, '__pycache__', '.git', 'node_modules', 'venv', '.venv', 'dist', 'build'}
 
     def __init__(self, project_root: Path = None, ctx = None) -> None:
+        """Initialize the instance."""
         self.project_root = Path(project_root) if project_root else Path.cwd()
         self.ctx = ctx
         self.min_lines = 10  # Minimum block size to flag
@@ -210,7 +211,7 @@ class DuplicateCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
         Logger.info(f"[DUPE SCAN] Found {len(duplicates)} duplicate code blocks")
         return duplicates[:self.max_report]
     
-    def _iter_files(self, file_types: Set[str]):
+    def _iter_files(self, file_types: Set[str]) -> Any:
         """Iterate over files matching the given extensions."""
         for file_path in self.project_root.rglob('*'):
             # Skip excluded directories

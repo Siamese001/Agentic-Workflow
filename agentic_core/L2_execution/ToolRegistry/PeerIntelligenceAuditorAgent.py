@@ -11,6 +11,7 @@ class PeerIntelligenceConfig:
     """Brief description of functionality and purpose."""
 
     def __init__(self) -> None:
+        """Initialize the instance."""
         self.total_hops = 3
         self.total_searches = 24
         self.differentiator_threshold = 0.3
@@ -22,12 +23,14 @@ class PeerIntelligenceResult:
     """Brief description of functionality and purpose."""
 
     def __init__(self, hops, keyword_analyses, table_stakes, DIFFERENTIATORS, validation_results, SUCCESS, total_searches_executed) -> None:
+        """Initialize the instance."""
         pass
 
 class RagHop:
     """Brief description of functionality and purpose."""
 
     def __init__(self, hop_number, search_queries, RESULTS, keywords_found) -> None:
+        """Initialize the instance."""
         self.hop_number = hop_number
         self.search_queries = search_queries
         self.RESULTS = RESULTS
@@ -42,6 +45,7 @@ class KeywordAnalysis:
     """Brief description of functionality and purpose."""
 
     def __init__(self, keyword, CLASSIFICATION, frequency_score, competitive_density, REASONING) -> None:
+        """Initialize the instance."""
         self.keyword = keyword
         self.classification = CLASSIFICATION
         self.frequency_score = frequency_score
@@ -52,6 +56,7 @@ class ValidationResult:
     """Brief description of functionality and purpose."""
 
     def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, SIGNATURE=None, DETAILS=None) -> None:
+        """Initialize the instance."""
         self.gate_id = gate_id
         self.passed = PASSED
         self.Severity = SEVERITY
@@ -71,6 +76,7 @@ class PeerIntelligenceAuditorAgent(HealerMixin):
     """
 
     def __init__(self, config: Optional[PeerIntelligenceConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None) -> None:
+        """Initialize the instance."""
         self.config = config or PeerIntelligenceConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
 

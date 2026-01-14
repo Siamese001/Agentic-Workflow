@@ -16,35 +16,40 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 # Lazy imports — gravity-safe (same/downstream L5)
 # Agents loaded on-demand to avoid circular dependencies
-def _get_hierarchy_agent():
+def _get_hierarchy_agent() -> Any:
+    """Get hierarchy agent."""
     try:
         from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
         return HierarchyAgent
     except Exception:
         return None
 
-def _get_naming_agent():
+def _get_naming_agent() -> Any:
+    """Get naming agent."""
     try:
         from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
         return NamingAgent
     except Exception:
         return None
 
-def _get_import_agent():
+def _get_import_agent() -> Any:
+    """Get import agent."""
     try:
         from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
         return ImportAgent
     except Exception:
         return None
 
-def _get_red_team_agent():
+def _get_red_team_agent() -> Any:
+    """Get red team agent."""
     try:
         from agentic_core.L5_safety.red_teaming.RedTeamAgent import RedTeamAgent
         return RedTeamAgent
     except Exception:
         return None
 
-def _get_healer_agent():
+def _get_healer_agent() -> Any:
+    """Get healer agent."""
     try:
         from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
         return StructuralHealerAgent
@@ -69,7 +74,8 @@ class L5SafetyExerciserAgent(MCPHardenedMixin):
     All operations isolated (temp files, in-memory) — zero persistent side effects.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize the instance."""
         self.name = "L5SafetyExerciserAgent"
         self.project_root = get_validated_project_root()
         self.exercise_strategies = {

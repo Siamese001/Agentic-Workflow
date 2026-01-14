@@ -84,7 +84,7 @@ class AutonomousCheckpointManagerAgent(MCPHardenedMixin, HealerMixin):
         assert hasattr(self, 'checkpoints'), "Missing checkpoints"
         return True
 
-    def _load_checkpoints(self):
+    def _load_checkpoints(self) -> Any:
         """Load existing checkpoints from disk."""
         try:
             checkpoint_index = os.path.join(self.checkpoint_dir, 'index.json')
@@ -99,7 +99,7 @@ class AutonomousCheckpointManagerAgent(MCPHardenedMixin, HealerMixin):
         except Exception as e:
             Logger.error(f'Failed to load checkpoints: {e}')
 
-    def _save_checkpoint_index(self):
+    def _save_checkpoint_index(self) -> Any:
         """Save Checkpoint index to disk."""
         try:
             checkpoint_index = os.path.join(self.checkpoint_dir, 'index.json')
@@ -277,7 +277,7 @@ class AutonomousCheckpointManagerAgent(MCPHardenedMixin, HealerMixin):
         result: Any = await self.rollback_to_checkpoint(best_checkpoint.checkpoint_id, restore_files=True, restore_state=True)
         return result
 
-    def _cleanup_old_checkpoints(self):
+    def _cleanup_old_checkpoints(self) -> Any:
         """Remove old checkpoints beyond max limit."""
         if len(self.checkpoints) <= self.max_checkpoints:
             return

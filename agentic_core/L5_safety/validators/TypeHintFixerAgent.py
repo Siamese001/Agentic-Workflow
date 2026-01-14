@@ -17,6 +17,7 @@ class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer, MCPHardenedMixin):
     """
 
     def __init__(self, fallback_param: str, fallback_return: str, fallback_var: str) -> None:
+        """Initialize the instance."""
         self.added_count = 0
         self.fallback_param = fallback_param
         self.fallback_return = fallback_return

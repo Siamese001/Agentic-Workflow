@@ -47,6 +47,7 @@ class CanonAstValidatorAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixi
     """
 
     def __init__(self, file_path: Path, content: str, key_id: int) -> None:
+        """Initialize the instance."""
         self.file_path = file_path
         self.content_lines = content.splitlines()
         self.key_id = key_id

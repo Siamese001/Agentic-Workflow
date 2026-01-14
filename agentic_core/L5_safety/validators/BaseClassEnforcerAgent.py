@@ -89,7 +89,8 @@ class BaseClassEnforcerAgent(L5Agent):
         'L5': 'from agentic_core.bases import L5Agent',
     })
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        """Post-initialization setup."""
         if isinstance(self.project_root, str):
             self.project_root = Path(self.project_root)
     

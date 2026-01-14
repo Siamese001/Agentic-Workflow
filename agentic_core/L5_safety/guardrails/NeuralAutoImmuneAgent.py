@@ -33,6 +33,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
     """
 
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.root = project_root
         super().__init__()  # Required for cooperative multiple inheritance
         self.Logger = logging.getLogger(f"{self.__class__.__name__}")
@@ -178,6 +179,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
         return (0.4 * base_risk) + (0.4 * historical_risk) + (0.2 * complexity_risk)
 
     async def _classify_predicted_breach(self, file_path: Path) -> str:
+        """Classify predicted breach."""
         name = file_path.name.lower()
         if "guard" in name or "validator" in name:
             return "safety_mechanism_degradation"
@@ -189,6 +191,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
 
     # === Adaptive Execution Modes ===
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute minimal."""
         self.Logger.warning("Minimal mode: immune system on standby")
         return {
             "mode": "minimal",
@@ -197,6 +200,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
         }
 
     async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute conservative."""
         self.Logger.info("Conservative mode: detection only, no prediction")
         return {
             "detected_breaches": self.detect_repeated_breaches(),

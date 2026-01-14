@@ -35,7 +35,7 @@ class SovereignBaseAgent(MCPHardenedMixin):
     """
     name: str = "SovereignAgent"
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """
         Initialize sovereign agent with MCP hardening.
         
@@ -53,7 +53,7 @@ class SovereignBaseAgent(MCPHardenedMixin):
         # 3. Core sovereign initialization logic
         self._initialize_sovereign_state()
     
-    def _initialize_sovereign_state(self):
+    def _initialize_sovereign_state(self) -> Any:
         """Initialize sovereign-specific state."""
         self._config: Dict[str, Any] = {}
         self._state: Dict[str, Any] = {}

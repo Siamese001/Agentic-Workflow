@@ -26,7 +26,8 @@ class SystemArchitectDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
     Phase 9A: DDD Remediation - Composition over inheritance
     """
 
-    def __init__(self, ctx: Any = None):
+    def __init__(self, ctx: Any = None) -> None:
+        """Initialize the instance."""
         self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
@@ -45,7 +46,7 @@ class SystemArchitectDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
         """Execute validate_state operation."""
         return self.impl.validate_state()
 
-    async def _execute_validation(self):
+    async def _execute_validation(self) -> Any:
         """
         Executes the SystemArchitect's checks for core architectural integrity.
         Reports on metaclass usage, nesting depth, directory depth, and root-level file content.
@@ -216,7 +217,7 @@ class SystemArchitectDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
                 root_violations.append(file_path)
         return len(root_violations) == 0, root_violations
 
-    async def _handle_key_41_fix_attempts(self, details_41: List[str]):
+    async def _handle_key_41_fix_attempts(self, details_41: List[str]) -> Any:
         """Helper to attempt smart fixes for Key 41 violations."""
         unique_fps_to_fix = list(
             {v.split(":")[0] for v in details_41}

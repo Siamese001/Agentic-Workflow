@@ -19,6 +19,7 @@ class McpConnectionManagerAgent(MCPHardenedMixin):
     """Sovereign MCP Connection Manager — single source of truth"""
 
     def __init__(self, config: Dict[str, Any]) -> None:
+        """Initialize the instance."""
         self.config = config
         self.connections: Dict[str, Any] = {}
         self.initialized = False

@@ -44,6 +44,7 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
     """
 
     def __init__(self, project_root: Path, dry_run: bool = True) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         self.dry_run = dry_run
         self.target_prefixes = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]

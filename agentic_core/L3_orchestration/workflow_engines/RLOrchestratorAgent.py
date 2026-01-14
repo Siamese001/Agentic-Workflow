@@ -20,7 +20,8 @@ from dataclasses import dataclass
 
 class PPOActorCritic(nn.Module):
     """Lightweight shared network for PPO — low param count."""
-    def __init__(self, input_dim: int, n_actions: int):
+    def __init__(self, input_dim: int, n_actions: int) -> None:
+        """Initialize the instance."""
         super().__init__()
         self.shared = nn.Sequential(
             nn.Linear(input_dim, 128),
@@ -45,7 +46,8 @@ class RLOrchestratorAgent(SovereignBaseAgent):
     Offline buffer updates every N cycles — stable learning.
     """
 
-    def __init__(self, layers: List[str], fallback_orchestrator=None):
+    def __init__(self, layers: List[str], fallback_orchestrator=None) -> None:
+        """Initialize the instance."""
         self.name = "RLOrchestratorAgent"
         self.project_root = get_validated_project_root()
         self.layers = layers

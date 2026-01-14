@@ -78,7 +78,7 @@ class PreCommitSovereignAgent(L0MaintenanceBaseAgent):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, root_dir: str = "."):
+    def __init__(self, root_dir: str = ".") -> None:
         """Initialize the Pre-Commit Sovereign Agent."""
         super().__init__()
         self.root = Path(root_dir).resolve()
@@ -203,7 +203,7 @@ class PreCommitSovereignAgent(L0MaintenanceBaseAgent):
         
         return 0
 
-    def _report_failure(self):
+    def _report_failure(self) -> Any:
         """Provides a detailed failure report and remediation instructions."""
         print("\n" + "!" * 80)
         print("  GOSPEL ENFORCEMENT FAILURE: COMMIT ABORTED")

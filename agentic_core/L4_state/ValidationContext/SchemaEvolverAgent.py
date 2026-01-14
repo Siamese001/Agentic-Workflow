@@ -88,7 +88,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     - Maintains data contract consistency across HOP stages
     """
 
-    def __init__(self, ctx) -> None:
+    def __init__(self, ctx: Any) -> None:
         """
         Initialize Schema Evolver.
         
@@ -115,7 +115,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         Logger.info(f'   Monitored {len(self.registry.schemas)} schemas')
         Logger.info(f'   Tracked {sum((len(deps) for deps in self.registry.dependencies.values()))} dependencies')
 
-    def _discover_schemas(self):
+    def _discover_schemas(self) -> Any:
         """Discover all Pydantic models and database schemas."""
         for schema_dir in self.schema_dirs:
             schema_path = Path(schema_dir)
@@ -124,7 +124,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
             for py_file in schema_path.rglob('*.py'):
                 self._scan_file_for_schemas(str(py_file))
 
-    def _scan_file_for_schemas(self, file_path: str):
+    def _scan_file_for_schemas(self, file_path: str) -> Any:
         """Scan a file for Pydantic model definitions."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -154,7 +154,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         base_classes = [base.id if isinstance(base, ast.Name) else ast.unparse(base) if hasattr(ast, 'unparse') else str(base) for base in node.bases]
         return SchemaDefinition(name=node.name, file_path=file_path, fields=fields, base_classes=base_classes, line_number=node.lineno, is_pydantic=is_pydantic)
 
-    def _track_dependencies(self):
+    def _track_dependencies(self) -> Any:
         """Track which files depend on which schemas."""
         for file_path in self.ctx.python_files:
             try:
@@ -228,7 +228,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
             recommendations.append(f'Document new field in schema')
         return recommendations
 
-    def _report_impact(self, impact: ImpactAnalysis):
+    def _report_impact(self, impact: ImpactAnalysis) -> Any:
         """Report impact analysis to user."""
         change = impact.change
         Logger.info(f"\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")

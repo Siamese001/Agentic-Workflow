@@ -268,6 +268,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         severity: int = 5
 
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         # Validate project root is correct
         self._validate_project_root()

@@ -10,7 +10,7 @@ import json
 import re
 import subprocess
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -23,7 +23,8 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
     Uses 'deptry' for accurate unused detection.
     """
 
-    def __init__(self, project_root: Path, ctx) -> None:
+    def __init__(self, project_root: Path, ctx: Any) -> None:
+        """Initialize the instance."""
         self.project_root = Path(project_root)
         self.ctx = ctx
         self.dry_run = True  # Safety: Default to non-destructive

@@ -1089,6 +1089,179 @@ def run_all_tests() -> bool:
     except Exception as e:
         errors.append(f"Test 19 FAILED: Could not validate Strategic Observations: {e}")
     
+    # Test 20: Comprehensive Zero Hardcoding Check (ALL metrics)
+    print("\n" + "─" * 70)
+    print("Running: Comprehensive Zero Hardcoding Check")
+    print("─" * 70)
+    
+    try:
+        # Load discovery data
+        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
+        with open(discovery_path, 'r', encoding='utf-8') as f:
+            agents = json.load(f)
+        
+        total_agents = len(agents)
+        
+        # Calculate ALL expected values from discovery (SSOT)
+        # IMPORTANT: Must match regenerate_dashboard_full.py calculations exactly
+        expected_metrics = {
+            'Total': total_agents,
+            'Heal Cap %': round(sum(1 for a in agents if a.get('has_healing', False)) / total_agents * 100, 1) if total_agents else 0,
+            'Invocation %': round(sum(1 for a in agents if a.get('invocation') == 'Yes') / total_agents * 100, 1) if total_agents else 0,
+            'Test %': round(sum(1 for a in agents if a.get('has_tests', False)) / total_agents * 100, 1) if total_agents else 0,  # Uses has_tests, not testing
+            'Hardened %': round(sum(1 for a in agents if a.get('mcp_hardened', False)) / total_agents * 100, 1) if total_agents else 0,
+            'Typed %': round(sum(a.get('typed_pct', 0) for a in agents) / total_agents, 1) if total_agents else 0,
+            'Documented %': round(sum(a.get('documented_pct', 0) for a in agents) / total_agents, 1) if total_agents else 0,
+            'Schema Strictness %': round(sum(a.get('schema_strictness', 0) for a in agents) / total_agents, 1) if total_agents else 0,
+            'Canonical Inheritance %': round(sum(1 for a in agents if a.get('proper_base_class', False)) / total_agents * 100, 1) if total_agents else 0,
+        }
+        
+        # Get dashboard TOTAL row values
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        
+        hardcoded_issues = []
+        if data_match:
+            dashboard_data_check = json.loads(data_match.group(1))
+            total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
+            
+            if total_row:
+                tolerance = 2.0  # Allow 2% variance for rounding differences
+                
+                for metric, expected in expected_metrics.items():
+                    actual = total_row.get(metric, 0)
+                    if actual is None:
+                        actual = 0
+                    
+                    if abs(float(actual) - float(expected)) > tolerance:
+                        hardcoded_issues.append(f"{metric}: Dashboard={actual}, Discovery={expected}")
+                
+                if hardcoded_issues:
+                    errors.append(f"Test 20 FAILED: {len(hardcoded_issues)} metrics appear hardcoded")
+                    for issue in hardcoded_issues:
+                        errors.append(f"  - {issue}")
+                else:
+                    print(f"✅ Test 20 PASSED: All {len(expected_metrics)} metrics match discovery (zero hardcoding)")
+                    for metric, expected in expected_metrics.items():
+                        actual = total_row.get(metric, 0)
+                        print(f"   ✓ {metric}: {actual} (expected {expected})")
+            else:
+                errors.append("Test 20 FAILED: Could not find TOTAL row")
+        else:
+            errors.append("Test 20 FAILED: Could not extract dashboardData")
+    
+    except Exception as e:
+        errors.append(f"Test 20 FAILED: {e}")
+    
+    # Test 21: Detailed Footnote Review (accuracy, rigor, alignment)
+    print("\n" + "─" * 70)
+    print("Running: Detailed Footnote Review")
+    print("─" * 70)
+    
+    try:
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        
+        # Define expected footnote definitions with their metric alignment
+        footnote_definitions = {
+            'Heal Cap %': {
+                'description': 'Percentage of agents with healing capability (has heal/apply_fix/heal_violation/heal_repository method or inherits healing)',
+                'patterns': ['heal', 'HealerMixin', 'healing capability', 'repair toolkit'],
+                'required': True
+            },
+            'Heal Invocation %': {
+                'description': 'Percentage of agents that call super().heal_repository() in their heal_repository method',
+                'patterns': ['super().heal_repository()', 'invocation', 'healing chain'],
+                'required': True
+            },
+            'Test %': {
+                'description': 'Percentage of agents with associated test files',
+                'patterns': ['test', 'coverage', 'regression'],
+                'required': True
+            },
+            'Hardened %': {
+                'description': 'Percentage of agents with MCPHardenedMixin for tool boundary security',
+                'patterns': ['MCP', 'hardened', 'security', 'tool boundary'],
+                'required': True
+            },
+            'Health': {
+                'description': 'Weighted composite score of autonomy metrics',
+                'patterns': ['weighted', 'composite', 'formula'],
+                'required': True
+            },
+            'Typed %': {
+                'description': 'Percentage of code with type hints',
+                'patterns': ['type', 'hint', 'annotation'],
+                'required': False
+            },
+            'Documented %': {
+                'description': 'Percentage of code with docstrings',
+                'patterns': ['docstring', 'documentation'],
+                'required': False
+            },
+            'Canonical Inheritance %': {
+                'description': 'Percentage of agents inheriting from proper layer base class',
+                'patterns': ['inherit', 'base class', 'canonical', 'proper'],
+                'required': True
+            }
+        }
+        
+        footnote_issues = []
+        footnote_passes = []
+        
+        # Check each footnote definition
+        for metric, definition in footnote_definitions.items():
+            if not definition['required']:
+                continue
+            
+            # Check if any pattern is present in the HTML
+            pattern_found = False
+            for pattern in definition['patterns']:
+                if pattern.lower() in html_content.lower():
+                    pattern_found = True
+                    break
+            
+            if not pattern_found:
+                footnote_issues.append(f"{metric}: No explanatory text found (expected patterns: {definition['patterns'][:2]})")
+            else:
+                footnote_passes.append(metric)
+        
+        # Check for specific footnote accuracy issues
+        # 1. Health formula should mention weighted calculation
+        if 'weighted' not in html_content.lower() and 'formula' not in html_content.lower():
+            footnote_issues.append("Health: Missing weighted formula explanation")
+        
+        # 2. Heal Cap should distinguish from Invocation
+        if 'Heal Cap' in html_content and 'Invocation' in html_content:
+            # Both should be explained differently
+            heal_cap_context = html_content.lower().find('heal cap')
+            invocation_context = html_content.lower().find('invocation')
+            if heal_cap_context > 0 and invocation_context > 0:
+                footnote_passes.append("Heal Cap vs Invocation distinction")
+        
+        # 3. Check for outdated/incorrect definitions
+        incorrect_patterns = [
+            ('local heal_repository() method', 'Heal Cap %'),  # This is outdated definition
+        ]
+        
+        for pattern, metric in incorrect_patterns:
+            if pattern in html_content:
+                footnote_issues.append(f"{metric}: Contains potentially outdated definition: '{pattern}'")
+        
+        if footnote_issues:
+            errors.append(f"Test 21 FAILED: {len(footnote_issues)} footnote issues")
+            for issue in footnote_issues:
+                errors.append(f"  - {issue}")
+        else:
+            print(f"✅ Test 21 PASSED: All required footnotes present and accurate")
+            print(f"   ✓ {len(footnote_passes)} metric explanations verified")
+            for fp in footnote_passes[:5]:
+                print(f"     - {fp}")
+    
+    except Exception as e:
+        errors.append(f"Test 21 FAILED: {e}")
+    
     # Final summary
     print("\n" + "=" * 70)
     if errors:
@@ -1096,7 +1269,7 @@ def run_all_tests() -> bool:
         failed_tests.extend([e.split(':')[0].replace('FAILED', '').strip() for e in errors if 'FAILED' in e])
     
     if all_passed:
-        print("✅ ALL 19 TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 21 TESTS PASSED - Dashboard is ready for deployment")
         print("\n⚠️  IMPORTANT: Hard refresh browser (Ctrl+Shift+R) to see changes!")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")

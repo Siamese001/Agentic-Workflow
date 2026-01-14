@@ -28,12 +28,14 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
     """
     _instance = None
 
-    def __new__(cls, project_root: Path, ctx=None):
+    def __new__(cls, project_root: Path, ctx=None) -> Any:
+        """New  ."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             return get_redis_sovereign(project_root, ctx)
 
-    def _init(self, project_root: Path, ctx=None):
+    def _init(self, project_root: Path, ctx=None) -> Any:
+        """Init."""
         env = get_env(project_root)
         
         # Store ValidationContext for state persistence operations

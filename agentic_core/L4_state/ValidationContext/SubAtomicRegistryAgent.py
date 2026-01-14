@@ -37,6 +37,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
     Now with Redis sovereign caching for instant method discovery.
     """
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.root = project_root
         self.pinecone = PineconeSovereignAgent(project_root)
         self.redis_gateway = RedisSovereignAgent(project_root)
