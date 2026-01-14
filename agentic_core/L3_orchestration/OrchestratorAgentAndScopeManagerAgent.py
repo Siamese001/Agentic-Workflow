@@ -102,6 +102,7 @@ class OrchestratorHealingService:
     """
 
     def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, client: Any, state: OrchestratorState, Logger: logging.Logger) -> None:
+        """Initialize the instance."""
         self.config = config
         self.ctx = ctx
         self.client = client
@@ -192,6 +193,7 @@ class OrchestratorStateManager:
     """
 
     def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, state: OrchestratorState, Logger: logging.Logger) -> None:
+        """Initialize the instance."""
         self.config = config
         self.ctx = ctx
         self.state = state
@@ -247,6 +249,7 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
     """
 
     def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, Logger: logging.Logger) -> None:
+        """Initialize the instance."""
         self.config = config
         self.ctx = ctx
         self.Logger = Logger

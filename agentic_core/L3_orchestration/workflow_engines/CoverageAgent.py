@@ -91,12 +91,14 @@ class CoverageAgent(SovereignBaseAgent):
             return None
 
     def _compute_proportions(self, counts: Dict[str, int]) -> Dict[str, float]:
+        """Compute proportions."""
         total = sum(counts.values())
         if total == 0:
             return {layer: 0.0 for layer in self.layers}
         return {layer: counts.get(layer, 0) / total for layer in self.layers}
 
     def _shannon_entropy(self, proportions: Dict[str, float]) -> float:
+        """Shannon entropy."""
         props = np.array([p for p in proportions.values() if p > 0])
         if len(props) == 0:
             return 0.0

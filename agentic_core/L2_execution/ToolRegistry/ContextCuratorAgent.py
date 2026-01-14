@@ -46,7 +46,7 @@ class ContextSnapshot:
         assert self.total_size >= 0, "total_size must be non-negative"
         return True
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 @dataclass
@@ -67,7 +67,7 @@ class HandoffSummary:
         assert isinstance(self.structural_facts, list), "structural_facts must be list"
         return True
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
@@ -90,7 +90,7 @@ class ContextCuratorAgent(MCPHardenedMixin, SubAtomicAgent):
     6. Wipe active memory for fresh context window
     """
 
-    def __init__(self, ctx) -> None:
+    def __init__(self, ctx: Any) -> None:
         """
         Initialize Context Curator.
         
@@ -244,7 +244,7 @@ class ContextCuratorAgent(MCPHardenedMixin, SubAtomicAgent):
                     warnings.append(item)
         return HandoffSummary(previous_stage='current', next_stage='next', structural_facts=structural_facts, critical_decisions=critical_decisions, lessons_learned=lessons_learned, warnings=warnings, compressed_context=compressed)
 
-    def _write_handoff_summary(self, handoff: HandoffSummary):
+    def _write_handoff_summary(self, handoff: HandoffSummary) -> Any:
         """Write handoff summary to .canon_memory/."""
         summary_file = self.memory_dir / 'HandoffSummary.md'
         content = f"# Context Handoff Summary\n\nGenerated: {datetime.now(timezone.utc).isoformat()}\n\n## Structural Facts\n{chr(10).join((f'- {fact}' for fact in handoff.structural_facts))}\n\n## Critical Decisions\n{chr(10).join((f'- {decision}' for decision in handoff.critical_decisions))}\n\n## Lessons Learned\n{chr(10).join((f'- {lesson}' for lesson in handoff.lessons_learned))}\n\n## Warnings\n{chr(10).join((f'- {warning}' for warning in handoff.warnings))}\n\n---\n\n## Full Compressed Context\n{handoff.compressed_context}\n"
@@ -252,7 +252,7 @@ class ContextCuratorAgent(MCPHardenedMixin, SubAtomicAgent):
             f.write(content)
         Logger.info(f'   Handoff summary written to {summary_file}')
 
-    def _archive_logs(self, ephemeral_logs: List[str]):
+    def _archive_logs(self, ephemeral_logs: List[str]) -> Any:
         """Archive ephemeral logs."""
         if not ephemeral_logs:
             return
@@ -262,7 +262,7 @@ class ContextCuratorAgent(MCPHardenedMixin, SubAtomicAgent):
             json.dump({'timestamp': datetime.now(timezone.utc).isoformat(), 'count': len(ephemeral_logs), 'logs': ephemeral_logs}, f, indent=2)
         Logger.info(f'   Archived {len(ephemeral_logs)} ephemeral logs to {archive_file}')
 
-    def _wipe_active_memory(self):
+    def _wipe_active_memory(self) -> Any:
         """Wipe active memory to keep context window fresh."""
         if hasattr(self.ctx, 'instructions'):
             self.ctx.instructions = []

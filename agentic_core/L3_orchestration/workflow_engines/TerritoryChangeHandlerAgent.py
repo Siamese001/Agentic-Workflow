@@ -40,13 +40,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 @dataclass
 class TerritoryChangeHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, FileSystemEventHandler, HealerMixin):
     """L0-L3: Watch for territory healing/ingestion changes with debouncing"""
-    def __init__(self, daemon) -> None:
+    def __init__(self, daemon: bool) -> None:
+        """Initialize the instance."""
         self.daemon = daemon
         self.last_trigger = 0
         self.debounce_seconds = 10
         super().__init__()
 
-    def on_modified(self, event) -> Any:
+    def on_modified(self, event: Any) -> Any:
         """Execute on_modified operation."""
         if event.is_directory:
             return
@@ -84,7 +85,8 @@ class AutonomousRagDaemon:
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
-    def __init__(self, orchestrator, retriever, Historian) -> None:
+    def __init__(self, orchestrator: Any, retriever: Any, Historian) -> None:
+        """Initialize the instance."""
         self.orchestrator = orchestrator
         self.retriever = retriever
         self.Historian = Historian

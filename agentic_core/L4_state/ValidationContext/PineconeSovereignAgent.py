@@ -38,6 +38,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
     """
     
     def __init__(self, project_root: Optional[Path] = None, ctx=None) -> None:
+        """Initialize the instance."""
         # Sovereign anchor: Ensure we know where we are in the territory
         self.project_root = project_root or Path(__file__).resolve().parents[4]
         self.status = "INITIALIZING"

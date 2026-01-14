@@ -85,6 +85,7 @@ DUST_THRESHOLD = 40
 class ImportUpdater(ast.NodeVisitor):
     """AST engine to verify and suggest import updates."""
     def __init__(self, target_symbols: Optional[Set[str]] = None) -> None:
+        """Initialize the instance."""
         self.target_symbols = target_symbols or set()
         self.found_usage = False
         self.imported_modules: Set[str] = set()
@@ -131,6 +132,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
     Autonomous Conductor for structural healing.
     """
     def __init__(self, project_root: Path, dry_run: bool = False) -> None:
+        """Initialize the instance."""
         self.project_root = Path(project_root).resolve()
         self.dry_run = dry_run
         self.backup_dir = self.project_root / "runtime" / "backups"

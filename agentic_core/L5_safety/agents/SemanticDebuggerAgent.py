@@ -24,7 +24,8 @@ class SemanticDebuggerAgent(L5SafetyBaseAgent, CognitiveRecoveryMixin):
     for known healing patterns matching incoming error traces.
     """
 
-    def __init__(self, project_root=None, ctx=None, **kwargs):
+    def __init__(self, project_root=None, ctx=None, **kwargs) -> None:
+        """Initialize the instance."""
         super().__init__(project_root=project_root, ctx=ctx, **kwargs)
         self.name = "SemanticDebuggerAgent"
         self.layer = "L5"

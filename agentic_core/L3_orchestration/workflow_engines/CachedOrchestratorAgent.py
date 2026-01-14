@@ -28,6 +28,7 @@ class CachedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
     Sovereign L3 orchestration base — Redis cache for all decisions and state.
     """
     def __init__(self, project_root: Path, mission_id: str) -> None:
+        """Initialize the instance."""
         self.root = project_root
         self.mission_id = mission_id
         self.redis_gateway = RedisSovereignAgent(project_root)

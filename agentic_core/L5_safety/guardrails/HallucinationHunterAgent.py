@@ -66,7 +66,7 @@ class IntegrityReport:
 class ClaimExtractor:
     """Handles extraction of atomic claims from text."""
 
-    def __init__(self, genai_client, genai_available) -> None:
+    def __init__(self, genai_client: Any, genai_available: bool) -> None:
         self.genai_client = genai_client
         self.genai_available = genai_available
 
@@ -186,7 +186,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
     5. Block deployment if integrity score too low
     """
 
-    def __init__(self, ctx) -> None:
+    def __init__(self, ctx: Any) -> None:
         """
         Initialize Hallucination Hunter.
         
@@ -288,7 +288,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
                 audit_trail[result.Claim.text] = result.source_citation
         return IntegrityReport(total_claims=total_claims, supported_claims=supported_claims, unsupported_claims=unsupported_claims, integrity_score=integrity_score, hallucination_percentage=hallucination_percentage, risk_level=risk_level, unsupported_details=unsupported_details[:10], requires_rollback=requires_rollback, audit_trail=audit_trail)
 
-    def _display_report(self, stage_name: str, report: IntegrityReport):
+    def _display_report(self, stage_name: str, report: IntegrityReport) -> Any:
         """Display integrity report."""
         Logger.info(f"\n{'=' * 80}")
         Logger.info(f'[SCAN] HALLUCINATION HUNTER REPORT - {stage_name}')
@@ -318,7 +318,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
             Logger.info(f'\n[OK] AUDIT TRAIL: {len(report.audit_trail)} claims mapped to sources')
         Logger.info(f"{'=' * 80}\n")
 
-    def _trigger_rollback(self, stage_name: str, report: IntegrityReport):
+    def _trigger_rollback(self, stage_name: str, report: IntegrityReport) -> Any:
         """Trigger rollback to previous stage."""
         Logger.error(f'[ALERT] TRIGGERING ROLLBACK for {stage_name}')
         Logger.error(f'   Reason: Integrity score {report.integrity_score:.1%} below threshold')
@@ -326,7 +326,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals.add(f'FACTUAL_RISK:{stage_name}:ROLLBACK_REQUIRED')
 
-    def _emit_factual_integrity_fail(self, stage_name: str, report: IntegrityReport):
+    def _emit_factual_integrity_fail(self, stage_name: str, report: IntegrityReport) -> Any:
         """
         Emit FACTUAL_INTEGRITY_FAIL signal when hallucination threshold exceeded.
         
@@ -341,7 +341,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
             self.ctx.signals.add(f'FACTUAL_INTEGRITY_FAIL:{stage_name}')
             self.ctx.signals.add(f'HALLUCINATION_DETECTED:{stage_name}:{report.hallucination_percentage:.1%}')
 
-    async def _audit_pipeline_output(self, file_path: str):
+    async def _audit_pipeline_output(self, file_path: str) -> Any:
         """
         Audit a pipeline output file for factual integrity.
         
@@ -370,7 +370,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
         if report.hallucination_percentage > self.HALLUCINATION_THRESHOLD:
             self._emit_factual_integrity_fail(file_path, report)
 
-    def _inject_audit_trail(self, file_path: str, report: IntegrityReport):
+    def _inject_audit_trail(self, file_path: str, report: IntegrityReport) -> Any:
         """
         Inject audit trail metadata into output file or create sidecar file.
         

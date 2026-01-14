@@ -43,6 +43,7 @@ class CoordinateObservabilityOperationsAgent(MCPHardenedMixin, SubatomicTestingM
     """Orchestrator for operations domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
+        """Initialize the instance."""
         SELF.CONFIG = config or {}
         self.steps: List[Dict] = []
         LOGGER.info(f'Initialized {self.__class__.__name__}')

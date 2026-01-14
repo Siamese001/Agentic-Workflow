@@ -45,7 +45,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     _registry_built: bool = False
 
     @classmethod
-    def _init_registry(cls, ctx: ValidationProtocol):
+    def _init_registry(cls, ctx: ValidationProtocol) -> Any:
         """Builds the registry once to avoid repetitive agent instantiation."""
         if cls._registry_built:
             return
@@ -74,7 +74,8 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         cls.VERIFICATION_REGISTRY = {0: safety.check_key_00_no_hardcoded_secrets, 1: safety.check_key_01_no_todo_fixme, 2: safety.check_key_02_no_print_statements, 3: safety.check_key_03_no_debugger_statements, 4: safety.check_key_04_no_empty_except_blocks, 5: safety.check_key_05_no_bare_except, 6: safety.check_key_06_no_eval_exec, 7: deps.check_key_07_no_star_imports, 8: deps.check_key_08_no_relative_imports, 10: janitor.check_key_10_no_long_lines, 11: janitor.check_key_11_no_trailing_whitespace, 12: janitor.check_key_12_no_missing_newline, 13: janitor.check_key_13_no_tabs, 14: deps.check_key_14_no_duplicate_imports, 15: janitor.check_key_15_no_magic_numbers, 16: janitor.check_key_16_no_deep_nesting, 17: budget.check_key_17_no_large_functions, 18: struct.check_key_18_no_many_parameters, 19: budget.check_key_19_no_complex_functions, 20: struct.check_key_20_no_large_classes, 21: docs.check_key_21_no_missing_docstrings, 22: type_mech.check_key_22_no_missing_type_hints, 23: type_mech.check_key_23_no_unreachable_code, 24: type_mech.check_key_24_no_unused_variables, 25: struct.check_key_25_no_global_variables, 26: pattern.check_key_26_no_mutable_defaults, 27: pattern.check_key_27_prefer_str_join, 28: pattern.check_key_28_no_bare_except, 29: pattern.check_key_29_no_assert_in_prod, 30: pattern.check_key_30_prefer_fstrings, 31: pattern.check_key_31_no_complex_comprehensions, 32: pattern.check_key_32_no_dict_keys_check, 33: pattern.check_key_33_no_float_equality, 34: pattern.check_key_34_use_is_for_none, 36: pattern.check_key_36_no_shadowed_builtins, 37: pattern.check_key_37_no_redundant_self, 38: pattern.check_key_38_prefer_comprehensions, 39: pattern.check_key_39_no_useless_return, 40: arch.check_key_40_no_metaclasses, 41: arch.check_key_41_scoped_nesting, 42: struct.check_key_42_no_large_files, 43: struct.check_key_43_class_density, 44: deps.check_key_44_no_circular_imports, 45: deps.check_key_45_no_unused_imports, 46: struct.check_key_46_no_duplicate_code, 47: naming.check_key_47_no_snake_case_classes}
         cls._registry_built = True
 
-    def __init__(self, context: ValidationProtocol = None, name: str = None, layer: str = None, **kwargs):
+    def __init__(self, context: ValidationProtocol = None, name: str = None, layer: str = None, **kwargs) -> None:
+        """Initialize the instance."""
         # Root handles name via __post_init__
         super().__init__(ctx=context or kwargs.get("ctx"), **kwargs)
         self.layer = layer or "L1"

@@ -87,6 +87,7 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
     """
 
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         self.ssot_file = self.project_root / "agentic_core" / "config" / "blueprint_sovereign" / "structure_blueprint.py"
 

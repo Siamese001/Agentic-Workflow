@@ -2,14 +2,15 @@
 Strategic Recommendation Agent
 L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
 
-Restored: 2026-01-13 | Version: 2.0.0
-Original: archives/unmapped_drift/20260107/agentic_core/L3_orchestration/strategic_recommendation/
+Restored: 2026-01-13 | Version: 3.0.0
+Refactored: 2026-01-14 | Improved macro + metrics observations
 
 Purpose:
 - Analyzes dashboardData (territories, metrics, gaps) for cross-layer patterns.
-- Outputs structured JSON with:
-  - Strategic review paragraph
-  - Top 5-15 prioritized recommendations (broader than per-territory)
+- Generates TWO types of observations:
+  1. MACRO OBSERVATIONS: Architectural insights (consolidation, layer health, structural patterns)
+  2. METRICS OBSERVATIONS: Specific metric-focused recommendations (invocation, coverage, complexity)
+- Outputs structured JSON with strategic review and prioritized recommendations.
 - Integrated into report generator → injects into autonomy_dashboard.html
 """
 from __future__ import annotations
@@ -38,7 +39,7 @@ class StrategicRecommendationAgent(MCPHardenedMixin, HealerMixin):
     - Integrated into report generator → injects into autonomy_dashboard.html
     """
     
-    def __init__(self, project_root: Optional[Path] = None, llm_client: Any = None):
+    def __init__(self, project_root: Optional[Path] = None, llm_client: Any = None) -> None:
         """
         Initialize Strategic Recommendation Agent.
         
@@ -153,11 +154,15 @@ Output strict JSON:
         """
         Generate rule-based recommendations when LLM is unavailable.
         
+        Generates TWO types of observations:
+        1. MACRO OBSERVATIONS: Architectural insights about portfolio structure
+        2. METRICS OBSERVATIONS: Specific metric-focused recommendations
+        
         Args:
             dashboard_data: Dashboard metrics
             
         Returns:
-            Dict with review and recommendations
+            Dict with review, macro_observations, and recommendations
         """
         # Helper for None-safe value extraction
         def safe_val(row: Dict, key: str, default: float = 0) -> float:
@@ -165,69 +170,201 @@ Output strict JSON:
             return val if val is not None else default
         
         total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), {})
-        recommendations = []
+        non_total_rows = [r for r in dashboard_data if r.get('Territory') != 'TOTAL']
         
-        # Analyze key metrics (handle None values)
+        # Extract key metrics
         health = safe_val(total_row, 'Health', 0)
         invocation = safe_val(total_row, 'Invocation %', 0)
         mcp_hardened = safe_val(total_row, 'Hardened %', 0)
         test_coverage = safe_val(total_row, 'Test %', 0)
         heal_cap = safe_val(total_row, 'Heal Cap %', 0)
+        typed_pct = safe_val(total_row, 'Typed %', 0)
+        documented_pct = safe_val(total_row, 'Documented %', 0)
         total_agents = total_row.get('Total', 0) or 0
+        total_territories = len(non_total_rows)
         
-        # Generate review
-        review = f"Portfolio health at {health:.1f}% with {total_agents} agents. "
+        # ========================================
+        # MACRO OBSERVATIONS (Architectural)
+        # ========================================
+        macro_observations = []
         
-        if invocation < 60:
-            review += f"Critical invocation gap at {invocation:.1f}% (target 100%) indicates healing protocols are not being actively used. "
-            recommendations.append("1. Boost Healing Invocation<br>Add super().heal_repository() calls in except blocks across agents with missing invocation. Target: +40% invocation boost.")
+        # 1. Portfolio Size & Consolidation Analysis
+        agents_per_territory = total_agents / max(total_territories, 1)
+        small_territories = [r for r in non_total_rows if (r.get('Total', 0) or 0) <= 2]
+        large_territories = [r for r in non_total_rows if (r.get('Total', 0) or 0) >= 20]
         
-        if mcp_hardened < 80:
-            review += f"MCP hardening at {mcp_hardened:.1f}% (target 100%) exposes tool boundaries to injection risks. "
-            recommendations.append("2. Harden External Tool Boundaries<br>Apply MCPHardenedMixin and @hardened decorators to all agents touching external APIs. Target: 100% coverage.")
+        if len(small_territories) > 5:
+            macro_observations.append({
+                "type": "consolidation",
+                "severity": "medium",
+                "title": "Territory Fragmentation Detected",
+                "observation": f"{len(small_territories)} territories have ≤2 agents each. Consider consolidating micro-territories to reduce cognitive overhead and improve maintainability.",
+                "territories": [t['Territory'] for t in small_territories[:5]],
+                "action": "Merge related micro-territories or promote agents to parent territories."
+            })
         
-        if test_coverage < 90:
-            review += f"Test coverage at {test_coverage:.1f}% (target 95%) increases regression risk. "
-            recommendations.append("3. Expand Test Coverage<br>Add unit tests for core behaviors and regression baselines. Focus on agents with 0% coverage first.")
+        if total_agents > 250:
+            macro_observations.append({
+                "type": "scale",
+                "severity": "info",
+                "title": "Large Agent Portfolio",
+                "observation": f"Portfolio contains {total_agents} agents across {total_territories} territories ({agents_per_territory:.1f} agents/territory avg). At this scale, automated governance and discovery become critical.",
+                "action": "Ensure automated discovery, health monitoring, and healing are fully operational."
+            })
         
-        if heal_cap < 100:
-            recommendations.append("4. Complete Healing Capability Rollout<br>Add HealerMixin to all agents. Enables standardized self-recovery tools across the portfolio.")
+        # 2. Layer Balance Analysis
+        layer_counts = {}
+        for row in non_total_rows:
+            territory = row.get('Territory', '')
+            for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']:
+                if layer in territory:
+                    layer_counts[layer] = layer_counts.get(layer, 0) + (row.get('Total', 0) or 0)
+                    break
         
-        # Add complexity recommendations
-        high_cc_territories = [r for r in dashboard_data 
-                             if r.get('Avg CC', 0) > 15 and r['Territory'] != 'TOTAL']
+        if layer_counts:
+            max_layer = max(layer_counts, key=layer_counts.get)
+            min_layer = min(layer_counts, key=layer_counts.get)
+            if layer_counts[max_layer] > 3 * layer_counts.get(min_layer, 1):
+                macro_observations.append({
+                    "type": "imbalance",
+                    "severity": "medium",
+                    "title": "Layer Imbalance Detected",
+                    "observation": f"{max_layer} has {layer_counts[max_layer]} agents while {min_layer} has only {layer_counts.get(min_layer, 0)}. Heavy concentration in one layer may indicate architectural drift.",
+                    "action": f"Review {max_layer} for potential decomposition or consolidation opportunities."
+                })
+        
+        # 3. Base Class Health
+        base_territories = [r for r in non_total_rows if 'Base' in r.get('Territory', '')]
+        if base_territories:
+            unhealthy_bases = [r for r in base_territories if safe_val(r, 'Health', 0) < 80]
+            if unhealthy_bases:
+                macro_observations.append({
+                    "type": "foundation",
+                    "severity": "critical",
+                    "title": "Base Class Health Risk",
+                    "observation": f"{len(unhealthy_bases)} base class territories have health <80%. Base classes are foundational—issues here cascade to all inheriting agents.",
+                    "territories": [t['Territory'] for t in unhealthy_bases],
+                    "action": "Prioritize base class remediation before addressing leaf agents."
+                })
+        
+        # 4. Apps vs Core Distribution
+        apps_rows = [r for r in non_total_rows if 'Apps' in r.get('Territory', '')]
+        core_rows = [r for r in non_total_rows if 'Apps' not in r.get('Territory', '')]
+        apps_agents = sum(r.get('Total', 0) or 0 for r in apps_rows)
+        core_agents = sum(r.get('Total', 0) or 0 for r in core_rows)
+        
+        if apps_agents > 0 and core_agents > 0:
+            ratio = apps_agents / core_agents
+            if ratio > 0.5:
+                macro_observations.append({
+                    "type": "architecture",
+                    "severity": "info",
+                    "title": "Significant Application Layer",
+                    "observation": f"Application agents ({apps_agents}) represent {ratio*100:.0f}% of core agents ({core_agents}). Ensure app-layer agents properly delegate to core primitives rather than duplicating logic.",
+                    "action": "Audit app agents for core logic duplication; refactor shared patterns into L2/L3."
+                })
+        
+        # ========================================
+        # METRICS OBSERVATIONS (Specific Gaps)
+        # ========================================
+        recommendations = []
+        
+        # Generate strategic review from actual data
+        review_parts = [f"Portfolio health at {health:.1f}% with {total_agents} agents across {total_territories} territories."]
+        
+        # Test Coverage (most impactful)
+        if test_coverage < 95:
+            gap = 95 - test_coverage
+            zero_test_territories = [r for r in non_total_rows if safe_val(r, 'Test %', 0) == 0]
+            review_parts.append(f"Test coverage at {test_coverage:.1f}% (target 95%) increases regression risk.")
+            recommendations.append({
+                "priority": 1,
+                "category": "Testing",
+                "title": "Expand Test Coverage",
+                "detail": f"Current: {test_coverage:.1f}% | Gap: {gap:.1f}pp | {len(zero_test_territories)} territories at 0%",
+                "action": "Add unit tests for core behaviors. Focus on zero-coverage territories first.",
+                "impact": "High - Prevents regressions during healing and refactoring cycles."
+            })
+        
+        # Healing Invocation
+        if invocation < 100:
+            gap = 100 - invocation
+            low_invocation = [r for r in non_total_rows if safe_val(r, 'Invocation %', 0) < 80]
+            review_parts.append(f"Healing invocation at {invocation:.1f}% (target 100%) indicates incomplete healing chains.")
+            recommendations.append({
+                "priority": 2,
+                "category": "Healing",
+                "title": "Complete Healing Chain Invocation",
+                "detail": f"Current: {invocation:.1f}% | Gap: {gap:.1f}pp | {len(low_invocation)} territories below 80%",
+                "action": "Add super().heal_repository() calls to agents that override heal_repository().",
+                "impact": "High - Ensures healing propagates through MRO chain."
+            })
+        
+        # MCP Hardening
+        if mcp_hardened < 100:
+            gap = 100 - mcp_hardened
+            unhardened = [r for r in non_total_rows if safe_val(r, 'Hardened %', 0) < 100]
+            review_parts.append(f"MCP hardening at {mcp_hardened:.1f}% (target 100%) exposes tool boundaries.")
+            recommendations.append({
+                "priority": 3,
+                "category": "Security",
+                "title": "Complete MCP Hardening",
+                "detail": f"Current: {mcp_hardened:.1f}% | Gap: {gap:.1f}pp | {len(unhardened)} territories incomplete",
+                "action": "Apply MCPHardenedMixin to all agents touching external APIs or tools.",
+                "impact": "Critical - Prevents injection and boundary violations."
+            })
+        
+        # Complexity
+        high_cc_territories = [r for r in non_total_rows if safe_val(r, 'Avg CC', 0) > 15]
         if high_cc_territories:
-            recommendations.append("5. Reduce Cyclomatic Complexity<br>Refactor methods with CC>15 into smaller primitives. Focus on L5 validators and L3 orchestrators first.")
+            avg_cc = sum(safe_val(r, 'Avg CC', 0) for r in high_cc_territories) / len(high_cc_territories)
+            recommendations.append({
+                "priority": 4,
+                "category": "Maintainability",
+                "title": "Reduce Cyclomatic Complexity",
+                "detail": f"{len(high_cc_territories)} territories have Avg CC >15 (avg: {avg_cc:.1f})",
+                "action": "Refactor complex methods into smaller primitives. Target CC ≤10.",
+                "impact": "Medium - Reduces bug density and improves testability."
+            })
         
-        # Add layer-specific recommendations
-        l5_rows = [r for r in dashboard_data if 'L5' in r.get('Territory', '')]
-        if l5_rows and any(r.get('Hardened %', 0) < 80 for r in l5_rows):
-            recommendations.append("6. Strengthen L5 Safety Layer<br>L5 is the last line of defense. Ensure 100% MCP hardening and comprehensive validation chains.")
-        
-        l1_rows = [r for r in dashboard_data if 'L1' in r.get('Territory', '')]
-        if l1_rows and any(r.get('Test %', 0) < 80 for r in l1_rows):
-            recommendations.append("7. Fortify L1 Cognition Testing<br>Cognitive layer brittleness cascades downstream. Add tests for reasoning modules and chain-of-thought proxies.")
-        
-        # Infrastructure recommendations
-        infra_rows = [r for r in dashboard_data if 'Infrastructure' in r.get('Territory', '')]
-        if infra_rows:
-            recommendations.append("8. Standardize Infrastructure Primitives<br>Implement circuit breakers, retries, rate limits, and feature flags across all layers.")
-        
-        # Observability
-        if total_row.get('Observable %', 0) < 90:
-            recommendations.append("9. Enhance Observability<br>Add structured logging, metrics, and tracing to enable production debugging and failure analysis.")
+        # Typing
+        if typed_pct < 100:
+            gap = 100 - typed_pct
+            recommendations.append({
+                "priority": 5,
+                "category": "Code Quality",
+                "title": "Complete Type Annotations",
+                "detail": f"Current: {typed_pct:.1f}% | Gap: {gap:.1f}pp",
+                "action": "Add type hints to function parameters and return types.",
+                "impact": "Medium - Enables static analysis and IDE support."
+            })
         
         # Documentation
-        if total_row.get('Documented %', 0) < 80:
-            recommendations.append("10. Improve Documentation<br>Add docstrings to public methods. Clear interfaces reduce hallucinated tool usage by constraining search space.")
+        if documented_pct < 100:
+            gap = 100 - documented_pct
+            recommendations.append({
+                "priority": 6,
+                "category": "Code Quality",
+                "title": "Complete Documentation",
+                "detail": f"Current: {documented_pct:.1f}% | Gap: {gap:.1f}pp",
+                "action": "Add docstrings to all public methods and classes.",
+                "impact": "Medium - Reduces hallucinated tool usage by constraining search space."
+            })
         
-        # Ensure we have at least 5 recommendations
-        if len(recommendations) < 5:
-            recommendations.append("5. Maintain Momentum<br>Continue systematic improvements across healing, testing, and hardening dimensions.")
+        # Format recommendations for display
+        formatted_recs = []
+        for i, rec in enumerate(sorted(recommendations, key=lambda x: x['priority']), 1):
+            formatted_recs.append(
+                f"{i}. {rec['title']}<br>"
+                f"<span style='color:#666'>{rec['detail']}</span><br>"
+                f"<b>Action:</b> {rec['action']}<br>"
+                f"<span style='color:#059669'><b>Impact:</b> {rec['impact']}</span>"
+            )
         
         return {
-            "review": review.strip(),
-            "recommendations": recommendations[:10]
+            "review": " ".join(review_parts),
+            "macro_observations": macro_observations,
+            "recommendations": formatted_recs[:10]
         }
     
     def run(self, dashboard_data: List[Dict[str, Any]]) -> Dict[str, Any]:

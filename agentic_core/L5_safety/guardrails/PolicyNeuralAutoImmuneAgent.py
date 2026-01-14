@@ -23,6 +23,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, MCPHardenedMixin):
     """PolicyNeuralAutoImmuneAgent agent for autonomous operations."""
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.redis = RedisSovereignAgent(project_root).get_client()
         self.threshold = 5
 

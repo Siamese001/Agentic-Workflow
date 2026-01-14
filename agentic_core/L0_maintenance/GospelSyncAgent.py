@@ -44,7 +44,7 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, root_dir: str = "."):
+    def __init__(self, root_dir: str = ".") -> None:
         """
         Initialize the Sync Agent with root directory context.
         """

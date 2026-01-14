@@ -44,7 +44,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         """Initialize with injected agent implementation."""
         self.agent = agent_impl
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         """Delegate all agent methods to injected implementation - backward compatible."""
         return getattr(self.agent, name)
 

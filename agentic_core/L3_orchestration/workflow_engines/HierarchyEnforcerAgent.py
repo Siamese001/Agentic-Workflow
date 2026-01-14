@@ -20,7 +20,8 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     Drills down from L2 -> L3 -> L4 to ensure all required directories exist.
     """
     
-    def __init__(self, project_root: Path, ctx) -> None:
+    def __init__(self, project_root: Path, ctx: Any) -> None:
+        """Initialize the instance."""
         from agentic_core.config.blueprint_sovereign.structure_blueprint import (
             CORE_L3_SUBFOLDER_MAP,
             CORE_L4_SUBFOLDER_MAP,
@@ -248,7 +249,7 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
             "compliant": len(violations) == 0
         }
     
-    async def execute(self, ctx) -> Any:
+    async def execute(self, ctx: Any) -> Any:
         """Execute execute operation."""
         issues = self.enforce_hierarchy()
         issues.extend(self.enforce_depth_precision())

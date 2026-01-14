@@ -56,6 +56,7 @@ class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     Targets technical debt markers in non-Python files with auto-remediation.
     """
     def __init__(self, project_root: Path, dry_run: bool = False) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         self.forbidden_patterns = FORBIDDEN_PATTERNS
         # REGEX: Catches repeated markers like .archived.archived or .old.old

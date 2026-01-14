@@ -31,7 +31,8 @@ warnings.warn(
 
 class PPOActorCritic(nn.Module):
     """Shared network with actor/critic heads — efficient parameter sharing."""
-    def __init__(self, input_dim: int, n_actions: int):
+    def __init__(self, input_dim: int, n_actions: int) -> None:
+        """Initialize the instance."""
         super().__init__()
         self.shared = nn.Sequential(
             nn.Linear(input_dim, 128),
@@ -60,7 +61,8 @@ class PPOOrchestratorAgent(SovereignBaseAgent):
     This class now wraps UnifiedWorkflowEngine for backward compatibility.
     """
 
-    def __init__(self, layers: List[str]):
+    def __init__(self, layers: List[str]) -> None:
+        """Initialize the instance."""
         log.warning("PPOOrchestratorAgent is deprecated - migrating to UnifiedWorkflowEngine")
         self.name = "PPOOrchestratorAgent"
         self.project_root = get_validated_project_root()

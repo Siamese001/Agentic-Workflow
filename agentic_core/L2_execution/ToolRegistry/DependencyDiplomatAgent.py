@@ -58,7 +58,7 @@ class BlastRadius:
         assert isinstance(self.indirect_dependents, list), "indirect_dependents must be list"
         return True
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Run self-tests after dataclass initialization."""
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
@@ -78,7 +78,7 @@ class DependencyDiplomatAgent(SubAtomicAgent, MCPHardenedMixin):
     4. Return surgical target list (only affected files)
     """
 
-    def __init__(self, ctx) -> None:
+    def __init__(self, ctx: Any) -> None:
         """
         Initialize Dependency Diplomat.
         
@@ -114,7 +114,7 @@ class DependencyDiplomatAgent(SubAtomicAgent, MCPHardenedMixin):
                 self.ctx.blast_radii[file_path] = BlastRadius
         Logger.info(f'   Graph contains {len(self.graph)} nodes')
 
-    async def _build_graph(self):
+    async def _build_graph(self) -> Any:
         """Build import dependency graph."""
         python_files = self._find_python_files()
         for file_path in python_files:
@@ -157,7 +157,7 @@ class DependencyDiplomatAgent(SubAtomicAgent, MCPHardenedMixin):
                     imports.add(node.module)
         return imports
 
-    def _persist_to_redis(self):
+    def _persist_to_redis(self) -> Any:
         """Persist graph to Redis with deps:forward: and deps:reverse: keys."""
         try:
             for file_path, node in self.graph.items():
@@ -207,7 +207,7 @@ class DependencyDiplomatAgent(SubAtomicAgent, MCPHardenedMixin):
                     queue.append((dependent, depth + 1))
         return BlastRadius(modified_file=modified_file, direct_dependents=direct_dependents, indirect_dependents=indirect_dependents, total_affected=len(direct_dependents) + len(indirect_dependents), depth=max_depth_reached)
 
-    def _report_blast_radius(self, BlastRadius: BlastRadius):
+    def _report_blast_radius(self, BlastRadius: BlastRadius) -> Any:
         """Report blast radius analysis."""
         Logger.info(f"\n{'=' * 80}")
         Logger.info(f'🔗 BLAST RADIUS ANALYSIS')

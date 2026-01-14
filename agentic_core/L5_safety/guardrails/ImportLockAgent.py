@@ -20,7 +20,7 @@ import sys
 import inspect
 import re
 from pathlib import Path
-from typing import Optional, List, Any
+from typing import Any, Dict, List, Optional
 from importlib.abc import MetaPathFinder
 from importlib.machinery import ModuleSpec
 
@@ -96,7 +96,7 @@ class ImportLockAgent(MCPHardenedMixin, MetaPathFinder):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the Import Lock Agent."""
         super().__init__()
         self.enabled = False

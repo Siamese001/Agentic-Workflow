@@ -45,7 +45,7 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
     WEIGHT_MCP = 0.3
     WEIGHT_COVERAGE = 0.3
     
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Initialize with skeptical performance analysis defaults."""
         super().__init__(**kwargs)
         self.name = "PerformanceAnalystAgent"

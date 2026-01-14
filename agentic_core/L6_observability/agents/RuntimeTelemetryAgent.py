@@ -42,7 +42,7 @@ class RuntimeTelemetryAgent(MCPHardenedMixin):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, limit_multiplier: float = 2.0):
+    def __init__(self, limit_multiplier: float = 2.0) -> None:
         """
         Initialize with the Gospel-mandated 2x overhead limit.
         """
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     # Self-test logic for immediate verification in Windsurf
     class MockSovereignAgent:
         """MockSovereignAgent agent for autonomous operations."""
-        def __init__(self):
+        def __init__(self) -> None:
             time.sleep(0.05)  # Simulate 50ms startup
 
     telemetry = RuntimeTelemetryAgent()

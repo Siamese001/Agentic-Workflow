@@ -38,7 +38,7 @@ class LLMPromptGovernorAgent(SovereignBaseAgent):
     - Dangerous operation prevention
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the prompt governor with hardened templates."""
         
         # [HARDENING 8] Core system template with comprehensive safety instructions

@@ -21,7 +21,7 @@ Placed in utils/naming per semantic_l2_registry:
   "Naming law enforcement logic, casing validators, and canon signal checks"
 """
 from pathlib import Path
-from typing import Tuple, Dict, List, Set, Any
+from typing import Any, Dict, List, Optional, Set, Tuple
 from dataclasses import dataclass
 from typing import Optional
 import re
@@ -103,6 +103,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
 
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         self.high_signal_keywords = CANON_SIGNALS
         self.forbidden_patterns = FORBIDDEN_PATTERNS
@@ -220,7 +221,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 stems.add(stem)
         return stems
 
-    def _get_hierarchy_agent(self):
+    def _get_hierarchy_agent(self) -> Any:
         """Lazy load HierarchyAgent for semantic territory context"""
         if self._hierarchy_agent is None:
             from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
@@ -475,6 +476,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return "REJECT"
 
     def _extract_decorators(self, content: str) -> List[str]:
+        """Extract decorators."""
         try:
             tree = ast.parse(content)
         except Exception:
@@ -493,6 +495,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return decorators
 
     def _extract_base_classes(self, content: str) -> List[str]:
+        """Extract base classes."""
         try:
             tree = ast.parse(content)
         except Exception:
@@ -509,6 +512,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return bases
 
     def _legacy_placement_fallback(self, content_preview: str) -> str:
+        """Legacy placement fallback."""
         lower_preview = content_preview.lower()
         
         if any(k in lower_preview for k in ['planner', 'strategy', 'reasoning', 'mission']):

@@ -21,6 +21,7 @@ class GlobalComplianceAggregatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
     """Naming/Compliance: Global Compliance Aggregation"""
     
     def __init__(self) -> None:
+        """Initialize the instance."""
         self.results = []
         
     def aggregate_results(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:

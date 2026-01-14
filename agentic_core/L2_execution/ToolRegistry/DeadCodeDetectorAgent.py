@@ -28,6 +28,7 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
     """
     
     def __init__(self, file_path: Path) -> None:
+        """Initialize the instance."""
         self.file_path = file_path
         self.imported_names: set[str] = set()
         self.defined_names: set[str] = set()
@@ -134,6 +135,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     """
     
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.project_root = project_root
         self.results = {
             "unused_imports": [],

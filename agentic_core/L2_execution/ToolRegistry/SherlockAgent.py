@@ -42,7 +42,8 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
     - Analysis state checkpointed for persistent debugging
     - Trace snapshots stored in L4 ledger
     """
-    def __init__(self, context) -> None:
+    def __init__(self, context: Any) -> None:
+        """Initialize the instance."""
         super().__init__(context)
         self.triggered = False
         self.last_failure = None
@@ -86,7 +87,8 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
 
         await self._analyze_failure(self.last_failure)
 
-    async def _analyze_failure(self, failure_info: dict):
+    async def _analyze_failure(self, failure_info: dict) -> Any:
+        """Analyze failure."""
         if not getattr(self.ctx, 'intelligence_enabled', False):
             return
 
@@ -130,6 +132,7 @@ Return ONLY the python code for {primary}.
                 print(f"   [OK] Fix Applied")
 
     def _extract_error_file(self, traceback: str) -> Optional[str]:
+        """Extract error file."""
         if not traceback:
             return None
         match = re.search(r'File "([^"]+)", line \d+', traceback)

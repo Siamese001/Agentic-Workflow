@@ -133,7 +133,8 @@ class FilesystemSSOTReconcilerAgent(L0MaintenanceBaseAgent, AutonomyMixin,
     BLUEPRINT_PATH = Path("agentic_core/config/blueprint_sovereign/structure_blueprint.py")
     ARCHIVE_ROOT = Path("archives/unmapped_drift/")
     
-    def __init__(self, project_root: Path, enforcement_mode: bool = True):
+    def __init__(self, project_root: Path, enforcement_mode: bool = True) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         self.blueprint_file = self.project_root / self.BLUEPRINT_PATH
         self.enforcement_mode = enforcement_mode

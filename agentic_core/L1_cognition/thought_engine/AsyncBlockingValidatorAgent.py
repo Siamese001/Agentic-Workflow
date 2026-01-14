@@ -27,6 +27,7 @@ class AsyncBlockingValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTVa
     """
 
     def __init__(self, file_path: Path, content: str, key_id: int) -> None:
+        """Initialize the instance."""
         super().__init__(file_path, content, key_id)
         self.in_async_function = False
 

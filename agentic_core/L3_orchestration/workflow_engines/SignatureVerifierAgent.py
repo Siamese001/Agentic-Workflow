@@ -27,6 +27,7 @@ class SignatureVerifierAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     """function class for inspection domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
+        """Initialize the instance."""
         SELF.CONFIG = config or {}
         Logger.info(f'Initialized {self.__class__.__name__}')
 

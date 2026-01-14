@@ -117,7 +117,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         """Build tests for edge cases."""
         return [VulnerabilityTest(test_id='EDGE-001', test_type='edge_case', target_file='test_target.py', attack_vector='Empty file healing attempt', expected_behavior='Should handle gracefully', Severity='low'), VulnerabilityTest(test_id='EDGE-002', test_type='edge_case', target_file='test_target.py', attack_vector='File with only comments', expected_behavior='Should skip healing', Severity='low'), VulnerabilityTest(test_id='EDGE-003', test_type='edge_case', target_file='test_target.py', attack_vector='Extremely nested code (10+ levels)', expected_behavior='Should trigger atomic fission', Severity='medium')]
 
-    async def _test_preservation_boundaries(self):
+    async def _test_preservation_boundaries(self) -> Any:
         """Test 90% preservation rule boundaries."""
         Logger.info('   Testing preservation boundaries...')
         result = await self._attempt_mass_deletion()
@@ -163,7 +163,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
             Logger.exception(f'Error during functional preservation test {test_id}')
             return RedTeamResult(test_id=test_id, passed=False, vulnerability_found=True, details=f'Error: {e}', Severity='high', Recommendation='Functional preservation check failed due to an error')
 
-    async def _test_sandbox_escapes(self):
+    async def _test_sandbox_escapes(self) -> Any:
         """Test sandbox security boundaries."""
         Logger.info('   Testing sandbox escapes...')
         result = await self._attempt_filesystem_escape()
@@ -191,7 +191,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         blocked = True
         return RedTeamResult(test_id=test_id, passed=blocked, vulnerability_found=not blocked, details='Simulated attempt subprocess execution', Severity='critical' if not blocked else None, Recommendation='Sandbox blocking subprocess' if blocked else 'CRITICAL: Subprocess execution possible!')
 
-    async def _test_connectivity_breaks(self):
+    async def _test_connectivity_breaks(self) -> Any:
         """Test pipeline stage connectivity."""
         Logger.info('   Testing connectivity breaks...')
         result = await self._attempt_schema_drift()
@@ -219,7 +219,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         detected = True
         return RedTeamResult(test_id=test_id, passed=detected, vulnerability_found=not detected, details='Simulated introduction of circular import', Severity='medium' if not detected else None, Recommendation='Cycle detection working' if detected else 'WARNING: Circular dependency possible!')
 
-    async def _test_edge_cases(self):
+    async def _test_edge_cases(self) -> Any:
         """Test edge case handling."""
         Logger.info('   Testing edge cases...')
         result = await self._test_empty_file()
@@ -247,7 +247,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         fission_triggered = True
         return RedTeamResult(test_id=test_id, passed=fission_triggered, vulnerability_found=not fission_triggered, details='Simulated 10+ nesting levels detected', Severity='medium' if not fission_triggered else None, Recommendation='Atomic fission triggered' if fission_triggered else 'WARNING: Extreme nesting not handled')
 
-    def _generate_report(self):
+    def _generate_report(self) -> Any:
         """Generate red team report."""
         total_tests = len(self.results)
         passed_tests = sum((1 for r in self.results if r.passed))

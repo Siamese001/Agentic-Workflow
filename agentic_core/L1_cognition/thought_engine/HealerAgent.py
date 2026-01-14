@@ -51,7 +51,8 @@ class HealerAgent(HealerMixin, CanonBaseAgentInterface):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, ctx: Any = None):
+    def __init__(self, ctx: Any = None) -> None:
+        """Initialize the instance."""
         self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
@@ -70,7 +71,7 @@ class HealerAgent(HealerMixin, CanonBaseAgentInterface):
         """Execute validate_state operation."""
         return self.impl.validate_state()
 
-    async def _execute_healing(self):
+    async def _execute_healing(self) -> Any:
         """Original execute logic preserved."""
         MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
 

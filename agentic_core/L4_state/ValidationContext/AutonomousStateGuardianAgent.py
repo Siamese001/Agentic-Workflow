@@ -40,6 +40,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
     """
     
     def __init__(self) -> None:
+        """Initialize the instance."""
         # GRAVITY FIXED: Dynamic import for Checkpoint manager
         try:
             from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
@@ -182,7 +183,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
             self.is_recovering = False
             Logger.info("L4: State lock released")
     
-    def _log_corruption_event(self, corrupt_ids: List[str]):
+    def _log_corruption_event(self, corrupt_ids: List[str]) -> Any:
         """Log corruption events for pattern analysis"""
         try:
             events = []

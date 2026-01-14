@@ -124,7 +124,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                 continue
         return (len(violations) == 0, violations)
 
-    def _check_node_naming_convention(self, file_path: str, node: ast.AST, violations: List[str]):
+    def _check_node_naming_convention(self, file_path: str, node: ast.AST, violations: List[str]) -> Any:
         """
         Helper to check naming convention for a single AST node.
         
@@ -141,7 +141,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                 if not re.match('^[a-z_][a-z0-9_]*$', node.name):
                     violations.append(f"{file_path}:{node.lineno}: Function '{node.name}' should be snake_case")
 
-    def _process_file_for_naming_conventions(self, file_path: str, violations: List[str]):
+    def _process_file_for_naming_conventions(self, file_path: str, violations: List[str]) -> Any:
         """
         Helper to parse a single file and check all its AST nodes for naming conventions.
         Args:
@@ -168,7 +168,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
             self._process_file_for_naming_conventions(file_path, violations)
         return (len(violations) == 0, violations)
 
-    async def _heal_violations(self, key: int, violations: List[str]):
+    async def _heal_violations(self, key: int, violations: List[str]) -> Any:
         """
         Heal violations for a specific key.
         
@@ -212,7 +212,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
         except Exception as e:
             return f'Cannot write {file_path}: {e}'
 
-    async def _smart_fix(self, file_path: str, violation_key: int, violations: List[str]):
+    async def _smart_fix(self, file_path: str, violation_key: int, violations: List[str]) -> Any:
         """
         Apply smart fix to a file using Gemini 2.5 Flash.
         

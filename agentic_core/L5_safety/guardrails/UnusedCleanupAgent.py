@@ -20,7 +20,8 @@ class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     Atomic agent: Removes unused imports and variables using autoflake.
     """
 
-    def __init__(self, project_root, ctx) -> None:
+    def __init__(self, project_root, ctx: Any) -> None:
+        """Initialize the instance."""
         self.project_root = Path(project_root)
         self.ctx = ctx
 

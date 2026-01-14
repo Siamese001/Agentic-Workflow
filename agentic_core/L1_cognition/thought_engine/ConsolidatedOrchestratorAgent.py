@@ -8,6 +8,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from typing import Any, Dict, List, Optional
 import ast
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
@@ -57,7 +58,7 @@ class ConsolidatedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
             self._execute_clean_slate()
         Logger.info('[START] Consolidated orchestrator initialized (Phase 5: Swarm Assembly)')
 
-    def _execute_clean_slate(self):
+    def _execute_clean_slate(self) -> Any:
         """Execute Clean Slate Protocol: Flush Redis and clear all leases."""
         Logger.info('[CLEAN] CLEAN SLATE PROTOCOL: Flushing Redis...')
         try:

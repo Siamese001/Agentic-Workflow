@@ -52,6 +52,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, Pine
     _namespace: str = "l5_compliance"
     
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         super().__init__()
         self.project_root = project_root
         self.required_methods = ["heal_repository"]

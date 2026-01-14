@@ -63,7 +63,7 @@ class L0MaintenanceBaseAgent(HealerMixin, L0DelegationTestingMixin, SovereignBas
     name: str = "L0MaintenanceBaseAgent"
     layer: str = "L0"
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Cooperative MRO initialization."""
         super().__post_init__()
     

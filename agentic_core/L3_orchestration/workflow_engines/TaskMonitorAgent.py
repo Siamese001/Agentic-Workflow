@@ -35,6 +35,7 @@ class TaskMonitorAgent(HealerMixin):
     """Monitors a single asyncio Task."""
 
     def __init__(self, Task: asyncio.Task, name: str = None) -> None:
+        """Initialize the instance."""
         self.Task = Task
         self.name = name or f"Task-{id(Task)}"
         self.start_time = time.time()

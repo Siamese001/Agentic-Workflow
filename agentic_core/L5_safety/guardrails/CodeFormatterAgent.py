@@ -20,7 +20,8 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     Atomic agent: Enforces consistent formatting using Black + Ruff auto-fix.
     """
 
-    def __init__(self, project_root, ctx) -> None:
+    def __init__(self, project_root, ctx: Any) -> None:
+        """Initialize the instance."""
         self.project_root = Path(project_root)
         self.ctx = ctx
 

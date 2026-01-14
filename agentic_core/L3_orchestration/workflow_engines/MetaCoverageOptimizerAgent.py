@@ -22,7 +22,8 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
     In-memory only — no persistent constitution changes.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize the instance."""
         self.name = "MetaCoverageOptimizerAgent"
         self.project_root = get_validated_project_root()
         self.coverage_agent = CoverageAgent()

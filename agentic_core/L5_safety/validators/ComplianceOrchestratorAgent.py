@@ -62,6 +62,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     """
 
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         self.validators_path = self.project_root / "agentic_core" / "L5_safety" / "validators"
 

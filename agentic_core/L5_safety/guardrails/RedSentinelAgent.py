@@ -142,7 +142,7 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             result['behavior'] = 'Extreme number may cause overflow'
         return result
 
-    async def _log_fuzz_results(self, results: Dict[str, Any]):
+    async def _log_fuzz_results(self, results: Dict[str, Any]) -> Any:
         """
         Log fuzz results to audit file.
 

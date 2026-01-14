@@ -16,28 +16,32 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 # Lazy imports — gravity-safe (same L4 territory)
-def _get_validation_context():
+def _get_validation_context() -> Any:
+    """Get validation context."""
     try:
         from agentic_core.L4_state.ValidationContext import ValidationContext
         return ValidationContext
     except Exception:
         return None
 
-def _get_ledger():
+def _get_ledger() -> Any:
+    """Get ledger."""
     try:
         from agentic_core.L4_state.ledger import Ledger
         return Ledger
     except Exception:
         return None
 
-def _get_memory_store():
+def _get_memory_store() -> Any:
+    """Get memory store."""
     try:
         from agentic_core.L4_state.memory import MemoryStore
         return MemoryStore
     except Exception:
         return None
 
-def _get_filesystem_mcp():
+def _get_filesystem_mcp() -> Any:
+    """Get filesystem mcp."""
     try:
         from agentic_core.L4_state.filesystem import FilesystemMCP
         return FilesystemMCP
@@ -62,7 +66,8 @@ class L4StateExerciserAgent(SovereignBaseAgent):
     All mutations isolated (temp dirs, synthetic keys) — zero persistent side effects; auto-cleanup.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize the instance."""
         self.name = "L4StateExerciserAgent"
         self.project_root = get_validated_project_root()
         self.exercise_strategies = {

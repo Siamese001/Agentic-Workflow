@@ -30,7 +30,8 @@ warnings.warn(
 
 class ActorCriticNet(nn.Module):
     """Shared body + actor/critic heads — lightweight."""
-    def __init__(self, input_dim: int, n_actions: int):
+    def __init__(self, input_dim: int, n_actions: int) -> None:
+        """Initialize the instance."""
         super().__init__()
         self.shared = nn.Sequential(
             nn.Linear(input_dim, 64),
@@ -58,7 +59,8 @@ class ActorCriticOrchestratorAgent(SovereignBaseAgent):
     This class now wraps UnifiedWorkflowEngine for backward compatibility.
     """
 
-    def __init__(self, layers: List[str], fallback_orchestrator=None):
+    def __init__(self, layers: List[str], fallback_orchestrator=None) -> None:
+        """Initialize the instance."""
         log.warning("ActorCriticOrchestratorAgent is deprecated - migrating to UnifiedWorkflowEngine")
         self.name = "ActorCriticOrchestratorAgent"
         self.project_root = get_validated_project_root()

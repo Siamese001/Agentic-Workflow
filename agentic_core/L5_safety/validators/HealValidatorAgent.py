@@ -90,6 +90,7 @@ class HealValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         self.max_diff_lines = 500  # Reject excessively large changes
         self.min_code_retention = 0.5  # Reject if <50% of original code remains

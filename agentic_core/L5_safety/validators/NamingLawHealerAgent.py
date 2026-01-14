@@ -21,7 +21,7 @@ import warnings
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List, Optional
 
 # Emit deprecation warning on import
 warnings.warn(
@@ -88,7 +88,8 @@ Eliminate noise. Amplify signal.
 Current date: December 24, 2025
 """
     
-    def __init__(self, project_root: Path, ctx) -> None:
+    def __init__(self, project_root: Path, ctx: Any) -> None:
+        """Initialize the instance."""
         self.root = project_root
         self.ctx = ctx
         self.healed_count = 0

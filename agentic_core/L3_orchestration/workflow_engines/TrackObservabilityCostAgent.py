@@ -25,6 +25,7 @@ class TrackObservabilityCostAgent(MCPHardenedMixin, SubatomicTestingMixin, Heale
     """function class for standard domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
+        """Initialize the instance."""
         self.CONFIG = config or {}
         LOGGER.info(f'Initialized {self.__class__.__name__}')
 

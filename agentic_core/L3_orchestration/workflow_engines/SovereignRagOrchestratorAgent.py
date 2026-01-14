@@ -50,6 +50,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     """Brief description of functionality and purpose."""
 
     def __init__(self, retriever=None, QueryPlanner=None, guardrail=None, engine=None) -> None:
+        """Initialize the instance."""
         self.query_history = []
         self.config_path = Path('agentic_core/L4_state/ValidationContext/.sovereign_config.json')
         self._load_sovereign_config()
@@ -62,7 +63,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         self.enable_red_team_critique = False
         self.max_critique_rounds = 2
 
-    def _load_sovereign_config(self):
+    def _load_sovereign_config(self) -> Any:
         """L4: Persist the 'learned intelligence' of the system"""
         if self.config_path.exists():
             config = json.loads(self.config_path.read_text())
@@ -74,7 +75,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             self.max_hops = 3
             self.base_top_k = 12
 
-    def _save_sovereign_config(self):
+    def _save_sovereign_config(self) -> Any:
         """L4: Write learned parameters back to the Canon"""
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
         self.config_path.write_text(json.dumps({'faithfulness_threshold': self.faithfulness_threshold, 'max_hops': self.max_hops, 'base_top_k': self.base_top_k}))
@@ -84,7 +85,8 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         critique_prompt: Any = f'\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nYou are a critical evaluator. Assess if this answer is faithful to the source documents.\n\nQuery: {query}\nAnswer: {answer}\nDocuments: {[d.text[:200] for d in documents[:5]]}\n\nOutput JSON: {{"faithfulness_score": 0.0-1.0, "improvement_suggestion": "..."}}\n'
         response: Any = await self.engine.resilient_mutation(critique_prompt, temperature=0.3)
 
-        def _parse_critique(raw):
+        def _parse_critique(raw) -> Any:
+            """Parse critique."""
             try:
                 from agentic_core.L1_cognition.thought_engine.QueryPlanner import QueryPlanner
                 planner_helper = QueryPlanner()

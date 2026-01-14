@@ -26,7 +26,8 @@ class MetaLearningAgent(MCPHardenedMixin, HealerMixin):
     thinking strategy selection.
     """
     
-    def __init__(self, replay_capacity: int = 1000):
+    def __init__(self, replay_capacity: int = 1000) -> None:
+        """Initialize the instance."""
         self.logger = logging.getLogger(self.__class__.__name__)
         self.replay_buffer: List[Experience] = []
         self.replay_capacity = replay_capacity

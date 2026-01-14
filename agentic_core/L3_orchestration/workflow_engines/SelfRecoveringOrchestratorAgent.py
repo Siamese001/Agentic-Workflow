@@ -158,7 +158,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             execution_state['duration'] = (execution_state['end_time'] - execution_state['start_time']).total_seconds()
         return execution_state
 
-    async def _execute_graph_with_recovery(self, graph_id: str, initial_inputs: Dict[str, Any], execution_state: Dict[str, Any]):
+    async def _execute_graph_with_recovery(self, graph_id: str, initial_inputs: Dict[str, Any], execution_state: Dict[str, Any]) -> Any:
         """Execute graph with recovery logic."""
         graph = self.active_graphs[graph_id]
         ready_nodes = self._get_ready_nodes(graph, execution_state['completed_nodes'])
@@ -393,12 +393,12 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                 Logger.info(f"PROBATION PASSED: {node_id} is reliable (failure rate: {prob['failures'] / prob['test_runs']:.1%})")
                 del self.probation_list[node_id]
 
-    def _record_node_success(self, node_id: str):
+    def _record_node_success(self, node_id: str) -> Any:
         """Record successful node execution."""
         self.record_node_attempt(node_id, success=True)
         Logger.debug(f'Node {node_id} success recorded')
 
-    def _record_node_failure(self, node_id: str, reason: str):
+    def _record_node_failure(self, node_id: str, reason: str) -> Any:
         """Record node failure."""
         self.record_node_attempt(node_id, success=False)
         if node_id not in self.node_patterns:
@@ -411,7 +411,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             pattern.failure_reasons = pattern.failure_reasons[-10:]
         Logger.warning(f'Node {node_id} failure recorded: {reason}')
 
-    def _update_execution_time(self, node_id: str, execution_time: float):
+    def _update_execution_time(self, node_id: str, execution_time: float) -> Any:
         """Update average execution time for a node."""
         if node_id not in self.node_patterns:
             self.node_patterns[node_id] = NodeFailurePattern(node_id=node_id)

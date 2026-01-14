@@ -63,7 +63,8 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
 
     REGISTRY_FILE = Path(__file__).parent / "registry.json"
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize the instance."""
         self.registry: Dict[str, List[Dict[str, Any]]] = {}
         self._content_cache: Dict[str, str] = {}  # Cache for content hashing
         self.similarity_threshold = SIMILARITY_THRESHOLD
@@ -268,7 +269,8 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
 
 class DuplicatePromptError(Exception):
     """Raised when a semantically duplicate prompt is detected."""
-    def __init__(self, message, similar_entries):
+    def __init__(self, message, similar_entries) -> None:
+        """Initialize the instance."""
         super().__init__(message)
         self.similar_entries = similar_entries
 
@@ -335,6 +337,7 @@ def registers_prompt(
     Usage:
         @registers_prompt("gravity_repair.jinja", purpose="Fixes import violations")
         class ImportAgent:
+            """ImportAgent class."""
             pass
     
     This enables:

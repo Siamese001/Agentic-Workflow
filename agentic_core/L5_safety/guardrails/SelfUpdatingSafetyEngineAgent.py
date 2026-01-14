@@ -119,13 +119,13 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
         self._load_rules()
         Logger.info('Self-Updating Safety Engine initialized')
 
-    def _initialize_base_rules(self):
+    def _initialize_base_rules(self) -> Any:
         """Initialize base safety rules."""
         base_rules = [SafetyRule(rule_id='base_001', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)(api[_-]?key|secret[_-]?key|password|token)\\s*[=:]\\s*[\'\\"][^\'\\"]{8,}[\'\\"]', description='Hardcoded secrets detection', ThreatLevel=ThreatLevel.CRITICAL, auto_generated=False), SafetyRule(rule_id='base_002', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)eval\\s*\\(|exec\\s*\\(', description='Dangerous code execution', ThreatLevel=ThreatLevel.HIGH, auto_generated=False), SafetyRule(rule_id='base_003', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)__import__\\s*\\(\\s*[\'\\"]os[\'\\"]|subprocess\\.call', description='System command execution', ThreatLevel=ThreatLevel.HIGH, auto_generated=False), SafetyRule(rule_id='base_004', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)DROP\\s+TABLE|DELETE\\s+FROM.*WHERE\\s+1\\s*=\\s*1', description='SQL injection patterns', ThreatLevel=ThreatLevel.CRITICAL, auto_generated=False), SafetyRule(rule_id='base_005', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)<script[^>]*>.*?</script>|javascript:', description='XSS attack patterns', ThreatLevel=ThreatLevel.HIGH, auto_generated=False)]
         for rule in base_rules:
             self.rules[rule.rule_id] = rule
 
-    def _load_rules(self):
+    def _load_rules(self) -> Any:
         """Load rules from storage."""
         if not os.path.exists(self.rules_storage_path):
             Logger.info('No existing rules found, using base rules only')
@@ -141,7 +141,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
         except Exception as e:
             Logger.error(f'Failed to load rules: {e}')
 
-    def _save_rules(self):
+    def _save_rules(self) -> Any:
         """Save rules to storage."""
         try:
             os.makedirs(os.path.dirname(self.rules_storage_path), exist_ok=True)
@@ -182,7 +182,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
             await self._learn_from_detection(text, matched_rules)
         return detection
 
-    async def _learn_from_detection(self, text: str, matched_rules: List[SafetyRule]):
+    async def _learn_from_detection(self, text: str, matched_rules: List[SafetyRule]) -> Any:
         """Learn from a threat detection."""
         for rule in matched_rules:
             pattern_id = f'pattern_{rule.rule_id}'
@@ -195,7 +195,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
                 pattern.examples.append(text[:200])
         await self._generate_new_rules_if_needed()
 
-    async def _generate_new_rules_if_needed(self):
+    async def _generate_new_rules_if_needed(self) -> Any:
         """Generate new rules based on detected patterns."""
         for pattern in self.threat_patterns.values():
             if pattern.confidence_score < 0.7:

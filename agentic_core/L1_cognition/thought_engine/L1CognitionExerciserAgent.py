@@ -10,42 +10,48 @@ from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1Cogn
 from dataclasses import dataclass
 
 # Lazy imports — gravity-safe (same L1 territory)
-def _get_thought_node():
+def _get_thought_node() -> Any:
+    """Get thought node."""
     try:
         from agentic_core.L1_cognition.thought_engine import ThoughtNode
         return ThoughtNode
     except Exception:
         return None
 
-def _get_chain_of_thought_executor():
+def _get_chain_of_thought_executor() -> Any:
+    """Get chain of thought executor."""
     try:
         from agentic_core.L1_cognition.thought_engine import ChainOfThoughtExecutor
         return ChainOfThoughtExecutor
     except Exception:
         return None
 
-def _get_tree_of_thoughts_node():
+def _get_tree_of_thoughts_node() -> Any:
+    """Get tree of thoughts node."""
     try:
         from agentic_core.L1_cognition.thought_engine import TreeOfThoughtsNode
         return TreeOfThoughtsNode
     except Exception:
         return None
 
-def _get_react_node():
+def _get_react_node() -> Any:
+    """Get react node."""
     try:
         from agentic_core.L1_cognition.thought_engine import ReActNode
         return ReActNode
     except Exception:
         return None
 
-def _get_intent_classifier():
+def _get_intent_classifier() -> Any:
+    """Get intent classifier."""
     try:
         from agentic_core.L1_cognition.intent_analysis import IntentClassifier
         return IntentClassifier
     except Exception:
         return None
 
-def _get_mission_decomposer():
+def _get_mission_decomposer() -> Any:
+    """Get mission decomposer."""
     try:
         from agentic_core.L1_cognition.planning import MissionDecomposer
         return MissionDecomposer
@@ -70,7 +76,8 @@ class L1CognitionExerciserAgent(L1CognitionBaseAgent):
     All reasoning on bounded, harmless synthetic inputs — zero external side effects.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize the instance."""
         self.name = "L1CognitionExerciserAgent"
         self.project_root = get_validated_project_root()
         self.exercise_strategies = {

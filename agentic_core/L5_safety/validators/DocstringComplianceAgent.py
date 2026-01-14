@@ -26,7 +26,7 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     """
     MIN_DOCSTRING: Any = "'''Brief description of functionality and purpose.'''"
 
-    def __init__(self, ctx, project_root=None) -> None:
+    def __init__(self, ctx: Any, project_root=None) -> None:
         """Initialize with mandatory ctx for sovereign operation."""
         if ctx is None:
             raise ValueError("ctx is mandatory for DocstringComplianceAgent (sovereign agent)")

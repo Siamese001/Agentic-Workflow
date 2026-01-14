@@ -34,7 +34,8 @@ class AutonomousPromptEvolutionAgent(MCPHardenedMixin, HealerMixin):
     - Validates evolved prompts before deployment
     """
 
-    def __init__(self, prompts_dir: Optional[Path] = None):
+    def __init__(self, prompts_dir: Optional[Path] = None) -> None:
+        """Initialize the instance."""
         super().__init__()
         self.prompts_dir = prompts_dir or Path("agentic_core/prompt_governance/templates")
         self._meta_learning: Optional[Any] = None
