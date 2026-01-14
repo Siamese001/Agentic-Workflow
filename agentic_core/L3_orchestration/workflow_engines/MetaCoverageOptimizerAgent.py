@@ -10,8 +10,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import get_vali
 from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.L6_observability.metrics.shared_counters import counters
 from agentic_core.runtime.shared_runtime import log_event, publish_event
+from dataclasses import dataclass
 
 
+@dataclass
 class MetaCoverageOptimizerAgent(SovereignBaseAgent):
     """
     Sub-atomic meta-responsibility: Autonomously optimize coverage parameters for sustained high entropy.

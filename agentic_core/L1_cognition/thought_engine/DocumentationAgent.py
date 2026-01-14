@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 DocumentationAgent - Extracted from canon_agents_quality.py
 Part of the quality enforcement agent family.
@@ -18,6 +19,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DocEnforcerAgent in L2 — excluded from discovery
+@dataclass
 class DocumentationAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """
     KEYS: 21 (Missing Docstrings)

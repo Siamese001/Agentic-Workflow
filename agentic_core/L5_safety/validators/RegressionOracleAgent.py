@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 RegressionOracleAgent - Extracted for one-class-per-file pattern.
 
@@ -10,6 +11,7 @@ from __future__ import annotations
 import ast
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class RegressionOracleAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     The Regression Oracle - Automated Test Synthesizer

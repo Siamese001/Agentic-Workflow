@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Sprawl Inspector - Pre-Flight Architectural Survey
 Identifies low-density folders and excessive breadth for consolidation.
@@ -31,6 +32,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     get_validated_project_root,
 )
 
+@dataclass
 class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Brief description of functionality and purpose."""
 

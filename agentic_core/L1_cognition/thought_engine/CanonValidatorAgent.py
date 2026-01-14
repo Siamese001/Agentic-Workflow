@@ -42,19 +42,19 @@ class CanonEntry:
     last_used: Optional[str] = None
 
     def get_success_rate(self) -> float:
-                    
+        """Execute get_success_rate operation."""
         total_count = self.success_count + self.failure_count
         if total_count == 0:
             return 0.0
         return self.success_count / total_count
 
     def update_failure(self) -> None:
-                    
+        """Execute update_failure operation."""
         self.failure_count += 1
         self.last_used = datetime.now(timezone.utc).isoformat()
 
     def update_success(self) -> None:
-                    
+        """Execute update_success operation."""
         self.success_count += 1
         self.last_used = datetime.now(timezone.utc).isoformat()
 

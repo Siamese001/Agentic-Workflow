@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 Unified Guardrail Agent - Canonical Membrane Pattern
 
@@ -61,7 +62,7 @@ class Guardrail(ABC):
         """
         pass
     
-    def record_violation(self):
+    def record_violation(self) -> Any:
         """Record guardrail violation."""
         self.violations += 1
 
@@ -169,7 +170,7 @@ class CircuitBreakerGuardrail(Guardrail):
         
         return {"result": GuardrailResult.ALLOW, "reason": "circuit closed"}
     
-    def record_failure(self):
+    def record_failure(self) -> Any:
         """Record failure and potentially open circuit."""
         self.failure_count += 1
         if self.failure_count >= self.failure_threshold:
@@ -255,6 +256,7 @@ class AuthorizationGuardrail(Guardrail):
         return {"result": GuardrailResult.ALLOW, "reason": "authorized"}
 
 
+@dataclass
 class CompositeGuardrailAgent(MCPHardenedMixin):
     """
     Unified guardrail agent - membrane pattern composition.

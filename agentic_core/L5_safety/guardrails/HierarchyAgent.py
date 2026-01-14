@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 HierarchyAgent - Unified Hierarchy Management
 Consolidates HierarchyEnforcerAgent and HierarchyHealerAgent into a single agent.
@@ -41,6 +42,7 @@ logging.basicConfig(level=logging.INFO)
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Unified Hierarchy Management Agent

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 FileSystemAgent: Sovereign Non-Python File Naming Enforcer
 
@@ -48,6 +49,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTi
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Autonomous agent for physical filesystem purity.

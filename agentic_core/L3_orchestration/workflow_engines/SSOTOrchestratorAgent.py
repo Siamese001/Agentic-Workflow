@@ -315,7 +315,7 @@ class SSOTOrchestratorAgent(MCPHardenedMixin, HealerMixin):
         
         return report
     
-    def record_result(self, report: OrchestrationReport):
+    def record_result(self, report: OrchestrationReport) -> Any:
         """
         Meta-Learning Integration: Write audit/healing results to L4 State.
         

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 LicInternalAgent - Extracted for one-class-per-file pattern.
 
@@ -12,6 +13,7 @@ from agentic_core.L2_execution.ToolRegistry.l2_self_testing_mixin import L2SelfT
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
+@dataclass
 class LicInternalAgent(MCPHardenedMixin, HealerMixin, L2SelfTestingMixin):
     """
     v12.0: UPGRADED to primary intelligence-gathering unit.

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """Outreach Validation Executor - LIC-Specific Validation Gates.
 
 This module extends ValidationGateExecutor with outreach-specific validation
@@ -20,6 +21,7 @@ from validation_gate_executor import (  # Assuming this import is correct
 
 LOGGER = logging.getLogger(__name__)
 
+@dataclass
 class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ValidationGateExecutor):
     """Extended validation executor for outreach-specific rules.
 

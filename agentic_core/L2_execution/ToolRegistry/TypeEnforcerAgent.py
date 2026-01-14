@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 TypeEnforcerAgent - Extracted for one-class-per-file pattern.
 
@@ -10,6 +11,7 @@ from __future__ import annotations
 import asyncio
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class TypeEnforcerAgent(SubAtomicAgent, MCPHardenedMixin):
     """ROLE: Type Guardian. Enforces PEP 484."""
     async def execute(self) -> None:

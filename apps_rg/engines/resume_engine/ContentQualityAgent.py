@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Specialized Resume Agents - Phase 1 Implementation
 
@@ -24,6 +25,7 @@ from .resume_base import ResumeAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
+@dataclass
 class ContentQualityAgent(ResumeAgent, MCPHardenedMixin):
     """
     Validates resume content quality.

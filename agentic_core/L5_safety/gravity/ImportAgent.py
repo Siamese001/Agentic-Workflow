@@ -52,7 +52,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
-def get_ast_safe_imports(content: str):
+def get_ast_safe_imports(content: str) -> Any:
     """Extract imports using AST, ignoring comments/docstrings."""
     import ast
     imports = set()
@@ -82,22 +82,28 @@ class ImportValidationVisitor(ast.NodeVisitor):
         self.used_names = set()
         self.dynamic_access = False
 
-    def visit_Import(self, node):
+    def visit_Import(self, node) -> Any:
+        """Execute visit_Import operation."""
         for alias in node.names:
             self.imported_modules.add(alias.name.split(".")[0])
         self.generic_visit(node)
 
-    def visit_ImportFrom(self, node):
+    def visit_ImportFrom(self, node) -> Any:
+        """Execute visit_ImportFrom operation."""
         if node.module:
             self.imported_modules.add(node.module.split(".")[0])
         self.generic_visit(node)
 
-    def visit_Name(self, node):
+    def visit_Name(self, node) -> Any:
+       """Execute visit_Name operation."""
+        """Execute visit_Name operation."""
         if isinstance(node.ctx, (ast.Load, ast.Store)):
             self.used_names.add(node.id)
         self.generic_visit(node)
 
-    def visit_Call(self, node):
+    def visit_Call(self, node) -> Any:
+       """Execute visit_Call operation."""
+        """Execute visit_Call operation."""
         # Detect potential dynamic access (Key 13: Dynamic Safeguard)
         if isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr", "__import__", "eval"}:
             self.dynamic_access = True
@@ -213,12 +219,16 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         dynamic_access = False
 
         class UsageVisitor(ast.NodeVisitor):
-            def visit_Name(self, node: ast.Name):
+            """UsageVisitor agent for autonomous operations."""
+            def visit_Name(self, node: ast.Name) -> Any:
+               """Execute visit_Name operation."""
+                """Execute visit_Name operation."""
                 if isinstance(node.ctx, (ast.Load, ast.Store)):
                     used_names.add(node.id)
                 self.generic_visit(node)
 
-            def visit_Attribute(self, node: ast.Attribute):
+            def visit_Attribute(self, node: ast.Attribute) -> Any:
+                """Execute visit_Attribute operation."""
                 # Check if the attribute being accessed is a dynamic pattern
                 if node.attr in self.dynamic_patterns:
                     nonlocal dynamic_access
@@ -228,7 +238,9 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                     used_names.add(node.value.id)
                 self.generic_visit(node)
 
-            def visit_Call(self, node: ast.Call):
+            def visit_Call(self, node: ast.Call) -> Any:
+               """Execute visit_Call operation."""
+                """Execute visit_Call operation."""
                 if isinstance(node.func, ast.Name) and node.func.id in self.dynamic_patterns:
                     nonlocal dynamic_access
                     dynamic_access = True

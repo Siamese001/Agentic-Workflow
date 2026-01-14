@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 MCPGuardianAgent - L5 Safety Guardian for MCP Integration Compliance
 
@@ -26,6 +27,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L5 Safety Guardian for MCP integration compliance.

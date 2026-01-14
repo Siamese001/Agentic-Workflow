@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 TypeMechanicAgent - Extracted from SubAtomicAgent.py
 Part of the SubAtomic agent family for code quality enforcement.
@@ -8,6 +9,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Sovereign Agent for type enforcement and precision engineering
+@dataclass
 class TypeMechanicAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     KEYS: 22 (Missing Types), 23 (Unreachable Code), 24 (Unused Vars)

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -23,6 +24,7 @@ from agentic_core.L6_observability.L6ObservabilityBaseAgent import (
 )
 
 
+@dataclass
 class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
     """
     The Performance Critic - Skeptical analyst for agent performance.
@@ -218,7 +220,7 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
 
 
 # Async entry point for scheduled execution
-async def run_nightly_analysis():
+async def run_nightly_analysis() -> Any:
     """Entry point for nightly scheduled analysis."""
     analyst = PerformanceAnalystAgent()
     result = await analyst.analyze()

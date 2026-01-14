@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP-1: Profile Analysis Agent - Classify recipient Archetype."""
 
 __version__ = "13.1"
@@ -16,6 +17,7 @@ from apps_shared.utils.state_manager import StateManager
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: HOP-1 - Profile Analysis with state-based I/O (MCP Hardened)

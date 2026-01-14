@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -58,6 +59,7 @@ class ValidationResult:
         self.signature = SIGNATURE
         self.details = DETAILS
 
+@dataclass
 class PeerIntelligenceAuditorAgent(HealerMixin):
     """
     K.2.5 - Multi-Hop RAG Analysis Agent

@@ -1,5 +1,6 @@
 from __future__ import annotations
 import asyncio
+from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -56,6 +57,7 @@ def _run_self_tests() -> dict:
         results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results
 
+@dataclass
 class SovereignCognitivePlaneAgent(ICognitivePlane, MCPHardenedMixin):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 

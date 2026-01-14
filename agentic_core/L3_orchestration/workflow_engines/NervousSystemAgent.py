@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 NervousSystemAgent - Extracted for one-class-per-file pattern.
 
@@ -28,6 +29,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     get_validated_project_root,
 )
 
+@dataclass
 class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
     """Core orchestrator that coordinates cognitive and action planes.
 

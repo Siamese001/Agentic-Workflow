@@ -1,3 +1,5 @@
+from typing import Any
+from dataclasses import dataclass
 """
 BrandComplianceAgent - Extracted for one-class-per-file pattern.
 
@@ -9,6 +11,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class BrandComplianceAgent(ResumeAgent, MCPHardenedMixin):
     """
     Ensures brand voice and professional tone.
@@ -40,6 +43,7 @@ class BrandComplianceAgent(ResumeAgent, MCPHardenedMixin):
     ]
 
     async def execute(self) -> None:
+        """Execute execute operation."""
         self.log("Checking brand compliance...")
 
         resume = self.ctx.current_resume

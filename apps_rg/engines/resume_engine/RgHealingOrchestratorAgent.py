@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 RgHealingOrchestratorAgent - Extracted for one-class-per-file pattern.
 
@@ -8,6 +9,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 
+@dataclass
 class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrates the complete self-healing process."""
 

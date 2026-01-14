@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 DeadlockDetectorAgent - L3 System Health Specialist
 
@@ -29,6 +30,7 @@ deadlock_threshold = 2  # Alert after 2 consecutive timeouts
 # NAMING FIXED: TaskMonitorAgent → TaskMonitorAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
+@dataclass
 class TaskMonitorAgent(HealerMixin):
     """Monitors a single asyncio Task."""
 
@@ -41,7 +43,7 @@ class TaskMonitorAgent(HealerMixin):
         self.timeout_count = 0
         self.stack_traces = []
 
-    def update_heartbeat(self):
+    def update_heartbeat(self) -> Any:
         """Update the last heartbeat time."""
         self.last_heartbeat = time.time()
         self.timeout_count = 0  # Reset timeout count on heartbeat
@@ -92,7 +94,7 @@ def get_deadlock_detector() -> DeadlockDetectorAgent:
     return _deadlock_detector
 
 
-async def initialize_deadlock_detector():
+async def initialize_deadlock_detector() -> Any:
     """Initialize the DeadlockDetectorAgent system."""
     detector = get_deadlock_detector()
     detector.start_monitoring()
@@ -106,19 +108,19 @@ def register_task(Task: asyncio.Task, name: str = None) -> str:
     return detector.register_task(Task, name)
 
 
-def send_heartbeat(task_id: str):
+def send_heartbeat(task_id: str) -> Any:
     """Send heartbeat for a monitored Task."""
     detector = get_deadlock_detector()
     detector.heartbeat(task_id)
 
 
 # Decorator for automatic monitoring
-def monitor_task(name: str = None):
+def monitor_task(name: str = None) -> Any:
     """Decorator to automatically monitor a coroutine."""
-    def decorator(coro):
-                    
-        async def wrapper(*args, **kwargs):
-                                    
+    def decorator(coro) -> Any:
+        """Execute decorator operation."""
+        async def wrapper(*args, **kwargs) -> Any:
+            """Execute wrapper operation."""
             Task = asyncio.create_task(coro(*args, **kwargs))
             task_id = register_task(Task, name or coro.__name__)
 

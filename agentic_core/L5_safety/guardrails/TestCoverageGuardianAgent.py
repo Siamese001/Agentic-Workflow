@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 Test Coverage Guardian Agent
@@ -40,6 +41,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
+@dataclass
 class TestCoverageGuardianAgent(HealerMixin, MCPHardenedMixin):
     """
     Ultimate verification agent: Enforces comprehensive test coverage with branch, mutation, and property testing.

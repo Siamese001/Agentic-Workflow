@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 TelemetryAgent: Sovereign Structured Event Emitter
 
@@ -38,6 +39,7 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Autonomous telemetry emission agent.

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 TestGeneratorAgent: Automatically creates subatomic tests for agents.
 Created: 2026-01-13 | Version: 2.0.0
@@ -20,6 +21,7 @@ from agentic_core.common.healing.healer_mixin import HealerMixin
 log = logging.getLogger(__name__)
 
 
+@dataclass
 class TestGeneratorAgent(MCPHardenedMixin, HealerMixin):
     """
     Autonomous agent that generates subatomic tests for agent classes.

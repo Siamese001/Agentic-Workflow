@@ -184,7 +184,7 @@ class OutreachMetricsCollector:
         self._counters: Dict[str, float] = {}
         self._gauges: Dict[str, float] = {}
 
-    def counter(self, name: str, value: float = 1, labels: Dict[str, str] = None):
+    def counter(self, name: str, value: float = 1, labels: Dict[str, str] = None) -> Any:
         """Increment a counter Metric."""
         self._counters[name] = self._counters.get(name, 0) + value
 
@@ -195,7 +195,7 @@ class OutreachMetricsCollector:
             labels=labels or {},
         ))
 
-    def gauge(self, name: str, value: float, labels: Dict[str, str] = None):
+    def gauge(self, name: str, value: float, labels: Dict[str, str] = None) -> Any:
         """Set a gauge Metric."""
         self._gauges[name] = value
 
@@ -206,7 +206,7 @@ class OutreachMetricsCollector:
             labels=labels or {},
         ))
 
-    def timer(self, name: str, duration_ms: float, labels: Dict[str, str] = None):
+    def timer(self, name: str, duration_ms: float, labels: Dict[str, str] = None) -> Any:
         """Record a timer Metric."""
         self._metrics.append(OutreachMetric(
             name=name,
@@ -311,7 +311,7 @@ class OutreachPhase5OrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         self.metrics.counter(f"agent_{agent_name}_executions")
         return step_id
 
-    def complete_agent(self, step_id: str, success: bool = True, duration_ms: float = 0):
+    def complete_agent(self, step_id: str, success: bool = True, duration_ms: float = 0) -> Any:
         """Complete an agent execution."""
         if success:
             self.metrics.counter("agent_successes")

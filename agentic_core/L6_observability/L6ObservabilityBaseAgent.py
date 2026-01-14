@@ -165,7 +165,7 @@ class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeV
             self.log_error(f"Async analysis failed: {e}")
             return {'status': 'failed', 'error': str(e)}
     
-    def schedule_analysis(self, interval: timedelta):
+    def schedule_analysis(self, interval: timedelta) -> Any:
         """
         Schedule recurring analysis (e.g., nightly at 2am, every 4 hours).
         
@@ -175,7 +175,7 @@ class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeV
         self.schedule_interval = interval
         self.log_info(f"Scheduled analysis every {interval}")
     
-    async def run_scheduled_loop(self):
+    async def run_scheduled_loop(self) -> Any:
         """
         Run continuous scheduled analysis loop.
         Typically run as a background daemon process.

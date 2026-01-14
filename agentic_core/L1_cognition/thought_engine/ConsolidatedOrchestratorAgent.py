@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 ConsolidatedOrchestratorAgent - Extracted for one-class-per-file pattern.
 
@@ -11,6 +12,7 @@ import ast
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class ConsolidatedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     [START] PHASE 5: THE HUB - Consolidated Command & Control Orchestrator

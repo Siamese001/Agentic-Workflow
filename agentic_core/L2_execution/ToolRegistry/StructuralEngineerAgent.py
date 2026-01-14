@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Structural Engineer Agent - Code Structure Validation (Keys 17-46)
 CANONICAL: True - Consolidated 2026-01-06 (merged from engineering.py)
@@ -31,6 +32,7 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+@dataclass
 class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
     """
     Structural Engineer validates code structure and organization.

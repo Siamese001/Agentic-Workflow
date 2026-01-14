@@ -1,5 +1,6 @@
 from __future__ import annotations
 import ast
+from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -38,6 +39,7 @@ def is_excepted_from_key(key_id: int, file_path: Path, line_content: str='') -> 
                 return True
     return False
 
+@dataclass
 class CanonAstValidatorAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ast.NodeVisitor):
     """
     [L6 INFRASTRUCTURE] Base AST visitor for Canon keys.

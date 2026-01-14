@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Semantic Gatekeeper - L3 Orchestration Layer
 
@@ -18,6 +19,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30
+@dataclass
 class SemanticGatekeeperAgent(MCPHardenedMixin, HealerMixin):
     """
     Gatekeeper that controls agent execution with concurrency limits and timeouts.

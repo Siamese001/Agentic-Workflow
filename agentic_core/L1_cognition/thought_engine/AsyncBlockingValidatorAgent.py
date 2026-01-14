@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 AsyncBlockingValidatorAgent - Extracted for one-class-per-file pattern.
 
@@ -19,6 +20,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class AsyncBlockingValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator, MCPHardenedMixin):
     """
     Key 31: Detects blocking calls in async functions (time.sleep, requests, etc).

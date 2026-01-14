@@ -21,6 +21,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON COMPLIANCE — renamed to TypeHintEnforcementAgent for discovery and sovereignty — 2025-12-30
 class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+   """TypeHintEnforcementAgent agent for autonomous operations."""
     """
     Ensures public functions, methods, and module-level assignments have type hints.
 
@@ -103,6 +104,7 @@ def get_type_hint_enforcement_agent(ctx, project_root=None) -> TypeHintEnforceme
 
 
 class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+    """TypeHintEnforcementAgent agent for autonomous operations."""
     # ... (rest of the class remains the same)
 
     @timeout(300)

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 ==============================================================================
 SOVEREIGN PINECONE STORE AGENT (MERGED IMPLEMENTATION)
@@ -34,6 +35,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+@dataclass
 class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     """
     ADAPTER: Legacy Interface -> New MCP Client.

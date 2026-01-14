@@ -6,30 +6,36 @@ import numpy as np
 import time
 import uuid
 import math
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
+from dataclasses import dataclass
 
 # Gravity-safe imports for active interventions
 try:
     from agentic_core.runtime.shared_runtime import publish_event, subscribe_event
 except ImportError:
     # Stub if not available
-    def publish_event(event_type: str, payload: dict):
+    def publish_event(event_type: str, payload: dict) -> Any:
+        """Execute publish_event operation."""
         print(f"[CoverageAgent] Event published (stub): {event_type} = {payload}")
-    def subscribe_event(event_type: str, handler):
+    def subscribe_event(event_type: str, handler) -> Any:
+        """Execute subscribe_event operation."""
         print(f"[CoverageAgent] Event subscription (stub): {event_type}")
 
 try:
     from agentic_core.L3_orchestration.workflow_engines.task_queue import enqueue
 except ImportError:
     # Stub if not available
-    def enqueue(task_payload: dict):
+    def enqueue(task_payload: dict) -> Any:
+        """Execute enqueue operation."""
         print(f"[CoverageAgent] Task enqueued (stub): {task_payload['task_id']}")
 
 # Use the canonical base for metric-related agents (observed pattern in MetricsAgent/BenchmarkingAgent)
 # If no specific base exists, fall back to a lightweight object; adjust if your MetricsAgent inherits something specific
+@dataclass
 class CoverageAgent(SovereignBaseAgent):
+    """CoverageAgent agent for autonomous operations."""
     def __init__(
         self,
         layers: list[str] = None,

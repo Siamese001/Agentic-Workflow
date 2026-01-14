@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 GravityHealerAgent - Unified Gravity Law Repair
 Territory: agentic_core/L2_execution/ToolRegistry/
@@ -30,6 +31,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
     """
     [L2 HEALER] Specialized repair agent for Gravity violations.

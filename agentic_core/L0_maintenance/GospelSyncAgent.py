@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 GOSPEL SYNC AGENT
@@ -17,6 +18,7 @@ from agentic_core.L0_maintenance.scripts.L0Agent import L0Agent
 from agentic_core.config.blueprint_sovereign.structure_blueprint import STRUCTURE_BLUEPRINT
 
 
+@dataclass
 class GospelSyncAgent(L0Agent):
     """
     THE SSOT GUARDIAN

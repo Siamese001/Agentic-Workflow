@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 # File: intelligence_librarian.py
 # Description: Persistent Intelligence Service ("The Librarian") - v13.0
 # Runs offline/async to pre-compute deep research and store in vector database
@@ -33,6 +34,7 @@ from apps_shared.utils.circuit_breaker import CircuitBreaker
 from apps_shared.utils.vector_memory import VectorMemoryStore
 
 
+@dataclass
 class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
     """
     v13.1: Offline research agent that pre-computes intelligence (MCP Hardened)
@@ -534,7 +536,7 @@ Output ONLY the JSON array, no explanation."""
             return super().heal_repository()
 
 
-async def run_intelligence_service(target_list_file: str = "research_targets.json"):
+async def run_intelligence_service(target_list_file: str = "research_targets.json") -> Any:
     """
     Main entry point for intelligence service
     

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 OutreachTestPilotDeprecatedAgent - Extracted for 1:1 sovereign file structure.
 Deprecated agent preserved for backward compatibility.
@@ -9,6 +10,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Legacy class - use OutreachTestPilotAgent instead
+@dataclass
 class OutreachTestPilotDeprecatedAgent(OutreachAgent):
     """Runs validation tests on the campaign."""
 

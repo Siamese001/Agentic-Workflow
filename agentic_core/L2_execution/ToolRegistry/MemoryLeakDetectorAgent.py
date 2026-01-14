@@ -1,5 +1,6 @@
 from __future__ import annotations
 import ast
+from typing import Any
 '''Brief description of functionality and purpose.'''
 
 import asyncio
@@ -45,7 +46,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
     }
 
     async def execute(self) -> None:
-                    
+        """Execute execute operation."""
         print(f"\n[>>>] {self.name} ACTIVATED: Detecting Resource Leaks...")
         await asyncio.sleep(0)
 
@@ -377,11 +378,13 @@ class DeadlockAnalyzer(ast.NodeVisitor):
         self.locks_without_timeout = []
         self.lock_acquisitions = []  # Track all lock.acquire() calls
 
-    def visit_Module(self, node):
+    def visit_Module(self, node) -> Any:
+       """Execute visit_Module operation."""
         """Visit the module and analyze all functions."""
         self.generic_visit(node)
 
-    def visit_FunctionDef(self, node):
+    def visit_FunctionDef(self, node) -> Any:
+       """Execute visit_FunctionDef operation."""
         """Analyze a function for lock acquisition patterns."""
         old_function = self.current_function
         old_sequence = self.current_sequence
@@ -409,11 +412,13 @@ class DeadlockAnalyzer(ast.NodeVisitor):
         self.current_function = old_function
         self.current_sequence = old_sequence
 
-    def visit_AsyncFunctionDef(self, node):
+    def visit_AsyncFunctionDef(self, node) -> Any:
+       """Execute visit_AsyncFunctionDef operation."""
         """Analyze async functions for lock patterns."""
         self.visit_FunctionDef(node)
 
-    def visit_With(self, node):
+    def visit_With(self, node) -> Any:
+       """Execute visit_With operation."""
         """Analyze 'with' statements for lock acquisitions."""
         for item in node.items:
             lock_name = self._extract_lock_name(item.context_expr)
@@ -430,11 +435,13 @@ class DeadlockAnalyzer(ast.NodeVisitor):
             if lock_name:
                 self.current_sequence.pop()
 
-    def visit_AsyncWith(self, node):
+    def visit_AsyncWith(self, node) -> Any:
+       """Execute visit_AsyncWith operation."""
         """Analyze 'async with' statements."""
         self.visit_With(node)
 
-    def visit_Call(self, node):
+    def visit_Call(self, node) -> Any:
+       """Execute visit_Call operation."""
         """Check for .acquire() calls without timeout."""
         if isinstance(node.func, ast.Attribute):
             if node.func.attr == 'acquire':
@@ -466,14 +473,14 @@ class DeadlockAnalyzer(ast.NodeVisitor):
             return ast.unparse(node) if hasattr(ast, 'unparse') else str(node.lineno)
         return None
 
-    def detect_cycles(self):
+    def detect_cycles(self) -> Any:
         """Detect cycles in the lock acquisition graph using DFS."""
         cycles = []
         visited = set()
         rec_stack = set()
 
-        def dfs(node, parent_path):
-                                    
+        def dfs(node, parent_path) -> Any:
+            """Execute dfs operation."""
             if node in rec_stack:
                 # Found a cycle
                 cycle_start = parent_path.index(node)
@@ -517,8 +524,8 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.global_variables = set()
         self.shared_state = []
 
-    def visit(self, node):
-                    
+    def visit(self, node) -> Any:
+        """Execute visit operation."""
         # Add parent info to nodes for context tracking
         for child in ast.walk(node):
             for field, value in ast.iter_fields(child):
@@ -530,8 +537,8 @@ class RaceAnalyzer(ast.NodeVisitor):
                     value._parent = child
         return super().visit(node)
 
-    def visit_Module(self, node):
-                    
+    def visit_Module(self, node) -> Any:
+        """Execute visit_Module operation."""
         # Track module-level assignments (global state)
         for stmt in node.body:
             if isinstance(stmt, ast.Assign):
@@ -540,8 +547,8 @@ class RaceAnalyzer(ast.NodeVisitor):
                         self.global_variables.add(target.id)
         self.generic_visit(node)
 
-    def visit_ClassDef(self, node):
-                    
+    def visit_ClassDef(self, node) -> Any:
+        """Execute visit_ClassDef operation."""
         old_class = self.current_class
         self.current_class = node.name
 
@@ -561,8 +568,8 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
         self.current_class = old_class
 
-    def visit_FunctionDef(self, node):
-                    
+    def visit_FunctionDef(self, node) -> Any:
+        """Execute visit_FunctionDef operation."""
         old_function = self.current_function
         self.current_function = node.name
 
@@ -574,12 +581,12 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
         self.current_function = old_function
 
-    def visit_AsyncFunctionDef(self, node):
-                    
+    def visit_AsyncFunctionDef(self, node) -> Any:
+        """Execute visit_AsyncFunctionDef operation."""
         self.visit_FunctionDef(node)
 
-    def visit_With(self, node):
-                    
+    def visit_With(self, node) -> Any:
+        """Execute visit_With operation."""
         # Check if this 'with' statement uses a lock
         is_lock_context = False
         for item in node.items:
@@ -594,12 +601,12 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
         self.in_with_context.pop()
 
-    def visit_AsyncWith(self, node):
-                    
+    def visit_AsyncWith(self, node) -> Any:
+        """Execute visit_AsyncWith operation."""
         self.visit_With(node)
 
-    def visit_Assign(self, node):
-                    
+    def visit_Assign(self, node) -> Any:
+        """Execute visit_Assign operation."""
         # Check for assignments to shared mutable state
         for target in node.targets:
             if isinstance(target, ast.Name):
@@ -638,8 +645,8 @@ class RaceAnalyzer(ast.NodeVisitor):
 
         self.generic_visit(node)
 
-    def visit_AugAssign(self, node):
-                    
+    def visit_AugAssign(self, node) -> Any:
+        """Execute visit_AugAssign operation."""
         # Check for compound operations (+=, -=, *=, /=)
         # These are always non-atomic
         if isinstance(node.target, ast.Name):
@@ -668,8 +675,8 @@ class RaceAnalyzer(ast.NodeVisitor):
 
         self.generic_visit(node)
 
-    def visit_Call(self, node):
-                    
+    def visit_Call(self, node) -> Any:
+        """Execute visit_Call operation."""
         # Check for method calls on shared objects without locks
         if isinstance(node.func, ast.Attribute):
             # Check if it's a mutable method on shared state

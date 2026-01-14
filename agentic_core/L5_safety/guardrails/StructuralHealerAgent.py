@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 StructuralHealerAgent: Sovereign Structural Convergence Conductor
 
@@ -90,26 +91,30 @@ class ImportUpdater(ast.NodeVisitor):
         self.used_names: Set[str] = set()
         self.last_import_lineno = 0
 
-    def visit_Import(self, node: ast.Import):
+    def visit_Import(self, node: ast.Import) -> Any:
+        """Execute visit_Import operation."""
         for alias in node.names:
             self.imported_modules.add(alias.name.split('.')[0])
         self.last_import_lineno = max(self.last_import_lineno, node.lineno)
         self.generic_visit(node)
 
-    def visit_ImportFrom(self, node: ast.ImportFrom):
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> Any:
+        """Execute visit_ImportFrom operation."""
         if node.module:
             self.imported_modules.add(node.module.split('.')[0])
         self.last_import_lineno = max(self.last_import_lineno, node.lineno)
         self.generic_visit(node)
 
-    def visit_Name(self, node: ast.Name):
+    def visit_Name(self, node: ast.Name) -> Any:
+        """Execute visit_Name operation."""
         if isinstance(node.ctx, ast.Load):
             self.used_names.add(node.id)
             if node.id in self.target_symbols:
                 self.found_usage = True
         self.generic_visit(node)
 
-    def visit_Attribute(self, node: ast.Attribute):
+    def visit_Attribute(self, node: ast.Attribute) -> Any:
+        """Execute visit_Attribute operation."""
         if isinstance(node.value, ast.Name):
             self.used_names.add(node.value.id)
             if node.value.id in self.target_symbols:
@@ -120,6 +125,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Autonomous Conductor for structural healing.

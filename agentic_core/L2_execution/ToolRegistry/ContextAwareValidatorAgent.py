@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 ContextAwareValidatorAgent – Sovereign Agent Role Component (Phase 32 – Dec 30, 2025)
 
@@ -22,6 +23,7 @@ from typing import Dict, Any, Optional
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
+@dataclass
 class ContextAwareValidatorAgent(HealerMixin, MCPHardenedMixin):
     """
     Base class for intelligent validators.

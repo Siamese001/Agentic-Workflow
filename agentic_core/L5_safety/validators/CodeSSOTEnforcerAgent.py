@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 CodeSSOTEnforcerAgent — CODE-LEVEL SSOT ENFORCEMENT
 
@@ -66,6 +67,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Ultra high-signal code-level SSOT enforcer using AST analysis.

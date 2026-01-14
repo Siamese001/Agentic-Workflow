@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 Territory Healer Agent - Exhaustive Territory Enforcement
@@ -20,6 +21,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
+@dataclass
 class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
     """
     Enforces exhaustive territory compliance by detecting intra-territory strays.

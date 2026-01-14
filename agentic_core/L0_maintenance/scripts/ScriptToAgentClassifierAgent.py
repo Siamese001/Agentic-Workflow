@@ -304,6 +304,7 @@ class _ModuleAnalyzer(ast.NodeVisitor):
         self.line_count = len(self.source_lines)
 
     def extract_signals(self) -> Dict[str, Any]:
+        """Execute extract_signals operation."""
         self.visit(self.tree)
         return {
             "has_main_guard": self.has_main_guard,
@@ -314,7 +315,8 @@ class _ModuleAnalyzer(ast.NodeVisitor):
             "line_count": self.line_count,
         }
 
-    def visit_If(self, node: ast.If):
+    def visit_If(self, node: ast.If) -> Any:
+        """Execute visit_If operation."""
         if (
             isinstance(node.test, ast.Compare)
             and isinstance(node.test.left, ast.Name)
@@ -324,7 +326,8 @@ class _ModuleAnalyzer(ast.NodeVisitor):
             self.has_main_guard = True
         self.generic_visit(node)
 
-    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> Any:
+        """Execute visit_AsyncFunctionDef operation."""
         if node.name == "main":
             # Check if called with asyncio.run
             for stmt in self.tree.body:
@@ -334,11 +337,14 @@ class _ModuleAnalyzer(ast.NodeVisitor):
                             self.has_async_main = True
         self.generic_visit(node)
 
-    def visit_ClassDef(self, node: ast.ClassDef):
+    def visit_ClassDef(self, node: ast.ClassDef) -> Any:
+       """Execute visit_ClassDef operation."""
+        """Execute visit_ClassDef operation."""
         self.num_classes += 1
         self.generic_visit(node)
 
-    def visit_Call(self, node: ast.Call):
+    def visit_Call(self, node: ast.Call) -> Any:
+        """Execute visit_Call operation."""
         # Detect common top-level side effects
         func_name = self._get_func_name(node.func)
         if func_name in {"print", "open", "Path.write_text", "Path.write_bytes", "logging"}:
@@ -354,7 +360,8 @@ class _ModuleAnalyzer(ast.NodeVisitor):
             return f"{self._get_func_name(func_node.value)}.{func_node.attr}"
         return "unknown"
 
-    def visit_Expr(self, node: ast.Expr):
+    def visit_Expr(self, node: ast.Expr) -> Any:
+        """Execute visit_Expr operation."""
         # Count top-level expressions (not inside functions/classes)
         # Note: parent attribute not available in standard AST, simplified check
         self.top_level_statements += 1
@@ -368,6 +375,8 @@ class _ClassExtractionVisitor(ast.NodeVisitor):
     def __init__(self) -> None:
         self.classes: List[ast.ClassDef] = []
 
-    def visit_ClassDef(self, node: ast.ClassDef):
+    def visit_ClassDef(self, node: ast.ClassDef) -> Any:
+       """Execute visit_ClassDef operation."""
+        """Execute visit_ClassDef operation."""
         self.classes.append(node)
         self.generic_visit(node)

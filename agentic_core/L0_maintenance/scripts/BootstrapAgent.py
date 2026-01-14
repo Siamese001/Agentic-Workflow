@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 BootstrapAgent: Sovereign Boot Integrity & Neural Link Verifier
 
@@ -35,6 +36,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class BootstrapAgent(L0Agent):
     """
     Autonomous boot integrity agent.

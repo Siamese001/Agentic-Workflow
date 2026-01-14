@@ -289,7 +289,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self._import_agent = None
 
     @property
-    def hierarchy_agent(self):
+    def hierarchy_agent(self) -> Any:
         """Lazy-load HierarchyAgent to avoid circular import."""
         if self._hierarchy_agent is None:
             try:
@@ -302,7 +302,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return self._hierarchy_agent
     
     @property
-    def import_agent(self):
+    def import_agent(self) -> Any:
         """Lazy-load ImportAgent to avoid circular import."""
         if self._import_agent is None:
             try:

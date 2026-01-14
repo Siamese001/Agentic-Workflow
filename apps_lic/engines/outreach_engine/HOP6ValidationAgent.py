@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP-6: Validation Agent - Rule-based validation from config."""
 
 __version__ = "13.1"
@@ -19,6 +20,7 @@ from apps_lic.engines.outreach_engine.tools.code_interpreter import ValidationTo
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: Validation Agent - Rule-based validation from config (MCP Hardened)

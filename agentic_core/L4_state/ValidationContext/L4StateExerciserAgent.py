@@ -1,10 +1,11 @@
 from __future__ import annotations
+from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import tempfile
 from pathlib import Path
-from typing import List
+from typing import List, Any
 import uuid
 import time
 
@@ -43,7 +44,7 @@ def _get_filesystem_mcp():
     except Exception:
         return None
 
-def log_event(event_type: str, payload: dict):
+def log_event(event_type: str, payload: dict) -> Any:
     """Log event with fallback to print."""
     try:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
@@ -52,6 +53,7 @@ def log_event(event_type: str, payload: dict):
         print(f"[L4StateExerciserAgent] Event logged (stub): {event_type} = {payload}")
 
 
+@dataclass
 class L4StateExerciserAgent(SovereignBaseAgent):
     """
     Sub-atomic responsibility: Safely exercise L4 state primitives via no-op/dry-run operations.

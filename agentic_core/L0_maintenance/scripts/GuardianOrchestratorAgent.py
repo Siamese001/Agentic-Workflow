@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 GuardianOrchestratorAgent – Sovereign Agent (Phase 15 – Dec 30, 2025)
 SSOT-compliant location: L0_maintenance/scripts/
@@ -20,6 +21,7 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
+@dataclass
 class GuardianOrchestratorAgent(L0Agent, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
@@ -116,11 +118,13 @@ class GuardianOrchestratorAgent(L0Agent, AutonomyMixin,
         }
 
     def execute_ddd_alignment(self) -> Tuple[float, List[str]]:
+        """Execute execute_ddd_alignment operation."""
         if self.ddd_guardian:
             return self.ddd_guardian(str(self.target_path))
         return 100.0, ["DDD Alignment guardian unavailable – assuming perfect alignment"]
 
     def execute_observability_footprint(self) -> Tuple[float, List[str]]:
+        """Execute execute_observability_footprint operation."""
         if not self.observability_guardian:
             return 100.0, ["Observability Footprint guardian unavailable – assuming full visibility"]
 

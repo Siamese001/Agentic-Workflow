@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP-4: Routing Agent - Determine optimal message Route."""
 
 __version__ = "13.1"
@@ -14,6 +15,7 @@ from apps_lic.domain.lic_models import OutreachMission
 from apps_shared.utils.state_manager import StateManager
 
 
+@dataclass
 class HOP4RoutingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: HOP-4 - Routing Decision with state-based I/O (MCP Hardened)

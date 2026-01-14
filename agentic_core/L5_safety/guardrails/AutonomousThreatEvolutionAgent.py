@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 AutonomousThreatEvolution – L5 Sovereign Threat Self-Evolution
@@ -38,6 +39,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+@dataclass
 class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """L5: Self-healing security agent"""
     def __init__(self, SafetyEngine=None) -> None:
@@ -53,8 +55,8 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         print(f"   [L5] Threat Evolution Agent: Online")
         await self.threat_evolution_loop()
 
-    async def threat_evolution_loop(self):
-                    
+    async def threat_evolution_loop(self) -> Any:
+        """Execute threat_evolution_loop operation."""
         while self.running:
             try:
                 await self._perform_evolution_cycle()
@@ -112,7 +114,7 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         finally:
             _call_path.discard(agent_name)
 
-    def stop(self):
+    def stop(self) -> Any:
         """Graceful shutdown"""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -130,12 +132,12 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             "recent_detections": len(self._load_recent_detections(hours=24))
         }
 
-    def set_evolution_interval(self, seconds: int):
+    def set_evolution_interval(self, seconds: int) -> Any:
         """Update evolution cycle interval"""
         self.evolution_interval = max(60, seconds)  # Minimum 1 minute
         print(f"   [L5] Evolution interval updated to {self.evolution_interval}s")
 
-    def set_confidence_threshold(self, threshold: float):
+    def set_confidence_threshold(self, threshold: float) -> Any:
         """Update confidence threshold for rule generation"""
         self.confidence_threshold = max(0.0, min(1.0, threshold))
         print(f"   [L5] Confidence threshold updated to {self.confidence_threshold}")

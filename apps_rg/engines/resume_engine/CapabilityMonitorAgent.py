@@ -186,7 +186,7 @@ class ProactiveScheduler:
         }
         return sorted(pending, key=lambda t: priority_order.get(t.priority, 5))
 
-    def mark_executed(self, task_id: str, result: str = "completed"):
+    def mark_executed(self, task_id: str, result: str = "completed") -> Any:
         """Mark a Task as executed."""
         for Task in self._tasks:
             if Task.task_id == task_id:
@@ -213,7 +213,7 @@ class PredictiveHandoff:
         self._request_counter = 0
         self._capability_profiles: Dict[str, CapabilityProfile] = {}
 
-    def register_capability(self, profile: CapabilityProfile):
+    def register_capability(self, profile: CapabilityProfile) -> Any:
         """Register an agent's capability profile."""
         self._capability_profiles[profile.agent_name] = profile
 
@@ -321,7 +321,7 @@ class PredictiveHandoff:
         """Get all pending handoff requests."""
         return self._handoff_requests
 
-    def clear_handoffs(self):
+    def clear_handoffs(self) -> Any:
         """Clear all handoff requests."""
         self._handoff_requests.clear()
 
@@ -346,7 +346,7 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
         success: bool,
         duration_ms: float,
         complexity: int = 1,
-    ):
+    ) -> Any:
         """Record an agent execution."""
         self._execution_history.append({
             "agent_name": agent_name,

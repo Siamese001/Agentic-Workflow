@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 IMPORT LOCK AGENT
@@ -54,6 +55,7 @@ class SovereigntyError(ImportError):
     pass
 
 
+@dataclass
 class ImportLockAgent(MCPHardenedMixin, MetaPathFinder):
     """
     The Runtime Execution Guard.
@@ -372,7 +374,7 @@ def disengage_global_lock() -> bool:
     return False
 
 
-def main():
+def main() -> Any:
     """CLI entry point for testing the Import Lock Agent."""
     import argparse
     

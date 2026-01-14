@@ -305,7 +305,7 @@ python scripts/ssot.py validate --summary
         return report
 
 
-def main():
+def main() -> Any:
     """CLI entry point for the Dynamic Seal Agent."""
     import argparse
     

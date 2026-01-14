@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 ReportingAgent: Sovereign Compliance Diagnostic Visualizer
 
@@ -45,6 +46,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
+@dataclass
 class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Autonomous diagnostic agent for compliance reporting and visualization.

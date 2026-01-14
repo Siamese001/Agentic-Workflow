@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 BudgetAgent - Extracted from SubAtomicAgent.py
 Part of the SubAtomic agent family for code quality enforcement.
@@ -8,6 +9,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Sovereign Agent for token budget tracking and complexity management
+@dataclass
 class BudgetAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     KEYS: 17 (Large Functions), 19 (Complex Functions)

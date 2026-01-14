@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 AutonomousPromptEvolutionAgent: Optimizes prompt templates based on MetaLearning rewards.
 Created: 2026-01-13 | Version: 2.0.0
@@ -21,6 +22,7 @@ from agentic_core.common.healing.healer_mixin import HealerMixin
 log = logging.getLogger(__name__)
 
 
+@dataclass
 class AutonomousPromptEvolutionAgent(MCPHardenedMixin, HealerMixin):
     """
     Autonomous agent that evolves prompt templates based on performance metrics.

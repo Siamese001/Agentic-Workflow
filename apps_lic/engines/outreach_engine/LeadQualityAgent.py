@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Outreach Engine Agents - Specialized Agents for Campaign Automation
 
@@ -22,6 +23,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
+@dataclass
 class LeadQualityAgent(OutreachAgent):
     """Validates and scores lead quality."""
 

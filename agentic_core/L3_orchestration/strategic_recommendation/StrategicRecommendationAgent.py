@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 Strategic Recommendation Agent
 L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
@@ -26,6 +27,7 @@ from agentic_core.common.healing.healer_mixin import HealerMixin
 log = logging.getLogger(__name__)
 
 
+@dataclass
 class StrategicRecommendationAgent(MCPHardenedMixin, HealerMixin):
     """
     L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.

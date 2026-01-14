@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 Git Safety Handler - L5 Safety Layer
 
@@ -22,6 +23,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.mixins import SubatomicTestingMixin
 Logger: Any = logging.getLogger(__name__)
 
+@dataclass
 class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     L5 Safety Layer: Uses GitKraken MCP to manage rollback points

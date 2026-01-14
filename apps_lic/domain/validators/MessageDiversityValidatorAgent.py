@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 MessageDiversityValidatorAgent - Extracted for one-class-per-file pattern.
 
@@ -11,6 +12,7 @@ from typing import Dict, Any, List
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
+@dataclass
 class MessageDiversityValidatorAgent(MCPHardenedMixin, HealerMixin):
     """
     Prevent repetitive messages using cosine similarity

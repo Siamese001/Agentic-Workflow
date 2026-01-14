@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Any
 import uuid
 import time
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import get_validated_project_root
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
+from dataclasses import dataclass
 
 # Lazy imports — gravity-safe (same L1 territory)
 def _get_thought_node():
@@ -51,7 +52,7 @@ def _get_mission_decomposer():
     except Exception:
         return None
 
-def log_event(event_type: str, payload: dict):
+def log_event(event_type: str, payload: dict) -> Any:
     """Log event with fallback to print."""
     try:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
@@ -60,6 +61,7 @@ def log_event(event_type: str, payload: dict):
         print(f"[L1CognitionExerciserAgent] Event logged (stub): {event_type} = {payload}")
 
 
+@dataclass
 class L1CognitionExerciserAgent(L1CognitionBaseAgent):
     """
     Sub-atomic responsibility: Safely exercise L1 cognition primitives via no-op reasoning cycles.

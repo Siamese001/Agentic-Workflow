@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 AdvancedDeadCodeAuditorAgent - Sovereign Code Auditor V2.0
@@ -11,10 +12,10 @@ import os
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Any
 
 
-def add_parents(node, parent=None):
+def add_parents(node, parent=None) -> Any:
     """Add parent reference to all AST nodes for upward traversal."""
     node.parent = parent
     for child in ast.iter_child_nodes(node):
@@ -40,7 +41,7 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
         self.import_line_numbers: Dict[str, int] = {}
         self.definition_line_numbers: Dict[str, int] = {}
         
-    def visit_Import(self, node: ast.Import):
+    def visit_Import(self, node: ast.Import) -> Any:
         """Track import statements and their line numbers."""
         for alias in node.names:
             name = alias.asname if alias.asname else alias.name
@@ -48,7 +49,7 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
             self.import_line_numbers[name] = node.lineno
         self.generic_visit(node)
         
-    def visit_ImportFrom(self, node: ast.ImportFrom):
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> Any:
         """Track from-import statements."""
         if node.module:
             for alias in node.names:
@@ -57,21 +58,21 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
                 self.import_line_numbers[name] = node.lineno
         self.generic_visit(node)
         
-    def visit_FunctionDef(self, node: ast.FunctionDef):
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
         """Track function definitions."""
         self.defined_names.add(node.name)
         self.defined_functions.add(node.name)
         self.definition_line_numbers[node.name] = node.lineno
         self.generic_visit(node)
         
-    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> Any:
         """Track async function definitions."""
         self.defined_names.add(node.name)
         self.defined_functions.add(node.name)
         self.definition_line_numbers[node.name] = node.lineno
         self.generic_visit(node)
         
-    def visit_ClassDef(self, node: ast.ClassDef):
+    def visit_ClassDef(self, node: ast.ClassDef) -> Any:
         """Track class definitions and their methods."""
         self.defined_names.add(node.name)
         self.defined_classes.add(node.name)
@@ -89,13 +90,13 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
                 
         self.generic_visit(node)
         
-    def visit_Name(self, node: ast.Name):
+    def visit_Name(self, node: ast.Name) -> Any:
         """Track name usage."""
         if isinstance(node.ctx, ast.Load):
             self.used_names.add(node.id)
         self.generic_visit(node)
         
-    def visit_Call(self, node: ast.Call):
+    def visit_Call(self, node: ast.Call) -> Any:
         """Track function/method calls."""
         # Track direct function calls
         if isinstance(node.func, ast.Name):
@@ -109,7 +110,7 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
         self.generic_visit(node)
         
     # [EXTENSION] Detect self.method / cls.method references
-    def visit_Attribute(self, node: ast.Attribute):
+    def visit_Attribute(self, node: ast.Attribute) -> Any:
         """Track attribute access, especially self.method and cls.method."""
         # Track self.method() and cls.method() calls within class context
         if isinstance(node.value, ast.Name) and node.value.id in {"self", "cls"}:
@@ -125,6 +126,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Sovereign dead code auditor that identifies unused code across the project.
@@ -318,7 +320,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
 
 
 # CLI Entry Point
-def main():
+def main() -> Any:
     """Command line interface for the dead code detector."""
     if len(sys.argv) < 2:
         print("Usage: python dead_code_detector_agent.py <directory>")

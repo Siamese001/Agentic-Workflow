@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 AutonomousRedisOrchestrator – L2 Sovereign Resilience
@@ -21,6 +22,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
+@dataclass
 class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     '''Brief description of functionality and purpose.'''
     
@@ -50,7 +52,7 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
         return redis.Redis(**params)
 
     def get(self, key: str) -> Any:
-                    
+        """Execute get operation."""
         if not self.use_fallback:
             try:
                 if not self.connection: self.connection = self._create_connection()
@@ -61,8 +63,8 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
         
         return self.fallback_cache.get(key)
 
-    def set(self, key: str, value: Any):
-                    
+    def set(self, key: str, value: Any) -> Any:
+        """Execute set operation."""
         if not self.use_fallback:
             try:
                 if not self.connection: self.connection = self._create_connection()
@@ -102,7 +104,7 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
         
         return key in self.fallback_cache
 
-    def clear(self):
+    def clear(self) -> Any:
         """Clear all data from Redis and fallback cache"""
         if not self.use_fallback:
             try:

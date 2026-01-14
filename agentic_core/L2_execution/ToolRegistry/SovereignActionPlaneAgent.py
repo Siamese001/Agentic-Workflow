@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """Sovereign Action Plane Implementation.
 
 Bypasses corrupted registry files with Toolsmith logic from the monolith.
@@ -111,6 +112,7 @@ class SovereignSandbox:
                         pass
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+@dataclass
 class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
     """Sovereign action plane with Toolsmith and Sandbox."""
 

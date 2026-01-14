@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """HOP Workflow Orchestrator Agent - HOP-based Workflow Orchestration."""
 
 __version__ = "13.1"
@@ -31,6 +32,7 @@ from .HOP6ValidationAgent import HOP6ValidationAgent
 from .HOP8QAReportAgent import HOP8QAReportAgent
 
 
+@dataclass
 class LicWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.0: HOP-based Workflow Orchestrator

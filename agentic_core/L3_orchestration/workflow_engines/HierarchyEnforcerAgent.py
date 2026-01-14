@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 HierarchyEnforcerAgent - Ensures L4 structure compliance
@@ -12,6 +13,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
 
+@dataclass
 class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Enforces the canonical L4 hierarchy across agentic_core.
@@ -246,7 +248,8 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
             "compliant": len(violations) == 0
         }
     
-    async def execute(self, ctx):
+    async def execute(self, ctx) -> Any:
+        """Execute execute operation."""
         issues = self.enforce_hierarchy()
         issues.extend(self.enforce_depth_precision())
         issues.extend(self.enforce_tests_depth())

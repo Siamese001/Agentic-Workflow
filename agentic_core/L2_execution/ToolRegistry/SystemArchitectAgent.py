@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 System Architect Agent - Core Architecture Validation (Keys 40-50)
 CANONICAL: True - Consolidated 2026-01-06 (removed system_architect.py duplicate)
@@ -20,6 +21,7 @@ from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+@dataclass
 class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
     """
     System Architect validates core architecture and import dependencies.

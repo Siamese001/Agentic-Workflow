@@ -2,6 +2,7 @@
 # CANONICAL: True - Enforces dedicated ClassNameAgent.py file naming (2026-01-06)
 
 from __future__ import annotations
+from dataclasses import dataclass
 
 import ast
 import subprocess
@@ -30,6 +31,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
+@dataclass
 class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     L5 Safety agent - enforces dedicated ClassNameAgent.py file naming standard.

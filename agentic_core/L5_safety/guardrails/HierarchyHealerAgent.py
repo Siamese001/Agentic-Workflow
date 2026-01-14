@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import shutil
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Set
 
@@ -25,6 +26,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
 
+@dataclass
 class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L5 Hierarchy Healer Agent

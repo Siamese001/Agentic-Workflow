@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 INTERFACE BOUNDARY AGENT
@@ -15,7 +16,7 @@ Mechanism:
 import ast
 import os
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Any
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
@@ -37,6 +38,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
+@dataclass
 class InterfaceBoundaryAgent(MCPHardenedMixin):
     """
     The Architect Agent.
@@ -112,7 +114,7 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
 
         return "\n".join(content)
 
-    def report(self):
+    def report(self) -> Any:
         """Detailed report of required structural decoupling."""
         if not self.violations:
             print("✅ BOUNDARY INTEGRITY: All L0 utilities are within complexity limits.")

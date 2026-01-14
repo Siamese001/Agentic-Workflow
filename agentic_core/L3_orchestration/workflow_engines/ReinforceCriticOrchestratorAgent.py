@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.distributions import Categorical
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Any
 import numpy as np
 import time
 
@@ -15,6 +15,7 @@ from agentic_core.L6_observability.metrics.shared_counters import counters
 from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent import NervousSystemAgent
+from dataclasses import dataclass
 
 
 class PolicyCriticNet(nn.Module):
@@ -30,11 +31,13 @@ class PolicyCriticNet(nn.Module):
         self.policy_head = nn.Linear(64, n_actions)
         self.critic_head = nn.Linear(64, 1)
 
-    def forward(self, x):
+    def forward(self, x) -> Any:
+        """Execute forward operation."""
         shared = self.shared(x)
         return self.policy_head(shared), self.critic_head(shared)
 
 
+@dataclass
 class ReinforceCriticOrchestratorAgent(SovereignBaseAgent):
     """
     Sub-atomic REINFORCE with learned critic baseline: Policy gradient + value baseline.
@@ -91,11 +94,11 @@ class ReinforceCriticOrchestratorAgent(SovereignBaseAgent):
         self.episode_buffer.append((state, action_idx, log_prob))
         return selected
 
-    def accumulate_step_reward(self, step_reward: float):
+    def accumulate_step_reward(self, step_reward: float) -> Any:
         """Called per step with immediate reward."""
         self.episode_rewards.append(step_reward)
 
-    def update_on_episode_end(self):
+    def update_on_episode_end(self) -> Any:
         """Full episode update with learned baseline."""
         if len(self.episode_buffer) < self.episode_length:
             return
