@@ -20,8 +20,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # NEW: Root
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # Root (includes MCPHardenedMixin)
+# MCPHardenedMixin is now in SovereignBaseAgent - DO NOT import here
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
@@ -34,8 +34,11 @@ class L3SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class L3SubatomicTestingMixin(MCPHardenedMixin):
+class L3SubatomicTestingMixin:
     """Mixin providing L3 subatomic testing capabilities.
+    
+    MRO HARDENING: Does NOT inherit from MCPHardenedMixin.
+    MCPHardenedMixin is now injected via SovereignBaseAgent root.
     
     L3 Table Decision:
     - Basic Self-Testing: YES (plan validation, cycles, delegation)
