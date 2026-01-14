@@ -154,20 +154,26 @@ Output strict JSON:
         """
         Generate rule-based recommendations when LLM is unavailable.
         
-        Generates TWO types of observations:
-        1. MACRO OBSERVATIONS: Architectural insights about portfolio structure
-        2. METRICS OBSERVATIONS: Specific metric-focused recommendations
+        SSOT for strategic observations - generates both:
+        1. macro_observations: Architectural insights (L0 warnings, layer balance, portfolio structure)
+        2. metric_observations: Real-time metric status (complexity, test coverage, invocation)
+        3. recommendations: Actionable improvement recommendations
         
         Args:
             dashboard_data: Dashboard metrics
             
         Returns:
-            Dict with review, macro_observations, and recommendations
+            Dict with review, macro_observations, metric_observations, and recommendations
         """
-        # Helper for None-safe value extraction
+        # Helper for None-safe value extraction (handles "N/A" strings)
         def safe_val(row: Dict, key: str, default: float = 0) -> float:
             val = row.get(key, default)
-            return val if val is not None else default
+            if val is None or val == "N/A":
+                return default
+            try:
+                return float(val)
+            except (ValueError, TypeError):
+                return default
         
         total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), {})
         non_total_rows = [r for r in dashboard_data if r.get('Territory') != 'TOTAL']
@@ -188,84 +194,74 @@ Output strict JSON:
         # ========================================
         macro_observations = []
         
-        # 1. Portfolio Size & Consolidation Analysis
-        agents_per_territory = total_agents / max(total_territories, 1)
-        small_territories = [r for r in non_total_rows if (r.get('Total', 0) or 0) <= 2]
-        large_territories = [r for r in non_total_rows if (r.get('Total', 0) or 0) >= 20]
-        
-        if len(small_territories) > 5:
-            macro_observations.append({
-                "type": "consolidation",
-                "severity": "medium",
-                "title": "Territory Fragmentation Detected",
-                "observation": f"{len(small_territories)} territories have ≤2 agents each. Consider consolidating micro-territories to reduce cognitive overhead and improve maintainability.",
-                "territories": [t['Territory'] for t in small_territories[:5]],
-                "action": "Merge related micro-territories or promote agents to parent territories."
-            })
-        
-        if total_agents > 250:
-            macro_observations.append({
-                "type": "scale",
-                "severity": "info",
-                "title": "Large Agent Portfolio",
-                "observation": f"Portfolio contains {total_agents} agents across {total_territories} territories ({agents_per_territory:.1f} agents/territory avg). At this scale, automated governance and discovery become critical.",
-                "action": "Ensure automated discovery, health monitoring, and healing are fully operational."
-            })
-        
-        # 2. Layer Balance Analysis
-        layer_counts = {}
-        for row in non_total_rows:
-            territory = row.get('Territory', '')
-            for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']:
-                if layer in territory:
-                    layer_counts[layer] = layer_counts.get(layer, 0) + (row.get('Total', 0) or 0)
-                    break
-        
-        if layer_counts:
-            max_layer = max(layer_counts, key=layer_counts.get)
-            min_layer = min(layer_counts, key=layer_counts.get)
-            if layer_counts[max_layer] > 3 * layer_counts.get(min_layer, 1):
+        # L0 Maintenance - should NOT have healing (infrastructure layer)
+        l0_rows = [r for r in non_total_rows if 'L0' in r.get('Territory', '')]
+        for l0_row in l0_rows:
+            heal_cap = l0_row.get('Heal Cap %')
+            if heal_cap != "N/A" and safe_val(l0_row, 'Heal Cap %', 0) > 0:
                 macro_observations.append({
-                    "type": "imbalance",
-                    "severity": "medium",
-                    "title": "Layer Imbalance Detected",
-                    "observation": f"{max_layer} has {layer_counts[max_layer]} agents while {min_layer} has only {layer_counts.get(min_layer, 0)}. Heavy concentration in one layer may indicate architectural drift.",
-                    "action": f"Review {max_layer} for potential decomposition or consolidation opportunities."
+                    "icon": "🔧",
+                    "title": "L0 Maintenance Layer",
+                    "text": f"L0 is infrastructure/scripts layer. Healing capability is N/A here (currently showing {heal_cap}%). Focus on stability, not self-healing.",
+                    "color": "#6b7280"
                 })
         
-        # 3. Base Class Health
-        base_territories = [r for r in non_total_rows if 'Base' in r.get('Territory', '')]
-        if base_territories:
-            unhealthy_bases = [r for r in base_territories if safe_val(r, 'Health', 0) < 80]
-            if unhealthy_bases:
-                macro_observations.append({
-                    "type": "foundation",
-                    "severity": "critical",
-                    "title": "Base Class Health Risk",
-                    "observation": f"{len(unhealthy_bases)} base class territories have health <80%. Base classes are foundational—issues here cascade to all inheriting agents.",
-                    "territories": [t['Territory'] for t in unhealthy_bases],
-                    "action": "Prioritize base class remediation before addressing leaf agents."
-                })
-        
-        # 4. Apps vs Core Distribution
+        # Apps territories observation
         apps_rows = [r for r in non_total_rows if 'Apps' in r.get('Territory', '')]
-        core_rows = [r for r in non_total_rows if 'Apps' not in r.get('Territory', '')]
-        apps_agents = sum(r.get('Total', 0) or 0 for r in apps_rows)
-        core_agents = sum(r.get('Total', 0) or 0 for r in core_rows)
-        
-        if apps_agents > 0 and core_agents > 0:
-            ratio = apps_agents / core_agents
-            if ratio > 0.5:
+        if apps_rows:
+            avg_apps_test = sum(safe_val(r, 'Test %', 0) for r in apps_rows) / len(apps_rows)
+            if avg_apps_test < 60:
                 macro_observations.append({
-                    "type": "architecture",
-                    "severity": "info",
-                    "title": "Significant Application Layer",
-                    "observation": f"Application agents ({apps_agents}) represent {ratio*100:.0f}% of core agents ({core_agents}). Ensure app-layer agents properly delegate to core primitives rather than duplicating logic.",
-                    "action": "Audit app agents for core logic duplication; refactor shared patterns into L2/L3."
+                    "icon": "📱",
+                    "title": "Apps Test Coverage",
+                    "text": f"Apps territories average {avg_apps_test:.0f}% test coverage. Target 80% for production safety.",
+                    "color": "#ea580c"
                 })
+        
+        # Observability observation
+        if safe_val(total_row, 'Observable %', 0) > 95:
+            macro_observations.append({
+                "icon": "👁️",
+                "title": "Excellent Observability",
+                "text": f"{safe_val(total_row, 'Observable %', 0):.1f}% observability coverage. Production debugging is well-supported.",
+                "color": "#16a34a"
+            })
         
         # ========================================
-        # METRICS OBSERVATIONS (Specific Gaps)
+        # METRIC OBSERVATIONS (Real-time Status)
+        # ========================================
+        metric_observations = []
+        
+        # Complexity observation
+        avg_cc = safe_val(total_row, 'Avg CC', 0)
+        if avg_cc > 30:
+            metric_observations.append({
+                "icon": "⚠️",
+                "title": "High Complexity",
+                "text": f"Average CC of {avg_cc:.1f} exceeds target (≤15). Refactor high-CC methods in L5 validators and L3 orchestrators.",
+                "color": "#ea580c"
+            })
+        
+        # Test coverage observation
+        if test_coverage < 80:
+            metric_observations.append({
+                "icon": "🧪",
+                "title": "Test Coverage Gap",
+                "text": f"Test coverage at {test_coverage:.1f}% (target: 80%). Focus on L1 Cognition and Apps territories first.",
+                "color": "#dc2626"
+            })
+        
+        # Healing invocation observation
+        if invocation > 85:
+            metric_observations.append({
+                "icon": "✅",
+                "title": "Strong Healing Invocation",
+                "text": f"{invocation:.1f}% healing invocation is excellent. Maintain this level.",
+                "color": "#16a34a"
+            })
+        
+        # ========================================
+        # RECOMMENDATIONS (Actionable)
         # ========================================
         recommendations = []
         
@@ -364,6 +360,7 @@ Output strict JSON:
         return {
             "review": " ".join(review_parts),
             "macro_observations": macro_observations,
+            "metric_observations": metric_observations,
             "recommendations": formatted_recs[:10]
         }
     
