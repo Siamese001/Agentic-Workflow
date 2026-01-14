@@ -12634,7 +12634,74 @@
 };
 
         // Real per-agent data (replaces generateMockAgentData)
-        const recommendationsData = [];
+        const strategicObservationsData = {
+  "macro_observations": [
+    {
+      "icon": "\ud83d\udcf1",
+      "title": "Apps Test Coverage",
+      "text": "Apps territories average 23% test coverage. Target 80% for production safety.",
+      "color": "#ea580c"
+    }
+  ],
+  "metric_observations": [
+    {
+      "icon": "\u26a0\ufe0f",
+      "title": "High Complexity",
+      "text": "Average CC of 33.7 exceeds target (\u226415). Refactor high-CC methods in L5 validators and L3 orchestrators.",
+      "color": "#ea580c"
+    },
+    {
+      "icon": "\ud83e\uddea",
+      "title": "Test Coverage Gap",
+      "text": "Test coverage at 59.6% (target: 80%). Focus on L1 Cognition and Apps territories first.",
+      "color": "#dc2626"
+    },
+    {
+      "icon": "\u2705",
+      "title": "Strong Healing Invocation",
+      "text": "96.2% healing invocation is excellent. Maintain this level.",
+      "color": "#16a34a"
+    }
+  ]
+};
+
+        const recommendationsData = [
+  {
+    "priority": 1,
+    "title": "Expand Test Coverage",
+    "description": "<span style='color:#666'>Current: 59.6% | Gap: 35.4pp | 8 territories at 0%</span><br><b>Action:</b> Add unit tests for core behaviors. Focus on zero-coverage territories first.<br><span style='color:#059669'><b>Impact:</b> High - Prevents regressions during healing and refactoring cycles.</span>",
+    "impact": "HIGH",
+    "effort": "MEDIUM"
+  },
+  {
+    "priority": 2,
+    "title": "Complete Healing Chain Invocation",
+    "description": "<span style='color:#666'>Current: 96.2% | Gap: 3.8pp | 4 territories below 80%</span><br><b>Action:</b> Add super().heal_repository() calls to agents that override heal_repository().<br><span style='color:#059669'><b>Impact:</b> High - Ensures healing propagates through MRO chain.</span>",
+    "impact": "HIGH",
+    "effort": "MEDIUM"
+  },
+  {
+    "priority": 3,
+    "title": "Reduce Cyclomatic Complexity",
+    "description": "<span style='color:#666'>17 territories have Avg CC >15 (avg: 38.6)</span><br><b>Action:</b> Refactor complex methods into smaller primitives. Target CC \u226410.<br><span style='color:#059669'><b>Impact:</b> Medium - Reduces bug density and improves testability.</span>",
+    "impact": "HIGH",
+    "effort": "MEDIUM"
+  },
+  {
+    "priority": 4,
+    "title": "Complete Type Annotations",
+    "description": "<span style='color:#666'>Current: 95.0% | Gap: 5.0pp</span><br><b>Action:</b> Add type hints to function parameters and return types.<br><span style='color:#059669'><b>Impact:</b> Medium - Enables static analysis and IDE support.</span>",
+    "impact": "MEDIUM",
+    "effort": "MEDIUM"
+  },
+  {
+    "priority": 5,
+    "title": "Complete Documentation",
+    "description": "<span style='color:#666'>Current: 97.0% | Gap: 3.0pp</span><br><b>Action:</b> Add docstrings to all public methods and classes.<br><span style='color:#059669'><b>Impact:</b> Medium - Reduces hallucinated tool usage by constraining search space.</span>",
+    "impact": "MEDIUM",
+    "effort": "MEDIUM"
+  }
+];
         const lastUpdatedStr = "Last Updated: " + new Date().toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZoneName: 'short' });
         const gaugeData = {
   "health": 76.9,
