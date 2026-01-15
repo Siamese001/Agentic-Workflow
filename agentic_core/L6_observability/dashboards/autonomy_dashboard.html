@@ -566,7 +566,61 @@
 
             <!-- Live Runtime Tab -->
             <div id="runtime-content" class="tab-content" style="display:none;">
-                <div class="kpi-grid">
+                <!-- Live Execution Status Section -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">🔴 Live Execution Status</div>
+                            <div class="chart-subtitle">Real-time heal mode progress from runtime_state.json</div>
+                        </div>
+                        <div class="chart-body">
+                            <p><strong>Status:</strong> <span id="liveStatus" style="font-weight:600;">Idle</span></p>
+                            <p><strong>Current Agent:</strong> <span id="liveAgent">--</span> (<span id="liveLayer">--</span>)</p>
+                            <p><strong>Progress:</strong></p>
+                            <div style="margin-top:8px; background:#e5e7eb; border-radius:4px; overflow:hidden; width:100%;">
+                                <div id="progressBar" style="height:24px; background:#2563eb; width:0%; text-align:center; color:white; font-weight:600; line-height:24px; transition: width 0.3s ease;">0%</div>
+                            </div>
+                            <p style="margin-top:12px;"><strong>Meta-Learning:</strong> <span id="liveMeta">Inactive</span></p>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">📋 Execution Sequence</div>
+                            <div class="chart-subtitle">Agent execution order with status indicators</div>
+                        </div>
+                        <div class="chart-body">
+                            <div style="max-height:250px; overflow-y:auto;">
+                                <table style="width:100%; border-collapse:collapse;">
+                                    <thead>
+                                        <tr style="background:#f1f5f9; position:sticky; top:0;">
+                                            <th style="text-align:left; padding:8px;">#</th>
+                                            <th style="text-align:left; padding:8px;">Agent → Target</th>
+                                            <th style="text-align:center; padding:8px;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orderTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-Time Event Log -->
+                <div class="charts-grid full-width" style="margin-top:20px;">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">📜 Real-Time Event Log</div>
+                            <div class="chart-subtitle">Reverse chronological • Color-coded by event type</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="eventLog" style="height:300px; overflow-y:auto; background:#1f2937; color:#f3f4f6; padding:16px; border-radius:8px; font-family:monospace; font-size:0.9em;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Original KPI Grid -->
+                <div class="kpi-grid" style="margin-top:20px;">
                     <div class="kpi-box warning">
                         <div class="kpi-label">⏱️ API Latency (Gemini)</div>
                         <div class="kpi-value" id="geminiLatency">--ms</div>
@@ -13655,7 +13709,7 @@
             evt.currentTarget.className += " active";
         }
 
-        // Phase 4.9: Live Tactical Poller
+        // Phase 4.9: Live Tactical Poller (API-based)
         async function updateRuntime() {
             try {
                 const [metaResp, latencyResp, logsResp] = await Promise.all([
@@ -13691,6 +13745,106 @@
             }
         }
         setInterval(updateRuntime, 2000); // Polling every 2 seconds
+
+        // Phase 4.10: Live Execution State Poller (runtime_state.json)
+        async function updateLiveExecutionState() {
+            try {
+                const resp = await fetch('runtime_state.json?' + Date.now());
+                if (!resp.ok) {
+                    // No runtime state file - show idle
+                    return;
+                }
+                const data = await resp.json();
+
+                // Status display
+                const statusEl = document.getElementById('liveStatus');
+                if (statusEl) {
+                    const statusText = data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1).replace('_', ' ') : "Idle";
+                    statusEl.textContent = statusText;
+                    statusEl.style.color = data.status === "idle" ? "#6b7280" : (data.status === "error" ? "#dc2626" : "#ea580c");
+                }
+
+                // Current agent/layer
+                const agentEl = document.getElementById('liveAgent');
+                const layerEl = document.getElementById('liveLayer');
+                if (agentEl) agentEl.textContent = data.current_agent || "--";
+                if (layerEl) layerEl.textContent = data.current_layer || "--";
+
+                // Progress bar calculation
+                const total = data.total_agents || 1;
+                const completed = data.completed_agents ? data.completed_agents.length : 0;
+                const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+                const progBar = document.getElementById('progressBar');
+                if (progBar) {
+                    progBar.style.width = `${percent}%`;
+                    progBar.textContent = `${percent}% (${completed}/${total})`;
+                    progBar.style.background = percent === 100 ? "#16a34a" : "#2563eb";
+                }
+
+                // Meta-Learning status
+                const metaSpan = document.getElementById('liveMeta');
+                if (metaSpan) {
+                    if (data.meta_learning?.gemini_active) {
+                        metaSpan.textContent = "Active — embedding fix patterns";
+                        metaSpan.style.color = "#16a34a";
+                    } else {
+                        metaSpan.textContent = "Inactive";
+                        metaSpan.style.color = "#dc2626";
+                    }
+                }
+
+                // Execution Sequence Table
+                const tbody = document.getElementById('orderTableBody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    const order = data.agents_order || [];
+                    const completedArr = data.completed_agents || [];
+                    
+                    order.forEach((entry, i) => {
+                        let status = "Pending";
+                        let statusColor = "#6b7280";
+                        
+                        if (completedArr.includes(entry)) {
+                            status = "Done ✓";
+                            statusColor = "#16a34a";
+                        } else if (data.current_agent && entry.includes(data.current_agent)) {
+                            status = "Running ⏩";
+                            statusColor = "#ea580c";
+                        }
+
+                        tbody.innerHTML += `
+                            <tr style="border-bottom:1px solid #e2e8f0;">
+                                <td style="padding:8px;">${i+1}</td>
+                                <td style="padding:8px; font-size:0.9em;">${entry}</td>
+                                <td style="padding:8px; text-align:center; color:${statusColor}; font-weight:600;">${status}</td>
+                            </tr>`;
+                    });
+                }
+
+                // Event Log (reverse chronological, color-coded)
+                const logDiv = document.getElementById('eventLog');
+                if (logDiv) {
+                    const events = (data.events || []).slice().reverse();
+                    logDiv.innerHTML = events.map(e => {
+                        let color = "#9ca3af";
+                        let prefix = "ℹ";
+                        if (e.type === "agent_start") { color = "#fbbf24"; prefix = "▶"; }
+                        else if (e.type === "agent_end") { color = "#4ade80"; prefix = "✓"; }
+                        else if (e.type === "error") { color = "#f87171"; prefix = "✗"; }
+                        else if (e.type === "info") { color = "#60a5fa"; prefix = "ℹ"; }
+                        else if (e.type === "meta") { color = "#c084fc"; prefix = "🧠"; }
+
+                        const time = new Date(e.time).toLocaleTimeString();
+                        return `<div style="margin-bottom:6px; color:${color}; border-bottom:1px solid #374151; padding-bottom:4px;">
+                                    <span style="opacity:0.6; font-size:0.8em;">[${time}]</span> <strong>${prefix}</strong> ${e.message}
+                                </div>`;
+                    }).join('') || '<div style="color:#6b7280; font-style:italic;">No events yet. Run canon_validator with --heal to see live progress.</div>';
+                }
+            } catch (err) {
+                // Silent fail - runtime_state.json may not exist yet
+            }
+        }
+        setInterval(updateLiveExecutionState, 1000); // Poll every 1 second for responsive UI
         
         // Initialize semantic retrieval metrics
         function initializeSemanticMetrics() {

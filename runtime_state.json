@@ -1,0 +1,168 @@
+{
+  "status": "idle",
+  "start_time": "2026-01-15T06:21:02.895140",
+  "current_agent": null,
+  "current_layer": null,
+  "agents_order": [
+    "NamingAgent \u2192 agentic_core",
+    "AutonomyGuardian \u2192 agentic_core",
+    "NamingAgent \u2192 apps_lic",
+    "AutonomyGuardian \u2192 apps_lic",
+    "NamingAgent \u2192 apps_rg",
+    "AutonomyGuardian \u2192 apps_rg",
+    "NamingAgent \u2192 scripts",
+    "AutonomyGuardian \u2192 scripts"
+  ],
+  "total_agents": 8,
+  "completed_agents": [
+    "NamingAgent \u2192 agentic_core",
+    "AutonomyGuardian \u2192 agentic_core",
+    "NamingAgent \u2192 apps_lic",
+    "AutonomyGuardian \u2192 apps_lic",
+    "NamingAgent \u2192 apps_rg",
+    "AutonomyGuardian \u2192 apps_rg",
+    "NamingAgent \u2192 scripts",
+    "AutonomyGuardian \u2192 scripts"
+  ],
+  "events": [
+    {
+      "time": "2026-01-15T06:21:02.895140",
+      "type": "info",
+      "message": "Heal mode started (EXECUTE)"
+    },
+    {
+      "time": "2026-01-15T06:21:02.895140",
+      "type": "meta",
+      "message": "Meta-learning ACTIVE"
+    },
+    {
+      "time": "2026-01-15T06:21:02.895655",
+      "type": "info",
+      "message": "Starting domain sweep: agentic_core"
+    },
+    {
+      "time": "2026-01-15T06:21:02.902616",
+      "type": "agent_start",
+      "message": "\u2192 Running NamingAgent (L5 \u2013 Safety & Governance) on agentic_core"
+    },
+    {
+      "time": "2026-01-15T06:23:30.478436",
+      "type": "agent_end",
+      "message": "\u2713 NamingAgent: fixed: 0 | violations: 0"
+    },
+    {
+      "time": "2026-01-15T06:23:30.478436",
+      "type": "agent_start",
+      "message": "\u2192 Running AutonomyGuardian (L5 \u2013 Safety & Governance) on agentic_core"
+    },
+    {
+      "time": "2026-01-15T06:23:40.997656",
+      "type": "agent_end",
+      "message": "\u2713 AutonomyGuardian: fixed: 0 | violations: 6"
+    },
+    {
+      "time": "2026-01-15T06:23:40.997656",
+      "type": "info",
+      "message": "Domain sweep completed: agentic_core"
+    },
+    {
+      "time": "2026-01-15T06:23:41.008567",
+      "type": "info",
+      "message": "Starting domain sweep: apps_lic"
+    },
+    {
+      "time": "2026-01-15T06:23:41.013886",
+      "type": "agent_start",
+      "message": "\u2192 Running NamingAgent (L5 \u2013 Safety & Governance) on apps_lic"
+    },
+    {
+      "time": "2026-01-15T06:26:10.110154",
+      "type": "agent_end",
+      "message": "\u2713 NamingAgent: fixed: 0 | violations: 0"
+    },
+    {
+      "time": "2026-01-15T06:26:10.110154",
+      "type": "agent_start",
+      "message": "\u2192 Running AutonomyGuardian (L5 \u2013 Safety & Governance) on apps_lic"
+    },
+    {
+      "time": "2026-01-15T06:26:20.893296",
+      "type": "agent_end",
+      "message": "\u2713 AutonomyGuardian: fixed: 0 | violations: 6"
+    },
+    {
+      "time": "2026-01-15T06:26:20.895309",
+      "type": "info",
+      "message": "Domain sweep completed: apps_lic"
+    },
+    {
+      "time": "2026-01-15T06:26:20.897843",
+      "type": "info",
+      "message": "Starting domain sweep: apps_rg"
+    },
+    {
+      "time": "2026-01-15T06:26:20.903555",
+      "type": "agent_start",
+      "message": "\u2192 Running NamingAgent (L5 \u2013 Safety & Governance) on apps_rg"
+    },
+    {
+      "time": "2026-01-15T06:28:49.697413",
+      "type": "agent_end",
+      "message": "\u2713 NamingAgent: fixed: 0 | violations: 0"
+    },
+    {
+      "time": "2026-01-15T06:28:49.697413",
+      "type": "agent_start",
+      "message": "\u2192 Running AutonomyGuardian (L5 \u2013 Safety & Governance) on apps_rg"
+    },
+    {
+      "time": "2026-01-15T06:29:00.478714",
+      "type": "agent_end",
+      "message": "\u2713 AutonomyGuardian: fixed: 0 | violations: 6"
+    },
+    {
+      "time": "2026-01-15T06:29:00.479296",
+      "type": "info",
+      "message": "Domain sweep completed: apps_rg"
+    },
+    {
+      "time": "2026-01-15T06:29:00.483249",
+      "type": "info",
+      "message": "Starting domain sweep: scripts"
+    },
+    {
+      "time": "2026-01-15T06:29:00.486884",
+      "type": "agent_start",
+      "message": "\u2192 Running NamingAgent (L5 \u2013 Safety & Governance) on scripts"
+    },
+    {
+      "time": "2026-01-15T06:31:31.844438",
+      "type": "agent_end",
+      "message": "\u2713 NamingAgent: fixed: 0 | violations: 0"
+    },
+    {
+      "time": "2026-01-15T06:31:31.845473",
+      "type": "agent_start",
+      "message": "\u2192 Running AutonomyGuardian (L5 \u2013 Safety & Governance) on scripts"
+    },
+    {
+      "time": "2026-01-15T06:31:42.738661",
+      "type": "agent_end",
+      "message": "\u2713 AutonomyGuardian: fixed: 0 | violations: 6"
+    },
+    {
+      "time": "2026-01-15T06:31:42.738661",
+      "type": "info",
+      "message": "Domain sweep completed: scripts"
+    },
+    {
+      "time": "2026-01-15T06:31:42.744343",
+      "type": "info",
+      "message": "Heal mode completed \u2014 full sweep finished"
+    }
+  ],
+  "meta_learning": {
+    "gemini_active": true,
+    "note": "Experiences embedded on success"
+  }
+}
