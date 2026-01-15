@@ -82,7 +82,7 @@ function renderTerritorySummaryTable(territoryData) {
 
     // Filter Data
     let filteredData = [...territoryData];
-    const state = tableFilterState.table1;
+    const state = window.tableFilterState.table1;
 
     if (state.showOnlyOutliers) {
         filteredData = filteredData.filter(row => {
@@ -94,7 +94,7 @@ function renderTerritorySummaryTable(territoryData) {
     if (state.showZombies) {
         filteredData = filteredData.filter(row => row.Territory === 'TOTAL' || isZombieTerritory(row.Territory));
     }
-    if (toxicityFilterEnabled) {
+    if (window.toxicityFilterEnabled) {
         filteredData = filteredData.filter(row => row.Territory === 'TOTAL' || getFanInData(row.Territory) >= 20);
     }
 
@@ -192,7 +192,7 @@ function renderTerritorySummaryTable(territoryData) {
 }
 
 function renderTableControls(tableType) {
-    const state = tableFilterState[tableType];
+    const state = window.tableFilterState[tableType];
     return `
         <div style="display:flex; gap:16px; margin-bottom:12px; flex-wrap:wrap;">
             <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em;">
@@ -210,15 +210,93 @@ function renderTableControls(tableType) {
         </div>`;
 }
 
-// Exposed to global scope for checkbox handlers
-window.toggleFilter = function(tableType, key) {
-    tableFilterState[tableType][key] = !tableFilterState[tableType][key];
-    renderTerritorySummaryTable(window.dashboardData); // Re-render both to be safe
-    // renderCodeQualityTable(window.dashboardData); // TODO: implement code quality table
-};
-
-// Placeholder for Code Quality Table (Phase 4 scope limited to main summary + structure)
+// Code Quality Table (Table 2)
 function renderCodeQualityTable(data) {
-    // Implementation would mirror renderTerritorySummaryTable but with different columns
-    // Omitted for brevity in Phase 4, will be populated in Phase 5 refinement or uses same pattern
+    const container = document.getElementById('codeQualityGrid');
+    if (!container) {
+        console.warn('[renderCodeQualityTable] codeQualityGrid container not found');
+        return;
+    }
+    
+    // Filter out TOTAL row for the table body
+    const territoryData = data.filter(row => row.Territory !== 'TOTAL');
+    const totalRow = data.find(row => row.Territory === 'TOTAL');
+    
+    if (!totalRow) {
+        container.innerHTML = '<div style="color:#dc2626; padding:20px;">TOTAL row not found in data</div>';
+        return;
+    }
+    
+    // Build table HTML
+    let html = `
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                <thead>
+                    <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
+                        <th style="padding: 12px 8px; text-align: left; font-weight: 600; position: sticky; left: 0; background: #f1f5f9; z-index: 10;">Territory</th>
+                        <th style="padding: 12px 8px; text-align: center; font-weight: 600;">Agents</th>
+                        <th style="padding: 12px 8px; text-align: center; font-weight: 600;">Typed %</th>
+                        <th style="padding: 12px 8px; text-align: center; font-weight: 600;">Documented %</th>
+                        <th style="padding: 12px 8px; text-align: center; font-weight: 600;">Schema %</th>
+                        <th style="padding: 12px 8px; text-align: center; font-weight: 600;">Base Class %</th>
+                        <th style="padding: 12px 8px; text-align: center; font-weight: 600;">Quality Score</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+    
+    // Render each territory row
+    territoryData.forEach(row => {
+        const territory = row.Territory;
+        const agentCount = row.Total || 0;
+        
+        // Get metrics with N/A handling
+        const typed = row['Typed %'];
+        const documented = row['Documented %'];
+        const schema = row['Schema Strictness %'];
+        const baseClass = row['Canonical Inheritance %'];
+        const quality = row['Code Quality Score'];
+        
+        // Color coding
+        const typedColor = typed === 'N/A' ? '#6b7280' : getColor(typed);
+        const docColor = documented === 'N/A' ? '#6b7280' : getColor(documented);
+        const schemaColor = schema === 'N/A' ? '#6b7280' : getColor(schema);
+        const baseColor = baseClass === 'N/A' ? '#6b7280' : getColor(baseClass);
+        const qualityColor = quality === 'N/A' ? '#6b7280' : getColor(quality);
+        
+        // Format values
+        const typedVal = typed === 'N/A' ? 'N/A' : typed.toFixed(1) + '%';
+        const docVal = documented === 'N/A' ? 'N/A' : documented.toFixed(1) + '%';
+        const schemaVal = schema === 'N/A' ? 'N/A' : schema.toFixed(1) + '%';
+        const baseVal = baseClass === 'N/A' ? 'N/A' : baseClass.toFixed(1) + '%';
+        const qualityVal = quality === 'N/A' ? 'N/A' : quality.toFixed(1);
+        
+        html += `
+            <tr style="border-bottom: 1px solid #e2e8f0; hover: background-color: #f8fafc;">
+                <td style="padding: 12px 8px; font-weight: 500; position: sticky; left: 0; background: white; z-index: 5;">${territory}</td>
+                <td style="padding: 12px 8px; text-align: center;">${agentCount}</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${typedColor}; font-weight: 600;">${typedVal}</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${docColor}; font-weight: 600;">${docVal}</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${schemaColor}; font-weight: 600;">${schemaVal}</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${baseColor}; font-weight: 600;">${baseVal}</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${qualityColor}; font-weight: 600; font-size: 1.1em;">${qualityVal}</td>
+            </tr>`;
+    });
+    
+    // Add TOTAL row
+    html += `
+            <tr style="background: #f8fafc; border-top: 3px solid #94a3b8; font-weight: 700; font-size: 1.05em;">
+                <td style="padding: 12px 8px; position: sticky; left: 0; background: #f8fafc; z-index: 5;">TOTAL</td>
+                <td style="padding: 12px 8px; text-align: center;">${totalRow.Total || 0}</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Typed %'])};">${totalRow['Typed %'].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Documented %'])};">${totalRow['Documented %'].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Schema Strictness %'])};">${totalRow['Schema Strictness %'].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Canonical Inheritance %'])};">${totalRow['Canonical Inheritance %'].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Code Quality Score'])}; font-size: 1.2em;">${totalRow['Code Quality Score'].toFixed(1)}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    `;
+    
+    container.innerHTML = html;
 }

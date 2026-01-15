@@ -291,11 +291,6 @@
     <script src="js/renderers/kpi-renderer.js"></script>
     <script src="js/renderers/content-renderer.js"></script>
 
-    <!-- Load Controller Modules -->
-    <script src="js/controllers/tab-controller.js"></script>
-    <script src="js/controllers/filter-controller.js"></script>
-    <script src="js/controllers/refresh-controller.js"></script>
-
     <script>
         // Main Application Orchestration
         console.log('[DASHBOARD] Initializing...');
@@ -403,16 +398,13 @@
             }
             
             console.log('[DASHBOARD] Initialization complete');
-            
-            // Initialize Controllers
-            TabController.init();
-            RefreshController.init(300); // 5 min refresh
-            
-            // Expose export function globally if needed for buttons
-            window.exportCSV = FilterController.exportCSV;
         });
         
-        // All utility functions, renderers, controllers, and data are loaded from external modules
+        // All utility functions, renderers, and data are loaded from external modules
+    </script>
+</body>
+</html>
+        }
     </script>
 </body>
 </html>
