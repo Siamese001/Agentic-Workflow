@@ -285,36 +285,57 @@
     <script src="js/utils/math-utils.js"></script>
     <script src="js/utils/format-utils.js"></script>
 
+    <!-- Load Renderer Modules -->
+    <script src="js/renderers/modal-renderer.js"></script>
+    <script src="js/renderers/table-renderer.js"></script>
+    <script src="js/renderers/kpi-renderer.js"></script>
+
     <script>
-        // Utilities loaded from external modules
-        // See js/utils/random-utils.js, color-utils.js, math-utils.js, format-utils.js
-
-        // ────────────────────────────────────────────────
-        //   TEMPORARY DEBUG INSTRUMENTATION – 2026-01-11
-        // ────────────────────────────────────────────────
-        console.log("[DEBUG] Script execution started");
+        // Main Application Orchestration
         
-        // Global error handler
-        window.addEventListener('error', (event) => {
-            console.error("[GLOBAL ERROR]", event.message, event.filename, event.lineno, event.colno);
-            console.error("[ERROR STACK]", event.error?.stack);
-        });
+        // Timestamp for report
+        const lastUpdatedStr = new Date().toLocaleString();
         
-        window.addEventListener('unhandledrejection', (event) => {
-            console.error("[UNHANDLED PROMISE REJECTION]", event.reason);
+        // Main Orchestration
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set timestamp
+            const ts = document.getElementById('lastUpdated');
+            if(ts) ts.textContent = `Generated: ${lastUpdatedStr}`;
+
+            // Initialize data and render
+            if (typeof window.dashboardData !== 'undefined') {
+                // Check for realAgentData
+                if (typeof window.realAgentData !== 'undefined') {
+                    // Initial Render
+                    renderTerritorySummaryTable(window.dashboardData);
+                    renderCodeQualityTable(window.dashboardData);
+                } else {
+                    console.warn('realAgentData not found');
+                }
+            }
+            
+            // Initialize KPIs
+            initializeSemanticMetrics();
+            initializeRuntimeMonitoring();
         });
 
-        // Data loaded from external scripts for modularity
-        const dashboardData = window.dashboardData;
-
-        // Real per-agent data loaded from external script
-        const realAgentData = window.realAgentData;
-
-        // Strategic observations loaded from external script
-        const strategicObservationsData = window.strategicObservationsData;
-
-        const recommendationsData = window.recommendationsData;
-        const lastUpdatedStr = "Last Updated: " + new Date().toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZoneName: 'short' });
+        function manualRefresh() {
+            window.location.reload();
+        }
+        
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("nav-tab");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName + "-content").style.display = "block";
+            evt.currentTarget.className += " active";
+        }
         const gaugeData = {
   "health": 76.9,
   "compliance": 91.7,
