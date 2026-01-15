@@ -116,7 +116,7 @@ def map_territory(agent):
         if 'Mixin' in class_name or 'mixins' in path.lower():
             return "Base/Mixins"
         else:
-            return "Base/Root"
+            return "Sovereign Base Agent"
     elif '/utils/core_extensions' in path or 'utils/core_extensions' in path:
         # Core utilities like NamingAgent
         return "L0 Maintenance/Core"
@@ -212,31 +212,48 @@ def calculate_metrics(agents_in_territory):
         "Criticality": 75
     }
 
-# TERRITORY_ORDER from original backup - matches monolithic dashboard
+# TERRITORY_ORDER - Sovereign Base Agent first, then L6→L5→L4→L3→L2→L1→L0, then Apps
 TERRITORY_ORDER = [
-    "Base/Root",
-    "L0 Maintenance/Base Agent",
-    "L0 Maintenance/Core",
-    "L1 Cognition/Base Agent",
-    "L1 Cognition/Core",
-    "L2 Execution/Base Agent",
-    "L2 Execution/Core",
-    "L3 Orchestration/Base Agent",
-    "L3 Orchestration/Core",
-    "L4 State/Base Agent",
-    "L4 State/Core",
-    "L4 State/Infrastructure",
+    # Sovereign Base Agent (root of hierarchy)
+    "Sovereign Base Agent",
+    # L6 Observability (highest layer)
+    "L6 Observability/Base Agent",
+    "L6 Observability/Core",
+    "L6 Observability/Infrastructure",
+    "L6 Observability/Metrics",
+    # L5 Safety
     "L5 Safety/Base Agent",
+    "L5 Safety/Core",
     "L5 Safety/Gravity",
     "L5 Safety/Guardrails",
     "L5 Safety/Red Teaming",
     "L5 Safety/Validators",
-    "L6 Observability/Base Agent",
-    "L6 Observability/Infrastructure",
-    "L6 Observability/Metrics",
-    "Apps Lic",
+    # L4 State
+    "L4 State/Base Agent",
+    "L4 State/Core",
+    "L4 State/Infrastructure",
+    "L4 State/Specialized",
+    # L3 Orchestration
+    "L3 Orchestration/Base Agent",
+    "L3 Orchestration/Core",
+    "L3 Orchestration/Infrastructure",
+    "L3 Orchestration/Specialized",
+    # L2 Execution
+    "L2 Execution/Base Agent",
+    "L2 Execution/Core",
+    "L2 Execution/Specialized",
+    # L1 Cognition
+    "L1 Cognition/Base Agent",
+    "L1 Cognition/Core",
+    "L1 Cognition/Specialized",
+    # L0 Maintenance
+    "L0 Maintenance/Base Agent",
+    "L0 Maintenance/Core",
+    "L0 Maintenance/Infrastructure",
+    # Apps (last)
     "Apps Rg",
-    "Apps Shared"
+    "Apps Lic",
+    "Apps Shared",
 ]
 
 def generate_dashboard_data(agents):

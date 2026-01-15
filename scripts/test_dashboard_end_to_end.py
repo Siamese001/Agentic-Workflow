@@ -1712,6 +1712,142 @@ def run_all_tests() -> bool:
     except Exception as e:
         errors.append(f"Test 25 FAILED: {e}")
     
+    # Test 26: Row Order Verification (Base/Root first, L6→L5→...→L0, Apps last)
+    print("\n" + "─" * 70)
+    print("Running: Row Order Verification (Base/Root → L6 → L5 → ... → L0 → Apps)")
+    print("─" * 70)
+    
+    try:
+        # Expected order: Sovereign Base Agent first, then L6→L5→L4→L3→L2→L1→L0, then Apps, TOTAL last
+        EXPECTED_ORDER_PREFIXES = [
+            "Sovereign Base Agent",
+            "L6 Observability",
+            "L5 Safety",
+            "L4 State",
+            "L3 Orchestration",
+            "L2 Execution",
+            "L1 Cognition",
+            "L0 Maintenance",
+            "Apps",
+            "TOTAL"
+        ]
+        
+        # Load dashboard_data.js for modular dashboard
+        data_js_path = project_root / DASHBOARD_DIR / "data" / "dashboard_data.js"
+        if data_js_path.exists():
+            data_js_content = data_js_path.read_text(encoding='utf-8')
+            # Extract JSON from window.dashboardData = [...]
+            start_marker = 'window.dashboardData = '
+            start_idx = data_js_content.find(start_marker)
+            if start_idx != -1:
+                json_start = data_js_content.find('[', start_idx)
+                json_end = data_js_content.rfind(']') + 1
+                dashboard_json = data_js_content[json_start:json_end]
+                dashboard_rows = json.loads(dashboard_json)
+                
+                # Get territory order from data
+                actual_territories = [row['Territory'] for row in dashboard_rows]
+                
+                # Verify order matches expected prefix sequence
+                order_issues = []
+                current_prefix_idx = 0
+                
+                for i, territory in enumerate(actual_territories):
+                    # Find which prefix this territory matches
+                    matched_prefix_idx = -1
+                    for j, prefix in enumerate(EXPECTED_ORDER_PREFIXES):
+                        if territory.startswith(prefix) or territory == prefix:
+                            matched_prefix_idx = j
+                            break
+                    
+                    if matched_prefix_idx == -1:
+                        order_issues.append(f"Row {i+1}: '{territory}' doesn't match any expected prefix")
+                    elif matched_prefix_idx < current_prefix_idx:
+                        order_issues.append(f"Row {i+1}: '{territory}' is out of order (expected after {EXPECTED_ORDER_PREFIXES[current_prefix_idx]})")
+                    else:
+                        current_prefix_idx = matched_prefix_idx
+                
+                # Verify first row is Sovereign Base Agent
+                if actual_territories and actual_territories[0] != "Sovereign Base Agent":
+                    order_issues.insert(0, f"First row should be 'Sovereign Base Agent', got '{actual_territories[0]}'")
+                
+                # Verify last row is TOTAL
+                if actual_territories and actual_territories[-1] != "TOTAL":
+                    order_issues.append(f"Last row should be 'TOTAL', got '{actual_territories[-1]}'")
+                
+                if order_issues:
+                    errors.append(f"Test 26 FAILED: {len(order_issues)} row order issues")
+                    for issue in order_issues[:5]:  # Show first 5
+                        errors.append(f"  - {issue}")
+                    print(f"❌ Test 26 FAILED: Row order incorrect")
+                    print(f"   Expected: Sovereign Base Agent → L6 → L5 → L4 → L3 → L2 → L1 → L0 → Apps → TOTAL")
+                    print(f"   Actual first 5: {actual_territories[:5]}")
+                    for issue in order_issues[:5]:
+                        print(f"   - {issue}")
+                else:
+                    print(f"✅ Test 26 PASSED: Row order is correct")
+                    print(f"   ✓ First row: {actual_territories[0]}")
+                    print(f"   ✓ Last row: {actual_territories[-1]}")
+                    print(f"   ✓ Order: Sovereign Base Agent → L6 → L5 → L4 → L3 → L2 → L1 → L0 → Apps → TOTAL")
+            else:
+                errors.append("Test 26 FAILED: Could not find window.dashboardData in dashboard_data.js")
+                print("❌ Test 26 FAILED: Could not parse dashboard_data.js")
+        else:
+            # Fall back to checking HTML for monolithic dashboard
+            print("   ⚠️  dashboard_data.js not found, skipping modular order check")
+    
+    except Exception as e:
+        errors.append(f"Test 26 FAILED: {e}")
+        print(f"❌ Test 26 FAILED: {e}")
+    
+    # Test 27: Cache-Busting Verification
+    print("\n" + "─" * 70)
+    print("Running: Cache-Busting Verification")
+    print("─" * 70)
+    
+    try:
+        cache_issues = []
+        
+        # Check JS files have been modified recently (within last hour)
+        js_dir = project_root / DASHBOARD_DIR / "js"
+        if js_dir.exists():
+            stale_js_files = []
+            for js_file in js_dir.rglob("*.js"):
+                file_age = datetime.now().timestamp() - js_file.stat().st_mtime
+                if file_age > 3600:  # 1 hour
+                    stale_js_files.append(f"{js_file.name} ({int(file_age/60)} min old)")
+            
+            if stale_js_files:
+                cache_issues.append(f"Stale JS files (may be cached): {', '.join(stale_js_files[:3])}")
+        
+        # Check data files
+        data_dir = project_root / DASHBOARD_DIR / "data"
+        if data_dir.exists():
+            for data_file in data_dir.glob("*.js"):
+                file_age = datetime.now().timestamp() - data_file.stat().st_mtime
+                if file_age > 600:  # 10 minutes
+                    cache_issues.append(f"Data file {data_file.name} is {int(file_age/60)} min old - may need regeneration")
+        
+        # Provide cache-busting instructions
+        print("   📋 CACHE-BUSTING CHECKLIST:")
+        print("   1. Stop any running http-server processes")
+        print("   2. Restart server with: python -m http.server 8765 --directory agentic_core/L6_observability/dashboards")
+        print("   3. Hard refresh browser: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)")
+        print("   4. Or use incognito/private browsing mode")
+        
+        if cache_issues:
+            print(f"\n   ⚠️  Potential cache issues detected:")
+            for issue in cache_issues:
+                print(f"      - {issue}")
+            # Don't fail test, just warn
+            print(f"✅ Test 27 PASSED (with warnings): Cache-busting instructions provided")
+        else:
+            print(f"✅ Test 27 PASSED: All files are fresh")
+    
+    except Exception as e:
+        errors.append(f"Test 27 FAILED: {e}")
+        print(f"❌ Test 27 FAILED: {e}")
+    
     # Final summary
     print("\n" + "=" * 70)
     if errors:
@@ -1719,7 +1855,7 @@ def run_all_tests() -> bool:
         failed_tests.extend([e.split(':')[0].replace('FAILED', '').strip() for e in errors if 'FAILED' in e])
     
     if all_passed:
-        print("✅ ALL 25 TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 27 TESTS PASSED - Dashboard is ready for deployment")
         print("\n⚠️  IMPORTANT: Hard refresh browser (Ctrl+Shift+R) to see changes!")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")

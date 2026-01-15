@@ -187,15 +187,25 @@ function renderTerritorySummaryTable(territoryData) {
         filteredData = filteredData.filter(row => row.Territory === 'TOTAL' || getFanInData(row.Territory) >= 20);
     }
 
-    // Sort Data
-    filteredData.sort((a, b) => {
-        if (a.Territory === 'TOTAL') return 1;
-        if (b.Territory === 'TOTAL') return -1;
-        if (state.sortByOutliers) {
+    // Sort Data - preserve original order from dashboardData unless sorting by outliers
+    // Create index map from original dashboardData order
+    const orderMap = {};
+    window.dashboardData.forEach((row, idx) => { orderMap[row.Territory] = idx; });
+    
+    if (state.sortByOutliers) {
+        filteredData.sort((a, b) => {
+            if (a.Territory === 'TOTAL') return 1;
+            if (b.Territory === 'TOTAL') return -1;
             return getTerritoryOutlierCount(b.Territory) - getTerritoryOutlierCount(a.Territory);
-        }
-        return a.Territory.localeCompare(b.Territory);
-    });
+        });
+    } else {
+        // Keep TOTAL at end, preserve original order from dashboardData
+        filteredData.sort((a, b) => {
+            if (a.Territory === 'TOTAL') return 1;
+            if (b.Territory === 'TOTAL') return -1;
+            return (orderMap[a.Territory] || 0) - (orderMap[b.Territory] || 0);
+        });
+    }
 
     // Build HTML
     let html = `
