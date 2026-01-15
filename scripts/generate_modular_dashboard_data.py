@@ -28,46 +28,100 @@ def load_discovery():
     return agents
 
 def map_territory(agent):
-    """Map agent to territory based on file path"""
-    path = agent.get('path', '') or agent.get('rel_file', '')
-    # Normalize path separators for cross-platform compatibility
-    path = path.replace('\\', '/')
+    """Map agent to territory using SSOT logic from generate_dashboard.py"""
+    layer = agent.get('layer', '')
+    sub_dir = agent.get('sub_dir', '')
+    path = agent.get('path', '').replace('\\', '/')
+    class_name = agent.get('class_name', '')
     
-    # Layer-based mapping
-    if '/L6_observability/' in path or '\\L6_observability\\' in agent.get('path', ''):
-        return 'L6 Observability'
-    elif '/L5_safety/' in path or '\\L5_safety\\' in agent.get('path', ''):
-        if '/validators/' in path or '\\validators\\' in agent.get('path', ''):
-            return 'L5 Safety/Validators'
-        elif '/guardrails/' in path or '\\guardrails\\' in agent.get('path', ''):
-            return 'L5 Safety/Guardrails'
-        return 'L5 Safety/Base Agent'
-    elif '/L4_state/' in path or '\\L4_state\\' in agent.get('path', ''):
-        return 'L4 State/Base Agent'
-    elif '/L3_orchestration/' in path or '\\L3_orchestration\\' in agent.get('path', ''):
-        if '/workflow_engines/' in path or '\\workflow_engines\\' in agent.get('path', ''):
-            return 'L3 Orchestration/Core'
-        return 'L3 Orchestration/Base Agent'
-    elif '/L2_execution/' in path or '\\L2_execution\\' in agent.get('path', ''):
-        if '/ToolRegistry/' in path or '\\ToolRegistry\\' in agent.get('path', ''):
-            return 'L2 Execution/Tools'
-        return 'L2 Execution/Core'
-    elif '/L1_cognition/' in path or '\\L1_cognition\\' in agent.get('path', ''):
-        if '/thought_engine/' in path or '/specialized/' in path or '\\thought_engine\\' in agent.get('path', '') or '\\specialized\\' in agent.get('path', ''):
-            return 'L1 Cognition/Specialized'
-        return 'L1 Cognition/Core'
-    elif '/L0_maintenance/' in path or '\\L0_maintenance\\' in agent.get('path', ''):
-        return 'L0 Maintenance'
-    elif '/base_agents/' in path or '\\base_agents\\' in agent.get('path', ''):
-        return 'Base/Root'
-    elif 'apps_lic' in path:
-        return 'Apps Lic'
-    elif 'apps_rg' in path:
-        return 'Apps Rg'
-    elif '/utils/' in path or '\\utils\\' in agent.get('path', ''):
-        return 'Utils'
-    
-    return 'Unknown'
+    # Map to FIXED detailed territory names with subcategories (matching generate_dashboard.py)
+    if 'apps_lic' in sub_dir.lower():
+        return "Apps Lic"
+    elif 'apps_rg' in sub_dir.lower():
+        return "Apps Rg"
+    elif 'apps_shared' in sub_dir.lower():
+        return "Apps Shared"
+    elif layer.startswith('L5'):
+        # L5 Safety subcategories
+        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
+            return "L5 Safety/Base Agent"
+        elif '/validators' in path or 'validators/' in path:
+            return "L5 Safety/Validators"
+        elif '/red_team' in path or 'red_teaming/' in path:
+            return "L5 Safety/Red Teaming"
+        elif '/gravity' in path or 'Gravity' in class_name:
+            return "L5 Safety/Gravity"
+        else:
+            return "L5 Safety/Guardrails"
+    elif layer.startswith('L4'):
+        # L4 State subcategories
+        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
+            return "L4 State/Base Agent"
+        elif '/filesystem' in path or '/infrastructure' in path:
+            return "L4 State/Infrastructure"
+        elif '/adapters' in path or 'Adapter' in class_name:
+            return "L4 State/Specialized"
+        else:
+            return "L4 State/Core"
+    elif layer.startswith('L3'):
+        # L3 Orchestration subcategories
+        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
+            return "L3 Orchestration/Base Agent"
+        elif '/infrastructure' in path:
+            return "L3 Orchestration/Infrastructure"
+        elif '/adapters' in path or 'Adapter' in class_name:
+            return "L3 Orchestration/Specialized"
+        else:
+            return "L3 Orchestration/Core"
+    elif layer.startswith('L2'):
+        # L2 Execution subcategories
+        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
+            return "L2 Execution/Base Agent"
+        elif '/adapters' in path or 'Adapter' in class_name:
+            return "L2 Execution/Specialized"
+        else:
+            return "L2 Execution/Core"
+    elif layer.startswith('L1'):
+        # L1 Cognition subcategories
+        if 'BaseAgent' in class_name or class_name == 'L1CognitionBaseAgent' or 'base_agent' in path.lower() or 'base_class' in path.lower():
+            return "L1 Cognition/Base Agent"
+        elif '/adapters' in path or 'Adapter' in class_name:
+            return "L1 Cognition/Specialized"
+        else:
+            return "L1 Cognition/Core"
+    elif layer.startswith('L0'):
+        # L0 Maintenance subcategories
+        if 'BaseAgent' in class_name or class_name == 'L0MaintenanceBaseAgent' or 'base_agent' in path.lower() or 'base_class' in path.lower():
+            return "L0 Maintenance/Base Agent"
+        elif '/infrastructure' in path or 'Infrastructure' in class_name:
+            return "L0 Maintenance/Infrastructure"
+        else:
+            return "L0 Maintenance/Core"
+    elif 'L6_observability' in path or 'L6_Observability' in path or layer.startswith('L6'):
+        # L6 Observability subcategories
+        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
+            return "L6 Observability/Base Agent"
+        elif '/metrics' in path or 'Metric' in class_name:
+            return "L6 Observability/Metrics"
+        elif '/telemetry' in path or 'Telemetry' in class_name:
+            return "L6 Observability/Infrastructure"
+        elif '/tracing' in path or 'Tracing' in class_name or 'Trace' in class_name:
+            return "L6 Observability/Tracing"
+        elif '/compliance' in path or 'Compliance' in class_name:
+            return "L6 Observability/Compliance"
+        else:
+            return "L6 Observability/Metrics"
+    elif layer == 'Base' or 'SovereignBaseAgent' in class_name or 'Mixin' in class_name:
+        # Base Layer Splitting: Root vs Mixins
+        if 'Mixin' in class_name or 'mixins' in path.lower():
+            return "Base/Mixins"
+        else:
+            return "Base/Root"
+    elif '/utils/core_extensions' in path or 'utils/core_extensions' in path:
+        # Core utilities like NamingAgent
+        return "L0 Maintenance/Core"
+    else:
+        return "Unknown"
 
 def calculate_metrics(agents_in_territory):
     """Calculate territory metrics from agent list"""
@@ -75,11 +129,11 @@ def calculate_metrics(agents_in_territory):
     if total == 0:
         return None
     
-    # Count agents with heal capability
-    heal_cap = sum(1 for a in agents_in_territory if a.get('has_healer_mixin', False))
+    # Count agents with heal capability (has_healing field in discovery)
+    heal_cap = sum(1 for a in agents_in_territory if a.get('has_healing', False))
     
-    # Count agents with heal invocation
-    heal_invocation = sum(1 for a in agents_in_territory if a.get('calls_heal_repository', False))
+    # Count agents with heal invocation (invocation field in discovery)
+    heal_invocation = sum(1 for a in agents_in_territory if a.get('invocation') == 'Yes')
     
     # Count agents with tests
     has_tests = sum(1 for a in agents_in_territory if a.get('has_tests', False))
@@ -89,24 +143,31 @@ def calculate_metrics(agents_in_territory):
     heal_inv_pct = (heal_invocation / total) * 100
     test_pct = (has_tests / total) * 100
     
-    # Get complexity values
-    complexities = [a.get('complexity', 0) for a in agents_in_territory if a.get('complexity')]
+    # Get complexity values (cyclomatic_complexity field)
+    complexities = [a.get('cyclomatic_complexity', 0) for a in agents_in_territory if a.get('cyclomatic_complexity')]
     avg_cc = sum(complexities) / len(complexities) if complexities else 0
     
     # Complexity health (inverse - lower CC is better)
     complexity_health = max(0, 100 - (avg_cc * 2)) if avg_cc else 100
     
-    # Observable % (placeholder - would need actual data)
-    observable_pct = 50.0
+    # Observable % - from observability field
+    observable_agents = sum(1 for a in agents_in_territory 
+                           if a.get('observability', {}).get('logging') or 
+                              a.get('observability', {}).get('metrics') or
+                              a.get('observability', {}).get('tracing'))
+    observable_pct = (observable_agents / total) * 100 if total > 0 else 0
     
-    # Typed % (placeholder)
-    typed_pct = 70.0
+    # Typed % - from typed_pct field
+    typed_values = [a.get('typed_pct', 0) for a in agents_in_territory]
+    typed_pct = sum(typed_values) / len(typed_values) if typed_values else 0
     
-    # Documented % (placeholder)
-    documented_pct = 60.0
+    # Documented % - from documented_pct field
+    doc_values = [a.get('documented_pct', 0) for a in agents_in_territory]
+    documented_pct = sum(doc_values) / len(doc_values) if doc_values else 0
     
-    # MCP Hardened % (placeholder)
-    hardened_pct = 10.0
+    # MCP Hardened % - from mcp_hardened field
+    hardened_count = sum(1 for a in agents_in_territory if a.get('mcp_hardened', False))
+    hardened_pct = (hardened_count / total) * 100 if total > 0 else 0
     
     # Calculate overall health (weighted average)
     health = (
@@ -151,6 +212,33 @@ def calculate_metrics(agents_in_territory):
         "Criticality": 75
     }
 
+# TERRITORY_ORDER from original backup - matches monolithic dashboard
+TERRITORY_ORDER = [
+    "Base/Root",
+    "L0 Maintenance/Base Agent",
+    "L0 Maintenance/Core",
+    "L1 Cognition/Base Agent",
+    "L1 Cognition/Core",
+    "L2 Execution/Base Agent",
+    "L2 Execution/Core",
+    "L3 Orchestration/Base Agent",
+    "L3 Orchestration/Core",
+    "L4 State/Base Agent",
+    "L4 State/Core",
+    "L4 State/Infrastructure",
+    "L5 Safety/Base Agent",
+    "L5 Safety/Gravity",
+    "L5 Safety/Guardrails",
+    "L5 Safety/Red Teaming",
+    "L5 Safety/Validators",
+    "L6 Observability/Base Agent",
+    "L6 Observability/Infrastructure",
+    "L6 Observability/Metrics",
+    "Apps Lic",
+    "Apps Rg",
+    "Apps Shared"
+]
+
 def generate_dashboard_data(agents):
     """Generate dashboard_data.js with territory rollups"""
     
@@ -158,16 +246,21 @@ def generate_dashboard_data(agents):
     territories = defaultdict(list)
     for agent in agents:
         territory = map_territory(agent)
-        territories[territory].append(agent)
+        if territory != "Unknown":  # Skip Unknown territories
+            territories[territory].append(agent)
     
     print(f"📊 Found {len(territories)} territories")
     
-    # Calculate metrics for each territory
+    # Calculate metrics for each territory IN ORDER
     dashboard_data = []
-    for territory, agents_list in sorted(territories.items()):
+    for territory_name in TERRITORY_ORDER:
+        if territory_name not in territories:
+            continue  # Skip territories with no agents
+        
+        agents_list = territories[territory_name]
         metrics = calculate_metrics(agents_list)
         if metrics:
-            metrics["Territory"] = territory
+            metrics["Territory"] = territory_name
             dashboard_data.append(metrics)
     
     # Calculate TOTAL row

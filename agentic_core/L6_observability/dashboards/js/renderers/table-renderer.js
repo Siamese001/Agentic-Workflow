@@ -12,6 +12,17 @@ const tableFilterState = {
 
 let toxicityFilterEnabled = false;
 
+// Toggle filter function for table controls
+function toggleFilter(tableType, filterName) {
+    window.tableFilterState[tableType][filterName] = !window.tableFilterState[tableType][filterName];
+    // Re-render the appropriate table
+    if (tableType === 'table1' && window.dashboardData) {
+        renderTerritorySummaryTable(window.dashboardData);
+    } else if (tableType === 'table2' && window.dashboardData) {
+        renderCodeQualityTable(window.dashboardData);
+    }
+}
+
 // --- Helper Functions ---
 
 // Fan-in data derived from architecture analysis
@@ -119,13 +130,14 @@ function renderTerritorySummaryTable(territoryData) {
                 <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
                     <thead>
                         <tr style="background:var(--primary); color:white;">
-                            <th style="padding:16px; text-align:left;">Territory</th>
-                            <th style="padding:16px; text-align:center;"># Agents</th>
-                            <th style="padding:16px; text-align:center;">Heal Capability %</th>
-                            <th style="padding:16px; text-align:center;">Heal Invocation %</th>
-                            <th style="padding:16px; text-align:center;">MCP Hardened %</th>
-                            <th style="padding:16px; text-align:center;">Test Coverage %</th>
-                            <th style="padding:16px; text-align:center;">Health Score</th>
+                            <th style="padding:16px; text-align:left;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
+                            <th style="padding:16px; text-align:center;" title="Total number of agents in this territory"># Agents</th>
+                            <th style="padding:16px; text-align:center;" title="% agents with HealerMixin - personal repair toolkits">Heal Capability %</th>
+                            <th style="padding:16px; text-align:center;" title="% agents calling heal_repository() - using centralized healing">Heal Invocation %</th>
+                            <th style="padding:16px; text-align:center;" title="% agents with MCP server integration - security hardening">MCP Hardened %</th>
+                            <th style="padding:16px; text-align:center;" title="% agents with test files - quality control">Test Coverage %</th>
+                            <th style="padding:16px; text-align:center;" title="Complexity Health % - inverted CC (100 - CC×2), higher is better">Complexity Health %</th>
+                            <th style="padding:16px; text-align:center;" title="Composite health score (weighted average)">Health Score</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -142,6 +154,7 @@ function renderTerritorySummaryTable(territoryData) {
         const invocationStats = getStats('invocation');
         const hardenedStats = getStats('hardened');
         const testStats = getStats('test');
+        const complexityStats = getStats('complexityHealth');
         
         const healthColor = getWorstCaseColor(row.Health);
         const rowBg = index % 2 === 0 ? '#f9fafb' : 'white';
@@ -172,13 +185,19 @@ function renderTerritorySummaryTable(territoryData) {
                 <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'])}">
                     ${formatDistributionCell(row['Hardened %'], hardenedStats)}
                     ${formatOutlierBadge(getOutliers('hardened', 50).atZero, getOutliers('hardened', 50).belowThreshold, 50)}
-                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'hardened', 'Hardened', 50)}</div>
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'hardened', 'MCP Hardened', 50)}</div>
                 </td>
 
                 <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}">
                     ${formatDistributionCell(row['Test %'], testStats)}
                     ${formatOutlierBadge(getOutliers('test', 50).atZero, getOutliers('test', 50).belowThreshold, 50)}
-                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'test', 'Tests', 50)}</div>
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'test', 'Test Coverage', 50)}</div>
+                </td>
+
+                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Complexity Health'])}">
+                    ${formatDistributionCell(row['Complexity Health'], complexityStats)}
+                    ${formatOutlierBadge(getOutliers('complexityHealth', 50).atZero, getOutliers('complexityHealth', 50).belowThreshold, 50)}
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'complexityHealth', 'Complexity Health', 50)}</div>
                 </td>
 
                 <td style="padding:12px; text-align:center; font-weight:700; color:${healthColor}">
@@ -187,7 +206,29 @@ function renderTerritorySummaryTable(territoryData) {
             </tr>`;
     });
 
-    html += `</tbody></table></div></div>`;
+    html += `</tbody></table></div>
+        
+        <!-- Footnotes & Legend -->
+        <div style="margin-top:16px; padding:16px; background:#f8fafc; border-radius:8px; border-left:4px solid var(--primary);">
+            <div style="display:flex; flex-wrap:wrap; gap:24px; margin-bottom:12px;">
+                <div style="font-weight:600; color:var(--primary);">Icon Legend:</div>
+                <span title="Critical: Has agents at 0% for key metrics">⚠️ <strong>Critical</strong> - Agents at 0%</span>
+                <span title="Warning: Has agents below 50% threshold">⚡ <strong>Warning</strong> - Below 50%</span>
+                <span title="Hub: High fan-in territory (≥20 dependents)">☢️ <strong>Hub</strong> - High Fan-In</span>
+                <span title="Zombie: Territory with no healing capability">🧟 <strong>Zombie</strong> - No Healing</span>
+            </div>
+            <div style="font-size:0.85em; color:#475569; line-height:1.7;">
+                <div style="display:grid; gap:10px;">
+                    <div><strong>Heal Capability %:</strong> Percentage of agents with <code>HealerMixin</code> — Each has their own customized fix-it list. <em>Factory analogy: Workers with personal repair toolkits—each has their own customized fix-it list for their station.</em></div>
+                    <div><strong>Heal Invocation %:</strong> Percentage of agents that call <code>super().heal_repository()</code> to invoke the centralized healing protocol from the parent agent. <em>Factory analogy: Workers who actually consult the master safety checklist when problems occur, ensuring consistent factory-wide repair procedures are followed.</em></div>
+                    <div><strong>MCP Hardened %:</strong> Percentage of agents with security validation around Model Context Protocol operations (tool calls, file access). <em>Factory analogy: Workers with safety guards on their power tools—prevents dangerous operations even if someone accidentally hits the wrong button.</em></div>
+                    <div><strong>Test Coverage %:</strong> Percentage of agents with associated unit/integration tests validating their behavior. <em>Factory analogy: Stations with quality control inspectors who verify each product before it leaves—catches defects before they reach customers.</em></div>
+                    <div><strong>Complexity Health %:</strong> Calculated as <code>100 - (Cyclomatic Complexity × 2)</code>. Higher values indicate simpler, more maintainable code (target ≥80%). <em>Factory analogy: How clean and organized a workstation is—cluttered stations slow everyone down and cause accidents.</em></div>
+                    <div><strong>Health Score:</strong> Gospel-weighted composite: <code>Heal Capability (30%) + Invocation (10%) + Test Coverage (25%) + Observability (20%) + Complexity Health (15%)</code>. Prioritizes autonomy and testing. L5 security violation = 0%. <em>Factory analogy: The worker's annual physical exam score—weighted to emphasize self-repair capability and quality gates over mere maintainability.</em></div>
+                </div>
+            </div>
+        </div>
+    </div>`;
     container.innerHTML = html;
 }
 
@@ -206,6 +247,10 @@ function renderTableControls(tableType) {
             <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em; color:#dc2626;">
                 <input type="checkbox" onchange="toggleFilter('${tableType}', 'showZombies')" ${state.showZombies ? 'checked' : ''}>
                 <span>🧟 Show Zombies</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em; color:#7c3aed;" title="Filter to show only high-impact territories (fan-in ≥ 20)">
+                <input type="checkbox" onchange="toggleToxicityFilter()" ${window.toxicityFilterEnabled ? 'checked' : ''}>
+                <span>☢️ High-Impact Only</span>
             </label>
         </div>`;
 }
@@ -296,7 +341,85 @@ function renderCodeQualityTable(data) {
         </tbody>
     </table>
     </div>
+    <div style="margin-top:16px; padding:16px; background:#f0f9ff; border-radius:8px; border-left:4px solid var(--primary); font-size:0.85em; line-height:1.7;">
+        <div style="display:grid; gap:10px;">
+            <div><strong>Typed %:</strong> Percentage of function signatures and variables with Python type hints (e.g., <code>def process(data: dict) -> bool</code>). <em>Factory analogy: Labels on every bin and shelf—workers instantly know what goes where without guessing, preventing mix-ups and speeding up work.</em></div>
+            <div><strong>Documented %:</strong> Percentage of classes and functions with docstrings explaining purpose, parameters, and return values. <em>Factory analogy: Instruction manuals at each station—new workers can learn the job without constantly asking veterans, and everyone follows the same procedures.</em></div>
+            <div><strong>Schema Strictness %:</strong> Percentage of agents using <code>@dataclass</code> decorator or Pydantic <code>BaseModel</code> for structured data validation. <em>Factory analogy: Quality gates that reject malformed parts—if a component doesn't meet spec, it gets caught immediately rather than causing problems downstream.</em></div>
+            <div><strong>Canonical Inheritance %:</strong> Percentage of agents following canonical architectural inheritance. Valid patterns include: <code>SovereignBaseAgent</code>, layer bases (<code>L0MaintenanceBaseAgent</code>, <code>L1CognitionBaseAgent</code>, <code>L5SafetyBaseAgent</code>, <code>L3OrchestrationBaseAgent</code>, etc.), and canonical mixins (<code>HealerMixin</code>, <code>MCPHardenedMixin</code>, <code>MCPShieldMixin</code>, <code>SubatomicTestingMixin</code>, <code>L3SubatomicTestingMixin</code>, <code>ObservabilityMixin</code>, <code>TelemetryMixin</code>, <code>ValidationMixin</code>, <code>StateMixin</code>, <code>CognitionMixin</code>, <code>ExecutionMixin</code>, <code>SafetyMixin</code>). <em>Factory analogy: Workers wearing the right department uniform—ensures they have access to the correct tools and follow department-specific safety protocols.</em></div>
+            <div><strong>Code Quality Score:</strong> Weighted composite: (Typed % × 0.30) + (Documented % × 0.30) + (Schema Strictness % × 0.25) + (Canonical Inheritance % × 0.15). Comprehensive code quality metric balancing type safety, documentation, validation contracts, and architectural compliance. <em>Factory analogy: The station's comprehensive quality audit—combining cleanliness (types), instruction manuals (docs), quality gates (schemas), and proper equipment (inheritance) into a single maintainability score.</em></div>
+        </div>
+    </div>
     `;
     
     container.innerHTML = html;
 }
+
+// Toggle toxicity filter (high-impact territories only)
+function toggleToxicityFilter() {
+    window.toxicityFilterEnabled = !window.toxicityFilterEnabled;
+    // Re-render both tables with new filter
+    if (window.dashboardData) {
+        renderTerritorySummaryTable(window.dashboardData);
+    }
+}
+
+// Toggle zombie filter (territories with no healing capability)
+function toggleZombieFilter(tableType) {
+    window.tableFilterState[tableType].showZombies = !window.tableFilterState[tableType].showZombies;
+    if (tableType === 'table1' && window.dashboardData) {
+        renderTerritorySummaryTable(window.dashboardData);
+    } else if (tableType === 'table2' && window.dashboardData) {
+        renderCodeQualityTable(window.dashboardData);
+    }
+}
+
+// Toggle outlier filter (show only territories with critical outliers)
+function toggleOutlierFilter(tableType) {
+    window.tableFilterState[tableType].showOnlyOutliers = !window.tableFilterState[tableType].showOnlyOutliers;
+    if (tableType === 'table1' && window.dashboardData) {
+        renderTerritorySummaryTable(window.dashboardData);
+    } else if (tableType === 'table2' && window.dashboardData) {
+        renderCodeQualityTable(window.dashboardData);
+    }
+}
+
+// Toggle sort by outliers
+function toggleSortByOutliers(tableType) {
+    window.tableFilterState[tableType].sortByOutliers = !window.tableFilterState[tableType].sortByOutliers;
+    if (tableType === 'table1' && window.dashboardData) {
+        renderTerritorySummaryTable(window.dashboardData);
+    } else if (tableType === 'table2' && window.dashboardData) {
+        renderCodeQualityTable(window.dashboardData);
+    }
+}
+
+// Load data function for initialization
+function loadData() {
+    console.log('🚀 loadData() called');
+    const data = window.dashboardData;
+    console.log('📊 dashboardData:', data ? data.length + ' rows' : 'UNDEFINED');
+    
+    if (!data || data.length === 0) {
+        console.error('❌ No dashboard data available');
+        return;
+    }
+    
+    const territoryData = data.filter(row => row.Territory !== 'TOTAL');
+    console.log('🗺️ territoryData:', territoryData.length + ' territories');
+    
+    // Render tables
+    renderTerritorySummaryTable(data);
+    renderCodeQualityTable(data);
+    
+    console.log('✅ Tables rendered');
+}
+
+// Make functions globally available
+window.toggleToxicityFilter = toggleToxicityFilter;
+window.toggleZombieFilter = toggleZombieFilter;
+window.toggleOutlierFilter = toggleOutlierFilter;
+window.toggleSortByOutliers = toggleSortByOutliers;
+window.loadData = loadData;
+window.toggleFilter = toggleFilter;
+window.tableFilterState = tableFilterState;

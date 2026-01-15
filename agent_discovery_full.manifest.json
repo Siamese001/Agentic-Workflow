@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-15T14:23:27.061288Z",
-  "scan_duration_seconds": 42.38,
+  "generated_at": "2026-01-15T19:01:41.796183Z",
+  "scan_duration_seconds": 17.05,
   "agent_count": 267,
-  "content_hash": "sha256:2a4bc1600beb11abe336f259a299d7eff1424f4f6111cdf419ee7d15daf18194",
+  "content_hash": "sha256:1baa4e7b3449ac9c793fb95b11e1584fc195b4aa0caf70a9983ed6e5bfa9921c",
   "layer_breakdown": {
     "Apps": 61,
     "Base": 1,
@@ -1531,6 +1531,7 @@
     "scripts/generate_all_agent_tests.py": "eb879c5447b6fb0329573059fad21e01",
     "scripts/generate_blueprint_metrics.py": "400f20d964621ef1976dd24d7f5dfbf6",
     "scripts/generate_comprehensive_tests.py": "93f6715759b1950b2c7377c9438fbfe3",
+    "scripts/generate_modular_dashboard_data.py": "487ed778356930208647649a96347817",
     "scripts/generate_phase2_metrics.py": "7a8811a2b7c3146f539f5d7dbea87204",
     "scripts/generate_syntax_report.py": "20f57f76c05a57a41192a01cfb238fc9",
     "scripts/HandlerAgent.py": "cf75bed08dd5c0c6ee016c6dc4415206",
@@ -1668,6 +1669,6 @@
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63",
     "scripts/refactor/verify_integrity.py": "2bfe5aaf42a32e5a9c880b33b8b95217"
   },
-  "hashed_file_count": 1644,
+  "hashed_file_count": 1645,
   "hash_errors": 0
 }
