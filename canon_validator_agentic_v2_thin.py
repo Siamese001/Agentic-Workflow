@@ -29,6 +29,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     get_validated_project_root,
 )
 
+# Define missing directory constants
+APPS_SHARED_DIR = "apps_shared"
+APPS_LIC_DIR = "apps_lic"
+APPS_RG_DIR = "apps_rg"
+
 # Load environment variables from .env file
 try:
     from dotenv import load_dotenv
