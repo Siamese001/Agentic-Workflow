@@ -46,6 +46,7 @@ MANIFEST_JSON = PROJECT_ROOT / AGENT_DISCOVERY_MANIFEST_JSON
 STALENESS_THRESHOLD = timedelta(hours=1)
 
 # Shared exclude logic with discovery
+ARCHIVES_DIR = "archives"
 EXCLUDED_DIRS = {'__pycache__', '.git', ARCHIVES_DIR, '.sovereign_healing_backup', 'node_modules', '.venv'}
 
 def should_exclude_path(path: Path) -> bool:
