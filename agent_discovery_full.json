@@ -8,8 +8,8 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "enforce_ascii",
@@ -28,7 +28,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -50,10 +50,10 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin",
       "HealerMixin",
-      "ResumeAgent"
+      "SubatomicTestingMixin",
+      "ResumeAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -94,8 +94,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ResumeAgent"
+      "ResumeAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -114,7 +114,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 50.0,
     "observability": {
@@ -136,10 +136,10 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "OutreachAgent",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "OutreachAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -198,7 +198,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -220,9 +220,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -286,7 +286,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -308,8 +308,8 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "detect_forbidden_verbs",
@@ -330,7 +330,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -352,8 +352,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ResumeAgent"
+      "ResumeAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -372,7 +372,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -394,9 +394,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -418,7 +418,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 83.3,
     "documented_pct": 83.3,
     "observability": {
@@ -459,7 +459,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -481,8 +481,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -528,8 +528,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -577,8 +577,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ResumeAgent"
+      "ResumeAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -598,7 +598,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -620,9 +620,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -667,9 +667,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -717,9 +717,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -760,9 +760,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -803,9 +803,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -853,9 +853,9 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -901,9 +901,9 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -945,9 +945,9 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -990,9 +990,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1033,9 +1033,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1101,7 +1101,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1123,9 +1123,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1144,7 +1144,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 50.0,
     "documented_pct": 50.0,
     "observability": {
@@ -1166,8 +1166,8 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
       "HealerMixin",
+      "MCPHardenedMixin",
       "L2SelfTestingMixin"
     ],
     "key_methods": [
@@ -1192,7 +1192,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 87.5,
     "observability": {
@@ -1236,7 +1236,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 66.7,
     "observability": {
@@ -1280,7 +1280,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 66.7,
     "observability": {
@@ -1321,7 +1321,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1367,7 +1367,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 83.3,
     "observability": {
@@ -1408,7 +1408,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1430,9 +1430,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1492,7 +1492,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1514,8 +1514,8 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1535,7 +1535,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 75.0,
     "observability": {
@@ -1557,8 +1557,8 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1581,7 +1581,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 85.7,
     "observability": {
@@ -1603,10 +1603,10 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "OutreachAgent",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "OutreachAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1650,9 +1650,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1718,7 +1718,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 50.0,
     "observability": {
@@ -1740,8 +1740,8 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_agents_for_signals",
@@ -1761,7 +1761,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 25.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1802,7 +1802,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1842,7 +1842,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1864,10 +1864,10 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "ValidationGateExecutor",
+      "HealerMixin",
       "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin"
+      "ValidationGateExecutor"
     ],
     "key_methods": [
       "__init__",
@@ -1915,9 +1915,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1937,7 +1937,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 66.7,
     "observability": {
@@ -1959,9 +1959,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1983,7 +1983,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 75.0,
     "observability": {
@@ -2005,9 +2005,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2032,7 +2032,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 87.5,
     "observability": {
@@ -2054,8 +2054,8 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "detect_placeholders",
@@ -2074,7 +2074,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2096,8 +2096,8 @@
     "territory": "Apps Rg",
     "category": "GenericAgent",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ResumeAgent"
+      "ResumeAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2118,7 +2118,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 75.0,
     "observability": {
@@ -2140,9 +2140,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2189,9 +2189,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2210,7 +2210,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 50.0,
     "documented_pct": 50.0,
     "observability": {
@@ -2232,8 +2232,8 @@
     "territory": "Apps Rg",
     "category": "Executor",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ResumeAgent"
+      "ResumeAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -2252,7 +2252,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2274,9 +2274,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2302,7 +2302,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2324,8 +2324,8 @@
     "territory": "Apps Rg",
     "category": "Executor",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ResumeAgent"
+      "ResumeAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -2343,7 +2343,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2365,8 +2365,8 @@
     "territory": "Apps Rg",
     "category": "GenericAgent",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ResumeAgent"
+      "ResumeAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -2385,7 +2385,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2407,9 +2407,9 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -2448,8 +2448,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ResumeAgent"
+      "ResumeAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -2468,7 +2468,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 50.0,
     "observability": {
@@ -2490,8 +2490,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_agents_for_signals",
@@ -2511,7 +2511,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 25.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2533,8 +2533,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2558,7 +2558,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 87.5,
     "observability": {
@@ -2580,8 +2580,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -2629,9 +2629,9 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2653,7 +2653,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 75.0,
     "observability": {
@@ -2675,8 +2675,8 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2700,7 +2700,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 87.5,
     "observability": {
@@ -2739,7 +2739,7 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "invocation": "Yes",
+    "invocation": "No (missing super)",
     "testing": "None",
     "has_subatomic": false,
     "loc": 39,
@@ -2748,7 +2748,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2770,8 +2770,8 @@
     "territory": "L0 Maintenance/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2797,7 +2797,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2842,7 +2842,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2864,10 +2864,10 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "L0MaintenanceBaseAgent",
+      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2893,7 +2893,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2915,8 +2915,8 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "Agent",
-      "L0MaintenanceBaseAgent"
+      "L0MaintenanceBaseAgent",
+      "Agent"
     ],
     "key_methods": [
       "heal_repository"
@@ -2933,7 +2933,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2977,7 +2977,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2999,10 +2999,10 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "L0MaintenanceBaseAgent",
+      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3028,7 +3028,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3050,9 +3050,9 @@
     "territory": "L0 Maintenance/Base Class",
     "category": "Validator",
     "inheritance": [
-      "L0DelegationTestingMixin",
+      "HealerMixin",
       "SovereignBaseAgent",
-      "HealerMixin"
+      "L0DelegationTestingMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -3093,10 +3093,10 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "L0MaintenanceBaseAgent",
+      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3120,7 +3120,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3166,7 +3166,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3211,7 +3211,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3233,8 +3233,8 @@
     "territory": "L0 Maintenance/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3260,7 +3260,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 92.9,
     "documented_pct": 92.9,
     "observability": {
@@ -3282,10 +3282,10 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
-      "CanonASTValidator",
+      "HealerMixin",
       "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "__init__",
@@ -3327,9 +3327,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
-      "CanonASTValidator",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "HealerMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -3391,7 +3391,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3413,9 +3413,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3508,9 +3508,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3555,9 +3555,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
-      "CanonASTValidator",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "HealerMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -3597,9 +3597,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
-      "CanonASTValidator",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "HealerMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -3639,8 +3639,8 @@
     "territory": "L1 Cognition/Core",
     "category": "GenericAgent",
     "inheritance": [
-      "SubAtomicAgent",
       "SubatomicTestingMixin",
+      "SubAtomicAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -3684,9 +3684,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
-      "CanonASTValidator",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "HealerMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -3726,9 +3726,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
-      "CanonASTValidator",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "HealerMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -3768,9 +3768,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
-      "CanonASTValidator",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "HealerMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Import",
@@ -3811,9 +3811,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "CanonBaseAgentInterface",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3839,7 +3839,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3861,9 +3861,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "CanonBaseAgentInterface",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -3889,7 +3889,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3911,9 +3911,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3961,8 +3961,8 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
-      "CanonBaseAgentInterface",
-      "HealerMixin"
+      "HealerMixin",
+      "CanonBaseAgentInterface"
     ],
     "key_methods": [
       "heal_repository",
@@ -3984,7 +3984,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4006,9 +4006,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4050,9 +4050,9 @@
     "territory": "L1 Cognition/Base Class",
     "category": "Validator",
     "inheritance": [
-      "PineconeVectorMixin",
+      "RedisCacheMixin",
       "SovereignBaseAgent",
-      "RedisCacheMixin"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "_init_registry",
@@ -4148,8 +4148,8 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4171,7 +4171,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4193,9 +4193,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4243,9 +4243,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Validator",
     "inheritance": [
-      "CanonASTValidator",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "HealerMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -4285,9 +4285,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4330,8 +4330,8 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -4349,7 +4349,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4371,8 +4371,8 @@
     "territory": "L1 Cognition/Core",
     "category": "Cognition",
     "inheritance": [
-      "MCPHardenedMixin",
-      "ICognitivePlane"
+      "ICognitivePlane",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4395,7 +4395,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4417,9 +4417,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "CanonBaseAgentInterface",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4445,7 +4445,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4494,7 +4494,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4536,7 +4536,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4558,10 +4558,10 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
-      "NodeVisitor",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "NodeVisitor",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4603,10 +4603,10 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
-      "SubAtomicAgent",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "SubAtomicAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "can_run",
@@ -4648,10 +4648,10 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
-      "PineconeVectorMixin",
+      "HealerMixin",
       "RedisCacheMixin",
       "MCPHardenedMixin",
-      "HealerMixin"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4699,9 +4699,9 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
-      "CanonBaseAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -4749,8 +4749,8 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4775,7 +4775,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4824,7 +4824,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4846,9 +4846,9 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4922,7 +4922,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4963,7 +4963,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -4985,9 +4985,9 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5028,9 +5028,9 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5056,7 +5056,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5101,7 +5101,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5123,9 +5123,9 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5173,9 +5173,9 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5223,9 +5223,9 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5266,9 +5266,9 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -5313,8 +5313,8 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5338,7 +5338,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5360,8 +5360,8 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5431,7 +5431,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5453,9 +5453,9 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -5494,10 +5494,10 @@
     "territory": "L2 Execution/Base Class",
     "category": "Validator",
     "inheritance": [
-      "PineconeVectorMixin",
+      "RedisCacheMixin",
       "SubatomicTestingMixin",
       "SovereignBaseAgent",
-      "RedisCacheMixin"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -5569,7 +5569,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5591,9 +5591,9 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5619,7 +5619,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5660,7 +5660,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5701,7 +5701,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5748,7 +5748,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5770,9 +5770,9 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5820,10 +5820,10 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "SubAtomicAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5869,9 +5869,9 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "IActionPlane",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5919,8 +5919,8 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5968,9 +5968,9 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6017,9 +6017,9 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6081,7 +6081,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -6103,9 +6103,9 @@
     "territory": "L2 Execution/Core",
     "category": "Orchestrator",
     "inheritance": [
-      "CanonBaseAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -6152,10 +6152,10 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
-      "CanonBaseAgent",
+      "HealerMixin",
       "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin"
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -6228,7 +6228,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -6269,7 +6269,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -6337,9 +6337,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6384,8 +6384,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6430,9 +6430,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6475,9 +6475,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6524,9 +6524,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6573,9 +6573,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6665,9 +6665,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6693,7 +6693,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -6715,8 +6715,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6764,9 +6764,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -6805,9 +6805,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -6846,9 +6846,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6896,9 +6896,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6991,9 +6991,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7039,9 +7039,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7082,9 +7082,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "L3SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7104,7 +7104,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -7126,9 +7126,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7174,8 +7174,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -7216,10 +7216,10 @@
     "territory": "L3 Orchestration/Base Class",
     "category": "Validator",
     "inheritance": [
-      "PineconeVectorMixin",
+      "RedisCacheMixin",
       "L3SubatomicTestingMixin",
       "SovereignBaseAgent",
-      "RedisCacheMixin"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "route",
@@ -7242,7 +7242,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -7286,7 +7286,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -7308,9 +7308,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7399,9 +7399,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7449,9 +7449,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7499,11 +7499,11 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
       "PineconeVectorMixin",
+      "RedisCacheMixin",
       "L3SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "RedisCacheMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7574,7 +7574,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 50.0,
     "documented_pct": 75.0,
     "observability": {
@@ -7616,7 +7616,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -7684,8 +7684,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
       "SubatomicTestingMixin",
+      "SubAtomicAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -7874,9 +7874,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7920,8 +7920,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7943,7 +7943,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -7965,10 +7965,10 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin",
       "HealerMixin",
-      "CognitiveRecoveryMixin"
+      "SubatomicTestingMixin",
+      "CognitiveRecoveryMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8016,8 +8016,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8063,8 +8063,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8111,9 +8111,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8155,9 +8155,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8201,9 +8201,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8250,8 +8250,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8274,7 +8274,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -8296,8 +8296,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8366,7 +8366,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -8388,9 +8388,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8440,8 +8440,8 @@
     "inheritance": [
       "FileSystemEventHandler",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8482,8 +8482,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8530,8 +8530,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8579,9 +8579,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -8620,9 +8620,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8664,8 +8664,8 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8713,8 +8713,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8879,7 +8879,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -8901,8 +8901,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -8943,10 +8943,10 @@
     "territory": "L4 State/Base Class",
     "category": "State",
     "inheritance": [
-      "PineconeVectorMixin",
-      "SovereignBaseAgent",
       "RedisCacheMixin",
-      "L4SubatomicTestingMixin"
+      "SovereignBaseAgent",
+      "L4SubatomicTestingMixin",
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "recall",
@@ -8972,7 +8972,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9040,9 +9040,9 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9090,8 +9090,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9139,8 +9139,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__new__",
@@ -9186,8 +9186,8 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
       "SubatomicTestingMixin",
+      "SubAtomicAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -9236,8 +9236,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9284,9 +9284,9 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9332,8 +9332,8 @@
     "territory": "L5 Safety/Red Teaming",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -9381,8 +9381,8 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Guardian",
     "inheritance": [
-      "SubAtomicAgent",
       "SubatomicTestingMixin",
+      "SubAtomicAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -9431,9 +9431,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9481,10 +9481,10 @@
     "territory": "L5 Safety/Validators",
     "category": "Healer",
     "inheritance": [
-      "PineconeVectorMixin",
+      "HealerMixin",
       "RedisCacheMixin",
       "MCPHardenedMixin",
-      "HealerMixin"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9509,7 +9509,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9575,9 +9575,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9621,9 +9621,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9664,9 +9664,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9714,8 +9714,8 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9741,7 +9741,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9808,9 +9808,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9851,9 +9851,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9896,9 +9896,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9940,9 +9940,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9990,9 +9990,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10038,9 +10038,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10085,9 +10085,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10132,8 +10132,8 @@
     "territory": "L5 Safety/Gravity",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10155,7 +10155,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10177,8 +10177,8 @@
     "territory": "L5 Safety/Gravity",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10200,7 +10200,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10222,8 +10222,8 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Analyzer",
     "inheritance": [
-      "SubAtomicAgent",
       "SubatomicTestingMixin",
+      "SubAtomicAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -10272,9 +10272,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10320,9 +10320,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10330,11 +10330,11 @@
       "_create_dir_with_init",
       "relocate_misplaced_files",
       "enforce_depth_rules",
+      "_enforce_depth_for_root",
+      "_archive_depth_violation",
       "_enforce_apps_depth",
       "_enforce_tests_depth",
-      "_enforce_universal_depth",
-      "_remove_empty_dirs",
-      "purge_orphaned_files"
+      "_enforce_universal_depth"
     ],
     "has_tools": true,
     "has_memory": false,
@@ -10342,7 +10342,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 462,
+    "loc": 439,
     "class_count": 1,
     "description": "\n    Unified Hierarchy Management Agent\n    \n    Combines capabilities from HierarchyEnforcerAgent a",
     "pascal_compliant": true,
@@ -10356,7 +10356,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 139,
+    "cyclomatic_complexity": 133,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10370,9 +10370,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10416,8 +10416,8 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10440,7 +10440,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10489,7 +10489,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10511,9 +10511,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10555,9 +10555,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10605,8 +10605,8 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -10647,9 +10647,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10697,9 +10697,9 @@
     "territory": "L5 Safety/Base Class",
     "category": "Validator",
     "inheritance": [
-      "PineconeVectorMixin",
+      "RedisCacheMixin",
       "SovereignBaseAgent",
-      "RedisCacheMixin"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10795,8 +10795,8 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "L5Agent"
+      "L5Agent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10822,7 +10822,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10844,9 +10844,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10891,8 +10891,8 @@
     "territory": "L5 Safety/Validators",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10912,7 +10912,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10960,7 +10960,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 95.2,
     "documented_pct": 100.0,
     "observability": {
@@ -10982,9 +10982,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11032,9 +11032,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11082,9 +11082,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11128,12 +11128,12 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin",
-      "AdaptiveExecutionMixin",
       "AutonomyMixin",
       "MCPHardenedMixin",
-      "SelfDiagnosisMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin",
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11181,10 +11181,10 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "CanonBaseAgent",
       "ASTEnforcementMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -11232,8 +11232,8 @@
     "territory": "L5 Safety/Guardrails",
     "category": "GenericAgent",
     "inheritance": [
-      "MCPHardenedMixin",
-      "NeuralAutoImmuneAgent"
+      "NeuralAutoImmuneAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11252,7 +11252,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -11274,9 +11274,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11319,9 +11319,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11367,9 +11367,9 @@
     "territory": "L5 Safety/Red Teaming",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -11436,7 +11436,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -11458,9 +11458,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11503,9 +11503,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Validator",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11553,9 +11553,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11603,9 +11603,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11653,8 +11653,8 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
-      "L5SafetyBaseAgent",
-      "CognitiveRecoveryMixin"
+      "CognitiveRecoveryMixin",
+      "L5SafetyBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -11674,7 +11674,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 75.0,
     "documented_pct": 100.0,
     "observability": {
@@ -11696,9 +11696,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11746,8 +11746,8 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11769,7 +11769,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -11791,8 +11791,8 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11818,7 +11818,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 80.0,
     "documented_pct": 90.0,
     "observability": {
@@ -11840,9 +11840,9 @@
     "territory": "L5 Safety/Validators",
     "category": "GenericAgent",
     "inheritance": [
-      "CanonBaseAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -11890,9 +11890,9 @@
     "territory": "L5 Safety/Validators",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
+      "HealerMixin",
       "NodeTransformer",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11913,7 +11913,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -11935,9 +11935,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11979,10 +11979,10 @@
     "category": "Analyzer",
     "inheritance": [
       "ABC",
-      "SubatomicTestingMixin",
-      "PineconeVectorMixin",
       "SovereignBaseAgent",
-      "RedisCacheMixin"
+      "PineconeVectorMixin",
+      "RedisCacheMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -12053,7 +12053,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -12096,7 +12096,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -12107,6 +12107,51 @@
     "cyclomatic_complexity": 8,
     "proper_base_class": true,
     "schema_strictness": 100.0,
+    "has_metadata": true
+  },
+  {
+    "class_name": "SovereignObservabilityAgent",
+    "path": "agentic_core\\L6_observability\\SovereignObservabilityAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/L6_observability",
+    "layer": "L6",
+    "territory": "L6_Observability/Metrics",
+    "category": "Monitor",
+    "inheritance": [
+      "RedisCacheMixin",
+      "EventEmissionMixin",
+      "ContextPropagationMixin"
+    ],
+    "key_methods": [
+      "heal_repository",
+      "__init__",
+      "_setup_consumer_group",
+      "process_stream",
+      "_analyze_event"
+    ],
+    "has_tools": false,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "No (missing super)",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 44,
+    "class_count": 1,
+    "description": "\n    L6 Observability Agent: The Consumer (Report 4.3 Part C).\n    Responsible for reading the globa",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 33.3,
+    "documented_pct": 66.7,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 11,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
     "has_metadata": true
   },
   {
@@ -12139,7 +12184,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -12153,6 +12198,47 @@
     "has_metadata": true
   },
   {
+    "class_name": "NamingAgent",
+    "path": "agentic_core\\utils\\core_extensions\\NamingAgent.py",
+    "top_dir": "agentic_core",
+    "sub_dir": "agentic_core/utils",
+    "layer": "Utils",
+    "territory": "Utils",
+    "category": "GenericAgent",
+    "inheritance": [],
+    "key_methods": [
+      "heal_repository",
+      "__init__",
+      "validate_name",
+      "suggest_name",
+      "analyze_placement"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "No (missing super)",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 26,
+    "class_count": 2,
+    "description": "Stub NamingAgent for backwards compatibility.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 80.0,
+    "documented_pct": 20.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 5,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": true
+  },
+  {
     "class_name": "StateValidatorAgent",
     "path": "apps_shared\\utils\\StateValidatorAgent.py",
     "top_dir": "apps_shared",
@@ -12161,8 +12247,8 @@
     "territory": "Utils",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "validate_state",
@@ -12180,7 +12266,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 50.0,
     "documented_pct": 100.0,
     "observability": {
@@ -12202,8 +12288,8 @@
     "territory": "Utils",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "validate_state",
@@ -12221,7 +12307,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 50.0,
     "documented_pct": 100.0,
     "observability": {
