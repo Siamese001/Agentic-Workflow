@@ -2313,7 +2313,7 @@ window.realAgentData = {
       92.5
     ]
   },
-  "Base/Root": {
+  "Sovereign Base Agent": {
     "agents": [
       {
         "name": "SovereignBaseAgent",
@@ -2323,15 +2323,15 @@ window.realAgentData = {
         "class_line": 1,
         "has_healing": true,
         "has_mixin": true,
-        "invocation": "No (missing super)",
-        "invocation_pct": 0.0,
+        "invocation": "Yes",
+        "invocation_pct": 100.0,
         "mcp_hardened": true,
         "hardened_pct": 100.0,
         "has_tests": false,
         "test_pct": 0.0,
         "cyclomatic_complexity": 14,
         "complexity_health": 72,
-        "health": 60.8,
+        "health": 70.8,
         "typed_pct": 100.0,
         "documented_pct": 100.0,
         "schema_pct": 100.0,
@@ -2346,7 +2346,7 @@ window.realAgentData = {
       100.0
     ],
     "invocation": [
-      0.0
+      100.0
     ],
     "hardened": [
       100.0
@@ -2358,7 +2358,7 @@ window.realAgentData = {
       72
     ],
     "health": [
-      60.8
+      70.8
     ],
     "typed": [
       100.0
@@ -2646,15 +2646,15 @@ window.realAgentData = {
         "class_line": 1,
         "has_healing": true,
         "has_mixin": true,
-        "invocation": "No (missing super)",
-        "invocation_pct": 0.0,
+        "invocation": "Yes",
+        "invocation_pct": 100.0,
         "mcp_hardened": false,
         "hardened_pct": 0.0,
         "has_tests": false,
         "test_pct": 0.0,
         "cyclomatic_complexity": 5,
         "complexity_health": 90,
-        "health": 43.5,
+        "health": 53.5,
         "typed_pct": 80.0,
         "documented_pct": 20.0,
         "schema_pct": 100.0,
@@ -2689,7 +2689,7 @@ window.realAgentData = {
       100.0,
       100.0,
       100.0,
-      0.0
+      100.0
     ],
     "hardened": [
       100.0,
@@ -2741,7 +2741,7 @@ window.realAgentData = {
       66.9,
       66.6,
       60.0,
-      43.5
+      53.5
     ],
     "typed": [
       100.0,
@@ -10217,15 +10217,15 @@ window.realAgentData = {
         "class_line": 1,
         "has_healing": true,
         "has_mixin": true,
-        "invocation": "No (missing super)",
-        "invocation_pct": 0.0,
+        "invocation": "Yes",
+        "invocation_pct": 100.0,
         "mcp_hardened": false,
         "hardened_pct": 0.0,
         "has_tests": false,
         "test_pct": 0.0,
         "cyclomatic_complexity": 11,
         "complexity_health": 78,
-        "health": 41.7,
+        "health": 51.7,
         "typed_pct": 33.3,
         "documented_pct": 66.7,
         "schema_pct": 100.0,
@@ -10269,7 +10269,7 @@ window.realAgentData = {
     ],
     "invocation": [
       100.0,
-      0.0,
+      100.0,
       100.0
     ],
     "hardened": [
@@ -10289,7 +10289,7 @@ window.realAgentData = {
     ],
     "health": [
       69.3,
-      41.7,
+      51.7,
       73.2
     ],
     "typed": [

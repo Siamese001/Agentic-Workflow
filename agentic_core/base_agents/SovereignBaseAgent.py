@@ -105,6 +105,7 @@ class SovereignBaseAgent(MCPHardenedMixin):
         reaches here and terminates cleanly.
         """
         # ROOT: No super() call - we ARE the termination point
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1}
 
 

@@ -52,14 +52,14 @@
 
         <div class="dashboard-container">
             <div class="nav-tabs">
-                <a href="#" class="nav-tab active" data-target="executive" onclick="openTab(event, 'executive')">📊 Strategic Health</a>
-                <a href="#" class="nav-tab" data-target="runtime" onclick="openTab(event, 'runtime')">⚡ Live Runtime</a>
+                <a href="#" class="nav-tab" data-target="executive" onclick="openTab(event, 'executive')">📊 Strategic Health</a>
+                <a href="#" class="nav-tab active" data-target="runtime" onclick="openTab(event, 'runtime')">⚡ Live Runtime</a>
                 <a href="#" class="nav-tab" data-target="recommendations" onclick="openTab(event, 'recommendations')">Prioritized Recommendations</a>
                 <a href="#" class="nav-tab" data-target="interview" onclick="openTab(event, 'interview')">Interview Prep</a>
             </div>
 
             <!-- Executive Dashboard Tab -->
-            <div id="executive-content" class="tab-content">
+            <div id="executive-content" class="tab-content" style="display:none;">
                 
                 <!-- Semantic Retrieval Metrics -->
                 <div class="kpi-grid" id="cognitiveGrid" style="margin-bottom: 25px;">
@@ -149,7 +149,7 @@
             </div>
 
             <!-- Live Runtime Tab -->
-            <div id="runtime-content" class="tab-content" style="display:none;">
+            <div id="runtime-content" class="tab-content">
                 <!-- Live Execution Status Section -->
                 <div class="charts-grid">
                     <div class="chart-card">

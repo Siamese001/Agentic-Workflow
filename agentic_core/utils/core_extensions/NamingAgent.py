@@ -25,6 +25,7 @@ except ImportError:
 
         def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
             """Autonomous healing method (Canon Key 51 compliance)."""
+            super().heal_repository(dry_run, execute)
             return {"violations": 0, "fixed": 0, "errors": 0}
 
         def __init__(self, *args, **kwargs):
