@@ -573,7 +573,7 @@ window.realAgentData = {
       }
     ]
   },
-  "L0 Maintenance": {
+  "L0 Maintenance/Core": {
     "agents": [
       {
         "name": "Unknown",
@@ -634,7 +634,7 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
-        "has_tests": true,
+        "has_tests": false,
         "complexity": 0,
         "health": 75.0
       },
@@ -676,7 +676,7 @@ window.realAgentData = {
       }
     ]
   },
-  "L1 Cognition/Specialized": {
+  "L0 Maintenance/Base Agent": {
     "agents": [
       {
         "name": "Unknown",
@@ -684,240 +684,6 @@ window.realAgentData = {
         "has_mixin": false,
         "invocation": "No",
         "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
         "complexity": 0,
         "health": 75.0
       }
@@ -930,13 +696,260 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
         "has_tests": false,
         "complexity": 0,
         "health": 75.0
       }
     ]
   },
-  "L2 Execution/Tools": {
+  "L1 Cognition/Base Agent": {
+    "agents": [
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      }
+    ]
+  },
+  "L2 Execution/Core": {
     "agents": [
       {
         "name": "Unknown",
@@ -1123,15 +1136,6 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
         "has_tests": false,
         "complexity": 0,
         "health": 75.0
@@ -1268,6 +1272,19 @@ window.realAgentData = {
         "has_mixin": false,
         "invocation": "No",
         "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      }
+    ]
+  },
+  "L2 Execution/Base Agent": {
+    "agents": [
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
         "complexity": 0,
         "health": 75.0
       }
@@ -1424,24 +1441,6 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
         "has_tests": true,
         "complexity": 0,
         "health": 75.0
@@ -1452,42 +1451,6 @@ window.realAgentData = {
         "has_mixin": false,
         "invocation": "No",
         "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
         "complexity": 0,
         "health": 75.0
       },
@@ -1568,6 +1531,69 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
         "has_tests": true,
         "complexity": 0,
         "health": 75.0
@@ -1632,6 +1658,15 @@ window.realAgentData = {
         "has_mixin": false,
         "invocation": "No",
         "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
         "complexity": 0,
         "health": 75.0
       },
@@ -1716,6 +1751,37 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
+        "has_tests": false,
+        "complexity": 0,
+        "health": 75.0
+      }
+    ]
+  },
+  "L4 State/Core": {
+    "agents": [
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
         "has_tests": true,
         "complexity": 0,
         "health": 75.0
@@ -1734,7 +1800,83 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
-        "has_tests": false,
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      }
+    ]
+  },
+  "L4 State/Infrastructure": {
+    "agents": [
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
         "complexity": 0,
         "health": 75.0
       }
@@ -1747,130 +1889,13 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
         "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": true,
         "complexity": 0,
         "health": 75.0
       }
     ]
   },
-  "L5 Safety/Base Agent": {
+  "L5 Safety/Red Teaming": {
     "agents": [
       {
         "name": "Unknown",
@@ -1886,25 +1911,7 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
         "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
-        "has_tests": false,
         "complexity": 0,
         "health": 75.0
       }
@@ -1998,15 +2005,6 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
-        "has_tests": false,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
         "has_tests": true,
         "complexity": 0,
         "health": 75.0
@@ -2079,15 +2077,6 @@ window.realAgentData = {
         "path": "",
         "has_mixin": false,
         "invocation": "No",
-        "has_tests": true,
-        "complexity": 0,
-        "health": 75.0
-      },
-      {
-        "name": "Unknown",
-        "path": "",
-        "has_mixin": false,
-        "invocation": "No",
         "has_tests": false,
         "complexity": 0,
         "health": 75.0
@@ -2152,6 +2141,15 @@ window.realAgentData = {
         "has_mixin": false,
         "invocation": "No",
         "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      },
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": false,
         "complexity": 0,
         "health": 75.0
       },
@@ -2386,14 +2384,14 @@ window.realAgentData = {
       }
     ]
   },
-  "L6 Observability": {
+  "L5 Safety/Gravity": {
     "agents": [
       {
         "name": "Unknown",
         "path": "",
         "has_mixin": false,
         "invocation": "No",
-        "has_tests": true,
+        "has_tests": false,
         "complexity": 0,
         "health": 75.0
       },
@@ -2405,7 +2403,37 @@ window.realAgentData = {
         "has_tests": false,
         "complexity": 0,
         "health": 75.0
-      },
+      }
+    ]
+  },
+  "L5 Safety/Base Agent": {
+    "agents": [
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      }
+    ]
+  },
+  "L6 Observability/Base Agent": {
+    "agents": [
+      {
+        "name": "Unknown",
+        "path": "",
+        "has_mixin": false,
+        "invocation": "No",
+        "has_tests": true,
+        "complexity": 0,
+        "health": 75.0
+      }
+    ]
+  },
+  "L6 Observability/Metrics": {
+    "agents": [
       {
         "name": "Unknown",
         "path": "",
@@ -2435,7 +2463,7 @@ window.realAgentData = {
       }
     ]
   },
-  "Utils": {
+  "L6 Observability/Infrastructure": {
     "agents": [
       {
         "name": "Unknown",
@@ -2445,7 +2473,11 @@ window.realAgentData = {
         "has_tests": false,
         "complexity": 0,
         "health": 75.0
-      },
+      }
+    ]
+  },
+  "Apps Shared": {
+    "agents": [
       {
         "name": "Unknown",
         "path": "",

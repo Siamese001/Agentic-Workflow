@@ -291,120 +291,14 @@
     <script src="js/renderers/kpi-renderer.js"></script>
     <script src="js/renderers/content-renderer.js"></script>
 
-    <script>
-        // Main Application Orchestration
-        console.log('[DASHBOARD] Initializing...');
-        
-        // Tab switching
-        function openTab(evt, tabName) {
-            const tabcontent = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            const tablinks = document.getElementsByClassName("nav-tab");
-            for (let i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName + "-content").style.display = "block";
-            evt.currentTarget.className += " active";
-        }
-        
-        // Manual refresh
-        function manualRefresh() {
-            window.location.reload();
-        }
-        
-        // Main initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('[DASHBOARD] DOMContentLoaded fired');
-            console.log('[DASHBOARD] dashboardData:', typeof window.dashboardData, window.dashboardData?.length);
-            console.log('[DASHBOARD] realAgentData:', typeof window.realAgentData, Object.keys(window.realAgentData || {}).length);
-            
-            // Timestamp
-            const ts = document.getElementById('lastUpdated');
-            if (ts) ts.textContent = `Generated: ${new Date().toLocaleString()}`;
-            
-            // Check data loaded
-            if (typeof window.dashboardData === 'undefined') {
-                console.error('[DASHBOARD] dashboardData not loaded!');
-                return;
-            }
-            
-            if (typeof window.realAgentData === 'undefined') {
-                console.warn('[DASHBOARD] realAgentData not loaded');
-            }
-            
-            // Check renderers loaded
-            if (typeof renderTerritorySummaryTable !== 'function') {
-                console.error('[DASHBOARD] renderTerritorySummaryTable not loaded!');
-                return;
-            }
-            
-            // Get territory data
-            const territoryData = window.dashboardData.filter(row => row.Territory !== 'TOTAL');
-            const totalRow = window.dashboardData.find(row => row.Territory === 'TOTAL');
-            
-            console.log('[DASHBOARD] Rendering content...');
-            try {
-                // Strategic observations
-                if (typeof renderStrategicObservations === 'function') {
-                    renderStrategicObservations();
-                    console.log('[DASHBOARD] Strategic observations rendered');
-                }
-                
-                // Alert banner
-                if (typeof updateGlobalAlertBanner === 'function') {
-                    updateGlobalAlertBanner(territoryData);
-                    console.log('[DASHBOARD] Alert banner updated');
-                }
-                
-                // Table 1: Territory Summary
-                renderTerritorySummaryTable(window.dashboardData);
-                console.log('[DASHBOARD] Territory summary table rendered');
-                
-                // Table 2: Code Quality (stub for now)
-                if (typeof renderCodeQualityTable === 'function') {
-                    renderCodeQualityTable(window.dashboardData);
-                    console.log('[DASHBOARD] Code quality table rendered');
-                }
-                
-                // Recommendations
-                if (typeof renderRecommendations === 'function') {
-                    renderRecommendations();
-                    console.log('[DASHBOARD] Recommendations rendered');
-                }
-                
-                // Interview questions
-                if (typeof renderInterviewQuestions === 'function' && totalRow) {
-                    renderInterviewQuestions(totalRow);
-                    console.log('[DASHBOARD] Interview questions rendered');
-                }
-            } catch (e) {
-                console.error('[DASHBOARD] Render error:', e);
-            }
-            
-            // Initialize KPIs
-            console.log('[DASHBOARD] Initializing KPIs...');
-            try {
-                if (typeof initializeSemanticMetrics === 'function') {
-                    initializeSemanticMetrics();
-                }
-                if (typeof initializeRuntimeMonitoring === 'function') {
-                    initializeRuntimeMonitoring();
-                }
-                console.log('[DASHBOARD] KPIs initialized');
-            } catch (e) {
-                console.error('[DASHBOARD] KPI init error:', e);
-            }
-            
-            console.log('[DASHBOARD] Initialization complete');
-        });
-        
-        // All utility functions, renderers, and data are loaded from external modules
-    </script>
-</body>
-</html>
-        }
-    </script>
+    <!-- Load Controller Modules -->
+    <script src="js/controllers/tab-controller.js"></script>
+    <script src="js/controllers/filter-controller.js"></script>
+    <script src="js/controllers/refresh-controller.js"></script>
+
+
+    <!-- Load Main Orchestrator -->
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
