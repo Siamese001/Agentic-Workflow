@@ -57,6 +57,51 @@ if sys.platform.startswith("win"):
 # [REENTRY GUARD] Prevent repeated full boot on convergence retries
 _mission_executed = False
 
+# ----------------------------------------------------------------------
+# RUNTIME STATE MANAGEMENT - For Dashboard Live Observability
+# ----------------------------------------------------------------------
+import json as _json
+
+RUNTIME_STATE_FILE = "runtime_state.json"
+_runtime_state = {
+    "status": "idle",
+    "start_time": None,
+    "current_agent": None,
+    "current_layer": None,
+    "agents_order": [],
+    "total_agents": 0,
+    "completed_agents": [],
+    "events": [],
+    "meta_learning": {"gemini_active": False, "note": ""}
+}
+
+def _save_runtime_state(project_root_path: Path):
+    """Persist runtime state to JSON for dashboard polling."""
+    try:
+        state_path = project_root_path / RUNTIME_STATE_FILE
+        state_path.write_text(_json.dumps(_runtime_state, indent=2, default=str), encoding="utf-8")
+    except Exception:
+        pass  # Non-critical
+
+def _add_event(event_type: str, message: str):
+    """Add timestamped event to runtime state."""
+    _runtime_state["events"].append({
+        "time": datetime.now().isoformat(),
+        "type": event_type,
+        "message": message
+    })
+
+# Agent layer mapping for UI display
+AGENT_LAYERS = {
+    "NamingAgent": "L5 – Safety & Governance",
+    "AutonomyGuardian": "L5 – Safety & Governance",
+    "LocationAgent": "L5 – Safety & Governance",
+    "HierarchyAgent": "L5 – Safety & Governance",
+    "StructuralHealerAgent": "L5 – Safety & Governance",
+    "ComplianceOrchestratorAgent": "L5 – Safety & Governance",
+    "AutonomyGuardianAgent": "L5 – Safety & Governance",
+}
+
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
 # Resolve Absolute Project Root by looking for the .env 'Soul' of the project
 current_file_path = Path(__file__).resolve()
@@ -395,6 +440,39 @@ def main():
             except:
                 pass
             
+            # Build agent list for runtime state
+            agents_template = [
+                ("NamingAgent", get_naming_agent),
+                ("AutonomyGuardian", get_autonomy_guardian),
+            ]
+            
+            # Calculate full execution order for progress tracking
+            full_order = []
+            for domain in domains:
+                domain_path = project_root / domain
+                if domain_path.exists():
+                    for agent_name, _ in agents_template:
+                        full_order.append(f"{agent_name} → {domain}")
+            
+            # Initialize runtime state for dashboard
+            _runtime_state.update({
+                "status": "healing",
+                "start_time": datetime.now().isoformat(),
+                "current_agent": None,
+                "current_layer": None,
+                "agents_order": full_order,
+                "total_agents": len(full_order),
+                "completed_agents": [],
+                "events": [],
+                "meta_learning": {
+                    "gemini_active": gemini_active,
+                    "note": "Experiences embedded on success" if gemini_active else "Logging only"
+                }
+            })
+            _add_event("info", f"Heal mode started ({mode_str})")
+            _add_event("meta", f"Meta-learning {'ACTIVE' if gemini_active else 'INACTIVE'}")
+            _save_runtime_state(project_root)
+            
             for domain in domains:
                 print(f"\n[SOVEREIGN SWEEP] Targeting Domain: {domain}")
                 
@@ -402,15 +480,18 @@ def main():
                 domain_path = project_root / domain
                 if not domain_path.exists():
                     print(f"   [SKIP] Domain not found: {domain}")
+                    _add_event("info", f"Skipped domain (not found): {domain}")
+                    _save_runtime_state(project_root)
                     continue
+                
+                # Log domain start
+                _add_event("info", f"Starting domain sweep: {domain}")
+                _save_runtime_state(project_root)
                 
                 # All healing goes through agents directly — no scripts
                 agents = [
                     ("NamingAgent", get_naming_agent(project_root)),
                     ("AutonomyGuardian", get_autonomy_guardian(project_root)),
-                    # Add other autonomous agents as they become available:
-                    # ("LocationAgent", get_location_agent(project_root)),
-                    # ("UniquenessAgent", get_uniqueness_agent(project_root)),
                 ]
                 
                 domain_summary = {
@@ -425,6 +506,14 @@ def main():
                 
                 for agent_name, agent in agents:
                     print(f"\n   [AGENT] {agent_name}.heal_repository()")
+                    
+                    # Update runtime state - agent starting
+                    layer = AGENT_LAYERS.get(agent_name, "Unknown")
+                    _runtime_state["current_agent"] = agent_name
+                    _runtime_state["current_layer"] = layer
+                    _add_event("agent_start", f"→ Running {agent_name} ({layer}) on {domain}")
+                    _save_runtime_state(project_root)
+                    
                     try:
                         result = agent.heal_repository(
                             dry_run=not execute_heal,
@@ -434,13 +523,40 @@ def main():
                             _call_path=None,  # Clean start for each agent
                         )
                         domain_summary["agents_run"] += 1
-                        domain_summary["total_renamed"] += result.get("renamed", 0)
-                        domain_summary["total_errors"] += result.get("errors", 0)
-                        domain_summary["total_fixed"] += result.get("fixed", 0)
-                        domain_summary["total_violations"] += result.get("violations", 0)
+                        renamed = result.get("renamed", 0)
+                        errors = result.get("errors", 0)
+                        fixed = result.get("fixed", 0)
+                        violations = result.get("violations", 0)
+                        scanned = result.get("scanned", 0)
+                        
+                        domain_summary["total_renamed"] += renamed
+                        domain_summary["total_errors"] += errors
+                        domain_summary["total_fixed"] += fixed
+                        domain_summary["total_violations"] += violations
+                        domain_summary["total_scanned"] += scanned
+                        
+                        # Build detailed completion message
+                        details = []
+                        if scanned: details.append(f"scanned: {scanned}")
+                        if renamed: details.append(f"renamed: {renamed}")
+                        details.append(f"fixed: {fixed}")
+                        details.append(f"violations: {violations}")
+                        detail_str = " | ".join(details)
+                        
+                        _add_event("agent_end", f"✓ {agent_name}: {detail_str}")
+                        _runtime_state["completed_agents"].append(f"{agent_name} → {domain}")
+                        _save_runtime_state(project_root)
+                        
                     except Exception as e:
                         print(f"   [!] {agent_name} failed: {e}")
                         domain_summary["total_errors"] += 1
+                        _add_event("error", f"✗ {agent_name} failed on {domain}: {str(e)[:200]}...")
+                        _runtime_state["completed_agents"].append(f"{agent_name} → {domain}")
+                        _save_runtime_state(project_root)
+                
+                # Domain sweep complete
+                _add_event("info", f"Domain sweep completed: {domain}")
+                _save_runtime_state(project_root)
                 
                 # Calculate domain compliance score
                 total_checks = domain_summary["total_violations"] + domain_summary["total_fixed"]
@@ -462,12 +578,22 @@ def main():
                 except Exception:
                     pass  # Health monitoring is optional
             
+            # Finalize runtime state
+            _runtime_state["status"] = "idle"
+            _runtime_state["current_agent"] = None
+            _runtime_state["current_layer"] = None
+            _add_event("info", "Heal mode completed — full sweep finished")
+            _save_runtime_state(project_root)
+            
             # Phase 4.5: Autonomous Executive Summary
             report_consolidated_summary(consolidated_results, gemini_active)
             
         except Exception as e:
             print(f"   [!] Heal mode failed: {e}")
             traceback.print_exc()
+            _add_event("error", f"Heal mode failed: {str(e)[:300]}...")
+            _runtime_state["status"] = "error"
+            _save_runtime_state(project_root)
         
         return  # Exit after heal mode
 
