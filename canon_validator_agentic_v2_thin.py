@@ -419,7 +419,7 @@ def main():
         print("\n[*] SOVEREIGN HEAL MODE - Autonomous Domain Healing")
         print("   [LAW] All healing via agent.heal_repository() — no external scripts")
         
-        execute_heal = args.execute_heal
+        execute_heal = getattr(args, 'execute_heal', False)
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
         print(f"   [MODE] {mode_str}")
         
@@ -554,13 +554,13 @@ def main():
                         _runtime_state["completed_agents"].append(f"{agent_name} → {domain}")
                         _save_runtime_state(project_root)
                 
-                # Domain sweep complete
-                _add_event("info", f"Domain sweep completed: {domain}")
-                _save_runtime_state(project_root)
-                
                 # Calculate domain compliance score
                 total_checks = domain_summary["total_violations"] + domain_summary["total_fixed"]
                 domain_summary["compliance_score"] = 100 if total_checks == 0 else int((1 - domain_summary["total_violations"] / max(total_checks, 1)) * 100)
+                
+                # Domain sweep complete
+                _add_event("info", f"Domain sweep completed: {domain}")
+                _save_runtime_state(project_root)
                 
                 consolidated_results.append(domain_summary)
                 
