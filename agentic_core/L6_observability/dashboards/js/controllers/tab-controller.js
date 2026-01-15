@@ -3,6 +3,13 @@
  * Handles navigation, URL hash updates, and view switching.
  */
 
+// Global openTab function for onclick handlers in HTML
+function openTab(evt, tabName) {
+    TabController.switchTab(tabName);
+    if (evt) evt.preventDefault();
+}
+window.openTab = openTab;
+
 const TabController = {
     init: function() {
         // Bind click events

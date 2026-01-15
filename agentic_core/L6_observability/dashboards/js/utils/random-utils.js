@@ -27,3 +27,7 @@ function createSeededRandom(context) {
     const seed = hashString(context);
     return mulberry32(seed);
 }
+
+// Export for global use
+window.createSeededRandom = createSeededRandom;
+window.hashString = hashString;

@@ -25,6 +25,84 @@ function toggleFilter(tableType, filterName) {
 
 // --- Helper Functions ---
 
+// Format HIGH-SIGNAL tooltip with actionable intelligence
+function formatProblemAgentsTooltip(territory, metricKey, metricLabel, threshold = 50) {
+    const agentData = window.realAgentData ? window.realAgentData[territory] : null;
+    if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
+        return `${metricLabel}: No agent data available`;
+    }
+    
+    const values = agentData[metricKey];
+    const agents = agentData.agents || [];
+    const stats = computeDistributionStats(values);
+    
+    // Build comprehensive tooltip
+    let tooltip = `📊 ${metricLabel} Distribution\n`;
+    tooltip += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+    tooltip += `Avg: ${stats.avg.toFixed(1)}% | Range: ${stats.min.toFixed(0)}-${stats.max.toFixed(0)}%\n`;
+    tooltip += `StdDev: ${stats.stdDev.toFixed(1)} | Agents: ${stats.count}\n`;
+    
+    // Find problem agents (below threshold)
+    const problems = [];
+    for (let i = 0; i < values.length; i++) {
+        if (values[i] < threshold) {
+            const agent = agents[i] || { name: `Agent_${i + 1}`, path: 'unknown' };
+            problems.push({ name: agent.name, value: values[i], path: agent.path });
+        }
+    }
+    problems.sort((a, b) => a.value - b.value);
+    
+    if (problems.length === 0) {
+        tooltip += `\n✅ All ${stats.count} agents meet threshold (≥${threshold}%)`;
+        return tooltip;
+    }
+    
+    // Calculate remediation effort
+    const criticalCount = problems.filter(p => p.value === 0).length;
+    const warningCount = problems.length - criticalCount;
+    const avgDeficit = problems.reduce((sum, p) => sum + (threshold - p.value), 0) / problems.length;
+    
+    tooltip += `\n⚠️ ${problems.length} agent(s) below ${threshold}% threshold\n`;
+    if (criticalCount > 0) {
+        tooltip += `🔴 Critical (0%): ${criticalCount} | `;
+    }
+    tooltip += `🟡 Warning: ${warningCount}\n`;
+    tooltip += `Avg deficit: ${avgDeficit.toFixed(1)} points to threshold\n`;
+    
+    tooltip += `\n🔧 TOP REMEDIATION TARGETS:\n`;
+    const topProblems = problems.slice(0, 3);
+    topProblems.forEach((p, idx) => {
+        const shortPath = p.path ? p.path.split('/').slice(-2).join('/') : 'path unknown';
+        tooltip += `${idx + 1}. ${p.name} (${p.value.toFixed(0)}%) → ${shortPath}\n`;
+    });
+    
+    if (problems.length > 3) {
+        tooltip += `   ... +${problems.length - 3} more agents need attention`;
+    }
+    
+    return tooltip;
+}
+
+// Format outlier badge with count and label
+function formatOutlierBadge(countAtZero, countBelowThreshold, threshold = 50) {
+    let badges = '';
+    if (countAtZero > 0) {
+        badges += `<span style="background:#dc2626; color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:4px; white-space:nowrap;" title="${countAtZero} agent(s) at 0%">${countAtZero} @0%</span>`;
+    }
+    if (countBelowThreshold > countAtZero) {
+        const belowOnly = countBelowThreshold - countAtZero;
+        badges += `<span style="background:#f59e0b; color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:4px; white-space:nowrap;" title="${belowOnly} agent(s) below ${threshold}%">${belowOnly} <${threshold}%</span>`;
+    }
+    return badges;
+}
+
+// Get outlier summary for a metric across all values
+function getOutlierSummary(values, criticalThreshold = 50) {
+    const atZero = countOutliers(values, 0.1, 'below'); // Effectively 0%
+    const belowThreshold = countOutliers(values, criticalThreshold, 'below');
+    return { atZero, belowThreshold, hasCritical: atZero > 0, hasWarning: belowThreshold > atZero };
+}
+
 // Fan-in data derived from architecture analysis
 function getFanInData(territory) {
     const fanInMap = {
@@ -171,9 +249,9 @@ function renderTerritorySummaryTable(territoryData) {
                 <td style="padding:12px; text-align:center;">${row.Total}</td>
                 
                 <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}">
-                    ${formatDistributionCell(row['Heal Cap %'], healCapStats)}
-                    ${formatOutlierBadge(getOutliers('healCap', 50).atZero, getOutliers('healCap', 50).belowThreshold, 50)}
-                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'healCap', 'Heal Cap', 50)}</div>
+                    <div>${formatDistributionCell(row['Heal Cap %'], healCapStats)}
+                    ${formatOutlierBadge(getOutliers('healCap', 50).atZero, getOutliers('healCap', 50).belowThreshold, 50)}</div>
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'healCap', 'Heal Capability', 50)}</div>
                 </td>
                 
                 <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}">
@@ -196,8 +274,8 @@ function renderTerritorySummaryTable(territoryData) {
 
                 <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Complexity Health'])}">
                     ${formatDistributionCell(row['Complexity Health'], complexityStats)}
-                    ${formatOutlierBadge(getOutliers('complexityHealth', 50).atZero, getOutliers('complexityHealth', 50).belowThreshold, 50)}
-                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'complexityHealth', 'Complexity Health', 50)}</div>
+                    ${formatOutlierBadge(getOutliers('complexityHealth', 30).atZero, getOutliers('complexityHealth', 30).belowThreshold, 30)}
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'complexityHealth', 'Complexity Health', 30)}</div>
                 </td>
 
                 <td style="padding:12px; text-align:center; font-weight:700; color:${healthColor}">
@@ -415,7 +493,108 @@ function loadData() {
     console.log('✅ Tables rendered');
 }
 
+// Drill-down modal function
+function openDrillModal(territoryName) {
+    const row = window.dashboardData.find(r => r.Territory === territoryName);
+    if (!row) {
+        console.error(`Territory not found: ${territoryName}`);
+        return;
+    }
+    
+    // Get agents from realAgentData
+    const territoryAgentData = window.realAgentData ? window.realAgentData[territoryName] : null;
+    const agents = territoryAgentData ? territoryAgentData.agents : [];
+
+    document.getElementById('modalTitle').textContent = `${territoryName} Territory Drill-Down`;
+    
+    // Helper to safely format values that might be "N/A"
+    const safeFormat = (val) => val === "N/A" ? "N/A" : (typeof val === 'number' ? val.toFixed(1) + '%' : val);
+    document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Health ${safeFormat(row.Health)} • Invocation ${safeFormat(row['Invocation %'])}`;
+
+    // Health Metrics Section
+    let content = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">';
+    content += '<div style="background:#f0fdf4; padding:15px; border-radius:8px; border-left:4px solid #16a34a;">';
+    content += '<strong style="font-size:1.1em; color:#166534;">🏥 Health Metrics</strong><ul style="margin-top:10px; list-style:none; padding:0;">';
+    content += `<li style="margin:5px 0;">Healing Capability: <strong>${safeFormat(row['Heal Cap %'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Healing Invocation: <strong>${safeFormat(row['Invocation %'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">MCP Hardened: <strong>${safeFormat(row['Hardened %'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Test Coverage: <strong>${safeFormat(row['Test %'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Complexity Health: <strong>${safeFormat(row['Complexity Health'])}</strong></li>`;
+    content += `<li style="margin:5px 0; font-weight:700; color:#166534;">Health Score: <strong>${safeFormat(row.Health)}</strong></li>`;
+    content += '</ul></div>';
+    
+    // Code Quality Metrics Section
+    content += '<div style="background:#eff6ff; padding:15px; border-radius:8px; border-left:4px solid #2563eb;">';
+    content += '<strong style="font-size:1.1em; color:#1e40af;">📊 Code Quality Metrics</strong><ul style="margin-top:10px; list-style:none; padding:0;">';
+    content += `<li style="margin:5px 0;">Typed %: <strong>${safeFormat(row['Typed %'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Documented %: <strong>${safeFormat(row['Documented %'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Schema Strictness %: <strong>${safeFormat(row['Schema Strictness %'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Canonical Inheritance %: <strong>${safeFormat(row['Canonical Inheritance %'])}</strong></li>`;
+    content += `<li style="margin:5px 0; font-weight:700; color:#1e40af;">Code Quality Score: <strong>${safeFormat(row['Code Quality Score'])}</strong></li>`;
+    content += '</ul></div></div>';
+
+    // Per-agent diagnostics table
+    if (agents && agents.length > 0) {
+        content += `<strong style="font-size:1.4em; margin:30px 0 15px 0; display:block;">Per-Agent Diagnostics (${agents.length} agents)</strong>`;
+        content += '<table style="width:100%; border-collapse:collapse; font-size:0.95em; margin-top:10px;">';
+        content += '<thead><tr style="background:#f1f5f9; border-bottom:2px solid var(--border);">';
+        content += '<th style="text-align:left; padding:12px; font-weight:600;" title="Click to open in VS Code">Agent File</th>';
+        content += '<th style="text-align:center; padding:12px; font-weight:600;">Has Healing</th>';
+        content += '<th style="padding:12px; font-weight:600;" title="Has dedicated test coverage">Tests</th>';
+        content += '<th style="padding:12px; font-weight:600;" title="Cyclomatic complexity">Complexity</th>';
+        content += '<th style="padding:12px; font-weight:600;" title="MCP Hardening">MCP</th>';
+        content += '<th style="padding:12px; font-weight:600;" title="Type annotations">Typed %</th>';
+        content += '</tr></thead><tbody>';
+
+        agents.forEach((agent, idx) => {
+            const rowBg = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
+            
+            const healingIcon = agent.has_healing 
+                ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
+                : '<span style="color:#dc2626; font-weight:700;">✗</span>';
+            
+            const testIcon = agent.has_tests 
+                ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
+                : '<span style="color:#dc2626; font-weight:700;">✗</span>';
+            
+            const mcpIcon = agent.mcp_hardened 
+                ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
+                : '<span style="color:#dc2626; font-weight:700;">✗</span>';
+            
+            const typedColor = getColor(agent.typed_pct || 0, true);
+            const complexityColor = getColor(100 - (agent.cyclomatic_complexity || 0) * 2, true);
+            
+            const filePath = agent.path || agent.file_path || 'unknown';
+            const fileName = filePath.split('/').pop() || filePath;
+            
+            content += `<tr style="border-bottom:1px solid var(--border); background:${rowBg};">
+                <td style="padding:12px;">
+                    <a href="vscode://file/${filePath}" target="_blank" style="color:var(--primary); font-family:monospace; font-size:0.9em; font-weight:600;">
+                        ${fileName}
+                    </a>
+                </td>
+                <td style="padding:12px; text-align:center;">${healingIcon}</td>
+                <td style="padding:12px; text-align:center;">${testIcon}</td>
+                <td style="padding:12px; text-align:center; color:${complexityColor}; font-weight:600;">${agent.cyclomatic_complexity || 0}</td>
+                <td style="padding:12px; text-align:center;">${mcpIcon}</td>
+                <td style="padding:12px; text-align:center; color:${typedColor}; font-weight:600;">${(agent.typed_pct || 0).toFixed(1)}%</td>
+            </tr>`;
+        });
+        content += '</tbody></table>';
+        
+        content += '<p style="margin-top:15px; font-size:0.9em; color:var(--text-light); font-style:italic;">';
+        content += 'Click any file link to open in VS Code. Add HealerMixin, tests, MCP hardening, or type annotations as needed.';
+        content += '</p>';
+    } else {
+        content += '<p style="margin-top:20px; color:var(--text-light);">No per-agent diagnostics available for this territory.</p>';
+    }
+
+    document.getElementById('modalContent').innerHTML = content;
+    document.getElementById('drillModal').style.display = 'flex';
+}
+
 // Make functions globally available
+window.openDrillModal = openDrillModal;
 window.toggleToxicityFilter = toggleToxicityFilter;
 window.toggleZombieFilter = toggleZombieFilter;
 window.toggleOutlierFilter = toggleOutlierFilter;

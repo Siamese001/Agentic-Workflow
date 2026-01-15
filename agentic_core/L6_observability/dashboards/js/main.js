@@ -18,6 +18,25 @@ const DashboardApp = {
             this.renderContent();
             this.initRenderers();
             this.initControllers();
+            // Add modal close handlers
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('drillModal');
+                    if (modal && modal.style.display === 'flex') {
+                        modal.style.display = 'none';
+                    }
+                }
+            });
+
+            const drillModal = document.getElementById('drillModal');
+            if (drillModal) {
+                drillModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            }
+
             console.log('[Dashboard] Ready.');
         } else {
             this.handleMissingData();
