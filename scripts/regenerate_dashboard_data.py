@@ -22,7 +22,12 @@ from scripts.dashboard_ssot_definitions import (
     calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
     calc_typed_pct, calc_documented_pct, calc_schema_strictness_pct,
     calc_canonical_inheritance_pct, calc_code_quality_score,
-    calc_avg_cc, calc_complexity_health, calc_health_score, is_l0_territory
+    calc_avg_cc, calc_complexity_health, calc_health_score, is_l0_territory,
+    # SSOT CONSTANTS
+    COL_TERRITORY, COL_TOTAL, COL_COMPLIANT, COL_HEAL_CAP, COL_INVOCATION,
+    COL_TEST, COL_HARDENED, COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED,
+    COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH,
+    FIELD_TERRITORY, FIELD_HAS_HEALING, PLACEHOLDER_OBSERVABLE_PCT
 )
 
 # Load agent discovery
@@ -35,43 +40,11 @@ print(f"Loaded {len(agents)} agents from discovery")
 # Group by territory
 territories = defaultdict(list)
 for agent in agents:
-    territory = agent.get('territory', 'Unknown')
+    territory = agent.get(FIELD_TERRITORY, 'Unknown')  # SSOT: Use field constant
     territories[territory].append(agent)
 
-# Define canonical sort order (TOTAL, Sovereign Base Agent, L6→L0 with Base Agents first, Apps)
-CANONICAL_ORDER = [
-    'Sovereign Base Agent',
-    'L6_Observability/Base Agent',
-    'L6_Observability/Metrics',
-    'L6_Observability/Telemetry',
-    'L5 Safety/Base Agent',
-    'L5 Safety/Validators',
-    'L5 Safety/Guardrails',
-    'L5 Safety/Red Teaming',
-    'L5 Safety/Gravity',
-    'L4 State/Base Agent',
-    'L4 State/Infrastructure',
-    'L4 State/Core',
-    'L3 Orchestration/Base Agent',
-    'L3 Orchestration/Core',
-    'L2 Execution/Base Agent',
-    'L2 Execution/Core',
-    'L1 Cognition/Base Agent',
-    'L1 Cognition/Core',
-    'L0 Maintenance/Base Agent',
-    'L0 Maintenance/Core',
-    'Apps Rg',
-    'Apps Lic',
-    'Apps Shared',
-    'Utils'
-]
-
-# Create sort key function
-def get_sort_key(territory):
-    try:
-        return CANONICAL_ORDER.index(territory)
-    except ValueError:
-        return 999  # Unknown territories go to end
+# REMOVED: Redundant CANONICAL_ORDER and get_sort_key
+# Now using SSOT get_territory_sort_key from territory_ssot_definitions.py
 
 # Add TOTAL row FIRST
 total_heal_cap = calc_heal_cap_pct(agents)
@@ -84,29 +57,29 @@ total_canonical_pct = calc_canonical_inheritance_pct(agents)
 total_avg_cc = calc_avg_cc(agents)
 total_complexity_health = calc_complexity_health(total_avg_cc)
 
-# Calculate overall health score (assume 50% observability as placeholder)
+# Calculate overall health score using SSOT placeholder
 total_health = calc_health_score(
     total_heal_cap, total_invocation, total_test, 
-    50.0,  # Observable % placeholder
+    PLACEHOLDER_OBSERVABLE_PCT,  # SSOT: Observable % placeholder
     total_complexity_health,
     is_l0=False
 )
 
 total_row = {
-    "Territory": "TOTAL",
-    "Total": len(agents),
-    "Compliant": sum(1 for a in agents if a.get('has_healing', False)),
-    "Heal Cap %": total_heal_cap,
-    "Invocation %": total_invocation,
-    "Test %": total_test,
-    "MCP Hardened %": calc_hardened_pct(agents),
-    "Complexity Health %": total_complexity_health,
-    "Typed %": total_typed_pct,
-    "Documented %": total_documented_pct,
-    "Schema Strictness %": total_schema_pct,
-    "Canonical Inheritance %": total_canonical_pct,
-    "Code Quality Score": calc_code_quality_score(total_typed_pct, total_documented_pct, total_schema_pct, total_canonical_pct),
-    "Health": total_health
+    COL_TERRITORY: "TOTAL",
+    COL_TOTAL: len(agents),
+    COL_COMPLIANT: sum(1 for a in agents if a.get(FIELD_HAS_HEALING, False)),
+    COL_HEAL_CAP: total_heal_cap,
+    COL_INVOCATION: total_invocation,
+    COL_TEST: total_test,
+    COL_HARDENED: calc_hardened_pct(agents),
+    COL_COMPLEXITY_HEALTH: total_complexity_health,
+    COL_TYPED: total_typed_pct,
+    COL_DOCUMENTED: total_documented_pct,
+    COL_SCHEMA_STRICTNESS: total_schema_pct,
+    COL_CANONICAL_INHERITANCE: total_canonical_pct,
+    COL_CODE_QUALITY: calc_code_quality_score(total_typed_pct, total_documented_pct, total_schema_pct, total_canonical_pct),
+    COL_HEALTH: total_health
 }
 
 # Build dashboard data rows in canonical order (TOTAL first, then territories)
@@ -129,32 +102,32 @@ for territory in sorted(territories.keys(), key=get_territory_sort_key):
     is_l0 = is_l0_territory(territory)
     health = calc_health_score(
         heal_cap, invocation, test_pct,
-        50.0,  # Observable % placeholder
+        PLACEHOLDER_OBSERVABLE_PCT,  # SSOT: Observable % placeholder
         complexity_health,
         is_l0=is_l0
     )
     
     row = {
-        "Territory": territory,
-        "Total": len(ags),
-        "Compliant": sum(1 for a in ags if a.get('has_healing', False)),
-        "Heal Cap %": heal_cap,
-        "Invocation %": invocation,
-        "Test %": test_pct,
-        "MCP Hardened %": calc_hardened_pct(ags),
-        "Complexity Health %": complexity_health,
-        "Typed %": typed_pct,
-        "Documented %": documented_pct,
-        "Schema Strictness %": schema_pct,
-        "Canonical Inheritance %": canonical_pct,
-        "Code Quality Score": calc_code_quality_score(typed_pct, documented_pct, schema_pct, canonical_pct),
-        "Health": health
+        COL_TERRITORY: territory,
+        COL_TOTAL: len(ags),
+        COL_COMPLIANT: sum(1 for a in ags if a.get(FIELD_HAS_HEALING, False)),
+        COL_HEAL_CAP: heal_cap,
+        COL_INVOCATION: invocation,
+        COL_TEST: test_pct,
+        COL_HARDENED: calc_hardened_pct(ags),
+        COL_COMPLEXITY_HEALTH: complexity_health,
+        COL_TYPED: typed_pct,
+        COL_DOCUMENTED: documented_pct,
+        COL_SCHEMA_STRICTNESS: schema_pct,
+        COL_CANONICAL_INHERITANCE: canonical_pct,
+        COL_CODE_QUALITY: calc_code_quality_score(typed_pct, documented_pct, schema_pct, canonical_pct),
+        COL_HEALTH: health
     }
     rows.append(row)
 
 print(f"\nGenerated {len(rows)} rows (including TOTAL)")
-print(f"MCP Hardened %: {total_row['MCP Hardened %']:.1f}%")
-print(f"Test Coverage %: {total_row['Test %']:.1f}%")
+print(f"MCP Hardened %: {total_row[COL_HARDENED]:.1f}%")
+print(f"Test Coverage %: {total_row[COL_TEST]:.1f}%")
 
 # Write to dashboard_data.js
 dashboard_data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
