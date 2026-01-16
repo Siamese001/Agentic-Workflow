@@ -26,6 +26,7 @@ from importlib.machinery import ModuleSpec
 
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -56,7 +57,7 @@ class SovereigntyError(ImportError):
 
 
 @dataclass
-class ImportLockAgent(MCPHardenedMixin, MetaPathFinder):
+class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     """
     The Runtime Execution Guard.
     

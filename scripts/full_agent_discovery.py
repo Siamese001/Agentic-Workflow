@@ -584,7 +584,10 @@ def detect_has_tests(class_node: ast.ClassDef, source: str) -> bool:
             base_name = base.id
         elif isinstance(base, ast.Attribute):
             base_name = base.attr
-        if base_name in ('SubatomicTestingMixin', 'SubatomicAgent', 'L0DelegationTestingMixin'):
+        # Include all layer-specific testing mixins
+        if base_name in ('SubatomicTestingMixin', 'SubatomicAgent', 'L0DelegationTestingMixin', 
+                         'L3SubatomicTestingMixin', 'L4SubatomicTestingMixin', 
+                         'L5SubatomicTestingMixin', 'L6SubatomicTestingMixin'):
             return True
     
     # Check for explicit test framework imports with test methods

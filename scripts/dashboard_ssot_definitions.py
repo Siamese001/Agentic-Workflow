@@ -36,14 +36,14 @@ COL_HEAL_CAP = 'Heal Cap %'
 COL_INVOCATION = 'Invocation %'
 COL_HEAL_INVOCATION = 'Heal Invocation %'
 COL_TEST = 'Test %'
-COL_HARDENED = 'Hardened %'
+COL_HARDENED = 'MCP Hardened %'  # Updated to match dashboard data
 COL_TYPED = 'Typed %'
 COL_DOCUMENTED = 'Documented %'
 COL_SCHEMA = 'Schema Strictness %'
 COL_CANONICAL_INHERITANCE = 'Canonical Inheritance %'
 COL_HEALTH = 'Health'
 COL_AVG_CC = 'Avg CC'
-COL_COMPLEXITY_HEALTH = 'Complexity Health'
+COL_COMPLEXITY_HEALTH = 'Complexity Health %'  # Updated to match dashboard data
 COL_CODE_QUALITY = 'Code Quality Score'
 
 

@@ -15,7 +15,7 @@ from scripts.dashboard_ssot_definitions import (
     calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
     calc_typed_pct, calc_documented_pct, calc_schema_strictness_pct,
     calc_canonical_inheritance_pct, calc_code_quality_score,
-    calc_avg_cc, calc_complexity_health
+    calc_avg_cc, calc_complexity_health, calc_health_score, is_l0_territory
 )
 
 # Load agent discovery
@@ -31,28 +31,28 @@ for agent in agents:
     territory = agent.get('territory', 'Unknown')
     territories[territory].append(agent)
 
-# Define canonical sort order (TOTAL, Base, L6→L0, Apps)
+# Define canonical sort order (TOTAL, Sovereign Base Agent, L6→L0 with Base Agents first, Apps)
 CANONICAL_ORDER = [
-    'Base/Base Class',
+    'Sovereign Base Agent',
+    'L6_Observability/Base Agent',
     'L6_Observability/Metrics',
     'L6_Observability/Telemetry',
-    'L6_Observability/Base Class',
+    'L5 Safety/Base Agent',
     'L5 Safety/Validators',
     'L5 Safety/Guardrails',
     'L5 Safety/Red Teaming',
     'L5 Safety/Gravity',
-    'L5 Safety/Base Class',
+    'L4 State/Base Agent',
     'L4 State/Infrastructure',
     'L4 State/Core',
-    'L4 State/Base Class',
+    'L3 Orchestration/Base Agent',
     'L3 Orchestration/Core',
-    'L3 Orchestration/Base Class',
+    'L2 Execution/Base Agent',
     'L2 Execution/Core',
-    'L2 Execution/Base Class',
+    'L1 Cognition/Base Agent',
     'L1 Cognition/Core',
-    'L1 Cognition/Base Class',
+    'L0 Maintenance/Base Agent',
     'L0 Maintenance/Core',
-    'L0 Maintenance/Base Class',
     'Apps Rg',
     'Apps Lic',
     'Apps Shared',
@@ -67,6 +67,9 @@ def get_sort_key(territory):
         return 999  # Unknown territories go to end
 
 # Add TOTAL row FIRST
+total_heal_cap = calc_heal_cap_pct(agents)
+total_invocation = calc_invocation_pct(agents)
+total_test = calc_test_pct(agents)
 total_typed_pct = calc_typed_pct(agents)
 total_documented_pct = calc_documented_pct(agents)
 total_schema_pct = calc_schema_strictness_pct(agents)
@@ -74,26 +77,40 @@ total_canonical_pct = calc_canonical_inheritance_pct(agents)
 total_avg_cc = calc_avg_cc(agents)
 total_complexity_health = calc_complexity_health(total_avg_cc)
 
+# Calculate overall health score (assume 50% observability as placeholder)
+total_health = calc_health_score(
+    total_heal_cap, total_invocation, total_test, 
+    50.0,  # Observable % placeholder
+    total_complexity_health,
+    is_l0=False
+)
+
 total_row = {
     "Territory": "TOTAL",
     "Total": len(agents),
     "Compliant": sum(1 for a in agents if a.get('has_healing', False)),
-    "Heal Cap %": calc_heal_cap_pct(agents),
-    "Invocation %": calc_invocation_pct(agents),
-    "Test %": calc_test_pct(agents),
+    "Heal Cap %": total_heal_cap,
+    "Invocation %": total_invocation,
+    "Test %": total_test,
     "MCP Hardened %": calc_hardened_pct(agents),
     "Complexity Health %": total_complexity_health,
     "Typed %": total_typed_pct,
     "Documented %": total_documented_pct,
     "Schema Strictness %": total_schema_pct,
     "Canonical Inheritance %": total_canonical_pct,
-    "Code Quality Score": calc_code_quality_score(total_typed_pct, total_documented_pct, total_schema_pct, total_canonical_pct)
+    "Code Quality Score": calc_code_quality_score(total_typed_pct, total_documented_pct, total_schema_pct, total_canonical_pct),
+    "Health": total_health
 }
 
 # Build dashboard data rows in canonical order (TOTAL first, then territories)
 rows = [total_row]
 for territory in sorted(territories.keys(), key=get_sort_key):
     ags = territories[territory]
+    
+    # Calculate all metrics
+    heal_cap = calc_heal_cap_pct(ags)
+    invocation = calc_invocation_pct(ags)
+    test_pct = calc_test_pct(ags)
     typed_pct = calc_typed_pct(ags)
     documented_pct = calc_documented_pct(ags)
     schema_pct = calc_schema_strictness_pct(ags)
@@ -101,20 +118,30 @@ for territory in sorted(territories.keys(), key=get_sort_key):
     avg_cc = calc_avg_cc(ags)
     complexity_health = calc_complexity_health(avg_cc)
     
+    # Calculate health score using SSOT formula
+    is_l0 = is_l0_territory(territory)
+    health = calc_health_score(
+        heal_cap, invocation, test_pct,
+        50.0,  # Observable % placeholder
+        complexity_health,
+        is_l0=is_l0
+    )
+    
     row = {
         "Territory": territory,
         "Total": len(ags),
         "Compliant": sum(1 for a in ags if a.get('has_healing', False)),
-        "Heal Cap %": calc_heal_cap_pct(ags),
-        "Invocation %": calc_invocation_pct(ags),
-        "Test %": calc_test_pct(ags),
+        "Heal Cap %": heal_cap,
+        "Invocation %": invocation,
+        "Test %": test_pct,
         "MCP Hardened %": calc_hardened_pct(ags),
         "Complexity Health %": complexity_health,
         "Typed %": typed_pct,
         "Documented %": documented_pct,
         "Schema Strictness %": schema_pct,
         "Canonical Inheritance %": canonical_pct,
-        "Code Quality Score": calc_code_quality_score(typed_pct, documented_pct, schema_pct, canonical_pct)
+        "Code Quality Score": calc_code_quality_score(typed_pct, documented_pct, schema_pct, canonical_pct),
+        "Health": health
     }
     rows.append(row)
 

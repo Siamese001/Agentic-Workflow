@@ -165,7 +165,7 @@ def test_browser_rendering():
             page.wait_for_function("typeof dashboardData !== 'undefined'", timeout=10000)
             time.sleep(2)  # Buffer for rendering
             
-            # Validate MCP Hardening AND Sort Order
+            # Validate MCP Hardening, Sort Order, AND Table 2 Data Integrity
             result = page.evaluate("""
                 () => {
                     if (typeof dashboardData === 'undefined') {
@@ -173,10 +173,39 @@ def test_browser_rendering():
                     }
                     
                     const failures = [];
+                    const table2Failures = [];
+                    
+                    // Table 1: MCP Hardening validation
                     for (const row of dashboardData) {
                         const mcpPct = row['MCP Hardened %'];
                         if (mcpPct !== 100.0) {
                             failures.push(`${row.Territory}: ${mcpPct}%`);
+                        }
+                    }
+                    
+                    // Table 2: Code Quality field validation
+                    const table2Fields = ['Typed %', 'Documented %', 'Schema Strictness %', 'Canonical Inheritance %', 'Code Quality Score'];
+                    
+                    for (const row of dashboardData) {
+                        for (const field of table2Fields) {
+                            const value = row[field];
+                            
+                            // Check field exists
+                            if (value === undefined || value === null) {
+                                table2Failures.push(`${row.Territory}: ${field} is missing`);
+                                continue;
+                            }
+                            
+                            // Check value is numeric
+                            if (typeof value !== 'number') {
+                                table2Failures.push(`${row.Territory}: ${field} is not numeric (${typeof value})`);
+                                continue;
+                            }
+                            
+                            // Check value in range 0-100
+                            if (value < 0 || value > 100) {
+                                table2Failures.push(`${row.Territory}: ${field}=${value} (out of range 0-100)`);
+                            }
                         }
                     }
                     
@@ -205,11 +234,15 @@ def test_browser_rendering():
                     return {
                         success: failures.length === 0,
                         failures: failures,
+                        table2Failures: table2Failures,
+                        table2Success: table2Failures.length === 0,
                         totalTerritories: dashboardData.length,
                         l0Found: !!l0,
                         l0MCP: l0 ? l0['MCP Hardened %'] : null,
+                        l0CodeQuality: l0 ? l0['Code Quality Score'] : null,
                         l6Found: !!l6,
                         l6MCP: l6 ? l6['MCP Hardened %'] : null,
+                        l6CodeQuality: l6 ? l6['Code Quality Score'] : null,
                         table1Rows: table1Rows,
                         table1SortValid: table1SortValid,
                         table2Rows: table2Rows,
@@ -220,7 +253,7 @@ def test_browser_rendering():
             
             browser.close()
             
-            # Check MCP Hardening
+            # Check MCP Hardening (Table 1)
             if not result['success']:
                 if 'error' in result:
                     print(f"\n❌ FAILED: {result['error']}")
@@ -233,14 +266,27 @@ def test_browser_rendering():
             print(f"\n✅ PASSED: All {result['totalTerritories']} territories show 100% MCP Hardening in browser")
             
             if result['l0Found']:
-                print(f"  ✅ L0 Maintenance/Core: {result['l0MCP']}%")
+                print(f"  ✅ L0 Maintenance/Core: MCP {result['l0MCP']}%, Quality {result['l0CodeQuality']:.1f}")
             else:
                 print(f"  ⚠️  L0 Maintenance/Core: NOT FOUND")
             
             if result['l6Found']:
-                print(f"  ✅ L6_Observability/Metrics: {result['l6MCP']}%")
+                print(f"  ✅ L6_Observability/Metrics: MCP {result['l6MCP']}%, Quality {result['l6CodeQuality']:.1f}")
             else:
                 print(f"  ⚠️  L6_Observability/Metrics: NOT FOUND")
+            
+            # Check Table 2 Data Integrity (NEW)
+            if not result['table2Success']:
+                print(f"\n❌ TABLE 2 DATA VALIDATION FAILED: {len(result['table2Failures'])} issues")
+                for f in result['table2Failures'][:10]:
+                    print(f"  - {f}")
+                if len(result['table2Failures']) > 10:
+                    print(f"  ... and {len(result['table2Failures']) - 10} more")
+                return False
+            else:
+                print(f"\n✅ PASSED: Table 2 (Code Quality) data integrity validated")
+                print(f"   - All 5 fields present (Typed, Documented, Schema, Base Class, Quality Score)")
+                print(f"   - All values numeric and in range 0-100")
             
             # Check Sort Order
             print("\n" + "="*70)
@@ -248,28 +294,29 @@ def test_browser_rendering():
             print("="*70)
             
             # Define expected canonical sort order
+            # CRITICAL: Base Agent must be first for each layer (L6→L0)
             expected_order = [
                 'TOTAL',
-                'Base/Base Class',
+                'Sovereign Base Agent',
+                'L6_Observability/Base Agent',
                 'L6_Observability/Metrics',
                 'L6_Observability/Telemetry',
-                'L6_Observability/Base Class',
+                'L5 Safety/Base Agent',
                 'L5 Safety/Validators',
                 'L5 Safety/Guardrails',
                 'L5 Safety/Red Teaming',
                 'L5 Safety/Gravity',
-                'L5 Safety/Base Class',
+                'L4 State/Base Agent',
                 'L4 State/Infrastructure',
                 'L4 State/Core',
-                'L4 State/Base Class',
+                'L3 Orchestration/Base Agent',
                 'L3 Orchestration/Core',
-                'L3 Orchestration/Base Class',
+                'L2 Execution/Base Agent',
                 'L2 Execution/Core',
-                'L2 Execution/Base Class',
+                'L1 Cognition/Base Agent',
                 'L1 Cognition/Core',
-                'L1 Cognition/Base Class',
+                'L0 Maintenance/Base Agent',
                 'L0 Maintenance/Core',
-                'L0 Maintenance/Base Class',
                 'Apps Rg',
                 'Apps Lic',
                 'Utils'
@@ -350,12 +397,14 @@ def test_browser_rendering():
 
 if __name__ == "__main__":
     print("\n" + "="*70)
-    print("MANDATORY MCP HARDENING VALIDATION - ALL TERRITORIES")
+    print("MANDATORY DASHBOARD VALIDATION - ALL TABLES")
     print("="*70)
     print("\nThis test MUST pass before deployment.")
-    print("Validates that 100% MCP Hardening is displayed for ALL territories.")
-    print("Also validates mandatory sort order: TOTAL row at top.")
-    print("Validates data integrity: all fields sourced correctly.")
+    print("Validates:")
+    print("  - Table 1: 100% MCP Hardening for ALL territories")
+    print("  - Table 2: Code Quality data integrity (5 fields)")
+    print("  - Both tables: Canonical sort order (TOTAL at top)")
+    print("  - Data integrity: All fields sourced correctly")
     
     test1_passed = test_data_file()
     test2_passed = test_browser_rendering()
@@ -366,10 +415,18 @@ if __name__ == "__main__":
     
     if test1_passed and test2_passed:
         print("\n✅ ALL TESTS PASSED")
+        print("\n   Table 1 (Territory Summary):")
         print("   - Data file: 100% MCP Hardening ✅")
-        print("   - Data integrity: All fields valid ✅")
         print("   - Browser rendering: 100% MCP Hardening ✅")
-        print("   - Table sort order: TOTAL at top ✅")
+        print("   - Sort order: TOTAL at top ✅")
+        print("\n   Table 2 (Code Quality):")
+        print("   - Field presence: All 5 fields ✅")
+        print("   - Value ranges: 0-100 ✅")
+        print("   - Data types: All numeric ✅")
+        print("   - Sort order: TOTAL at top ✅")
+        print("\n   Data Integrity:")
+        print("   - All required fields present ✅")
+        print("   - All values in valid ranges ✅")
         print("\n✅ DEPLOYMENT APPROVED")
         sys.exit(0)
     else:
@@ -377,6 +434,6 @@ if __name__ == "__main__":
         if not test1_passed:
             print("   - Data file/integrity validation: FAILED ❌")
         if not test2_passed:
-            print("   - Browser rendering/sort order validation: FAILED ❌")
+            print("   - Browser rendering/Table 2 validation: FAILED ❌")
         print("\n❌ DEPLOYMENT BLOCKED")
         sys.exit(1)

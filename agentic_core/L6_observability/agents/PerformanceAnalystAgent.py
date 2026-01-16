@@ -22,10 +22,11 @@ from agentic_core.L6_observability.L6ObservabilityBaseAgent import (
     AgentPerformanceMetrics,
     CritiqueReport
 )
+from agentic_core.utils.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
+class PerformanceAnalystAgent(SubatomicTestingMixin, L6ObservabilityBaseAgent):
     """
     The Performance Critic - Skeptical analyst for agent performance.
     
