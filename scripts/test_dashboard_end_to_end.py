@@ -475,6 +475,7 @@ def run_all_tests() -> bool:
             name = agent.get('class_name', '')
             layer = agent.get('layer', '')
             proper_base = agent.get('proper_base_class', False)
+            inheritance = agent.get('inheritance', [])
             
             # Skip base agents themselves
             if 'BaseAgent' in name:
@@ -484,9 +485,16 @@ def run_all_tests() -> bool:
             if layer not in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Base']:
                 continue
             
-            # Check if agent has proper base class architecture
-            if not proper_base:
+            # Hardening: Cross-verify proper_base flag against actual inheritance
+            # Every core agent must inherit from something ending in 'BaseAgent'
+            has_base_in_list = any('BaseAgent' in base for base in inheritance)
+            
+            if not proper_base or not has_base_in_list:
                 orphans.append(f"{name} ({layer})")
+            
+            # Ensure it doesn't just inherit from 'object'
+            if len(inheritance) == 1 and inheritance[0] == 'object':
+                orphans.append(f"{name} ({layer}) - Raw Object Inheritance")
         
         if orphans:
             errors.append(f"Test 9 FAILED: {len(orphans)} agents lack proper base class architecture")
@@ -542,11 +550,17 @@ def run_all_tests() -> bool:
     try:
         l5_agents = [a for a in agents if a.get('layer', '').startswith('L5')]
         unhardened_l5 = [a for a in l5_agents if not a.get(FIELD_MCP_HARDENED)]
+        # Hardening: Verify the summary isn't empty
+        empty_summary_l5 = [a for a in l5_agents if not a.get('mcp_summary') or len(a.get('mcp_summary')) < 10]
         
         if unhardened_l5:
             errors.append(f"Test 11 FAILED: {len(unhardened_l5)}/{len(l5_agents)} L5 agents NOT MCP hardened (SECURITY VIOLATION)")
             for agent in unhardened_l5[:3]:
                 errors.append(f"  - {agent['class_name']}")
+        
+        if empty_summary_l5:
+            errors.append(f"Test 11 FAILED: {len(empty_summary_l5)} L5 agents have missing/weak MCP summaries")
+            
         else:
             print(f"✅ Test 11 PASSED: All {len(l5_agents)} L5 safety agents are MCP hardened")
     
@@ -1399,15 +1413,22 @@ def run_all_tests() -> bool:
                 load_data_snippet = html_content[load_data_start:load_data_start + 2000]
                 
                 render_calls = [
-                    ('renderTerritorySummaryTable', 'Table 1 not rendered'),
-                    ('renderCodeQualityTable', 'Table 2 not rendered'),
-                    ('renderRecommendations', 'Recommendations not rendered'),
-                    ('renderStrategicObservations', 'Observations not rendered'),
+                    # (Function, Error Message, Required Order Index)
+                    ('renderTerritorySummaryTable', 'Table 1 not rendered', 1),
+                    ('renderCodeQualityTable', 'Table 2 not rendered', 2),
+                    ('renderStrategicObservations', 'Observations not rendered', 3),
+                    ('renderRecommendations', 'Recommendations not rendered', 4),
                 ]
                 
-                for func_call, error_msg in render_calls:
-                    if func_call not in load_data_snippet:
+                # Hardening: Verify rendering happens in logical sequence
+                last_pos = -1
+                for func_call, error_msg, _ in render_calls:
+                    current_pos = load_data_snippet.find(func_call)
+                    if current_pos == -1:
                         js_issues.append(f"loadData() missing call to {func_call}: {error_msg}")
+                    elif current_pos < last_pos:
+                        js_issues.append(f"Execution order violation: {func_call} called before previous render step")
+                    last_pos = current_pos
             
             # ============================================================
             # PART C: Simulate table row generation for ALL territories
