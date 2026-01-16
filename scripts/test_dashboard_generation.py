@@ -7,6 +7,7 @@ If any injection fails, the entire generation must fail.
 """
 import sys
 import re
+import json
 from pathlib import Path
 
 # SSOT: Import canonical definitions for dashboard testing
@@ -31,6 +32,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L4_STATE_DIR,
     L5_SAFETY_DIR,
     L6_OBSERVABILITY_DIR,
+    REPORTS_DIR,
     get_validated_project_root,
 )
 
@@ -82,8 +84,14 @@ def test_dashboard_generation():
         else:
             # Verify data is actually present (not just empty)
             match = re.search(r'const dashboardData = \[(.*?)\];', content, re.DOTALL)
-            if match and len(match.group(1).strip()) < 100:
-                failures.append("dashboardData appears empty or too small")
+            if match:
+                data_str = f"[{match.group(1).strip()}]"
+                try:
+                    parsed_data = json.loads(data_str)
+                    if not parsed_data:
+                        failures.append("dashboardData injected but contains an empty list")
+                except json.JSONDecodeError:
+                    failures.append("dashboardData injected but contains invalid JSON")
             else:
                 print("✓ Dashboard data injected with content")
         
@@ -109,7 +117,15 @@ def test_dashboard_generation():
         elif 'const gaugeData = {' not in content:
             failures.append("gaugeData variable not found")
         else:
-            print("✓ Gauge data injected")
+            # Hardening: Verify gaugeData has required keys for UI rendering
+            match = re.search(r'const gaugeData = (\{.*?\});', content, re.DOTALL)
+            if match:
+                try:
+                    g_data = json.loads(match.group(1))
+                    if "overallHealth" not in g_data:
+                        failures.append("gaugeData missing 'overallHealth' key")
+                except json.JSONDecodeError:
+                    failures.append("gaugeData contains invalid JSON")
         
         # Check 5: Strategic review injection
         if '<!-- STRATEGIC_REVIEW_INSERT -->' in content:
@@ -122,6 +138,10 @@ def test_dashboard_generation():
             failures.append("Top recommendations placeholder not replaced")
         else:
             print("✓ Top recommendations placeholder replaced")
+        
+        # Check 6.1: Strategic Observations injection (Phase 5 Requirement)
+        if 'const strategicObservationsData = {};' in content:
+            failures.append("strategicObservationsData placeholder not replaced")
         
         # Check 7: Verify actual data content
         if '"Territory"' not in content:

@@ -20,10 +20,16 @@ Usage:
 """
 import sys
 import re
+import ast
 from pathlib import Path
 from typing import List, Tuple
 
-PROJECT_ROOT = Path(__file__).parent.parent
+# SSOT: Use centralized blueprint for project root discovery
+try:
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import get_validated_project_root
+    PROJECT_ROOT = get_validated_project_root()
+except ImportError:
+    PROJECT_ROOT = Path(__file__).parent.parent
 
 # SSOT: Import canonical definitions to verify against
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -66,22 +72,25 @@ SSOT_FIELD_MAPPINGS = {
 def check_ssot_imports(file_path: Path) -> Tuple[bool, List[str]]:
     """Check if file imports SSOT definitions."""
     errors = []
-    content = file_path.read_text(encoding='utf-8')
-    
-    # Check for SSOT import
-    has_ssot_import = 'from dashboard_ssot_definitions import' in content or \
-                      'from scripts.dashboard_ssot_definitions import' in content
-    
-    if not has_ssot_import:
-        errors.append(f"Missing SSOT import from dashboard_ssot_definitions")
-        return False, errors
-    
-    # Check if COL_* constants are imported
-    col_imports = [col for col in ['COL_HEAL_CAP', 'COL_TEST', 'COL_HEALTH'] 
-                   if col in content]
-    
-    if len(col_imports) == 0:
-        errors.append(f"No COL_* constants imported (should use SSOT column names)")
+    try:
+        tree = ast.parse(file_path.read_text(encoding='utf-8'))
+        has_ssot_import = False
+        imported_names = set()
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom):
+                if node.module in ['dashboard_ssot_definitions', 'scripts.dashboard_ssot_definitions']:
+                    has_ssot_import = True
+                    for alias in node.names:
+                        imported_names.add(alias.name)
+
+        if not has_ssot_import:
+            errors.append("Missing SSOT import from dashboard_ssot_definitions")
+        elif not any(name.startswith('COL_') for name in imported_names):
+            errors.append("No COL_* constants imported (should use SSOT column names)")
+            
+    except Exception as e:
+        errors.append(f"AST Parsing Error: {e}")
     
     return len(errors) == 0, errors
 
@@ -89,30 +98,28 @@ def check_hardcoded_strings(file_path: Path) -> Tuple[bool, List[str]]:
     """Check for hardcoded column/field names instead of SSOT constants."""
     errors = []
     content = file_path.read_text(encoding='utf-8')
-    
-    # Skip lines that are comments or imports
     lines = content.split('\n')
     
     for line_num, line in enumerate(lines, 1):
-        # Skip comments and docstrings
-        if line.strip().startswith('#') or line.strip().startswith('"""') or line.strip().startswith("'''"):
+        stripped = line.strip()
+        if not stripped or stripped.startswith('#') or stripped.startswith('"""') or stripped.startswith("'''"):
             continue
         
-        # Check for hardcoded column names in dictionary access or string literals
         for hardcoded, ssot_const in SSOT_COLUMN_MAPPINGS.items():
-            # Pattern: row['Heal Cap %'] or row.get('Heal Cap %')
-            if f"['{hardcoded}']" in line or f'["{hardcoded}"]' in line or \
-               f"get('{hardcoded}')" in line or f'get("{hardcoded}")' in line:
-                # Check if the SSOT constant is already being used on this line
+            # Robust detection for dict access and .get() calls
+            patterns = [
+                rf"\[['\"]{re.escape(hardcoded)}['\"]\]",
+                rf"\.get\(['\"{re.escape(hardcoded)}['\"]\)"
+            ]
+            if any(re.search(p, line) for p in patterns):
                 if ssot_const not in line:
                     errors.append(
                         f"Line {line_num}: Hardcoded '{hardcoded}' should use {ssot_const}"
                     )
         
-        # Check for hardcoded field names in .get() calls
         for hardcoded, ssot_const in SSOT_FIELD_MAPPINGS.items():
-            if f"get('{hardcoded}')" in line or f'get("{hardcoded}")' in line:
-                if ssot_const not in line:
+            if re.search(rf"\.get\(['\"{re.escape(hardcoded)}['\"]\)", line):
+                if ssot_const not in line: # Ensure we aren't already using the constant
                     errors.append(
                         f"Line {line_num}: Hardcoded '{hardcoded}' should use {ssot_const}"
                     )
@@ -126,10 +133,10 @@ def check_calculation_duplication(file_path: Path) -> Tuple[bool, List[str]]:
     
     # Patterns that indicate duplicate calculation logic
     duplicate_patterns = [
-        (r'sum\(1 for .* if .*has_healing.*\).*\*\s*100', 'calc_heal_cap_pct()'),
-        (r'sum\(1 for .* if .*invocation.*\).*\*\s*100', 'calc_invocation_pct()'),
-        (r'sum\(1 for .* if .*has_tests.*\).*\*\s*100', 'calc_test_pct()'),
-        (r'sum\(1 for .* if .*mcp_hardened.*\).*\*\s*100', 'calc_hardened_pct()'),
+        (r'sum\(\s*1\s*for\s+.*\s+if\s+.*has_healing.*\).*\*\s*100', 'calc_heal_cap_pct()'),
+        (r'sum\(\s*1\s*for\s+.*\s+if\s+.*invocation.*\).*\*\s*100', 'calc_invocation_pct()'),
+        (r'sum\(\s*1\s*for\s+.*\s+if\s+.*has_tests.*\).*\*\s*100', 'calc_test_pct()'),
+        (r'sum\(\s*1\s*for\s+.*\s+if\s+.*mcp_hardened.*\).*\*\s*100', 'calc_hardened_pct()'),
     ]
     
     for pattern, ssot_func in duplicate_patterns:
