@@ -244,7 +244,7 @@ function renderTerritorySummaryTable(territoryData) {
         const testStats = getStats('test');
         const complexityStats = getStats('complexityHealth');
         
-        const healthColor = getWorstCaseColor(row['Code Quality Score'] || 0);
+        const healthColor = getWorstCaseColor(row['Health'] || 0);
         const rowBg = index % 2 === 0 ? '#f9fafb' : 'white';
 
         html += `
@@ -289,7 +289,7 @@ function renderTerritorySummaryTable(territoryData) {
                 </td>
 
                 <td style="padding:12px; text-align:center; font-weight:700; color:${healthColor}">
-                    ${typeof row['Code Quality Score'] === 'number' ? row['Code Quality Score'].toFixed(1) : (row['Code Quality Score'] || 'N/A')}%
+                    ${typeof row['Health'] === 'number' ? row['Health'].toFixed(1) : (row['Health'] || 'N/A')}%
                 </td>
             </tr>`;
     });
