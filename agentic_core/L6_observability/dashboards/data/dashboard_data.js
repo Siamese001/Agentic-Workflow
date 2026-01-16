@@ -320,7 +320,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 67.0
+    "Health": 97.0
   },
   {
     "Territory": "L0 Maintenance/Core",
@@ -336,7 +336,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.65,
-    "Health": 45.0
+    "Health": 75.0
   },
   {
     "Territory": "Apps Lic",

@@ -28,6 +28,40 @@ function toggleFilter(tableType, filterName) {
 
 // --- Helper Functions ---
 
+/**
+ * PHASE 3 STEP 2: Generate dynamic health tooltip using SSOT weights
+ * This tooltip automatically updates when YAML weights change
+ */
+function getHealthTooltip(row) {
+    const weights = window.HEALTH_WEIGHTS || {};
+    const cols = window.COLUMNS || {};
+    const placeholders = window.PLACEHOLDERS || {};
+    
+    // These weights are driven by scripts/config/dashboard_ssot.yaml
+    return `Health Calculation Breakdown:
+-----------------------------
+Healing: ${(row[cols.HEAL_CAP] || 0).toFixed(1)}% × ${(weights.HEAL_CAP || 0).toFixed(2)}
+Tests: ${(row[cols.TEST] || 0).toFixed(1)}% × ${(weights.TEST || 0).toFixed(2)}
+Invocation: ${(row[cols.INVOCATION] || 0).toFixed(1)}% × ${(weights.INVOCATION || 0).toFixed(2)}
+Complexity: ${(row[cols.COMPLEXITY_HEALTH] || 0).toFixed(1)}% × ${(weights.COMPLEXITY || 0).toFixed(2)}
+Observable: ${(placeholders.OBSERVABLE_PCT || 50).toFixed(1)}% × ${(weights.OBSERVABLE || 0).toFixed(2)}
+-----------------------------
+Total: ${(row[cols.HEALTH] || 0).toFixed(1)}%
+
+Note: Weights sum to 1.0 and are defined in dashboard_ssot.yaml`;
+}
+
+/**
+ * PHASE 3 STEP 2: Get score class using SSOT thresholds
+ * Styling automatically updates when YAML thresholds change
+ */
+function getScoreClass(score) {
+    const thresholds = window.THRESHOLDS || {};
+    if (score >= (thresholds.TEST_COVERAGE_TARGET || 80)) return 'excellent';
+    if (score >= (thresholds.HEALTH_SCORE_MIN || 60)) return 'good';
+    return 'critical';
+}
+
 // Format HIGH-SIGNAL tooltip with actionable intelligence
 function formatProblemAgentsTooltip(territory, metricKey, metricLabel, threshold = 50) {
     const agentData = window.realAgentData ? window.realAgentData[territory] : null;
@@ -291,8 +325,9 @@ function renderTerritorySummaryTable(territoryData) {
                     <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, METRIC_KEYS.COMPLEXITYHEALTH, 'Complexity Health', THRESHOLDS.COMPLEXITY_HEALTH_MIN)}</div>
                 </td>
 
-                <td style="padding:12px; text-align:center; font-weight:700; color:${healthColor}">
+                <td class="metric-cell" style="padding:12px; text-align:center; font-weight:700; color:${healthColor}" title="${getHealthTooltip(row).replace(/"/g, '&quot;')}">
                     ${typeof row[COLUMNS.HEALTH] === 'number' ? row[COLUMNS.HEALTH].toFixed(1) : (row[COLUMNS.HEALTH] || 'N/A')}%
+                    <div class="custom-tooltip">${getHealthTooltip(row)}</div>
                 </td>
             </tr>`;
     });
