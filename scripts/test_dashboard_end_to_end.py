@@ -2002,6 +2002,52 @@ def run_all_tests() -> bool:
         errors.append(f"Test 30 FAILED: {e}")
         print(f"❌ Test 30 FAILED: {e}")
     
+    # =========================================================================
+    # TEST 31: Phase 6 Integration - Start Script Exists
+    # =========================================================================
+    print("\n--- Test 31: Phase 6 Start Script ---")
+    start_script = project_root / "scripts" / "start_runtime_api.py"
+    if not start_script.exists():
+        errors.append("Test 31 FAILED: start_runtime_api.py not found")
+        print("❌ Test 31 FAILED: start_runtime_api.py not found")
+    else:
+        content = start_script.read_text(encoding='utf-8')
+        required = ["uvicorn", "runtime_api", "def main()", "argparse"]
+        missing = [r for r in required if r not in content]
+        if missing:
+            errors.append(f"Test 31 FAILED: Missing in start script: {missing}")
+            print(f"❌ Test 31 FAILED: Missing in start script: {missing}")
+        else:
+            print("✅ Test 31 PASSED: start_runtime_api.py exists with all required components")
+    
+    # =========================================================================
+    # TEST 32: Phase 6 Integration - E2E Data Flow
+    # =========================================================================
+    print("\n--- Test 32: Phase 6 E2E Data Flow ---")
+    try:
+        from agentic_core.L6_observability.api.runtime_api import app, meta_agent, redis_client, pinecone_wrapper
+        from fastapi.testclient import TestClient
+        
+        client = TestClient(app)
+        
+        # Test meta-learning data flow
+        initial_exp = meta_agent.total_experiences
+        response = client.post("/api/meta-learning/experience", json={
+            "thought_type": "cot", "reward": 0.9, "state": {}, "outcome": {}
+        })
+        
+        response = client.get("/api/meta-learning/statistics")
+        data = response.json()
+        
+        if data.get("total_experiences", 0) > initial_exp:
+            print("✅ Test 32 PASSED: E2E data flow working (meta-learning → API)")
+        else:
+            errors.append("Test 32 FAILED: E2E data flow not working")
+            print("❌ Test 32 FAILED: E2E data flow not working")
+    except Exception as e:
+        errors.append(f"Test 32 FAILED: {e}")
+        print(f"❌ Test 32 FAILED: {e}")
+    
     # Final summary
     print("\n" + "=" * 70)
     if errors:
@@ -2009,7 +2055,7 @@ def run_all_tests() -> bool:
         failed_tests.extend([e.split(':')[0].replace('FAILED', '').strip() for e in errors if 'FAILED' in e])
     
     if all_passed:
-        print("✅ ALL 30 TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 32 TESTS PASSED - Dashboard is ready for deployment")
         print("\n⚠️  IMPORTANT: Hard refresh browser (Ctrl+Shift+R) to see changes!")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")
