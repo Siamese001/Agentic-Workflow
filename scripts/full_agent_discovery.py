@@ -41,6 +41,15 @@ from collections import defaultdict
 sys.path.insert(0, str(Path(__file__).parent))
 from territory_ssot_definitions import get_territory_from_path
 
+# SSOT: Import field name constants for agent_discovery_full.json
+from dashboard_ssot_definitions import (
+    FIELD_CLASS_NAME, FIELD_PATH, FIELD_LAYER, FIELD_TERRITORY, FIELD_CATEGORY,
+    FIELD_HAS_HEALING, FIELD_HAS_TESTS, FIELD_HAS_TOOLS, FIELD_HAS_MEMORY,
+    FIELD_MCP_HARDENED, FIELD_INVOCATION, FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT,
+    FIELD_SCHEMA_STRICTNESS, FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
+    FIELD_INHERITANCE, FIELD_BASE_CLASSES
+)
+
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
@@ -1472,36 +1481,34 @@ def main():
             )
             
             agents.append({
-                'class_name': node.name,
-                'path': str(rel_path),
-                'top_dir': rel_path.parts[0] if len(rel_path.parts) >= 1 else '',
-                'sub_dir': '/'.join(rel_path.parts[:2]) if len(rel_path.parts) >= 2 else (rel_path.parts[0] if len(rel_path.parts) >= 1 else ''),
-                'layer': layer,
-                'territory': territory,  # NEW: Territory assignment with base class handling
-                'category': category,  # NEW: Agent category from canonical_truth.py (Phase 3)
-                'inheritance': list(bases),
-                'key_methods': methods[:10],  # Top 10 methods
-                'has_tools': has_tools,
-                'has_memory': has_memory,
-                'has_healing': has_healing,
-                'invocation': invocation,  # SSOT for heal_repository invocation
-                'testing': testing,
-                'has_subatomic': 'SubAtomicAgent' in bases or 'subatomic' in source.lower(),
-                'loc': loc,
-                'class_count': class_count,
-                'description': get_docstring(node),
-                'pascal_compliant': node.name[0].isupper() and '_' not in node.name,
-                'external_touch': external_touch,
-                'mcp_hardened': mcp_hardened,
+                FIELD_CLASS_NAME: node.name,
+                FIELD_PATH: str(rel_path),
+                FIELD_LAYER: layer,
+                FIELD_TERRITORY: territory,  # NEW: Territory assignment with base class handling
+                FIELD_CATEGORY: category,  # NEW: Agent category from canonical_truth.py (Phase 3)
+                FIELD_INHERITANCE: list(bases),
+                'key_methods': methods[:10],  # Top 10 methods (not used in dashboard)
+                FIELD_HAS_TOOLS: has_tools,
+                FIELD_HAS_MEMORY: has_memory,
+                FIELD_HAS_HEALING: has_healing,
+                FIELD_INVOCATION: invocation,  # SSOT for heal_repository invocation
+                'testing': testing,  # Legacy field (not used in dashboard)
+                'has_subatomic': 'SubAtomicAgent' in bases or 'subatomic' in source.lower(),  # Legacy
+                'loc': loc,  # Legacy field (not used in dashboard)
+                'class_count': class_count,  # Legacy field (not used in dashboard)
+                'description': get_docstring(node),  # Legacy field (not used in dashboard)
+                'pascal_compliant': node.name[0].isupper() and '_' not in node.name,  # Legacy
+                'external_touch': external_touch,  # Legacy field (not used in dashboard)
+                FIELD_MCP_HARDENED: mcp_hardened,
                 # NEW SSOT METRICS (dashboard consumes these directly)
-                'has_tests': has_tests,
-                'typed_pct': typed_pct,
-                'documented_pct': documented_pct,
-                'observability': observability,
-                'cyclomatic_complexity': cyclomatic_complexity,
-                'proper_base_class': proper_base_class,  # Gravity signal
-                'schema_strictness': schema_strictness,  # Hardened signal
-                'has_metadata': has_metadata,  # PHASE 3: Metadata compliance
+                FIELD_HAS_TESTS: has_tests,
+                FIELD_TYPED_PCT: typed_pct,
+                FIELD_DOCUMENTED_PCT: documented_pct,
+                'observability': observability,  # Not yet in SSOT (future)
+                FIELD_CYCLOMATIC_COMPLEXITY: cyclomatic_complexity,
+                FIELD_PROPER_BASE_CLASS: proper_base_class,  # Gravity signal
+                FIELD_SCHEMA_STRICTNESS: schema_strictness,  # Hardened signal
+                'has_metadata': has_metadata,  # PHASE 3: Metadata compliance (not yet in SSOT)
             })
     
     if incremental_mode:
