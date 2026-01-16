@@ -13,7 +13,7 @@
 // ============================================================================
 // Display names for dashboard table columns
 
-export const COLUMNS = {
+window.COLUMNS = {
     TERRITORY: "Territory",
     TOTAL: "Total",
     COMPLIANT: "Compliant",
@@ -37,7 +37,7 @@ export const COLUMNS = {
 // ============================================================================
 // Field names from agent_discovery_full.json
 
-export const FIELDS = {
+window.FIELDS = {
     CLASS_NAME: "class_name",
     PATH: "path",
     LAYER: "layer",
@@ -63,7 +63,7 @@ export const FIELDS = {
 // ============================================================================
 // Standard thresholds for validation and outlier detection
 
-export const THRESHOLDS = {
+window.THRESHOLDS = {
     MCP_HARDENED_TARGET: 100.0,
     HEAL_CAP_TARGET: 100.0,
     TEST_COVERAGE_MIN: 50.0,
@@ -85,7 +85,7 @@ export const THRESHOLDS = {
 // ============================================================================
 // CamelCase keys used in agentData objects
 
-export const METRIC_KEYS = {
+window.METRIC_KEYS = {
     HEALCAP: "healCap",
     INVOCATION: "invocation",
     HARDENED: "hardened",
@@ -103,7 +103,7 @@ export const METRIC_KEYS = {
 // HEALTH SCORE WEIGHTS
 // ============================================================================
 
-export const HEALTH_WEIGHTS = {
+window.WEIGHTS = {
     HEAL_CAP: 0.3,
     INVOCATION: 0.1,
     TEST: 0.25,
@@ -111,7 +111,7 @@ export const HEALTH_WEIGHTS = {
     COMPLEXITY: 0.15,
 };
 
-export const HEALTH_WEIGHTS_L0 = {
+window.HEALTH_WEIGHTS_L0 = {
     TEST: 0.4,
     HARDENED: 0.3,
     COMPLEXITY: 0.3,
@@ -121,7 +121,7 @@ export const HEALTH_WEIGHTS_L0 = {
 // CODE QUALITY WEIGHTS
 // ============================================================================
 
-export const CODE_QUALITY_WEIGHTS = {
+window.CODE_QUALITY_WEIGHTS = {
     TYPED: 0.25,
     DOCUMENTED: 0.25,
     SCHEMA_STRICTNESS: 0.25,
@@ -132,6 +132,6 @@ export const CODE_QUALITY_WEIGHTS = {
 // PLACEHOLDERS
 // ============================================================================
 
-export const PLACEHOLDERS = {
+window.PLACEHOLDERS = {
     OBSERVABLE_PCT: 50.0,
 };

@@ -4,8 +4,8 @@
  * Includes filtering, sorting, and toxicity logic.
  */
 
-// SSOT: Import constants from centralized configuration
-import { COLUMNS, THRESHOLDS, METRIC_KEYS } from '../constants/dashboard-constants.js';
+// SSOT: Constants loaded from dashboard-constants.js via window globals
+// Access via: window.COLUMNS, window.THRESHOLDS, window.METRIC_KEYS
 
 // Global state for table filtering
 const tableFilterState = {
