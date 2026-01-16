@@ -16,6 +16,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
 from agentic_core.L6_observability.dashboards.renderer import DashboardRenderer
 
@@ -38,7 +39,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 log = logging.getLogger(__name__)
 
-class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
+class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Sovereign guardian for agent autonomy enforcement.
     

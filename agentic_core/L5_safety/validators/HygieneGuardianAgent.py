@@ -26,6 +26,7 @@ from collections import defaultdict
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -57,7 +58,7 @@ class HygieneViolation:
     line_number: Optional[int] = None
 
 
-class HygieneGuardianAgent(MCPHardenedMixin, HealerMixin):
+class HygieneGuardianAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     [L5 VALIDATOR] Code hygiene and cleanliness validator.
     
