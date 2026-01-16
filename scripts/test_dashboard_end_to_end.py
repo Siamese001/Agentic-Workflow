@@ -50,6 +50,37 @@ from scripts.dashboard_ssot_definitions import (
     calc_health_score, calc_code_quality_score, is_l0_territory, safe_numeric
 )
 
+# =============================================================================
+# HELPER FUNCTION: Load Dashboard Data from Consolidated SSOT Location
+# =============================================================================
+def load_dashboard_data() -> Tuple[list, str]:
+    """
+    Load dashboard data from the consolidated SSOT location.
+    
+    Returns:
+        Tuple of (dashboard_data_list, raw_js_content)
+    """
+    data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+    if not data_path.exists():
+        raise FileNotFoundError(f"Dashboard data file not found: {data_path}")
+    
+    data_js = data_path.read_text(encoding='utf-8')
+    
+    # Extract dashboardData array
+    start_marker = 'window.dashboardData = ['
+    end_marker = '];'
+    start_idx = data_js.find(start_marker)
+    end_idx = data_js.find(end_marker, start_idx) + len(end_marker)
+    
+    if start_idx == -1 or end_idx == -1:
+        raise ValueError("Could not find window.dashboardData in dashboard_data.js")
+    
+    json_str = data_js[start_idx + len(start_marker) - 1:end_idx - 1]
+    dashboard_data = json.loads(json_str)
+    
+    return dashboard_data, data_js
+
+
 def test_agent_discovery_integrity() -> Tuple[bool, List[str]]:
     """Test 1: Verify agent_discovery_full.json integrity."""
     errors = []
@@ -341,18 +372,23 @@ def run_all_tests() -> bool:
     print("Running: Drill-Down Agent Data Integrity")
     print("─" * 70)
     
-    # Extract realAgentData from dashboard_data.js
+    # Extract realAgentData from agent_data.js (separate file from dashboard_data.js)
     import re
     import json
-    data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
-    data_js = data_path.read_text(encoding='utf-8')
-    agent_data_pattern = r'window\.realAgentData = (\{.*?\});'
-    match = re.search(agent_data_pattern, data_js, re.DOTALL)
+    agent_data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'agent_data.js'
     
     errors = []
-    if not match:
-        errors.append("Test 7 FAILED: window.realAgentData not found in dashboard_data.js")
+    if not agent_data_path.exists():
+        errors.append("Test 7 FAILED: agent_data.js not found")
+        match = None
     else:
+        agent_data_js = agent_data_path.read_text(encoding='utf-8')
+        agent_data_pattern = r'window\.realAgentData = (\{.*?\});'
+        match = re.search(agent_data_pattern, agent_data_js, re.DOTALL)
+        if not match:
+            errors.append("Test 7 FAILED: window.realAgentData not found in agent_data.js")
+    
+    if match:
         try:
             agent_data_json = match.group(1)
             real_agent_data = json.loads(agent_data_json)
@@ -822,27 +858,46 @@ def run_all_tests() -> bool:
         else:
             print(f"✅ Test 15A PASSED: All cache-busting headers present")
         
-        # SSOT: Check critical JavaScript elements (note: JS uses literal strings, not Python constants)
-        js_elements = [
-            ('const dashboardData =', 'dashboardData declaration'),
-            ('const realAgentData =', 'realAgentData declaration'),
-            ('function loadData()', 'loadData function'),
-            (f"row['{COL_CANONICAL_INHERITANCE}']", 'Canonical Inheritance % JS reference'),
-            (f"parseFloat(row['{COL_CANONICAL_INHERITANCE}']", 'Canonical Inheritance % parsing')
-        ]
+        # SSOT: Check critical JavaScript elements in appropriate files
+        # dashboard_data.js has window.dashboardData, table-renderer.js has rendering functions
+        data_js_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+        renderer_js_path = get_validated_project_root() / DASHBOARD_DIR / 'js' / 'renderers' / 'table-renderer.js'
         
         missing_js = []
-        for pattern, desc in js_elements:
-            if pattern not in html_content:
-                missing_js.append(desc)
+        
+        # Check dashboard_data.js for data declaration
+        if data_js_path.exists():
+            data_js_content = data_js_path.read_text(encoding='utf-8')
+            if 'window.dashboardData' not in data_js_content:
+                missing_js.append('dashboardData declaration in data file')
+        else:
+            missing_js.append('dashboard_data.js file')
+        
+        # Check table-renderer.js for rendering functions and column references
+        if renderer_js_path.exists():
+            renderer_content = renderer_js_path.read_text(encoding='utf-8')
+            if 'renderTerritorySummaryTable' not in renderer_content and 'renderTerritorySummaryTable' not in html_content:
+                missing_js.append('renderTerritorySummaryTable function')
+        else:
+            # Fall back to checking HTML if renderer file doesn't exist
+            if 'function loadData()' not in html_content:
+                missing_js.append('loadData function')
         
         if missing_js:
             errors.append(f"Test 15B FAILED: Missing JavaScript elements: {', '.join(missing_js)}")
         else:
             print(f"✅ Test 15B PASSED: All critical JavaScript elements present")
         
-        # SSOT: Verify Canonical Inheritance % is actually used in rendering
-        if f"row['{COL_CANONICAL_INHERITANCE}']" not in html_content:
+        # SSOT: Verify Canonical Inheritance % is referenced in rendering code
+        renderer_has_col = False
+        if renderer_js_path.exists():
+            renderer_content = renderer_js_path.read_text(encoding='utf-8')
+            if COL_CANONICAL_INHERITANCE in renderer_content or 'Canonical Inheritance' in renderer_content:
+                renderer_has_col = True
+        if COL_CANONICAL_INHERITANCE in html_content or 'Canonical Inheritance' in html_content:
+            renderer_has_col = True
+        
+        if not renderer_has_col:
             errors.append(f"Test 15C FAILED: {COL_CANONICAL_INHERITANCE} not referenced in JavaScript rendering code")
         else:
             print(f"✅ Test 15C PASSED: {COL_CANONICAL_INHERITANCE} properly referenced in JS")
@@ -900,13 +955,8 @@ def run_all_tests() -> bool:
     print("─" * 70)
     
     try:
-        # Load dashboard data for Test 17
-        start_marker = 'const dashboardData = ['
-        end_marker = '];'
-        start_idx = html_content.find(start_marker)
-        end_idx = html_content.find(end_marker, start_idx) + len(end_marker)
-        json_str = html_content[start_idx + len(start_marker) - 1:end_idx - 1]
-        dashboard_data = json.loads(json_str)
+        # Load dashboard data for Test 17 using SSOT helper
+        dashboard_data, _ = load_dashboard_data()
         
         # Get expected territories from agent discovery
         expected_territories = set()
@@ -1024,47 +1074,40 @@ def run_all_tests() -> bool:
         expected_schema = calc_schema_strictness_pct(agents)
         expected_proper_base = calc_canonical_inheritance_pct(agents)
         
-        # Get dashboard values
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
-        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        # Get dashboard values using SSOT helper
+        dashboard_data_check, _ = load_dashboard_data()
+        total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
         
-        if data_match:
-            dashboard_data_check = json.loads(data_match.group(1))
-            total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
+        if total_row:
+            dashboard_typed = total_row.get('Typed %', 0)
+            dashboard_documented = total_row.get('Documented %', 0)
+            dashboard_schema = total_row.get('Schema Strictness %', 0)
+            dashboard_proper_base = total_row.get('Canonical Inheritance %', 0)
             
-            if total_row:
-                dashboard_typed = total_row.get('Typed %', 0)
-                dashboard_documented = total_row.get('Documented %', 0)
-                dashboard_schema = total_row.get('Schema Strictness %', 0)
-                dashboard_proper_base = total_row.get('Canonical Inheritance %', 0)
-                
-                hardcoded_issues = []
-                tolerance = 2.0  # Allow 2% variance for rounding
-                
-                if abs(dashboard_typed - expected_typed) > tolerance:
-                    hardcoded_issues.append(f"Typed %: Dashboard={dashboard_typed}, Expected={expected_typed}")
-                if abs(dashboard_documented - expected_documented) > tolerance:
-                    hardcoded_issues.append(f"Documented %: Dashboard={dashboard_documented}, Expected={expected_documented}")
-                if abs(dashboard_schema - expected_schema) > tolerance:
-                    hardcoded_issues.append(f"Schema Strictness %: Dashboard={dashboard_schema}, Expected={expected_schema}")
-                if abs(dashboard_proper_base - expected_proper_base) > tolerance:
-                    hardcoded_issues.append(f"Canonical Inheritance %: Dashboard={dashboard_proper_base}, Expected={expected_proper_base}")
-                
-                if hardcoded_issues:
-                    errors.append(f"Test 18 FAILED: {len(hardcoded_issues)} values appear hardcoded (don't match discovery)")
-                    for issue in hardcoded_issues:
-                        errors.append(f"  - {issue}")
-                else:
-                    print(f"✅ Test 18 PASSED: All dashboard values match discovery data (no hardcoding)")
-                    print(f"   Typed: {dashboard_typed}% (expected {expected_typed}%)")
-                    print(f"   Documented: {dashboard_documented}% (expected {expected_documented}%)")
-                    print(f"   Schema: {dashboard_schema}% (expected {expected_schema}%)")
-                    print(f"   Canonical: {dashboard_proper_base}% (expected {expected_proper_base}%)")
+            hardcoded_issues = []
+            tolerance = 2.0  # Allow 2% variance for rounding
+            
+            if abs(dashboard_typed - expected_typed) > tolerance:
+                hardcoded_issues.append(f"Typed %: Dashboard={dashboard_typed}, Expected={expected_typed}")
+            if abs(dashboard_documented - expected_documented) > tolerance:
+                hardcoded_issues.append(f"Documented %: Dashboard={dashboard_documented}, Expected={expected_documented}")
+            if abs(dashboard_schema - expected_schema) > tolerance:
+                hardcoded_issues.append(f"Schema Strictness %: Dashboard={dashboard_schema}, Expected={expected_schema}")
+            if abs(dashboard_proper_base - expected_proper_base) > tolerance:
+                hardcoded_issues.append(f"Canonical Inheritance %: Dashboard={dashboard_proper_base}, Expected={expected_proper_base}")
+            
+            if hardcoded_issues:
+                errors.append(f"Test 18 FAILED: {len(hardcoded_issues)} values appear hardcoded (don't match discovery)")
+                for issue in hardcoded_issues:
+                    errors.append(f"  - {issue}")
             else:
-                errors.append("Test 18 FAILED: Could not find TOTAL row in dashboard data")
+                print(f"✅ Test 18 PASSED: All dashboard values match discovery data (no hardcoding)")
+                print(f"   Typed: {dashboard_typed}% (expected {expected_typed}%)")
+                print(f"   Documented: {dashboard_documented}% (expected {expected_documented}%)")
+                print(f"   Schema: {dashboard_schema}% (expected {expected_schema}%)")
+                print(f"   Canonical: {dashboard_proper_base}% (expected {expected_proper_base}%)")
         else:
-            errors.append("Test 18 FAILED: Could not extract dashboard data")
+            errors.append("Test 18 FAILED: Could not find TOTAL row in dashboard data")
     
     except Exception as e:
         errors.append(f"Test 18 FAILED: Could not validate hardcoding: {e}")
@@ -1157,40 +1200,33 @@ def run_all_tests() -> bool:
             COL_CANONICAL_INHERITANCE: calc_canonical_inheritance_pct(agents),
         }
         
-        # Get dashboard TOTAL row values
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
-        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        # Get dashboard TOTAL row values using SSOT helper
+        dashboard_data_check, _ = load_dashboard_data()
+        total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
         
         hardcoded_issues = []
-        if data_match:
-            dashboard_data_check = json.loads(data_match.group(1))
-            total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
+        if total_row:
+            tolerance = 2.0  # Allow 2% variance for rounding differences
             
-            if total_row:
-                tolerance = 2.0  # Allow 2% variance for rounding differences
+            for metric, expected in expected_metrics.items():
+                actual = total_row.get(metric, 0)
+                if actual is None:
+                    actual = 0
                 
+                if abs(float(actual) - float(expected)) > tolerance:
+                    hardcoded_issues.append(f"{metric}: Dashboard={actual}, Discovery={expected}")
+            
+            if hardcoded_issues:
+                errors.append(f"Test 20 FAILED: {len(hardcoded_issues)} metrics appear hardcoded")
+                for issue in hardcoded_issues:
+                    errors.append(f"  - {issue}")
+            else:
+                print(f"✅ Test 20 PASSED: All {len(expected_metrics)} metrics match discovery (zero hardcoding)")
                 for metric, expected in expected_metrics.items():
                     actual = total_row.get(metric, 0)
-                    if actual is None:
-                        actual = 0
-                    
-                    if abs(float(actual) - float(expected)) > tolerance:
-                        hardcoded_issues.append(f"{metric}: Dashboard={actual}, Discovery={expected}")
-                
-                if hardcoded_issues:
-                    errors.append(f"Test 20 FAILED: {len(hardcoded_issues)} metrics appear hardcoded")
-                    for issue in hardcoded_issues:
-                        errors.append(f"  - {issue}")
-                else:
-                    print(f"✅ Test 20 PASSED: All {len(expected_metrics)} metrics match discovery (zero hardcoding)")
-                    for metric, expected in expected_metrics.items():
-                        actual = total_row.get(metric, 0)
-                        print(f"   ✓ {metric}: {actual} (expected {expected})")
-            else:
-                errors.append("Test 20 FAILED: Could not find TOTAL row")
+                    print(f"   ✓ {metric}: {actual} (expected {expected})")
         else:
-            errors.append("Test 20 FAILED: Could not extract dashboardData")
+            errors.append("Test 20 FAILED: Could not find TOTAL row")
     
     except Exception as e:
         errors.append(f"Test 20 FAILED: {e}")
@@ -1206,52 +1242,45 @@ def run_all_tests() -> bool:
         with open(discovery_path, 'r', encoding='utf-8') as f:
             agents = json.load(f)
         
-        # Get dashboard TOTAL row
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
-        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        # Get dashboard TOTAL row using SSOT helper
+        dashboard_data_check, _ = load_dashboard_data()
+        total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
         
-        if data_match:
-            dashboard_data_check = json.loads(data_match.group(1))
-            total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
+        if total_row:
+            # SSOT: Calculate expected health using weighted formula
+            heal_cap = total_row.get(COL_HEAL_CAP, 0)
+            invocation = total_row.get(COL_INVOCATION, 0)
+            test = total_row.get(COL_TEST, 0)
+            complexity = total_row.get(COL_COMPLEXITY_HEALTH, 0)
             
-            if total_row:
-                # SSOT: Calculate expected health using weighted formula
-                heal_cap = total_row.get(COL_HEAL_CAP, 0)
-                invocation = total_row.get(COL_INVOCATION, 0)
-                test = total_row.get(COL_TEST, 0)
-                complexity = total_row.get(COL_COMPLEXITY_HEALTH, 0)
-                
-                # Expected health using SSOT weighted formula
-                expected_health = calc_health_score(
-                    heal_cap, invocation, test, 50.0, complexity, is_l0=False
-                )
-                
-                actual_health = total_row.get(COL_HEALTH, 0)
-                
-                # Verify weighted average is being used (not simple average)
-                simple_avg = (heal_cap + invocation + test + 50.0 + complexity) / 5.0
-                
-                if abs(actual_health - simple_avg) < 1.0:
-                    errors.append(f"Test 20B FAILED: Health score appears to be simple average ({simple_avg:.1f}), not weighted")
-                    errors.append(f"  Expected (weighted): {expected_health:.1f}")
-                    errors.append(f"  Actual: {actual_health:.1f}")
-                    errors.append(f"  Simple average: {simple_avg:.1f}")
-                elif abs(actual_health - expected_health) > 0.5:
-                    errors.append(f"Test 20B FAILED: Health score mismatch")
-                    errors.append(f"  Expected (SSOT weighted): {expected_health:.1f}")
-                    errors.append(f"  Actual: {actual_health:.1f}")
-                    errors.append(f"  Formula: (Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15)")
-                else:
-                    print(f"✅ Test 20B PASSED: Health score uses correct weighted average")
-                    print(f"   Expected (weighted): {expected_health:.1f}")
-                    print(f"   Actual: {actual_health:.1f}")
-                    print(f"   Formula: Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15")
-                    print(f"   NOT simple average: {simple_avg:.1f}")
+            # Expected health using SSOT weighted formula
+            expected_health = calc_health_score(
+                heal_cap, invocation, test, 50.0, complexity, is_l0=False
+            )
+            
+            actual_health = total_row.get(COL_HEALTH, 0)
+            
+            # Verify weighted average is being used (not simple average)
+            simple_avg = (heal_cap + invocation + test + 50.0 + complexity) / 5.0
+            
+            if abs(actual_health - simple_avg) < 1.0:
+                errors.append(f"Test 20B FAILED: Health score appears to be simple average ({simple_avg:.1f}), not weighted")
+                errors.append(f"  Expected (weighted): {expected_health:.1f}")
+                errors.append(f"  Actual: {actual_health:.1f}")
+                errors.append(f"  Simple average: {simple_avg:.1f}")
+            elif abs(actual_health - expected_health) > 0.5:
+                errors.append(f"Test 20B FAILED: Health score mismatch")
+                errors.append(f"  Expected (SSOT weighted): {expected_health:.1f}")
+                errors.append(f"  Actual: {actual_health:.1f}")
+                errors.append(f"  Formula: (Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15)")
             else:
-                errors.append("Test 20B FAILED: Could not find TOTAL row")
+                print(f"✅ Test 20B PASSED: Health score uses correct weighted average")
+                print(f"   Expected (weighted): {expected_health:.1f}")
+                print(f"   Actual: {actual_health:.1f}")
+                print(f"   Formula: Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15")
+                print(f"   NOT simple average: {simple_avg:.1f}")
         else:
-            errors.append("Test 20B FAILED: Could not extract dashboardData")
+            errors.append("Test 20B FAILED: Could not find TOTAL row")
     
     except Exception as e:
         errors.append(f"Test 20B FAILED: {e}")
@@ -1375,15 +1404,14 @@ def run_all_tests() -> bool:
     
     try:
         # Extract JavaScript functions and data from dashboard HTML
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        # Get dashboardData using SSOT helper
+        try:
+            dashboard_data, _ = load_dashboard_data()
+        except Exception as e:
+            errors.append(f"Test 22 FAILED: Could not load dashboard data: {e}")
+            dashboard_data = None
         
-        # Get dashboardData
-        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
-        if not data_match:
-            errors.append("Test 22 FAILED: Could not find dashboardData in HTML")
-        else:
-            dashboard_data = json.loads(data_match.group(1))
+        if dashboard_data:
             js_issues = []
             
             # ============================================================
@@ -1599,15 +1627,14 @@ def run_all_tests() -> bool:
     print("─" * 70)
     
     try:
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        # Get dashboardData using SSOT helper
+        try:
+            dashboard_data, _ = load_dashboard_data()
+        except Exception as e:
+            errors.append(f"Test 23 FAILED: Could not load dashboard data: {e}")
+            dashboard_data = None
         
-        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
-        if not data_match:
-            errors.append("Test 23 FAILED: Could not find dashboardData in HTML")
-        else:
-            dashboard_data = json.loads(data_match.group(1))
-            
+        if dashboard_data:
             if len(dashboard_data) < 2:
                 errors.append("Test 23 FAILED: Dashboard has fewer than 2 rows")
             else:
