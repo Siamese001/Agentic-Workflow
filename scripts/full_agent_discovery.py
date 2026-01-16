@@ -1457,7 +1457,7 @@ def main():
             for pattern, special_layer in SPECIAL_LAYER_MAPPINGS.items():
                 if pattern in path_str:
                     if special_layer == 'Base':
-                        special_territory = f"{layer}/Base Class"
+                        special_territory = f"{layer}/Base Agent"
                     elif special_layer in ('L1', 'L2', 'L3', 'L4', 'L5', 'L6'):
                         special_territory = f"{special_layer}/{pattern.title()}"
                     else:
@@ -1476,7 +1476,7 @@ def main():
             # L5 Safety detailed territories
             elif layer == 'L5':
                 if is_base_class:
-                    territory = "L5 Safety/Base Class"
+                    territory = "L5 Safety/Base Agent"
                 elif 'validators' in path_str or 'validator' in path_str:
                     territory = "L5 Safety/Validators"
                 elif 'red_team' in path_str or 'red_teaming' in path_str:
@@ -1488,7 +1488,7 @@ def main():
             # L4 State detailed territories
             elif layer == 'L4':
                 if is_base_class:
-                    territory = "L4 State/Base Class"
+                    territory = "L4 State/Base Agent"
                 elif 'filesystem' in path_str or 'infrastructure' in path_str:
                     territory = "L4 State/Infrastructure"
                 elif 'adapter' in path_str:
@@ -1498,7 +1498,7 @@ def main():
             # L3 Orchestration detailed territories
             elif layer == 'L3':
                 if is_base_class:
-                    territory = "L3 Orchestration/Base Class"
+                    territory = "L3 Orchestration/Base Agent"
                 elif 'infrastructure' in path_str:
                     territory = "L3 Orchestration/Infrastructure"
                 elif 'adapter' in path_str:
@@ -1508,7 +1508,7 @@ def main():
             # L2 Execution detailed territories
             elif layer == 'L2':
                 if is_base_class:
-                    territory = "L2 Execution/Base Class"
+                    territory = "L2 Execution/Base Agent"
                 elif 'adapter' in path_str:
                     territory = "L2 Execution/Specialized"
                 else:
@@ -1516,7 +1516,7 @@ def main():
             # L1 Cognition detailed territories
             elif layer == 'L1':
                 if is_base_class:
-                    territory = "L1 Cognition/Base Class"
+                    territory = "L1 Cognition/Base Agent"
                 elif 'adapter' in path_str:
                     territory = "L1 Cognition/Specialized"
                 else:
@@ -1524,7 +1524,7 @@ def main():
             # L0 Maintenance detailed territories
             elif layer == 'L0':
                 if is_base_class:
-                    territory = "L0 Maintenance/Base Class"
+                    territory = "L0 Maintenance/Base Agent"
                 elif 'infrastructure' in path_str or 'Infrastructure' in node.name:
                     territory = "L0 Maintenance/Infrastructure"
                 else:
@@ -1532,7 +1532,7 @@ def main():
             # L6 Observability detailed territories
             elif layer == 'L6':
                 if is_base_class:
-                    territory = "L6_Observability/Base Class"
+                    territory = "L6_Observability/Base Agent"
                 elif 'metrics' in path_str or 'Metric' in node.name:
                     territory = "L6_Observability/Metrics"
                 elif 'telemetry' in path_str or 'Telemetry' in node.name:
@@ -1546,6 +1546,9 @@ def main():
             # Utils and other
             elif 'utils' in path_str:
                 territory = "utils"
+            # Special case: SovereignBaseAgent (root base agent)
+            elif node.name == 'SovereignBaseAgent' or layer == 'Base':
+                territory = "Sovereign Base Agent"
             else:
                 territory = layer if layer else "Unknown"
             

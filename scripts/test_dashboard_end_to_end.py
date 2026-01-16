@@ -35,9 +35,15 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import DASHBOAR
 
 # SSOT: Import all metric definitions from single source
 from scripts.dashboard_ssot_definitions import (
+    # Field names (SSOT for agent_discovery_full.json)
     FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS, FIELD_MCP_HARDENED,
     FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
     FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
+    # Column names (SSOT for dashboard display)
+    COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
+    COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_SCHEMA,
+    COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH, COL_AVG_CC,
+    # Calculation functions (SSOT for metrics)
     calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
     calc_typed_pct, calc_documented_pct, calc_schema_strictness_pct,
     calc_canonical_inheritance_pct, calc_avg_cc, calc_complexity_health,
@@ -159,10 +165,12 @@ def test_dashboard_required_fields() -> Tuple[bool, List[str]]:
     errors = []
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
     
+    # SSOT: Use canonical column names from dashboard_ssot_definitions
     required_fields = [
-        'Territory', 'Total', 'Compliant', 'Heal Cap %', 'Heal Invocation %',
-        'Invocation %', 'Test %', 'Observable %', 'Avg CC', 'Typed %',
-        'Documented %', 'Health', 'Risk', 'Hardened %', 'Complexity Health'
+        'Territory', 'Total', COL_HEAL_CAP, COL_INVOCATION,
+        COL_TEST, COL_HARDENED, COL_AVG_CC, COL_COMPLEXITY_HEALTH,
+        COL_TYPED, COL_DOCUMENTED, COL_SCHEMA, COL_CANONICAL_INHERITANCE,
+        COL_CODE_QUALITY, COL_HEALTH
     ]
     
     try:
@@ -227,26 +235,26 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
             errors.append(f"❌ Agent count mismatch: Dashboard={dashboard_total}, Actual={actual_total}")
             return False, errors
         
-        # Check heal capability using SSOT field name
+        # SSOT: Check heal capability using canonical field and column names
         actual_healed = sum(1 for a in agents if a.get(FIELD_HAS_HEALING))
-        heal_cap = total_row['Heal Cap %']
-        heal_inv = total_row['Heal Invocation %']
-        test = total_row['Test %']
-        obs = total_row['Observable %']
-        complexity = total_row['Complexity Health']
+        heal_cap = total_row[COL_HEAL_CAP]
+        heal_inv = total_row[COL_INVOCATION]
+        test = total_row[COL_TEST]
+        complexity = total_row[COL_COMPLEXITY_HEALTH]
         # SSOT: Use dashboard_ssot_definitions health calculation
+        # Note: calc_health_score signature doesn't include 'obs' parameter
         expected_health = calc_health_score(
-            heal_cap, heal_inv, test, obs, complexity, is_l0=False
+            heal_cap, heal_inv, test, complexity, is_l0=False
         )
-        actual_heal_pct = total_row['Health']
+        actual_heal_pct = total_row[COL_HEALTH]
         
         if abs(actual_heal_pct - expected_health) > 0.5:
-            errors.append(f"❌ Heal Cap % mismatch: Dashboard={actual_heal_pct}%, Expected={expected_health}%")
+            errors.append(f"❌ {COL_HEALTH} mismatch: Dashboard={actual_heal_pct}%, Expected={expected_health}%")
             return False, errors
         
         print(f"✅ Test 5 PASSED: Dashboard data consistent with agent_discovery_full.json")
         print(f"   Total agents: {actual_total}")
-        print(f"   Heal Cap %: {actual_heal_pct}%")
+        print(f"   {COL_HEALTH}: {actual_heal_pct}%")
         return True, []
         
     except Exception as e:
@@ -794,13 +802,13 @@ def run_all_tests() -> bool:
         else:
             print(f"✅ Test 15A PASSED: All cache-busting headers present")
         
-        # Check critical JavaScript elements
+        # SSOT: Check critical JavaScript elements (note: JS uses literal strings, not Python constants)
         js_elements = [
             ('const dashboardData =', 'dashboardData declaration'),
             ('const realAgentData =', 'realAgentData declaration'),
             ('function loadData()', 'loadData function'),
-            ("row['Canonical Inheritance %']", 'Canonical Inheritance % JS reference'),
-            ('parseFloat(row[\'Canonical Inheritance %\']', 'Canonical Inheritance % parsing')
+            (f"row['{COL_CANONICAL_INHERITANCE}']", 'Canonical Inheritance % JS reference'),
+            (f"parseFloat(row['{COL_CANONICAL_INHERITANCE}']", 'Canonical Inheritance % parsing')
         ]
         
         missing_js = []
@@ -813,11 +821,11 @@ def run_all_tests() -> bool:
         else:
             print(f"✅ Test 15B PASSED: All critical JavaScript elements present")
         
-        # Verify Canonical Inheritance % is actually used in rendering
-        if "row['Canonical Inheritance %']" not in html_content:
-            errors.append("Test 15C FAILED: Canonical Inheritance % not referenced in JavaScript rendering code")
+        # SSOT: Verify Canonical Inheritance % is actually used in rendering
+        if f"row['{COL_CANONICAL_INHERITANCE}']" not in html_content:
+            errors.append(f"Test 15C FAILED: {COL_CANONICAL_INHERITANCE} not referenced in JavaScript rendering code")
         else:
-            print(f"✅ Test 15C PASSED: Canonical Inheritance % properly referenced in JS")
+            print(f"✅ Test 15C PASSED: {COL_CANONICAL_INHERITANCE} properly referenced in JS")
     
     except Exception as e:
         errors.append(f"Test 15 FAILED: Could not validate browser cache/JS: {e}")
@@ -951,8 +959,8 @@ def run_all_tests() -> bool:
             if total == 0:
                 invalid_rows.append(f"{territory}: Total=0 (empty territory)")
             
-            # Check critical fields have valid values (allow "N/A" for L0 healing metrics)
-            for field in ['Heal Cap %', 'Test %', 'Observable %', 'Health']:
+            # SSOT: Check critical fields have valid values (allow "N/A" for L0 healing metrics)
+            for field in [COL_HEAL_CAP, COL_TEST, COL_HEALTH]:
                 val = row.get(field)
                 if val is None:
                     invalid_rows.append(f"{territory}: {field}=None")
@@ -1119,14 +1127,14 @@ def run_all_tests() -> bool:
         # IMPORTANT: Use SSOT functions to match regenerate_dashboard_full.py exactly
         expected_metrics = {
             'Total': total_agents,
-            'Heal Cap %': calc_heal_cap_pct(agents),
-            'Invocation %': calc_invocation_pct(agents),
-            'Test %': calc_test_pct(agents),
-            'Hardened %': calc_hardened_pct(agents),
-            'Typed %': calc_typed_pct(agents),
-            'Documented %': calc_documented_pct(agents),
-            'Schema Strictness %': calc_schema_strictness_pct(agents),
-            'Canonical Inheritance %': calc_canonical_inheritance_pct(agents),
+            COL_HEAL_CAP: calc_heal_cap_pct(agents),
+            COL_INVOCATION: calc_invocation_pct(agents),
+            COL_TEST: calc_test_pct(agents),
+            COL_HARDENED: calc_hardened_pct(agents),
+            COL_TYPED: calc_typed_pct(agents),
+            COL_DOCUMENTED: calc_documented_pct(agents),
+            COL_SCHEMA: calc_schema_strictness_pct(agents),
+            COL_CANONICAL_INHERITANCE: calc_canonical_inheritance_pct(agents),
         }
         
         # Get dashboard TOTAL row values
@@ -1167,6 +1175,67 @@ def run_all_tests() -> bool:
     except Exception as e:
         errors.append(f"Test 20 FAILED: {e}")
     
+    # Test 20B: Health Score Weighted Average Validation (CRITICAL)
+    print("\n" + "─" * 70)
+    print("Running: Health Score Weighted Average Validation")
+    print("─" * 70)
+    
+    try:
+        # Load discovery data
+        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
+        with open(discovery_path, 'r', encoding='utf-8') as f:
+            agents = json.load(f)
+        
+        # Get dashboard TOTAL row
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        
+        if data_match:
+            dashboard_data_check = json.loads(data_match.group(1))
+            total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
+            
+            if total_row:
+                # SSOT: Calculate expected health using weighted formula
+                heal_cap = total_row.get(COL_HEAL_CAP, 0)
+                invocation = total_row.get(COL_INVOCATION, 0)
+                test = total_row.get(COL_TEST, 0)
+                complexity = total_row.get(COL_COMPLEXITY_HEALTH, 0)
+                
+                # Expected health using SSOT weighted formula
+                expected_health = calc_health_score(
+                    heal_cap, invocation, test, 50.0, complexity, is_l0=False
+                )
+                
+                actual_health = total_row.get(COL_HEALTH, 0)
+                
+                # Verify weighted average is being used (not simple average)
+                simple_avg = (heal_cap + invocation + test + 50.0 + complexity) / 5.0
+                
+                if abs(actual_health - simple_avg) < 1.0:
+                    errors.append(f"Test 20B FAILED: Health score appears to be simple average ({simple_avg:.1f}), not weighted")
+                    errors.append(f"  Expected (weighted): {expected_health:.1f}")
+                    errors.append(f"  Actual: {actual_health:.1f}")
+                    errors.append(f"  Simple average: {simple_avg:.1f}")
+                elif abs(actual_health - expected_health) > 0.5:
+                    errors.append(f"Test 20B FAILED: Health score mismatch")
+                    errors.append(f"  Expected (SSOT weighted): {expected_health:.1f}")
+                    errors.append(f"  Actual: {actual_health:.1f}")
+                    errors.append(f"  Formula: (Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15)")
+                else:
+                    print(f"✅ Test 20B PASSED: Health score uses correct weighted average")
+                    print(f"   Expected (weighted): {expected_health:.1f}")
+                    print(f"   Actual: {actual_health:.1f}")
+                    print(f"   Formula: Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15")
+                    print(f"   NOT simple average: {simple_avg:.1f}")
+            else:
+                errors.append("Test 20B FAILED: Could not find TOTAL row")
+        else:
+            errors.append("Test 20B FAILED: Could not extract dashboardData")
+    
+    except Exception as e:
+        errors.append(f"Test 20B FAILED: {e}")
+    
     # Test 21: Detailed Footnote Review (accuracy, rigor, alignment)
     print("\n" + "─" * 70)
     print("Running: Detailed Footnote Review")
@@ -1177,23 +1246,24 @@ def run_all_tests() -> bool:
         html_content = dashboard_path.read_text(encoding='utf-8')
         
         # Define expected footnote definitions with their metric alignment
+        # SSOT: Use canonical column names for footnote definitions
         footnote_definitions = {
-            'Heal Cap %': {
+            COL_HEAL_CAP: {
                 'description': 'Percentage of agents with healing capability (has heal/apply_fix/heal_violation/heal_repository method or inherits healing)',
                 'patterns': ['heal', 'HealerMixin', 'healing capability', 'repair toolkit'],
                 'required': True
             },
-            'Heal Invocation %': {
-                'description': 'Percentage of agents that call super().heal_repository() in their heal_repository method',
+            COL_INVOCATION: {
+                'description': 'Percentage of agents that invoke healing (call super().heal_repository())',
                 'patterns': ['super().heal_repository()', 'invocation', 'healing chain'],
                 'required': True
             },
-            'Test %': {
+            COL_TEST: {
                 'description': 'Percentage of agents with associated test files',
                 'patterns': ['test', 'coverage', 'regression'],
                 'required': True
             },
-            'Hardened %': {
+            COL_HARDENED: {
                 'description': 'Percentage of agents with MCPHardenedMixin for tool boundary security',
                 'patterns': ['MCP', 'hardened', 'security', 'tool boundary'],
                 'required': True
@@ -1351,9 +1421,9 @@ def run_all_tests() -> bool:
             if len(territory_rows) == 0:
                 js_issues.append("No territory rows in dashboardData - tables would be empty")
             
-            # Simulate rendering each territory row - check all required fields
-            table1_fields = ['Territory', 'Total', 'Heal Cap %', 'Invocation %', 'Hardened %', 'Test %', 'Complexity Health', 'Health']
-            table2_fields = ['Territory', 'Total', 'Typed %', 'Documented %', 'Schema Strictness %', 'Canonical Inheritance %', 'Code Quality Score']
+            # SSOT: Simulate rendering each territory row - check all required fields
+            table1_fields = ['Territory', 'Total', COL_HEAL_CAP, COL_INVOCATION, COL_HARDENED, COL_TEST, COL_COMPLEXITY_HEALTH, COL_HEALTH]
+            table2_fields = ['Territory', 'Total', COL_TYPED, COL_DOCUMENTED, COL_SCHEMA, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY]
             
             rows_with_missing_fields = []
             for row in dashboard_data:
@@ -1377,7 +1447,8 @@ def run_all_tests() -> bool:
             # ============================================================
             # PART D: Verify N/A value handling (L0 territories)
             # ============================================================
-            na_rows = [r for r in dashboard_data if r.get('Heal Cap %') == "N/A" or r.get('Invocation %') == "N/A"]
+            # SSOT: Check N/A value handling for L0 territories
+            na_rows = [r for r in dashboard_data if r.get(COL_HEAL_CAP) == "N/A" or r.get(COL_INVOCATION) == "N/A"]
             
             if na_rows:
                 # Check computeDistributionStats filters N/A
