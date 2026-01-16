@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 """
-Regenerate dashboard data files from agent_discovery_full.json
-This updates the data/dashboard_data.js file with current agent metrics.
+Regenerate Dashboard Data
+==========================
+
+Regenerates dashboard_data.js from agent_discovery_full.json
+using SSOT calculation functions.
 """
 import json
 import sys
 from pathlib import Path
 from collections import defaultdict
+
+# SSOT: Import territory ordering
+sys.path.insert(0, str(Path(__file__).parent))
+from territory_ssot_definitions import get_territory_sort_key
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -104,7 +111,7 @@ total_row = {
 
 # Build dashboard data rows in canonical order (TOTAL first, then territories)
 rows = [total_row]
-for territory in sorted(territories.keys(), key=get_sort_key):
+for territory in sorted(territories.keys(), key=get_territory_sort_key):
     ags = territories[territory]
     
     # Calculate all metrics

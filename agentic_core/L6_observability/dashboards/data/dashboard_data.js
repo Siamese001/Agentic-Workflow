@@ -179,22 +179,6 @@ window.dashboardData = [
     "Health": 75.9
   },
   {
-    "Territory": "L4 State/Infrastructure",
-    "Total": 1,
-    "Compliant": 1,
-    "Heal Cap %": 100.0,
-    "Invocation %": 100.0,
-    "Test %": 100.0,
-    "MCP Hardened %": 100.0,
-    "Complexity Health %": 40.0,
-    "Typed %": 100.0,
-    "Documented %": 100.0,
-    "Schema Strictness %": 100.0,
-    "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 100.0,
-    "Health": 81.0
-  },
-  {
     "Territory": "L4 State/Core",
     "Total": 12,
     "Compliant": 12,
@@ -209,6 +193,22 @@ window.dashboardData = [
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.1,
     "Health": 78.9
+  },
+  {
+    "Territory": "L4 State/Infrastructure",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Invocation %": 100.0,
+    "Test %": 100.0,
+    "MCP Hardened %": 100.0,
+    "Complexity Health %": 40.0,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
+    "Schema Strictness %": 100.0,
+    "Canonical Inheritance %": 100.0,
+    "Code Quality Score": 100.0,
+    "Health": 81.0
   },
   {
     "Territory": "L3 Orchestration/Base Agent",
@@ -339,22 +339,6 @@ window.dashboardData = [
     "Health": 75.0
   },
   {
-    "Territory": "Apps Rg",
-    "Total": 24,
-    "Compliant": 24,
-    "Heal Cap %": 100.0,
-    "Invocation %": 100.0,
-    "Test %": 91.7,
-    "MCP Hardened %": 100.0,
-    "Complexity Health %": 70.8,
-    "Typed %": 90.3,
-    "Documented %": 85.4,
-    "Schema Strictness %": 100.0,
-    "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 93.9,
-    "Health": 83.5
-  },
-  {
     "Territory": "Apps Lic",
     "Total": 37,
     "Compliant": 37,
@@ -369,6 +353,22 @@ window.dashboardData = [
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 96.5,
     "Health": 82.7
+  },
+  {
+    "Territory": "Apps Rg",
+    "Total": 24,
+    "Compliant": 24,
+    "Heal Cap %": 100.0,
+    "Invocation %": 100.0,
+    "Test %": 91.7,
+    "MCP Hardened %": 100.0,
+    "Complexity Health %": 70.8,
+    "Typed %": 90.3,
+    "Documented %": 85.4,
+    "Schema Strictness %": 100.0,
+    "Canonical Inheritance %": 100.0,
+    "Code Quality Score": 93.9,
+    "Health": 83.5
   },
   {
     "Territory": "Utils",
