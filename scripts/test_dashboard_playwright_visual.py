@@ -86,11 +86,47 @@ def run_playwright_visual_tests() -> Tuple[bool, List[str]]:
                 browser.close()
                 return False, errors
             
-            time.sleep(3)  # Wait for JavaScript to execute
+            time.sleep(5)  # Wait for JavaScript to execute and render
             
             # Check for JavaScript errors
             if js_errors:
                 errors.append(f"JavaScript errors detected: {js_errors}")
+                print(f"   ⚠️  JavaScript errors: {js_errors}")
+            
+            # Debug: Check if page loaded
+            print("   Checking page load status...")
+            page_title = page.title()
+            print(f"   Page title: {page_title}")
+            
+            # Check if tabs are present
+            tabs = page.locator('a.nav-tab').all()
+            print(f"   Found {len(tabs)} navigation tabs")
+            
+            if len(tabs) == 0:
+                # Check what's actually in the page
+                html_content = page.content()
+                if 'nav-tab' in html_content:
+                    print("   ⚠️  nav-tab found in HTML but not rendered by locator")
+                else:
+                    print("   ❌ nav-tab not found in HTML at all")
+                
+                # Check for console errors
+                console_logs = page.evaluate("() => { return window.__console_logs || []; }")
+                if console_logs:
+                    print(f"   Console logs: {console_logs}")
+                
+                errors.append("CRITICAL: Navigation tabs not found - page may not have loaded correctly")
+                # Take screenshot for debugging
+                page.screenshot(path=str(project_root / "dashboard_load_failure.png"))
+                print(f"   ❌ Dashboard failed to load properly - screenshot saved")
+                
+                # Try to get the actual error
+                try:
+                    error_element = page.locator('body').text_content()
+                    if error_element:
+                        print(f"   Page body text (first 200 chars): {error_element[:200]}")
+                except:
+                    pass
             
             print("\n4. Clicking Strategic Health tab...")
             try:
@@ -207,32 +243,62 @@ def run_playwright_visual_tests() -> Tuple[bool, List[str]]:
             except Exception as e:
                 errors.append(f"TEST 6 FAILED: Error checking JavaScript: {e}")
             
-            # TEST 7: Verify 100% MCP Hardening displayed in dashboard
-            print("\n12. TEST 7: Verifying 100% MCP Hardening displayed in TOTAL row...")
+            # TEST 7: Verify 100% MCP Hardening displayed in ALL territories
+            print("\n12. TEST 7: Verifying 100% MCP Hardening displayed in ALL territories...")
             try:
                 # Click back to Strategic Health tab
                 page.click('a[data-target="executive"]', timeout=5000)
                 time.sleep(1)
                 
-                # Get TOTAL row from Table 1
-                total_row = page.locator('#kpiGrid table tbody tr').first
-                total_row_text = total_row.text_content()
+                # Get all rows from Table 1
+                all_rows = page.locator('#kpiGrid table tbody tr').all()
                 
-                # Extract MCP Hardened % from TOTAL row
-                # Row format: TOTAL | Total | Compliant | Heal Cap % | Invocation % | Test % | MCP Hardened %
-                cells = total_row.locator('td').all()
-                if len(cells) >= 7:
-                    mcp_hardened_cell = cells[6]  # 7th column (0-indexed)
-                    mcp_hardened_text = mcp_hardened_cell.text_content().strip()
-                    
-                    # Should be "100.0%" or "100%"
-                    if '100' in mcp_hardened_text and '%' in mcp_hardened_text:
-                        print(f"   ✅ TEST 7 PASSED: MCP Hardening shows {mcp_hardened_text} in TOTAL row")
-                    else:
-                        errors.append(f"TEST 7 FAILED: MCP Hardening shows {mcp_hardened_text}, expected 100%")
-                        print(f"   ❌ TEST 7 FAILED: MCP Hardening is {mcp_hardened_text}, not 100%")
+                if len(all_rows) == 0:
+                    errors.append("TEST 7 FAILED: No rows found in Table 1")
                 else:
-                    errors.append(f"TEST 7 FAILED: TOTAL row has {len(cells)} cells, expected at least 7")
+                    # Check each territory for 100% MCP Hardening
+                    territories_checked = 0
+                    territories_failed = []
+                    
+                    for row in all_rows:
+                        cells = row.locator('td').all()
+                        if len(cells) >= 7:
+                            territory_name = cells[0].text_content().strip()
+                            mcp_hardened_text = cells[6].text_content().strip()  # 7th column (0-indexed)
+                            
+                            # Check if MCP Hardening is 100%
+                            if '100' not in mcp_hardened_text or '%' not in mcp_hardened_text:
+                                territories_failed.append(f"{territory_name}: {mcp_hardened_text}")
+                            
+                            territories_checked += 1
+                    
+                    if territories_failed:
+                        errors.append(f"TEST 7 FAILED: {len(territories_failed)} territories do NOT show 100% MCP Hardening:")
+                        for failure in territories_failed:
+                            errors.append(f"  - {failure}")
+                            print(f"   ❌ {failure}")
+                    else:
+                        print(f"   ✅ TEST 7 PASSED: All {territories_checked} territories show 100% MCP Hardening")
+                        
+                        # Specifically verify the two territories user mentioned
+                        l0_found = False
+                        l6_found = False
+                        for row in all_rows:
+                            cells = row.locator('td').all()
+                            if len(cells) >= 7:
+                                territory_name = cells[0].text_content().strip()
+                                if 'L0 Maintenance' in territory_name and 'Core' in territory_name:
+                                    l0_found = True
+                                    print(f"   ✅ L0 Maintenance/Core: 100% MCP Hardening verified")
+                                elif 'L6' in territory_name and 'Metrics' in territory_name:
+                                    l6_found = True
+                                    print(f"   ✅ L6_Observability/Metrics: 100% MCP Hardening verified")
+                        
+                        if not l0_found:
+                            errors.append("TEST 7 WARNING: L0 Maintenance/Core territory not found in table")
+                        if not l6_found:
+                            errors.append("TEST 7 WARNING: L6_Observability/Metrics territory not found in table")
+                            
             except Exception as e:
                 errors.append(f"TEST 7 FAILED: Error checking MCP Hardening: {e}")
             

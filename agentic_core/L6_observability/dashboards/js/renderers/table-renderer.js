@@ -244,7 +244,7 @@ function renderTerritorySummaryTable(territoryData) {
         const testStats = getStats('test');
         const complexityStats = getStats('complexityHealth');
         
-        const healthColor = getWorstCaseColor(row.Health);
+        const healthColor = getWorstCaseColor(row['Code Quality Score'] || 0);
         const rowBg = index % 2 === 0 ? '#f9fafb' : 'white';
 
         html += `
@@ -270,8 +270,8 @@ function renderTerritorySummaryTable(territoryData) {
                     <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'invocation', 'Invocation', 50)}</div>
                 </td>
 
-                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Hardened %'])}">
-                    ${formatDistributionCell(row['Hardened %'], hardenedStats)}
+                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['MCP Hardened %'])}">
+                    ${formatDistributionCell(row['MCP Hardened %'], hardenedStats)}
                     ${formatOutlierBadge(getOutliers('hardened', 50).atZero, getOutliers('hardened', 50).belowThreshold, 50)}
                     <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'hardened', 'MCP Hardened', 50)}</div>
                 </td>
@@ -282,14 +282,14 @@ function renderTerritorySummaryTable(territoryData) {
                     <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'test', 'Test Coverage', 50)}</div>
                 </td>
 
-                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Complexity Health'])}">
-                    ${formatDistributionCell(row['Complexity Health'], complexityStats)}
+                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Complexity Health %'] || 0)}">
+                    ${formatDistributionCell(row['Complexity Health %'] || 0, complexityStats)}
                     ${formatOutlierBadge(getOutliers('complexityHealth', 30).atZero, getOutliers('complexityHealth', 30).belowThreshold, 30)}
                     <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'complexityHealth', 'Complexity Health', 30)}</div>
                 </td>
 
                 <td style="padding:12px; text-align:center; font-weight:700; color:${healthColor}">
-                    ${typeof row.Health === 'number' ? row.Health.toFixed(1) : row.Health}%
+                    ${typeof row['Code Quality Score'] === 'number' ? row['Code Quality Score'].toFixed(1) : (row['Code Quality Score'] || 'N/A')}%
                 </td>
             </tr>`;
     });
@@ -521,7 +521,7 @@ function openDrillModal(territoryName) {
     
     // Helper to safely format values that might be "N/A"
     const safeFormat = (val) => val === "N/A" ? "N/A" : (typeof val === 'number' ? val.toFixed(1) + '%' : val);
-    document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Health ${safeFormat(row.Health)} • Invocation ${safeFormat(row['Invocation %'])}`;
+    document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Code Quality ${safeFormat(row['Code Quality Score'])} • Invocation ${safeFormat(row['Invocation %'])}`;
 
     // Health Metrics Section
     let content = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">';
@@ -529,10 +529,10 @@ function openDrillModal(territoryName) {
     content += '<strong style="font-size:1.1em; color:#166534;">🏥 Health Metrics</strong><ul style="margin-top:10px; list-style:none; padding:0;">';
     content += `<li style="margin:5px 0;">Healing Capability: <strong>${safeFormat(row['Heal Cap %'])}</strong></li>`;
     content += `<li style="margin:5px 0;">Healing Invocation: <strong>${safeFormat(row['Invocation %'])}</strong></li>`;
-    content += `<li style="margin:5px 0;">MCP Hardened: <strong>${safeFormat(row['Hardened %'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">MCP Hardened: <strong>${safeFormat(row['MCP Hardened %'])}</strong></li>`;
     content += `<li style="margin:5px 0;">Test Coverage: <strong>${safeFormat(row['Test %'])}</strong></li>`;
-    content += `<li style="margin:5px 0;">Complexity Health: <strong>${safeFormat(row['Complexity Health'])}</strong></li>`;
-    content += `<li style="margin:5px 0; font-weight:700; color:#166534;">Health Score: <strong>${safeFormat(row.Health)}</strong></li>`;
+    content += `<li style="margin:5px 0;">Complexity Health: <strong>${safeFormat(row['Complexity Health %'])}</strong></li>`;
+    content += `<li style="margin:5px 0; font-weight:700; color:#166534;">Code Quality Score: <strong>${safeFormat(row['Code Quality Score'])}</strong></li>`;
     content += '</ul></div>';
     
     // Code Quality Metrics Section
