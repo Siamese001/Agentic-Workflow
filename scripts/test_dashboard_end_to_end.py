@@ -88,52 +88,58 @@ def test_agent_discovery_integrity() -> Tuple[bool, List[str]]:
         return False, errors
 
 def test_dashboard_html_exists() -> Tuple[bool, List[str]]:
-    """Test 2: Verify dashboard HTML exists and is valid."""
+    """Test 2: Verify dashboard HTML and data files exist."""
     errors = []
     project_root = get_validated_project_root()
     dashboard_path = project_root / DASHBOARD_DIR / 'autonomy_dashboard.html'
+    data_path = project_root / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
     
     if not dashboard_path.exists():
         errors.append("❌ autonomy_dashboard.html not found")
         return False, errors
     
+    if not data_path.exists():
+        errors.append("❌ dashboard_data.js not found")
+        return False, errors
+    
     try:
         html = dashboard_path.read_text(encoding='utf-8')
+        data_js = data_path.read_text(encoding='utf-8')
         
         if len(html) < 1000:
             errors.append("❌ Dashboard HTML is suspiciously small")
             return False, errors
         
-        if 'dashboardData' not in html:
-            errors.append("❌ Dashboard HTML missing dashboardData variable")
+        if 'window.dashboardData' not in data_js:
+            errors.append("❌ dashboard_data.js missing window.dashboardData")
             return False, errors
         
-        print(f"✅ Test 2 PASSED: Dashboard HTML exists ({len(html)} bytes)")
+        print(f"✅ Test 2 PASSED: Dashboard HTML ({len(html)} bytes) and data file ({len(data_js)} bytes) exist")
         return True, []
         
     except Exception as e:
-        errors.append(f"❌ Failed to read dashboard HTML: {e}")
+        errors.append(f"❌ Failed to read dashboard files: {e}")
         return False, errors
 
 def test_dashboard_data_structure() -> Tuple[bool, List[str]]:
-    """Test 3: Verify dashboardData JSON structure in HTML."""
+    """Test 3: Verify dashboardData JSON structure in dashboard_data.js."""
     errors = []
-    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+    data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
     
     try:
-        html = dashboard_path.read_text(encoding='utf-8')
+        data_js = data_path.read_text(encoding='utf-8')
         
-        # Extract dashboardData JSON
-        start_marker = 'const dashboardData = ['
+        # Extract dashboardData from JS file
+        start_marker = 'window.dashboardData = ['
         end_marker = '];'
-        start_idx = html.find(start_marker)
-        end_idx = html.find(end_marker, start_idx) + len(end_marker)
+        start_idx = data_js.find(start_marker)
+        end_idx = data_js.find(end_marker, start_idx) + len(end_marker)
         
         if start_idx == -1 or end_idx == -1:
-            errors.append("❌ Could not find dashboardData in HTML")
+            errors.append("❌ Could not find window.dashboardData in dashboard_data.js")
             return False, errors
         
-        json_str = html[start_idx+len(start_marker)-1:end_idx-1]
+        json_str = data_js[start_idx+len(start_marker)-1:end_idx-1]
         territories = json.loads(json_str)
         
         if not isinstance(territories, list):
@@ -163,7 +169,7 @@ def test_dashboard_data_structure() -> Tuple[bool, List[str]]:
 def test_dashboard_required_fields() -> Tuple[bool, List[str]]:
     """Test 4: Verify all required fields exist in dashboardData."""
     errors = []
-    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+    data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
     
     # SSOT: Use canonical column names from dashboard_ssot_definitions
     required_fields = [
@@ -174,12 +180,12 @@ def test_dashboard_required_fields() -> Tuple[bool, List[str]]:
     ]
     
     try:
-        html = dashboard_path.read_text(encoding='utf-8')
-        start_marker = 'const dashboardData = ['
+        data_js = data_path.read_text(encoding='utf-8')
+        start_marker = 'window.dashboardData = ['
         end_marker = '];'
-        start_idx = html.find(start_marker)
-        end_idx = html.find(end_marker, start_idx) + len(end_marker)
-        json_str = html[start_idx+len(start_marker)-1:end_idx-1]
+        start_idx = data_js.find(start_marker)
+        end_idx = data_js.find(end_marker, start_idx) + len(end_marker)
+        json_str = data_js[start_idx+len(start_marker)-1:end_idx-1]
         territories = json.loads(json_str)
         
         # Check TOTAL row has all fields
@@ -216,14 +222,14 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
         with open(discovery_path, 'r', encoding='utf-8') as f:
             agents = json.load(f)
         
-        # Load dashboard data
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html = dashboard_path.read_text(encoding='utf-8')
-        start_marker = 'const dashboardData = ['
+        # Load dashboard data from JS file
+        data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+        data_js = data_path.read_text(encoding='utf-8')
+        start_marker = 'window.dashboardData = ['
         end_marker = '];'
-        start_idx = html.find(start_marker)
-        end_idx = html.find(end_marker, start_idx) + len(end_marker)
-        json_str = html[start_idx+len(start_marker)-1:end_idx-1]
+        start_idx = data_js.find(start_marker)
+        end_idx = data_js.find(end_marker, start_idx) + len(end_marker)
+        json_str = data_js[start_idx+len(start_marker)-1:end_idx-1]
         territories = json.loads(json_str)
         
         total_row = next((t for t in territories if t.get('Territory') == 'TOTAL'), None)
@@ -264,7 +270,7 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
 def test_table_rendering_elements() -> Tuple[bool, List[str]]:
     """Test 6: Verify HTML has table rendering functions."""
     errors = []
-    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / 'autonomy_dashboard.html'
     
     required_functions = [
         'renderTerritorySummaryTable',
@@ -335,17 +341,17 @@ def run_all_tests() -> bool:
     print("Running: Drill-Down Agent Data Integrity")
     print("─" * 70)
     
-    # Extract realAgentData from HTML
+    # Extract realAgentData from dashboard_data.js
     import re
     import json
-    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-    html_content = dashboard_path.read_text(encoding='utf-8')
-    agent_data_pattern = r'const realAgentData = (\{.*?\});'
-    match = re.search(agent_data_pattern, html_content, re.DOTALL)
+    data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+    data_js = data_path.read_text(encoding='utf-8')
+    agent_data_pattern = r'window\.realAgentData = (\{.*?\});'
+    match = re.search(agent_data_pattern, data_js, re.DOTALL)
     
     errors = []
     if not match:
-        errors.append("Test 7 FAILED: realAgentData not found in dashboard HTML")
+        errors.append("Test 7 FAILED: window.realAgentData not found in dashboard_data.js")
     else:
         try:
             agent_data_json = match.group(1)
@@ -574,13 +580,13 @@ def run_all_tests() -> bool:
     
     try:
         # Re-extract dashboard data for this test
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+        data_js = data_path.read_text(encoding='utf-8')
         
         # Extract dashboardData
-        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        data_match = re.search(r'window\.dashboardData = (\[.*?\]);', data_js, re.DOTALL)
         if not data_match:
-            errors.append("Test 12 FAILED: Could not extract dashboardData from HTML")
+            errors.append("Test 12 FAILED: Could not extract window.dashboardData from dashboard_data.js")
         else:
             dashboard_data_test = json.loads(data_match.group(1))
             
@@ -635,9 +641,9 @@ def run_all_tests() -> bool:
     
     try:
         # Re-extract dashboard data
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
-        data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
+        data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+        data_js = data_path.read_text(encoding='utf-8')
+        data_match = re.search(r'window\.dashboardData = (\[.*?\]);', data_js, re.DOTALL)
         
         if data_match:
             dashboard_data_test = json.loads(data_match.group(1))
