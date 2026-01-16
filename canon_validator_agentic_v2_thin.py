@@ -64,15 +64,62 @@ import json as _json
 
 RUNTIME_STATE_FILE = "runtime_state.json"
 _runtime_state = {
-    "status": "idle",
+    "status": "idle",  # idle | running | completed | error
     "start_time": None,
+    "end_time": None,
     "current_agent": None,
     "current_layer": None,
     "agents_order": [],
     "total_agents": 0,
     "completed_agents": [],
     "events": [],
-    "meta_learning": {"gemini_active": False, "note": ""}
+    
+    # Meta-Learning Metrics (Phase 1.1)
+    "meta_learning": {
+        "enabled": False,
+        "total_experiences": 0,
+        "patterns_extracted": 0,
+        "strategy_weights": {
+            "cot": 1.0,
+            "tot": 1.0,
+            "react": 1.0,
+            "reflection": 1.0
+        },
+        "recent_experiences": [],  # Last 10 experiences
+        "pattern_history": []  # Pattern extraction timeline
+    },
+    
+    # Redis Metrics (Phase 1.1)
+    "redis": {
+        "connected": False,
+        "operations": {
+            "get": 0,
+            "set": 0,
+            "delete": 0,
+            "total": 0
+        },
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "hit_rate": 0.0,
+        "recent_operations": []  # Last 20 operations
+    },
+    
+    # Pinecone Metrics (Phase 1.1)
+    "pinecone": {
+        "connected": False,
+        "operations": {
+            "upsert": 0,
+            "query": 0,
+            "delete": 0,
+            "total": 0
+        },
+        "vectors_stored": 0,
+        "avg_similarity": 0.0,
+        "recent_queries": []  # Last 10 queries with results
+    },
+    
+    # Agent Execution Timeline (Phase 1.1)
+    "execution_timeline": []  # [{agent, layer, start, end, duration, success}]
 }
 
 def _save_runtime_state(project_root_path: Path):
@@ -89,6 +136,93 @@ def _add_event(event_type: str, message: str):
         "time": datetime.now().isoformat(),
         "type": event_type,
         "message": message
+    })
+
+def _update_meta_learning_state(experience_data: dict):
+    """Update runtime state with new meta-learning experience."""
+    ml = _runtime_state["meta_learning"]
+    ml["enabled"] = True
+    ml["total_experiences"] = experience_data.get("total_experiences", ml["total_experiences"])
+    ml["patterns_extracted"] = experience_data.get("patterns_extracted", ml["patterns_extracted"])
+    
+    if "strategy_weights" in experience_data:
+        ml["strategy_weights"] = experience_data["strategy_weights"]
+    
+    if "experience" in experience_data:
+        ml["recent_experiences"].insert(0, experience_data["experience"])
+        ml["recent_experiences"] = ml["recent_experiences"][:10]  # Keep last 10
+    
+    if "pattern" in experience_data:
+        ml["pattern_history"].append({
+            "pattern": experience_data["pattern"],
+            "timestamp": datetime.now().isoformat()
+        })
+
+def _update_redis_state(operation: str, key: str, hit: bool = None):
+    """Update runtime state with Redis operation."""
+    redis = _runtime_state["redis"]
+    redis["connected"] = True
+    
+    if operation in redis["operations"]:
+        redis["operations"][operation] += 1
+    redis["operations"]["total"] += 1
+    
+    if hit is not None:
+        if hit:
+            redis["cache_hits"] += 1
+        else:
+            redis["cache_misses"] += 1
+        
+        total = redis["cache_hits"] + redis["cache_misses"]
+        redis["hit_rate"] = redis["cache_hits"] / total if total > 0 else 0.0
+    
+    redis["recent_operations"].insert(0, {
+        "operation": operation,
+        "key": key,
+        "hit": hit,
+        "timestamp": datetime.now().isoformat()
+    })
+    redis["recent_operations"] = redis["recent_operations"][:20]  # Keep last 20
+
+def _update_pinecone_state(operation: str, metadata: dict = None):
+    """Update runtime state with Pinecone operation."""
+    pc = _runtime_state["pinecone"]
+    pc["connected"] = True
+    
+    if operation in pc["operations"]:
+        pc["operations"][operation] += 1
+    pc["operations"]["total"] += 1
+    
+    if metadata:
+        if "vectors_count" in metadata:
+            pc["vectors_stored"] += metadata["vectors_count"]
+        
+        if "similarity" in metadata:
+            # Running average of similarity scores
+            total_queries = pc["operations"]["query"]
+            if total_queries > 0:
+                pc["avg_similarity"] = (
+                    (pc["avg_similarity"] * (total_queries - 1) + metadata["similarity"]) / total_queries
+                )
+        
+        if operation == "query":
+            pc["recent_queries"].insert(0, {
+                "results": metadata.get("results", []),
+                "top_k": metadata.get("top_k", 0),
+                "avg_score": metadata.get("similarity", 0),
+                "timestamp": datetime.now().isoformat()
+            })
+            pc["recent_queries"] = pc["recent_queries"][:10]  # Keep last 10
+
+def _update_agent_execution(agent_name: str, layer: str, start_time: float, end_time: float, success: bool):
+    """Update execution timeline with agent completion."""
+    _runtime_state["execution_timeline"].append({
+        "agent": agent_name,
+        "layer": layer,
+        "start": start_time,
+        "end": end_time,
+        "duration": end_time - start_time,
+        "success": success
     })
 
 # Agent layer mapping for UI display
