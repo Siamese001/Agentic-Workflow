@@ -2,8 +2,8 @@
  * Statistical Analysis Utilities
  */
 
-// SSOT: Import constants from centralized configuration
-import { THRESHOLDS } from '../constants/dashboard-constants.js';
+// SSOT: Constants loaded from dashboard-constants.js via window globals
+// Access via: window.THRESHOLDS
 
 function computeDistributionStats(values) {
     // Filter out N/A and non-numbers

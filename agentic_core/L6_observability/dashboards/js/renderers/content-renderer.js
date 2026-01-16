@@ -3,8 +3,8 @@
  * Renders strategic observations, recommendations, interview questions, and alerts
  */
 
-// SSOT: Import constants from centralized configuration
-import { COLUMNS } from '../constants/dashboard-constants.js';
+// SSOT: Constants loaded from dashboard-constants.js via window globals
+// Access via: window.COLUMNS
 
 function renderStrategicObservations() {
     const macroContainer = document.getElementById('macroObservations');
