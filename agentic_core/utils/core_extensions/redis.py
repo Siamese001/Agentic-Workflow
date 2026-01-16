@@ -6,14 +6,19 @@ Routes all Redis operations through controlled plane with:
 - Audit logging
 - Connection pooling with fallback
 - Error handling with local cache fallback
+- Telemetry callbacks for dashboard observability (Phase 1.3)
 """
 import logging
 import os
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any, Callable, Dict, List, Optional
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
+# Type alias for telemetry callback
+TelemetryCallback = Callable[[str, Dict[str, Any]], None]
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -38,12 +43,14 @@ Logger = logging.getLogger(__name__)
 class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
     """Sovereign Redis client - audit + safe exec for all cache operations."""
     
-    def __init__(self, url: Optional[str] = None):
+    def __init__(self, url: Optional[str] = None, telemetry_callback: Optional[TelemetryCallback] = None):
         """
         Initialize Redis client.
         
         Args:
             url: Redis URL (defaults to env var or localhost)
+            telemetry_callback: Optional callback for dashboard telemetry.
+                               Signature: callback(event_type: str, data: dict) -> None
         """
         super().__init__()
         self.redis_url = url or os.getenv('REDIS_URL', 'redis://localhost:6379')
@@ -52,7 +59,14 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
         self._fallback_cache: OrderedDict = OrderedDict()
         self._max_fallback_size = 1000
         self._use_fallback = False
-        self._mcp_audit('init')
+        
+        # Telemetry for dashboard observability (Phase 1.3)
+        self.telemetry_callback = telemetry_callback
+        self.operation_stats = {
+            'get': 0, 'set': 0, 'delete': 0,
+            'hits': 0, 'misses': 0, 'total': 0
+        }
+        self.recent_operations: List[Dict[str, Any]] = []
     
     def _get_client(self):
         """Lazy-load Redis client with fallback."""
@@ -145,6 +159,23 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
                 client.set(key, value)
         else:
             self._fallback_set(key, value)
+        
+        # Track for telemetry
+        self.operation_stats['set'] += 1
+        self.operation_stats['total'] += 1
+        
+        op_record = {
+            'operation': 'set',
+            'key': key[:50] if key else '',
+            'hit': None,  # SET doesn't have hit/miss
+            'timestamp': datetime.now().isoformat()
+        }
+        self.recent_operations.insert(0, op_record)
+        self.recent_operations = self.recent_operations[:20]
+        
+        if self.telemetry_callback:
+            self.telemetry_callback('redis_set', op_record)
+        
         return {'success': True}
     
     def _handle_get(self, key: str, **kwargs) -> Dict[str, Any]:
@@ -154,6 +185,30 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
             value = client.get(key)
         else:
             value = self._fallback_cache.get(key)
+        
+        # Track hit/miss for telemetry
+        hit = value is not None
+        self.operation_stats['get'] += 1
+        self.operation_stats['total'] += 1
+        if hit:
+            self.operation_stats['hits'] += 1
+        else:
+            self.operation_stats['misses'] += 1
+        
+        # Add to recent operations
+        op_record = {
+            'operation': 'get',
+            'key': key[:50] if key else '',
+            'hit': hit,
+            'timestamp': datetime.now().isoformat()
+        }
+        self.recent_operations.insert(0, op_record)
+        self.recent_operations = self.recent_operations[:20]  # Keep last 20
+        
+        # Telemetry callback
+        if self.telemetry_callback:
+            self.telemetry_callback('redis_get', op_record)
+        
         return {'success': True, 'value': value}
     
     def _handle_delete(self, key: str, **kwargs) -> Dict[str, Any]:
@@ -165,6 +220,23 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
             deleted = 1 if key in self._fallback_cache else 0
             if key in self._fallback_cache:
                 del self._fallback_cache[key]
+        
+        # Track for telemetry
+        self.operation_stats['delete'] += 1
+        self.operation_stats['total'] += 1
+        
+        op_record = {
+            'operation': 'delete',
+            'key': key[:50] if key else '',
+            'hit': None,
+            'timestamp': datetime.now().isoformat()
+        }
+        self.recent_operations.insert(0, op_record)
+        self.recent_operations = self.recent_operations[:20]
+        
+        if self.telemetry_callback:
+            self.telemetry_callback('redis_delete', op_record)
+        
         return {'success': True, 'deleted': deleted}
     
     def _handle_exists(self, key: str, **kwargs) -> Dict[str, Any]:
@@ -199,6 +271,25 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
         if client:
             client.ping()
         return {'success': True, 'pong': True, 'fallback': self._use_fallback}
+
+    def get_statistics(self) -> Dict[str, Any]:
+        """Get Redis operation statistics for dashboard observability."""
+        total_ops = self.operation_stats['hits'] + self.operation_stats['misses']
+        hit_rate = self.operation_stats['hits'] / total_ops if total_ops > 0 else 0.0
+        
+        return {
+            'connected': not self._use_fallback,
+            'operations': {
+                'get': self.operation_stats['get'],
+                'set': self.operation_stats['set'],
+                'delete': self.operation_stats['delete'],
+                'total': self.operation_stats['total']
+            },
+            'cache_hits': self.operation_stats['hits'],
+            'cache_misses': self.operation_stats['misses'],
+            'hit_rate': hit_rate,
+            'recent_operations': self.recent_operations[:20]
+        }
 
 def _run_self_tests(self) -> dict:
         """Run internal self-tests."""

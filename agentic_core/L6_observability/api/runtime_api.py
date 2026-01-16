@@ -1,11 +1,13 @@
 """
 Runtime API: Backend service for real-time system monitoring and dashboard data.
-Created: 2026-01-13 | Version: 1.0.0
+Created: 2026-01-13 | Version: 2.0.0 (Phase 2 - Enhanced Telemetry)
 """
 
 from __future__ import annotations
 
+import json
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException
@@ -13,19 +15,27 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
+from agentic_core.utils.core_extensions.redis import SovereignRedisClient
+from agentic_core.L4_state.pinecone_telemetry import PineconeTelemetryWrapper
 
-app = FastAPI(title="Agentic AI Runtime API")
+app = FastAPI(title="Agentic AI Runtime API", version="2.0.0")
 
 # Allow dashboard usage from file:// (origin "null") and localhost.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=False,
-    allow_methods=["*"] ,
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Runtime state file path
+RUNTIME_STATE_FILE = Path("runtime_state.json")
+
+# Initialize telemetry-enabled clients
 meta_agent = MetaLearningAgent()
+redis_client = SovereignRedisClient()
+pinecone_wrapper = PineconeTelemetryWrapper()
 
 # Simple in-memory log buffer for the Live Runtime tab.
 _LOG_BUFFER: List[str] = []
@@ -94,3 +104,57 @@ async def get_api_latency() -> Dict[str, Any]:
         "gemini_embeddings": 128.2,
         "redis_lookup": 1.4,
     }
+
+
+# ============================================================================
+# Phase 2 Endpoints - Enhanced Telemetry for Dashboard Live Runtime
+# ============================================================================
+
+@app.get("/api/runtime/state")
+async def get_runtime_state() -> Dict[str, Any]:
+    """Get current runtime state from runtime_state.json."""
+    try:
+        if RUNTIME_STATE_FILE.exists():
+            return json.loads(RUNTIME_STATE_FILE.read_text(encoding='utf-8'))
+        return {"status": "idle", "message": "No runtime state file found"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/redis/stats")
+async def get_redis_stats() -> Dict[str, Any]:
+    """Get Redis operation statistics."""
+    try:
+        return redis_client.get_statistics()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/pinecone/stats")
+async def get_pinecone_stats() -> Dict[str, Any]:
+    """Get Pinecone operation statistics."""
+    try:
+        return pinecone_wrapper.get_statistics()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/execution/timeline")
+async def get_execution_timeline() -> List[Dict[str, Any]]:
+    """Get agent execution timeline from runtime_state.json."""
+    try:
+        if RUNTIME_STATE_FILE.exists():
+            state = json.loads(RUNTIME_STATE_FILE.read_text(encoding='utf-8'))
+            return state.get('execution_timeline', [])
+        return []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/meta-learning/statistics")
+async def get_meta_learning_statistics() -> Dict[str, Any]:
+    """Get detailed meta-learning statistics including recent experiences."""
+    try:
+        return meta_agent.get_live_statistics()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

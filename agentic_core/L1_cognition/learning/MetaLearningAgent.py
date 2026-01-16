@@ -1,15 +1,18 @@
 """
 MetaLearningAgent: Core adaptive learning agent for strategy weighting and experience replay.
-Restored: 2026-01-13 | Version: 2.0.0 (Modernized)
+Restored: 2026-01-13 | Version: 2.1.0 (With Telemetry)
 """
 
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.common.healing.healer_mixin import HealerMixin
+
+# Type alias for telemetry callback
+TelemetryCallback = Callable[[str, Dict[str, Any]], None]
 
 @dataclass
 class Experience:
@@ -24,10 +27,18 @@ class MetaLearningAgent(MCPHardenedMixin, HealerMixin):
     """
     Learns success/failure patterns across execution cycles to optimize 
     thinking strategy selection.
+    
+    Supports telemetry callbacks for dashboard observability.
     """
     
-    def __init__(self, replay_capacity: int = 1000) -> None:
-        """Initialize the instance."""
+    def __init__(self, replay_capacity: int = 1000, telemetry_callback: Optional[TelemetryCallback] = None) -> None:
+        """Initialize the instance.
+        
+        Args:
+            replay_capacity: Maximum number of experiences to store in replay buffer.
+            telemetry_callback: Optional callback function for dashboard telemetry.
+                               Signature: callback(event_type: str, data: dict) -> None
+        """
         self.logger = logging.getLogger(self.__class__.__name__)
         self.replay_buffer: List[Experience] = []
         self.replay_capacity = replay_capacity
@@ -40,6 +51,9 @@ class MetaLearningAgent(MCPHardenedMixin, HealerMixin):
         self.total_experiences = 0
         self.total_replays = 0
         self.patterns_extracted = 0
+        
+        # Telemetry callback for dashboard observability (Phase 1.2)
+        self.telemetry_callback = telemetry_callback
         
         # Initialize Mixins
         super().__init__()
@@ -54,7 +68,24 @@ class MetaLearningAgent(MCPHardenedMixin, HealerMixin):
             
         self.replay_buffer.append(exp)
         self.total_experiences += 1
-        return f"exp_{self.total_experiences}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        exp_id = f"exp_{self.total_experiences}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        # Telemetry hook for dashboard observability
+        if self.telemetry_callback:
+            self.telemetry_callback('experience_stored', {
+                'experience_id': exp_id,
+                'thought_type': thought_type,
+                'reward': reward,
+                'buffer_size': len(self.replay_buffer),
+                'total_experiences': self.total_experiences,
+                'experience': {
+                    'thought_type': thought_type,
+                    'reward': reward,
+                    'timestamp': exp.timestamp.isoformat()
+                }
+            })
+        
+        return exp_id
 
     def update_strategy_weights(self) -> Dict[str, float]:
         """
@@ -92,11 +123,42 @@ class MetaLearningAgent(MCPHardenedMixin, HealerMixin):
     def extract_patterns(self) -> List[Dict[str, Any]]:
         """Identifies success/failure patterns from clustered experiences."""
         self.patterns_extracted += 1
-        return [{"type": "high_reward_cot", "threshold": 0.8}]
+        patterns = [{"type": "high_reward_cot", "threshold": 0.8}]
+        
+        # Telemetry hook for dashboard observability
+        if self.telemetry_callback:
+            self.telemetry_callback('patterns_extracted', {
+                'patterns': patterns,
+                'total_patterns': self.patterns_extracted
+            })
+        
+        return patterns
 
     def get_strategy_recommendation(self, context: Dict[str, Any]) -> str:
         """Returns the highest-weighted strategy for a given context."""
         return max(self.strategy_weights, key=self.strategy_weights.get)
+
+    def get_live_statistics(self) -> Dict[str, Any]:
+        """Get current meta-learning statistics for dashboard observability."""
+        return {
+            'total_experiences': self.total_experiences,
+            'buffer_size': len(self.replay_buffer),
+            'buffer_capacity': self.replay_capacity,
+            'patterns_extracted': self.patterns_extracted,
+            'strategy_weights': self.strategy_weights.copy(),
+            'recent_experiences': [
+                {
+                    'thought_type': exp.thought_type,
+                    'reward': exp.reward,
+                    'timestamp': exp.timestamp.isoformat()
+                }
+                for exp in self.replay_buffer[-10:]
+            ]
+        }
+
+    def get_statistics(self) -> Dict[str, Any]:
+        """Legacy method for backward compatibility."""
+        return self.get_live_statistics()
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
