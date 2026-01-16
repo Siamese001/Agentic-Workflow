@@ -117,12 +117,14 @@ def validate_calculation_integrity():
     print("TEST 3: Calculation Integrity Validation")
     print("="*70)
     
-    # Import SSOT calculation functions
+    # Import SSOT calculation functions and column names
     sys.path.insert(0, str(project_root / "scripts"))
     from dashboard_ssot_definitions import (
         calc_heal_cap_pct, calc_invocation_pct, calc_test_pct,
         calc_hardened_pct, calc_avg_cc, calc_complexity_health,
-        calc_typed_pct, calc_documented_pct
+        calc_typed_pct, calc_documented_pct, calc_canonical_inheritance_pct,
+        COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
+        COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_CANONICAL_INHERITANCE
     )
     
     # Load source data
