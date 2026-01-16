@@ -2275,23 +2275,62 @@ if __name__ == "__main__":
     parser.add_argument("--auto", action="store_true", help="Auto-regenerate if stale")
     args = parser.parse_args()
     
+    # MANDATORY: Display cache-busting instructions at start
+    print("\n" + "=" * 70)
+    print("⚠️  CRITICAL: DASHBOARD SERVER & CACHE MANAGEMENT")
+    print("=" * 70)
+    print("\n📋 BEFORE RUNNING TESTS, ENSURE:")
+    print("   1. Stop any running dashboard server (Ctrl+C in terminal)")
+    print("   2. Restart server with:")
+    print("      python -m http.server 8765 --directory agentic_core/L6_observability/dashboards")
+    print("   3. Clear browser cache:")
+    print("      • Hard refresh: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)")
+    print("      • OR use Incognito/Private browsing mode")
+    print("      • OR clear browser cache completely in settings")
+    print("\n⚠️  JavaScript files are cached aggressively by browsers!")
+    print("   Without cache clearing, you will see OLD versions of the dashboard.")
+    print("=" * 70)
+    
+    # Prompt user to confirm
+    try:
+        response = input("\n✅ Have you restarted the server and cleared browser cache? (yes/no): ").strip().lower()
+        if response not in ['yes', 'y']:
+            print("\n⚠️  Please restart server and clear cache before running tests.")
+            print("   Tests may fail or show incorrect results without fresh cache.")
+            sys.exit(1)
+    except (KeyboardInterrupt, EOFError):
+        print("\n\n⚠️  Test aborted. Please restart server and clear cache.")
+        sys.exit(1)
+    
     # Handle regeneration modes
     if args.regenerate:
-        print("🔄 Force regeneration requested...")
+        print("\n🔄 Force regeneration requested...")
         if not full_regeneration_pipeline():
             print("❌ Regeneration failed - aborting tests")
             sys.exit(1)
     elif args.auto:
         is_stale, reason = check_if_stale()
         if is_stale:
-            print(f"🔄 Dashboard is stale: {reason}")
+            print(f"\n🔄 Dashboard is stale: {reason}")
             print("   Auto-regenerating...")
             if not full_regeneration_pipeline():
                 print("❌ Regeneration failed - aborting tests")
                 sys.exit(1)
         else:
-            print(f"✅ Dashboard is current: {reason}")
+            print(f"\n✅ Dashboard is current: {reason}")
     
     # Run validation tests
     success = run_all_tests()
+    
+    # Final reminder
+    if not success:
+        print("\n" + "=" * 70)
+        print("⚠️  TESTS FAILED - CACHE-BUSTING REMINDER")
+        print("=" * 70)
+        print("If tests show 'stale JS files' or unexpected failures:")
+        print("1. Restart dashboard server")
+        print("2. Clear browser cache completely")
+        print("3. Re-run tests")
+        print("=" * 70)
+    
     sys.exit(0 if success else 1)

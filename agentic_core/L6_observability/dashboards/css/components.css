@@ -1,5 +1,40 @@
 /* Component Styles */
 
+/* Scrollbar Styling for Logs */
+#eventLog::-webkit-scrollbar,
+#liveLog::-webkit-scrollbar {
+    width: 12px;
+}
+
+#eventLog::-webkit-scrollbar-track {
+    background: #1f2937;
+    border-radius: 4px;
+}
+
+#eventLog::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+}
+
+#eventLog::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+#liveLog::-webkit-scrollbar-track {
+    background: #000;
+    border-radius: 4px;
+}
+
+#liveLog::-webkit-scrollbar-thumb {
+    background: #0f0;
+    border-radius: 4px;
+}
+
+#liveLog::-webkit-scrollbar-thumb:hover {
+    background: #0f0;
+    opacity: 0.8;
+}
+
 /* Trend Indicators */
 .trend-up { color: #16a34a; font-weight: 600; }
 .trend-down { color: #dc2626; font-weight: 600; }

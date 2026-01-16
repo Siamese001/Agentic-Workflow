@@ -9,7 +9,7 @@
   "completed_agents": [],
   "events": [
     {
-      "time": "2026-01-16T07:08:03.192188",
+      "time": "2026-01-16T08:05:23.956307",
       "type": "test",
       "message": "Test event message"
     }
@@ -48,7 +48,7 @@
         "operation": "get",
         "key": "test_key",
         "hit": true,
-        "timestamp": "2026-01-16T07:08:03.192188"
+        "timestamp": "2026-01-16T08:05:23.956307"
       }
     ]
   },
@@ -67,7 +67,7 @@
         "results": [],
         "top_k": 5,
         "avg_score": 0.95,
-        "timestamp": "2026-01-16T07:08:03.192188"
+        "timestamp": "2026-01-16T08:05:23.956307"
       }
     ]
   },
@@ -75,8 +75,8 @@
     {
       "agent": "TestAgent",
       "layer": "L5",
-      "start": 1768565282.1921883,
-      "end": 1768565283.1921883,
+      "start": 1768568722.956308,
+      "end": 1768568723.956308,
       "duration": 1.0,
       "success": true
     }

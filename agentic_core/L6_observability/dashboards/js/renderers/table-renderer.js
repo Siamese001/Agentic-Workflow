@@ -194,15 +194,15 @@ function renderTerritorySummaryTable(territoryData) {
     
     if (state.sortByOutliers) {
         filteredData.sort((a, b) => {
-            if (a.Territory === 'TOTAL') return 1;
-            if (b.Territory === 'TOTAL') return -1;
+            if (a.Territory === 'TOTAL') return -1;
+            if (b.Territory === 'TOTAL') return 1;
             return getTerritoryOutlierCount(b.Territory) - getTerritoryOutlierCount(a.Territory);
         });
     } else {
-        // Keep TOTAL at end, preserve original order from dashboardData
+        // Keep TOTAL at top, preserve original order from dashboardData
         filteredData.sort((a, b) => {
-            if (a.Territory === 'TOTAL') return 1;
-            if (b.Territory === 'TOTAL') return -1;
+            if (a.Territory === 'TOTAL') return -1;
+            if (b.Territory === 'TOTAL') return 1;
             return (orderMap[a.Territory] || 0) - (orderMap[b.Territory] || 0);
         });
     }
@@ -377,6 +377,18 @@ function renderCodeQualityTable(data) {
                 </thead>
                 <tbody>`;
     
+    // Add TOTAL row first
+    html += `
+            <tr style="background: #f8fafc; border-bottom: 3px solid #94a3b8; font-weight: 700; font-size: 1.05em;">
+                <td style="padding: 12px 8px; position: sticky; left: 0; background: #f8fafc; z-index: 5;">TOTAL</td>
+                <td style="padding: 12px 8px; text-align: center;">${totalRow.Total || 0}</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Typed %'])};">${totalRow['Typed %'].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Documented %'])};">${totalRow['Documented %'].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Schema Strictness %'])};">${totalRow['Schema Strictness %'].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Canonical Inheritance %'])};">${totalRow['Canonical Inheritance %'].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Code Quality Score'])}; font-size: 1.2em;">${totalRow['Code Quality Score'].toFixed(1)}</td>
+            </tr>`;
+    
     // Render each territory row
     territoryData.forEach(row => {
         const territory = row.Territory;
@@ -415,17 +427,7 @@ function renderCodeQualityTable(data) {
             </tr>`;
     });
     
-    // Add TOTAL row
     html += `
-            <tr style="background: #f8fafc; border-top: 3px solid #94a3b8; font-weight: 700; font-size: 1.05em;">
-                <td style="padding: 12px 8px; position: sticky; left: 0; background: #f8fafc; z-index: 5;">TOTAL</td>
-                <td style="padding: 12px 8px; text-align: center;">${totalRow.Total || 0}</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Typed %'])};">${totalRow['Typed %'].toFixed(1)}%</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Documented %'])};">${totalRow['Documented %'].toFixed(1)}%</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Schema Strictness %'])};">${totalRow['Schema Strictness %'].toFixed(1)}%</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Canonical Inheritance %'])};">${totalRow['Canonical Inheritance %'].toFixed(1)}%</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Code Quality Score'])}; font-size: 1.2em;">${totalRow['Code Quality Score'].toFixed(1)}</td>
-            </tr>
         </tbody>
     </table>
     </div>
