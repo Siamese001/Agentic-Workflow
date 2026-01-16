@@ -19,10 +19,11 @@ from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0Mainten
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
-class GuardianOrchestratorAgent(L0MaintenanceBaseAgent, AutonomyMixin,
+class GuardianOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """

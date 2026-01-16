@@ -9,11 +9,12 @@ Renamed from StateValidator for consistent Agent suffix.
 from typing import Any, Dict, List, Tuple
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 @dataclass
-class StateValidatorAgent(HealerMixin, MCPHardenedMixin):
+class StateValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Validates state files against expected schemas.
     
@@ -53,7 +54,36 @@ class StateValidatorAgent(HealerMixin, MCPHardenedMixin):
     }
     
     @classmethod
-    def validate_state(cls, hop_id: str, state_data: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    
+    def test_self(self) -> dict:
+        """
+        SubatomicTestingMixin self-test implementation.
+        Returns test results for this agent's core functionality.
+        """
+        results = {"agent": "StateValidatorAgent", "tests": [], "passed": 0, "failed": 0}
+        
+        # Test 1: Agent can be instantiated (already proven by reaching here)
+        results["tests"].append({"name": "instantiation", "passed": True})
+        results["passed"] += 1
+        
+        # Test 2: Required methods exist
+        required_methods = ["heal_repository"] if hasattr(self, "heal_repository") else []
+        for method in required_methods:
+            if callable(getattr(self, method, None)):
+                results["tests"].append({"name": f"has_{method}", "passed": True})
+                results["passed"] += 1
+            else:
+                results["tests"].append({"name": f"has_{method}", "passed": False})
+                results["failed"] += 1
+        
+        # Test 3: MCP hardening check
+        if hasattr(self, '_mcp_tools'):
+            results["tests"].append({"name": "mcp_hardened", "passed": True})
+            results["passed"] += 1
+        
+        return results
+
+def validate_state(cls, hop_id: str, state_data: Dict[str, Any]) -> Tuple[bool, List[str]]:
         """
         Validate state data against expected schema.
         

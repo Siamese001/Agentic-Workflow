@@ -24,12 +24,13 @@ from typing import Any, Dict, List, Optional
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 log = logging.getLogger(__name__)
 
 
 @dataclass
-class StrategicRecommendationAgent(MCPHardenedMixin, HealerMixin):
+class StrategicRecommendationAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
     

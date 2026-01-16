@@ -16,10 +16,11 @@ from typing import Dict, List, Set, Any
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.config.blueprint_sovereign.structure_blueprint import STRUCTURE_BLUEPRINT
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
-class GospelSyncAgent(L0MaintenanceBaseAgent):
+class GospelSyncAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     """
     THE SSOT GUARDIAN
     Ensures the 'World as it Is' (Filesystem) matches the 'World as it Should Be' (Blueprint).

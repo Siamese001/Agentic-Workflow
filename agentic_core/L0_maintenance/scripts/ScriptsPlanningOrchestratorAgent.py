@@ -12,6 +12,7 @@ from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 Logger: Any = logging.getLogger(__name__)
 
 class ScriptExecutionPriority(Enum):
@@ -54,7 +55,7 @@ class ScriptsPlanningResult:
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-class ScriptsPlanningOrchestratorAgent(L0MaintenanceBaseAgent):
+class ScriptsPlanningOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     """Orchestrator for planning script execution operations.
     
     Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin

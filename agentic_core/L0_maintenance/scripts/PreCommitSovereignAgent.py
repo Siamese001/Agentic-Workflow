@@ -40,7 +40,7 @@ class ViolationReport:
     target_layer: str
 
 
-class PreCommitSovereignAgent(L0MaintenanceBaseAgent):
+class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     """
     The 'Seal-Guard' of the Sovereign Architecture.
     Ensures compliance stays at 99.7%+ by blocking architectural rot at the source.
@@ -260,6 +260,7 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root))
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 if __name__ == "__main__":
     agent = PreCommitSovereignAgent(root_dir=str(repo_root))

@@ -7,10 +7,11 @@ from typing import Any
 from agentic_core.L1_cognition.thought_engine.SubAtomicAgent import SubAtomicAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 # Sovereign Agent for token budget tracking and complexity management
 @dataclass
-class BudgetAgent(SubAtomicAgent, MCPHardenedMixin):
+class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     KEYS: 17 (Large Functions), 19 (Complex Functions)
     ROLE: The Comptroller. Proactively marks functions exceeding size/complexity limits.

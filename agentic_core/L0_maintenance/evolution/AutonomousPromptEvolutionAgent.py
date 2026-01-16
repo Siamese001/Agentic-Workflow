@@ -18,12 +18,13 @@ from typing import Any, Dict, List, Optional
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 log = logging.getLogger(__name__)
 
 
 @dataclass
-class AutonomousPromptEvolutionAgent(MCPHardenedMixin, HealerMixin):
+class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     Autonomous agent that evolves prompt templates based on performance metrics.
     

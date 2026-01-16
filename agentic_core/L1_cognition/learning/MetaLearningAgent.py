@@ -10,6 +10,7 @@ from datetime import datetime
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 # Type alias for telemetry callback
 TelemetryCallback = Callable[[str, Dict[str, Any]], None]
@@ -23,7 +24,7 @@ class Experience:
     reward: float
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
-class MetaLearningAgent(MCPHardenedMixin, HealerMixin):
+class MetaLearningAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     Learns success/failure patterns across execution cycles to optimize 
     thinking strategy selection.

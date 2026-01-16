@@ -16,10 +16,11 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Any, Callable, Tuple
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
-class RuntimeTelemetryAgent(MCPHardenedMixin):
+class RuntimeTelemetryAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
     THE PERFORMANCE GUARDIAN
     Ensures architectural purity does not sacrifice operational speed.

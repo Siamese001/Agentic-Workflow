@@ -8,9 +8,10 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 @dataclass
-class ASCIIEnforcerAgent(HealerMixin, MCPHardenedMixin):
+class ASCIIEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Enforce ASCII-only characters for LinkedIn compatibility
     GAP 1.10 from v10.22

@@ -10,10 +10,11 @@ from typing import Any, Dict
 
 from .OutreachAgent import OutreachAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
-class OutreachTestPilotAgent(OutreachAgent, MCPHardenedMixin):
+class OutreachTestPilotAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """
     Runs validation tests on the campaign.
     

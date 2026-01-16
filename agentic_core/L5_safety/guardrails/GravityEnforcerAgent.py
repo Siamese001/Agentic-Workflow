@@ -44,6 +44,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 from agentic_core.config.blueprint_sovereign.canonical_truth import get_canonical_layer
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -60,7 +61,7 @@ class GravityViolation:
     suggested_fix: str = ""
 
 
-class GravityEnforcerAgent(MCPHardenedMixin, HealerMixin):
+class GravityEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     [L5 GUARDRAIL] Gravity law enforcement agent.
     

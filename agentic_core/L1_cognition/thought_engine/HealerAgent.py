@@ -20,12 +20,13 @@ _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_m
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
 @dataclass
-class HealerAgent(HealerMixin, CanonBaseAgentInterface):
+class HealerAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface):
     """
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()

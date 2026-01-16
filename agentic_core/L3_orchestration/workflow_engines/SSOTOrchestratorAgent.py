@@ -29,6 +29,7 @@ from datetime import datetime
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ class OrchestrationReport:
         return (self.agents_passed / self.total_agents_run) * 100
 
 
-class SSOTOrchestratorAgent(MCPHardenedMixin, HealerMixin):
+class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     [L3 ORCHESTRATOR] Master SSOT validation orchestrator.
     

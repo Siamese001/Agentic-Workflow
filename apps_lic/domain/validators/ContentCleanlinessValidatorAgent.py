@@ -5,7 +5,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from dataclasses import dataclass
 
 @dataclass
-class ContentCleanlinessValidatorAgent(MCPHardenedMixin, HealerMixin):
+class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     Forbidden verbs and weak language detection
     FEATURE 3.1 and 3.2 from SUPREME_SPELL
@@ -90,6 +90,7 @@ from apps_lic.core.data_models import (
 import numpy as np
 # from scripts.utilities.FormatScriptsContext import TfidfVectorizer  # TODO: Replace with sovereign equivalent
 from sklearn.metrics.pairwise import cosine_similarity
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 # ============================================================================
 # NEW v11.6: GLOBAL ERROR CODE REGISTRY (GAP 6.1)

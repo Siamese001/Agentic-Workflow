@@ -75,6 +75,7 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -109,7 +110,7 @@ class ReconciliationViolation:
             _call_path.discard(agent_name)
 
 
-class FilesystemSSOTReconcilerAgent(L0MaintenanceBaseAgent, AutonomyMixin,
+class FilesystemSSOTReconcilerAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin):
     """Filesystem-level SSOT enforcer - treats blueprint as the Gospel.

@@ -9,9 +9,10 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 @dataclass
-class RgTemplateOptimizerAgent(ResumeAgent, MCPHardenedMixin):
+class RgTemplateOptimizerAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     """
     Optimizes template selection based on job description.
 

@@ -11,9 +11,10 @@ from __future__ import annotations
 from typing import Dict, Any, List, Tuple
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 @dataclass
-class PlaceholderDetectorAgent(MCPHardenedMixin, HealerMixin):
+class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     Comprehensive placeholder detection
     FEATURE 3.3 from SUPREME_SPELL / GAP 1.5
