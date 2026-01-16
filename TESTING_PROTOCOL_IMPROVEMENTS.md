@@ -12,6 +12,72 @@ This document describes comprehensive improvements made to the dashboard testing
 
 ---
 
+## CRITICAL: Automated Server Restart (NEW)
+
+### **Feature:** Automated Dashboard Server Management
+
+**Status:** ✅ IMPLEMENTED (January 16, 2026)
+
+**Problem Solved:**
+- Manual server restart was error-prone and often forgotten
+- Stale server instances caused test failures
+- Port conflicts from multiple server instances
+
+**Solution:**
+The E2E test suite now **automatically stops and restarts** the dashboard server before running tests.
+
+### Implementation Details
+
+**Function:** `restart_dashboard_server()`
+
+**Process:**
+1. Scans for existing Python HTTP servers on port 8765
+2. Kills all existing server processes
+3. Waits 2 seconds for port release
+4. Starts new server in background (detached process)
+5. Verifies server started successfully
+
+**Usage:**
+```bash
+# Default: Automated server restart enabled
+python scripts/test_dashboard_end_to_end.py
+
+# Skip server restart (manual mode)
+python scripts/test_dashboard_end_to_end.py --no-server-restart
+```
+
+**Output:**
+```
+======================================================================
+🔄 AUTOMATED DASHBOARD SERVER RESTART
+======================================================================
+   🛑 Stopping existing server (PID 12345)...
+   ✅ Stopped 1 existing server(s)
+   
+   🚀 Starting new server...
+      Directory: C:\Git\Agentic-Workflow\agentic_core\L6_observability\dashboards
+      Port: 8765
+   ✅ Server started successfully (PID 67890)
+   🌐 Dashboard URL: http://localhost:8765/autonomy_dashboard.html
+```
+
+**Dependencies:**
+- `psutil` library (for process management)
+- Python `subprocess` module
+
+**Benefits:**
+- ✅ Eliminates manual server restart step
+- ✅ Prevents port conflicts
+- ✅ Ensures fresh server state for tests
+- ✅ Reduces test setup time
+- ✅ Improves test reliability
+
+**Remaining Manual Step:**
+- ⚠️ Browser cache clearing still required (cannot be automated)
+- User must confirm cache clearing before tests run
+
+---
+
 ## New Test: Column Rendering Validation
 
 ### **File:** `scripts/test_table_column_rendering.py`
@@ -45,6 +111,8 @@ python scripts/test_table_column_rendering.py
 ```
 
 **Expected Output:** 4/4 tests passed
+
+**Note:** This test is now part of the automated E2E workflow with server restart
 
 ---
 
