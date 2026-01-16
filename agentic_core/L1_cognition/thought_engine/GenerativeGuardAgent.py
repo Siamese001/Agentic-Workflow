@@ -21,6 +21,15 @@ _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_m
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+
+# Import CanonBaseAgentInterface
+try:
+    from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+except ImportError:
+    # Fallback if not available
+    class CanonBaseAgentInterface:
+        pass
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -49,7 +58,7 @@ EXCLUDED_DIRS = [
 
 
 @dataclass
-class GenerativeGuardAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
+class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.

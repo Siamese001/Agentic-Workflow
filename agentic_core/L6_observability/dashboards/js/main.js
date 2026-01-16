@@ -12,50 +12,78 @@ const DashboardApp = {
     init: function() {
         console.log('[Dashboard] Initializing...');
         this.setupGlobalErrors();
-        this.updateMetadata();
         
-        if (this.checkDependencies()) {
-            this.renderContent();
-            this.initRenderers();
-            this.initControllers();
-            // Add modal close handlers
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    const modal = document.getElementById('drillModal');
-                    if (modal && modal.style.display === 'flex') {
-                        modal.style.display = 'none';
-                    }
-                }
-            });
-
-            const drillModal = document.getElementById('drillModal');
-            if (drillModal) {
-                drillModal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        this.style.display = 'none';
+        // Hardened: Retry mechanism for slow-loading local data files
+        let retryCount = 0;
+        const tryLoad = () => {
+            if (this.checkDependencies()) {
+                this.updateMetadata();
+                this.renderContent();
+                this.initRenderers();
+                this.initControllers();
+                
+                // Add modal close handlers
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        const modal = document.getElementById('drillModal');
+                        if (modal && modal.style.display === 'flex') {
+                            modal.style.display = 'none';
+                        }
                     }
                 });
-            }
 
-            console.log('[Dashboard] Ready.');
-        } else {
-            this.handleMissingData();
-        }
+                const drillModal = document.getElementById('drillModal');
+                if (drillModal) {
+                    drillModal.addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            this.style.display = 'none';
+                        }
+                    });
+                }
+
+                console.log('[Dashboard] Ready.');
+            } else if (retryCount < 10) { // Increased retries for slow local I/O
+                retryCount++;
+                console.warn(`[Dashboard] Awaiting data hydration (Attempt ${retryCount}/10)...`);
+                setTimeout(tryLoad, 300); // Increased backoff to 300ms
+            } else {
+                this.handleMissingData();
+            }
+        };
+        tryLoad();
     },
 
     checkDependencies: function() {
-        // Ensure critical data is loaded
-        const hasData = typeof window.dashboardData !== 'undefined';
+        // 1. Universal Variable Mapping: Map all known variants to standard pointers
+        if (typeof window.globalAgentData !== 'undefined' && typeof window.realAgentData === 'undefined') {
+            window.realAgentData = window.globalAgentData;
+        }
+        if (typeof window.agentData !== 'undefined' && typeof window.realAgentData === 'undefined') {
+            window.realAgentData = window.agentData;
+        }
+        
+        // 2. Map observations and recommendations variable names
+        if (typeof window.strategicObservationsData !== 'undefined' && typeof window.observations === 'undefined') {
+            window.observations = window.strategicObservationsData;
+        }
+        if (typeof window.recommendationsData !== 'undefined' && typeof window.recommendations === 'undefined') {
+            window.recommendations = window.recommendationsData;
+        }
+
+        // 3. Lenient Dependency Check: Ensure data exists even if empty initially
+        const hasData = typeof window.dashboardData !== 'undefined' && Array.isArray(window.dashboardData);
         const hasAgentData = typeof window.realAgentData !== 'undefined';
         
-        if (!hasData) {
-            console.error('[Dashboard] dashboardData not loaded!');
-        }
-        if (!hasAgentData) {
-            console.warn('[Dashboard] realAgentData not loaded');
+        // 4. Debug logging to identify which specific variable is missing
+        if (!hasData) console.warn('[Dashboard] Missing: dashboardData');
+        if (!hasAgentData) console.warn('[Dashboard] Missing: realAgentData');
+
+        if (hasData && hasAgentData) {
+            console.log(`[Dashboard] Data loaded: ${window.dashboardData.length} territories`);
+            return true;
         }
         
-        return hasData;
+        return false;
     },
 
     updateMetadata: function() {
@@ -130,10 +158,31 @@ const DashboardApp = {
                 initializeMetaLearningDashboard();
                 console.log('[Dashboard] Meta-Learning dashboard initialized');
             }
+            
+            // Initialize SSE Connection for Live Runtime
+            this.setupSSE();
+            
             console.log('[Dashboard] KPIs initialized');
 
         } catch (e) {
             console.error('[Dashboard] Renderer error:', e);
+        }
+    },
+    
+    setupSSE: function() {
+        try {
+            const eventSource = new EventSource('/api/runtime/stream');
+            eventSource.onmessage = (e) => {
+                const msg = JSON.parse(e.data);
+                const eventType = msg.type === 'state_update' ? 'runtime-state-update' : 'runtime-event';
+                window.dispatchEvent(new CustomEvent(eventType, { detail: msg.type === 'state_update' ? msg.data : msg }));
+            };
+            eventSource.onerror = () => {
+                console.warn('[Dashboard] SSE connection failed (Live Runtime may be offline)');
+                eventSource.close();
+            };
+        } catch (e) {
+            console.warn('[Dashboard] SSE setup failed:', e);
         }
     },
 
@@ -190,14 +239,20 @@ const DashboardApp = {
     },
 
     handleMissingData: function() {
-        const container = document.querySelector('.container');
-        if (container) {
-            container.innerHTML = `
-                <div class="kpi-box danger" style="margin-top: 50px; text-align: center;">
-                    <h3>⚠️ Data Load Error</h3>
-                    <p>Could not load dashboard data. Please ensure <code>data/*.js</code> files are present.</p>
-                </div>
-            `;
-        }
+        // Hardened: Non-destructive error state (Keep UI structure for late-loading scripts)
+        const bannerId = 'data-load-error-banner';
+        if (document.getElementById(bannerId)) return;
+
+        const banner = document.createElement('div');
+        banner.id = bannerId;
+        banner.className = 'kpi-box danger';
+        banner.style = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 80%; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2);';
+        banner.innerHTML = `
+            <h3>⚠️ Critical Data Delay</h3>
+            <p>The dashboard is waiting for <code>data/*.js</code>. If this persists, check if files are blocked by CORS or missing.</p>
+            <button onclick="location.reload()" style="margin-top:10px; padding:5px 15px; cursor:pointer;">Retry Full Reload</button>
+        `;
+        document.body.appendChild(banner);
     }
+
 };

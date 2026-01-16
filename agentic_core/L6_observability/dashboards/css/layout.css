@@ -119,10 +119,45 @@ h1 {
 pre {
     background: #f8f9fa;
     padding: 12px;
-    border-radius: 6px;
+    border-radius: 4px;
     overflow-x: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    border: 1px solid #dee2e6;
     color: #333;
     font-size: 0.85em;
 }
+
+/* Meta-Learning Panel Styles */
+.meta-learning-section .experience-item {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border-left-width: 4px;
+}
+
+.reward-high { border-left-color: #10b981; background: #ecfdf5; }
+.reward-medium { border-left-color: #f59e0b; background: #fffbeb; }
+.reward-low { border-left-color: #ef4444; background: #fef2f2; }
+
+.redis-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-box {
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.stat-label { font-size: 0.8em; color: #64748b; text-transform: uppercase; }
+.stat-value { font-size: 1.4em; font-weight: bold; color: #334155; }
+.text-success { color: #10b981; }
+.text-warning { color: #f59e0b; }
+.text-danger { color: #ef4444; }
+
+.log-entry.cache-hit { background-color: #ecfdf5; }
+.log-entry.cache-miss { background-color: #fef2f2; }

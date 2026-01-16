@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-16T13:50:36.713547Z",
-  "scan_duration_seconds": 21.87,
+  "generated_at": "2026-01-16T13:56:35.836364Z",
+  "scan_duration_seconds": 18.06,
   "agent_count": 265,
-  "content_hash": "sha256:3b560868d636bd643c5d24f04355ddf84f0f255113fa205b4fcd741aedee06cd",
+  "content_hash": "sha256:0632bbd8c3c9885fc49607a706bec640b06254c13c1c031982bb16bef375bc35",
   "layer_breakdown": {
     "Apps": 61,
     "Base": 1,
@@ -412,7 +412,7 @@
     "agentic_core/L1_cognition/thought_engine/format_metadata.py": "68d29bea26f6321bdf59cf4c07eb69c6",
     "agentic_core/L1_cognition/thought_engine/generate_subject_line.py": "a3ef614d44bfe4f9d8e1c82822369b2c",
     "agentic_core/L1_cognition/thought_engine/generate_summary_section.py": "23e096614f370c37853c05d9c91191fe",
-    "agentic_core/L1_cognition/thought_engine/GenerativeGuardAgent.py": "1a74d796cfb6874b8b7b6c530b8627e2",
+    "agentic_core/L1_cognition/thought_engine/GenerativeGuardAgent.py": "2c27375b1de67d07ca698b37084e3ac7",
     "agentic_core/L1_cognition/thought_engine/GenerativeGuardDeprecatedAgent.py": "aac40e6f20dcd4f202fdaa98376ea129",
     "agentic_core/L1_cognition/thought_engine/get_info_embedding_compare.py": "643fc755010cf4a5e5c73594a12e93b2",
     "agentic_core/L1_cognition/thought_engine/get_info_embedding_compare_types.py": "6bcc7b09ddd0880978b3f8fc1c1a1513",
@@ -580,7 +580,7 @@
     "agentic_core/L2_execution/ToolRegistry/diff_generator.py": "c9d058c906d9457788dd8faed7ef3ebe",
     "agentic_core/L2_execution/ToolRegistry/DocEnforcerAgent.py": "0b29401ea8f4d9c9562cc5d13beac9db",
     "agentic_core/L2_execution/ToolRegistry/DriftDetectorAgent.py": "b73de5f3c601556e466861d0080049f7",
-    "agentic_core/L2_execution/ToolRegistry/DynamicModelRouterAgent.py": "e50488addc60b754766d884bdd5a242c",
+    "agentic_core/L2_execution/ToolRegistry/DynamicModelRouterAgent.py": "ce8bb5f6edfa012971e544ca52f62a16",
     "agentic_core/L2_execution/ToolRegistry/DynamicSealAgent.py": "b37134ebbf1d761b10e92fc2f5341e25",
     "agentic_core/L2_execution/ToolRegistry/enforce_execution_policy.py": "94fecbdc11ee39ffeb191464f91b8ac2",
     "agentic_core/L2_execution/ToolRegistry/enums_final.py": "8f4ad36481ba72b4983304b80000fb14",
@@ -1447,6 +1447,7 @@
     "scripts/audit_all_agents_mro.py": "049a8de03c23c060c1787ed9db0acf6b",
     "scripts/audit_dashboard_heal_cap.py": "d41d8cd98f00b204e9800998ecf8427e",
     "scripts/audit_dashboard_ssot.py": "634458def2c67b13f858a1ce092ff1a1",
+    "scripts/batch_fix_9_agents.py": "52d8e983e1abb38f28389b872fc8b115",
     "scripts/batch_fix_docstrings.py": "3c406168eedea934129c01e340878f41",
     "scripts/batch_fix_typing.py": "fc6ee018406f885219896a818a82c132",
     "scripts/bulk_agent_rename.py": "51684965e3689ba2de8bbf790d1fdea5",
@@ -1528,6 +1529,7 @@
     "scripts/fix_mcp_hardening.py": "0677f7c06834a9eb7e784c18b7b6436f",
     "scripts/fix_mcp_hardening_smart.py": "096541953e258e132b1ce1a0aa6e3b13",
     "scripts/fix_missing_invocation.py": "0a6c3844ad54594018f02460ddddcf57",
+    "scripts/fix_remaining_agents.py": "68ed79a8af7ffd09797cd769a3b3806f",
     "scripts/fix_remaining_mcp_gaps.py": "642426b693bea969dfcf6b6ea4fb6733",
     "scripts/fix_testing_observability.py": "5708b8fc5aed676958af07b6bd2e141e",
     "scripts/fix_typed_documented.py": "df99d090ebfdec6be51cf5ba9fe686af",
@@ -1692,6 +1694,6 @@
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63",
     "scripts/refactor/verify_integrity.py": "2bfe5aaf42a32e5a9c880b33b8b95217"
   },
-  "hashed_file_count": 1668,
+  "hashed_file_count": 1670,
   "hash_errors": 0
 }
