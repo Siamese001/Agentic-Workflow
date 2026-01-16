@@ -31,9 +31,14 @@ JS_OUTPUT = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / 
 
 
 def load_yaml_config():
-    """Load the YAML configuration file."""
+    """Load the YAML configuration file with path validation."""
+    if not YAML_CONFIG.exists():
+        raise FileNotFoundError(f"❌ CRITICAL: SSOT YAML not found at {YAML_CONFIG}")
     with open(YAML_CONFIG, 'r', encoding='utf-8') as f:
-        return yaml.safe_load(f)
+        config = yaml.safe_load(f)
+    if not config:
+        raise ValueError(f"❌ CRITICAL: SSOT YAML at {YAML_CONFIG} is empty")
+    return config
 
 
 def generate_python_constants(config):
@@ -137,11 +142,6 @@ from typing import Dict, Any, List, Set
         const_name = f"WEIGHT_HEALTH_L0_{key.upper()}"
         output += f"{const_name} = {value}\n"
     
-    # Validate weights sum to 1.0
-    output += "\n# Validate weights\n"
-    output += "assert abs(sum([WEIGHT_HEALTH_HEAL_CAP, WEIGHT_HEALTH_INVOCATION, WEIGHT_HEALTH_TEST, WEIGHT_HEALTH_OBSERVABLE, WEIGHT_HEALTH_COMPLEXITY]) - 1.0) < 0.001, 'Health weights must sum to 1.0'\n"
-    output += "assert abs(sum([WEIGHT_HEALTH_L0_TEST, WEIGHT_HEALTH_L0_HARDENED, WEIGHT_HEALTH_L0_COMPLEXITY]) - 1.0) < 0.001, 'L0 health weights must sum to 1.0'\n"
-    
     output += "\n\n"
     
     # Add code quality weights
@@ -156,8 +156,18 @@ from typing import Dict, Any, List, Set
         const_name = f"WEIGHT_CODE_QUALITY_{key.upper()}"
         output += f"{const_name} = {value}\n"
     
-    output += "\n# Validate weights\n"
-    output += "assert abs(sum([WEIGHT_CODE_QUALITY_TYPED, WEIGHT_CODE_QUALITY_DOCUMENTED, WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS, WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE]) - 1.0) < 0.001, 'Code quality weights must sum to 1.0'\n"
+    # SSOT INTEGRITY CONSTRAINTS - Strict validation (AFTER all weights defined)
+    output += "\n# ============================================================================\n"
+    output += "# SSOT INTEGRITY CONSTRAINTS\n"
+    output += "# ============================================================================\n"
+    output += "try:\n"
+    output += "    assert abs(sum([WEIGHT_HEALTH_HEAL_CAP, WEIGHT_HEALTH_INVOCATION, WEIGHT_HEALTH_TEST, WEIGHT_HEALTH_OBSERVABLE, WEIGHT_HEALTH_COMPLEXITY]) - 1.0) < 0.001\n"
+    output += "    assert abs(sum([WEIGHT_HEALTH_L0_TEST, WEIGHT_HEALTH_L0_HARDENED, WEIGHT_HEALTH_L0_COMPLEXITY]) - 1.0) < 0.001\n"
+    output += "    assert abs(sum([WEIGHT_CODE_QUALITY_TYPED, WEIGHT_CODE_QUALITY_DOCUMENTED, WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS, WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE]) - 1.0) < 0.001\n"
+    output += "except AssertionError as e:\n"
+    output += "    print(f'❌ CRITICAL: SSOT Weight mismatch detected in dashboard_ssot.yaml')\n"
+    output += "    raise\n"
+    
     
     output += "\n\n"
     

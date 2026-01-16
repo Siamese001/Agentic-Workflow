@@ -14,7 +14,7 @@ ALL dashboard-related scripts MUST import from this file:
 
 DO NOT define metric calculations elsewhere. This eliminates "split brain" issues.
 
-Last Generated: 2026-01-16 14:47:22
+Last Generated: 2026-01-16 15:04:55
 """
 from typing import Dict, Any, List, Set
 
@@ -104,10 +104,6 @@ WEIGHT_HEALTH_L0_TEST = 0.4
 WEIGHT_HEALTH_L0_HARDENED = 0.3
 WEIGHT_HEALTH_L0_COMPLEXITY = 0.3
 
-# Validate weights
-assert abs(sum([WEIGHT_HEALTH_HEAL_CAP, WEIGHT_HEALTH_INVOCATION, WEIGHT_HEALTH_TEST, WEIGHT_HEALTH_OBSERVABLE, WEIGHT_HEALTH_COMPLEXITY]) - 1.0) < 0.001, 'Health weights must sum to 1.0'
-assert abs(sum([WEIGHT_HEALTH_L0_TEST, WEIGHT_HEALTH_L0_HARDENED, WEIGHT_HEALTH_L0_COMPLEXITY]) - 1.0) < 0.001, 'L0 health weights must sum to 1.0'
-
 
 # ============================================================================
 # CODE QUALITY FORMULA WEIGHTS
@@ -119,8 +115,16 @@ WEIGHT_CODE_QUALITY_DOCUMENTED = 0.25
 WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS = 0.25
 WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE = 0.25
 
-# Validate weights
-assert abs(sum([WEIGHT_CODE_QUALITY_TYPED, WEIGHT_CODE_QUALITY_DOCUMENTED, WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS, WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE]) - 1.0) < 0.001, 'Code quality weights must sum to 1.0'
+# ============================================================================
+# SSOT INTEGRITY CONSTRAINTS
+# ============================================================================
+try:
+    assert abs(sum([WEIGHT_HEALTH_HEAL_CAP, WEIGHT_HEALTH_INVOCATION, WEIGHT_HEALTH_TEST, WEIGHT_HEALTH_OBSERVABLE, WEIGHT_HEALTH_COMPLEXITY]) - 1.0) < 0.001
+    assert abs(sum([WEIGHT_HEALTH_L0_TEST, WEIGHT_HEALTH_L0_HARDENED, WEIGHT_HEALTH_L0_COMPLEXITY]) - 1.0) < 0.001
+    assert abs(sum([WEIGHT_CODE_QUALITY_TYPED, WEIGHT_CODE_QUALITY_DOCUMENTED, WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS, WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE]) - 1.0) < 0.001
+except AssertionError as e:
+    print(f'❌ CRITICAL: SSOT Weight mismatch detected in dashboard_ssot.yaml')
+    raise
 
 
 # ============================================================================
@@ -355,14 +359,16 @@ def calc_health_score(
     is_l0: bool = False
 ) -> float:
     """
-    Calculate overall Health score for a territory.
+    Calculate overall Health score for a territory using SSOT weights.
     
     Definition (standard):
-        Health = (Heal Cap * 0.30) + (Invocation * 0.10) + (Test * 0.25) + 
-                 (Observable * 0.20) + (Complexity Health * 0.15)
+        Health = (Heal Cap * WEIGHT_HEALTH_HEAL_CAP) + (Invocation * WEIGHT_HEALTH_INVOCATION) + 
+                 (Test * WEIGHT_HEALTH_TEST) + (Observable * WEIGHT_HEALTH_OBSERVABLE) + 
+                 (Complexity Health * WEIGHT_HEALTH_COMPLEXITY)
     
     Definition (L0 - infrastructure layer):
-        Health = (Test * 0.40) + (Hardened * 0.30) + (Complexity Health * 0.30)
+        Health = (Test * WEIGHT_HEALTH_L0_TEST) + (Hardened * WEIGHT_HEALTH_L0_HARDENED) + 
+                 (Complexity Health * WEIGHT_HEALTH_L0_COMPLEXITY)
         Note: L0 excludes healing metrics as they are N/A
     
     Args:
@@ -377,19 +383,19 @@ def calc_health_score(
         Health score (0-100)
     """
     if is_l0:
-        # L0 health excludes healing metrics
+        # L0 health excludes healing metrics, uses L0-specific SSOT weights
         return round(
-            test_pct * 0.40 +
-            100.0 * 0.30 +  # Assume 100% hardened for L0
-            complexity_health * 0.30,
+            test_pct * WEIGHT_HEALTH_L0_TEST +
+            THRESHOLD_MCP_HARDENED_TARGET * WEIGHT_HEALTH_L0_HARDENED +
+            complexity_health * WEIGHT_HEALTH_L0_COMPLEXITY,
             1
         )
     return round(
-        heal_cap_pct * 0.30 +
-        invocation_pct * 0.10 +
-        test_pct * 0.25 +
-        observable_pct * 0.20 +
-        complexity_health * 0.15,
+        heal_cap_pct * WEIGHT_HEALTH_HEAL_CAP +
+        invocation_pct * WEIGHT_HEALTH_INVOCATION +
+        test_pct * WEIGHT_HEALTH_TEST +
+        observable_pct * WEIGHT_HEALTH_OBSERVABLE +
+        complexity_health * WEIGHT_HEALTH_COMPLEXITY,
         1
     )
 
@@ -401,11 +407,11 @@ def calc_code_quality_score(
     canonical_pct: float
 ) -> float:
     """
-    Calculate Code Quality Score.
+    Calculate Code Quality Score using SSOT weights.
     
     Definition: Weighted composite of code quality metrics.
-        Quality = (Typed * 0.25) + (Documented * 0.25) + 
-                  (Schema * 0.25) + (Canonical * 0.25)
+        Quality = (Typed * WEIGHT_CODE_QUALITY_TYPED) + (Documented * WEIGHT_CODE_QUALITY_DOCUMENTED) + 
+                  (Schema * WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS) + (Canonical * WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE)
     
     Args:
         typed_pct: Typed %
@@ -417,10 +423,10 @@ def calc_code_quality_score(
         Code quality score (0-100)
     """
     return round(
-        typed_pct * 0.25 +
-        documented_pct * 0.25 +
-        schema_pct * 0.25 +
-        canonical_pct * 0.25,
+        typed_pct * WEIGHT_CODE_QUALITY_TYPED +
+        documented_pct * WEIGHT_CODE_QUALITY_DOCUMENTED +
+        schema_pct * WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS +
+        canonical_pct * WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE,
         1
     )
 
