@@ -481,6 +481,214 @@ def run_e2e_tests() -> Tuple[bool, Dict[str, bool]]:
 
 
 # =============================================================================
+# PLAYWRIGHT VISUAL VALIDATION
+# =============================================================================
+def run_playwright_visual_tests() -> Tuple[bool, Dict[str, bool]]:
+    """Run Playwright visual validation tests."""
+    print_subheader("STEP 7: Playwright Visual Validation")
+    
+    results = {}
+    all_passed = True
+    
+    # Wait for server to be fully ready
+    print("  Waiting for server to be fully ready...")
+    time.sleep(3)
+    
+    # Verify server is responding before launching Playwright
+    max_retries = 5
+    for i in range(max_retries):
+        if is_port_in_use(SERVER_PORT):
+            print(f"  [OK] Server confirmed on port {SERVER_PORT}")
+            break
+        time.sleep(1)
+    else:
+        print(f"  [FAIL] Server not responding on port {SERVER_PORT}")
+        results['Server responding'] = False
+        return False, results
+    
+    try:
+        from playwright.sync_api import sync_playwright
+        
+        print("  Starting Playwright browser...")
+        
+        with sync_playwright() as p:
+            # Launch browser in headless mode
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
+                # Disable cache to ensure fresh load
+                ignore_https_errors=True
+            )
+            page = context.new_page()
+            
+            # Navigate to dashboard
+            dashboard_url = f"http://localhost:{SERVER_PORT}/autonomy_dashboard.html"
+            print(f"  Loading: {dashboard_url}")
+            
+            try:
+                # Use domcontentloaded instead of networkidle for faster load
+                page.goto(dashboard_url, wait_until='domcontentloaded', timeout=60000)
+                # Wait a bit for JS to execute
+                time.sleep(2)
+                results['Dashboard loads'] = True
+                print("  [OK] Dashboard loaded")
+            except Exception as e:
+                results['Dashboard loads'] = False
+                all_passed = False
+                print(f"  [FAIL] Dashboard failed to load: {e}")
+                browser.close()
+                return all_passed, results
+            
+            # Wait for data to load
+            try:
+                page.wait_for_selector('table', timeout=10000)
+                results['Tables rendered'] = True
+                print("  [OK] Tables rendered")
+            except:
+                results['Tables rendered'] = False
+                all_passed = False
+                print("  [FAIL] Tables did not render")
+            
+            # Visual Test 1: Table 1 (Territory Summary) has TOTAL row at top
+            try:
+                table1_rows = page.query_selector_all('#territorySummaryTable tbody tr')
+                if table1_rows:
+                    first_row_text = table1_rows[0].inner_text()
+                    has_total_first = 'TOTAL' in first_row_text
+                    results['Table 1 TOTAL row at top'] = has_total_first
+                    if has_total_first:
+                        print("  [OK] Table 1: TOTAL row at top")
+                    else:
+                        all_passed = False
+                        print(f"  [FAIL] Table 1: TOTAL row not at top (first row: {first_row_text[:50]})")
+                else:
+                    results['Table 1 TOTAL row at top'] = False
+                    all_passed = False
+                    print("  [FAIL] Table 1: No rows found")
+            except Exception as e:
+                results['Table 1 TOTAL row at top'] = False
+                all_passed = False
+                print(f"  [FAIL] Table 1 check failed: {e}")
+            
+            # Visual Test 2: Table 2 (Code Quality) has TOTAL row at top
+            try:
+                table2_rows = page.query_selector_all('#codeQualityTable tbody tr')
+                if table2_rows:
+                    first_row_text = table2_rows[0].inner_text()
+                    has_total_first = 'TOTAL' in first_row_text
+                    results['Table 2 TOTAL row at top'] = has_total_first
+                    if has_total_first:
+                        print("  [OK] Table 2: TOTAL row at top")
+                    else:
+                        all_passed = False
+                        print(f"  [FAIL] Table 2: TOTAL row not at top (first row: {first_row_text[:50]})")
+                else:
+                    results['Table 2 TOTAL row at top'] = False
+                    all_passed = False
+                    print("  [FAIL] Table 2: No rows found")
+            except Exception as e:
+                results['Table 2 TOTAL row at top'] = False
+                all_passed = False
+                print(f"  [FAIL] Table 2 check failed: {e}")
+            
+            # Visual Test 3: Live Sovereign Log has scrollbar
+            try:
+                log_element = page.query_selector('#sovereignLog')
+                if log_element:
+                    overflow_y = page.evaluate('(el) => window.getComputedStyle(el).overflowY', log_element)
+                    has_scroll = overflow_y in ['scroll', 'auto']
+                    results['Live Sovereign Log scrollable'] = has_scroll
+                    if has_scroll:
+                        print(f"  [OK] Live Sovereign Log: scrollable (overflow-y: {overflow_y})")
+                    else:
+                        all_passed = False
+                        print(f"  [FAIL] Live Sovereign Log: not scrollable (overflow-y: {overflow_y})")
+                else:
+                    results['Live Sovereign Log scrollable'] = False
+                    all_passed = False
+                    print("  [FAIL] Live Sovereign Log: element not found")
+            except Exception as e:
+                results['Live Sovereign Log scrollable'] = False
+                all_passed = False
+                print(f"  [FAIL] Live Sovereign Log check failed: {e}")
+            
+            # Visual Test 4: Real-Time Event Log has scrollbar
+            try:
+                event_log = page.query_selector('#eventLog')
+                if event_log:
+                    overflow_y = page.evaluate('(el) => window.getComputedStyle(el).overflowY', event_log)
+                    has_scroll = overflow_y in ['scroll', 'auto']
+                    results['Real-Time Event Log scrollable'] = has_scroll
+                    if has_scroll:
+                        print(f"  [OK] Real-Time Event Log: scrollable (overflow-y: {overflow_y})")
+                    else:
+                        all_passed = False
+                        print(f"  [FAIL] Real-Time Event Log: not scrollable (overflow-y: {overflow_y})")
+                else:
+                    results['Real-Time Event Log scrollable'] = False
+                    all_passed = False
+                    print("  [FAIL] Real-Time Event Log: element not found")
+            except Exception as e:
+                results['Real-Time Event Log scrollable'] = False
+                all_passed = False
+                print(f"  [FAIL] Real-Time Event Log check failed: {e}")
+            
+            # Visual Test 5: All JavaScript files loaded without errors
+            try:
+                # Check for JS errors in console
+                console_errors = []
+                page.on('console', lambda msg: console_errors.append(msg.text) if msg.type == 'error' else None)
+                
+                # Reload to catch any console errors
+                page.reload(wait_until='networkidle')
+                
+                # Check if critical JS files are loaded
+                js_loaded = page.evaluate('''() => {
+                    return typeof window.dashboardData !== 'undefined' && 
+                           typeof window.realAgentData !== 'undefined';
+                }''')
+                
+                results['JavaScript files loaded'] = js_loaded and len(console_errors) == 0
+                if js_loaded and len(console_errors) == 0:
+                    print("  [OK] All JavaScript files loaded without errors")
+                else:
+                    all_passed = False
+                    if not js_loaded:
+                        print("  [FAIL] Critical JavaScript variables not defined")
+                    if console_errors:
+                        print(f"  [FAIL] Console errors: {console_errors[:3]}")
+            except Exception as e:
+                results['JavaScript files loaded'] = False
+                all_passed = False
+                print(f"  [FAIL] JavaScript check failed: {e}")
+            
+            # Visual Test 6: Take screenshot for visual record
+            try:
+                screenshot_path = DASHBOARD_DIR / "playwright_screenshot.png"
+                page.screenshot(path=str(screenshot_path), full_page=True)
+                results['Screenshot saved'] = screenshot_path.exists()
+                if screenshot_path.exists():
+                    print(f"  [OK] Screenshot saved: {screenshot_path}")
+                else:
+                    print("  [WARN] Screenshot not saved")
+            except Exception as e:
+                results['Screenshot saved'] = False
+                print(f"  [WARN] Screenshot failed: {e}")
+            
+            browser.close()
+            
+    except ImportError:
+        print("  [FAIL] Playwright not installed. Run: pip install playwright && playwright install chromium")
+        results['Playwright available'] = False
+        all_passed = False
+    except Exception as e:
+        print(f"  [FAIL] Playwright tests failed: {e}")
+        all_passed = False
+    
+    return all_passed, results
+
+
+# =============================================================================
 # REGENERATION
 # =============================================================================
 def regenerate_ssot() -> bool:
@@ -593,6 +801,16 @@ def main():
         all_results['E2E Tests'] = e2e_passed
         if not e2e_passed:
             all_passed = False
+        
+        # =================================================================
+        # STEP 7: Playwright Visual Validation (MANDATORY)
+        # =================================================================
+        playwright_passed, playwright_results = run_playwright_visual_tests()
+        all_results['Playwright Visual Validation'] = playwright_passed
+        if not playwright_passed:
+            all_passed = False
+            print("\n  ❌ CRITICAL: Playwright visual validation FAILED")
+            print("  Dashboard changes are NOT visually validated")
         
         # =================================================================
         # FINAL SUMMARY
