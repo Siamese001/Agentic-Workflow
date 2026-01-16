@@ -15,8 +15,8 @@ window.dashboardData = [
     "Documented %": 96.4,
     "Schema Strictness %": 99.2,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.7,
-    "Health": 78.5
+    "Code Quality Score": 97.67,
+    "Health": 78.45
   },
   {
     "Territory": "Sovereign Base Agent",
@@ -63,7 +63,7 @@ window.dashboardData = [
     "Documented %": 88.9,
     "Schema Strictness %": 66.7,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 83.3,
+    "Code Quality Score": 83.35,
     "Health": 86.4
   },
   {
@@ -111,8 +111,8 @@ window.dashboardData = [
     "Documented %": 98.3,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.8,
-    "Health": 72.8
+    "Code Quality Score": 97.83,
+    "Health": 72.83
   },
   {
     "Territory": "L5 Safety/Guardrails",
@@ -127,7 +127,7 @@ window.dashboardData = [
     "Documented %": 99.6,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.9,
+    "Code Quality Score": 97.92,
     "Health": 74.1
   },
   {
@@ -160,7 +160,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 81.2
+    "Health": 81.15
   },
   {
     "Territory": "L4 State/Base Agent",
@@ -192,7 +192,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.1,
-    "Health": 78.9
+    "Health": 78.93
   },
   {
     "Territory": "L4 State/Infrastructure",
@@ -239,8 +239,8 @@ window.dashboardData = [
     "Documented %": 99.3,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 98.6,
-    "Health": 79.6
+    "Code Quality Score": 98.62,
+    "Health": 79.62
   },
   {
     "Territory": "L2 Execution/Base Agent",
@@ -271,8 +271,8 @@ window.dashboardData = [
     "Documented %": 98.9,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 99.0,
-    "Health": 76.7
+    "Code Quality Score": 99.03,
+    "Health": 76.72
   },
   {
     "Territory": "L1 Cognition/Base Agent",
@@ -287,7 +287,7 @@ window.dashboardData = [
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.7,
+    "Code Quality Score": 97.72,
     "Health": 75.3
   },
   {
@@ -303,8 +303,8 @@ window.dashboardData = [
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 99.8,
-    "Health": 81.5
+    "Code Quality Score": 99.78,
+    "Health": 81.48
   },
   {
     "Territory": "L0 Maintenance/Base Agent",
@@ -320,7 +320,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 97.0
+    "Health": 67.0
   },
   {
     "Territory": "L0 Maintenance/Core",
@@ -335,8 +335,8 @@ window.dashboardData = [
     "Documented %": 99.3,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 99.7,
-    "Health": 75.0
+    "Code Quality Score": 99.65,
+    "Health": 45.0
   },
   {
     "Territory": "Apps Lic",
@@ -352,7 +352,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 96.5,
-    "Health": 82.7
+    "Health": 82.68
   },
   {
     "Territory": "Apps Rg",
@@ -367,8 +367,8 @@ window.dashboardData = [
     "Documented %": 85.4,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 93.9,
-    "Health": 83.5
+    "Code Quality Score": 93.92,
+    "Health": 83.55
   },
   {
     "Territory": "Utils",

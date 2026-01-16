@@ -21,13 +21,18 @@ sys.path.insert(0, str(project_root))
 from scripts.dashboard_ssot_definitions import (
     calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
     calc_typed_pct, calc_documented_pct, calc_schema_strictness_pct,
-    calc_canonical_inheritance_pct, calc_code_quality_score,
-    calc_avg_cc, calc_complexity_health, calc_health_score, is_l0_territory,
+    calc_canonical_inheritance_pct,
+    calc_avg_cc, calc_complexity_health, is_l0_territory,
+    # PHASE 3: New canonical calculation functions
+    get_canonical_health_score, get_canonical_code_quality_score,
     # SSOT CONSTANTS
     COL_TERRITORY, COL_TOTAL, COL_COMPLIANT, COL_HEAL_CAP, COL_INVOCATION,
     COL_TEST, COL_HARDENED, COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED,
     COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH,
-    FIELD_TERRITORY, FIELD_HAS_HEALING, PLACEHOLDER_OBSERVABLE_PCT
+    # SSOT FIELD CONSTANTS
+    FIELD_TERRITORY, FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS,
+    FIELD_MCP_HARDENED, FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT,
+    FIELD_SCHEMA_STRICTNESS, FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY
 )
 
 # Load agent discovery
@@ -57,13 +62,21 @@ total_canonical_pct = calc_canonical_inheritance_pct(agents)
 total_avg_cc = calc_avg_cc(agents)
 total_complexity_health = calc_complexity_health(total_avg_cc)
 
-# Calculate overall health score using SSOT placeholder
-total_health = calc_health_score(
-    total_heal_cap, total_invocation, total_test, 
-    PLACEHOLDER_OBSERVABLE_PCT,  # SSOT: Observable % placeholder
-    total_complexity_health,
-    is_l0=False
-)
+# PHASE 3: Build metrics dictionary for canonical calculation
+total_metrics = {
+    FIELD_HAS_HEALING: total_heal_cap,
+    FIELD_INVOCATION: total_invocation,
+    FIELD_HAS_TESTS: total_test,
+    FIELD_CYCLOMATIC_COMPLEXITY: total_complexity_health,
+    FIELD_TYPED_PCT: total_typed_pct,
+    FIELD_DOCUMENTED_PCT: total_documented_pct,
+    FIELD_SCHEMA_STRICTNESS: total_schema_pct,
+    FIELD_PROPER_BASE_CLASS: total_canonical_pct
+}
+
+# PHASE 3: Use canonical calculation functions (driven by YAML weights)
+total_health = get_canonical_health_score(total_metrics, is_l0=False)
+total_code_quality = get_canonical_code_quality_score(total_metrics)
 
 total_row = {
     COL_TERRITORY: "TOTAL",
@@ -78,7 +91,7 @@ total_row = {
     COL_DOCUMENTED: total_documented_pct,
     COL_SCHEMA_STRICTNESS: total_schema_pct,
     COL_CANONICAL_INHERITANCE: total_canonical_pct,
-    COL_CODE_QUALITY: calc_code_quality_score(total_typed_pct, total_documented_pct, total_schema_pct, total_canonical_pct),
+    COL_CODE_QUALITY: total_code_quality,
     COL_HEALTH: total_health
 }
 
@@ -98,14 +111,22 @@ for territory in sorted(territories.keys(), key=get_territory_sort_key):
     avg_cc = calc_avg_cc(ags)
     complexity_health = calc_complexity_health(avg_cc)
     
-    # Calculate health score using SSOT formula
+    # PHASE 3: Build metrics dictionary for canonical calculation
+    territory_metrics = {
+        FIELD_HAS_HEALING: heal_cap,
+        FIELD_INVOCATION: invocation,
+        FIELD_HAS_TESTS: test_pct,
+        FIELD_CYCLOMATIC_COMPLEXITY: complexity_health,
+        FIELD_TYPED_PCT: typed_pct,
+        FIELD_DOCUMENTED_PCT: documented_pct,
+        FIELD_SCHEMA_STRICTNESS: schema_pct,
+        FIELD_PROPER_BASE_CLASS: canonical_pct
+    }
+    
+    # PHASE 3: Use canonical calculation functions (driven by YAML weights)
     is_l0 = is_l0_territory(territory)
-    health = calc_health_score(
-        heal_cap, invocation, test_pct,
-        PLACEHOLDER_OBSERVABLE_PCT,  # SSOT: Observable % placeholder
-        complexity_health,
-        is_l0=is_l0
-    )
+    health = get_canonical_health_score(territory_metrics, is_l0=is_l0)
+    code_quality = get_canonical_code_quality_score(territory_metrics)
     
     row = {
         COL_TERRITORY: territory,
@@ -120,7 +141,7 @@ for territory in sorted(territories.keys(), key=get_territory_sort_key):
         COL_DOCUMENTED: documented_pct,
         COL_SCHEMA_STRICTNESS: schema_pct,
         COL_CANONICAL_INHERITANCE: canonical_pct,
-        COL_CODE_QUALITY: calc_code_quality_score(typed_pct, documented_pct, schema_pct, canonical_pct),
+        COL_CODE_QUALITY: code_quality,
         COL_HEALTH: health
     }
     rows.append(row)
