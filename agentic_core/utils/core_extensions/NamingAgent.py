@@ -4,6 +4,7 @@ NamingAgent - Agent for handling naming conventions and validation.
 Re-exported from L5_safety for backwards compatibility.
 """
 from typing import Dict, Any
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 TREE_SITTER_AVAILABLE = False  # Stub - tree-sitter not required for tests
 
@@ -20,7 +21,7 @@ try:
     from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
 except ImportError:
     # Stub implementation if original not available
-    class NamingAgent:
+    class NamingAgent(MCPHardenedMixin):
         """Stub NamingAgent for backwards compatibility."""
 
         def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:

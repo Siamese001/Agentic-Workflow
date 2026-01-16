@@ -4,8 +4,9 @@ from typing import Any, Dict
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissionMixin
 from agentic_core.utils.core_extensions.context_propagation_mixin import ContextPropagationMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class SovereignObservabilityAgent(RedisCacheMixin, EventEmissionMixin, ContextPropagationMixin):
+class SovereignObservabilityAgent(MCPHardenedMixin, RedisCacheMixin, EventEmissionMixin, ContextPropagationMixin):
     """
     L6 Observability Agent: The Consumer (Report 4.3 Part C).
     Responsible for reading the global event stream and updating KPIs.
