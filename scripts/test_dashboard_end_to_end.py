@@ -41,7 +41,7 @@ from scripts.dashboard_ssot_definitions import (
     FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
     # Column names (SSOT for dashboard display)
     COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
-    COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_SCHEMA,
+    COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_SCHEMA_STRICTNESS,
     COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH, COL_AVG_CC,
     # Calculation functions (SSOT for metrics)
     calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
@@ -169,7 +169,7 @@ def test_dashboard_required_fields() -> Tuple[bool, List[str]]:
     required_fields = [
         'Territory', 'Total', COL_HEAL_CAP, COL_INVOCATION,
         COL_TEST, COL_HARDENED, COL_AVG_CC, COL_COMPLEXITY_HEALTH,
-        COL_TYPED, COL_DOCUMENTED, COL_SCHEMA, COL_CANONICAL_INHERITANCE,
+        COL_TYPED, COL_DOCUMENTED, COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE,
         COL_CODE_QUALITY, COL_HEALTH
     ]
     
@@ -1147,7 +1147,7 @@ def run_all_tests() -> bool:
             COL_HARDENED: calc_hardened_pct(agents),
             COL_TYPED: calc_typed_pct(agents),
             COL_DOCUMENTED: calc_documented_pct(agents),
-            COL_SCHEMA: calc_schema_strictness_pct(agents),
+            COL_SCHEMA_STRICTNESS: calc_schema_strictness_pct(agents),
             COL_CANONICAL_INHERITANCE: calc_canonical_inheritance_pct(agents),
         }
         
@@ -1444,7 +1444,7 @@ def run_all_tests() -> bool:
             
             # SSOT: Simulate rendering each territory row - check all required fields
             table1_fields = ['Territory', 'Total', COL_HEAL_CAP, COL_INVOCATION, COL_HARDENED, COL_TEST, COL_COMPLEXITY_HEALTH, COL_HEALTH]
-            table2_fields = ['Territory', 'Total', COL_TYPED, COL_DOCUMENTED, COL_SCHEMA, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY]
+            table2_fields = ['Territory', 'Total', COL_TYPED, COL_DOCUMENTED, COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY]
             
             rows_with_missing_fields = []
             for row in dashboard_data:
@@ -2359,23 +2359,135 @@ def full_regeneration_pipeline() -> bool:
     return True
 
 
+def check_server_health():
+    """Check if dashboard server is healthy and accepting connections."""
+    import socket
+    import time
+    
+    try:
+        # Try to connect to server
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(5)
+        result = sock.connect_ex(('localhost', 8765))
+        sock.close()
+        
+        if result == 0:
+            # Server is listening - check for excessive TIME_WAIT connections
+            try:
+                netstat_output = subprocess.check_output(
+                    ['netstat', '-ano'],
+                    text=True,
+                    timeout=5
+                )
+                
+                # Count TIME_WAIT connections on port 8765
+                time_wait_count = netstat_output.count('8765') - 2  # Subtract LISTENING entries
+                
+                if time_wait_count > 30:
+                    print(f"   ⚠️  WARNING: {time_wait_count} TIME_WAIT connections detected")
+                    print(f"   ⚠️  Server may be overloaded - restart recommended")
+                    return False
+                elif time_wait_count > 20:
+                    print(f"   ⚠️  INFO: {time_wait_count} TIME_WAIT connections (acceptable)")
+                
+                return True
+            except Exception as e:
+                print(f"   ⚠️  Could not check TIME_WAIT connections: {e}")
+                return True  # Assume healthy if we can't check
+        else:
+            print(f"   ❌ Server not responding on port 8765")
+            return False
+    except Exception as e:
+        print(f"   ❌ Health check failed: {e}")
+        return False
+
+
+def restart_dashboard_server():
+    """Stop any running dashboard server and restart it with health checks."""
+    import psutil
+    import time
+    
+    print("\n" + "=" * 70)
+    print("🔄 AUTOMATED DASHBOARD SERVER RESTART")
+    print("=" * 70)
+    
+    # Find and kill existing Python HTTP servers on port 8765
+    killed_count = 0
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        try:
+            cmdline = proc.info.get('cmdline', [])
+            if cmdline and 'python' in proc.info['name'].lower():
+                # Check if it's running http.server on port 8765
+                if 'http.server' in ' '.join(cmdline) and '8765' in ' '.join(cmdline):
+                    print(f"   🛑 Stopping existing server (PID {proc.info['pid']})...")
+                    proc.kill()
+                    killed_count += 1
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    
+    if killed_count > 0:
+        print(f"   ✅ Stopped {killed_count} existing server(s)")
+        time.sleep(2)  # Wait for ports to be released
+    else:
+        print("   ℹ️  No existing servers found")
+    
+    # Start new server in background
+    dashboard_dir = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards"
+    print(f"\n   🚀 Starting new server...")
+    print(f"      Directory: {dashboard_dir}")
+    print(f"      Port: 8765")
+    
+    try:
+        # Start server as background process
+        server_process = subprocess.Popen(
+            [sys.executable, "-m", "http.server", "8765"],
+            cwd=str(dashboard_dir),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True  # Detach from parent
+        )
+        
+        # Wait a moment to ensure server starts
+        time.sleep(2)
+        
+        # Check if server is still running
+        if server_process.poll() is None:
+            print(f"   ✅ Server started successfully (PID {server_process.pid})")
+            print(f"   🌐 Dashboard URL: http://localhost:8765/autonomy_dashboard.html")
+            
+            # Verify server health
+            print(f"\n   💚 Verifying server health...")
+            if check_server_health():
+                print(f"   ✅ Server is healthy and accepting connections")
+            else:
+                print(f"   ⚠️  Server health check failed but server is running")
+            
+            return True
+        else:
+            print(f"   ❌ Server failed to start")
+            return False
+    except Exception as e:
+        print(f"   ❌ Failed to start server: {e}")
+        return False
+
+
 if __name__ == "__main__":
     import sys
     
     parser = argparse.ArgumentParser(description="Dashboard E2E Test with Auto-Regeneration")
     parser.add_argument("--regenerate", action="store_true", help="Force regeneration before testing")
     parser.add_argument("--auto", action="store_true", help="Auto-regenerate if stale")
+    parser.add_argument("--no-server-restart", action="store_true", help="Skip automated server restart")
+    parser.add_argument("--yes", "-y", action="store_true", help="Skip all interactive prompts (assume yes)")
     args = parser.parse_args()
     
     # MANDATORY: Display cache-busting instructions at start
     print("\n" + "=" * 70)
     print("⚠️  CRITICAL: DASHBOARD SERVER & CACHE MANAGEMENT")
     print("=" * 70)
-    print("\n📋 BEFORE RUNNING TESTS, ENSURE:")
-    print("   1. Stop any running dashboard server (Ctrl+C in terminal)")
-    print("   2. Restart server with:")
-    print("      python -m http.server 8765 --directory agentic_core/L6_observability/dashboards")
-    print("   3. Clear browser cache:")
+    print("\n📋 E2E TEST WORKFLOW:")
+    print("   1. ✅ AUTOMATED: Stop and restart dashboard server")
+    print("   2. ⚠️  MANUAL: Clear browser cache (REQUIRED)")
     print("      • Hard refresh: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)")
     print("      • OR use Incognito/Private browsing mode")
     print("      • OR clear browser cache completely in settings")
@@ -2383,16 +2495,63 @@ if __name__ == "__main__":
     print("   Without cache clearing, you will see OLD versions of the dashboard.")
     print("=" * 70)
     
-    # Prompt user to confirm
-    try:
-        response = input("\n✅ Have you restarted the server and cleared browser cache? (yes/no): ").strip().lower()
-        if response not in ['yes', 'y']:
-            print("\n⚠️  Please restart server and clear cache before running tests.")
-            print("   Tests may fail or show incorrect results without fresh cache.")
+    # Automated server restart (unless disabled)
+    if not args.no_server_restart:
+        if not restart_dashboard_server():
+            if args.yes:
+                print("\n⚠️  Server restart failed but continuing (--yes flag)")
+            else:
+                print("\n⚠️  Server restart failed. Continue anyway? (yes/no): ")
+                try:
+                    response = input().strip().lower()
+                    if response not in ['yes', 'y']:
+                        print("\n⚠️  Test aborted due to server restart failure.")
+                        sys.exit(1)
+                except (KeyboardInterrupt, EOFError):
+                    print("\n\n⚠️  Test aborted.")
+                    sys.exit(1)
+        
+        # Additional health check after restart
+        print("\n   🔍 Performing post-restart health check...")
+        import time
+        time.sleep(1)  # Brief pause before health check
+        if not check_server_health():
+            print("\n⚠️  WARNING: Server health check failed after restart")
+            print("   Server may be unstable - tests may fail")
+            if not args.yes:
+                try:
+                    response = input("   Continue anyway? (yes/no): ").strip().lower()
+                    if response not in ['yes', 'y']:
+                        print("\n⚠️  Test aborted due to health check failure.")
+                        sys.exit(1)
+                except (KeyboardInterrupt, EOFError):
+                    print("\n\n⚠️  Test aborted.")
+                    sys.exit(1)
+    else:
+        print("\n⚠️  Server restart skipped (--no-server-restart flag)")
+        print("   Ensure server is running manually on port 8765")
+        print("\n   🔍 Checking existing server health...")
+        if not check_server_health():
+            print("\n⚠️  WARNING: Existing server health check failed")
+            print("   Consider restarting server manually")
+    
+    # Prompt user to confirm browser cache clearing (skip if --yes flag)
+    if not args.yes:
+        print("\n" + "=" * 70)
+        try:
+            response = input("\n✅ Have you cleared browser cache? (yes/no): ").strip().lower()
+            if response not in ['yes', 'y']:
+                print("\n⚠️  Please clear browser cache before running tests.")
+                print("   Tests may fail or show incorrect results without fresh cache.")
+                sys.exit(1)
+        except (KeyboardInterrupt, EOFError):
+            print("\n\n⚠️  Test aborted. Please clear browser cache.")
             sys.exit(1)
-    except (KeyboardInterrupt, EOFError):
-        print("\n\n⚠️  Test aborted. Please restart server and clear cache.")
-        sys.exit(1)
+    else:
+        print("\n⚠️  Skipping cache confirmation (--yes flag)")
+        print("   ⚠️  WARNING: Tests assume browser cache has been cleared!")
+        print("   ⚠️  If tests fail, manually clear cache and re-run.")
+        print("\n" + "=" * 70)
     
     # Handle regeneration modes
     if args.regenerate:
