@@ -63,10 +63,12 @@ total_avg_cc = calc_avg_cc(agents)
 total_complexity_health = calc_complexity_health(total_avg_cc)
 
 # PHASE 3: Build metrics dictionary for canonical calculation
+total_hardened = calc_hardened_pct(agents)
 total_metrics = {
     FIELD_HAS_HEALING: total_heal_cap,
     FIELD_INVOCATION: total_invocation,
     FIELD_HAS_TESTS: total_test,
+    FIELD_MCP_HARDENED: total_hardened,
     FIELD_CYCLOMATIC_COMPLEXITY: total_complexity_health,
     FIELD_TYPED_PCT: total_typed_pct,
     FIELD_DOCUMENTED_PCT: total_documented_pct,
@@ -104,6 +106,7 @@ for territory in sorted(territories.keys(), key=get_territory_sort_key):
     heal_cap = calc_heal_cap_pct(ags)
     invocation = calc_invocation_pct(ags)
     test_pct = calc_test_pct(ags)
+    hardened_pct = calc_hardened_pct(ags)
     typed_pct = calc_typed_pct(ags)
     documented_pct = calc_documented_pct(ags)
     schema_pct = calc_schema_strictness_pct(ags)
@@ -116,6 +119,7 @@ for territory in sorted(territories.keys(), key=get_territory_sort_key):
         FIELD_HAS_HEALING: heal_cap,
         FIELD_INVOCATION: invocation,
         FIELD_HAS_TESTS: test_pct,
+        FIELD_MCP_HARDENED: hardened_pct,
         FIELD_CYCLOMATIC_COMPLEXITY: complexity_health,
         FIELD_TYPED_PCT: typed_pct,
         FIELD_DOCUMENTED_PCT: documented_pct,

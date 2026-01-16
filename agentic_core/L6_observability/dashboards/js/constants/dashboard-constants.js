@@ -5,7 +5,7 @@
 // ⚠️  DO NOT EDIT MANUALLY - Edit the YAML file instead
 // ⚠️  Run: python scripts/generate_dashboard_ssot.py
 //
-// Last Generated: 2026-01-16 16:49:14
+// Last Generated: 2026-01-16 17:03:20
 // ============================================================================
 
 // ============================================================================
