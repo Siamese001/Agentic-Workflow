@@ -5,7 +5,7 @@
 // ⚠️  DO NOT EDIT MANUALLY - Edit the YAML file instead
 // ⚠️  Run: python scripts/generate_dashboard_ssot.py
 //
-// Last Generated: 2026-01-16 15:04:55
+// Last Generated: 2026-01-16 16:49:14
 // ============================================================================
 
 // ============================================================================
@@ -78,6 +78,9 @@ window.THRESHOLDS = {
     COMPLEXITY_HEALTH_MAX: 60.0,
     AVG_CC_WARNING: 15.0,
     AVG_CC_CRITICAL: 25.0,
+    COVERAGE_WARNING: 70.0,
+    COVERAGE_CRITICAL: 40.0,
+    QUALITY_TARGET: 90.0,
 };
 
 // ============================================================================
@@ -103,7 +106,7 @@ window.METRIC_KEYS = {
 // HEALTH SCORE WEIGHTS
 // ============================================================================
 
-window.WEIGHTS = {
+window.HEALTH_WEIGHTS = {
     HEAL_CAP: 0.3,
     INVOCATION: 0.1,
     TEST: 0.25,

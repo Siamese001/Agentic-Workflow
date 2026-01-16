@@ -14,7 +14,7 @@ ALL dashboard-related scripts MUST import from this file:
 
 DO NOT define metric calculations elsewhere. This eliminates "split brain" issues.
 
-Last Generated: 2026-01-16 15:04:55
+Last Generated: 2026-01-16 16:49:14
 """
 from typing import Dict, Any, List, Set
 
@@ -86,6 +86,9 @@ THRESHOLD_OUTLIER_THRESHOLD_CRITICAL = 0.0
 THRESHOLD_COMPLEXITY_HEALTH_MAX = 60.0
 THRESHOLD_AVG_CC_WARNING = 15.0
 THRESHOLD_AVG_CC_CRITICAL = 25.0
+THRESHOLD_COVERAGE_WARNING = 70.0
+THRESHOLD_COVERAGE_CRITICAL = 40.0
+THRESHOLD_QUALITY_TARGET = 90.0
 
 
 # ============================================================================
@@ -545,6 +548,62 @@ def validate_agent_has_required_fields(agent: Dict) -> List[str]:
     ]
     missing = [f for f in required if f not in agent]
     return missing
+
+
+def get_canonical_health_score(metrics_dict: Dict[str, Any], is_l0: bool = False) -> float:
+    """
+    Calculate health score using SSOT weights and field constants.
+    
+    This is the canonical implementation that should be used everywhere
+    health scores are calculated. It uses SSOT weights from the YAML config.
+    
+    Args:
+        metrics_dict: Dictionary with agent metrics (uses FIELD_* constants as keys)
+        is_l0: If True, uses L0-specific formula (no healing metrics)
+    
+    Returns:
+        Health score (0-100)
+    """
+    if is_l0:
+        # L0 health excludes healing metrics
+        return round(
+            safe_numeric(metrics_dict.get(FIELD_HAS_TESTS, 0)) * WEIGHT_HEALTH_L0_TEST +
+            safe_numeric(metrics_dict.get(FIELD_MCP_HARDENED, 0)) * WEIGHT_HEALTH_L0_HARDENED +
+            safe_numeric(metrics_dict.get(FIELD_CYCLOMATIC_COMPLEXITY, 0)) * WEIGHT_HEALTH_L0_COMPLEXITY,
+            2
+        )
+    
+    # Standard health formula
+    return round(
+        safe_numeric(metrics_dict.get(FIELD_HAS_HEALING, 0)) * WEIGHT_HEALTH_HEAL_CAP +
+        safe_numeric(metrics_dict.get(FIELD_INVOCATION, 0)) * WEIGHT_HEALTH_INVOCATION +
+        safe_numeric(metrics_dict.get(FIELD_HAS_TESTS, 0)) * WEIGHT_HEALTH_TEST +
+        PLACEHOLDER_OBSERVABLE_PCT * WEIGHT_HEALTH_OBSERVABLE +
+        safe_numeric(metrics_dict.get(FIELD_CYCLOMATIC_COMPLEXITY, 0)) * WEIGHT_HEALTH_COMPLEXITY,
+        2
+    )
+
+
+def get_canonical_code_quality_score(metrics_dict: Dict[str, Any]) -> float:
+    """
+    Calculate code quality score using SSOT weights and field constants.
+    
+    This is the canonical implementation that should be used everywhere
+    code quality scores are calculated.
+    
+    Args:
+        metrics_dict: Dictionary with agent metrics (uses FIELD_* constants as keys)
+    
+    Returns:
+        Code quality score (0-100)
+    """
+    return round(
+        safe_numeric(metrics_dict.get(FIELD_TYPED_PCT, 0)) * WEIGHT_CODE_QUALITY_TYPED +
+        safe_numeric(metrics_dict.get(FIELD_DOCUMENTED_PCT, 0)) * WEIGHT_CODE_QUALITY_DOCUMENTED +
+        safe_numeric(metrics_dict.get(FIELD_SCHEMA_STRICTNESS, 0)) * WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS +
+        safe_numeric(metrics_dict.get(FIELD_PROPER_BASE_CLASS, 0)) * WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE,
+        2
+    )
 
 
 def safe_numeric(value: Any, default: float = 0.0) -> float:

@@ -256,7 +256,7 @@ def generate_js_constants(config):
 // ============================================================================
 // Display names for dashboard table columns
 
-export const COLUMNS = {{
+window.COLUMNS = {{
 '''
     
     for key, value in config['columns'].items():
@@ -271,7 +271,7 @@ export const COLUMNS = {{
 // ============================================================================
 // Field names from agent_discovery_full.json
 
-export const FIELDS = {
+window.FIELDS = {
 '''
     
     for key, value in config['fields'].items():
@@ -286,7 +286,7 @@ export const FIELDS = {
 // ============================================================================
 // Standard thresholds for validation and outlier detection
 
-export const THRESHOLDS = {
+window.THRESHOLDS = {
 '''
     
     for key, value in config['thresholds'].items():
@@ -301,7 +301,7 @@ export const THRESHOLDS = {
 // ============================================================================
 // CamelCase keys used in agentData objects
 
-export const METRIC_KEYS = {
+window.METRIC_KEYS = {
 '''
     
     for key, value in config['js_keys'].items():
@@ -314,7 +314,7 @@ export const METRIC_KEYS = {
 // HEALTH SCORE WEIGHTS
 // ============================================================================
 
-export const HEALTH_WEIGHTS = {
+window.HEALTH_WEIGHTS = {
 '''
     
     for key, value in config['health_weights'].items():
@@ -323,7 +323,7 @@ export const HEALTH_WEIGHTS = {
     
     output += '};\n\n'
     
-    output += 'export const HEALTH_WEIGHTS_L0 = {\n'
+    output += 'window.HEALTH_WEIGHTS_L0 = {\n'
     for key, value in config['health_weights_l0'].items():
         js_key = key.upper()
         output += f'    {js_key}: {value},\n'
@@ -335,7 +335,7 @@ export const HEALTH_WEIGHTS = {
 // CODE QUALITY WEIGHTS
 // ============================================================================
 
-export const CODE_QUALITY_WEIGHTS = {
+window.CODE_QUALITY_WEIGHTS = {
 '''
     
     for key, value in config['code_quality_weights'].items():
@@ -349,7 +349,7 @@ export const CODE_QUALITY_WEIGHTS = {
 // PLACEHOLDERS
 // ============================================================================
 
-export const PLACEHOLDERS = {
+window.PLACEHOLDERS = {
 '''
     
     for key, value in config['placeholders'].items():

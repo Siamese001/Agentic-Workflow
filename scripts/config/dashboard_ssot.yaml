@@ -166,6 +166,11 @@ thresholds:
   complexity_health_max: 60.0
   avg_cc_warning: 15.0
   avg_cc_critical: 25.0
+  
+  # Phase 2: Granular Thresholds for Stricter Logic
+  coverage_warning: 70.0
+  coverage_critical: 40.0
+  quality_target: 90.0
 
 # ============================================================================
 # HEALTH SCORE FORMULA WEIGHTS
