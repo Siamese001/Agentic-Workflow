@@ -2048,6 +2048,42 @@ def run_all_tests() -> bool:
         errors.append(f"Test 32 FAILED: {e}")
         print(f"❌ Test 32 FAILED: {e}")
     
+    # =========================================================================
+    # TEST 33: Phase 7 Documentation - User Guide Exists
+    # =========================================================================
+    print("\n--- Test 33: Phase 7 User Documentation ---")
+    user_doc = project_root / "docs" / "DASHBOARD_META_LEARNING_GUIDE.md"
+    if not user_doc.exists():
+        errors.append("Test 33 FAILED: DASHBOARD_META_LEARNING_GUIDE.md not found")
+        print("❌ Test 33 FAILED: DASHBOARD_META_LEARNING_GUIDE.md not found")
+    else:
+        content = user_doc.read_text(encoding='utf-8')
+        required = ["Overview", "Getting Started", "Troubleshooting", "FAQ"]
+        missing = [r for r in required if r not in content]
+        if missing:
+            errors.append(f"Test 33 FAILED: Missing sections: {missing}")
+            print(f"❌ Test 33 FAILED: Missing sections: {missing}")
+        else:
+            print("✅ Test 33 PASSED: User documentation complete with all sections")
+    
+    # =========================================================================
+    # TEST 34: Phase 7 Documentation - Developer API Docs Exists
+    # =========================================================================
+    print("\n--- Test 34: Phase 7 Developer Documentation ---")
+    dev_doc = project_root / "docs" / "META_LEARNING_TELEMETRY_API.md"
+    if not dev_doc.exists():
+        errors.append("Test 34 FAILED: META_LEARNING_TELEMETRY_API.md not found")
+        print("❌ Test 34 FAILED: META_LEARNING_TELEMETRY_API.md not found")
+    else:
+        content = dev_doc.read_text(encoding='utf-8')
+        required = ["/api/health", "/api/meta-learning", "/api/redis", "/api/pinecone"]
+        missing = [r for r in required if r not in content]
+        if missing:
+            errors.append(f"Test 34 FAILED: Missing API docs: {missing}")
+            print(f"❌ Test 34 FAILED: Missing API docs: {missing}")
+        else:
+            print("✅ Test 34 PASSED: Developer documentation complete with all API endpoints")
+    
     # Final summary
     print("\n" + "=" * 70)
     if errors:
@@ -2055,7 +2091,7 @@ def run_all_tests() -> bool:
         failed_tests.extend([e.split(':')[0].replace('FAILED', '').strip() for e in errors if 'FAILED' in e])
     
     if all_passed:
-        print("✅ ALL 32 TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 34 TESTS PASSED - Dashboard is ready for deployment")
         print("\n⚠️  IMPORTANT: Hard refresh browser (Ctrl+Shift+R) to see changes!")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")
