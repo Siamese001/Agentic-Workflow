@@ -4,6 +4,9 @@
  * Includes filtering, sorting, and toxicity logic.
  */
 
+// SSOT: Import constants from centralized configuration
+import { COLUMNS, THRESHOLDS, METRIC_KEYS } from '../constants/dashboard-constants.js';
+
 // Global state for table filtering
 const tableFilterState = {
     table1: { showOnlyOutliers: false, sortByOutliers: false, showZombies: false },
@@ -244,7 +247,7 @@ function renderTerritorySummaryTable(territoryData) {
         const testStats = getStats('test');
         const complexityStats = getStats('complexityHealth');
         
-        const healthColor = getWorstCaseColor(row['Health'] || 0);
+        const healthColor = getWorstCaseColor(row[COLUMNS.HEALTH] || 0);
         const rowBg = index % 2 === 0 ? '#f9fafb' : 'white';
 
         html += `
@@ -258,38 +261,38 @@ function renderTerritorySummaryTable(territoryData) {
                 </td>
                 <td style="padding:12px; text-align:center;">${row.Total}</td>
                 
-                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}">
-                    <div>${formatDistributionCell(row['Heal Cap %'], healCapStats)}
-                    ${formatOutlierBadge(getOutliers('healCap', 50).atZero, getOutliers('healCap', 50).belowThreshold, 50)}</div>
-                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'healCap', 'Heal Capability', 50)}</div>
+                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row[COLUMNS.HEAL_CAP])}">
+                    <div>${formatDistributionCell(row[COLUMNS.HEAL_CAP], healCapStats)}
+                    ${formatOutlierBadge(getOutliers(METRIC_KEYS.HEALCAP, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).atZero, getOutliers(METRIC_KEYS.HEALCAP, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).belowThreshold, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}</div>
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, METRIC_KEYS.HEALCAP, 'Heal Capability', THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}</div>
                 </td>
                 
-                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}">
-                    ${formatDistributionCell(row['Invocation %'], invocationStats)}
-                    ${formatOutlierBadge(getOutliers('invocation', 50).atZero, getOutliers('invocation', 50).belowThreshold, 50)}
-                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'invocation', 'Invocation', 50)}</div>
+                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row[COLUMNS.INVOCATION])}">
+                    ${formatDistributionCell(row[COLUMNS.INVOCATION], invocationStats)}
+                    ${formatOutlierBadge(getOutliers(METRIC_KEYS.INVOCATION, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).atZero, getOutliers(METRIC_KEYS.INVOCATION, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).belowThreshold, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, METRIC_KEYS.INVOCATION, 'Invocation', THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}</div>
                 </td>
 
-                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['MCP Hardened %'])}">
-                    ${formatDistributionCell(row['MCP Hardened %'], hardenedStats)}
-                    ${formatOutlierBadge(getOutliers('hardened', 50).atZero, getOutliers('hardened', 50).belowThreshold, 50)}
-                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'hardened', 'MCP Hardened', 50)}</div>
+                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row[COLUMNS.HARDENED])}">
+                    ${formatDistributionCell(row[COLUMNS.HARDENED], hardenedStats)}
+                    ${formatOutlierBadge(getOutliers(METRIC_KEYS.HARDENED, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).atZero, getOutliers(METRIC_KEYS.HARDENED, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).belowThreshold, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, METRIC_KEYS.HARDENED, 'MCP Hardened', THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}</div>
                 </td>
 
-                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}">
-                    ${formatDistributionCell(row['Test %'], testStats)}
-                    ${formatOutlierBadge(getOutliers('test', 50).atZero, getOutliers('test', 50).belowThreshold, 50)}
-                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'test', 'Test Coverage', 50)}</div>
+                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row[COLUMNS.TEST])}">
+                    ${formatDistributionCell(row[COLUMNS.TEST], testStats)}
+                    ${formatOutlierBadge(getOutliers(METRIC_KEYS.TEST, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).atZero, getOutliers(METRIC_KEYS.TEST, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).belowThreshold, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, METRIC_KEYS.TEST, 'Test Coverage', THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}</div>
                 </td>
 
-                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row['Complexity Health %'] || 0)}">
-                    ${formatDistributionCell(row['Complexity Health %'] || 0, complexityStats)}
-                    ${formatOutlierBadge(getOutliers('complexityHealth', 30).atZero, getOutliers('complexityHealth', 30).belowThreshold, 30)}
-                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, 'complexityHealth', 'Complexity Health', 30)}</div>
+                <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row[COLUMNS.COMPLEXITY_HEALTH] || 0)}">
+                    ${formatDistributionCell(row[COLUMNS.COMPLEXITY_HEALTH] || 0, complexityStats)}
+                    ${formatOutlierBadge(getOutliers(METRIC_KEYS.COMPLEXITYHEALTH, THRESHOLDS.COMPLEXITY_HEALTH_MIN).atZero, getOutliers(METRIC_KEYS.COMPLEXITYHEALTH, THRESHOLDS.COMPLEXITY_HEALTH_MIN).belowThreshold, THRESHOLDS.COMPLEXITY_HEALTH_MIN)}
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, METRIC_KEYS.COMPLEXITYHEALTH, 'Complexity Health', THRESHOLDS.COMPLEXITY_HEALTH_MIN)}</div>
                 </td>
 
                 <td style="padding:12px; text-align:center; font-weight:700; color:${healthColor}">
-                    ${typeof row['Health'] === 'number' ? row['Health'].toFixed(1) : (row['Health'] || 'N/A')}%
+                    ${typeof row[COLUMNS.HEALTH] === 'number' ? row[COLUMNS.HEALTH].toFixed(1) : (row[COLUMNS.HEALTH] || 'N/A')}%
                 </td>
             </tr>`;
     });
@@ -382,11 +385,11 @@ function renderCodeQualityTable(data) {
             <tr style="background: #f8fafc; border-bottom: 3px solid #94a3b8; font-weight: 700; font-size: 1.05em;">
                 <td style="padding: 12px 8px; position: sticky; left: 0; background: #f8fafc; z-index: 5;">TOTAL</td>
                 <td style="padding: 12px 8px; text-align: center;">${totalRow.Total || 0}</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Typed %'])};">${totalRow['Typed %'].toFixed(1)}%</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Documented %'])};">${totalRow['Documented %'].toFixed(1)}%</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Schema Strictness %'])};">${totalRow['Schema Strictness %'].toFixed(1)}%</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Canonical Inheritance %'])};">${totalRow['Canonical Inheritance %'].toFixed(1)}%</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow['Code Quality Score'])}; font-size: 1.2em;">${totalRow['Code Quality Score'].toFixed(1)}</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow[COLUMNS.TYPED])};">${totalRow[COLUMNS.TYPED].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow[COLUMNS.DOCUMENTED])};">${totalRow[COLUMNS.DOCUMENTED].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow[COLUMNS.SCHEMA_STRICTNESS])};">${totalRow[COLUMNS.SCHEMA_STRICTNESS].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow[COLUMNS.CANONICAL_INHERITANCE])};">${totalRow[COLUMNS.CANONICAL_INHERITANCE].toFixed(1)}%</td>
+                <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow[COLUMNS.CODE_QUALITY])}; font-size: 1.2em;">${totalRow[COLUMNS.CODE_QUALITY].toFixed(1)}</td>
             </tr>`;
     
     // Render each territory row
@@ -395,11 +398,11 @@ function renderCodeQualityTable(data) {
         const agentCount = row.Total || 0;
         
         // Get metrics with N/A handling
-        const typed = row['Typed %'];
-        const documented = row['Documented %'];
-        const schema = row['Schema Strictness %'];
-        const baseClass = row['Canonical Inheritance %'];
-        const quality = row['Code Quality Score'];
+        const typed = row[COLUMNS.TYPED];
+        const documented = row[COLUMNS.DOCUMENTED];
+        const schema = row[COLUMNS.SCHEMA_STRICTNESS];
+        const baseClass = row[COLUMNS.CANONICAL_INHERITANCE];
+        const quality = row[COLUMNS.CODE_QUALITY];
         
         // Color coding
         const typedColor = typed === 'N/A' ? '#6b7280' : getColor(typed);
@@ -521,28 +524,28 @@ function openDrillModal(territoryName) {
     
     // Helper to safely format values that might be "N/A"
     const safeFormat = (val) => val === "N/A" ? "N/A" : (typeof val === 'number' ? val.toFixed(1) + '%' : val);
-    document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Code Quality ${safeFormat(row['Code Quality Score'])} • Invocation ${safeFormat(row['Invocation %'])}`;
+    document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Code Quality ${safeFormat(row[COLUMNS.CODE_QUALITY])} • Invocation ${safeFormat(row[COLUMNS.INVOCATION])}`;
 
     // Health Metrics Section
     let content = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">';
     content += '<div style="background:#f0fdf4; padding:15px; border-radius:8px; border-left:4px solid #16a34a;">';
     content += '<strong style="font-size:1.1em; color:#166534;">🏥 Health Metrics</strong><ul style="margin-top:10px; list-style:none; padding:0;">';
-    content += `<li style="margin:5px 0;">Healing Capability: <strong>${safeFormat(row['Heal Cap %'])}</strong></li>`;
-    content += `<li style="margin:5px 0;">Healing Invocation: <strong>${safeFormat(row['Invocation %'])}</strong></li>`;
-    content += `<li style="margin:5px 0;">MCP Hardened: <strong>${safeFormat(row['MCP Hardened %'])}</strong></li>`;
-    content += `<li style="margin:5px 0;">Test Coverage: <strong>${safeFormat(row['Test %'])}</strong></li>`;
-    content += `<li style="margin:5px 0;">Complexity Health: <strong>${safeFormat(row['Complexity Health %'])}</strong></li>`;
-    content += `<li style="margin:5px 0; font-weight:700; color:#166534;">Code Quality Score: <strong>${safeFormat(row['Code Quality Score'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Healing Capability: <strong>${safeFormat(row[COLUMNS.HEAL_CAP])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Healing Invocation: <strong>${safeFormat(row[COLUMNS.INVOCATION])}</strong></li>`;
+    content += `<li style="margin:5px 0;">MCP Hardened: <strong>${safeFormat(row[COLUMNS.HARDENED])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Test Coverage: <strong>${safeFormat(row[COLUMNS.TEST])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Complexity Health: <strong>${safeFormat(row[COLUMNS.COMPLEXITY_HEALTH])}</strong></li>`;
+    content += `<li style="margin:5px 0; font-weight:700; color:#166534;">Code Quality Score: <strong>${safeFormat(row[COLUMNS.CODE_QUALITY])}</strong></li>`;
     content += '</ul></div>';
     
     // Code Quality Metrics Section
     content += '<div style="background:#eff6ff; padding:15px; border-radius:8px; border-left:4px solid #2563eb;">';
     content += '<strong style="font-size:1.1em; color:#1e40af;">📊 Code Quality Metrics</strong><ul style="margin-top:10px; list-style:none; padding:0;">';
-    content += `<li style="margin:5px 0;">Typed %: <strong>${safeFormat(row['Typed %'])}</strong></li>`;
-    content += `<li style="margin:5px 0;">Documented %: <strong>${safeFormat(row['Documented %'])}</strong></li>`;
-    content += `<li style="margin:5px 0;">Schema Strictness %: <strong>${safeFormat(row['Schema Strictness %'])}</strong></li>`;
-    content += `<li style="margin:5px 0;">Canonical Inheritance %: <strong>${safeFormat(row['Canonical Inheritance %'])}</strong></li>`;
-    content += `<li style="margin:5px 0; font-weight:700; color:#1e40af;">Code Quality Score: <strong>${safeFormat(row['Code Quality Score'])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Typed %: <strong>${safeFormat(row[COLUMNS.TYPED])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Documented %: <strong>${safeFormat(row[COLUMNS.DOCUMENTED])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Schema Strictness %: <strong>${safeFormat(row[COLUMNS.SCHEMA_STRICTNESS])}</strong></li>`;
+    content += `<li style="margin:5px 0;">Canonical Inheritance %: <strong>${safeFormat(row[COLUMNS.CANONICAL_INHERITANCE])}</strong></li>`;
+    content += `<li style="margin:5px 0; font-weight:700; color:#1e40af;">Code Quality Score: <strong>${safeFormat(row[COLUMNS.CODE_QUALITY])}</strong></li>`;
     content += '</ul></div></div>';
 
     // Per-agent diagnostics table

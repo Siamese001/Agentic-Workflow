@@ -3,6 +3,9 @@
  * Renders strategic observations, recommendations, interview questions, and alerts
  */
 
+// SSOT: Import constants from centralized configuration
+import { COLUMNS } from '../constants/dashboard-constants.js';
+
 function renderStrategicObservations() {
     const macroContainer = document.getElementById('macroObservations');
     const metricContainer = document.getElementById('metricObservations');
@@ -80,31 +83,31 @@ function renderInterviewQuestions(totalRow) {
             category: "Architecture",
             question: "How does the healing system work across agents?",
             analogy: "Like a factory where each worker has a personal repair toolkit (HealerMixin) and follows a master safety checklist (heal_repository).",
-            key_metric: `Healing Invocation: ${totalRow['Invocation %'].toFixed(1)}%`
+            key_metric: `Healing Invocation: ${totalRow[COLUMNS.INVOCATION].toFixed(1)}%`
         },
         {
             category: "Quality",
             question: "What's your approach to managing code complexity?",
-            analogy: "We measure workflow complexity like steps in an assembly line. Target is ≤15 steps (CC). Current average is " + totalRow['Avg CC'].toFixed(1) + ".",
-            key_metric: `Avg CC: ${totalRow['Avg CC'].toFixed(1)}`
+            analogy: "We measure workflow complexity like steps in an assembly line. Target is ≤15 steps (CC). Current average is " + totalRow[COLUMNS.AVG_CC].toFixed(1) + ".",
+            key_metric: `Avg CC: ${totalRow[COLUMNS.AVG_CC].toFixed(1)}`
         },
         {
             category: "Testing",
             question: "How do you ensure agent reliability?",
-            analogy: "Each agent has quality control inspections (tests) before deployment. " + totalRow['Test %'].toFixed(0) + "% currently have verification procedures.",
-            key_metric: `Test Coverage: ${totalRow['Test %'].toFixed(0)}%`
+            analogy: "Each agent has quality control inspections (tests) before deployment. " + totalRow[COLUMNS.TEST].toFixed(0) + "% currently have verification procedures.",
+            key_metric: `Test Coverage: ${totalRow[COLUMNS.TEST].toFixed(0)}%`
         },
         {
             category: "Safety",
             question: "How do you secure agent interactions?",
             analogy: "MCP Hardening is like adding safety guards to machinery - MCPShield mixin + @hardened decorators prevent unsafe operations.",
-            key_metric: `MCP Hardened: ${totalRow['Hardened %'].toFixed(1)}%`
+            key_metric: `MCP Hardened: ${totalRow[COLUMNS.HARDENED].toFixed(1)}%`
         },
         {
             category: "Observability",
             question: "How do you monitor agent behavior in production?",
             analogy: "Like factory sensors tracking machine health - structured logging, metrics, and tracing give real-time visibility.",
-            key_metric: `Observable: ${totalRow['Observable %'].toFixed(1)}%`
+            key_metric: `Observable: ${totalRow[COLUMNS.OBSERVABLE].toFixed(1)}%`
         }
     ];
     

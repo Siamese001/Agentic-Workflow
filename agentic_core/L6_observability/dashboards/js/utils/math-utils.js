@@ -2,6 +2,9 @@
  * Statistical Analysis Utilities
  */
 
+// SSOT: Import constants from centralized configuration
+import { THRESHOLDS } from '../constants/dashboard-constants.js';
+
 function computeDistributionStats(values) {
     // Filter out N/A and non-numbers
     const numbers = values.filter(v => typeof v === 'number' && !isNaN(v));
@@ -30,7 +33,7 @@ function countOutliers(values, threshold, direction = 'below') {
     }
 }
 
-function getOutlierSummary(values, threshold, direction = 'below') {
+function getOutlierSummary(values, threshold = THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT, direction = 'below') {
     const numbers = values.filter(v => typeof v === 'number' && !isNaN(v));
     let atZero = 0;
     let belowThreshold = 0;
@@ -45,7 +48,7 @@ function getOutlierSummary(values, threshold, direction = 'below') {
 }
 
 // Format outlier badge with count and label
-function formatOutlierBadge(countAtZero, countBelowThreshold, threshold = 50) {
+function formatOutlierBadge(countAtZero, countBelowThreshold, threshold = THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT) {
     let badges = '';
     if (countAtZero > 0) {
         badges += `<span style="background:#dc2626; color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:4px; white-space:nowrap;" title="${countAtZero} agent(s) at 0%">${countAtZero} @0%</span>`;
