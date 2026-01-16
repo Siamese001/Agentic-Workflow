@@ -31,13 +31,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # PHASE 2.1: L0 Structural Standardization - inherit from L0MaintenanceBaseAgent
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class BootstrapAgent(L0MaintenanceBaseAgent):
+class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     """
     Autonomous boot integrity agent.
     Runs before any validation mission to anchor the environment.

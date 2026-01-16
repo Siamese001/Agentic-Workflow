@@ -23,10 +23,11 @@ from typing import Any, Dict
 
 from .resume_base import ResumeAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
-class ContentQualityAgent(ResumeAgent, MCPHardenedMixin):
+class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     """
     Validates resume content quality.
 

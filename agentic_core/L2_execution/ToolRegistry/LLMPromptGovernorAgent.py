@@ -22,12 +22,13 @@ import re
 from typing import Dict, Optional
 import logging
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class LLMPromptGovernorAgent(SovereignBaseAgent):
+class LLMPromptGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Centralized prompt governance for all LLM interactions.
     

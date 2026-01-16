@@ -29,6 +29,7 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ class HealingRecord:
     line_number: Optional[int] = None
 
 
-class GravityStateAgent(MCPHardenedMixin):
+class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
     [L4 STATE] Tracks gravity healing operations and prevents re-flagging.
     

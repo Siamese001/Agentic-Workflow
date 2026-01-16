@@ -17,10 +17,11 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
 )
 from agentic_core.L5_safety.guardrails.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
-class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, MCPHardenedMixin):
+class PolicyNeuralAutoImmuneAgent(SubatomicTestingMixin, NeuralAutoImmuneAgent, MCPHardenedMixin):
     """PolicyNeuralAutoImmuneAgent agent for autonomous operations."""
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""

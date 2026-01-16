@@ -2322,6 +2322,46 @@ if __name__ == "__main__":
     # Run validation tests
     success = run_all_tests()
     
+    # MANDATORY: Run Playwright visual inspection
+    if success:
+        print("\n" + "=" * 70)
+        print("🎭 MANDATORY PLAYWRIGHT VISUAL INSPECTION")
+        print("=" * 70)
+        print("\nRunning Playwright visual validation tests...")
+        print("This is a REQUIRED step to visually verify all dashboard changes.")
+        
+        try:
+            playwright_script = project_root / "scripts" / "test_dashboard_playwright_visual.py"
+            result = subprocess.run(
+                [sys.executable, str(playwright_script)],
+                cwd=str(project_root),
+                capture_output=True,
+                text=True,
+                timeout=120
+            )
+            
+            # Show Playwright output
+            print(result.stdout)
+            if result.stderr:
+                print(result.stderr)
+            
+            if result.returncode != 0:
+                print("\n❌ PLAYWRIGHT VISUAL INSPECTION FAILED")
+                print("   Dashboard changes are NOT visually validated.")
+                print("   DO NOT DEPLOY until visual inspection passes.")
+                success = False
+            else:
+                print("\n✅ PLAYWRIGHT VISUAL INSPECTION PASSED")
+                print("   All dashboard changes visually validated.")
+        except subprocess.TimeoutExpired:
+            print("\n❌ PLAYWRIGHT VISUAL INSPECTION TIMED OUT")
+            print("   Visual validation did not complete in 2 minutes.")
+            success = False
+        except Exception as e:
+            print(f"\n❌ PLAYWRIGHT VISUAL INSPECTION ERROR: {e}")
+            print("   Could not run visual validation.")
+            success = False
+    
     # Final reminder
     if not success:
         print("\n" + "=" * 70)

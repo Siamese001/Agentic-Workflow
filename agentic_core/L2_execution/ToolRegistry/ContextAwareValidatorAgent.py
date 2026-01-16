@@ -21,10 +21,11 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
-class ContextAwareValidatorAgent(HealerMixin, MCPHardenedMixin):
+class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Base class for intelligent validators.
     Subclasses implement rule-specific logic while inheriting context analysis.

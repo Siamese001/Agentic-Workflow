@@ -12,9 +12,10 @@ from typing import Dict, Any
 from agentic_core.L2_execution.ToolRegistry.l2_self_testing_mixin import L2SelfTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 @dataclass
-class LicInternalAgent(MCPHardenedMixin, HealerMixin, L2SelfTestingMixin):
+class LicInternalAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin, L2SelfTestingMixin):
     """
     v12.0: UPGRADED to primary intelligence-gathering unit.
     NOW LOADS: 

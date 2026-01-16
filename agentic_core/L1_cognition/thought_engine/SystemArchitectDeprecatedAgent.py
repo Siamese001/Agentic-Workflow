@@ -15,11 +15,12 @@ from typing import Any, Dict, List, Optional, Tuple
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 # Legacy class removed - use SystemArchitectAgent instead
 @dataclass
-class SystemArchitectDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
+class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)
     ROLE: The Gatekeeper. If this fails, the system is unstable.

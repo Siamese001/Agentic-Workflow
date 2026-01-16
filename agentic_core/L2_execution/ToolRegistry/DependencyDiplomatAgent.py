@@ -31,6 +31,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -63,7 +64,7 @@ class BlastRadius:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class DependencyDiplomatAgent(SubAtomicAgent, MCPHardenedMixin):
+class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     The Dependency Diplomat - Graph Optimizer
     

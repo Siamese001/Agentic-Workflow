@@ -26,6 +26,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -71,7 +72,7 @@ class HandoffSummary:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class ContextCuratorAgent(MCPHardenedMixin, SubAtomicAgent):
+class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgent):
     """
     The Context Curator - Prompt Engineer Agent
     

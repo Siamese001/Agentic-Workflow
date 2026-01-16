@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTValidator
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -31,7 +32,7 @@ class SealResult:
     error: Optional[str] = None
 
 
-class DynamicSealAgent(MCPHardenedMixin):
+class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
     Sovereign Agent responsible for surgical refactoring of upward dependencies.
     

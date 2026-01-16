@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional
 
 from .outreach_base import OutreachAgent
 from .context import OutreachEngineContext
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 class OutreachTaskPriority(Enum):
@@ -351,7 +352,7 @@ class OutreachPredictiveHandoff:
         self._handoff_requests.clear()
 
 
-class OutreachCapabilityMonitorAgent(HealerMixin, MCPHardenedMixin):
+class OutreachCapabilityMonitorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Monitors outreach agent capabilities and performance.
     """
