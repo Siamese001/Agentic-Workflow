@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/meta-learning.css">
     <style>
 
         /* Remaining inline styles - minimal overrides */
@@ -231,6 +232,157 @@
                         <pre id="liveLog" style="height: 400px; background: #000; color: #0f0; padding: 15px; overflow-y: scroll; font-family: monospace;"></pre>
                     </div>
                 </div>
+
+                <!-- Phase 5: Meta-Learning Activity Section -->
+                <div class="meta-learning-section" style="margin-top: 30px;">
+                    <h2 style="font-size: 1.4em; margin-bottom: 16px;">🧠 Meta-Learning Activity</h2>
+                    
+                    <div class="charts-grid">
+                        <!-- Meta-Learning Stats -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📊 Meta-Learning Statistics</div>
+                                <div class="chart-subtitle">Experience buffer and pattern extraction metrics</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="meta-stats"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Strategy Weights -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">⚖️ Strategy Weights</div>
+                                <div class="chart-subtitle">CoT, ToT, ReAct, Reflection weights</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="strategy-weights"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-grid" style="margin-top: 16px;">
+                        <!-- Experience Stream -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📜 Experience Stream</div>
+                                <div class="chart-subtitle">Recent experiences with reward signals</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="experience-stream" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pattern Timeline -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">🔍 Pattern Extraction Timeline</div>
+                                <div class="chart-subtitle">Extracted patterns from experience replay</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="pattern-timeline" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 5: Redis Cache Activity Section -->
+                <div class="redis-section" style="margin-top: 30px;">
+                    <h2 style="font-size: 1.4em; margin-bottom: 16px;">💾 Redis Cache Activity</h2>
+                    
+                    <div class="charts-grid">
+                        <!-- Redis Stats -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📈 Operation Statistics</div>
+                                <div class="chart-subtitle">GET/SET/DELETE counts and hit rate</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="redis-stats"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Redis Operation Log -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📋 Recent Operations</div>
+                                <div class="chart-subtitle">Last 20 cache operations</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="redis-log" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 5: Pinecone Vector Operations Section -->
+                <div class="pinecone-section" style="margin-top: 30px;">
+                    <h2 style="font-size: 1.4em; margin-bottom: 16px;">🔍 Pinecone Vector Operations</h2>
+                    
+                    <div class="charts-grid">
+                        <!-- Pinecone Stats -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📊 Vector Storage Statistics</div>
+                                <div class="chart-subtitle">Upsert/Query counts and similarity scores</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="pinecone-stats"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pinecone Query Results -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">🔎 Recent Queries</div>
+                                <div class="chart-subtitle">Last 10 similarity searches</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="pinecone-queries" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 5: Agent Execution Flow Section -->
+                <div class="execution-section" style="margin-top: 30px;">
+                    <h2 style="font-size: 1.4em; margin-bottom: 16px;">⚡ Agent Execution Flow</h2>
+                    
+                    <!-- Layer Flow Diagram -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">🔄 Layer Progression</div>
+                            <div class="chart-subtitle">L6 → L0 execution flow</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="layer-flow"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-grid" style="margin-top: 16px;">
+                        <!-- Execution Summary -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📊 Execution Summary</div>
+                                <div class="chart-subtitle">Success/failure rates and timing</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="execution-summary"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Execution Timeline -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📈 Execution Timeline</div>
+                                <div class="chart-subtitle">Agent execution durations</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="execution-timeline" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Interview Prep Tab -->
@@ -297,6 +449,12 @@
     <script src="js/controllers/refresh-controller.js"></script>
     <script src="js/controllers/runtime-controller.js"></script>
 
+    <!-- Phase 5: Meta-Learning Components -->
+    <script src="js/components/meta-learning-panel.js"></script>
+    <script src="js/components/redis-monitor.js"></script>
+    <script src="js/components/pinecone-monitor.js"></script>
+    <script src="js/components/execution-flow.js"></script>
+    <script src="js/controllers/meta-learning-controller.js"></script>
 
     <!-- Load Main Orchestrator -->
     <script src="js/config.js"></script>

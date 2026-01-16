@@ -1848,6 +1848,160 @@ def run_all_tests() -> bool:
         errors.append(f"Test 27 FAILED: {e}")
         print(f"❌ Test 27 FAILED: {e}")
     
+    # Test 28: Meta-Learning Dashboard Components (Phase 5)
+    print("\n" + "─" * 70)
+    print("Running: Meta-Learning Dashboard Components (Phase 5)")
+    print("─" * 70)
+    
+    try:
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        
+        # Check for Phase 5 HTML elements
+        phase5_elements = [
+            ('id="meta-stats"', 'Meta-Learning Stats container'),
+            ('id="strategy-weights"', 'Strategy Weights container'),
+            ('id="experience-stream"', 'Experience Stream container'),
+            ('id="pattern-timeline"', 'Pattern Timeline container'),
+            ('id="redis-stats"', 'Redis Stats container'),
+            ('id="redis-log"', 'Redis Log container'),
+            ('id="pinecone-stats"', 'Pinecone Stats container'),
+            ('id="pinecone-queries"', 'Pinecone Queries container'),
+            ('id="execution-timeline"', 'Execution Timeline container'),
+            ('id="execution-summary"', 'Execution Summary container'),
+            ('id="layer-flow"', 'Layer Flow container'),
+        ]
+        
+        missing_elements = []
+        for pattern, desc in phase5_elements:
+            if pattern not in html_content:
+                missing_elements.append(desc)
+        
+        if missing_elements:
+            errors.append(f"Test 28A FAILED: Missing Phase 5 HTML elements: {', '.join(missing_elements[:3])}")
+        else:
+            print(f"✅ Test 28A PASSED: All {len(phase5_elements)} Phase 5 HTML elements present")
+        
+        # Check for Phase 5 JS includes
+        phase5_js = [
+            ('meta-learning-panel.js', 'Meta-Learning Panel component'),
+            ('redis-monitor.js', 'Redis Monitor component'),
+            ('pinecone-monitor.js', 'Pinecone Monitor component'),
+            ('execution-flow.js', 'Execution Flow component'),
+            ('meta-learning-controller.js', 'Meta-Learning Controller'),
+        ]
+        
+        missing_js = []
+        for filename, desc in phase5_js:
+            if filename not in html_content:
+                missing_js.append(desc)
+        
+        if missing_js:
+            errors.append(f"Test 28B FAILED: Missing Phase 5 JS includes: {', '.join(missing_js)}")
+        else:
+            print(f"✅ Test 28B PASSED: All {len(phase5_js)} Phase 5 JS files included")
+        
+        # Check for Phase 5 CSS include
+        if 'meta-learning.css' not in html_content:
+            errors.append("Test 28C FAILED: meta-learning.css not included in dashboard")
+        else:
+            print(f"✅ Test 28C PASSED: meta-learning.css included")
+        
+        # Check Phase 5 section headers
+        phase5_sections = [
+            ('Meta-Learning Activity', 'Meta-Learning section'),
+            ('Redis Cache Activity', 'Redis section'),
+            ('Pinecone Vector Operations', 'Pinecone section'),
+            ('Agent Execution Flow', 'Execution Flow section'),
+        ]
+        
+        missing_sections = []
+        for header, desc in phase5_sections:
+            if header not in html_content:
+                missing_sections.append(desc)
+        
+        if missing_sections:
+            errors.append(f"Test 28D FAILED: Missing Phase 5 sections: {', '.join(missing_sections)}")
+        else:
+            print(f"✅ Test 28D PASSED: All {len(phase5_sections)} Phase 5 sections present")
+    
+    except Exception as e:
+        errors.append(f"Test 28 FAILED: {e}")
+        print(f"❌ Test 28 FAILED: {e}")
+    
+    # Test 29: Phase 5 JavaScript Component Files Exist
+    print("\n" + "─" * 70)
+    print("Running: Phase 5 JavaScript Component Files Exist")
+    print("─" * 70)
+    
+    try:
+        js_components_dir = project_root / DASHBOARD_DIR / "js" / "components"
+        js_controllers_dir = project_root / DASHBOARD_DIR / "js" / "controllers"
+        css_dir = project_root / DASHBOARD_DIR / "css"
+        
+        required_files = [
+            (js_components_dir / "meta-learning-panel.js", "Meta-Learning Panel JS"),
+            (js_components_dir / "redis-monitor.js", "Redis Monitor JS"),
+            (js_components_dir / "pinecone-monitor.js", "Pinecone Monitor JS"),
+            (js_components_dir / "execution-flow.js", "Execution Flow JS"),
+            (js_controllers_dir / "meta-learning-controller.js", "Meta-Learning Controller JS"),
+            (css_dir / "meta-learning.css", "Meta-Learning CSS"),
+        ]
+        
+        missing_files = []
+        for file_path, desc in required_files:
+            if not file_path.exists():
+                missing_files.append(desc)
+        
+        if missing_files:
+            errors.append(f"Test 29 FAILED: Missing Phase 5 files: {', '.join(missing_files)}")
+        else:
+            print(f"✅ Test 29 PASSED: All {len(required_files)} Phase 5 files exist")
+            for file_path, desc in required_files:
+                size = file_path.stat().st_size
+                print(f"   ✓ {desc}: {size:,} bytes")
+    
+    except Exception as e:
+        errors.append(f"Test 29 FAILED: {e}")
+        print(f"❌ Test 29 FAILED: {e}")
+    
+    # Test 30: Phase 5 API Endpoints Available
+    print("\n" + "─" * 70)
+    print("Running: Phase 5 API Endpoints Available")
+    print("─" * 70)
+    
+    try:
+        # Import and test API endpoints
+        from agentic_core.L6_observability.api.runtime_api import app
+        from fastapi.testclient import TestClient
+        
+        client = TestClient(app)
+        
+        phase5_endpoints = [
+            ("/api/meta-learning/statistics", "Meta-Learning Statistics"),
+            ("/api/redis/stats", "Redis Stats"),
+            ("/api/pinecone/stats", "Pinecone Stats"),
+            ("/api/execution/timeline", "Execution Timeline"),
+            ("/api/runtime/state", "Runtime State"),
+        ]
+        
+        failed_endpoints = []
+        for endpoint, desc in phase5_endpoints:
+            response = client.get(endpoint)
+            if response.status_code != 200:
+                failed_endpoints.append(f"{desc} ({response.status_code})")
+        
+        if failed_endpoints:
+            errors.append(f"Test 30 FAILED: API endpoints not working: {', '.join(failed_endpoints)}")
+        else:
+            print(f"✅ Test 30 PASSED: All {len(phase5_endpoints)} Phase 5 API endpoints return 200")
+    
+    except ImportError as e:
+        print(f"   ⚠️  Test 30 SKIPPED: Could not import API ({e})")
+    except Exception as e:
+        errors.append(f"Test 30 FAILED: {e}")
+        print(f"❌ Test 30 FAILED: {e}")
+    
     # Final summary
     print("\n" + "=" * 70)
     if errors:
@@ -1855,7 +2009,7 @@ def run_all_tests() -> bool:
         failed_tests.extend([e.split(':')[0].replace('FAILED', '').strip() for e in errors if 'FAILED' in e])
     
     if all_passed:
-        print("✅ ALL 27 TESTS PASSED - Dashboard is ready for deployment")
+        print("✅ ALL 30 TESTS PASSED - Dashboard is ready for deployment")
         print("\n⚠️  IMPORTANT: Hard refresh browser (Ctrl+Shift+R) to see changes!")
     else:
         print(f"❌ {len(failed_tests)} TEST(S) FAILED:")

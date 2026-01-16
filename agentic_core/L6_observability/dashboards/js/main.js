@@ -124,6 +124,12 @@ const DashboardApp = {
             if (typeof initializeRuntimeMonitoring === 'function') {
                 initializeRuntimeMonitoring();
             }
+            
+            // Phase 5: Initialize Meta-Learning Dashboard
+            if (typeof initializeMetaLearningDashboard === 'function') {
+                initializeMetaLearningDashboard();
+                console.log('[Dashboard] Meta-Learning dashboard initialized');
+            }
             console.log('[Dashboard] KPIs initialized');
 
         } catch (e) {
