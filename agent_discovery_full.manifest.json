@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-16T16:51:31.601837Z",
-  "scan_duration_seconds": 20.28,
+  "generated_at": "2026-01-16T16:57:44.862058Z",
+  "scan_duration_seconds": 17.8,
   "agent_count": 265,
-  "content_hash": "sha256:37d242cc19f31d55ff2e6afa5b8a9866a199dfb9c2cc68bf81b990783eaf50aa",
+  "content_hash": "sha256:0aff28f4b9c34b6e16c24d0200818b4114e08a7f34bd3b3bc94dbc53ef1ba127",
   "layer_breakdown": {
     "Apps": 61,
     "Base": 1,
@@ -1479,6 +1479,7 @@
     "scripts/check_syntax.py": "4f23a279664dd247226fc9f6c1b3c481",
     "scripts/check_template_usage.py": "a071ea2cb5ec2497d21043a968dbc416",
     "scripts/check_territories_mcp.py": "a897138ae73e3db63f0697764a098e86",
+    "scripts/check_territory_order.py": "55f2ed22ea564ed64c8095e0dbcf7512",
     "scripts/check_territory_sum.py": "bbd07d839e823c2bcc863f566134bca4",
     "scripts/check_zero_counts.py": "764094925eb972d4d7f440edc9258a93",
     "scripts/clean_dashboard_html.py": "90e426ab8449a1705364ce3fd2787521",
@@ -1512,6 +1513,7 @@
     "scripts/find_agents_in_low_heal_territories.py": "36fea4fad157f5cb95143ab7efe2dd6a",
     "scripts/find_and_fix_all_missing_heal.py": "5303fedf6d968533a824756f75a10c74",
     "scripts/find_and_fix_missing_heal.py": "d763eccd09b20dc3c548312c74bc7015",
+    "scripts/find_base_class_agents.py": "d7f55d4d28da8dca6f171b57e5a0d00a",
     "scripts/find_corrupted_files.py": "67a260721f55aaab7071dbcffed4c176",
     "scripts/find_duplicate_agents.py": "c923f4272a1499518bf97104ed6dffcc",
     "scripts/find_infrastructure_target_issue.py": "5c8e86d7ed95a8be151234287ffb464a",
@@ -1547,7 +1549,7 @@
     "scripts/fix_typed_documented.py": "df99d090ebfdec6be51cf5ba9fe686af",
     "scripts/fix_typing_docs.py": "e9efdf7f1e60d265477dbb04bfc15a1f",
     "scripts/full_agent_capability_audit.py": "d2caad79192e8492878063882dde27b6",
-    "scripts/full_agent_discovery.py": "4093f3a6be706900b39ee396537cd371",
+    "scripts/full_agent_discovery.py": "18166a84daad2469cd0995ad85d40a2d",
     "scripts/generate_agent_duplicates_table.py": "65c2a540b0406b9dd07a20ae7ade4558",
     "scripts/generate_agent_report.py": "342335642afc5c8270d2f99bf753d3e0",
     "scripts/generate_agent_table_simple.py": "e05c78eb25c09907223885dd300326a1",
@@ -1715,6 +1717,6 @@
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63",
     "scripts/refactor/verify_integrity.py": "2bfe5aaf42a32e5a9c880b33b8b95217"
   },
-  "hashed_file_count": 1691,
+  "hashed_file_count": 1693,
   "hash_errors": 0
 }

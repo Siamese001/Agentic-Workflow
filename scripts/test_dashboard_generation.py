@@ -9,6 +9,14 @@ import sys
 import re
 from pathlib import Path
 
+# SSOT: Import canonical definitions for dashboard testing
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from scripts.dashboard_ssot_definitions import (
+    COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
+    COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_SCHEMA,
+    COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH
+)
+
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,

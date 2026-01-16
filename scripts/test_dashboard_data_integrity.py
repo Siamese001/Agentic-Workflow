@@ -165,15 +165,15 @@ def validate_calculation_integrity():
         expected_typed = calc_typed_pct(territory_agents)
         expected_documented = calc_documented_pct(territory_agents)
         
-        # Compare with dashboard values
+        # SSOT: Compare with dashboard values using canonical column names
         checks = [
-            ('Heal Cap %', expected_heal_cap, row.get('Heal Cap %')),
-            ('Invocation %', expected_invocation, row.get('Invocation %')),
-            ('Test %', expected_test, row.get('Test %')),
-            ('MCP Hardened %', expected_hardened, row.get('MCP Hardened %')),
-            ('Complexity Health %', expected_complexity, row.get('Complexity Health %')),
-            ('Typed %', expected_typed, row.get('Typed %')),
-            ('Documented %', expected_documented, row.get('Documented %'))
+            (COL_HEAL_CAP, expected_heal_cap, row.get(COL_HEAL_CAP)),
+            (COL_INVOCATION, expected_invocation, row.get(COL_INVOCATION)),
+            (COL_TEST, expected_test, row.get(COL_TEST)),
+            (COL_HARDENED, expected_hardened, row.get(COL_HARDENED)),
+            (COL_COMPLEXITY_HEALTH, expected_complexity, row.get(COL_COMPLEXITY_HEALTH)),
+            (COL_TYPED, expected_typed, row.get(COL_TYPED)),
+            (COL_DOCUMENTED, expected_documented, row.get(COL_DOCUMENTED))
         ]
         
         for field_name, expected, actual in checks:
