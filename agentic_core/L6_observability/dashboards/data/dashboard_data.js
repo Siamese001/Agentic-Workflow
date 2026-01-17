@@ -11,11 +11,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 92.8,
-    "Typed %": 96.7,
-    "Documented %": 97.7,
+    "Typed %": 97.1,
+    "Documented %": 98.3,
     "Schema Strictness %": 99.2,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 98.4,
+    "Code Quality Score": 98.65,
     "Health": 88.92
   },
   {
@@ -123,11 +123,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 91.0,
-    "Typed %": 95.7,
-    "Documented %": 99.6,
+    "Typed %": 97.6,
+    "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 98.83,
+    "Code Quality Score": 99.4,
     "Health": 88.65
   },
   {
@@ -187,11 +187,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 93.6,
-    "Typed %": 96.4,
+    "Typed %": 97.6,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 99.1,
+    "Code Quality Score": 99.4,
     "Health": 89.04
   },
   {
@@ -235,11 +235,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 93.6,
-    "Typed %": 95.2,
+    "Typed %": 95.9,
     "Documented %": 99.3,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 98.62,
+    "Code Quality Score": 98.8,
     "Health": 89.04
   },
   {
@@ -348,10 +348,10 @@ window.dashboardData = [
     "MCP Hardened %": 100.0,
     "Complexity Health %": 92.0,
     "Typed %": 96.8,
-    "Documented %": 93.2,
+    "Documented %": 95.7,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.5,
+    "Code Quality Score": 98.12,
     "Health": 88.8
   },
   {
@@ -364,10 +364,10 @@ window.dashboardData = [
     "MCP Hardened %": 100.0,
     "Complexity Health %": 94.0,
     "Typed %": 93.1,
-    "Documented %": 90.3,
+    "Documented %": 92.4,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 95.85,
+    "Code Quality Score": 96.38,
     "Health": 89.1
   },
   {

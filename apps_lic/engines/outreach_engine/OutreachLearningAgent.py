@@ -34,7 +34,18 @@ class OutreachConfidenceLevel(Enum):
 
 @dataclass
 class OutreachLearningExample:
-    """A learning example from past outreach."""
+    """
+    A learning example from past outreach.
+    
+    Attributes:
+        example_id: Unique identifier for the example
+        TaskType: Type of task performed
+        input_context: Input context for the task
+        output_result: Result produced
+        success: Whether the task succeeded
+        confidence: Confidence score (0-1)
+        timestamp: ISO timestamp of creation
+    """
     example_id: str
     TaskType: str
     input_context: str
@@ -46,7 +57,15 @@ class OutreachLearningExample:
 
 @dataclass
 class OutreachInstruction:
-    """An instruction for outreach agents."""
+    """
+    An instruction for outreach agents.
+    
+    Attributes:
+        text: Instruction text
+        priority: Priority level (higher = more important)
+        source: Source of the instruction
+        timestamp: ISO timestamp of creation
+    """
     text: str
     priority: int
     source: str
@@ -57,10 +76,22 @@ class OutreachLearningLoop:
     """
     Learning loop for outreach campaigns.
 
-    Tracks patterns and improves over time.
+    Tracks patterns and improves over time through example recording
+    and pattern recognition.
+    
+    Attributes:
+        ctx: Outreach engine context
+        _examples: List of recorded learning examples
+        _patterns: Dictionary of recognized patterns and their counts
     """
 
-    def __init__(self, ctx: OutreachEngineContext) -> None:
+    def __init__(self, ctx: 'OutreachEngineContext') -> None:
+        """
+        Initialize the learning loop.
+        
+        Args:
+            ctx: Outreach engine context
+        """
         self.ctx = ctx
         self._examples: List[OutreachLearningExample] = []
         self._patterns: Dict[str, int] = {}

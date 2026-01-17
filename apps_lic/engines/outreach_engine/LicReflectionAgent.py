@@ -13,14 +13,31 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 
 @dataclass
 class LicReflectionAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
-    """Reflects on execution and suggests improvements."""
+    """
+    Reflects on execution and suggests improvements.
+    
+    Analyzes:
+    - Passed and failed agents
+    - Active signals
+    - Campaign readiness
+    """
 
     async def execute(self) -> None:
+        """
+        Execute reflection on campaign execution.
+        
+        Analyzes:
+        - Agent results (passed/failed)
+        - Active signals
+        - Campaign readiness for execution
+        
+        Determines if more cycles are needed.
+        """
         print(f"   [{self.name}] Reflecting on execution...")
 
         # Analyze results
-        passed_agents = []
-        failed_agents = []
+        passed_agents: list = []
+        failed_agents: list = []
 
         for agent_name, result in self.ctx.results.items():
             if result.get("passed", False):
@@ -29,7 +46,7 @@ class LicReflectionAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin)
                 failed_agents.append(agent_name)
 
         # Analyze signals
-        active_signals = list(self.ctx.signals)
+        active_signals: list = list(self.ctx.signals)
 
         # Determine if more cycles needed
         if active_signals or failed_agents:

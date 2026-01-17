@@ -13,7 +13,14 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 
 @dataclass
 class MessageComplianceAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
-    """Ensures message compliance with regulations and best practices."""
+    """
+    Ensures message compliance with regulations and best practices.
+    
+    Validates:
+    - Forbidden words/phrases
+    - Unsubscribe link presence
+    - Message length limits
+    """
 
     FORBIDDEN_WORDS = [
         "guaranteed", "free money", "act now", "limited time",
@@ -21,6 +28,17 @@ class MessageComplianceAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
     ]
 
     async def execute(self) -> None:
+        """
+        Execute message compliance check.
+        
+        Validates all messages for:
+        - Forbidden marketing words
+        - Required unsubscribe links
+        - Length limits
+        
+        Raises:
+            COMPLIANCE_ISSUE signal if violations found
+        """
         print(f"   [{self.name}] Checking message compliance...")
 
         messages = self.ctx.messages
@@ -30,11 +48,11 @@ class MessageComplianceAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
             self.record_result(True, "No messages to check")
             return
 
-        compliance_issues = []
+        compliance_issues: list = []
 
         for i, message in enumerate(messages):
-            content = message.get("content", "").lower()
-            subject = message.get("subject", "").lower()
+            content: str = message.get("content", "").lower()
+            subject: str = message.get("subject", "").lower()
 
             # Check for forbidden words
             for word in self.FORBIDDEN_WORDS:

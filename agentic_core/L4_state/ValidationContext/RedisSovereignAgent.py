@@ -28,21 +28,39 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
     """
     _instance = None
 
-    def __new__(cls, project_root: Path, ctx=None) -> Any:
-        """New  ."""
+    def __new__(cls, project_root: Path, ctx: Optional[Any] = None) -> 'RedisSovereignAgent':
+        """
+        Singleton constructor for Redis sovereign agent.
+        
+        Args:
+            project_root: Root directory of the project
+            ctx: Optional validation context
+        
+        Returns:
+            RedisSovereignAgent singleton instance
+        """
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             return get_redis_sovereign(project_root, ctx)
 
-    def _init(self, project_root: Path, ctx=None) -> Any:
-        """Init."""
+    def _init(self, project_root: Path, ctx: Optional[Any] = None) -> None:
+        """
+        Initialize Redis connection with hardened pool.
+        
+        Args:
+            project_root: Root directory of the project
+            ctx: Optional validation context for state persistence
+        
+        Raises:
+            ConnectionError: If Redis connection fails
+        """
         env = get_env(project_root)
         
         # Store ValidationContext for state persistence operations
         self.ctx = ctx
         
         # Hardened Pool: Prevent connection leaks
-        connection_kwargs = {
+        connection_kwargs: Dict[str, Any] = {
             "max_connections": 20,
             "socket_connect_timeout": 5,
             "socket_timeout": 5,
@@ -79,25 +97,38 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
         return True
 
     def get_client(self) -> redis.Redis:
-        """Execute get_client operation."""
+        """
+        Get the Redis client instance.
+        
+        Returns:
+            Redis client for direct operations
+        """
         return self.client
 
-    def invalidate_file_cache(self, file_path: Path) -> Any:
-        """Wipes old embeddings if the file has evolved"""
+    def invalidate_file_cache(self, file_path: Path) -> None:
+        """
+        Wipes old embeddings if the file has evolved.
+        
+        Args:
+            file_path: Path to file whose cache should be invalidated
+        """
         try:
-            content = file_path.read_bytes()
+            content: bytes = file_path.read_bytes()
             # We use a partial hash in the key to find related embeddings
-            content_hash = hashlib.sha256(content).hexdigest()[:16]
-            pattern = f"pc_embed:*{content_hash}*"
-            keys = self.client.keys(pattern)
+            content_hash: str = hashlib.sha256(content).hexdigest()[:16]
+            pattern: str = f"pc_embed:*{content_hash}*"
+            keys: list = self.client.keys(pattern)
             if keys:
                 self.client.delete(*keys)
         except Exception:
             pass 
 
-    def invalidate_by_path(self, file_path: Path) -> Any:
+    def invalidate_by_path(self, file_path: Path) -> None:
         """
         Invalidate cache by exact file path (for moves/deletes).
+        
+        Args:
+            file_path: Path to file whose cache should be invalidated
         Ensures no 'ghost' embeddings remain for a path that no longer exists.
         """
         try:

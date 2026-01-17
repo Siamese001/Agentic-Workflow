@@ -15,7 +15,13 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class LicRecipientAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
     v12.0: DEMOTED to secondary fact-checker role.
-    Now performs validation searches based on strategic brief entities.
+    
+    Performs validation searches for recipient entities from strategic brief.
+    Validates people, initiatives, and provides recipient profile context.
+    
+    Attributes:
+        circuit_breaker: Circuit breaker for fault tolerance
+        search_client: Google search client for validation queries
     """
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
@@ -33,13 +39,28 @@ class LicRecipientAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient) -> None:
+    def __init__(self, circuit_breaker: 'CircuitBreaker', search_client: 'GoogleSearchClient') -> None:
+        """
+        Initialize the recipient validation agent.
+        
+        Args:
+            circuit_breaker: Circuit breaker for fault tolerance
+            search_client: Google search client for validation queries
+        """
         self.circuit_breaker = circuit_breaker
         self.search_client = search_client
 
-    async def validate_entity(self, entity_name: str, entity_context: str, mission: OutreachMission) -> Dict[str, object]:
+    async def validate_entity(self, entity_name: str, entity_context: str, mission: 'OutreachMission') -> Dict[str, Any]:
         """
         NEW v12.0: Validate a specific entity (person, initiative) from strategic brief.
+        
+        Args:
+            entity_name: Name of the entity to validate
+            entity_context: Context about the entity
+            mission: Outreach mission context
+        
+        Returns:
+            Dict with rag_results, is_validated flag, and staleness_warning
         """
 
         # Build targeted validation query
@@ -64,8 +85,16 @@ class LicRecipientAgent(SubatomicTestingMixin, MCPHardenedMixin):
             "staleness_warning": staleness_warning
         }
     
-    async def get_profile(self, mission: OutreachMission) -> Dict[str, object]:
-        """Legacy method - minimal search for basic profile validation."""
+    async def get_profile(self, mission: 'OutreachMission') -> Dict[str, Any]:
+        """
+        Legacy method - minimal search for basic profile validation.
+        
+        Args:
+            mission: Outreach mission context
+        
+        Returns:
+            Dict with rag_results from profile search
+        """
 
         name = mission.recipient_profile.get('name', '')
         company = mission.recipient_profile.get('company', '')

@@ -37,6 +37,17 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
     ]
 
     async def execute(self) -> None:
+        """
+        Execute ATS compatibility check.
+        
+        Validates resume for:
+        - ATS-unfriendly formatting patterns
+        - Standard section headers
+        - Keyword optimization against job description
+        
+        Raises:
+            ATS_FAILURE signal if compatibility issues found
+        """
         self.log("Checking ATS compatibility...")
 
         resume = self.ctx.current_resume
@@ -47,10 +58,10 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
             self.add_signal("ATS_FAILURE")
             return
 
-        issues = []
+        issues: list = []
 
         # Check for ATS-unfriendly patterns (use ensure_ascii=False to preserve unicode)
-        full_content = json.dumps(resume, ensure_ascii=False)
+        full_content: str = json.dumps(resume, ensure_ascii=False)
         for pattern in self.ATS_UNFRIENDLY_PATTERNS:
             if re.search(pattern, full_content):
                 issues.append(f"ATS-unfriendly pattern found: {pattern}")
@@ -60,8 +71,8 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
             if section_name.startswith("_"):
                 continue
 
-            normalized = section_name.lower().strip()
-            is_standard = False
+            normalized: str = section_name.lower().strip()
+            is_standard: bool = False
 
             for standard_section, variants in self.STANDARD_HEADERS.items():
                 if normalized in variants or normalized == standard_section:

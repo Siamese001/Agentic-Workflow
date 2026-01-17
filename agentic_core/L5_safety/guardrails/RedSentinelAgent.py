@@ -39,7 +39,7 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     - Null bytes and special characters
     """
 
-    def __init__(self, llm_client=None) -> None:
+    def __init__(self, llm_client: Optional[Any] = None) -> None:
         """
         Initialize the RedSentinelAgent agent.
         Phase 16B: Uses LLM Router MCP for hostile input generation.
@@ -48,8 +48,8 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             llm_client: LLM client for generating hostile inputs (deprecated, uses MCP)
         """
         self.llm_client = llm_client
-        self.enabled = os.getenv('ENABLE_FUZZ', 'false').lower() == 'true'
-        self.audit_path = Path('observability/audit/fuzz_results.json')
+        self.enabled: bool = os.getenv('ENABLE_FUZZ', 'false').lower() == 'true'
+        self.audit_path: Path = Path('observability/audit/fuzz_results.json')
         self.audit_path.parent.mkdir(parents=True, exist_ok=True)
 
     async def fuzz_function(self, func_name: str, func_code: str, file_path: str) -> Dict[str, Any]:
@@ -66,11 +66,11 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """
         if not self.enabled:
             return {'enabled': False, 'reason': 'ENABLE_FUZZ not set'}
-        LOGGER.info(f'🛡️  RedSentinelAgent: Generating hostile inputs for {func_name}')
-        hostile_inputs: Any = await self._generate_hostile_inputs(func_name, func_code)
-        results: Any = {'function': func_name, 'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'hostile_inputs': hostile_inputs, 'vulnerabilities': [], 'crashes': []}
+        Logger.info(f'🛡️  RedSentinelAgent: Generating hostile inputs for {func_name}')
+        hostile_inputs: List[Any] = await self._generate_hostile_inputs(func_name, func_code)
+        results: Dict[str, Any] = {'function': func_name, 'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'hostile_inputs': hostile_inputs, 'vulnerabilities': [], 'crashes': []}
         for input_data in hostile_inputs:
-            result: Any = await self._test_with_input(func_name, input_data)
+            result: Dict[str, Any] = await self._test_with_input(func_name, input_data)
             if result['crashed']:
                 results['crashes'].append({'input': input_data, 'error': result['error'], 'traceback': result['traceback']})
                 results['vulnerabilities'].append({'type': 'crash', 'input': input_data, 'Severity': 'HIGH'})

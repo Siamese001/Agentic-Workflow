@@ -903,27 +903,19 @@ class _CCVisitor(ast.NodeVisitor):
 
 def calculate_cyclomatic_complexity(class_node: ast.ClassDef) -> int:
     """
-    Calculate average cyclomatic complexity per method in class.
+    Calculate total cyclomatic complexity for class.
     
-    Changed from total to average to better reflect maintainability.
-    A class with 50 methods each with CC=5 is more maintainable than
-    a class with 5 methods each with CC=50, even though total is same.
-    
-    Returns average CC per method, capped at 10 for 100% complexity health.
+    Complexity health % = 100 - (CC * 2)
+    This penalizes complex classes to encourage refactoring.
     """
-    method_ccs = []
+    total_cc = 0
     for item in class_node.body:
         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
             visitor = _CCVisitor()
             visitor.visit(item)
-            method_ccs.append(visitor.cc)
+            total_cc += visitor.cc
     
-    if not method_ccs:
-        return 1  # No methods = minimal complexity
-    
-    # Return average CC per method (rounded)
-    avg_cc = sum(method_ccs) / len(method_ccs)
-    return round(avg_cc)
+    return total_cc if total_cc > 0 else 1
 
 
 def count_loc(source: str) -> int:
