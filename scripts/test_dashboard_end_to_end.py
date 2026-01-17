@@ -36,18 +36,16 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import DASHBOAR
 # SSOT: Import all metric definitions from single source
 from scripts.dashboard_ssot_definitions import (
     # Field names (SSOT for agent_discovery_full.json)
-    FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS, FIELD_MCP_HARDENED,
+    FIELD_HAS_HEALING, FIELD_INVOCATION as FIELD_INVOCATION_CONST, FIELD_HAS_TESTS, FIELD_MCP_HARDENED,
     FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
     FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
+    FIELD_CLASS_NAME, FIELD_PATH, FIELD_LAYER, FIELD_TERRITORY,
     # Column names (SSOT for dashboard display)
     COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
-    COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_SCHEMA_STRICTNESS,
-    COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH, COL_AVG_CC,
+    COL_AVG_CC, COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED,
+    COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH,
     # Calculation functions (SSOT for metrics)
-    calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
-    calc_typed_pct, calc_documented_pct, calc_schema_strictness_pct,
-    calc_canonical_inheritance_pct, calc_avg_cc, calc_complexity_health,
-    calc_health_score, calc_code_quality_score, is_l0_territory, safe_numeric
+    calc_health_score
 )
 
 # =============================================================================
@@ -243,6 +241,88 @@ def test_dashboard_required_fields() -> Tuple[bool, List[str]]:
         errors.append(f"❌ Failed to verify required fields: {e}")
         return False, errors
 
+def test_discovery_field_names() -> Tuple[bool, List[str]]:
+    """Test 4B: Verify agent_discovery_full.json uses exact SSOT field names.
+    
+    CRITICAL: This test prevents field name errors like:
+    - Using 'docstring_percentage' instead of 'documented_pct'
+    - Using 'typed_percentage' instead of 'typed_pct'
+    - Any deviation from dashboard_ssot_definitions.py FIELD_* constants
+    """
+    errors = []
+    
+    # SSOT: All required field names from dashboard_ssot_definitions.py
+    REQUIRED_SSOT_FIELDS = {
+        'class_name',
+        'path',
+        'layer',
+        'territory',
+        'has_healing',
+        'has_tests',
+        'mcp_hardened',
+        'invocation',
+        'typed_pct',        # NOT 'typed_percentage'
+        'documented_pct',   # NOT 'docstring_percentage'
+        'schema_strictness',
+        'proper_base_class',
+        'cyclomatic_complexity',
+    }
+    
+    # FORBIDDEN field names (common mistakes)
+    FORBIDDEN_FIELD_NAMES = {
+        'docstring_percentage': "Use 'documented_pct' instead",
+        'typed_percentage': "Use 'typed_pct' instead",
+        'docstring_pct': "Use 'documented_pct' instead",
+        'type_hints_pct': "Use 'typed_pct' instead",
+        'has_schema': "Use 'schema_strictness' instead",
+        'base_class': "Use 'proper_base_class' instead",
+    }
+    
+    try:
+        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
+        with open(discovery_path, 'r', encoding='utf-8') as f:
+            agents = json.load(f)
+        
+        if not agents:
+            errors.append("❌ agent_discovery_full.json is empty")
+            return False, errors
+        
+        # Sample first 10 agents for field validation
+        sample_agents = agents[:min(10, len(agents))]
+        field_issues = []
+        
+        for idx, agent in enumerate(sample_agents):
+            agent_id = agent.get('class_name', f'Agent_{idx}')
+            
+            # Check for FORBIDDEN field names
+            for forbidden, suggestion in FORBIDDEN_FIELD_NAMES.items():
+                if forbidden in agent:
+                    field_issues.append(f"{agent_id}: Found forbidden field '{forbidden}' - {suggestion}")
+            
+            # Check for MISSING required fields
+            missing = REQUIRED_SSOT_FIELDS - set(agent.keys())
+            if missing:
+                field_issues.append(f"{agent_id}: Missing SSOT fields: {missing}")
+        
+        if field_issues:
+            errors.append(f"Test 4B FAILED: {len(field_issues)} SSOT field name violations")
+            for issue in field_issues[:5]:  # Show first 5
+                errors.append(f"  - {issue}")
+            print(f"❌ Test 4B FAILED: Discovery JSON uses incorrect field names")
+            for issue in field_issues[:5]:
+                print(f"   - {issue}")
+            return False, errors
+        
+        print(f"✅ Test 4B PASSED: All agents use correct SSOT field names")
+        print(f"   ✓ Validated {len(sample_agents)} agents")
+        print(f"   ✓ No forbidden fields (docstring_percentage, typed_percentage, etc.)")
+        print(f"   ✓ All required SSOT fields present")
+        return True, []
+    
+    except Exception as e:
+        errors.append(f"Test 4B FAILED: {e}")
+        return False, errors
+
 def test_data_consistency() -> Tuple[bool, List[str]]:
     """Test 5: Verify dashboard data matches agent_discovery_full.json."""
     errors = []
@@ -346,6 +426,7 @@ def run_all_tests() -> bool:
         ("Dashboard HTML Exists", test_dashboard_html_exists),
         ("Dashboard Data Structure", test_dashboard_data_structure),
         ("Required Fields Present", test_dashboard_required_fields),
+        ("Discovery SSOT Field Names", test_discovery_field_names),
         ("Data Consistency", test_data_consistency),
         ("Table Rendering Elements", test_table_rendering_elements)
     ]
@@ -996,47 +1077,115 @@ def run_all_tests() -> bool:
     except Exception as e:
         errors.append(f"Test 12G FAILED: {e}")
     
-    # Test 13: Footnote Accuracy Check
+    # Test 13: Footnote Accuracy Check (Table 1 and Table 2)
     print("\n" + "─" * 70)
-    print("Running: Footnote Accuracy Check")
+    print("Running: Comprehensive Footnote Accuracy Check (Both Tables)")
     print("─" * 70)
     
     try:
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        # Check table-renderer.js for footnotes (modular architecture)
+        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        js_content = table_renderer_path.read_text(encoding='utf-8')
         
         footnote_checks = []
         
-        # Check 1: Health footnote mentions weighted formula
-        if 'Gospel-weighted' in html_content or 'Heal Capability (30%)' in html_content:
-            print("   ✅ Health footnote updated to weighted formula")
-        else:
-            footnote_checks.append("Health footnote still shows old equal-weight formula")
+        # TABLE 1 (Territory Summary) Footnote Checks
+        print("\n   Checking Table 1 (Territory Summary) Footnotes:")
         
-        # Check 2: Code Quality Score footnote is accurate
-        # Accepts either simple average OR weighted composite formula
-        if 'Typed (35%)' in html_content and 'Schema (30%)' in html_content:
-            footnote_checks.append("Code Quality Score footnote shows stale weighted formula")
-        elif '(Typed % + Documented %) / 2' in html_content or 'Simple average' in html_content:
-            print("   ✅ Code Quality Score footnote updated to simple average")
-        elif 'Typed % × 0.30' in html_content or 'Weighted composite' in html_content:
-            print("   ✅ Code Quality Score footnote updated to weighted composite")
+        # Heal Capability % - NEW DEFINITION
+        if 'Direct implementation: Agent defines' in js_content and 'heal()' in js_content and 'apply_fix()' in js_content and 'heal_violation()' in js_content and 'heal_repository()' in js_content:
+            if 'Inheritance: Agent inherits from a class that has healing capability' in js_content and 'has_healing_in_chain()' in js_content:
+                print("   ✅ Heal Capability %: Correct definition (direct + inheritance)")
+            else:
+                footnote_checks.append("Heal Capability %: Missing inheritance detection explanation")
         else:
-            footnote_checks.append("Code Quality Score footnote formula unclear")
+            footnote_checks.append("Heal Capability %: Missing direct implementation methods (heal, apply_fix, heal_violation, heal_repository)")
         
-        # Check 3: Stale percentage weights in footnotes
-        stale_patterns = ['35%.*Schema.*30%', 'Typed.*35%', 'Metadata.*15%']
-        for pattern in stale_patterns:
-            if re.search(pattern, html_content):
-                footnote_checks.append(f"Found stale percentage pattern: {pattern}")
-                break
+        # Heal Invocation %
+        if 'super().heal_repository()' in js_content and 'centralized healing protocol' in js_content:
+            print("   ✅ Heal Invocation %: Correct definition")
+        else:
+            footnote_checks.append("Heal Invocation %: Missing super().heal_repository() explanation")
+        
+        # MCP Hardened %
+        if 'MCP Hardened' in js_content and ('Model Context Protocol' in js_content or 'security validation' in js_content):
+            print("   ✅ MCP Hardened %: Correct definition")
+        else:
+            footnote_checks.append("MCP Hardened %: Missing MCP/security validation explanation")
+        
+        # Test Coverage %
+        if 'Test Coverage' in js_content and ('unit/integration tests' in js_content or 'test files' in js_content):
+            print("   ✅ Test Coverage %: Correct definition")
+        else:
+            footnote_checks.append("Test Coverage %: Missing test explanation")
+        
+        # Complexity Health %
+        if '100 - (Cyclomatic Complexity' in js_content or 'Complexity Health' in js_content:
+            print("   ✅ Complexity Health %: Correct definition")
+        else:
+            footnote_checks.append("Complexity Health %: Missing complexity formula")
+        
+        # Health Score - Gospel-weighted
+        if 'Gospel-weighted' in js_content or 'Heal Capability (30%)' in js_content:
+            if 'Invocation (10%)' in js_content and 'Test Coverage (25%)' in js_content:
+                print("   ✅ Health Score: Correct weighted formula")
+            else:
+                footnote_checks.append("Health Score: Weighted formula incomplete")
+        else:
+            footnote_checks.append("Health Score: Missing Gospel-weighted formula")
+        
+        # TABLE 2 (Code Quality) Footnote Checks
+        print("\n   Checking Table 2 (Code Quality) Footnotes:")
+        
+        # Typed %
+        if 'Typed %' in js_content and ('type hints' in js_content or 'type annotations' in js_content):
+            print("   ✅ Typed %: Correct definition")
+        else:
+            footnote_checks.append("Typed %: Missing type hints explanation")
+        
+        # Documented %
+        if 'Documented %' in js_content and 'docstrings' in js_content:
+            print("   ✅ Documented %: Correct definition")
+        else:
+            footnote_checks.append("Documented %: Missing docstrings explanation")
+        
+        # Schema Strictness %
+        if 'Schema Strictness' in js_content and ('@dataclass' in js_content or 'Pydantic' in js_content or 'BaseModel' in js_content):
+            print("   ✅ Schema Strictness %: Correct definition")
+        else:
+            footnote_checks.append("Schema Strictness %: Missing @dataclass/Pydantic explanation")
+        
+        # Canonical Inheritance %
+        if 'Canonical Inheritance' in js_content and ('SovereignBaseAgent' in js_content or 'layer bases' in js_content):
+            print("   ✅ Canonical Inheritance %: Correct definition")
+        else:
+            footnote_checks.append("Canonical Inheritance %: Missing base class explanation")
+        
+        # Code Quality Score
+        if 'Code Quality Score' in js_content and ('Typed % × 0.30' in js_content or 'Weighted composite' in js_content):
+            print("   ✅ Code Quality Score: Correct weighted formula")
+        else:
+            footnote_checks.append("Code Quality Score: Missing weighted formula")
+        
+        # Check for stale patterns
+        stale_patterns = [
+            ('Typed.*35%', 'Stale Typed % weight (should be 30%)'),
+            ('Schema.*30%.*Typed.*35%', 'Stale Code Quality formula'),
+            ('Metadata.*15%', 'Stale metadata reference')
+        ]
+        for pattern, msg in stale_patterns:
+            if re.search(pattern, js_content):
+                footnote_checks.append(msg)
         
         if footnote_checks:
             errors.append(f"Test 13 FAILED: {len(footnote_checks)} footnote issues")
             for issue in footnote_checks:
                 errors.append(f"  - {issue}")
+            print(f"\n❌ Test 13 FAILED: {len(footnote_checks)} footnote accuracy issues")
         else:
-            print(f"✅ Test 13 PASSED: All footnotes accurate and up-to-date")
+            print(f"\n✅ Test 13 PASSED: All footnotes accurate for both Table 1 and Table 2")
+            print(f"   ✓ Table 1: 6 metrics verified (Heal Cap, Invocation, MCP, Test, Complexity, Health)")
+            print(f"   ✓ Table 2: 5 metrics verified (Typed, Documented, Schema, Base Class, Quality Score)")
     
     except Exception as e:
         errors.append(f"Test 13 FAILED: Could not validate footnotes: {e}")
