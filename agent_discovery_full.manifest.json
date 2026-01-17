@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-17T02:49:40.060432Z",
-  "scan_duration_seconds": 16.11,
+  "generated_at": "2026-01-17T02:56:41.046412Z",
+  "scan_duration_seconds": 16.33,
   "agent_count": 265,
-  "content_hash": "sha256:3f7cca7fd2470eb237045395fbab06f7c34b3a1c8373dba8de107367e37b326a",
+  "content_hash": "sha256:5a1d1528f2400504ca2357e819ba63bbdfe8bd06d472993072b6b91629ed1247",
   "layer_breakdown": {
     "Apps": 61,
     "Base": 1,
@@ -975,7 +975,7 @@
     "agentic_core/L6_observability/dashboards/verify_dashboard_e2e.py": "1036ac0594ef16cc5b1b2f602612bd8a",
     "agentic_core/L6_observability/dashboards/verify_dashboard_e2e_playwright.py": "250997268d16d893d70f0a23cd96499f",
     "agentic_core/L6_observability/dashboards/_temp_server.py": "8b0b786f66a0c396f80272825250ea54",
-    "agentic_core/L6_observability/dashboards/core/ssot_definitions.py": "09935297d1da8653c73932afff9dd18e",
+    "agentic_core/L6_observability/dashboards/core/ssot_definitions.py": "d5f8e2b4dfdeb4bed402ec2124613635",
     "agentic_core/L6_observability/dashboards/scripts/generate_ssot.py": "0040161c536aa16e100643e3023d90bf",
     "agentic_core/L6_observability/dashboards/scripts/mandatory_dashboard_tests.py": "b3e490fd5063f54f2b4c41e969dedcc8",
     "agentic_core/L6_observability/dashboards/scripts/regenerate_data.py": "e8726b3fe95d5304e4178cf48190f7d3",
@@ -1229,7 +1229,7 @@
     "apps_lic/engines/outreach_engine/OutreachLearningAgent.py": "28ba1cb0847edb03147403cfa86f6454",
     "apps_lic/engines/outreach_engine/OutreachPhase5OrchestratorAgent.py": "088dbe5341051f5c7deb0eca609a014b",
     "apps_lic/engines/outreach_engine/OutreachProactiveAgent.py": "9778a61d3fd9662bc39f53cfa3f9b8d6",
-    "apps_lic/engines/outreach_engine/OutreachSignalRouterAgent.py": "1cf36153a6d9785b065f8297d90f60a1",
+    "apps_lic/engines/outreach_engine/OutreachSignalRouterAgent.py": "8e02c70810bc925b935201accdb01026",
     "apps_lic/engines/outreach_engine/OutreachTestPilotAgent.py": "11edba1ade4c81c1a003c6e5fc06eb23",
     "apps_lic/engines/outreach_engine/OutreachTestPilotDeprecatedAgent.py": "97c247b64bd6bd1d20bfc4822e901bfb",
     "apps_lic/engines/outreach_engine/OutreachValidationExecutorAgent.py": "9329c24fd4ac09ed014e489a2d1f1a76",
@@ -1604,6 +1604,7 @@
     "scripts/rca_table_rendering.py": "a5c70563d73ae8481b2056f97e9e9919",
     "scripts/recalculate_code_quality_scores.py": "0e4f1bf44bddff94456740660b045bcf",
     "scripts/recalculate_health_scores.py": "898fa322f3709322da74e994ff9a70ed",
+    "scripts/reduce_complexity_top5.py": "980057db3669de97510e54044dc93784",
     "scripts/refactor_complexity.py": "d9f791e3f98b167b1d30477124ab252f",
     "scripts/refactor_hardcoded_paths.py": "de891200a988d17d942e0a61c6e3704e",
     "scripts/refactor_l0_gravity_imports.py": "0873f21c9e4bf900344cb6d98f6286c7",
@@ -1747,6 +1748,6 @@
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63",
     "scripts/refactor/verify_integrity.py": "2bfe5aaf42a32e5a9c880b33b8b95217"
   },
-  "hashed_file_count": 1723,
+  "hashed_file_count": 1724,
   "hash_errors": 0
 }
