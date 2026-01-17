@@ -28,100 +28,25 @@ def load_discovery():
     return agents
 
 def map_territory(agent):
-    """Map agent to territory using SSOT logic from generate_dashboard.py"""
-    layer = agent.get('layer', '')
-    sub_dir = agent.get('sub_dir', '')
-    path = agent.get('path', '').replace('\\', '/')
-    class_name = agent.get('class_name', '')
+    """
+    Get territory from agent discovery data (SSOT).
     
-    # Map to FIXED detailed territory names with subcategories (matching generate_dashboard.py)
-    if 'apps_lic' in sub_dir.lower():
-        return "Apps Lic"
-    elif 'apps_rg' in sub_dir.lower():
-        return "Apps Rg"
-    elif 'apps_shared' in sub_dir.lower():
-        return "Apps Shared"
-    elif layer.startswith('L5'):
-        # L5 Safety subcategories
-        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
-            return "L5 Safety/Base Agent"
-        elif '/validators' in path or 'validators/' in path:
-            return "L5 Safety/Validators"
-        elif '/red_team' in path or 'red_teaming/' in path:
-            return "L5 Safety/Red Teaming"
-        elif '/gravity' in path or 'Gravity' in class_name:
-            return "L5 Safety/Gravity"
-        else:
-            return "L5 Safety/Guardrails"
-    elif layer.startswith('L4'):
-        # L4 State subcategories
-        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
-            return "L4 State/Base Agent"
-        elif '/filesystem' in path or '/infrastructure' in path:
-            return "L4 State/Infrastructure"
-        elif '/adapters' in path or 'Adapter' in class_name:
-            return "L4 State/Specialized"
-        else:
-            return "L4 State/Core"
-    elif layer.startswith('L3'):
-        # L3 Orchestration subcategories
-        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
-            return "L3 Orchestration/Base Agent"
-        elif '/infrastructure' in path:
-            return "L3 Orchestration/Infrastructure"
-        elif '/adapters' in path or 'Adapter' in class_name:
-            return "L3 Orchestration/Specialized"
-        else:
-            return "L3 Orchestration/Core"
-    elif layer.startswith('L2'):
-        # L2 Execution subcategories
-        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
-            return "L2 Execution/Base Agent"
-        elif '/adapters' in path or 'Adapter' in class_name:
-            return "L2 Execution/Specialized"
-        else:
-            return "L2 Execution/Core"
-    elif layer.startswith('L1'):
-        # L1 Cognition subcategories
-        if 'BaseAgent' in class_name or class_name == 'L1CognitionBaseAgent' or 'base_agent' in path.lower() or 'base_class' in path.lower():
-            return "L1 Cognition/Base Agent"
-        elif '/adapters' in path or 'Adapter' in class_name:
-            return "L1 Cognition/Specialized"
-        else:
-            return "L1 Cognition/Core"
-    elif layer.startswith('L0'):
-        # L0 Maintenance subcategories
-        if 'BaseAgent' in class_name or class_name == 'L0MaintenanceBaseAgent' or 'base_agent' in path.lower() or 'base_class' in path.lower():
-            return "L0 Maintenance/Base Agent"
-        elif '/infrastructure' in path or 'Infrastructure' in class_name:
-            return "L0 Maintenance/Infrastructure"
-        else:
-            return "L0 Maintenance/Core"
-    elif 'L6_observability' in path or 'L6_Observability' in path or layer.startswith('L6'):
-        # L6 Observability subcategories
-        if 'BaseAgent' in class_name or 'base_agent' in path.lower() or 'base_class' in path.lower():
-            return "L6 Observability/Base Agent"
-        elif '/metrics' in path or 'Metric' in class_name:
-            return "L6 Observability/Metrics"
-        elif '/telemetry' in path or 'Telemetry' in class_name:
-            return "L6 Observability/Infrastructure"
-        elif '/tracing' in path or 'Tracing' in class_name or 'Trace' in class_name:
-            return "L6 Observability/Tracing"
-        elif '/compliance' in path or 'Compliance' in class_name:
-            return "L6 Observability/Compliance"
-        else:
-            return "L6 Observability/Metrics"
-    elif layer == 'Base' or 'SovereignBaseAgent' in class_name or 'Mixin' in class_name:
-        # Base Layer Splitting: Root vs Mixins
-        if 'Mixin' in class_name or 'mixins' in path.lower():
-            return "Base/Mixins"
-        else:
-            return "Sovereign Base Agent"
-    elif '/utils/core_extensions' in path or 'utils/core_extensions' in path:
-        # Core utilities like NamingAgent
-        return "L0 Maintenance/Core"
-    else:
+    Uses the 'territory' field from agent_discovery_full.json which is
+    computed by territory_ssot_definitions.get_territory_from_path().
+    This ensures consistency with regenerate_data.py.
+    """
+    # SSOT: Use territory from discovery data directly
+    territory = agent.get('territory', 'Unknown')
+    
+    # Fallback for agents without territory field
+    if not territory or territory == 'Unknown':
+        # Use layer as fallback
+        layer = agent.get('layer', '')
+        if layer:
+            return f"{layer}/Core"
         return "Unknown"
+    
+    return territory
 
 def calculate_metrics(agents_in_territory):
     """Calculate territory metrics from agent list"""

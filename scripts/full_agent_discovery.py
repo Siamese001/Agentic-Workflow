@@ -572,14 +572,21 @@ def detect_invocation_status(class_node: ast.ClassDef) -> str:
 # SSOT METRICS: All dashboard metrics computed here (single AST pass)
 # ============================================================================
 
-def detect_has_tests(class_node: ast.ClassDef, source: str) -> bool:
+def detect_has_tests(class_node: ast.ClassDef, source: str, class_name: str = None) -> bool:
     """Detect if class has ACTUAL test coverage (not inherited infrastructure).
     
-    Only counts explicit test implementations:
-    - _run_self_tests method defined in the class
-    - SubatomicTestingMixin in direct inheritance
-    - pytest/unittest imports with test_ methods
+    Checks:
+    1. External test file exists (test_<ClassName>.py in tests/ subdirs)
+    2. _run_self_tests method defined in the class
+    3. SubatomicTestingMixin in direct inheritance
+    4. pytest/unittest imports with test_ methods
     """
+    # PRIORITY 1: Check for external test file (most reliable)
+    if class_name:
+        test_file_exists = _check_external_test_file(class_name)
+        if test_file_exists:
+            return True
+    
     # Check class methods for actual test implementations
     for item in class_node.body:
         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -610,6 +617,36 @@ def detect_has_tests(class_node: ast.ClassDef, source: str) -> bool:
             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if item.name.startswith('test_'):
                     return True
+    
+    return False
+
+
+def _check_external_test_file(agent_name: str) -> bool:
+    """Check if an external test file exists for the given agent."""
+    project_root = Path(__file__).parent.parent
+    tests_dir = project_root / "tests"
+    
+    test_patterns = [
+        tests_dir / f"test_{agent_name}.py",
+        tests_dir / "apps" / f"test_{agent_name}.py",
+        tests_dir / "l0" / f"test_{agent_name}.py",
+        tests_dir / "l1" / f"test_{agent_name}.py",
+        tests_dir / "l2" / f"test_{agent_name}.py",
+        tests_dir / "l3" / f"test_{agent_name}.py",
+        tests_dir / "l4" / f"test_{agent_name}.py",
+        tests_dir / "l5" / f"test_{agent_name}.py",
+        tests_dir / "l6" / f"test_{agent_name}.py",
+        tests_dir / "L6" / f"test_{agent_name}.py",
+        tests_dir / "unit" / f"test_{agent_name}.py",
+        tests_dir / "integration" / f"test_{agent_name}.py",
+        tests_dir / "autogen" / f"test_{agent_name}.py",
+        tests_dir / "base" / f"test_{agent_name}.py",
+        tests_dir / "utils" / f"test_{agent_name}.py",
+    ]
+    
+    for pattern in test_patterns:
+        if pattern.exists():
+            return True
     
     return False
 
@@ -865,14 +902,28 @@ class _CCVisitor(ast.NodeVisitor):
 
 
 def calculate_cyclomatic_complexity(class_node: ast.ClassDef) -> int:
-    """Calculate total cyclomatic complexity for all methods in class."""
-    total_cc = 0
+    """
+    Calculate average cyclomatic complexity per method in class.
+    
+    Changed from total to average to better reflect maintainability.
+    A class with 50 methods each with CC=5 is more maintainable than
+    a class with 5 methods each with CC=50, even though total is same.
+    
+    Returns average CC per method, capped at 10 for 100% complexity health.
+    """
+    method_ccs = []
     for item in class_node.body:
         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
             visitor = _CCVisitor()
             visitor.visit(item)
-            total_cc += visitor.cc
-    return total_cc
+            method_ccs.append(visitor.cc)
+    
+    if not method_ccs:
+        return 1  # No methods = minimal complexity
+    
+    # Return average CC per method (rounded)
+    avg_cc = sum(method_ccs) / len(method_ccs)
+    return round(avg_cc)
 
 
 def count_loc(source: str) -> int:
@@ -1440,7 +1491,7 @@ def main():
             invocation = detect_invocation_status(node)
             
             # SSOT METRICS: Compute all dashboard metrics here (single AST pass)
-            has_tests = detect_has_tests(node, source)
+            has_tests = detect_has_tests(node, source, node.name)
             typed_pct = calculate_typing_coverage(node)
             documented_pct = calculate_docstring_coverage(node)
             observability = detect_observability(node, source)

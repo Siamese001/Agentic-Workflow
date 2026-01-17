@@ -7,8 +7,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "enforce_ascii",
@@ -35,7 +35,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -47,10 +47,10 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "ResumeAgent",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -77,7 +77,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 18,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -89,8 +89,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
+      "ResumeAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -118,7 +118,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 16,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -130,10 +130,10 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -159,7 +159,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -171,9 +171,9 @@
     "territory": "Apps Lic",
     "category": "Cognition",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent"
     ],
     "key_methods": [
       "execute",
@@ -199,7 +199,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -212,8 +212,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -244,7 +244,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 14,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -256,9 +256,9 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent"
     ],
     "key_methods": [
       "execute",
@@ -284,7 +284,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 7,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -297,8 +297,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "detect_forbidden_verbs",
@@ -327,7 +327,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 13,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -339,8 +339,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
+      "ResumeAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -368,7 +368,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 17,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -380,9 +380,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -412,7 +412,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -424,9 +424,9 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent"
     ],
     "key_methods": [
       "execute",
@@ -452,7 +452,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -464,8 +464,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -497,7 +497,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 19,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -509,8 +509,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -544,7 +544,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 32,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -556,8 +556,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
+      "ResumeAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -586,7 +586,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 29,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -599,8 +599,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -631,7 +631,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 35,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -644,8 +644,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -679,7 +679,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 48,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -692,8 +692,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -720,7 +720,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 21,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -733,8 +733,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -761,7 +761,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 15,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -774,8 +774,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -809,7 +809,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 50,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -822,8 +822,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -855,7 +855,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 55,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -868,8 +868,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -897,7 +897,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 15,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -910,8 +910,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -940,7 +940,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 15,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -953,8 +953,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -981,7 +981,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 12,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -994,8 +994,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1029,7 +1029,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 53,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1059,7 +1059,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1067,7 +1067,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1079,9 +1079,9 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1108,7 +1108,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1122,8 +1122,8 @@
     "inheritance": [
       "SubatomicTestingMixin",
       "L2SelfTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -1155,7 +1155,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 38,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1198,7 +1198,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 12,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1241,7 +1241,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 10,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1253,9 +1253,9 @@
     "territory": "Apps Lic",
     "category": "Executor",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent"
     ],
     "key_methods": [
       "execute",
@@ -1281,7 +1281,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1326,7 +1326,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 54,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1338,9 +1338,9 @@
     "territory": "Apps Lic",
     "category": "GenericAgent",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent"
     ],
     "key_methods": [
       "execute",
@@ -1366,7 +1366,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1379,8 +1379,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1407,7 +1407,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 15,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1419,9 +1419,9 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent"
     ],
     "key_methods": [
       "execute",
@@ -1447,7 +1447,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 10,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1460,8 +1460,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1489,7 +1489,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1502,8 +1502,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1534,7 +1534,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 13,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1546,10 +1546,10 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1579,7 +1579,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1592,8 +1592,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1625,7 +1625,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 12,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1637,9 +1637,9 @@
     "territory": "Apps Lic",
     "category": "GenericAgent",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent"
     ],
     "key_methods": [
       "__init__",
@@ -1666,7 +1666,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 5,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1678,8 +1678,8 @@
     "territory": "Apps Lic",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "get_agents_for_signals",
@@ -1699,7 +1699,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 25.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1707,7 +1707,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 10,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1719,9 +1719,9 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "OutreachAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "OutreachAgent"
     ],
     "key_methods": [
       "execute",
@@ -1747,7 +1747,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1759,8 +1759,8 @@
     "territory": "Apps Lic",
     "category": "Validator",
     "inheritance": [
-      "OutreachAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "OutreachAgent"
     ],
     "key_methods": [
       "execute",
@@ -1786,7 +1786,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1800,8 +1800,8 @@
     "inheritance": [
       "SubatomicTestingMixin",
       "ValidationGateExecutor",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1835,7 +1835,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 65,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1847,9 +1847,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1877,7 +1877,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1889,9 +1889,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1921,7 +1921,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1933,9 +1933,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1968,7 +1968,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 10,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1981,8 +1981,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "detect_placeholders",
@@ -2009,7 +2009,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2021,8 +2021,8 @@
     "territory": "Apps Rg",
     "category": "GenericAgent",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
+      "ResumeAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -2052,7 +2052,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 7,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2065,8 +2065,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2099,7 +2099,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2111,9 +2111,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2140,7 +2140,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2152,8 +2152,8 @@
     "territory": "Apps Rg",
     "category": "Executor",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
+      "ResumeAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -2181,7 +2181,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 7,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2193,9 +2193,9 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2229,7 +2229,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 20,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2241,8 +2241,8 @@
     "territory": "Apps Rg",
     "category": "Executor",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
+      "ResumeAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -2269,7 +2269,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 7,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2281,8 +2281,8 @@
     "territory": "Apps Rg",
     "category": "GenericAgent",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
+      "ResumeAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -2310,7 +2310,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 12,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2323,8 +2323,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -2361,8 +2361,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "ResumeAgent",
       "SubatomicTestingMixin",
+      "ResumeAgent",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -2390,7 +2390,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 17,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2402,8 +2402,8 @@
     "territory": "Apps Rg",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "get_agents_for_signals",
@@ -2423,7 +2423,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 25.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2431,7 +2431,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 13,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2443,8 +2443,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2468,7 +2468,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 87.5,
     "observability": {
@@ -2476,7 +2476,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 34,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2488,8 +2488,8 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -2523,7 +2523,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 16,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2535,9 +2535,9 @@
     "territory": "Apps Rg",
     "category": "Validator",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2567,7 +2567,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 14,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2580,8 +2580,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2613,7 +2613,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 38,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2660,7 +2660,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 14,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2673,8 +2673,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2708,7 +2708,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 45,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2752,7 +2752,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 29,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2764,11 +2764,11 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin",
       "SubatomicTestingMixin",
+      "AutonomyMixin",
+      "L0MaintenanceBaseAgent",
       "SelfDiagnosisMixin",
-      "L0MaintenanceBaseAgent"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2802,7 +2802,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 114,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2814,8 +2814,8 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "Agent",
-      "L0MaintenanceBaseAgent"
+      "L0MaintenanceBaseAgent",
+      "Agent"
     ],
     "key_methods": [
       "heal_repository"
@@ -2832,7 +2832,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -2883,7 +2883,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 18,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2895,11 +2895,11 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin",
       "SubatomicTestingMixin",
+      "AutonomyMixin",
+      "L0MaintenanceBaseAgent",
       "SelfDiagnosisMixin",
-      "L0MaintenanceBaseAgent"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2933,7 +2933,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 19,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2974,7 +2974,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 5,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2986,11 +2986,11 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin",
       "SubatomicTestingMixin",
+      "AutonomyMixin",
+      "L0MaintenanceBaseAgent",
       "SelfDiagnosisMixin",
-      "L0MaintenanceBaseAgent"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3022,7 +3022,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 15,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3067,7 +3067,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 27,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3111,7 +3111,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 28,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3124,8 +3124,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3159,7 +3159,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 54,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3173,8 +3173,8 @@
     "inheritance": [
       "SubatomicTestingMixin",
       "CanonASTValidator",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3202,7 +3202,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 12,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3242,7 +3242,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 4,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3255,8 +3255,8 @@
     "category": "GenericAgent",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "heal_repository",
@@ -3285,7 +3285,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 22,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3298,8 +3298,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3333,7 +3333,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 59,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3376,7 +3376,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 37,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3389,8 +3389,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3421,7 +3421,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 43,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3461,7 +3461,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 5,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3501,7 +3501,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 10,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3514,8 +3514,8 @@
     "category": "GenericAgent",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "execute",
@@ -3544,7 +3544,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3584,7 +3584,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3624,7 +3624,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 5,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3665,7 +3665,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3678,9 +3678,9 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "CanonBaseAgentInterface",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3714,7 +3714,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 23,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3726,9 +3726,9 @@
     "territory": "L1 Cognition/Core",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "CanonBaseAgentInterface",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -3754,7 +3754,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -3762,7 +3762,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 20,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3775,8 +3775,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3810,7 +3810,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 110,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3854,7 +3854,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 20,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3867,8 +3867,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3896,7 +3896,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 19,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3909,8 +3909,8 @@
     "category": "Validator",
     "inheritance": [
       "PineconeVectorMixin",
-      "SovereignBaseAgent",
-      "RedisCacheMixin"
+      "RedisCacheMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "_init_registry",
@@ -3944,7 +3944,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 49,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3990,7 +3990,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 26,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4003,8 +4003,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4036,7 +4036,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 21,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4049,8 +4049,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4084,7 +4084,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 84,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4124,7 +4124,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 5,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4137,8 +4137,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4167,7 +4167,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 20,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4180,8 +4180,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -4207,7 +4207,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 2,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4252,7 +4252,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 16,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4265,9 +4265,9 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "CanonBaseAgentInterface",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4301,7 +4301,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 47,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4314,8 +4314,8 @@
     "category": "Orchestrator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "heal_repository",
@@ -4349,7 +4349,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 42,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4362,8 +4362,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "can_run",
@@ -4390,7 +4390,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 4,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4404,8 +4404,8 @@
     "inheritance": [
       "SubatomicTestingMixin",
       "NodeVisitor",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4433,7 +4433,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 8,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4446,9 +4446,9 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "can_run",
@@ -4476,7 +4476,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4488,10 +4488,10 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
-      "PineconeVectorMixin",
       "RedisCacheMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "PineconeVectorMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4525,7 +4525,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 148,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4573,7 +4573,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 79,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4586,8 +4586,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4620,7 +4620,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 13,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4633,8 +4633,8 @@
     "category": "Orchestrator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -4668,7 +4668,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 64,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4681,8 +4681,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4715,7 +4715,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 45,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4728,8 +4728,8 @@
     "category": "Orchestrator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -4763,7 +4763,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 61,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4776,8 +4776,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "execute",
@@ -4803,7 +4803,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 2,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4816,8 +4816,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4844,7 +4844,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 13,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4857,9 +4857,9 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4893,7 +4893,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 43,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4937,7 +4937,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 35,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4950,8 +4950,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4985,7 +4985,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 31,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4998,8 +4998,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5033,7 +5033,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 66,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5046,8 +5046,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5074,7 +5074,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 7,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5087,8 +5087,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -5119,7 +5119,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 30,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5132,8 +5132,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5165,7 +5165,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 31,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5177,8 +5177,8 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5212,7 +5212,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 37,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5246,7 +5246,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5254,7 +5254,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 16,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5267,8 +5267,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -5306,9 +5306,9 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SovereignBaseAgent",
+      "PineconeVectorMixin",
       "RedisCacheMixin",
-      "PineconeVectorMixin"
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "__post_init__",
@@ -5342,7 +5342,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 40,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5387,7 +5387,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 16,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5399,9 +5399,9 @@
     "territory": "L2 Execution/Core",
     "category": "Validator",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5427,7 +5427,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5435,7 +5435,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 69,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5448,8 +5448,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "execute",
@@ -5475,7 +5475,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 2,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5488,8 +5488,8 @@
     "category": "State",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "execute",
@@ -5515,7 +5515,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 2,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5552,7 +5552,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -5560,7 +5560,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 34,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5573,8 +5573,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5608,7 +5608,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 68,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5621,9 +5621,9 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5655,7 +5655,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 23,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5667,9 +5667,9 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "IActionPlane",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5703,7 +5703,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 51,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5715,8 +5715,8 @@
     "territory": "L2 Execution/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5750,7 +5750,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 26,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5763,8 +5763,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5797,7 +5797,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 32,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5810,8 +5810,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5839,7 +5839,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 15,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5852,8 +5852,8 @@
     "category": "Governor",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "can_run",
@@ -5880,7 +5880,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5927,7 +5927,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 52,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5941,8 +5941,8 @@
     "inheritance": [
       "SubatomicTestingMixin",
       "CanonBaseAgent",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -5975,7 +5975,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 66,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6013,7 +6013,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -6021,7 +6021,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 56,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6034,8 +6034,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "execute",
@@ -6061,7 +6061,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 2,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6105,7 +6105,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 21,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6118,8 +6118,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6150,7 +6150,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 30,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6162,8 +6162,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6194,7 +6194,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 21,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6207,8 +6207,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6237,7 +6237,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 16,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6250,8 +6250,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6284,7 +6284,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 39,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6297,8 +6297,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6331,7 +6331,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 17,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6344,8 +6344,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6373,7 +6373,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6419,7 +6419,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 27,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6431,9 +6431,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6467,7 +6467,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 46,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6479,8 +6479,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6514,7 +6514,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 65,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6527,8 +6527,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -6566,8 +6566,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -6604,9 +6604,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6640,7 +6640,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 41,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6653,8 +6653,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6688,7 +6688,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 56,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6731,7 +6731,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 8,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6744,8 +6744,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6777,7 +6777,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 20,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6790,8 +6790,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6818,7 +6818,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 4,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6830,9 +6830,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6860,7 +6860,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 7,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6873,8 +6873,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6906,7 +6906,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 48,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6918,8 +6918,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -6946,7 +6946,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 3,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -6959,9 +6959,9 @@
     "category": "Validator",
     "inheritance": [
       "PineconeVectorMixin",
-      "SovereignBaseAgent",
       "RedisCacheMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "route",
@@ -6992,7 +6992,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 33,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7035,7 +7035,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 15,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7048,8 +7048,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7079,7 +7079,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 16,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7122,7 +7122,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 23,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7135,8 +7135,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7170,7 +7170,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 49,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7183,8 +7183,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7218,7 +7218,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 37,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7230,10 +7230,10 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "PineconeVectorMixin",
       "MCPHardenedMixin",
-      "RedisCacheMixin",
       "L3SubatomicTestingMixin",
+      "RedisCacheMixin",
+      "PineconeVectorMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -7268,7 +7268,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 105,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7303,7 +7303,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 50.0,
     "documented_pct": 75.0,
     "observability": {
@@ -7311,7 +7311,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 30,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7343,7 +7343,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -7351,7 +7351,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 10,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7395,7 +7395,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 15,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7408,8 +7408,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -7443,7 +7443,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 63,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7488,7 +7488,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 23,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7533,7 +7533,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 24,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7577,7 +7577,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 14,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7590,8 +7590,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7621,7 +7621,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 21,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7634,8 +7634,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7665,7 +7665,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 33,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7677,10 +7677,10 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "CognitiveRecoveryMixin",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "CognitiveRecoveryMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7714,7 +7714,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 96,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7726,8 +7726,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7759,7 +7759,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 13,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7771,8 +7771,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7805,7 +7805,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 40,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7818,8 +7818,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7847,7 +7847,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7860,8 +7860,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7891,7 +7891,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 16,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7904,8 +7904,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7938,7 +7938,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 31,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7951,8 +7951,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7983,7 +7983,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 58,
+    "cyclomatic_complexity": 8,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -7995,8 +7995,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8030,7 +8030,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 36,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8063,7 +8063,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -8071,7 +8071,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 10,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8084,8 +8084,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8119,7 +8119,7 @@
       "metrics": true,
       "tracing": true
     },
-    "cyclomatic_complexity": 36,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8131,10 +8131,10 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "FileSystemEventHandler",
       "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "FileSystemEventHandler"
     ],
     "key_methods": [
       "__init__",
@@ -8161,7 +8161,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8173,8 +8173,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8207,7 +8207,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 68,
+    "cyclomatic_complexity": 8,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8219,8 +8219,8 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8254,7 +8254,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 97,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8267,8 +8267,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -8306,8 +8306,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8335,7 +8335,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8347,8 +8347,8 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8382,7 +8382,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 59,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8394,8 +8394,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8429,7 +8429,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 38,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8473,7 +8473,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 33,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8516,7 +8516,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 30,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8563,7 +8563,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 31,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8575,8 +8575,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -8603,7 +8603,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 3,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8617,8 +8617,8 @@
     "inheritance": [
       "L4SubatomicTestingMixin",
       "PineconeVectorMixin",
-      "SovereignBaseAgent",
-      "RedisCacheMixin"
+      "RedisCacheMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "recall",
@@ -8652,7 +8652,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 47,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8696,7 +8696,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 20,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8709,8 +8709,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8744,7 +8744,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 54,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8756,8 +8756,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8791,7 +8791,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 63,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8803,8 +8803,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__new__",
@@ -8836,7 +8836,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 20,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8849,8 +8849,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -8884,7 +8884,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 62,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8896,8 +8896,8 @@
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8930,7 +8930,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 32,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8943,8 +8943,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8976,7 +8976,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 28,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -8988,8 +8988,8 @@
     "territory": "L5 Safety/Red Teaming",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -9023,7 +9023,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 24,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9036,8 +9036,8 @@
     "category": "Guardian",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -9071,7 +9071,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 44,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9084,8 +9084,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9119,7 +9119,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 32,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9131,10 +9131,10 @@
     "territory": "L5 Safety/Validators",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "PineconeVectorMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "RedisCacheMixin",
+      "PineconeVectorMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -9168,7 +9168,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 75,
+    "cyclomatic_complexity": 8,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9210,7 +9210,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 27,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9223,8 +9223,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9254,7 +9254,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 18,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9267,8 +9267,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9295,7 +9295,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 15,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9308,8 +9308,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9343,7 +9343,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 56,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9355,8 +9355,8 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9382,7 +9382,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9390,7 +9390,7 @@
       "metrics": true,
       "tracing": true
     },
-    "cyclomatic_complexity": 179,
+    "cyclomatic_complexity": 9,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9433,7 +9433,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 18,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9446,8 +9446,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9474,7 +9474,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 8,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9487,8 +9487,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9517,7 +9517,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 23,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9530,8 +9530,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9559,7 +9559,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 22,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9572,8 +9572,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9607,7 +9607,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 64,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9620,8 +9620,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9653,7 +9653,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 42,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9666,8 +9666,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9698,7 +9698,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 51,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9711,8 +9711,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9743,7 +9743,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 31,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9756,8 +9756,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9787,7 +9787,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 36,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9800,8 +9800,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9831,7 +9831,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 23,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9844,8 +9844,8 @@
     "category": "Analyzer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -9879,7 +9879,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 57,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9892,8 +9892,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9925,7 +9925,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 35,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9938,8 +9938,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9973,7 +9973,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 133,
+    "cyclomatic_complexity": 9,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -9986,8 +9986,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10017,7 +10017,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 78,
+    "cyclomatic_complexity": 13,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10030,8 +10030,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10062,7 +10062,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 46,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10074,8 +10074,8 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Validator",
     "inheritance": [
-      "MetaPathFinder",
       "SubatomicTestingMixin",
+      "MetaPathFinder",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -10110,7 +10110,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 31,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10123,8 +10123,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10152,7 +10152,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 29,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10165,8 +10165,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10200,7 +10200,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 85,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10212,8 +10212,8 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -10240,7 +10240,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 3,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10253,8 +10253,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10288,7 +10288,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 77,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10301,8 +10301,8 @@
     "category": "Validator",
     "inheritance": [
       "PineconeVectorMixin",
-      "SovereignBaseAgent",
-      "RedisCacheMixin"
+      "RedisCacheMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -10336,7 +10336,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 35,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10382,7 +10382,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 25,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10421,7 +10421,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -10429,7 +10429,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 426,
+    "cyclomatic_complexity": 8,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10442,8 +10442,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10474,7 +10474,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 35,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10487,8 +10487,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10516,7 +10516,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 17,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10554,7 +10554,7 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": false,
+    "has_tests": true,
     "typed_pct": 95.2,
     "documented_pct": 100.0,
     "observability": {
@@ -10562,7 +10562,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 92,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10575,8 +10575,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10610,7 +10610,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 344,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10623,8 +10623,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10658,7 +10658,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 48,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10671,8 +10671,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10702,7 +10702,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 26,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10714,11 +10714,11 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -10753,7 +10753,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 49,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10765,10 +10765,10 @@
     "territory": "L5 Safety/Validators",
     "category": "Validator",
     "inheritance": [
-      "ASTEnforcementMixin",
       "SubatomicTestingMixin",
       "CanonBaseAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "ASTEnforcementMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10802,7 +10802,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 67,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10814,9 +10814,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "GenericAgent",
     "inheritance": [
-      "NeuralAutoImmuneAgent",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "NeuralAutoImmuneAgent"
     ],
     "key_methods": [
       "__init__",
@@ -10843,7 +10843,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10856,8 +10856,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10886,7 +10886,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 20,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10899,8 +10899,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10932,7 +10932,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 37,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10945,8 +10945,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -10974,7 +10974,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 20,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -10987,8 +10987,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -11020,7 +11020,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 50,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11033,8 +11033,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11063,7 +11063,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 36,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11076,8 +11076,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11111,7 +11111,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 33,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11124,8 +11124,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11159,7 +11159,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 67,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11172,8 +11172,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11207,7 +11207,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 64,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11219,9 +11219,9 @@
     "territory": "L5 Safety/Guardrails",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "CognitiveRecoveryMixin",
-      "L5SafetyBaseAgent",
-      "SubatomicTestingMixin"
+      "L5SafetyBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -11249,7 +11249,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 8,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11262,8 +11262,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11297,7 +11297,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 241,
+    "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11310,8 +11310,8 @@
     "category": "Validator",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11341,7 +11341,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 29,
+    "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11354,8 +11354,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11389,7 +11389,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 67,
+    "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11437,7 +11437,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 33,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11450,9 +11450,9 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
+      "NodeTransformer",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "NodeTransformer"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11481,7 +11481,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 14,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11494,8 +11494,8 @@
     "category": "Healer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11522,7 +11522,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 9,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11535,10 +11535,10 @@
     "category": "Analyzer",
     "inheritance": [
       "SubatomicTestingMixin",
-      "PineconeVectorMixin",
+      "ABC",
       "RedisCacheMixin",
       "SovereignBaseAgent",
-      "ABC"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -11572,7 +11572,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 59,
+    "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11584,8 +11584,8 @@
     "territory": "L6_Observability/Metrics",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "L6ObservabilityBaseAgent"
+      "L6ObservabilityBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -11616,7 +11616,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 19,
+    "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11658,7 +11658,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 8,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11670,11 +11670,11 @@
     "territory": "L6_Observability/Metrics",
     "category": "Monitor",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "EventEmissionMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "RedisCacheMixin",
-      "ContextPropagationMixin"
+      "ContextPropagationMixin",
+      "EventEmissionMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -11703,7 +11703,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 11,
+    "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 0.0,
     "has_metadata": true
@@ -11715,8 +11715,8 @@
     "territory": "L6_Observability/Metrics",
     "category": "Orchestrator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "L6ObservabilityBaseAgent"
+      "L6ObservabilityBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "get_timestamp",
@@ -11745,7 +11745,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 6,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -11787,7 +11787,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 5,
+    "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 0.0,
     "has_metadata": true
