@@ -1,23 +1,26 @@
-from __future__ import annotations
-from dataclasses import dataclass
 """Constitutional Overseer for validating ActionRequests.
 
-Validates actions against forbidden commands and safety rules.
-Includes SafetyInspectorAgent with Socratic Judge for false positive mitigation.
+This module provides safety validation for action requests, including:
+- ConstitutionalOverseer: Validates actions against forbidden commands
+- SafetyInspectorAgent: Scans files for security violations with Socratic Judge
+
+Typical usage:
+    overseer = create_overseer()
+    result = await overseer.validate_action(request)
+    
+    inspector = create_safety_inspector()
+    violations = await inspector.scan_file("path/to/file.py")
 """
+from __future__ import annotations
+
 import logging
-import os
 import re
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Pattern, Set
+
 from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-
-Logger: Any = logging.getLogger(__name__)
+Logger: logging.Logger = logging.getLogger(__name__)
 
 class ViolationCheck:
     """Result of a safety Violation check."""

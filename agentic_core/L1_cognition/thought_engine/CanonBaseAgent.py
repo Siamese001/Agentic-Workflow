@@ -162,9 +162,50 @@ class CanonBaseAgent(HealerMixin):
         cache_key: Any = f'{self.name}:{key}:{file_hash}'
         self.ctx.services.cache_result(cache_key, result)
 
+    async def _run_check_func(self, check_func: Any) -> Tuple[bool, List[Any]]:
+        """Run a check function (sync or async) and return result."""
+        if asyncio.iscoroutinefunction(check_func):
+            return await check_func()
+        return check_func()
+
+    def _get_violation_details(self, res: Tuple[bool, List[Any]], file_path: str) -> str:
+        """Extract violation details relevant to a specific file."""
+        if res[0]:
+            return ''
+        relevant = [d for d in res[1] if str(d).startswith(file_path)]
+        if not relevant:
+            return ''
+        max_shown = int(os.getenv('MAX_VIOLATIONS_SHOWN', '8'))
+        return '\nSpecific Violations:\n' + '\n'.join(map(str, relevant[:max_shown]))
+
+    def _get_reference_fix(self, violation_desc: str) -> Optional[str]:
+        """Find similar patterns and return reference fix if available."""
+        similar = self.ctx.services.find_similar_patterns(violation_desc)
+        if similar and similar[0]['similarity'] > 0.85:
+            best = similar[0]
+            return f"\n\nReference Fix (similarity: {best['similarity']:.2f}):\n{best['fix']}"
+        return None
+
+    def _build_task(self, violation_key: int, file_path: str, details: str, ref_fix: Optional[str]) -> str:
+        """Build the task description for LLM healing."""
+        parts = [f'Fix Key {violation_key} Violation in {file_path}.']
+        if details:
+            parts.append(details)
+        if ref_fix:
+            parts.append(ref_fix)
+        return '\n'.join(parts)
+
+    def _record_success(self, file_path: str, violation_key: int, violation_desc: str, fixed_code: str) -> None:
+        """Record a successful healing attempt."""
+        self.ctx.record_healing_attempt(file_path, success=True)
+        self.ctx.modified_files.add(file_path)
+        if file_path not in self.ctx.healing_history:
+            self.ctx.healing_history[file_path] = []
+        self.ctx.healing_history[file_path].append(f'Key{violation_key}')
+        self.ctx.services.store_healing_pattern(Violation=violation_desc, fix=fixed_code[:500], success_rate=1.0)
+
     async def smart_fix(self, file_path: str, violation_key: int) -> bool:
-        """
-        Trigger LLM-based fix for a specific violation.
+        """Trigger LLM-based fix for a specific violation.
         
         Uses resilient mutation with retry logic to fix violations.
         Records healing attempts and stores successful patterns.
@@ -182,68 +223,60 @@ class CanonBaseAgent(HealerMixin):
         if not self.ctx.can_attempt_healing(file_path):
             Logger.debug(f'Cannot attempt healing for {file_path}.')
             return False
+        
         self.__class__._init_registry(self.ctx)
+        check_func = self.VERIFICATION_REGISTRY.get(violation_key)
+        if not check_func:
+            Logger.warning(f'No check function found for Violation key {violation_key}.')
+            return False
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                original_code: Any = f.read()
-            current_code: Any = original_code
-            check_func: Any = self.VERIFICATION_REGISTRY.get(violation_key)
-            if not check_func:
-                Logger.warning(f'No check function found for Violation key {violation_key}.')
-                return False
-            violation_details: Any = ''
-            res: Any = await check_func() if asyncio.iscoroutinefunction(check_func) else check_func()
-            if not res[0]:
-                relevant: Any = [d for d in res[1] if str(d).startswith(file_path)]
-                if relevant:
-                    max_violations_shown: Any = int(os.getenv('MAX_VIOLATIONS_SHOWN', '8'))
-                    violation_details: Any = '\nSpecific Violations:\n' + '\n'.join(map(str, relevant[:max_violations_shown]))
-            violation_desc: Any = f'{self.name} Key {violation_key} Violation in {file_path}'
-            similar_patterns: Any = self.ctx.services.find_similar_patterns(violation_desc)
-            reference_fix: Any = None
-            if similar_patterns:
-                best_match: Any = similar_patterns[0]
-                if best_match['similarity'] > 0.85:
-                    reference_fix: Any = f"\n\nReference Fix (similarity: {best_match['similarity']:.2f}):\n{best_match['fix']}"
-            max_rounds: Any = int(os.getenv('MAX_HEALING_ROUNDS', '5'))
-            previous_failure: Any = None
+                original_code = f.read()
+            
+            res = await self._run_check_func(check_func)
+            violation_details = self._get_violation_details(res, file_path)
+            violation_desc = f'{self.name} Key {violation_key} Violation in {file_path}'
+            reference_fix = self._get_reference_fix(violation_desc)
+            
+            max_rounds = int(os.getenv('MAX_HEALING_ROUNDS', '5'))
+            current_code = original_code
+            previous_failure: Optional[str] = None
+
             for round_num in range(1, max_rounds + 1):
                 print(f'      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}', flush=True)
-                task_parts: Any = [f'Fix Key {violation_key} Violation in {file_path}.']
-                if violation_details:
-                    task_parts.append(violation_details)
-                if reference_fix:
-                    task_parts.append(reference_fix)
-                Task: Any = '\n'.join(task_parts)
-                fixed_code: Any = await self.ctx.resilient_mutation(agent_name=self.name, Task=Task, code=current_code, file_path=file_path, round_num=round_num, previous_failure=previous_failure)
+                
+                task = self._build_task(violation_key, file_path, violation_details, reference_fix)
+                fixed_code = await self.ctx.resilient_mutation(
+                    agent_name=self.name, Task=task, code=current_code,
+                    file_path=file_path, round_num=round_num, previous_failure=previous_failure
+                )
+                
                 if fixed_code == current_code:
                     print(f'      [!] No changes made in Round {round_num}', flush=True)
-                    previous_failure: Any = 'No changes were made to the code.'
+                    previous_failure = 'No changes were made to the code.'
                     continue
+                
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(fixed_code)
-                res: Any = await check_func() if asyncio.iscoroutinefunction(check_func) else check_func()
+                
+                res = await self._run_check_func(check_func)
                 if res[0]:
                     print(f'      [OK] Healing successful in Round {round_num}', flush=True)
-                    self.ctx.record_healing_attempt(file_path, success=True)
-                    self.ctx.modified_files.add(file_path)
-                    if file_path not in self.ctx.healing_history:
-                        self.ctx.healing_history[file_path] = []
-                    self.ctx.healing_history[file_path].append(f'Key{violation_key}')
-                    self.ctx.services.store_healing_pattern(Violation=violation_desc, fix=fixed_code[:500], success_rate=1.0)
+                    self._record_success(file_path, violation_key, violation_desc, fixed_code)
                     return True
-                else:
-                    relevant: Any = [d for d in res[1] if str(d).startswith(file_path)]
-                    if relevant:
-                        previous_failure: Any = 'Fix attempt failed. Remaining violations:\n' + '\n'.join(map(str, relevant[:3]))
-                    else:
-                        previous_failure: Any = 'Fix attempt did not resolve the Violation (no specific file violations found).'
-                current_code: Any = fixed_code
+                
+                relevant = [d for d in res[1] if str(d).startswith(file_path)]
+                previous_failure = ('Fix attempt failed. Remaining violations:\n' + '\n'.join(map(str, relevant[:3]))
+                                   if relevant else 'Fix attempt did not resolve the Violation.')
+                current_code = fixed_code
+
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(original_code)
             print(f'      [X] Healing failed after {max_rounds} rounds - reverting {os.path.basename(file_path)}', flush=True)
             self.ctx.record_healing_attempt(file_path, success=False)
             return False
+
         except Exception as e:
             Logger.error(f'Healing error for {file_path}, key {violation_key}: {e}', exc_info=True)
             print(f'      [ALERT] Healing error for {os.path.basename(file_path)}: {e}', flush=True)

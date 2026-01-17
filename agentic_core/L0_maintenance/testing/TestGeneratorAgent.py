@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 """
 TestGeneratorAgent: Automatically creates subatomic tests for agents.
@@ -6,7 +7,6 @@ Created: 2026-01-13 | Version: 2.0.0
 This agent parses agent source files via AST and generates corresponding
 test cases for methods, ensuring L0 maintenance health.
 """
-from __future__ import annotations
 
 import ast
 import logging

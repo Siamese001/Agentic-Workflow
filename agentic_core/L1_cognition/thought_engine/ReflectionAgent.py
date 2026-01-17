@@ -89,9 +89,53 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             Logger.error(f'Failed to initialize Pinecone: {str(e)}')
             self.pinecone_client = None
 
-    async def execute(self, file_path: Optional[str] = None) -> Dict[str, Any]:
+    def _get_successful_traces(self) -> List[Dict[str, Any]]:
+        """Get successful traces from context.
+        
+        Returns:
+            List of trace dictionaries, or empty list if unavailable.
         """
-        Process successful traces and internalize them to memory.
+        if self.ctx and hasattr(self.ctx, 'successful_traces'):
+            traces = self.ctx.successful_traces
+            if isinstance(traces, list):
+                return traces
+        return []
+
+    def _is_valid_trace(self, trace: Any) -> bool:
+        """Check if a trace has required fields.
+        
+        Args:
+            trace: Trace to validate.
+            
+        Returns:
+            True if trace is valid with required fields.
+        """
+        if not isinstance(trace, dict):
+            return False
+        task = trace.get('Task', '')
+        code_before = trace.get('code_before', '')
+        if not task or not code_before:
+            Logger.warning("Skipping trace with missing mandatory fields 'Task' or 'code_before'")
+            return False
+        return True
+
+    async def _process_single_trace(self, trace: Dict[str, Any], results: Dict[str, Any]) -> None:
+        """Process a single trace and update results.
+        
+        Args:
+            trace: Trace dictionary to process.
+            results: Results dictionary to update.
+        """
+        analysis = await self._analyze_success_pattern(trace)
+        if await self._internalize_trace(trace, analysis):
+            results['internalized'] += 1
+        results['processed'] += 1
+        recommendations = await self._generate_recommendations(trace, analysis)
+        if isinstance(recommendations, list):
+            results['recommendations'].extend(recommendations)
+
+    async def execute(self, file_path: Optional[str] = None) -> Dict[str, Any]:
+        """Process successful traces and internalize them to memory.
         
         Called by orchestrator. Pulls traces from context and processes them.
 
@@ -101,44 +145,31 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Returns:
             Dict with processed count, internalized count, errors, and recommendations.
         """
-        successful_traces: Any = []
-        if self.ctx and hasattr(self.ctx, 'successful_traces'):
-            successful_traces: Any = self.ctx.successful_traces
-        if not isinstance(successful_traces, list):
-            Logger.error("Input 'successful_traces' must be a list.")
-            return {'processed': 0, 'internalized': 0, 'errors': ['Invalid input type']}
+        successful_traces = self._get_successful_traces()
+        
         if not successful_traces:
             Logger.debug('No successful traces to process')
             return {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
+        
         Logger.info(f'RgReflectionAgent processing {len(successful_traces)} successful traces')
-        results: Any = {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
+        results: Dict[str, Any] = {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
+        
         for trace in successful_traces:
+            if not self._is_valid_trace(trace):
+                continue
             try:
-                if not isinstance(trace, dict):
-                    continue
-                Task: Any = trace.get('Task', '')
-                code_before: Any = trace.get('code_before', '')
-                trace.get('code_after', '')
-                trace.get('context', {})
-                if not Task or not code_before:
-                    Logger.warning("Skipping trace with Missing mandatory fields 'Task' or 'code_before'")
-                    continue
-                analysis: Any = await self._analyze_success_pattern(trace)
-                if await self._internalize_trace(trace, analysis):
-                    results['internalized'] += 1
-                results['processed'] += 1
-                recommendations: Any = await self._generate_recommendations(trace, analysis)
-                if isinstance(recommendations, list):
-                    results['recommendations'].extend(recommendations)
+                await self._process_single_trace(trace, results)
             except Exception as e:
-                error_msg: Any = f'Error processing trace: {str(e)}'
+                error_msg = f'Error processing trace: {str(e)}'
                 Logger.error(error_msg)
                 results['errors'].append(error_msg)
+        
         try:
             results['critique'] = await self._self_critique(results)
         except Exception as e:
             Logger.error(f'Self-critique failed: {e}')
             results['critique'] = 'Internal critique unavailable'
+        
         return results
 
     async def _analyze_success_pattern(self, trace: Dict[str, Any]) -> Dict[str, Any]:

@@ -247,46 +247,80 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
         else:
             Logger.info('   No pipeline outputs to audit')
 
-    async def _audit_integrity(self, stage_name: str, source_truth: str, generated_artifact: str) -> IntegrityReport:
-        """
-        Audit integrity of generated Artifact against source truth.
+    def _determine_risk_level(self, integrity_score: float) -> str:
+        """Determine risk level based on integrity score.
         
         Args:
-            stage_name: Name of pipeline stage
-            source_truth: Ground truth source data
-            generated_artifact: Generated output
+            integrity_score: Score between 0 and 1.
             
         Returns:
-            Integrity report
+            Risk level string: 'low', 'medium', 'high', or 'critical'.
+        """
+        if integrity_score >= self.LOW_RISK_THRESHOLD:
+            return 'low'
+        elif integrity_score >= self.MEDIUM_RISK_THRESHOLD:
+            return 'medium'
+        elif integrity_score >= self.HIGH_RISK_THRESHOLD:
+            return 'high'
+        return 'critical'
+
+    def _build_audit_trail(self, verification_results: List[VerificationResult]) -> Dict[str, str]:
+        """Build audit trail from verification results.
+        
+        Args:
+            verification_results: List of verification results.
+            
+        Returns:
+            Dict mapping claim text to source citation.
+        """
+        audit_trail = {}
+        for result in verification_results:
+            if result.is_supported and result.source_citation:
+                audit_trail[result.Claim.text] = result.source_citation
+        return audit_trail
+
+    async def _audit_integrity(self, stage_name: str, source_truth: str, generated_artifact: str) -> IntegrityReport:
+        """Audit integrity of generated Artifact against source truth.
+        
+        Args:
+            stage_name: Name of pipeline stage.
+            source_truth: Ground truth source data.
+            generated_artifact: Generated output.
+            
+        Returns:
+            Integrity report with verification results.
         """
         source_claims = await self._claim_extractor.extract_claims(source_truth)
         generated_claims = await self._claim_extractor.extract_claims(generated_artifact)
         source_claims = await self._claim_embedder.embed_claims(source_claims)
         generated_claims = await self._claim_embedder.embed_claims(generated_claims)
-        verification_results = []
-        for gen_claim in generated_claims:
-            result = self._claim_verifier.verify_claim(gen_claim, source_claims)
-            verification_results.append(result)
+        
+        verification_results = [
+            self._claim_verifier.verify_claim(gen_claim, source_claims)
+            for gen_claim in generated_claims
+        ]
+        
         total_claims = len(generated_claims)
-        supported_claims = sum((1 for r in verification_results if r.is_supported))
+        supported_claims = sum(1 for r in verification_results if r.is_supported)
         unsupported_claims = total_claims - supported_claims
         integrity_score = supported_claims / total_claims if total_claims > 0 else 1.0
-        if integrity_score >= self.LOW_RISK_THRESHOLD:
-            risk_level = 'low'
-        elif integrity_score >= self.MEDIUM_RISK_THRESHOLD:
-            risk_level = 'medium'
-        elif integrity_score >= self.HIGH_RISK_THRESHOLD:
-            risk_level = 'high'
-        else:
-            risk_level = 'critical'
-        requires_rollback = risk_level in ['high', 'critical']
-        unsupported_details = [r for r in verification_results if not r.is_supported]
         hallucination_percentage = unsupported_claims / total_claims if total_claims > 0 else 0.0
-        audit_trail = {}
-        for result in verification_results:
-            if result.is_supported and result.source_citation:
-                audit_trail[result.Claim.text] = result.source_citation
-        return IntegrityReport(total_claims=total_claims, supported_claims=supported_claims, unsupported_claims=unsupported_claims, integrity_score=integrity_score, hallucination_percentage=hallucination_percentage, risk_level=risk_level, unsupported_details=unsupported_details[:10], requires_rollback=requires_rollback, audit_trail=audit_trail)
+        
+        risk_level = self._determine_risk_level(integrity_score)
+        audit_trail = self._build_audit_trail(verification_results)
+        unsupported_details = [r for r in verification_results if not r.is_supported]
+        
+        return IntegrityReport(
+            total_claims=total_claims,
+            supported_claims=supported_claims,
+            unsupported_claims=unsupported_claims,
+            integrity_score=integrity_score,
+            hallucination_percentage=hallucination_percentage,
+            risk_level=risk_level,
+            unsupported_details=unsupported_details[:10],
+            requires_rollback=risk_level in ['high', 'critical'],
+            audit_trail=audit_trail
+        )
 
     def _display_report(self, stage_name: str, report: IntegrityReport) -> Any:
         """Display integrity report."""

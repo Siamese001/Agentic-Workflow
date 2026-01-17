@@ -66,67 +66,97 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
         passed, details = self.check_key_19_no_complex_functions()
         self.ctx.report(self.name, 19, passed, details)
 
-    def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
+    def _parse_file_safe(self, fp: str) -> Tuple[ast.AST, None] | Tuple[None, str]:
+        """Safely parse a Python file into AST.
+        
+        Args:
+            fp: File path to parse.
+            
+        Returns:
+            Tuple of (tree, None) on success or (None, error_msg) on failure.
         """
-        Check for functions exceeding maximum line count.
+        try:
+            with open(fp, "r", encoding="utf-8") as f:
+                return ast.parse(f.read(), filename=fp), None
+        except (IOError, SyntaxError) as e:
+            return None, str(e)
+
+    def _get_function_line_count(self, node: ast.FunctionDef) -> int:
+        """Get line count for a function node."""
+        return node.end_lineno - node.lineno + 1 if hasattr(node, 'end_lineno') else 0
+
+    def _check_functions_in_file(
+        self, fp: str, tree: ast.AST, checker: callable, formatter: callable
+    ) -> List[str]:
+        """Check all functions in a file using provided checker and formatter.
+        
+        Args:
+            fp: File path for violation messages.
+            tree: Parsed AST tree.
+            checker: Function(node) -> bool, returns True if violation.
+            formatter: Function(fp, node, value) -> str, formats violation message.
+            
+        Returns:
+            List of violation messages.
+        """
+        violations = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                result = checker(node)
+                if result is not None:
+                    violations.append(formatter(fp, node, result))
+        return violations
+
+    def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
+        """Check for functions exceeding maximum line count.
         
         The limit is configurable via MAX_FUNCTION_LINES env var (default: 50).
         
         Returns:
             Tuple of (passed: bool, violations: List[str]).
-            - passed: True if no violations found.
-            - violations: List of violation messages with file:line format.
         """
         violations = []
         max_lines = int(os.getenv('MAX_FUNCTION_LINES', '50'))
 
+        def check(node: ast.FunctionDef):
+            lines = self._get_function_line_count(node)
+            return lines if lines > max_lines else None
+
+        def format_msg(fp: str, node: ast.FunctionDef, lines: int) -> str:
+            return f"{fp}:{node.lineno}: Function '{node.name}' is too large ({lines} lines, max {max_lines})."
+
         for fp in self.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read(), filename=fp)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        # ast.FunctionDef nodes have lineno and end_lineno attributes in Python 3.8+
-                        func_lines = node.end_lineno - node.lineno + 1 if hasattr(node, 'end_lineno') else 0
-                        if func_lines > max_lines:
-                            violations.append(
-                                f"{fp}:{node.lineno}: Function '{node.name}' is too large "
-                                f"({func_lines} lines, max {max_lines})."
-                            )
-            except (IOError, SyntaxError) as e:
-                self.ctx.log_error(f"Error parsing {fp} for large functions: {e}")
+            tree, error = self._parse_file_safe(fp)
+            if error:
+                self.ctx.log_error(f"Error parsing {fp} for large functions: {error}")
                 continue
+            violations.extend(self._check_functions_in_file(fp, tree, check, format_msg))
         return len(violations) == 0, violations
 
     def check_key_19_no_complex_functions(self) -> Tuple[bool, List[str]]:
-        """
-        Check for functions exceeding maximum cyclomatic complexity.
+        """Check for functions exceeding maximum cyclomatic complexity.
         
         The limit is configurable via MAX_CYCLOMATIC_COMPLEXITY env var (default: 10).
         
         Returns:
             Tuple of (passed: bool, violations: List[str]).
-            - passed: True if no violations found.
-            - violations: List of violation messages with file:line format.
         """
         violations = []
         max_complexity = int(os.getenv('MAX_CYCLOMATIC_COMPLEXITY', '10'))
 
+        def check(node: ast.FunctionDef):
+            complexity = self._calculate_complexity(node)
+            return complexity if complexity > max_complexity else None
+
+        def format_msg(fp: str, node: ast.FunctionDef, complexity: int) -> str:
+            return f"{fp}:{node.lineno}: Function '{node.name}' is too complex (complexity: {complexity}, max {max_complexity})."
+
         for fp in self.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read(), filename=fp)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        complexity = self._calculate_complexity(node)
-                        if complexity > max_complexity:
-                            violations.append(
-                                f"{fp}:{node.lineno}: Function '{node.name}' is too complex "
-                                f"(complexity: {complexity}, max {max_complexity})."
-                            )
-            except (IOError, SyntaxError) as e:
-                self.ctx.log_error(f"Error parsing {fp} for complex functions: {e}")
+            tree, error = self._parse_file_safe(fp)
+            if error:
+                self.ctx.log_error(f"Error parsing {fp} for complex functions: {error}")
                 continue
+            violations.extend(self._check_functions_in_file(fp, tree, check, format_msg))
         return len(violations) == 0, violations
 
     def _calculate_complexity(self, node: ast.FunctionDef) -> int:

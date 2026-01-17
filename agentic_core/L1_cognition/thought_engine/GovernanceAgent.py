@@ -591,37 +591,55 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             file_impacts[file_path] = {'direct_count': len(impacted), 'impacted_files': impacted}
         return {'modified_count': len(modified_files), 'total_impacted': len(total_impacted), 'BlastRadius': sorted(list(total_impacted)), 'file_details': file_impacts}
 
+    def _create_empty_report(self) -> Dict[str, Any]:
+        """Create empty validation report structure."""
+        return {
+            'root_violations': [],
+            'depth_violations': [],
+            'atomicity_violations': [],
+            'complexity_violations': [],
+            'enforced_actions': [],
+            'BlastRadius': None,
+            'overall_status': 'PASS'
+        }
+
+    def _validate_single_file(self, file_path: str, report: Dict[str, Any], enforce: bool) -> None:
+        """Validate a single file and update report."""
+        depth_violation = self.check_depth_law(file_path)
+        if depth_violation:
+            report['depth_violations'].append(depth_violation)
+            if enforce:
+                new_path = self.enforce_depth_law(file_path)
+                if new_path:
+                    report['enforced_actions'].append(f'Moved {file_path} to {new_path}')
+        
+        atomicity_violation = self.check_atomicity_law(file_path)
+        if atomicity_violation:
+            report['atomicity_violations'].append(atomicity_violation)
+            complexity_violations = self.check_complexity(file_path)
+            if complexity_violations:
+                report['complexity_violations'].extend(complexity_violations)
+
+    def _has_violations(self, report: Dict[str, Any]) -> bool:
+        """Check if report contains any violations."""
+        return bool(
+            report['root_violations'] or
+            report['depth_violations'] or
+            report['atomicity_violations'] or
+            report['complexity_violations']
+        )
+
     def validate_architecture(self, file_paths: List[str]=None, enforce: bool=False) -> Dict[str, Any]:
-        """
-        Perform full architecture validation.
-
-        Args:
-            file_paths: Specific files to validate (all if None)
-            enforce: Whether to automatically fix violations
-
-        Returns:
-            Validation report
-        """
-        report: Any = {'root_violations': [], 'depth_violations': [], 'atomicity_violations': [], 'complexity_violations': [], 'enforced_actions': [], 'BlastRadius': None, 'overall_status': 'PASS'}
+        """Perform full architecture validation."""
+        report = self._create_empty_report()
         report['root_violations'] = self.check_root_hygiene(auto_sanitize=enforce)
+        
         if file_paths:
             for file_path in file_paths:
-                Violation: Any = self.check_depth_law(file_path)
-                if Violation:
-                    report['depth_violations'].append(Violation)
-                    if enforce:
-                        new_path: Any = self.enforce_depth_law(file_path)
-                        if new_path:
-                            report['enforced_actions'].append(f'Moved {file_path} to {new_path}')
-                Violation: Any = self.check_atomicity_law(file_path)
-                if Violation:
-                    report['atomicity_violations'].append(Violation)
-                    complexity_violations: Any = self.check_complexity(file_path)
-                    if complexity_violations:
-                        report['complexity_violations'].extend(complexity_violations)
-        if file_paths:
+                self._validate_single_file(file_path, report, enforce)
             report['BlastRadius'] = self.get_blast_radius(file_paths)
-        if report['root_violations'] or report['depth_violations'] or report['atomicity_violations'] or report['complexity_violations']:
+        
+        if self._has_violations(report):
             report['overall_status'] = 'FAIL'
         return report
 

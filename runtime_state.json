@@ -1,5 +1,5 @@
 {
-  "status": "idle",
+  "status": "error",
   "start_time": null,
   "end_time": null,
   "current_agent": null,
@@ -9,14 +9,14 @@
   "completed_agents": [],
   "events": [
     {
-      "time": "2026-01-16T08:05:23.956307",
-      "type": "test",
-      "message": "Test event message"
+      "time": "2026-01-17T07:39:47.596863",
+      "type": "error",
+      "message": "Heal mode failed: No module named 'agentic_core.L3_orchestration.mixins'..."
     }
   ],
   "meta_learning": {
-    "enabled": true,
-    "total_experiences": 1,
+    "enabled": false,
+    "total_experiences": 0,
     "patterns_extracted": 0,
     "strategy_weights": {
       "cot": 1.0,
@@ -24,61 +24,33 @@
       "react": 1.0,
       "reflection": 1.0
     },
-    "recent_experiences": [
-      {
-        "id": "test_exp",
-        "reward": 0.8
-      }
-    ],
+    "recent_experiences": [],
     "pattern_history": []
   },
   "redis": {
-    "connected": true,
+    "connected": false,
     "operations": {
-      "get": 1,
+      "get": 0,
       "set": 0,
       "delete": 0,
-      "total": 1
+      "total": 0
     },
-    "cache_hits": 1,
+    "cache_hits": 0,
     "cache_misses": 0,
-    "hit_rate": 1.0,
-    "recent_operations": [
-      {
-        "operation": "get",
-        "key": "test_key",
-        "hit": true,
-        "timestamp": "2026-01-16T08:05:23.956307"
-      }
-    ]
+    "hit_rate": 0.0,
+    "recent_operations": []
   },
   "pinecone": {
-    "connected": true,
+    "connected": false,
     "operations": {
       "upsert": 0,
-      "query": 1,
+      "query": 0,
       "delete": 0,
-      "total": 1
+      "total": 0
     },
     "vectors_stored": 0,
-    "avg_similarity": 0.95,
-    "recent_queries": [
-      {
-        "results": [],
-        "top_k": 5,
-        "avg_score": 0.95,
-        "timestamp": "2026-01-16T08:05:23.956307"
-      }
-    ]
+    "avg_similarity": 0.0,
+    "recent_queries": []
   },
-  "execution_timeline": [
-    {
-      "agent": "TestAgent",
-      "layer": "L5",
-      "start": 1768568722.956308,
-      "end": 1768568723.956308,
-      "duration": 1.0,
-      "success": true
-    }
-  ]
+  "execution_timeline": []
 }

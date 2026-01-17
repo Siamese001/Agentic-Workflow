@@ -397,49 +397,57 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         self.agent.ctx.signal_deps_valid()
         print(f"[<<<] {self.agent.name} FINISHED.")
 
-    def check_key_07_no_star_imports(self) -> Tuple[bool, List[str]]:
+    def _parse_file_for_check(self, fp: str, key: int) -> Optional[ast.AST]:
+        """Parse file and return AST, handling errors gracefully.
+        
+        Args:
+            fp: File path to parse.
+            key: Canon key number for error messages.
+            
+        Returns:
+            Parsed AST tree or None on error.
         """
-        Checks for 'from module import *' (star imports).
-        Reports file paths and line numbers.
+        try:
+            with open(fp, "r", encoding="utf-8") as f:
+                return ast.parse(f.read(), filename=fp)
+        except (IOError, OSError, UnicodeDecodeError) as e:
+            print(f"      [!]  Could not read {fp} for Key {key} check: {e}")
+            return None
+        except SyntaxError as e:
+            print(f"      [X] Syntax error in {fp} for Key {key} check: {e}")
+            return None
+
+    def _check_import_pattern(
+        self, key: int, predicate: callable
+    ) -> Tuple[bool, List[str]]:
+        """Generic import pattern checker.
+        
+        Args:
+            key: Canon key number for error messages.
+            predicate: Function(node) -> bool, returns True if violation.
+            
+        Returns:
+            Tuple of (passed, violations).
         """
         violations = []
         for fp in self.agent.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read(), filename=fp)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ImportFrom):
-                        if any(alias.name == "*" for alias in node.names):
-                            violations.append(f"{fp}:{node.lineno}")
-            except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      [!]  Could not read {fp} for Key 7 check: {e}")
+            tree = self._parse_file_for_check(fp, key)
+            if tree is None:
                 continue
-            except SyntaxError as e:
-                print(f"      [X] Syntax error in {fp} for Key 7 check: {e}")
-                continue
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ImportFrom) and predicate(node):
+                    violations.append(f"{fp}:{node.lineno}")
         return len(violations) == 0, violations
 
+    def check_key_07_no_star_imports(self) -> Tuple[bool, List[str]]:
+        """Checks for 'from module import *' (star imports)."""
+        return self._check_import_pattern(
+            7, lambda node: any(alias.name == "*" for alias in node.names)
+        )
+
     def check_key_08_no_relative_imports(self) -> Tuple[bool, List[str]]:
-        """
-        Checks for relative imports (e.g., 'from agentic_core. import module', 'from agentic_core. import package').
-        Reports file paths and line numbers.
-        """
-        violations = []
-        for fp in self.agent.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read(), filename=fp)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ImportFrom):
-                        if node.level > 0:  # level > 0 indicates a relative import
-                            violations.append(f"{fp}:{node.lineno}")
-            except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      [!]  Could not read {fp} for Key 8 check: {e}")
-                continue
-            except SyntaxError as e:
-                print(f"      [X] Syntax error in {fp} for Key 8 check: {e}")
-                continue
-        return len(violations) == 0, violations
+        """Checks for relative imports (level > 0)."""
+        return self._check_import_pattern(8, lambda node: node.level > 0)
 
     def check_key_09_no_unused_imports(self) -> Tuple[bool, List[str]]:
         """

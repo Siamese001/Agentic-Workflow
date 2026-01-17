@@ -1,53 +1,55 @@
-from __future__ import annotations
-from dataclasses import dataclass
-"""
-RedSentinelAgent - L5 Active Defense & Hostile Input Fuzzing
+"""RedSentinelAgent - L5 Active Defense & Hostile Input Fuzzing.
 
-Generates hostile inputs (buffer overflows, malformed data) to test
-the robustness of code and detect potential security vulnerabilities.
+This module provides an active defense system that generates hostile inputs
+(buffer overflows, malformed data) to test the robustness of code and detect
+potential security vulnerabilities.
+
+Typical usage:
+    agent = RedSentinelAgent()
+    result = await agent.fuzz_function("my_func", "def my_func(): pass", "file.py")
 """
+from __future__ import annotations
+
 import json
 import logging
 import os
-import time
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-
-Logger: Any = logging.getLogger(__name__)
+from typing import Any, Dict, List, Optional, Set
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
-@dataclass
-class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-    """
-    Active defense system that generates hostile inputs for testing.
+Logger: logging.Logger = logging.getLogger(__name__)
 
-    Creates edge cases and malformed inputs to test function robustness:
-    - Type errors and boundary conditions
-    - Buffer overflow attempts
-    - Malformed JSON/data structures
-    - Null bytes and special characters
+
+@dataclass
+class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
+    """L5 Safety agent that generates hostile inputs for security testing.
+    
+    This active defense system creates edge cases and malformed inputs to test
+    function robustness including type errors, boundary conditions, buffer
+    overflow attempts, malformed JSON, and special characters.
+    
+    Attributes:
+        llm_client: LLM client for generating hostile inputs (deprecated).
+        enabled: Whether fuzzing is enabled (via ENABLE_FUZZ env var).
+        audit_path: Path to audit log file for fuzz results.
+        
+    Inherits:
+        SubatomicTestingMixin: Provides testing utilities.
+        HealerMixin: Provides healing chain support.
     """
 
     def __init__(self, llm_client: Optional[Any] = None) -> None:
-        """
-        Initialize the RedSentinelAgent agent.
-        Phase 16B: Uses LLM Router MCP for hostile input generation.
-
+        """Initialize the RedSentinelAgent.
+        
         Args:
-            llm_client: LLM client for generating hostile inputs (deprecated, uses MCP)
+            llm_client: LLM client for generating hostile inputs (deprecated, uses MCP).
         """
-        self.llm_client = llm_client
+        self.llm_client: Optional[Any] = llm_client
         self.enabled: bool = os.getenv('ENABLE_FUZZ', 'false').lower() == 'true'
         self.audit_path: Path = Path('observability/audit/fuzz_results.json')
         self.audit_path.parent.mkdir(parents=True, exist_ok=True)
@@ -196,9 +198,29 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         return results
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L5 safety agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """Execute L5 safety healing operations.
+        
+        This is an operational agent - no repository healing required.
+        Implements cycle detection and depth limiting.
+        
+        Args:
+            dry_run: If True, only report what would be done (default: True).
+            execute: If True, execute healing actions (default: False).
+            depth: Current recursion depth for cycle detection (default: 0).
+            max_depth: Maximum recursion depth allowed (default: 3).
+            _call_path: Set of agent names in current call chain for cycle detection.
+            
+        Returns:
+            Dictionary with healing results: {"skipped": 1} for operational agents.
+        """
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -215,11 +237,13 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
 _red_sentinel: Optional[RedSentinelAgent] = None
 
-def get_red_sentinel() -> RedSentinelAgent:
-    """Get or create the global RedSentinelAgent instance."""
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-    super().heal_repository()
 
+def get_red_sentinel() -> RedSentinelAgent:
+    """Get or create the global RedSentinelAgent instance.
+    
+    Returns:
+        Global RedSentinelAgent singleton instance.
+    """
     global _red_sentinel
     if _red_sentinel is None:
         _red_sentinel = RedSentinelAgent()

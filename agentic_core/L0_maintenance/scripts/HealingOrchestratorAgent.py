@@ -141,44 +141,109 @@ class RgHealingOrchestratorAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             return await self.apply_fixes_transactionally(fixes)
         return 0
 
+    def _enrich_fix_with_prediction(self, fix: Dict, strategy_name: str) -> Dict:
+        """Enrich a fix with prediction data and strategy info.
+        
+        Args:
+            fix: The fix dictionary to enrich.
+            strategy_name: Name of the strategy that proposed this fix.
+            
+        Returns:
+            Enriched fix dictionary.
+        """
+        fix["strategy"] = strategy_name
+        prob = self.experience_buffer.predict_success_probability(
+            action=fix.get("action", "unknown"),
+            target=str(fix.get("file", "unknown"))
+        )
+        fix["predicted_success"] = prob
+        fix["priority"] = fix.get("priority", 5) + (2 if prob > 0.8 else 0)
+        return fix
+
     async def diagnose_and_propose_fixes(self, issues: List[Dict]) -> List[Dict]:
-        """Run all strategies to diagnose and collect proposed fixes."""
+        """Run all strategies to diagnose and collect proposed fixes.
+        
+        Args:
+            issues: List of issue dictionaries to diagnose.
+            
+        Returns:
+            List of proposed fix dictionaries.
+        """
         all_fixes = []
         for strategy in self.strategies:
             fixes = await strategy.diagnose(issues)
-            if fixes:
-                for fix in fixes:
-                    fix["strategy"] = strategy.name
-                    # Predict success using experience
-                    prob = self.experience_buffer.predict_success_probability(
-                        action=fix.get("action", "unknown"),
-                        target=str(fix.get("file", "unknown"))
-                    )
-                    fix["predicted_success"] = prob
-                    # Boost priority for high-confidence fixes
-                    fix["priority"] = fix.get("priority", 5) + (2 if prob > 0.8 else 0)
-                all_fixes.extend(fixes)
-                self.Logger.info(f"{strategy.name} proposed {len(fixes)} fixes")
+            if not fixes:
+                continue
+            enriched = [self._enrich_fix_with_prediction(f, strategy.name) for f in fixes]
+            all_fixes.extend(enriched)
+            self.Logger.info(f"{strategy.name} proposed {len(fixes)} fixes")
         return all_fixes
 
+    def _record_fix_attempt(self, fix: Dict) -> None:
+        """Record a fix attempt to the experience buffer."""
+        self.experience_buffer.record({
+            "action": fix.get("action"),
+            "target": str(fix.get("file")),
+            "predicted_success": fix.get("predicted_success", 0.5),
+            "attempted": True,
+        })
+
+    def _record_fix_outcome(self, fix: Dict, success: bool) -> None:
+        """Record a fix outcome to the experience buffer."""
+        self.experience_buffer.record({
+            "action": fix.get("action"),
+            "target": str(fix.get("file")),
+            "success": success,
+            "strategy": fix.get("strategy"),
+            "predicted_success": fix.get("predicted_success", 0.5),
+        })
+
+    def _log_proposed_fixes(self, fixes: List[Dict]) -> None:
+        """Log proposed fixes when transactional healing is unavailable."""
+        self.Logger.warning("Transactional healing unavailable – logging for manual review")
+        for fix in sorted(fixes, key=lambda f: f.get("priority", 10)):
+            self.Logger.info(f"PROPOSED: {fix['action']} | {fix['reason']} | File: {fix.get('file', 'N/A')}")
+
+    async def _apply_single_fix(self, fix: Dict, tx: Any) -> bool:
+        """Apply a single fix with backup and logging.
+        
+        Returns:
+            True if fix was successful.
+        """
+        file_path = fix.get("file")
+        if file_path and file_path != 'N/A':
+            path = Path(file_path)
+            if path.exists():
+                tx.backup(path)
+
+        strategy = self.strategy_map.get(fix.get("strategy"))
+        if not strategy:
+            self.Logger.warning(f"Strategy '{fix.get('strategy')}' not found – skipping")
+            return False
+
+        success = await strategy.apply(fix, ctx=None)
+        if self.log_healing_action:
+            self.log_healing_action(fix["action"], fix, success)
+        self._record_fix_outcome(fix, success)
+        return success
+
     async def apply_fixes_transactionally(self, fixes: List[Dict]) -> int:
-        """Apply fixes with full transactional safety and audit trail."""
+        """Apply fixes with full transactional safety and audit trail.
+        
+        Args:
+            fixes: List of fix dictionaries to apply.
+            
+        Returns:
+            Number of fixes successfully applied.
+        """
         if not fixes:
             return 0
 
-        # Record attempt
         for fix in fixes:
-            self.experience_buffer.record({
-                "action": fix.get("action"),
-                "target": str(fix.get("file")),
-                "predicted_success": fix.get("predicted_success", 0.5),
-                "attempted": True,
-            })
+            self._record_fix_attempt(fix)
 
         if self.transaction_cls is None or self.log_healing_action is None:
-            self.Logger.warning("Transactional healing unavailable – logging for manual review")
-            for fix in sorted(fixes, key=lambda f: f.get("priority", 10)):
-                self.Logger.info(f"PROPOSED: {fix['action']} | {fix['reason']} | File: {fix.get('file', 'N/A')}")
+            self._log_proposed_fixes(fixes)
             return 0
 
         tx = self.transaction_cls()
@@ -186,30 +251,7 @@ class RgHealingOrchestratorAgent(L0MaintenanceBaseAgent, AutonomyMixin,
 
         try:
             for fix in sorted(fixes, key=lambda f: f.get("priority", 10)):
-                file_path = fix.get("file")
-                if file_path and file_path != 'N/A':
-                    path = Path(file_path)
-                    if path.exists():
-                        tx.backup(path)
-
-                strategy = self.strategy_map.get(fix.get("strategy"))
-                if not strategy:
-                    self.Logger.warning(f"Strategy '{fix.get('strategy')}' not found – skipping")
-                    continue
-
-                success = await strategy.apply(fix, ctx=None)
-                self.log_healing_action(fix["action"], fix, success) if self.log_healing_action else None
-
-                # Record outcome for learning
-                self.experience_buffer.record({
-                    "action": fix.get("action"),
-                    "target": str(fix.get("file")),
-                    "success": success,
-                    "strategy": fix.get("strategy"),
-                    "predicted_success": fix.get("predicted_success", 0.5),
-                })
-
-                if success:
+                if await self._apply_single_fix(fix, tx):
                     fixes_applied += 1
 
             tx.commit()

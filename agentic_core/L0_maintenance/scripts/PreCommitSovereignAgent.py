@@ -109,52 +109,37 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
             print("⚠️  Warning: Git not found. Skipping pre-commit validation.")
             return []
 
-    def validate_staged_files(self) -> Dict[str, Any]:
-        """
-        Validate staged files for architectural compliance.
-        
-        Returns:
-            Dictionary with validation results:
-            {
-                "compliant": bool,
-                "files_scanned": int,
-                "violations": List[ViolationReport],
-                "error": Optional[str]
-            }
-        """
-        staged_files = self.get_staged_files()
-        
-        if not staged_files:
-            return {
-                "compliant": True,
-                "files_scanned": 0,
-                "violations": [],
-                "error": None
-            }
-        
-        print(f"🛡️  Sovereign Sentinel: Auditing {len(staged_files)} staged files...")
-        
-        # Run full validation on repository
-        try:
-            report = self.validator.validate_all()
-        except Exception as e:
-            return {
-                "compliant": False,
-                "files_scanned": 0,
-                "violations": [],
-                "error": f"Validation error: {str(e)}"
-            }
-        
-        # Filter violations to only staged files
+    def _create_empty_result(self) -> Dict[str, Any]:
+        """Create empty validation result for no staged files."""
+        return {
+            "compliant": True,
+            "files_scanned": 0,
+            "violations": [],
+            "error": None
+        }
+
+    def _create_error_result(self, error: str) -> Dict[str, Any]:
+        """Create error validation result."""
+        return {
+            "compliant": False,
+            "files_scanned": 0,
+            "violations": [],
+            "error": error
+        }
+
+    def _paths_match(self, path1: str, path2: str) -> bool:
+        """Check if two paths refer to the same file."""
+        p1 = path1.replace('\\', '/')
+        p2 = path2.replace('\\', '/')
+        return p1.endswith(p2) or p2.endswith(p1)
+
+    def _filter_staged_violations(self, report: Any, staged_files: List[str]) -> List[ViolationReport]:
+        """Filter violations to only those in staged files."""
         staged_violations = []
         for violation in report.import_violations:
-            # Normalize paths for comparison
-            violation_path = str(violation.file_path).replace('\\', '/')
-            
+            violation_path = str(violation.file_path)
             for staged_file in staged_files:
-                staged_path = staged_file.replace('\\', '/')
-                
-                if violation_path.endswith(staged_path) or staged_path.endswith(violation_path):
+                if self._paths_match(violation_path, staged_file):
                     staged_violations.append(ViolationReport(
                         file_path=staged_file,
                         line_number=violation.line_number,
@@ -164,14 +149,37 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
                         target_layer=violation.target_layer
                     ))
                     break
+        return staged_violations
+
+    def _print_violations(self, violations: List[ViolationReport]) -> None:
+        """Print violation details to console."""
+        for violation in violations:
+            print(f"❌ GRAVITY VIOLATION: {violation.file_path}:{violation.line_number}")
+            print(f"   {violation.violation_type}: {violation.import_statement[:70]}...")
+
+    def validate_staged_files(self) -> Dict[str, Any]:
+        """Validate staged files for architectural compliance.
         
+        Returns:
+            Dictionary with validation results.
+        """
+        staged_files = self.get_staged_files()
+        
+        if not staged_files:
+            return self._create_empty_result()
+        
+        print(f"🛡️  Sovereign Sentinel: Auditing {len(staged_files)} staged files...")
+        
+        try:
+            report = self.validator.validate_all()
+        except Exception as e:
+            return self._create_error_result(f"Validation error: {str(e)}")
+        
+        staged_violations = self._filter_staged_violations(report, staged_files)
         self.violations_found = staged_violations
         
-        # Report violations
         if staged_violations:
-            for violation in staged_violations:
-                print(f"❌ GRAVITY VIOLATION: {violation.file_path}:{violation.line_number}")
-                print(f"   {violation.violation_type}: {violation.import_statement[:70]}...")
+            self._print_violations(staged_violations)
         
         return {
             "compliant": len(staged_violations) == 0,

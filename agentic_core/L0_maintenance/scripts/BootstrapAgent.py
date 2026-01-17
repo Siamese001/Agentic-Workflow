@@ -51,24 +51,26 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         """Initialize the instance."""
         self.project_root = project_root.resolve()
 
-    def verify_neural_link(self) -> bool:
+    def _verify_env_file(self) -> bool:
+        """Verify .env file exists and load it.
+        
+        Returns:
+            True if .env loaded successfully.
         """
-        Full neural link verification.
-        Checks the physical presence of the .env 'Soul' and Redis state.
-        Returns True if all critical systems are active.
-        """
-        success = True
-
-        # 1. .env gravity anchor
         env_path = self.project_root / ".env"
         if not env_path.exists():
             print(f"\n[!] [L6 ERROR] GRAVITY LOSS: .env Missing at {env_path}")
-            success = False
-        else:
-            load_dotenv(dotenv_path=env_path, override=True)
-            print(f"   [OK] Sovereign .env loaded from {env_path}")
+            return False
+        load_dotenv(dotenv_path=env_path, override=True)
+        print(f"   [OK] Sovereign .env loaded from {env_path}")
+        return True
 
-        # 2. Redis/Langcache state check
+    def _verify_redis_connection(self) -> bool:
+        """Verify Redis/Langcache connectivity.
+        
+        Returns:
+            True if Redis is reachable.
+        """
         try:
             redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
             parsed = urllib.parse.urlparse(redis_url)
@@ -80,28 +82,42 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
                 "socket_timeout": 3,
             }
             if parsed.scheme == "rediss":
-                # Handle SSL for sovereign remote connections
                 conn_kwargs.update({"ssl": True, "ssl_cert_reqs": None})
-
             r = redis.Redis(**conn_kwargs)
             r.ping()
             print(f"   [OK] Redis State Active: Langcache connected.")
+            return True
         except Exception as e:
             print(f"   [!] [L4 STATE WARNING] Redis offline: {e}")
-            # Non-fatal for structural check, but logged
-            success = False
+            return False
 
-        # 3. Model neural authorization check
+    def _verify_model_authorization(self) -> bool:
+        """Verify mandatory model API keys are present.
+        
+        Returns:
+            True if all mandatory keys are set.
+        """
         mandatory_keys = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
-        Missing = [k for k in mandatory_keys if not os.getenv(k)]
-        if Missing:
-            print(f"\n[!] [NEURAL LINK ERROR] Missing mandatory keys: {', '.join(Missing)}")
-            success = False
-        else:
-            model = os.getenv("GEMINI_MODEL")
-            print(f"   [OK] Neural authorization complete: {model}")
+        missing = [k for k in mandatory_keys if not os.getenv(k)]
+        if missing:
+            print(f"\n[!] [NEURAL LINK ERROR] Missing mandatory keys: {', '.join(missing)}")
+            return False
+        model = os.getenv("GEMINI_MODEL")
+        print(f"   [OK] Neural authorization complete: {model}")
+        return True
 
-        return success
+    def verify_neural_link(self) -> bool:
+        """Full neural link verification.
+        
+        Checks .env presence, Redis state, and model authorization.
+        
+        Returns:
+            True if all critical systems are active.
+        """
+        env_ok = self._verify_env_file()
+        redis_ok = self._verify_redis_connection()
+        auth_ok = self._verify_model_authorization()
+        return env_ok and redis_ok and auth_ok
 
     def run_bootstrap(self) -> bool:
         """Execute full bootstrap sequence with L6 telemetry logging."""
@@ -148,63 +164,51 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
             
         return result
 
-    # SUPPLEMENTED FROM AgentRegistryValidatorAgent — meta-sovereignty registry check — merged 2025-12-30
-    def validate_sovereign_registry(self) -> List[str]:
-        """
-        Ensure all mandatory agents exist and are discoverable.
-        Ported from AgentRegistryValidatorAgent.validate_registry().
-        
-        Returns:
-            List of Missing agent names (empty if all present)
-        """
+    # Mandatory agents and search paths for registry validation
+    _MANDATORY_AGENTS = [
+        'LocationAgent', 'HierarchyAgent', 'NamingAgent', 'HealerAgent', 'ImportAgent',
+    ]
+    _SEARCH_PATHS = [
+        'agentic_core.L5_safety.validators', 'agentic_core.L5_safety.guardrails',
+        'agentic_core.L5_safety.gravity', 'agentic_core.L2_execution.tool_registry',
+        'agentic_core.utils.naming',
+    ]
+
+    def _try_import_agent(self, agent_name: str) -> bool:
+        """Try to import an agent from known search paths."""
         import importlib
-        
-        # Mandatory agents that must exist for sovereign operation
-        MANDATORY_AGENTS = [
-            'LocationAgent',
-            'HierarchyAgent', 
-            'NamingAgent',
-            'HealerAgent',
-            'ImportAgent',
-        ]
-        
-        # Search paths for agents
-        SEARCH_PATHS = [
-            'agentic_core.L5_safety.validators',
-            'agentic_core.L5_safety.guardrails',
-            'agentic_core.L5_safety.gravity',
-            'agentic_core.L2_execution.tool_registry',
-            'agentic_core.utils.naming',
-        ]
-        
-        Missing = []
-        found = []
-        
-        for agent_name in MANDATORY_AGENTS:
-            agent_found = False
-            for module_path in SEARCH_PATHS:
-                try:
-                    # Try to import as module.AgentName
-                    full_path = f"{module_path}.{agent_name}"
-                    module = importlib.import_module(full_path)
-                    if hasattr(module, agent_name):
-                        agent_found = True
-                        found.append(agent_name)
-                        break
-                except (ImportError, AttributeError):
-                    continue
-                    
-            if not agent_found:
-                Missing.append(agent_name)
-        
-        if Missing:
-            Logger.critical(f"[SOVEREIGN BREACH] Missing mandatory agents: {Missing}")
-            print(f"\n[!] [SOVEREIGN BREACH] Missing mandatory agents: {Missing}")
+        for module_path in self._SEARCH_PATHS:
+            try:
+                full_path = f"{module_path}.{agent_name}"
+                module = importlib.import_module(full_path)
+                if hasattr(module, agent_name):
+                    return True
+            except (ImportError, AttributeError):
+                continue
+        return False
+
+    def _report_registry_status(self, missing: List[str], found_count: int) -> None:
+        """Report registry validation status."""
+        if missing:
+            Logger.critical(f"[SOVEREIGN BREACH] Missing mandatory agents: {missing}")
+            print(f"\n[!] [SOVEREIGN BREACH] Missing mandatory agents: {missing}")
         else:
             Logger.info("[OK] All mandatory agents present — registry sovereign")
-            print(f"   [OK] All {len(found)} mandatory agents present — registry sovereign")
+            print(f"   [OK] All {found_count} mandatory agents present — registry sovereign")
+
+    def validate_sovereign_registry(self) -> List[str]:
+        """Ensure all mandatory agents exist and are discoverable."""
+        missing = []
+        found = []
         
-        return Missing
+        for agent_name in self._MANDATORY_AGENTS:
+            if self._try_import_agent(agent_name):
+                found.append(agent_name)
+            else:
+                missing.append(agent_name)
+        
+        self._report_registry_status(missing, len(found))
+        return missing
 
     async def run_full_bootstrap(self) -> Dict[str, Any]:
         """

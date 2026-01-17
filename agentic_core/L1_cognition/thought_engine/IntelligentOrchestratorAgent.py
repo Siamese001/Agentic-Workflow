@@ -43,44 +43,58 @@ class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         self.ctx: ValidationContext = ValidationContext(target_scope=target or '.')
         self.swarm = [HealerAgent(self.ctx), SystemArchitect(self.ctx), GenerativeGuard(self.ctx), CodeJanitor(self.ctx), DependencySentinelAgent(self.ctx), SafetyInspectorAgent(self.ctx), PatternEnforcerAgent(self.ctx), DocumentationAgent(self.ctx), NamingAgent(self.ctx), BudgetAgent(self.ctx), TypeMechanicAgent(self.ctx), UIValidationAgent(self.ctx), SemanticMapperAgent(self.ctx), StructuralEngineerAgent(self.ctx)]
 
-    async def run_mission(self) -> None:
+    async def _execute_single_agent(self, agent: Any, index: int) -> str:
+        """Execute a single agent and return status.
+        
+        Returns:
+            'skipped', 'passed', or 'failed'
         """
-        Execute all agents in sequence.
+        print(f'\n[MISSION] Agent {index}/{len(self.swarm)}: {agent.name}')
+        if not agent.can_run():
+            print(f'   ⛔ {agent.name} STANDING DOWN (Dependencies not met).')
+            return 'skipped'
+        try:
+            print(f'   ⚡ Executing {agent.name}...')
+            result = agent.execute()
+            if asyncio.iscoroutine(result):
+                await result
+            print(f'   ✅ {agent.name} completed successfully')
+            return 'passed'
+        except Exception as e:
+            print(f'   ❌ [ALERT] AGENT CRASH ({agent.name}): {e}')
+            return 'failed'
 
-        Agents are run in their defined dependency order. If an agent's dependencies
-        are not met, it will stand down. Critical failures can abort the mission.
-        """
+    def _print_execution_summary(self, executed: int, passed: int, failed: int) -> None:
+        """Print agent execution summary."""
+        print(f'\n[MISSION] Agent Execution Summary:')
+        print(f'   • Total Agents: {len(self.swarm)}')
+        print(f'   • Executed: {executed}')
+        print(f'   • Passed: {passed} ✅')
+        print(f'   • Failed: {failed} ❌')
+
+    async def run_mission(self) -> None:
+        """Execute all agents in sequence."""
         print('🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...')
-        print(f'\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[MISSION] Starting validation sweep across {len(self.ctx.python_files)} files...')
-        agents_executed: Any = 0
-        agents_passed: Any = 0
-        agents_failed: Any = 0
+        print(f'\n[MISSION] Starting validation sweep across {len(self.ctx.python_files)} files...')
+        
+        agents_executed, agents_passed, agents_failed = 0, 0, 0
         await self.ctx.services.init_mcp_async()
+        
         for i, agent in enumerate(self.swarm, 1):
-            print(f'\n[MISSION] Agent {i}/{len(self.swarm)}: {agent.name}')
-            if not agent.can_run():
-                print(f'   ⛔ {agent.name} STANDING DOWN (Dependencies not met).')
-                continue
-            agents_executed += 1
-            try:
-                print(f'   ⚡ Executing {agent.name}...')
-                result: Any = agent.execute()
-                if asyncio.iscoroutine(result):
-                    await result
+            status = await self._execute_single_agent(agent, i)
+            if status == 'passed':
+                agents_executed += 1
                 agents_passed += 1
-                print(f'   ✅ {agent.name} completed successfully')
-            except Exception as e:
-                print(f'   ❌ [ALERT] AGENT CRASH ({agent.name}): {e}')
+            elif status == 'failed':
+                agents_executed += 1
                 agents_failed += 1
+            
             if 'CRITICAL_FAIL' in self.ctx.signals:
                 print('\n🛑 MISSION ABORTED: Critical Architecture Failure.')
                 print('   Action: Fix Key 40/41/50 immediately.')
                 break
-        print(f'\n[MISSION] Agent Execution Summary:')
-        print(f'   • Total Agents: {len(self.swarm)}')
-        print(f'   • Executed: {agents_executed}')
-        print(f'   • Passed: {agents_passed} ✅')
-        print(f'   • Failed: {agents_failed} ❌')
+        
+        self._print_execution_summary(agents_executed, agents_passed, agents_failed)
         self.print_mission_report()
 
     def print_mission_report(self) -> None:

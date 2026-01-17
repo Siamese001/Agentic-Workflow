@@ -134,20 +134,46 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             Logger.error(f'Error reading lines from {filepath}: {e}')
         return None
 
-    def check_key_26_no_mutable_defaults(self) -> Tuple[bool, List[str]]:
+    def _check_ast_pattern(
+        self,
+        node_filter: Callable[[ast.AST], bool],
+        violation_formatter: Callable[[str, ast.AST], Optional[str]]
+    ) -> Tuple[bool, List[str]]:
+        """Generic AST pattern checker to reduce code duplication.
+        
+        Args:
+            node_filter: Function that returns True for nodes to check.
+            violation_formatter: Function that returns violation string or None.
+            
+        Returns:
+            Tuple of (passed, violations_list).
         """
-        Checks for mutable default arguments in function definitions (e.g., list, dict, set).
-        """
-        violations: Any = []
+        violations: List[str] = []
         for fp in self.agent.ctx.python_files:
-            tree: Any = self._parse_file_ast(fp)
-            if tree:
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        for default in node.args.defaults:
-                            if isinstance(default, (ast.List, ast.Dict, ast.Set)):
-                                violations.append(f"{fp}:{node.lineno} in function '{node.name}'")
+            tree = self._parse_file_ast(fp)
+            if not tree:
+                continue
+            for node in ast.walk(tree):
+                if node_filter(node):
+                    violation = violation_formatter(fp, node)
+                    if violation:
+                        violations.append(violation)
         return (len(violations) == 0, violations)
+
+    def check_key_26_no_mutable_defaults(self) -> Tuple[bool, List[str]]:
+        """Check for mutable default arguments in function definitions."""
+        def check_node(node: ast.AST) -> bool:
+            return isinstance(node, ast.FunctionDef)
+        
+        def format_violation(fp: str, node: ast.AST) -> Optional[str]:
+            if not isinstance(node, ast.FunctionDef):
+                return None
+            for default in node.args.defaults:
+                if isinstance(default, (ast.List, ast.Dict, ast.Set)):
+                    return f"{fp}:{node.lineno} in function '{node.name}'"
+            return None
+        
+        return self._check_ast_pattern(check_node, format_violation)
 
     def check_key_27_prefer_str_join(self) -> Tuple[bool, List[str]]:
         """

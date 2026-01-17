@@ -200,78 +200,71 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
                     )
         return violations
 
-    def get_orphans(self) -> List[str]:
+    def _should_skip_file(self, file: str) -> bool:
+        """Check if file should be skipped in orphan detection.
+        
+        Args:
+            file: Relative file path.
+            
+        Returns:
+            True if file should be skipped.
         """
-        Get files that are never imported.
+        filename = os.path.basename(file)
+        if filename == "__init__.py" or filename in self.entry_points:
+            return True
+        if TESTS_DIR in file or SCRIPTS_DIR in file or "test_" in filename:
+            return True
+        return False
+
+    def _is_file_imported(self, file: str, imported_targets: Set[str]) -> bool:
+        """Check if file is imported by any other file.
+        
+        Args:
+            file: Relative file path.
+            imported_targets: Set of import target paths.
+            
+        Returns:
+            True if file is imported.
+        """
+        for target in imported_targets:
+            if file.endswith(target) or target.endswith(file):
+                return True
+        return False
+
+    def _find_orphan_files(self) -> List[str]:
+        """Find all orphan files (never imported).
+        
+        Returns:
+            List of orphan file paths.
+        """
+        imported_targets = set(self.import_graph.keys())
+        orphans = []
+        for file in self.all_py_files:
+            if self._should_skip_file(file):
+                continue
+            if not self._is_file_imported(file, imported_targets):
+                orphans.append(file)
+        return orphans
+
+    def get_orphans(self) -> List[str]:
+        """Get files that are never imported.
         
         Returns:
             List of violation messages for orphaned files.
             Excludes entry points, test files, and scripts.
         """
-        orphans = []
-        # Flatten the set of all imported targets
-        imported_targets = set(self.import_graph.keys())
-
-        for file in self.all_py_files:
-            filename = os.path.basename(file)
-
-            # Skip files that are expected to be standalone
-            if filename == "__init__.py" or filename in self.entry_points:
-                continue
-
-            # Skip test files and scripts (they're meant to be run, not imported)
-            if TESTS_DIR in file or SCRIPTS_DIR in file or "test_" in filename:
-                continue
-
-            # Loose check: if the filename (or path) appears in any import target
-            is_imported = False
-            for target in imported_targets:
-                # Matches if 'agentic_core/utils.py' is in target 'agentic_core/utils.py'
-                if file.endswith(target) or target.endswith(file):
-                    is_imported = True
-                    break
-
-            if not is_imported:
-                orphans.append(f"DEAD CODE: {file} is never imported (potential orphan)")
-
-        return orphans
-
+        orphan_files = self._find_orphan_files()
+        return [f"DEAD CODE: {f} is never imported (potential orphan)" for f in orphan_files]
 
     def get_orphans_raw(self) -> List[str]:
-        """
-        Get raw list of orphan file paths.
+        """Get raw list of orphan file paths.
         
         For use by pruner scripts. Returns paths without violation messages.
         
         Returns:
             List of orphan file paths.
         """
-        orphans = []
-        imported_targets = set(self.import_graph.keys())
-
-        for file in self.all_py_files:
-            filename = os.path.basename(file)
-
-            # Skip files that are expected to be standalone
-            if filename == "__init__.py" or filename in self.entry_points:
-                continue
-
-            # Skip test files and scripts (they're meant to be run, not imported)
-            if TESTS_DIR in file or SCRIPTS_DIR in file or "test_" in filename:
-                continue
-
-            # Loose check: if the filename (or path) appears in any import target
-            is_imported = False
-            for target in imported_targets:
-                # Matches if 'agentic_core/utils.py' is in target 'agentic_core/utils.py'
-                if file.endswith(target) or target.endswith(file):
-                    is_imported = True
-                    break
-
-            if not is_imported:
-                orphans.append(file)
-
-        return orphans
+        return self._find_orphan_files()
 
     def _run_self_tests(self) -> Dict[str, Any]:
         """
