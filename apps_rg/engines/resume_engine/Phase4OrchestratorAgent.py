@@ -41,7 +41,15 @@ class MutationMode(Enum):
 
 @dataclass
 class FileBackup:
-    """Backup of a file for rollback."""
+    """
+    Backup of a file for rollback.
+    
+    Attributes:
+        path: File path
+        content: File content snapshot
+        hash: Content hash for verification
+        timestamp: ISO timestamp of backup creation
+    """
     path: str
     content: str
     hash: str
@@ -50,7 +58,19 @@ class FileBackup:
 
 @dataclass
 class MutationResult:
-    """Result of a mutation operation."""
+    """
+    Result of a mutation operation.
+    
+    Attributes:
+        success: Whether mutation succeeded
+        original_content: Original file content
+        mutated_content: Mutated file content
+        attempts: Number of attempts made
+        confidence: Confidence score (0-1)
+        mode: Mutation mode used
+        error: Optional error message
+        diff_applied: Whether diff was successfully applied
+    """
     success: bool
     original_content: str
     mutated_content: str
@@ -63,7 +83,15 @@ class MutationResult:
 
 @dataclass
 class RepairProposal:
-    """A proposed repair from collective intelligence."""
+    """
+    A proposed repair from collective intelligence.
+    
+    Attributes:
+        agent_name: Name of proposing agent
+        proposal: Repair proposal text
+        confidence: Confidence score (0-1)
+        reasoning: Reasoning for the proposal
+    """
     agent_name: str
     proposal: str
     confidence: float

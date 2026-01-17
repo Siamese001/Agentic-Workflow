@@ -23,6 +23,17 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     """
 
     async def execute(self) -> None:
+        """
+        Execute fact-checking of resume claims against user profile.
+        
+        Validates:
+        - Skills against profile skills
+        - Experience companies against work history
+        - Dates consistency
+        
+        Raises:
+            HALLUCINATION_DETECTED signal if unverified claims found
+        """
         self.log("Fact-checking resume claims...")
 
         resume = self.ctx.current_resume
@@ -38,14 +49,14 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             self.record_pass("Fact-check skipped (no profile)")
             return
 
-        issues = []
+        issues: list = []
 
         # Check skills against profile (case-insensitive)
-        resume_skills = self._extract_skills(resume)
-        profile_skills = {self._normalize(s) for s in profile.get("skills", []) if isinstance(s, str)}
+        resume_skills: set = self._extract_skills(resume)
+        profile_skills: set = {self._normalize(s) for s in profile.get("skills", []) if isinstance(s, str)}
 
         if profile_skills and resume_skills:
-            unverified_skills = resume_skills - profile_skills
+            unverified_skills: set = resume_skills - profile_skills
             # Only flag if majority of skills are unverified
             if unverified_skills and len(unverified_skills) > len(resume_skills) * 0.5:
                 issues.append(f"Unverified skills: {list(unverified_skills)[:5]}")
@@ -56,8 +67,8 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             profile_exp = profile.get("work_history", [])
 
             if isinstance(resume_exp, list) and isinstance(profile_exp, list):
-                resume_companies = {self._normalize(e.get("company", "")) for e in resume_exp if isinstance(e, dict)}
-                profile_companies = {self._normalize(e.get("company", "")) for e in profile_exp if isinstance(e, dict)}
+                resume_companies: set = {self._normalize(e.get("company", "")) for e in resume_exp if isinstance(e, dict)}
+                profile_companies: set = {self._normalize(e.get("company", "")) for e in profile_exp if isinstance(e, dict)}
 
                 if profile_companies:
                     unverified = resume_companies - profile_companies
@@ -72,8 +83,16 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             self.remove_signal("HALLUCINATION_DETECTED")
 
     def _extract_skills(self, resume: Dict) -> set:
-        """Extract skills from resume."""
-        skills = set()
+        """
+        Extract skills from resume.
+        
+        Args:
+            resume: Resume dictionary
+        
+        Returns:
+            Set of normalized skill names
+        """
+        skills: set = set()
 
         if "skills" in resume:
             skill_data = resume["skills"]

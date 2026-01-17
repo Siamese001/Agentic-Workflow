@@ -25,9 +25,27 @@ from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import Subatomic
 
 @dataclass
 class LeadQualityAgent(OutreachAgent):
-    """Validates and scores lead quality."""
+    """
+    Validates and scores lead quality.
+    
+    Validates:
+    - Required fields (company, contact info)
+    - Email domain quality
+    - Spam indicators
+    """
 
     async def execute(self) -> None:
+        """
+        Execute lead quality validation.
+        
+        Validates all leads for:
+        - Required fields presence
+        - Contact information completeness
+        - Suspicious email domains
+        
+        Raises:
+            LEAD_QUALITY_ISSUE signal if validation fails
+        """
         print(f"   [{self.name}] Analyzing lead quality...")
 
         leads = self.ctx.leads
@@ -37,7 +55,7 @@ class LeadQualityAgent(OutreachAgent):
             self.record_result(True, "No leads to analyze")
             return
 
-        quality_issues = []
+        quality_issues: list = []
 
         for i, lead in enumerate(leads):
             # Check required fields

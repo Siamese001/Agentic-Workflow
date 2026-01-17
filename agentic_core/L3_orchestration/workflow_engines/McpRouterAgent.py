@@ -36,7 +36,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     - L5 failures → GitKraken for version control verification
     """
 
-    def __init__(self, tui_handle=None) -> None:
+    def __init__(self, tui_handle: Optional[Any] = None) -> None:
         """
         Initialize MCP Router.
         
@@ -44,7 +44,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             tui_handle: Optional TUI dashboard for status updates
         """
         self.tui = tui_handle
-        self.registry = {'L1': ['sequential_thinking'], 'L2': ['brave_search', 'deepwiki', 'fetch'], 'L3': ['redis', 'playwright'], 'L4': ['pinecone', 'memory', 'filesystem'], 'L5': ['sequential_thinking', 'gitkraken']}
+        self.registry: Dict[str, List[str]] = {'L1': ['sequential_thinking'], 'L2': ['brave_search', 'deepwiki', 'fetch'], 'L3': ['redis', 'playwright'], 'L4': ['pinecone', 'memory', 'filesystem'], 'L5': ['sequential_thinking', 'gitkraken']}
         Logger.info('[OK] MCP Router initialized with L1-L5 registry')
 
     async def resolve_failure(self, layer: str, error_context: str) -> Dict[str, Any]:

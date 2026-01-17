@@ -58,6 +58,18 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     }
 
     async def execute(self) -> None:
+        """
+        Execute content quality validation.
+        
+        Validates:
+        - Minimum section lengths
+        - Placeholder text detection
+        - Sentence structure
+        - Quantified achievements
+        
+        Raises:
+            QUALITY_FAILURE signal if quality issues found
+        """
         self.log("Analyzing content quality...")
 
         resume = self.ctx.current_resume
@@ -66,14 +78,14 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             self.add_signal("QUALITY_FAILURE")
             return
 
-        issues = []
+        issues: list = []
 
         # Check each section
         for section_name, content in resume.items():
             if section_name.startswith("_"):
                 continue  # Skip metadata
 
-            content_str = self._to_string(content)
+            content_str: str = self._to_string(content)
 
             # Check for placeholders
             for pattern in self.PLACEHOLDER_PATTERNS:

@@ -53,23 +53,35 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     - Property testing: Hypothesis skeleton generation
     """
 
-    def __init__(self, project_root: Path, ctx):
-        self.project_root = Path(project_root)
+    def __init__(self, project_root: Path, ctx: Any) -> None:
+        """
+        Initialize the test coverage guardian.
+        
+        Args:
+            project_root: Root directory of the project
+            ctx: Execution context
+        """
+        self.project_root: Path = Path(project_root)
         self.ctx = ctx
-        self.min_line_coverage = 95
-        self.min_branch_coverage = 90
-        self.min_mutation_score = 95
-        self.test_dir = self.project_root / TESTS_DIR
-        self.html_report_dir = self.project_root / "htmlcov"
-        self.history_file = self.project_root / "coverage_history.json"
-        self.auto_generate = True
-        self.mutation_hints = True
-        self.property_testing_enabled = True
+        self.min_line_coverage: int = 95
+        self.min_branch_coverage: int = 90
+        self.min_mutation_score: int = 95
+        self.test_dir: Path = self.project_root / TESTS_DIR
+        self.html_report_dir: Path = self.project_root / "htmlcov"
+        self.history_file: Path = self.project_root / "coverage_history.json"
+        self.auto_generate: bool = True
+        self.mutation_hints: bool = True
+        self.property_testing_enabled: bool = True
         # [FIX] distinct scope for coverage vs. root
         self.target_scope = getattr(ctx, 'target_scope', AGENTIC_CORE_DIR)
 
-    def _load_history(self) -> List[Dict]:
-        """Load coverage history from JSON file."""
+    def _load_history(self) -> List[Dict[str, Any]]:
+        """
+        Load coverage history from JSON file.
+        
+        Returns:
+            List of historical coverage entries
+        """
         if self.history_file.exists():
             try:
                 return json.loads(self.history_file.read_text(encoding="utf-8"))
@@ -77,7 +89,13 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 return []
         return []
 
-    def _save_history(self, entry: Dict):
+    def _save_history(self, entry: Dict[str, Any]) -> None:
+        """
+        Save coverage entry to history.
+        
+        Args:
+            entry: Coverage data entry to save
+        """
         """Save coverage history entry (keep last 30)."""
         history = self._load_history()
         history.append(entry)
