@@ -1,309 +1,57 @@
 {
-  "status": "idle",
-  "start_time": "2026-01-17T08:47:28.461405",
+  "status": "healing",
+  "start_time": "2026-01-17T12:00:31.008205",
   "end_time": null,
-  "current_agent": null,
-  "current_layer": null,
+  "current_agent": "LocationAgent",
+  "current_layer": "L5 \u2013 Safety & Governance",
   "agents_order": [
     "LocationAgent \u2192 agentic_core",
     "HierarchyAgent \u2192 agentic_core",
     "NamingAgent \u2192 agentic_core",
     "ImportAgent \u2192 agentic_core",
+    "GovernanceAgent \u2192 agentic_core",
     "AutonomyGuardian \u2192 agentic_core",
     "LocationAgent \u2192 apps_lic",
     "HierarchyAgent \u2192 apps_lic",
     "NamingAgent \u2192 apps_lic",
     "ImportAgent \u2192 apps_lic",
+    "GovernanceAgent \u2192 apps_lic",
     "AutonomyGuardian \u2192 apps_lic",
     "LocationAgent \u2192 apps_rg",
     "HierarchyAgent \u2192 apps_rg",
     "NamingAgent \u2192 apps_rg",
     "ImportAgent \u2192 apps_rg",
+    "GovernanceAgent \u2192 apps_rg",
     "AutonomyGuardian \u2192 apps_rg",
     "LocationAgent \u2192 scripts",
     "HierarchyAgent \u2192 scripts",
     "NamingAgent \u2192 scripts",
     "ImportAgent \u2192 scripts",
+    "GovernanceAgent \u2192 scripts",
     "AutonomyGuardian \u2192 scripts"
   ],
-  "total_agents": 20,
-  "completed_agents": [
-    "LocationAgent \u2192 agentic_core",
-    "HierarchyAgent \u2192 agentic_core",
-    "NamingAgent \u2192 agentic_core",
-    "ImportAgent \u2192 agentic_core",
-    "AutonomyGuardian \u2192 agentic_core",
-    "LocationAgent \u2192 apps_lic",
-    "HierarchyAgent \u2192 apps_lic",
-    "NamingAgent \u2192 apps_lic",
-    "ImportAgent \u2192 apps_lic",
-    "AutonomyGuardian \u2192 apps_lic",
-    "LocationAgent \u2192 apps_rg",
-    "HierarchyAgent \u2192 apps_rg",
-    "NamingAgent \u2192 apps_rg",
-    "ImportAgent \u2192 apps_rg",
-    "AutonomyGuardian \u2192 apps_rg",
-    "LocationAgent \u2192 scripts",
-    "HierarchyAgent \u2192 scripts",
-    "NamingAgent \u2192 scripts",
-    "ImportAgent \u2192 scripts",
-    "AutonomyGuardian \u2192 scripts"
-  ],
+  "total_agents": 24,
+  "completed_agents": [],
   "events": [
     {
-      "time": "2026-01-17T08:47:28.461405",
+      "time": "2026-01-17T12:00:31.008205",
       "type": "info",
       "message": "Heal mode started (DRY-RUN)"
     },
     {
-      "time": "2026-01-17T08:47:28.461405",
+      "time": "2026-01-17T12:00:31.008205",
       "type": "meta",
       "message": "Meta-learning ACTIVE"
     },
     {
-      "time": "2026-01-17T08:47:28.461942",
+      "time": "2026-01-17T12:00:31.009747",
       "type": "info",
       "message": "Starting domain sweep: agentic_core"
     },
     {
-      "time": "2026-01-17T08:47:28.469292",
+      "time": "2026-01-17T12:00:31.016127",
       "type": "agent_start",
       "message": "\u2192 Running LocationAgent (L5 \u2013 Safety & Governance) on agentic_core"
-    },
-    {
-      "time": "2026-01-17T08:47:40.623300",
-      "type": "agent_end",
-      "message": "\u2713 LocationAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:47:40.623813",
-      "type": "agent_start",
-      "message": "\u2192 Running HierarchyAgent (L5 \u2013 Safety & Governance) on agentic_core"
-    },
-    {
-      "time": "2026-01-17T08:48:50.408152",
-      "type": "agent_end",
-      "message": "\u2713 HierarchyAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:48:50.408940",
-      "type": "agent_start",
-      "message": "\u2192 Running NamingAgent (L5 \u2013 Safety & Governance) on agentic_core"
-    },
-    {
-      "time": "2026-01-17T08:51:01.175817",
-      "type": "error",
-      "message": "\u2717 NamingAgent failed on agentic_core: name 'file_path' is not defined..."
-    },
-    {
-      "time": "2026-01-17T08:51:01.182174",
-      "type": "agent_start",
-      "message": "\u2192 Running ImportAgent (L2 \u2013 Execution & Tools) on agentic_core"
-    },
-    {
-      "time": "2026-01-17T08:51:23.016162",
-      "type": "agent_end",
-      "message": "\u2713 ImportAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:51:23.016162",
-      "type": "agent_start",
-      "message": "\u2192 Running AutonomyGuardian (L5 \u2013 Safety & Governance) on agentic_core"
-    },
-    {
-      "time": "2026-01-17T08:51:33.616022",
-      "type": "agent_end",
-      "message": "\u2713 AutonomyGuardian: fixed: 0 | violations: 7"
-    },
-    {
-      "time": "2026-01-17T08:51:33.616539",
-      "type": "info",
-      "message": "Domain sweep completed: agentic_core"
-    },
-    {
-      "time": "2026-01-17T08:51:33.623751",
-      "type": "info",
-      "message": "Starting domain sweep: apps_lic"
-    },
-    {
-      "time": "2026-01-17T08:51:33.630321",
-      "type": "agent_start",
-      "message": "\u2192 Running LocationAgent (L5 \u2013 Safety & Governance) on apps_lic"
-    },
-    {
-      "time": "2026-01-17T08:51:45.777914",
-      "type": "agent_end",
-      "message": "\u2713 LocationAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:51:45.777914",
-      "type": "agent_start",
-      "message": "\u2192 Running HierarchyAgent (L5 \u2013 Safety & Governance) on apps_lic"
-    },
-    {
-      "time": "2026-01-17T08:52:55.823574",
-      "type": "agent_end",
-      "message": "\u2713 HierarchyAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:52:55.824139",
-      "type": "agent_start",
-      "message": "\u2192 Running NamingAgent (L5 \u2013 Safety & Governance) on apps_lic"
-    },
-    {
-      "time": "2026-01-17T08:55:05.837894",
-      "type": "error",
-      "message": "\u2717 NamingAgent failed on apps_lic: name 'file_path' is not defined..."
-    },
-    {
-      "time": "2026-01-17T08:55:05.840809",
-      "type": "agent_start",
-      "message": "\u2192 Running ImportAgent (L2 \u2013 Execution & Tools) on apps_lic"
-    },
-    {
-      "time": "2026-01-17T08:55:27.128055",
-      "type": "agent_end",
-      "message": "\u2713 ImportAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:55:27.130199",
-      "type": "agent_start",
-      "message": "\u2192 Running AutonomyGuardian (L5 \u2013 Safety & Governance) on apps_lic"
-    },
-    {
-      "time": "2026-01-17T08:55:37.192713",
-      "type": "agent_end",
-      "message": "\u2713 AutonomyGuardian: fixed: 0 | violations: 7"
-    },
-    {
-      "time": "2026-01-17T08:55:37.193715",
-      "type": "info",
-      "message": "Domain sweep completed: apps_lic"
-    },
-    {
-      "time": "2026-01-17T08:55:37.197810",
-      "type": "info",
-      "message": "Starting domain sweep: apps_rg"
-    },
-    {
-      "time": "2026-01-17T08:55:37.202829",
-      "type": "agent_start",
-      "message": "\u2192 Running LocationAgent (L5 \u2013 Safety & Governance) on apps_rg"
-    },
-    {
-      "time": "2026-01-17T08:55:49.265043",
-      "type": "agent_end",
-      "message": "\u2713 LocationAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:55:49.266083",
-      "type": "agent_start",
-      "message": "\u2192 Running HierarchyAgent (L5 \u2013 Safety & Governance) on apps_rg"
-    },
-    {
-      "time": "2026-01-17T08:56:58.636208",
-      "type": "agent_end",
-      "message": "\u2713 HierarchyAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:56:58.638456",
-      "type": "agent_start",
-      "message": "\u2192 Running NamingAgent (L5 \u2013 Safety & Governance) on apps_rg"
-    },
-    {
-      "time": "2026-01-17T08:59:06.661324",
-      "type": "error",
-      "message": "\u2717 NamingAgent failed on apps_rg: name 'file_path' is not defined..."
-    },
-    {
-      "time": "2026-01-17T08:59:06.665262",
-      "type": "agent_start",
-      "message": "\u2192 Running ImportAgent (L2 \u2013 Execution & Tools) on apps_rg"
-    },
-    {
-      "time": "2026-01-17T08:59:28.427982",
-      "type": "agent_end",
-      "message": "\u2713 ImportAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:59:28.430124",
-      "type": "agent_start",
-      "message": "\u2192 Running AutonomyGuardian (L5 \u2013 Safety & Governance) on apps_rg"
-    },
-    {
-      "time": "2026-01-17T08:59:39.008096",
-      "type": "agent_end",
-      "message": "\u2713 AutonomyGuardian: fixed: 0 | violations: 7"
-    },
-    {
-      "time": "2026-01-17T08:59:39.009645",
-      "type": "info",
-      "message": "Domain sweep completed: apps_rg"
-    },
-    {
-      "time": "2026-01-17T08:59:39.015086",
-      "type": "info",
-      "message": "Starting domain sweep: scripts"
-    },
-    {
-      "time": "2026-01-17T08:59:39.020001",
-      "type": "agent_start",
-      "message": "\u2192 Running LocationAgent (L5 \u2013 Safety & Governance) on scripts"
-    },
-    {
-      "time": "2026-01-17T08:59:51.493501",
-      "type": "agent_end",
-      "message": "\u2713 LocationAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T08:59:51.495123",
-      "type": "agent_start",
-      "message": "\u2192 Running HierarchyAgent (L5 \u2013 Safety & Governance) on scripts"
-    },
-    {
-      "time": "2026-01-17T09:01:01.816308",
-      "type": "agent_end",
-      "message": "\u2713 HierarchyAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T09:01:01.818634",
-      "type": "agent_start",
-      "message": "\u2192 Running NamingAgent (L5 \u2013 Safety & Governance) on scripts"
-    },
-    {
-      "time": "2026-01-17T09:03:09.277780",
-      "type": "error",
-      "message": "\u2717 NamingAgent failed on scripts: name 'file_path' is not defined..."
-    },
-    {
-      "time": "2026-01-17T09:03:09.282367",
-      "type": "agent_start",
-      "message": "\u2192 Running ImportAgent (L2 \u2013 Execution & Tools) on scripts"
-    },
-    {
-      "time": "2026-01-17T09:03:30.284400",
-      "type": "agent_end",
-      "message": "\u2713 ImportAgent: fixed: 0 | violations: 0"
-    },
-    {
-      "time": "2026-01-17T09:03:30.287476",
-      "type": "agent_start",
-      "message": "\u2192 Running AutonomyGuardian (L5 \u2013 Safety & Governance) on scripts"
-    },
-    {
-      "time": "2026-01-17T09:03:40.390986",
-      "type": "agent_end",
-      "message": "\u2713 AutonomyGuardian: fixed: 0 | violations: 7"
-    },
-    {
-      "time": "2026-01-17T09:03:40.390986",
-      "type": "info",
-      "message": "Domain sweep completed: scripts"
-    },
-    {
-      "time": "2026-01-17T09:03:40.396786",
-      "type": "info",
-      "message": "Heal mode completed \u2014 full sweep finished"
     }
   ],
   "meta_learning": {

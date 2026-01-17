@@ -51,7 +51,10 @@ _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_m
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
+LOGGER = Logger  # Alias for compatibility
 
 class DependencyGraph:
     """
@@ -812,10 +815,14 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L1 cognition agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
+        """L1 cognition agent - architectural governance enforcement."""
         if _call_path is None:
             _call_path = set()
+            try:
+                super().heal_repository(dry_run=dry_run)
+            except Exception as e:
+                Logger.warning(f"[HEAL_REPOSITORY] Parent chain warning: {e}")
+        
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}
@@ -823,8 +830,21 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L1 cognition - operational only")
-            return {"skipped": 1}
+            violations_found = 0
+            
+            # Check Law of The Void (Root Hygiene)
+            root_violations = self.check_root_hygiene(auto_sanitize=False)
+            if root_violations:
+                print(f"[{agent_name}] ROOT HYGIENE VIOLATIONS: {len(root_violations)}")
+                for v in root_violations[:5]:
+                    print(f"  - {v}")
+                violations_found += len(root_violations)
+            
+            # Skip dependency graph building for now (has path resolution issues)
+            # TODO: Fix build_graph to handle relative/absolute path mixing
+            
+            print(f"[{agent_name} HEAL @ depth {depth}] Found {violations_found} governance violations")
+            return {"violations_found": violations_found, "fixed": 0}
         finally:
             _call_path.discard(agent_name)
 
@@ -840,4 +860,4 @@ def create_architecture_governor(root_dir: str=None) -> GovernanceAgent:
 
 def get_governance_agent(project_root: Path, enforcement_mode: str = "audit") -> GovernanceAgent:
     """Factory function to get governance agent instance."""
-    return GovernanceAgent(project_root, enforcement_mode)
+    return GovernanceAgent(project_root)
