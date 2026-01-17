@@ -39,7 +39,7 @@ from collections import defaultdict
 
 # SSOT: Import territory name definitions
 sys.path.insert(0, str(Path(__file__).parent))
-from territory_ssot_definitions import get_territory_from_path
+from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
 
 # SSOT: Import field name constants for agent_discovery_full.json
 from dashboard_ssot_definitions import (
@@ -1512,6 +1512,16 @@ def main():
                 path_str=path_str,
                 is_base_class=is_base_class,
                 class_name=node.name
+            )
+            
+            # SSOT: Refine high-count territories using AST analysis
+            # This subdivides territories with >15 agents into semantically meaningful sub-territories
+            agent_docstring = ast.get_docstring(node) or ""
+            territory = refine_territory_by_ast(
+                territory=territory,
+                class_name=node.name,
+                docstring=agent_docstring,
+                path_str=path_str
             )
             
             # SSOT: Categorize agent using canonical function (Phase 3 Migration)

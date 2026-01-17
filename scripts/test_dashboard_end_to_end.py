@@ -45,8 +45,13 @@ from scripts.dashboard_ssot_definitions import (
     COL_AVG_CC, COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED,
     COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH,
     # Calculation functions (SSOT for metrics)
-    calc_health_score
+    calc_health_score, calc_typed_pct, calc_documented_pct,
+    calc_schema_strictness_pct, calc_canonical_inheritance_pct,
+    calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct
 )
+
+# SSOT: Import exclusion logic from full_agent_discovery
+from scripts.full_agent_discovery import should_exclude_file
 
 # =============================================================================
 # HELPER FUNCTION: Load Dashboard Data from Consolidated SSOT Location
@@ -253,19 +258,19 @@ def test_discovery_field_names() -> Tuple[bool, List[str]]:
     
     # SSOT: All required field names from dashboard_ssot_definitions.py
     REQUIRED_SSOT_FIELDS = {
-        'class_name',
-        'path',
-        'layer',
-        'territory',
-        'has_healing',
-        'has_tests',
-        'mcp_hardened',
-        'invocation',
-        'typed_pct',        # NOT 'typed_percentage'
-        'documented_pct',   # NOT 'docstring_percentage'
-        'schema_strictness',
-        'proper_base_class',
-        'cyclomatic_complexity',
+        FIELD_CLASS_NAME,
+        FIELD_PATH,
+        FIELD_LAYER,
+        FIELD_TERRITORY,
+        FIELD_HAS_HEALING,
+        FIELD_HAS_TESTS,
+        FIELD_MCP_HARDENED,
+        FIELD_INVOCATION_CONST,
+        FIELD_TYPED_PCT,
+        FIELD_DOCUMENTED_PCT,
+        FIELD_SCHEMA_STRICTNESS,
+        FIELD_PROPER_BASE_CLASS,
+        FIELD_CYCLOMATIC_COMPLEXITY,
     }
     
     # FORBIDDEN field names (common mistakes)
@@ -535,10 +540,11 @@ def run_all_tests() -> bool:
     CANONICAL_BASE_AGENTS = {
         'L0': 'L0MaintenanceBaseAgent',
         'L1': 'L1CognitionBaseAgent',
-        'L2': 'L2Agent',
-        'L3': 'L3Agent',
-        'L4': 'L4Agent',
-        'L5': 'L5Agent',
+        'L2': 'L2ExecutionBaseAgent',
+        'L3': 'L3OrchestrationBaseAgent',
+        'L4': 'L4StateBaseAgent',
+        'L5': 'L5SafetyBaseAgent',
+        'L6': 'L6ObservabilityBaseAgent',
     }
     try:
         # Load agents from discovery file (using SSOT path)
@@ -2661,16 +2667,17 @@ def run_all_tests() -> bool:
     return all_passed
 
 def count_actual_agents() -> int:
-    """Count actual agent files in the codebase (quick scan)."""
+    """Count actual agent files using SSOT exclusion logic."""
     project_root = get_validated_project_root()
-    agentic_core = project_root / "agentic_core"
     
     count = 0
-    for py_file in agentic_core.rglob("*.py"):
-        if "__pycache__" in str(py_file):
-            continue
-        if "Agent" in py_file.stem and py_file.stem.endswith("Agent"):
-            count += 1
+    # Scan strictly based on SSOT logic (same as full_agent_discovery.py)
+    for py_file in project_root.rglob("*.py"):
+        # Use the exact same exclusion logic as the discovery script
+        if not should_exclude_file(py_file):
+            # Additionally verify it has "Agent" in the name as a quick heuristic
+            if "Agent" in py_file.stem and py_file.stem.endswith("Agent"):
+                count += 1
     return count
 
 
