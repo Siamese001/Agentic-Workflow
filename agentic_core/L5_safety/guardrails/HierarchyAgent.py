@@ -599,7 +599,10 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                       create_structure: bool = True,
                       relocate_files: bool = True,
                       enforce_depth: bool = True,
-                      purge_orphans: bool = True) -> Dict[str, Any]:
+                      purge_orphans: bool = True,
+                      execute: bool = False,
+                      dry_run: bool = True,
+                      **kwargs) -> Dict[str, Any]:
         """
         Unified hierarchy healing with granular control.
         
@@ -696,3 +699,14 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return {"hierarchy": result, "parent": parent_result}
         finally:
             self.healing_enabled = original_healing
+
+
+# Singleton getter for canon_validator compatibility
+_hierarchy_agent_instance = None
+
+def get_hierarchy_agent(project_root):
+    """Get or create HierarchyAgent singleton."""
+    global _hierarchy_agent_instance
+    if _hierarchy_agent_instance is None:
+        _hierarchy_agent_instance = HierarchyAgent(project_root)
+    return _hierarchy_agent_instance

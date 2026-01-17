@@ -29,6 +29,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class DuplicateFile:
     rationale: str = ""
 
 
-class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin):
+class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """L5 Safety agent that detects duplicate files and code blocks.
     
     This batch agent detects exact duplicate files and code blocks across the

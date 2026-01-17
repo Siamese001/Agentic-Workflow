@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
 """
+[DEPRECATED] This script is deprecated. Use regenerate_dashboard_full.py instead.
+
+DEPRECATION REASON: This script does not use SSOT definitions and generates
+incorrect data structure (15 rows instead of 43 territories).
+
+CANONICAL SSOT: scripts/regenerate_dashboard_full.py
+ - Uses dashboard_ssot_definitions.py for all calculations
+ - Generates correct 43 territory rows with TOTAL first
+ - Updates dashboardData, realAgentData, and recommendations
+
+This file is kept for reference only. DO NOT USE.
+"""
+import sys
+print("[DEPRECATED] This script is deprecated. Use regenerate_dashboard_full.py instead.")
+sys.exit(1)
+
+# Original code below for reference:
+"""
 Generate modular dashboard data files from agent_discovery_full.json
 Creates: dashboard_data.js, agent_data.js, recommendations.js, observations.js
 """

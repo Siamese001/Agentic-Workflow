@@ -3,6 +3,12 @@
 MANDATORY END-TO-END DASHBOARD TEST WITH AUTO-REGENERATION
 Must be run after ANY data change to agent_discovery_full.json or dashboard HTML.
 
+SSOT BEHAVIOR (2026-01-17):
+- Auto-regeneration is NOW DEFAULT - tests always validate fresh data
+- Agent discovery is regenerated if stale before running tests
+- Dashboard data is regenerated from discovery before running tests
+- This ensures tests catch real issues, not stale data problems
+
 CRITICAL REQUIREMENTS:
 1. Auto-regenerate agent discovery and dashboard when agents change
 2. Verify browser cache-busting headers
@@ -12,9 +18,10 @@ CRITICAL REQUIREMENTS:
 6. Test all JavaScript data rendering
 
 Usage:
-  python scripts/test_dashboard_end_to_end.py              # Validate only
-  python scripts/test_dashboard_end_to_end.py --regenerate # Force regeneration first
-  python scripts/test_dashboard_end_to_end.py --auto       # Auto-regenerate if stale
+  python scripts/test_dashboard_end_to_end.py                    # Auto-regenerate if stale (DEFAULT)
+  python scripts/test_dashboard_end_to_end.py --regenerate       # Force regeneration first
+  python scripts/test_dashboard_end_to_end.py --skip-regenerate  # Skip regeneration (NOT RECOMMENDED)
+  python scripts/test_dashboard_end_to_end.py -y                 # Skip interactive prompts
 """
 import json
 import re
@@ -1831,17 +1838,20 @@ def run_all_tests() -> bool:
             # ============================================================
             # PART E: Verify realAgentData exists for drill-down
             # ============================================================
-            # Check in all JS content and data files
+            # SSOT: Check modular agent_data.js file (not inline HTML)
             agent_data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'agent_data.js'
-            has_agent_data = 'realAgentData' in all_js_content or (agent_data_path.exists() and agent_data_path.stat().st_size > 100)
+            has_agent_data = agent_data_path.exists() and agent_data_path.stat().st_size > 100
             if not has_agent_data:
                 js_issues.append("realAgentData missing - drill-down modals would have no agent data")
             else:
-                # Verify realAgentData has entries for each territory
-                agent_data_match = re.search(r'const realAgentData = (\{.*?\});', html_content, re.DOTALL)
-                if agent_data_match:
-                    try:
-                        real_agent_data = json.loads(agent_data_match.group(1))
+                # Load realAgentData from modular JS file
+                try:
+                    agent_data_content = agent_data_path.read_text(encoding='utf-8')
+                    # Extract JSON from window.realAgentData = {...};
+                    start_idx = agent_data_content.find('{')
+                    end_idx = agent_data_content.rfind('}') + 1
+                    if start_idx != -1 and end_idx > start_idx:
+                        real_agent_data = json.loads(agent_data_content[start_idx:end_idx])
                         territories_without_agents = []
                         for row in territory_rows:
                             territory = row.get('Territory')
@@ -1850,8 +1860,10 @@ def run_all_tests() -> bool:
                         
                         if territories_without_agents:
                             js_issues.append(f"{len(territories_without_agents)} territories missing from realAgentData")
-                    except json.JSONDecodeError:
-                        js_issues.append("realAgentData is not valid JSON - drill-down would crash")
+                    else:
+                        js_issues.append("agent_data.js does not contain valid realAgentData object")
+                except json.JSONDecodeError as e:
+                    js_issues.append(f"realAgentData is not valid JSON - drill-down would crash: {e}")
             
             # ============================================================
             # PART F: Verify DOM containers exist for rendered content
@@ -2822,11 +2834,13 @@ def regenerate_dashboard() -> bool:
     print("=" * 70)
     
     project_root = get_validated_project_root()
-    # SSOT: Use regenerate_dashboard_data.py which writes to dashboard_data.js
-    dashboard_script = project_root / "scripts" / "regenerate_dashboard_data.py"
+    # SSOT: Use regenerate_dashboard_full.py - the CANONICAL script
+    # This generates: dashboardData, realAgentData, and recommendations
+    # DEPRECATED: regenerate_dashboard_data.py, generate_modular_dashboard_data.py
+    dashboard_script = project_root / "scripts" / "regenerate_dashboard_full.py"
     
     if not dashboard_script.exists():
-        print("❌ Dashboard data generator not found: scripts/regenerate_dashboard_data.py")
+        print("❌ Dashboard data generator not found: scripts/regenerate_dashboard_full.py")
         return False
     
     try:
@@ -3030,10 +3044,14 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="Dashboard E2E Test with Auto-Regeneration")
     parser.add_argument("--regenerate", action="store_true", help="Force regeneration before testing")
-    parser.add_argument("--auto", action="store_true", help="Auto-regenerate if stale")
+    parser.add_argument("--skip-regenerate", action="store_true", help="Skip auto-regeneration (NOT RECOMMENDED)")
     parser.add_argument("--no-server-restart", action="store_true", help="Skip automated server restart")
     parser.add_argument("--yes", "-y", action="store_true", help="Skip all interactive prompts (assume yes)")
     args = parser.parse_args()
+    
+    # SSOT FIX: Auto-regeneration is now DEFAULT behavior (not optional)
+    # This ensures tests always validate against fresh data from the codebase
+    args.auto = not args.skip_regenerate  # Auto-regenerate unless explicitly skipped
     
     # MANDATORY: Display cache-busting instructions at start
     print("\n" + "=" * 70)

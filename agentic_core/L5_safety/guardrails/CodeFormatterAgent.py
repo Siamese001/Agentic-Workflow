@@ -17,10 +17,11 @@ from typing import Any, Dict, Optional, Set
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass
-class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin):
+class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """L5 Safety agent that enforces consistent formatting using Black + Ruff.
     
     This atomic agent applies Black formatting and Ruff lint auto-fixes to
