@@ -50,6 +50,7 @@ DASHBOARD_DIR = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards
 SCRIPTS_DIR = PROJECT_ROOT / "scripts"
 SERVER_PORT = 8765
 SERVER_TIMEOUT = 10  # seconds to wait for server to start
+PAGE_LOAD_TIMEOUT = 60000  # 60 seconds for dashboard load
 FLOAT_TOLERANCE = 1.0  # Percentage points tolerance for floating point comparisons
 GLOBAL_SERVER_PROCESS: Optional[subprocess.Popen] = None
 
@@ -614,10 +615,13 @@ def run_playwright_visual_tests() -> Tuple[bool, Dict[str, bool]]:
             browser = p.chromium.launch(headless=True)
             context = browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
-                # Disable cache to ensure fresh load
                 ignore_https_errors=True
             )
             page = context.new_page()
+            
+            # HARDENING: Capture browser console logs and errors
+            page.on("console", lambda msg: print(f"    [BROWSER CONSOLE] {msg.text}"))
+            page.on("pageerror", lambda exc: print(f"    [BROWSER ERROR] {exc}"))
             
             # Navigate to dashboard
             dashboard_url = f"http://localhost:{SERVER_PORT}/autonomy_dashboard.html"
@@ -625,7 +629,7 @@ def run_playwright_visual_tests() -> Tuple[bool, Dict[str, bool]]:
             
             try:
                 # Use domcontentloaded instead of networkidle for faster load
-                page.goto(dashboard_url, wait_until='domcontentloaded', timeout=60000)
+                page.goto(dashboard_url, wait_until='domcontentloaded', timeout=PAGE_LOAD_TIMEOUT)
                 # Wait a bit for JS to execute
                 time.sleep(2)
                 results['Dashboard loads'] = True
@@ -765,6 +769,7 @@ def run_playwright_visual_tests() -> Tuple[bool, Dict[str, bool]]:
                 results['Screenshot saved'] = False
                 print(f"  [WARN] Screenshot failed: {e}")
             
+            context.close()
             browser.close()
             
     except ImportError:

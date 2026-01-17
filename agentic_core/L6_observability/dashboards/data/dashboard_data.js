@@ -8,7 +8,7 @@ window.dashboardData = [
     "Compliant": 265,
     "Heal Cap %": 100.0,
     "Invocation %": 100.0,
-    "Test %": 100.0,
+    "Test %": 94.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 33.0,
     "Typed %": 95.1,
@@ -16,7 +16,7 @@ window.dashboardData = [
     "Schema Strictness %": 99.2,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 97.67,
-    "Health": 79.95
+    "Health": 78.45
   },
   {
     "Territory": "Sovereign Base Agent",
@@ -104,7 +104,7 @@ window.dashboardData = [
     "Compliant": 23,
     "Heal Cap %": 100.0,
     "Invocation %": 100.0,
-    "Test %": 100.0,
+    "Test %": 91.3,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 0,
     "Typed %": 93.0,
@@ -112,7 +112,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 97.83,
-    "Health": 75.0
+    "Health": 72.83
   },
   {
     "Territory": "L5 Safety/Guardrails",
@@ -120,7 +120,7 @@ window.dashboardData = [
     "Compliant": 28,
     "Heal Cap %": 100.0,
     "Invocation %": 100.0,
-    "Test %": 100.0,
+    "Test %": 96.4,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 0,
     "Typed %": 92.1,
@@ -128,7 +128,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 97.92,
-    "Health": 75.0
+    "Health": 74.1
   },
   {
     "Territory": "L5 Safety/Red Teaming",
@@ -232,7 +232,7 @@ window.dashboardData = [
     "Compliant": 50,
     "Heal Cap %": 100.0,
     "Invocation %": 100.0,
-    "Test %": 100.0,
+    "Test %": 94.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 40.8,
     "Typed %": 95.2,
@@ -240,7 +240,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 98.62,
-    "Health": 81.12
+    "Health": 79.62
   },
   {
     "Territory": "L2 Execution/Base Agent",
@@ -264,7 +264,7 @@ window.dashboardData = [
     "Compliant": 36,
     "Heal Cap %": 100.0,
     "Invocation %": 100.0,
-    "Test %": 100.0,
+    "Test %": 88.9,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 30.0,
     "Typed %": 97.2,
@@ -272,7 +272,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.03,
-    "Health": 79.5
+    "Health": 76.72
   },
   {
     "Territory": "L1 Cognition/Base Agent",
@@ -296,7 +296,7 @@ window.dashboardData = [
     "Compliant": 27,
     "Heal Cap %": 100.0,
     "Invocation %": 100.0,
-    "Test %": 100.0,
+    "Test %": 96.3,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 49.4,
     "Typed %": 99.1,
@@ -304,7 +304,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.78,
-    "Health": 82.41
+    "Health": 81.48
   },
   {
     "Territory": "L0 Maintenance/Base Agent",
@@ -328,7 +328,7 @@ window.dashboardData = [
     "Compliant": 10,
     "Heal Cap %": 100.0,
     "Invocation %": 100.0,
-    "Test %": 100.0,
+    "Test %": 90.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 30.0,
     "Typed %": 99.3,
@@ -336,7 +336,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.65,
-    "Health": 79.0
+    "Health": 75.0
   },
   {
     "Territory": "Apps Lic",
@@ -344,7 +344,7 @@ window.dashboardData = [
     "Compliant": 37,
     "Heal Cap %": 100.0,
     "Invocation %": 100.0,
-    "Test %": 100.0,
+    "Test %": 94.6,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 60.2,
     "Typed %": 95.5,
@@ -352,7 +352,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 96.5,
-    "Health": 84.03
+    "Health": 82.68
   },
   {
     "Territory": "Apps Rg",
@@ -360,7 +360,7 @@ window.dashboardData = [
     "Compliant": 24,
     "Heal Cap %": 100.0,
     "Invocation %": 100.0,
-    "Test %": 100.0,
+    "Test %": 91.7,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 70.8,
     "Typed %": 90.3,
@@ -368,10 +368,10 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 93.92,
-    "Health": 85.62
+    "Health": 83.55
   },
   {
-    "Territory": "Utils",
+    "Territory": "Apps Shared",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,

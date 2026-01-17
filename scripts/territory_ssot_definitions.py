@@ -68,8 +68,8 @@ TERRITORY_APPS_LIC = "Apps Lic"
 TERRITORY_APPS_RG = "Apps Rg"
 TERRITORY_APPS_SHARED = "Apps Shared"
 
-# Utils Territory
-TERRITORY_UTILS = "Utils"
+# Utils Territory (DEPRECATED - now maps to Apps Shared)
+TERRITORY_UTILS = "Apps Shared"  # Changed from "Utils" to "Apps Shared"
 
 # ============================================================================
 # TERRITORY MAPPING FUNCTIONS
