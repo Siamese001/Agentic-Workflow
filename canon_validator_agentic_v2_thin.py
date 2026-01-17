@@ -651,12 +651,13 @@ def main():
                 _save_runtime_state(project_root)
                 
                 # All healing goes through agents directly — no scripts
-                # PHASE 2 ACTIVATION: Foundation (L5) + Execution (L2)
+                # PHASE 3 ACTIVATION: Foundation (L5) + Execution (L2) + Cognition (L1)
                 agents = [
                     ("LocationAgent", get_location_agent(project_root)),
                     ("HierarchyAgent", get_hierarchy_agent(project_root)),
                     ("NamingAgent", get_naming_agent(project_root)),
                     ("ImportAgent", get_import_agent(project_root)),
+                    ("GovernanceAgent", get_governance_agent(project_root)),
                     ("AutonomyGuardian", get_autonomy_guardian(project_root)),
                 ]
                 

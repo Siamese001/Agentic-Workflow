@@ -27,7 +27,7 @@ Note: StructuralEngineerAgent, SystemArchitectAgent, and RgStrategicPlannerAgent
 """
 
 from .CanonBaseAgent import CanonBaseAgent
-from .RgReflectionAgent import LicHealingOrchestratorAgent
+from .ReflectionAgent import RgReflectionAgent as ReflectionAgent
 
 # Public API surface — expose only what's intended
 __all__ = [
