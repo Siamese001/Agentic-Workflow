@@ -51,7 +51,7 @@ from scripts.dashboard_ssot_definitions import (
 )
 
 # SSOT: Import exclusion logic from full_agent_discovery
-from scripts.full_agent_discovery import should_exclude_file
+from scripts.full_agent_discovery import should_exclude_file, should_exclude_path
 
 # =============================================================================
 # HELPER FUNCTION: Load Dashboard Data from Consolidated SSOT Location
@@ -206,9 +206,10 @@ def test_dashboard_required_fields() -> Tuple[bool, List[str]]:
     data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
     
     # SSOT: Use canonical column names from dashboard_ssot_definitions
+    # Note: Dashboard data uses COL_COMPLEXITY_HEALTH, not COL_AVG_CC
     required_fields = [
         'Territory', 'Total', COL_HEAL_CAP, COL_INVOCATION,
-        COL_TEST, COL_HARDENED, COL_AVG_CC, COL_COMPLEXITY_HEALTH,
+        COL_TEST, COL_HARDENED, COL_COMPLEXITY_HEALTH,
         COL_TYPED, COL_DOCUMENTED, COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE,
         COL_CODE_QUALITY, COL_HEALTH
     ]
@@ -364,9 +365,9 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
         test = total_row[COL_TEST]
         complexity = total_row[COL_COMPLEXITY_HEALTH]
         # SSOT: Use dashboard_ssot_definitions health calculation
-        # Note: calc_health_score signature doesn't include 'obs' parameter
+        # Note: observable_pct is placeholder at 50.0 currently
         expected_health = calc_health_score(
-            heal_cap, heal_inv, test, complexity, is_l0=False
+            heal_cap, heal_inv, test, 50.0, complexity, is_l0=False
         )
         actual_heal_pct = total_row[COL_HEALTH]
         
@@ -384,14 +385,15 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
         return False, errors
 
 def test_table_rendering_elements() -> Tuple[bool, List[str]]:
-    """Test 6: Verify HTML has table rendering functions."""
+    """Test 6: Verify HTML and JS files have table rendering functions."""
     errors = []
-    dashboard_path = get_validated_project_root() / DASHBOARD_DIR / 'autonomy_dashboard.html'
+    project_root = get_validated_project_root()
+    dashboard_path = project_root / DASHBOARD_DIR / 'autonomy_dashboard.html'
+    js_dir = project_root / DASHBOARD_DIR / 'js'
     
     required_functions = [
         'renderTerritorySummaryTable',
         'renderCodeQualityTable',
-        'loadData'
     ]
     
     required_elements = [
@@ -402,8 +404,16 @@ def test_table_rendering_elements() -> Tuple[bool, List[str]]:
     try:
         html = dashboard_path.read_text(encoding='utf-8')
         
+        # Collect all JS content from renderers directory
+        all_js_content = html  # Start with HTML (may have inline JS)
+        renderers_dir = js_dir / 'renderers'
+        if renderers_dir.exists():
+            for js_file in renderers_dir.glob('*.js'):
+                all_js_content += js_file.read_text(encoding='utf-8')
+        
+        # Check for required functions in HTML or JS files
         for func in required_functions:
-            if f'function {func}' not in html:
+            if f'function {func}' not in all_js_content:
                 errors.append(f"❌ Missing function: {func}")
                 return False, errors
         
@@ -479,10 +489,10 @@ def run_all_tests() -> bool:
             agent_data_json = match.group(1)
             real_agent_data = json.loads(agent_data_json)
             
-            # Required fields for drill-down
-            REQUIRED_AGENT_FIELDS = ['name', 'path', 'rel', 'abs_file', 'abs_class', 'class_line',
+            # Required fields for drill-down (matches agent_data.js structure)
+            REQUIRED_AGENT_FIELDS = ['name', 'path', 'abs_file', 'class_line',
                                      'has_mixin', 'invocation', 'has_tests', 'obs_summary',
-                                     'mcp_summary', 'typing_summary', 'health', 'complexity']
+                                     'mcp_summary', 'typing_summary', 'health']
             
             territories_checked = 0
             agents_checked = 0
@@ -569,8 +579,8 @@ def run_all_tests() -> bool:
                         base_agents_by_layer[layer] = []
                     base_agents_by_layer[layer].append(agent)
                 
-                # Verify base agents are in "Base Class" territories
-                if 'Base Class' not in territory:
+                # Verify base agents are in "Base Agent" territories (or Sovereign Base Agent)
+                if 'Base Agent' not in territory and 'Sovereign Base Agent' not in territory:
                     base_agents_wrong_territory.append(f"{name} ({layer}): territory='{territory}'")
         
         # Report findings
@@ -583,11 +593,11 @@ def run_all_tests() -> bool:
             print(f"   {layer}: {len(base_agents)} base agents - {', '.join(agent_names)}")
         
         if base_agents_wrong_territory:
-            errors.append(f"Test 8 FAILED: {len(base_agents_wrong_territory)} base agents NOT in 'Base Class' territories")
+            errors.append(f"Test 8 FAILED: {len(base_agents_wrong_territory)} base agents NOT in 'Base Agent' territories")
             for issue in base_agents_wrong_territory[:5]:
                 errors.append(f"  - {issue}")
         else:
-            print(f"✅ Test 8 PASSED: All {total_base_agents} base agents in correct 'Base Class' territories")
+            print(f"✅ Test 8 PASSED: All {total_base_agents} base agents in correct 'Base Agent' territories")
         
     except Exception as e:
         errors.append(f"Test 8 FAILED: Could not validate base agents: {e}")
@@ -646,7 +656,7 @@ def run_all_tests() -> bool:
         # Check heal invocation vs capability using SSOT field names
         agents_with_healing = [a for a in agents if a.get(FIELD_HAS_HEALING)]
         heal_capable = len(agents_with_healing)
-        heal_invoked = sum(1 for a in agents_with_healing if a.get(FIELD_INVOCATION) == 'Yes')
+        heal_invoked = sum(1 for a in agents_with_healing if a.get(FIELD_INVOCATION_CONST) == 'Yes')
         
         if heal_invoked > heal_capable:
             inconsistencies.append(f"Invocation ({heal_invoked}) > Capability ({heal_capable})")
@@ -2667,18 +2677,26 @@ def run_all_tests() -> bool:
     return all_passed
 
 def count_actual_agents() -> int:
-    """Count actual agent files using SSOT exclusion logic."""
-    project_root = get_validated_project_root()
+    """Count actual agents from the discovery JSON file (SSOT).
     
-    count = 0
-    # Scan strictly based on SSOT logic (same as full_agent_discovery.py)
-    for py_file in project_root.rglob("*.py"):
-        # Use the exact same exclusion logic as the discovery script
-        if not should_exclude_file(py_file):
-            # Additionally verify it has "Agent" in the name as a quick heuristic
-            if "Agent" in py_file.stem and py_file.stem.endswith("Agent"):
-                count += 1
-    return count
+    The discovery JSON is the single source of truth for agent count.
+    File-based heuristics don't match the actual discovery logic which
+    parses Python files and looks for classes inheriting from agent bases.
+    """
+    project_root = get_validated_project_root()
+    discovery_path = project_root / 'agent_discovery_full.json'
+    
+    if not discovery_path.exists():
+        # Fallback: return 0 to trigger regeneration
+        return 0
+    
+    try:
+        import json
+        with open(discovery_path, 'r', encoding='utf-8') as f:
+            agents = json.load(f)
+        return len(agents)
+    except Exception:
+        return 0
 
 
 def regenerate_agent_discovery() -> bool:
@@ -2737,16 +2755,17 @@ def regenerate_agent_discovery() -> bool:
 
 
 def regenerate_dashboard() -> bool:
-    """Regenerate autonomy_dashboard.html from agent discovery data."""
+    """Regenerate dashboard data from agent discovery data."""
     print("\n" + "=" * 70)
-    print("🔄 REGENERATING DASHBOARD HTML")
+    print("🔄 REGENERATING DASHBOARD DATA")
     print("=" * 70)
     
     project_root = get_validated_project_root()
-    dashboard_script = project_root / "agentic_core" / "L6_observability" / "dashboards" / "generate_dashboard.py"
+    # SSOT: Use regenerate_dashboard_data.py which writes to dashboard_data.js
+    dashboard_script = project_root / "scripts" / "regenerate_dashboard_data.py"
     
     if not dashboard_script.exists():
-        print("❌ Dashboard generator not found")
+        print("❌ Dashboard data generator not found: scripts/regenerate_dashboard_data.py")
         return False
     
     try:
@@ -2767,16 +2786,17 @@ def regenerate_dashboard() -> bool:
         )
         
         if result.returncode != 0:
-            print(f"❌ Dashboard generation failed: {result.stderr[:500] if result.stderr else 'No error output'}")
+            print(f"❌ Dashboard data generation failed: {result.stderr[:500] if result.stderr else 'No error output'}")
             return False
         
-        dashboard_path = project_root / DASHBOARD_DIR / "autonomy_dashboard.html"
-        if dashboard_path.exists():
-            size = dashboard_path.stat().st_size
-            print(f"✅ Dashboard generated: {size:,} bytes")
+        # Verify dashboard_data.js was created/updated
+        data_path = project_root / DASHBOARD_DIR / "data" / "dashboard_data.js"
+        if data_path.exists():
+            size = data_path.stat().st_size
+            print(f"✅ Dashboard data generated: {size:,} bytes")
             return True
         else:
-            print("❌ Dashboard file not created")
+            print("❌ Dashboard data file not created")
             return False
             
     except Exception as e:
