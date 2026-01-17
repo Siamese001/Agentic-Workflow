@@ -92,8 +92,16 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
 
     @classmethod
     def get_agents_for_signals(cls, signals: Set[str]) -> List[str]:
-        """Get list of agent names that should handle the given signals."""
-        agents = set()
+        """
+        Get list of agent names that should handle the given signals.
+        
+        Args:
+            signals: Set of signal names to route
+        
+        Returns:
+            List of agent class names that should handle these signals
+        """
+        agents: Set[str] = set()
         for signal in signals:
             if signal in cls.SIGNAL_AGENT_MAP:
                 agents.update(cls.SIGNAL_AGENT_MAP[signal])
@@ -101,20 +109,38 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
 
     @classmethod
     def has_critical_signal(cls, signals: Set[str]) -> bool:
-        """Check if any critical signals are present."""
+        """
+        Check if any critical signals are present.
+        
+        Args:
+            signals: Set of signal names to check
+        
+        Returns:
+            True if any signal is critical (requires rollback), False otherwise
+        """
         return bool(signals & cls.CRITICAL_SIGNALS)
 
     @classmethod
     def determine_strategy(cls, cycle: int, signals: Set[str], modified_sections: Set[str]) -> HealingStrategy:
-        """Determine the healing strategy based on current state."""
+        """
+        Determine the healing strategy based on current state.
+        
+        Args:
+            cycle: Current healing cycle number (1-indexed)
+            signals: Set of active signals requiring attention
+            modified_sections: Set of resume sections that were modified
+        
+        Returns:
+            Appropriate healing strategy for the current context
+        """
         if cycle == 1:
             return HealingStrategy.FULL_DIAGNOSTIC
 
         if not signals and not modified_sections:
             return HealingStrategy.VERIFICATION_ONLY
 
-        quality_signals = {"QUALITY_FAILURE", "HALLUCINATION_DETECTED"}
-        compliance_signals = {"BRAND_VIOLATION", "ATS_FAILURE", "BALANCE_ISSUE"}
+        quality_signals: Set[str] = {"QUALITY_FAILURE", "HALLUCINATION_DETECTED"}
+        compliance_signals: Set[str] = {"BRAND_VIOLATION", "ATS_FAILURE", "BALANCE_ISSUE"}
 
         if signals & quality_signals and not (signals & compliance_signals):
             return HealingStrategy.QUALITY_FOCUS

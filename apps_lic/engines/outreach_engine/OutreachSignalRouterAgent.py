@@ -82,8 +82,16 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
 
     @classmethod
     def get_agents_for_signals(cls, signals: Set[str]) -> List[str]:
-        """Get agents needed for the given signals."""
-        agents = set()
+        """
+        Get agents needed for the given signals.
+        
+        Args:
+            signals: Set of signal names to route
+        
+        Returns:
+            List of agent names that should handle these signals
+        """
+        agents: Set[str] = set()
         for signal in signals:
             if signal in cls.SIGNAL_TO_AGENTS:
                 agents.update(cls.SIGNAL_TO_AGENTS[signal])
@@ -91,7 +99,15 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
 
     @classmethod
     def has_critical_signal(cls, signals: Set[str]) -> bool:
-        """Check if any critical signals are present."""
+        """
+        Check if any critical signals are present.
+        
+        Args:
+            signals: Set of signal names to check
+        
+        Returns:
+            True if any signal is critical, False otherwise
+        """
         return bool(signals & cls.CRITICAL_SIGNALS)
 
     @classmethod
@@ -101,7 +117,17 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
         signals: Set[str],
         modified_sections: Set[str],
     ) -> OutreachHealingStrategy:
-        """Determine the healing strategy based on context."""
+        """
+        Determine the healing strategy based on context.
+        
+        Args:
+            cycle_number: Current healing cycle number (1-indexed)
+            signals: Set of active signals requiring attention
+            modified_sections: Set of campaign sections that were modified
+        
+        Returns:
+            Appropriate healing strategy for the current context
+        """
         if cycle_number == 1:
             return OutreachHealingStrategy.FULL_DIAGNOSTIC
 

@@ -41,11 +41,17 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     - Symbol renames: limited to public definitions (functions/classes/constants)
     - All changes bounded to one file
     """
-    SNAKE_CASE_PATTERN: Any = re.compile('^[a-z0-9_]+$')
-    CAMEL_OR_PASCAL: Any = re.compile('^[A-Z][a-zA-Z0-9]*$|^[a-z]+([A-Z][a-z]+)+')
+    SNAKE_CASE_PATTERN: re.Pattern = re.compile('^[a-z0-9_]+$')
+    CAMEL_OR_PASCAL: re.Pattern = re.compile('^[A-Z][a-zA-Z0-9]*$|^[a-z]+([A-Z][a-z]+)+')
 
-    def __init__(self, ctx=None, project_root=None) -> None:
-        """Initialize the instance."""
+    def __init__(self, ctx: Optional[Any] = None, project_root: Optional[str] = None) -> None:
+        """
+        Initialize the naming normalization agent.
+        
+        Args:
+            ctx: Optional execution context
+            project_root: Optional project root directory
+        """
         self.ctx = ctx
         self.project_root = project_root
 

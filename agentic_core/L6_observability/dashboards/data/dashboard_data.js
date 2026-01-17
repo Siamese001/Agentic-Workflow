@@ -11,11 +11,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 92.8,
-    "Typed %": 95.4,
-    "Documented %": 96.9,
+    "Typed %": 96.7,
+    "Documented %": 97.7,
     "Schema Strictness %": 99.2,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.88,
+    "Code Quality Score": 98.4,
     "Health": 88.92
   },
   {
@@ -107,11 +107,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 89.4,
-    "Typed %": 93.0,
+    "Typed %": 98.5,
     "Documented %": 98.3,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.83,
+    "Code Quality Score": 99.2,
     "Health": 88.41
   },
   {
@@ -123,11 +123,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 91.0,
-    "Typed %": 92.1,
+    "Typed %": 95.7,
     "Documented %": 99.6,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.92,
+    "Code Quality Score": 98.83,
     "Health": 88.65
   },
   {
@@ -347,11 +347,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 92.0,
-    "Typed %": 95.5,
-    "Documented %": 90.5,
+    "Typed %": 96.8,
+    "Documented %": 93.2,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 96.5,
+    "Code Quality Score": 97.5,
     "Health": 88.8
   },
   {
@@ -363,11 +363,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 94.0,
-    "Typed %": 90.3,
-    "Documented %": 85.4,
+    "Typed %": 93.1,
+    "Documented %": 90.3,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 93.92,
+    "Code Quality Score": 95.85,
     "Health": 89.1
   },
   {

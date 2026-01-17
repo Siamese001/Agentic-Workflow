@@ -1,42 +1,70 @@
-from dataclasses import dataclass
 """
 RgHealingOrchestratorAgent - Extracted for one-class-per-file pattern.
 
 Originally from: SignalRouterAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
+
+Orchestrates the complete self-healing process for resume generation.
 """
-
-
 from __future__ import annotations
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+import time
 
 @dataclass
 class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
-    """Orchestrates the complete self-healing process."""
+    """
+    Orchestrates the complete self-healing process for resume generation.
+    
+    Manages multiple healing cycles with convergence detection, budget tracking,
+    and automatic rollback on critical failures.
+    
+    Attributes:
+        ctx: Resume engine context containing resume state
+        max_cycles: Maximum number of healing cycles to run
+        enable_reflection: Whether to run reflection agent after healing
+        cycle_results: List of results from each healing cycle
+    """
 
     def __init__(
         self,
-        ctx: ResumeEngineContext,
+        ctx: 'ResumeEngineContext',
         max_cycles: int = 5,
         enable_reflection: bool = True,
-    ):
+    ) -> None:
+        """
+        Initialize the healing orchestrator.
+        
+        Args:
+            ctx: Resume engine context
+            max_cycles: Maximum healing cycles (default: 5)
+            enable_reflection: Enable post-healing reflection (default: True)
+        """
         super().__init__()
         self.ctx = ctx
         self._mcp_audit("init")
-        self.max_cycles = max_cycles
-        self.enable_reflection = enable_reflection
-        self.cycle_results: List[CycleResult] = []
+        self.max_cycles: int = max_cycles
+        self.enable_reflection: bool = enable_reflection
+        self.cycle_results: List['CycleResult'] = []
 
-    async def run(self) -> HealingResult:
-        """Run the complete healing process."""
-        import time
-        start_time = time.time()
+    async def run(self) -> 'HealingResult':
+        """
+        Run the complete healing process.
+        
+        Executes multiple healing cycles until convergence is achieved,
+        budget is exhausted, or max cycles is reached.
+        
+        Returns:
+            HealingResult with complete execution details
+        """
+        start_time: float = time.time()
 
         print("\n" + "=" * 60)
         print("🧬 SELF-HEALING ORCHESTRATOR STARTED")
         print("=" * 60)
 
-        convergence_cycle = None
-        budget_exhausted = False
+        convergence_cycle: Optional[int] = None
+        budget_exhausted: bool = False
 
         for cycle_num in range(1, self.max_cycles + 1):
             self.ctx.signal_healing_cycle(cycle_num)
@@ -88,10 +116,10 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
             reflection = RgReflectionAgent(self.ctx)
             await reflection.execute()
 
-        end_time = time.time()
-        total_duration_ms = (end_time - start_time) * 1000
+        end_time: float = time.time()
+        total_duration_ms: float = (end_time - start_time) * 1000
 
-        success = convergence_cycle is not None
+        success: bool = convergence_cycle is not None
 
         print("\n" + "=" * 60)
         print(f"{'✅ HEALING SUCCESS' if success else '⚠️ HEALING INCOMPLETE'}")
@@ -111,6 +139,16 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
             final_resume=self.ctx.current_resume.copy(),
         )
 
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+            **kwargs: Additional healing parameters
+        
+        Returns:
+            Dict with healing summary (violations, fixed, errors)
+        """
+        return super().heal_repository(dry_run, execute, **kwargs)

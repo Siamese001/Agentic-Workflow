@@ -24,28 +24,52 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     - Never removes or modifies existing content
     - Single-file scope
     """
-    MIN_DOCSTRING: Any = "'''Brief description of functionality and purpose.'''"
+    MIN_DOCSTRING: str = "'''Brief description of functionality and purpose.'''"
 
-    def __init__(self, ctx: Any, project_root=None) -> None:
-        """Initialize with mandatory ctx for sovereign operation."""
+    def __init__(self, ctx: Any, project_root: Optional[str] = None) -> None:
+        """
+        Initialize with mandatory ctx for sovereign operation.
+        
+        Args:
+            ctx: Execution context (mandatory)
+            project_root: Optional project root directory
+        
+        Raises:
+            ValueError: If ctx is None
+        """
         if ctx is None:
             raise ValueError("ctx is mandatory for DocstringComplianceAgent (sovereign agent)")
         self.ctx = ctx
         self.project_root = project_root
 
     async def execute(self, file_path: str) -> Dict[str, Any]:
-        """Execute method for validator compatibility."""
+        """
+        Execute method for validator compatibility.
+        
+        Args:
+            file_path: Path to file to validate
+        
+        Returns:
+            Dict with healed status
+        """
         return await self.heal_violation(Path(file_path), self.ctx)
 
-    async def heal_violation(self, file_path: Path, ctx: Any=None) -> Dict[str, Any]:
+    async def heal_violation(self, file_path: Path, ctx: Optional[Any] = None) -> Dict[str, Any]:
         """
-        Per-file healing: add Missing docstrings.
+        Per-file healing: add missing docstrings.
+        
+        Args:
+            file_path: Path to file to heal
+            ctx: Optional execution context (uses self.ctx if None)
+        
+        Returns:
+            Dict with healed status and violations fixed count
         """
-        ctx: Any = ctx or self.ctx
+        ctx = ctx or self.ctx
         try:
-            source: Any = file_path.read_text(encoding='utf-8')
-            tree: Any = ast.parse(source)
-            needs_docstring: Any = []
+            source: str = file_path.read_text(encoding='utf-8')
+            tree: ast.Module = ast.parse(source)
+            needs_docstring: List[tuple] = []
             if not ast.get_docstring(tree):
                 needs_docstring.append(('module', 0))
             for node in ast.walk(tree):
@@ -56,8 +80,8 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
                         needs_docstring.append((type(node).__name__, node.lineno))
             if not needs_docstring:
                 return {'healed': False}
-            lines: Any = source.splitlines(keepends=True)
-            new_lines: Any = lines.copy()
+            lines: List[str] = source.splitlines(keepends=True)
+            new_lines: List[str] = lines.copy()
             added_count: Any = 0
             needs_docstring.sort(key=lambda x: x[1] if x[0] != 'module' else 0, reverse=True)
             for node_type, lineno in needs_docstring:

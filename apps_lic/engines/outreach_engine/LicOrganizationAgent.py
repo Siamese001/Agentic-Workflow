@@ -15,7 +15,13 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class LicOrganizationAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
     v12.0: DEMOTED to secondary fact-checker role.
-    Now performs validation searches based on strategic brief entities.
+    
+    Performs validation searches based on strategic brief entities.
+    Validates initiatives and provides organization context through RAG.
+    
+    Attributes:
+        circuit_breaker: Circuit breaker for fault tolerance
+        search_client: Google search client for validation queries
     """
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
@@ -33,13 +39,27 @@ class LicOrganizationAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient) -> None:
+    def __init__(self, circuit_breaker: 'CircuitBreaker', search_client: 'GoogleSearchClient') -> None:
+        """
+        Initialize the organization validation agent.
+        
+        Args:
+            circuit_breaker: Circuit breaker for fault tolerance
+            search_client: Google search client for validation queries
+        """
         self.circuit_breaker = circuit_breaker
         self.search_client = search_client
 
-    async def validate_initiative(self, initiative_name: str, mission: OutreachMission) -> Dict[str, object]:
+    async def validate_initiative(self, initiative_name: str, mission: 'OutreachMission') -> Dict[str, Any]:
         """
         NEW v12.0: Validate a specific initiative from strategic brief.
+        
+        Args:
+            initiative_name: Name of the initiative to validate
+            mission: Outreach mission context
+        
+        Returns:
+            Dict with rag_results, is_validated flag, and staleness_warning
         """
 
         company = mission.JobDescription.get('company', '')
@@ -61,8 +81,16 @@ class LicOrganizationAgent(SubatomicTestingMixin, MCPHardenedMixin):
             "staleness_warning": staleness_warning
         }
 
-    async def get_organization_context(self, mission: OutreachMission) -> Dict[str, object]:
-        """Legacy method - minimal search for basic org validation."""
+    async def get_organization_context(self, mission: 'OutreachMission') -> Dict[str, Any]:
+        """
+        Legacy method - minimal search for basic org validation.
+        
+        Args:
+            mission: Outreach mission context
+        
+        Returns:
+            Dict with rag_results from organization search
+        """
 
         company = mission.JobDescription.get('company', '')
         query = f'"{company}" news'
@@ -76,8 +104,17 @@ class LicOrganizationAgent(SubatomicTestingMixin, MCPHardenedMixin):
         
         return {"rag_results": rag_results}
 
-    async def run_refinement_task(self, Task: str, mission: OutreachMission) -> Dict[str, object]:
-        """Perform targeted refinement RAG."""
+    async def run_refinement_task(self, Task: str, mission: 'OutreachMission') -> Dict[str, Any]:
+        """
+        Perform targeted refinement RAG.
+        
+        Args:
+            Task: Refinement task description
+            mission: Outreach mission context
+        
+        Returns:
+            Dict with rag_results from refinement search
+        """
 
         loop = asyncio.get_event_loop()
         search_results = await loop.run_in_executor(
