@@ -38,6 +38,7 @@ import json
 import re
 import socket
 import shutil
+import glob
 from pathlib import Path
 from datetime import datetime
 from typing import Tuple, List, Dict, Any, Optional
@@ -47,6 +48,7 @@ from typing import Tuple, List, Dict, Any, Optional
 # =============================================================================
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 DASHBOARD_DIR = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards"
+AGENTS_DIR = PROJECT_ROOT / "agentic_core" / "L2_discovery" # Path where agents live
 SCRIPTS_DIR = PROJECT_ROOT / "scripts"
 SERVER_PORT = 8765
 SERVER_TIMEOUT = 10  # seconds to wait for server to start
@@ -390,6 +392,96 @@ def run_ssot_tests() -> Tuple[bool, Dict[str, bool]]:
     else:
         results['No hardcoded strings in JS'] = True  # Skip if file doesn't exist
     
+    # Test 5: Detect fake/mock data injection (all metrics at exactly 100% is suspicious)
+    try:
+        discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
+        if discovery_path.exists():
+            with open(discovery_path, 'r', encoding='utf-8') as f:
+                agents = json.load(f)
+            
+            if agents:
+                # Check for suspicious "all 100%" pattern in code quality metrics
+                typed_values = [a.get('typed_pct', 0) for a in agents]
+                doc_values = [a.get('documented_pct', 0) for a in agents]
+                schema_values = [a.get('schema_strictness', 0) for a in agents]
+                
+                all_typed_100 = all(v == 100.0 for v in typed_values)
+                all_doc_100 = all(v == 100.0 for v in doc_values)
+                all_schema_100 = all(v == 100.0 for v in schema_values)
+                
+                # If ALL three metrics are exactly 100% for ALL agents, this is suspicious
+                if all_typed_100 and all_doc_100 and all_schema_100:
+                    results['No fake data injection'] = False
+                    all_passed = False
+                    print(f"  [FAIL] SUSPICIOUS: All 265 agents have exactly 100% for typed, documented, AND schema")
+                    print(f"         This indicates fake data injection. Re-run full_agent_discovery.py")
+                else:
+                    results['No fake data injection'] = True
+                    # Show actual distribution
+                    typed_avg = sum(typed_values) / len(typed_values)
+                    doc_avg = sum(doc_values) / len(doc_values)
+                    schema_avg = sum(schema_values) / len(schema_values)
+                    print(f"  [OK] Real data detected: Typed={typed_avg:.1f}%, Doc={doc_avg:.1f}%, Schema={schema_avg:.1f}%")
+    except Exception as e:
+        results['No fake data injection'] = False
+        all_passed = False
+        print(f"  [FAIL] Could not check for fake data: {e}")
+    
+    # Test 6: Validate agent discovery uses same SSOT field definitions as dashboard
+    try:
+        # Import SSOT field constants
+        from agentic_core.L6_observability.dashboards.core.ssot_definitions import (
+            FIELD_HAS_HEALING, FIELD_HAS_TESTS, FIELD_MCP_HARDENED, FIELD_INVOCATION,
+            FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
+            FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY, FIELD_TERRITORY
+        )
+        
+        # Load agent discovery and check field names match SSOT
+        discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
+        if discovery_path.exists():
+            with open(discovery_path, 'r', encoding='utf-8') as f:
+                agents = json.load(f)
+            
+            if agents:
+                sample_agent = agents[0]
+                ssot_fields = {
+                    'has_healing': FIELD_HAS_HEALING,
+                    'has_tests': FIELD_HAS_TESTS,
+                    'mcp_hardened': FIELD_MCP_HARDENED,
+                    'invocation': FIELD_INVOCATION,
+                    'typed_pct': FIELD_TYPED_PCT,
+                    'documented_pct': FIELD_DOCUMENTED_PCT,
+                    'schema_strictness': FIELD_SCHEMA_STRICTNESS,
+                    'proper_base_class': FIELD_PROPER_BASE_CLASS,
+                    'cyclomatic_complexity': FIELD_CYCLOMATIC_COMPLEXITY,
+                    'territory': FIELD_TERRITORY
+                }
+                
+                missing_fields = []
+                for expected_name, ssot_const in ssot_fields.items():
+                    if ssot_const not in sample_agent:
+                        missing_fields.append(f"{ssot_const} (expected: {expected_name})")
+                
+                if not missing_fields:
+                    results['Discovery uses SSOT fields'] = True
+                    print(f"  [OK] Agent discovery uses all SSOT field definitions")
+                else:
+                    results['Discovery uses SSOT fields'] = False
+                    all_passed = False
+                    print(f"  [FAIL] Discovery missing SSOT fields: {missing_fields}")
+            else:
+                results['Discovery uses SSOT fields'] = False
+                all_passed = False
+                print(f"  [FAIL] Agent discovery is empty")
+        else:
+            results['Discovery uses SSOT fields'] = False
+            all_passed = False
+            print(f"  [FAIL] Agent discovery not found")
+    except ImportError as e:
+        results['Discovery uses SSOT fields'] = False
+        all_passed = False
+        print(f"  [FAIL] Could not import SSOT field definitions: {e}")
+    
     # Print results
     for test_name, passed in results.items():
         print_result(test_name, passed)
@@ -407,8 +499,25 @@ def run_data_validation_tests() -> Tuple[bool, Dict[str, bool]]:
     results = {}
     all_passed = True
     
-    # Test 1: Agent discovery exists and is valid
+    # ANTI-CHEATING: Check if source code is newer than discovery artifact
     discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
+    agent_files = glob.glob(str(PROJECT_ROOT / "**" / "*.py"), recursive=True)
+    
+    if discovery_path.exists() and agent_files:
+        discovery_mtime = os.path.getmtime(discovery_path)
+        latest_source_mtime = max(os.path.getmtime(f) for f in agent_files if "discovery" not in f and "dashboard" not in f)
+        
+        # Allow a 2-second grace period for filesystem latency
+        if latest_source_mtime > (discovery_mtime + 2):
+            results['Source Consistency Check'] = False
+            all_passed = False
+            print(f"  [FAIL] CHEATING DETECTED: Agent source code is newer than discovery data.")
+            print(f"         You modified the code but didn't successfully regenerate, or you modified data manually.")
+            return False, results
+        else:
+            print(f"  [OK] Source Consistency Check: Discovery is up to date with code.")
+    
+    # Test 1: Agent discovery exists and is valid
     if discovery_path.exists():
         try:
             with open(discovery_path, 'r', encoding='utf-8') as f:
@@ -475,9 +584,45 @@ def run_data_validation_tests() -> Tuple[bool, Dict[str, bool]]:
     else:
         print(f"  [OK] Dashboard HTML exists")
     
+    # Test 4: Territory consistency between dashboard_data.js and agent_data.js
+    agent_data_path = DASHBOARD_DIR / "data" / "agent_data.js"
+    if data_path.exists() and agent_data_path.exists():
+        try:
+            # Extract territories from dashboard_data.js
+            dashboard_content = data_path.read_text(encoding='utf-8')
+            dash_match = re.search(r'window\.dashboardData = (\[.*?\]);', dashboard_content, re.DOTALL)
+            dashboard_data = json.loads(dash_match.group(1)) if dash_match else []
+            dashboard_territories = {row['Territory'] for row in dashboard_data}
+            
+            # Extract territories from agent_data.js
+            agent_content = agent_data_path.read_text(encoding='utf-8')
+            agent_match = re.search(r'window\.realAgentData = (\{.*\});', agent_content, re.DOTALL)
+            agent_data = json.loads(agent_match.group(1)) if agent_match else {}
+            agent_territories = set(agent_data.keys())
+            
+            # Check for mismatches (TOTAL is expected to be dashboard-only)
+            expected_dashboard_only = {'TOTAL'}
+            in_dashboard_not_agent = dashboard_territories - agent_territories - expected_dashboard_only
+            in_agent_not_dashboard = agent_territories - dashboard_territories
+            
+            if not in_dashboard_not_agent and not in_agent_not_dashboard:
+                results['Territory consistency'] = True
+                print(f"  [OK] Territory consistency: {len(agent_territories)} territories match")
+            else:
+                results['Territory consistency'] = False
+                all_passed = False
+                if in_dashboard_not_agent:
+                    print(f"  [FAIL] Territories in dashboard but not agent_data: {in_dashboard_not_agent}")
+                if in_agent_not_dashboard:
+                    print(f"  [FAIL] Territories in agent_data but not dashboard: {in_agent_not_dashboard}")
+        except Exception as e:
+            results['Territory consistency'] = False
+            all_passed = False
+            print(f"  [FAIL] Territory consistency check failed: {e}")
+    
     # Print results
     for test_name, passed in results.items():
-        if test_name not in ['Agent discovery valid', 'Dashboard data valid', 'Dashboard HTML exists']:
+        if test_name not in ['Agent discovery valid', 'Dashboard data valid', 'Dashboard HTML exists', 'Territory consistency']:
             print_result(test_name, passed)
     
     return all_passed, results
