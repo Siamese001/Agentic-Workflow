@@ -52,16 +52,32 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             ctx: Optional execution context
             project_root: Optional project root directory
         """
-        self.ctx = ctx
-        self.project_root = project_root
+        self.ctx: Optional[Any] = ctx
+        self.project_root: Optional[str] = project_root
 
     async def execute(self, file_path: str) -> Dict[str, Any]:
-        """Execute method for validator compatibility."""
+        """
+        Execute method for validator compatibility.
+        
+        Args:
+            file_path: Path to file to validate
+        
+        Returns:
+            Dictionary with execution results
+        """
         from pathlib import Path
         return await self.heal_violation(Path(file_path), self.ctx)
 
     def _to_snake_case(self, name: str) -> str:
-        """Convert CamelCase/PascalCase/kebab-case to snake_case."""
+        """
+        Convert CamelCase/PascalCase/kebab-case to snake_case.
+        
+        Args:
+            name: Name to convert
+        
+        Returns:
+            snake_case version of name
+        """
         s1 = re.sub('([A-Z]+)([A-Z][a-z])', r'\1_\2', name)
         s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1)
         return s2.lower()

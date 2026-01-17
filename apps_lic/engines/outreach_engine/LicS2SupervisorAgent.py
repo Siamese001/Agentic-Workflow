@@ -35,6 +35,17 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient, llm_client: GeminiLLMClient) -> None:
+        """
+        Initialize LIC S2 supervisor agent.
+        
+        Args:
+            circuit_breaker: Circuit breaker for fault tolerance
+            search_client: Google search client for research
+            llm_client: Gemini LLM client for generation
+        
+        Sets up internal, recipient, and organization agents along with
+        scoring systems and reflexion capabilities.
+        """
         self.circuit_breaker = circuit_breaker
         self.internal_agent = LicInternalAgent(circuit_breaker)
         self.recipient_agent = LicRecipientAgent(circuit_breaker, search_client)

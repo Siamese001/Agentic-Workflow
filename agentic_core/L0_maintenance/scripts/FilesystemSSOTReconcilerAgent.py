@@ -369,6 +369,25 @@ class FilesystemSSOTReconcilerAgent(SubatomicTestingMixin, L0MaintenanceBaseAgen
         Logger.info("Detecting drift between actual state and blueprint...")
         
         # 1. Check SOVEREIGN_REGISTRY subfolders
+        self._check_registry_subfolders(current_blueprint, drift)
+        
+        # 2. Check CORE_SUBFOLDER_MAP (L2 depth)
+        self._check_l2_subfolders(current_blueprint, drift)
+        
+        # 3. Check CANON_SIGNALS
+        self._check_canon_signals(current_blueprint, drift)
+        
+        Logger.info(f"Drift detection complete: {len(drift)} discrepancies found")
+        return drift
+    
+    def _check_registry_subfolders(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+        """
+        Check SOVEREIGN_REGISTRY subfolders.
+        
+        Checks:
+        - Missing subfolders in actual state
+        - Extra subfolders in blueprint
+        """
         blueprint_registry = current_blueprint.get("sovereign_registry", {})
         
         for root, actual_subfolders in self.actual_folders.items():
@@ -378,15 +397,15 @@ class FilesystemSSOTReconcilerAgent(SubatomicTestingMixin, L0MaintenanceBaseAgen
             blueprint_subfolders = set(blueprint_registry.get(root, {}).get("subfolders", []))
             
             # Missing in blueprint
-            Missing = actual_subfolders - blueprint_subfolders
-            if Missing:
+            missing = actual_subfolders - blueprint_subfolders
+            if missing:
                 drift.append({
                     "type": "orphaned_subfolders",
                     "root": root,
-                    "folders": sorted(list(Missing)),
+                    "folders": sorted(list(missing)),
                     "Severity": "medium"
                 })
-                Logger.warning(f"Orphaned subfolders in {root}: {Missing}")
+                Logger.warning(f"Orphaned subfolders in {root}: {missing}")
             
             # Extra in blueprint (deleted folders)
             extra = blueprint_subfolders - actual_subfolders
@@ -398,8 +417,14 @@ class FilesystemSSOTReconcilerAgent(SubatomicTestingMixin, L0MaintenanceBaseAgen
                     "Severity": "high"
                 })
                 Logger.warning(f"Missing subfolders in {root}: {extra}")
+    
+    def _check_l2_subfolders(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+        """
+        Check CORE_SUBFOLDER_MAP (L2 depth).
         
-        # 2. Check CORE_SUBFOLDER_MAP (L2 depth)
+        Checks:
+        - Missing L2 subfolders in actual state
+        """
         blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
         
         for key, actual_l2 in self.actual_folders.items():
@@ -418,8 +443,14 @@ class FilesystemSSOTReconcilerAgent(SubatomicTestingMixin, L0MaintenanceBaseAgen
                     "Severity": "medium"
                 })
                 Logger.warning(f"Orphaned L2 subfolders in {l1_folder}: {missing_l2}")
+    
+    def _check_canon_signals(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+        """
+        Check CANON_SIGNALS.
         
-        # 3. Check CANON_SIGNALS
+        Checks:
+        - Missing signals in actual state
+        """
         blueprint_signals = set(current_blueprint.get("CANON_SIGNALS", set()))
         missing_signals = blueprint_signals - self.actual_signals
         
@@ -430,10 +461,73 @@ class FilesystemSSOTReconcilerAgent(SubatomicTestingMixin, L0MaintenanceBaseAgen
                 "Severity": "low"
             })
             Logger.info(f"Missing canonical signals: {missing_signals}")
-        
-        Logger.info(f"Drift detection complete: {len(drift)} discrepancies found")
-        return drift
     
+    def _check_registry_subfolders(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+        """Check SOVEREIGN_REGISTRY subfolders for drift."""
+        blueprint_registry = current_blueprint.get("sovereign_registry", {})
+        
+        for root, actual_subfolders in self.actual_folders.items():
+            if "/" in root:  # Skip L2 folders for now
+                continue
+            
+            blueprint_subfolders = set(blueprint_registry.get(root, {}).get("subfolders", []))
+            
+            # Missing in blueprint
+            missing = actual_subfolders - blueprint_subfolders
+            if missing:
+                drift.append({
+                    "type": "orphaned_subfolders",
+                    "root": root,
+                    "folders": sorted(list(missing)),
+                    "Severity": "medium"
+                })
+                Logger.warning(f"Orphaned subfolders in {root}: {missing}")
+            
+            # Extra in blueprint (deleted folders)
+            extra = blueprint_subfolders - actual_subfolders
+            if extra:
+                drift.append({
+                    "type": "missing_subfolders",
+                    "root": root,
+                    "folders": sorted(list(extra)),
+                    "Severity": "high"
+                })
+                Logger.warning(f"Missing subfolders in {root}: {extra}")
+    
+    def _check_l2_subfolders(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+        """Check CORE_SUBFOLDER_MAP (L2 depth) for drift."""
+        blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
+        
+        for key, actual_l2 in self.actual_folders.items():
+            if "/" not in key or not key.startswith("agentic_core/"):
+                continue
+            
+            l1_folder = key.split("/")[1]
+            blueprint_l2 = set(blueprint_core_map.get(l1_folder, []))
+            
+            missing_l2 = actual_l2 - blueprint_l2
+            if missing_l2:
+                drift.append({
+                    "type": "orphaned_l2_subfolders",
+                    "l1_folder": l1_folder,
+                    "folders": sorted(list(missing_l2)),
+                    "Severity": "medium"
+                })
+                Logger.warning(f"Orphaned L2 subfolders in {l1_folder}: {missing_l2}")
+    
+    def _check_canon_signals(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+        """Check CANON_SIGNALS for drift."""
+        blueprint_signals = set(current_blueprint.get("CANON_SIGNALS", set()))
+        missing_signals = blueprint_signals - self.actual_signals
+        
+        if missing_signals:
+            drift.append({
+                "type": "missing_canon_signals",
+                "signals": sorted(list(missing_signals)),
+                "Severity": "low"
+            })
+            Logger.info(f"Missing canonical signals: {missing_signals}")
+
     def _generate_filesystem_proposals(self, drift: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Generates OS-level folder actions to match blueprint."""
         proposals = []

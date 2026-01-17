@@ -75,7 +75,7 @@ def invalid_resume() -> Any:
 class TestTraceLevel:
     """Tests for TraceLevel enum."""
 
-    def test_trace_levels(self) -> Any:
+    def test_trace_levels(self) -> None:
         """Test trace level values."""
         assert TraceLevel.MINIMAL.value == "minimal"
         assert TraceLevel.STANDARD.value == "standard"
@@ -86,7 +86,7 @@ class TestTraceLevel:
 class TestMetricType:
     """Tests for MetricType enum."""
 
-    def test_metric_types(self) -> Any:
+    def test_metric_types(self) -> None:
         """Test Metric type values."""
         assert MetricType.COUNTER.value == "counter"
         assert MetricType.GAUGE.value == "gauge"
@@ -97,7 +97,7 @@ class TestMetricType:
 class TestValidationSeverity:
     """Tests for ValidationSeverity enum."""
 
-    def test_severity_levels(self) -> Any:
+    def test_severity_levels(self) -> None:
         """Test Severity level values."""
         assert ValidationSeverity.INFO.value == "info"
         assert ValidationSeverity.WARNING.value == "warning"
@@ -108,9 +108,9 @@ class TestValidationSeverity:
 class TestTraceStep:
     """Tests for TraceStep dataclass."""
 
-    def test_create_step(self) -> Any:
+    def test_create_step(self) -> None:
         """Test creating a trace step."""
-        step = TraceStep(
+        step: TraceStep = TraceStep(
             step_id="step_1",
             agent_name="TestAgent",
             action="test_action",
@@ -126,9 +126,9 @@ class TestTraceStep:
 class TestExecutionTrace:
     """Tests for ExecutionTrace dataclass."""
 
-    def test_create_trace(self) -> Any:
+    def test_create_trace(self) -> None:
         """Test creating an execution trace."""
-        trace = ExecutionTrace(
+        trace: ExecutionTrace = ExecutionTrace(
             trace_id="trace_123",
             mission_id="mission_456",
             start_time="2024-01-01T00:00:00",
@@ -143,9 +143,9 @@ class TestExecutionTrace:
 class TestMetric:
     """Tests for Metric dataclass."""
 
-    def test_create_metric(self) -> Any:
+    def test_create_metric(self) -> None:
         """Test creating a Metric."""
-        Metric = Metric(
+        metric: Metric = Metric(
             name="test_metric",
             value=42.0,
             metric_type=MetricType.GAUGE,

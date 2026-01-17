@@ -19,6 +19,14 @@ class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     """
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
+        """
+        Initialize proactive agent.
+        
+        Args:
+            ctx: Resume engine context for coordination
+        
+        Sets up proactive scheduler, predictive handoff, and capability monitoring.
+        """
         super().__init__(ctx)
         self.name = "ProactiveAgent"
         self.scheduler = ProactiveScheduler(ctx)
@@ -26,16 +34,32 @@ class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         self.monitor = CapabilityMonitorAgent(ctx)
 
     def record_result(self, passed: bool, details: str = "") -> Any:
-        """Record the agent's result."""
+        """
+        Record the agent's execution result.
+        
+        Args:
+            passed: Whether execution passed
+            details: Optional details about the result
+        """
         self.ctx.record_result(self.name, passed, details)
 
     def add_signal(self, signal: str) -> Any:
-        """Add a signal to the context."""
+        """
+        Add a signal to the context.
+        
+        Args:
+            signal: Signal name to add
+        """
         self.ctx.add_signal(signal)
         print(f"   [{self.name}] 📡 Signal: {signal}")
 
     async def execute(self) -> None:
-        """Execute execute operation."""
+        """
+        Execute proactive analysis and task execution.
+        
+        Identifies proactive tasks, checks for handoff needs, and executes
+        auto-executable tasks while recording results.
+        """
         print(f"   [{self.name}] Running proactive analysis...")
 
         # Identify tasks
@@ -69,5 +93,10 @@ class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         print(f"   [{self.name}] ✅ Proactive analysis complete")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """
+        Invoke healing chain via super().
+        
+        Returns:
+            Dictionary with healing results including violations, fixed, errors, skipped
+        """
+        return super().heal_repository()

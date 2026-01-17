@@ -52,7 +52,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         cognitive_plane: Optional[ICognitivePlane] = None,
         action_plane: Optional[IActionPlane] = None,
         config: Optional[OrchestratorConfig] = None,
-    ):
+    ) -> None:
         """Initialize nervous system.
 
         Args:
@@ -248,6 +248,17 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         """Iteration."""
         self._iteration_val[0] = value
 
+    async def _restore_checkpoint_if_exists(self) -> Optional[str]:
+        """Restore from checkpoint if one exists."""
+        last_checkpoint = await self._checkpointing.find_last_checkpoint()
+        if last_checkpoint:
+            LOGGER.info(f"L4: Checkpoint found. Resuming from Phase 2.")
+            (self._state, self._results, self._signals,
+             self._modified_files, self._iteration, resume_phase) = \
+                self._checkpointing.restore_from_checkpoint(last_checkpoint)
+            return resume_phase
+        return None
+
     async def run_mission(self, max_phases: Optional[int] = None) -> ExecutionResult:
         """Run the full mission with phase-based execution.
 
@@ -260,13 +271,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         start_time = time.time()
 
         # Check for existing Checkpoint to resume from
-        last_checkpoint = await self._checkpointing.find_last_checkpoint()
-        resume_phase = None
-        if last_checkpoint:
-            LOGGER.info(f"L4: Checkpoint found. Resuming from Phase 2.")
-            (self._state, self._results, self._signals,
-             self._modified_files, self._iteration, resume_phase) = \
-                self._checkpointing.restore_from_checkpoint(last_checkpoint)
+        resume_phase = await self._restore_checkpoint_if_exists()
 
         # Create execution context for the mission
         context = ExecutionContext(

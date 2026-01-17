@@ -21,7 +21,12 @@ from agentic_core.utils.mixins import SubatomicTestingMixin
 
 
 def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
-    """Brief description of functionality and purpose."""
+    """
+    Get singleton instance of Sovereign RAG Orchestrator.
+    
+    Returns:
+        SovereignRagOrchestratorAgent instance
+    """
     return SovereignRagOrchestratorAgent()
 
 
@@ -47,24 +52,40 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
 
 @dataclass
 class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-    """Brief description of functionality and purpose."""
+    """
+    Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System.
+    
+    Adapts parameters based on performance with persistent configuration.
+    """
 
-    def __init__(self, retriever=None, QueryPlanner=None, guardrail=None, engine=None) -> None:
-        """Initialize the instance."""
-        self.query_history = []
-        self.config_path = Path('agentic_core/L4_state/ValidationContext/.sovereign_config.json')
+    def __init__(self, retriever: Optional[Any] = None, QueryPlanner: Optional[Any] = None, guardrail: Optional[Any] = None, engine: Optional[Any] = None) -> None:
+        """
+        Initialize sovereign RAG orchestrator.
+        
+        Args:
+            retriever: Optional retriever instance
+            QueryPlanner: Optional query planner instance
+            guardrail: Optional guardrail instance
+            engine: Optional engine instance
+        """
+        self.query_history: List[Any] = []
+        self.config_path: Path = Path('agentic_core/L4_state/ValidationContext/.sovereign_config.json')
         self._load_sovereign_config()
-        self.threshold_adaptation_rate = 0.02
-        self.performance_window = 50
-        self.retriever = retriever
-        self.QueryPlanner = QueryPlanner
-        self.guardrail = guardrail
-        self.engine = engine
-        self.enable_red_team_critique = False
-        self.max_critique_rounds = 2
+        self.threshold_adaptation_rate: float = 0.02
+        self.performance_window: int = 50
+        self.retriever: Optional[Any] = retriever
+        self.QueryPlanner: Optional[Any] = QueryPlanner
+        self.guardrail: Optional[Any] = guardrail
+        self.engine: Optional[Any] = engine
+        self.enable_red_team_critique: bool = False
+        self.max_critique_rounds: int = 2
 
-    def _load_sovereign_config(self) -> Any:
-        """L4: Persist the 'learned intelligence' of the system"""
+    def _load_sovereign_config(self) -> None:
+        """
+        L4: Persist the 'learned intelligence' of the system.
+        
+        Loads configuration from persistent storage or uses defaults.
+        """
         if self.config_path.exists():
             config = json.loads(self.config_path.read_text())
             self.faithfulness_threshold = config.get('faithfulness_threshold', 0.88)
@@ -75,13 +96,27 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             self.max_hops = 3
             self.base_top_k = 12
 
-    def _save_sovereign_config(self) -> Any:
-        """L4: Write learned parameters back to the Canon"""
+    def _save_sovereign_config(self) -> None:
+        """
+        L4: Write learned parameters back to the Canon.
+        
+        Persists learned configuration to disk.
+        """
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
         self.config_path.write_text(json.dumps({'faithfulness_threshold': self.faithfulness_threshold, 'max_hops': self.max_hops, 'base_top_k': self.base_top_k}))
 
-    async def red_team_critique(self, answer: str, documents: List[Any], query: str) -> Dict:
-        """L5: Red team critique for faithfulness validation"""
+    async def red_team_critique(self, answer: str, documents: List[Any], query: str) -> Dict[str, Any]:
+        """
+        L5: Red team critique for faithfulness validation.
+        
+        Args:
+            answer: Generated answer to critique
+            documents: Source documents used
+            query: Original query
+        
+        Returns:
+            Dictionary with faithfulness score and improvement suggestions
+        """
         critique_prompt: Any = f'\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nYou are a critical evaluator. Assess if this answer is faithful to the source documents.\n\nQuery: {query}\nAnswer: {answer}\nDocuments: {[d.text[:200] for d in documents[:5]]}\n\nOutput JSON: {{"faithfulness_score": 0.0-1.0, "improvement_suggestion": "..."}}\n'
         response: Any = await self.engine.resilient_mutation(critique_prompt, temperature=0.3)
 

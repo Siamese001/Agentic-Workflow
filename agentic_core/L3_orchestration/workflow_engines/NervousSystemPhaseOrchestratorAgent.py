@@ -87,11 +87,20 @@ class NervousSystemCheckpointing:
         SignalLedger: SignalLedger,
         session_id: str,
         Logger: logging.Logger,
-    ):
-        self.CheckpointManager = CheckpointManager
-        self.SignalLedger = SignalLedger
-        self.session_id = session_id
-        self.Logger = Logger
+    ) -> None:
+        """
+        Initialize checkpointing handler.
+        
+        Args:
+            CheckpointManager: Verifiable checkpoint manager instance
+            SignalLedger: Signal ledger for tracking signals
+            session_id: Unique session identifier
+            Logger: Logger instance for logging operations
+        """
+        self.CheckpointManager: VerifiableCheckpointManager = CheckpointManager
+        self.SignalLedger: SignalLedger = SignalLedger
+        self.session_id: str = session_id
+        self.Logger: logging.Logger = Logger
 
     async def save_phase_checkpoint(
         self,

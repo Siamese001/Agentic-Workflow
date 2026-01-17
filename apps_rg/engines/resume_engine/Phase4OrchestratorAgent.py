@@ -33,7 +33,12 @@ from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin i
 
 
 class MutationMode(Enum):
-    """Mutation output modes."""
+    """
+    Mutation output modes for code changes.
+    
+    Defines the different formats in which code mutations can be expressed,
+    including full code replacement, unified diffs, and JSON patches.
+    """
     FULL_CODE = "full_code"
     UNIFIED_DIFF = "unified_diff"
     JSON_PATCH = "json_patch"

@@ -392,28 +392,8 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
     def _check_forbidden_imports(self, tree: ast.AST, current_l1: str, rel_path: Path) -> Tuple[bool, str]:
         """Check for forbidden app imports and layer violations."""
-        forbidden_app_import = False
-        forbidden_layer_import = None
+        forbidden_app_import, forbidden_layer_import = self._scan_imports_for_violations(tree, current_l1)
         
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
-                modules = []
-                if isinstance(node, ast.Import):
-                    modules = [alias.name for alias in node.names]
-                elif isinstance(node, ast.ImportFrom) and node.module:
-                    modules = [node.module]
-
-                for module in modules:
-                    if module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES:
-                        forbidden_app_import = True
-                    if current_l1 and module.startswith("agentic_core.") and len(module.split(".")) > 2:
-                        imported_l1 = module.split(".")[1]
-                        if imported_l1 in LAYER_FORBIDDEN_IMPORTS.get(current_l1, set()):
-                            forbidden_layer_import = f"{current_l1} → {imported_l1}"
-                            
-                if forbidden_app_import or forbidden_layer_import:
-                    break
-
         if forbidden_app_import:
             return False, (
                 f"GRAVITY VIOLATION (AST-resolved): Imports from apps_* modules forbidden in agentic_core. "
@@ -426,13 +406,65 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
             )
             
         return True, "OK"
+    
+    def _scan_imports_for_violations(self, tree: ast.AST, current_l1: str) -> Tuple[bool, Optional[str]]:
+        """Scan AST for forbidden imports and return violation flags."""
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                modules = self._extract_modules_from_node(node)
+                
+                for module in modules:
+                    if self._is_forbidden_app_import(module):
+                        return True, None
+                    
+                    layer_violation = self._check_layer_import_violation(module, current_l1)
+                    if layer_violation:
+                        return False, layer_violation
+        
+        return False, None
+    
+    def _extract_modules_from_node(self, node: ast.AST) -> List[str]:
+        """Extract module names from import node."""
+        if isinstance(node, ast.Import):
+            return [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            return [node.module]
+        return []
+    
+    def _is_forbidden_app_import(self, module: str) -> bool:
+        """Check if module is a forbidden app import."""
+        return module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES
+    
+    def _check_layer_import_violation(self, module: str, current_l1: str) -> Optional[str]:
+        """Check for layer import violations and return violation description."""
+        if not current_l1:
+            return None
+        
+        if module.startswith("agentic_core.") and len(module.split(".")) > 2:
+            imported_l1 = module.split(".")[1]
+            if imported_l1 in LAYER_FORBIDDEN_IMPORTS.get(current_l1, set()):
+                return f"{current_l1} → {imported_l1}"
+        
+        return None
 
     def _check_semantic_alignment(self, tree: ast.AST, current_territory: str, rel_path: Path) -> Tuple[bool, str]:
         """Check semantic alignment between file location and content."""
         if not current_territory:
             return True, "OK"
             
-        # Simplified semantic scoring
+        # Calculate semantic scores
+        app_rg_score, app_lic_score, territory_scores = self._calculate_semantic_scores(tree)
+        
+        # Check for app-specific violations
+        result = self._check_app_domain_violation(app_rg_score, app_lic_score, rel_path)
+        if not result[0]:
+            return result
+        
+        # Check territory alignment
+        return self._check_territory_alignment(current_territory, territory_scores, rel_path)
+    
+    def _calculate_semantic_scores(self, tree: ast.AST) -> Tuple[float, float, Dict[str, float]]:
+        """Calculate semantic scores for app and territory alignment."""
         app_rg_score = 0.0
         app_lic_score = 0.0
         territory_scores: Dict[str, float] = {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
@@ -448,8 +480,11 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
                     for terms in cats.values():
                         if any(t in name for t in terms):
                             territory_scores[terr] += 1.0
-
-        # App-specific violation check
+        
+        return app_rg_score, app_lic_score, territory_scores
+    
+    def _check_app_domain_violation(self, app_rg_score: float, app_lic_score: float, rel_path: Path) -> Tuple[bool, str]:
+        """Check for app-specific domain violations."""
         total_app_score = app_rg_score + app_lic_score
         if total_app_score >= AST_DOMAIN_HIT_THRESHOLD:
             dominant = "apps_rg" if app_rg_score >= app_lic_score else "apps_lic"
@@ -459,23 +494,27 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
                 f"Strong application signals (RG: {app_rg_score:.2f}, LIC: {app_lic_score:.2f}). "
                 f"Move to '{target}/'. File: {rel_path}"
             )
-
-        # Territory alignment check
+        return True, "OK"
+    
+    def _check_territory_alignment(self, current_territory: str, territory_scores: Dict[str, float], rel_path: Path) -> Tuple[bool, str]:
+        """Check territory alignment between file location and content."""
+        if not territory_scores:
+            return True, "OK"
+        
         current_score = territory_scores.get(current_territory, 0.0)
-        if territory_scores:
-            best_territory = max(territory_scores, key=territory_scores.get)
-            max_other = max((s for t, s in territory_scores.items() if t != current_territory), default=0.0)
+        best_territory = max(territory_scores, key=territory_scores.get)
+        max_other = max((s for t, s in territory_scores.items() if t != current_territory), default=0.0)
 
-            if current_score < MIN_ALIGNMENT_SCORE and max_other >= MIN_ALIGNMENT_SCORE:
-                return False, (
-                    f"TERRITORY ALIGNMENT WEAK: Current '{current_territory}' score {current_score:.2f} < {MIN_ALIGNMENT_SCORE}. "
-                    f"Lacks semantic signals — refactor or move to '{best_territory}'. File: {rel_path}"
-                )
-            if max_other > current_score + TERRITORY_MISMATCH_THRESHOLD:
-                return False, (
-                    f"TERRITORY MISMATCH VIOLATION: Stronger signals for '{best_territory}' ({max_other:.2f}) "
-                    f"vs current ({current_score:.2f}). Move to agentic_core/{best_territory}. File: {rel_path}"
-                )
+        if current_score < MIN_ALIGNMENT_SCORE and max_other >= MIN_ALIGNMENT_SCORE:
+            return False, (
+                f"TERRITORY ALIGNMENT WEAK: Current '{current_territory}' score {current_score:.2f} < {MIN_ALIGNMENT_SCORE}. "
+                f"Lacks semantic signals — refactor or move to '{best_territory}'. File: {rel_path}"
+            )
+        if max_other > current_score + TERRITORY_MISMATCH_THRESHOLD:
+            return False, (
+                f"TERRITORY MISMATCH VIOLATION: Stronger signals for '{best_territory}' ({max_other:.2f}) "
+                f"vs current ({current_score:.2f}). Move to agentic_core/{best_territory}. File: {rel_path}"
+            )
 
         return True, "OK"
 
@@ -1270,84 +1309,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
             # === GRAVITY LIMITED AUTO-HEAL (Safe removal + TODO) ===
             gravity_heal_actions = []
             if total_gravity > 0:
-                for grav in gravity_issues:
-                    path = Path(grav["path"]) if isinstance(grav["path"], str) else grav["path"]
-                    msg = grav["issue"]
-
-                    try:
-                        content = path.read_text(encoding="utf-8")
-                        lines = content.splitlines()
-
-                        # Extract downstream roots from message
-                        downstream_match = re.search(r"downstream roots: \[(.*?)\]", msg)
-                        if not downstream_match:
-                            downstream_match = re.search(r"apps_[a-z_]+", msg)
-                            if downstream_match:
-                                downstream_roots = [downstream_match.group(0)]
-                            else:
-                                continue
-                        else:
-                            downstream_roots = [r.strip().strip("'\"") for r in downstream_match.group(1).split(",")]
-
-                        # Find and remove offending import lines
-                        new_lines = []
-                        removed = False
-                        removed_modules = []
-                        for line in lines:
-                            if any(root in line for root in downstream_roots) and line.strip().startswith(("import ", "from ")):
-                                removed = True
-                                match = re.match(r"^(import|from)\s+([a-zA-Z0-9_.]+)", line.strip())
-                                if match:
-                                    removed_modules.append(match.group(2))
-                                continue
-                            new_lines.append(line)
-
-                        if removed:
-                            todo_block = [
-                                "",
-                                "# TODO: GRAVITY VIOLATION AUTO-HEALED",
-                                "# Downstream imports removed — move shared logic to apps_shared or sovereign utils",
-                                "# Original violation: " + msg[:200],
-                                "# Removed: " + ", ".join(removed_modules),
-                                "",
-                            ]
-                            # Insert after potential shebang/docstring
-                            insert_idx = 0
-                            if new_lines and new_lines[0].startswith("#!"):
-                                insert_idx = 1
-                            if len(new_lines) > insert_idx and new_lines[insert_idx].strip().startswith('"""'):
-                                try:
-                                    for i, l in enumerate(new_lines[insert_idx:], insert_idx):
-                                        if i > insert_idx and '"""' in l:
-                                            insert_idx = i + 1
-                                            break
-                                except StopIteration:
-                                    pass
-
-                            new_lines = new_lines[:insert_idx] + todo_block + new_lines[insert_idx:]
-                            new_content = "\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n".join(new_lines)
-
-                            # Backup + write
-                            backup_dir = self._init_backup_dir() / "gravity_auto_heal"
-                            backup_dir.mkdir(parents=True, exist_ok=True)
-                            backup_path = backup_dir / path.relative_to(self.project_root)
-                            backup_path.parent.mkdir(parents=True, exist_ok=True)
-                            shutil.copy2(path, backup_path)
-
-                            path.write_text(new_content, encoding="utf-8")
-
-                            gravity_heal_actions.append({
-                                "type": "GRAVITY_AUTO_HEAL",
-                                "file": grav["file"],
-                                "removed_imports": removed_modules,
-                            })
-
-                    except Exception as e:
-                        gravity_heal_actions.append({
-                            "type": "GRAVITY_HEAL_ERROR",
-                            "file": grav["file"],
-                            "error": str(e),
-                        })
+                gravity_heal_actions = self._heal_gravity_violations(gravity_issues)
 
                 if gravity_heal_actions:
                     full_report["import_gravity_auto_heal_applied"] = True
@@ -1380,6 +1342,108 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
             Logger.error(f"[LocationAgent] Import validation failed: {e}")
 
         return full_report
+
+    def _heal_gravity_violations(self, gravity_issues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Helper method to heal gravity violations by removing offending imports."""
+        gravity_heal_actions = []
+        for grav in gravity_issues:
+            path = Path(grav["path"]) if isinstance(grav["path"], str) else grav["path"]
+            msg = grav["issue"]
+            
+            try:
+                downstream_roots = self._extract_downstream_roots(msg)
+                if not downstream_roots:
+                    continue
+                
+                content = path.read_text(encoding="utf-8")
+                lines = content.splitlines()
+                
+                new_lines, removed_modules = self._remove_offending_imports(lines, downstream_roots)
+                
+                if removed_modules:
+                    new_content = self._insert_gravity_heal_todo(new_lines, msg, removed_modules)
+                    self._backup_and_write_file(path, new_content)
+                    
+                    gravity_heal_actions.append({
+                        "type": "GRAVITY_AUTO_HEAL",
+                        "file": grav["file"],
+                        "removed_imports": removed_modules,
+                    })
+            
+            except Exception as e:
+                gravity_heal_actions.append({
+                    "type": "GRAVITY_HEAL_ERROR",
+                    "file": grav["file"],
+                    "error": str(e),
+                })
+        
+        return gravity_heal_actions
+    
+    def _extract_downstream_roots(self, msg: str) -> List[str]:
+        """Extract downstream roots from gravity violation message."""
+        downstream_match = re.search(r"downstream roots: \[(.*?)\]", msg)
+        if downstream_match:
+            return [r.strip().strip("'\"") for r in downstream_match.group(1).split(",")]
+        
+        downstream_match = re.search(r"apps_[a-z_]+", msg)
+        if downstream_match:
+            return [downstream_match.group(0)]
+        
+        return []
+    
+    def _remove_offending_imports(self, lines: List[str], downstream_roots: List[str]) -> Tuple[List[str], List[str]]:
+        """Remove import lines containing downstream roots."""
+        new_lines = []
+        removed_modules = []
+        
+        for line in lines:
+            if any(root in line for root in downstream_roots) and line.strip().startswith(("import ", "from ")):
+                match = re.match(r"^(import|from)\s+([a-zA-Z0-9_.]+)", line.strip())
+                if match:
+                    removed_modules.append(match.group(2))
+                continue
+            new_lines.append(line)
+        
+        return new_lines, removed_modules
+    
+    def _insert_gravity_heal_todo(self, lines: List[str], msg: str, removed_modules: List[str]) -> str:
+        """Insert TODO block after shebang/docstring."""
+        todo_block = [
+            "",
+            "# TODO: GRAVITY VIOLATION AUTO-HEALED",
+            "# Downstream imports removed — move shared logic to apps_shared or sovereign utils",
+            "# Original violation: " + msg[:200],
+            "# Removed: " + ", ".join(removed_modules),
+            "",
+        ]
+        
+        insert_idx = self._find_todo_insert_position(lines)
+        new_lines = lines[:insert_idx] + todo_block + lines[insert_idx:]
+        return "\n".join(new_lines)
+    
+    def _find_todo_insert_position(self, lines: List[str]) -> int:
+        """Find position to insert TODO block after shebang/docstring."""
+        insert_idx = 0
+        
+        if lines and lines[0].startswith("#!"):
+            insert_idx = 1
+        
+        if len(lines) > insert_idx and lines[insert_idx].strip().startswith('"""'):
+            for i, l in enumerate(lines[insert_idx:], insert_idx):
+                if i > insert_idx and '"""' in l:
+                    insert_idx = i + 1
+                    break
+        
+        return insert_idx
+    
+    def _backup_and_write_file(self, path: Path, content: str) -> None:
+        """Backup file and write new content."""
+        backup_dir = self._init_backup_dir() / "gravity_auto_heal"
+        backup_dir.mkdir(parents=True, exist_ok=True)
+        backup_path = backup_dir / path.relative_to(self.project_root)
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, backup_path)
+        path.write_text(content, encoding="utf-8")
 
     def post_naming_conventions_validation_and_heal(self, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
         """

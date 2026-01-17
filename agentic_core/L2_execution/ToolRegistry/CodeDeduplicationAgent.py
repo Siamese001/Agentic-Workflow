@@ -142,6 +142,12 @@ class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, Pin
     def _normalize_code(code: str) -> str:
         """Normalize for hashing: dedent, collapse whitespace, strip comments."""
         code = textwrap.dedent(code)
+        lines = CodeDeduplicationAgent._filter_code_lines(code)
+        return ' '.join(lines)
+    
+    @staticmethod
+    def _filter_code_lines(code: str) -> List[str]:
+        """Filter code lines by removing comments and empty lines."""
         lines = []
         for line in code.splitlines():
             stripped = line.strip()

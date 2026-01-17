@@ -92,12 +92,18 @@ class DuplicateCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
     # Directories to exclude from scanning
     EXCLUDE_DIRS = {ARCHIVES_DIR, '__pycache__', '.git', 'node_modules', 'venv', '.venv', 'dist', 'build'}
 
-    def __init__(self, project_root: Path = None, ctx = None) -> None:
-        """Initialize the instance."""
-        self.project_root = Path(project_root) if project_root else Path.cwd()
-        self.ctx = ctx
-        self.min_lines = 10  # Minimum block size to flag
-        self.max_report = 100  # Limit detailed reporting
+    def __init__(self, project_root: Optional[Path] = None, ctx: Optional[Any] = None) -> None:
+        """
+        Initialize duplicate code detector.
+        
+        Args:
+            project_root: Optional project root directory
+            ctx: Optional validation context
+        """
+        self.project_root: Path = Path(project_root) if project_root else Path.cwd()
+        self.ctx: Optional[Any] = ctx
+        self.min_lines: int = 10  # Minimum block size to flag
+        self.max_report: int = 100  # Limit detailed reporting
         self.auto_deduplicate = False
         
         # Initialize tree-sitter parser if available

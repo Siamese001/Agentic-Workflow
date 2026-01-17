@@ -54,10 +54,10 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
         Raises:
             ConnectionError: If Redis connection fails
         """
-        env = get_env(project_root)
+        env: Any = get_env(project_root)
         
         # Store ValidationContext for state persistence operations
-        self.ctx = ctx
+        self.ctx: Optional[Any] = ctx
         
         # Hardened Pool: Prevent connection leaks
         connection_kwargs: Dict[str, Any] = {
@@ -81,8 +81,8 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
         if env.REDIS_PASSWORD:
             connection_kwargs["password"] = env.REDIS_PASSWORD
 
-        self.pool = ConnectionPool.from_url(env.REDIS_URL, **connection_kwargs)
-        self.client = redis.Redis(connection_pool=self.pool)
+        self.pool: ConnectionPool = ConnectionPool.from_url(env.REDIS_URL, **connection_kwargs)
+        self.client: redis.Redis = redis.Redis(connection_pool=self.pool)
 
         # Fail-fast check
         try:

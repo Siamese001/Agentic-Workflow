@@ -37,11 +37,17 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
     Centralizes all vector operations to prevent configuration drift.
     """
     
-    def __init__(self, project_root: Optional[Path] = None, ctx=None) -> None:
-        """Initialize the instance."""
+    def __init__(self, project_root: Optional[Path] = None, ctx: Optional[Any] = None) -> None:
+        """
+        Initialize Pinecone sovereign agent.
+        
+        Args:
+            project_root: Optional project root directory
+            ctx: Optional validation context
+        """
         # Sovereign anchor: Ensure we know where we are in the territory
-        self.project_root = project_root or Path(__file__).resolve().parents[4]
-        self.status = "INITIALIZING"
+        self.project_root: Path = project_root or Path(__file__).resolve().parents[4]
+        self.status: str = "INITIALIZING"
         
         api_key = os.getenv("PINECONE_API_KEY")
         if not api_key:

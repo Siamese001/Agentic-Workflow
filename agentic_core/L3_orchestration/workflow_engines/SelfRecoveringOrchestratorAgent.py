@@ -211,31 +211,40 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                 
                 # On final retry failure, attempt cognitive recovery
                 if attempt == max_retries - 1:
-                    Logger.info(f"All retries exhausted for {node_id}. Attempting cognitive recovery...")
-                    
-                    # Tier 1 & 2: Standard Heuristics/HealerMixin
-                    healed = False
-                    if hasattr(self, 'heal_repository'):
-                        try:
-                            heal_result = self.heal_repository(dry_run=False, execute=True)
-                            healed = heal_result.get('fixed', 0) > 0
-                            if healed:
-                                Logger.info(f"HealerMixin fixed {heal_result.get('fixed', 0)} issues")
-                        except Exception as heal_error:
-                            Logger.warning(f"Healing attempt failed: {heal_error}")
-                    
-                    # Tier 3: NEW Cognitive Recovery (Semantic Brain)
-                    known_fix_found = self.attempt_cognitive_recovery(e)
-                    
-                    if known_fix_found:
-                        Logger.warning("Cognitive recovery identified a known fix. Proceeding with semantic-guided retry.")
-                        # Future: apply specific fix based on advice
-                        # For now, we've logged the RCA and can retry if healing succeeded
-                        if healed:
-                            Logger.info("Attempting one more retry after healing + cognitive guidance...")
-                            continue  # One bonus retry after cognitive recovery
-                    
+                    if self._attempt_final_recovery(node_id, e):
+                        continue  # One bonus retry after cognitive recovery
                     return False
+        return False
+
+    def _attempt_final_recovery(self, node_id: str, error: Exception) -> bool:
+        """Attempt final recovery using healing and cognitive recovery."""
+        Logger.info(f"All retries exhausted for {node_id}. Attempting cognitive recovery...")
+        
+        # Tier 1 & 2: Standard Heuristics/HealerMixin
+        healed = self._attempt_healing()
+        
+        # Tier 3: NEW Cognitive Recovery (Semantic Brain)
+        known_fix_found = self.attempt_cognitive_recovery(error)
+        
+        if known_fix_found:
+            Logger.warning("Cognitive recovery identified a known fix. Proceeding with semantic-guided retry.")
+            if healed:
+                Logger.info("Attempting one more retry after healing + cognitive guidance...")
+                return True
+        
+        return False
+    
+    def _attempt_healing(self) -> bool:
+        """Attempt to heal repository issues."""
+        if hasattr(self, 'heal_repository'):
+            try:
+                heal_result = self.heal_repository(dry_run=False, execute=True)
+                healed = heal_result.get('fixed', 0) > 0
+                if healed:
+                    Logger.info(f"HealerMixin fixed {heal_result.get('fixed', 0)} issues")
+                return healed
+            except Exception as heal_error:
+                Logger.warning(f"Healing attempt failed: {heal_error}")
         return False
 
     async def _execute_single_node(self, node: Any, initial_inputs: Dict[str, Any], execution_state: Dict[str, Any]) -> Any:
@@ -265,40 +274,76 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         strategy = self._select_recovery_strategy(pattern)
         graph = self.active_graphs[graph_id]
         if strategy == RecoveryStrategy.SKIP:
-            Logger.info(f'Applying SKIP strategy for {node_id}')
-            execution_state['completed_nodes'].add(failed_node)
-            execution_state['results'][failed_node] = {'status': 'skipped', 'reason': 'recovery_skip'}
-            mutation = WorkflowMutation(mutation_id=f'mut_{len(self.mutation_history)}', mutation_type=RecoveryStrategy.SKIP, target_node=node_id, reason='Node consistently failing, skipping to continue workflow', applied_at=datetime.now(), success=True)
+            return self._apply_skip_strategy(node_id, failed_node, execution_state)
+        elif strategy == RecoveryStrategy.FORK:
+            return self._apply_fork_strategy(node_id, failed_node, graph, execution_state)
+        elif strategy == RecoveryStrategy.REPLACE:
+            return self._apply_replace_strategy(node_id, failed_node, graph, execution_state)
+        return False
+
+    def _apply_skip_strategy(self, node_id: str, failed_node: Any, execution_state: Dict[str, Any]) -> bool:
+        """Apply SKIP recovery strategy."""
+        Logger.info(f'Applying SKIP strategy for {node_id}')
+        execution_state['completed_nodes'].add(failed_node)
+        execution_state['results'][failed_node] = {'status': 'skipped', 'reason': 'recovery_skip'}
+        mutation = WorkflowMutation(
+            mutation_id=f'mut_{len(self.mutation_history)}',
+            mutation_type=RecoveryStrategy.SKIP,
+            target_node=node_id,
+            reason='Node consistently failing, skipping to continue workflow',
+            applied_at=datetime.now(),
+            success=True
+        )
+        self.mutation_history.append(mutation)
+        execution_state['mutations_applied'].append(mutation)
+        return True
+    
+    def _apply_fork_strategy(self, node_id: str, failed_node: Any, graph: nx.DiGraph, execution_state: Dict[str, Any]) -> bool:
+        """Apply FORK recovery strategy."""
+        Logger.info(f'Applying FORK strategy for {node_id}')
+        successors = list(graph.successors(failed_node))
+        if successors:
+            for successor in successors:
+                execution_state['completed_nodes'].add(failed_node)
+                execution_state['results'][failed_node] = {'status': 'forked', 'reason': 'recovery_fork'}
+            mutation = WorkflowMutation(
+                mutation_id=f'mut_{len(self.mutation_history)}',
+                mutation_type=RecoveryStrategy.FORK,
+                target_node=node_id,
+                reason='Forking workflow to bypass failed node',
+                applied_at=datetime.now(),
+                success=True
+            )
             self.mutation_history.append(mutation)
             execution_state['mutations_applied'].append(mutation)
             return True
-        elif strategy == RecoveryStrategy.FORK:
-            Logger.info(f'Applying FORK strategy for {node_id}')
+        return False
+    
+    def _apply_replace_strategy(self, node_id: str, failed_node: Any, graph: nx.DiGraph, execution_state: Dict[str, Any]) -> bool:
+        """Apply REPLACE recovery strategy."""
+        Logger.info(f'Applying REPLACE strategy for {node_id}')
+        replacement = self._find_replacement_node(node_id, graph)
+        if replacement:
+            graph.add_node(replacement)
+            predecessors = list(graph.predecessors(failed_node))
             successors = list(graph.successors(failed_node))
-            if successors:
-                for successor in successors:
-                    execution_state['completed_nodes'].add(failed_node)
-                    execution_state['results'][failed_node] = {'status': 'forked', 'reason': 'recovery_fork'}
-                mutation = WorkflowMutation(mutation_id=f'mut_{len(self.mutation_history)}', mutation_type=RecoveryStrategy.FORK, target_node=node_id, reason='Forking workflow to bypass failed node', applied_at=datetime.now(), success=True)
-                self.mutation_history.append(mutation)
-                execution_state['mutations_applied'].append(mutation)
-                return True
-        elif strategy == RecoveryStrategy.REPLACE:
-            Logger.info(f'Applying REPLACE strategy for {node_id}')
-            replacement = self._find_replacement_node(node_id, graph)
-            if replacement:
-                graph.add_node(replacement)
-                predecessors = list(graph.predecessors(failed_node))
-                successors = list(graph.successors(failed_node))
-                for pred in predecessors:
-                    graph.add_edge(pred, replacement)
-                for succ in successors:
-                    graph.add_edge(replacement, succ)
-                graph.remove_node(failed_node)
-                mutation = WorkflowMutation(mutation_id=f'mut_{len(self.mutation_history)}', mutation_type=RecoveryStrategy.REPLACE, target_node=node_id, replacement_node=str(replacement), reason='Replaced problematic node with alternative', applied_at=datetime.now(), success=True)
-                self.mutation_history.append(mutation)
-                execution_state['mutations_applied'].append(mutation)
-                return True
+            for pred in predecessors:
+                graph.add_edge(pred, replacement)
+            for succ in successors:
+                graph.add_edge(replacement, succ)
+            graph.remove_node(failed_node)
+            mutation = WorkflowMutation(
+                mutation_id=f'mut_{len(self.mutation_history)}',
+                mutation_type=RecoveryStrategy.REPLACE,
+                target_node=node_id,
+                replacement_node=str(replacement),
+                reason='Replaced problematic node with alternative',
+                applied_at=datetime.now(),
+                success=True
+            )
+            self.mutation_history.append(mutation)
+            execution_state['mutations_applied'].append(mutation)
+            return True
         return False
 
     def _select_recovery_strategy(self, pattern: NodeFailurePattern) -> RecoveryStrategy:

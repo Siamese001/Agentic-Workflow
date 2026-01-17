@@ -110,15 +110,21 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
     def run(self) -> List[Tuple[Path, str]]:
         """Scan repository for autonomy and script violations."""
         violations = []
-        # Runner script check
+        self._check_forbidden_runner_scripts(violations)
+        self._check_agent_autonomy_violations(violations)
+        return violations
+
+    def _check_forbidden_runner_scripts(self, violations: List[Tuple[Path, str]]) -> None:
+        """Check for forbidden runner scripts."""
         for dir_path in self.forbidden_dirs:
             dir_obj = self.project_root / dir_path
             if dir_obj.exists():
                 for py_file in dir_obj.rglob("*.py"):
                     if any(p in py_file.stem.lower() for p in self.forbidden_patterns):
                         violations.append((py_file, "FORBIDDEN_RUNNER_SCRIPT"))
-        
-        # Agent autonomy check
+    
+    def _check_agent_autonomy_violations(self, violations: List[Tuple[Path, str]]) -> None:
+        """Check for agent autonomy violations."""
         registry = DashboardDataGenerator(self.project_root, self.territories).load_registry()
         for entry in registry:
             agent_path = self.project_root / entry.get("path", "")
@@ -126,7 +132,6 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                 missing = self.validate_agent_autonomy(agent_path)
                 for m in missing:
                     violations.append((agent_path, f"MISSING_METHOD:{m}"))
-        return violations
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set[str]] = None) -> Dict[str, int]:

@@ -54,20 +54,20 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         project_root: Optional[Path] = None,
         log_file: Optional[Path] = None,
         max_events: int = 10_000
-    ):
+    ) -> None:
         """
         Initialize telemetry buffer.
 
         Args:
-            project_root: Optional context
+            project_root: Optional project root directory
             log_file: If provided, append events to file (JSONL format)
             max_events: In-memory buffer limit (oldest dropped)
         """
-        self.project_root = project_root.resolve() if project_root else None
-        self.log_file = log_file
-        self.max_events = max_events
+        self.project_root: Optional[Path] = project_root.resolve() if project_root else None
+        self.log_file: Optional[Path] = log_file
+        self.max_events: int = max_events
 
-        self._lock = Lock()
+        self._lock: Lock = Lock()
         self._events: List[Dict[str, Any]] = []
 
         # Emit agent startup

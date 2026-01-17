@@ -59,14 +59,20 @@ class ActorCriticOrchestratorAgent(SovereignBaseAgent):
     This class now wraps UnifiedWorkflowEngine for backward compatibility.
     """
 
-    def __init__(self, layers: List[str], fallback_orchestrator=None) -> None:
-        """Initialize the instance."""
+    def __init__(self, layers: List[str], fallback_orchestrator: Optional[Any] = None) -> None:
+        """
+        Initialize Actor-Critic orchestrator.
+        
+        Args:
+            layers: List of layer names for action selection
+            fallback_orchestrator: Optional fallback orchestrator
+        """
         log.warning("ActorCriticOrchestratorAgent is deprecated - migrating to UnifiedWorkflowEngine")
-        self.name = "ActorCriticOrchestratorAgent"
-        self.project_root = get_validated_project_root()
-        self.layers = layers
-        self.n_actions = len(layers)
-        self.input_dim = self.n_actions + 1
+        self.name: str = "ActorCriticOrchestratorAgent"
+        self.project_root: Any = get_validated_project_root()
+        self.layers: List[str] = layers
+        self.n_actions: int = len(layers)
+        self.input_dim: int = self.n_actions + 1
 
         # Legacy implementation preserved for compatibility
         self.model = ActorCriticNet(self.input_dim, self.n_actions)

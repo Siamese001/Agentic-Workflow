@@ -118,7 +118,7 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
         modified_sections: Set[str],
     ) -> OutreachHealingStrategy:
         """
-        Determine the healing strategy based on context.
+        Determine healing strategy based on context.
         
         Args:
             cycle_number: Current healing cycle number (1-indexed)

@@ -34,9 +34,15 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     - Detects mixin inheritance for specialized test patterns
     """
 
-    def __init__(self, tests_dir: Optional[Path] = None):
+    def __init__(self, tests_dir: Optional[Path] = None) -> None:
+        """
+        Initialize test generator agent.
+        
+        Args:
+            tests_dir: Optional directory for generated tests (defaults to tests/autogen)
+        """
         super().__init__()
-        self.tests_dir = tests_dir or Path("tests/autogen")
+        self.tests_dir: Path = tests_dir or Path("tests/autogen")
         self.tests_dir.mkdir(parents=True, exist_ok=True)
         self._generated_tests: List[Dict[str, Any]] = []
         log.info("[L0 TESTING] TestGeneratorAgent initialized")

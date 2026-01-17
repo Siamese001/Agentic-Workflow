@@ -41,6 +41,12 @@ class LicInternalAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin, L2S
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def __init__(self, circuit_breaker: CircuitBreaker) -> None:
+        """
+        Initialize LIC internal agent.
+        
+        Args:
+            circuit_breaker: Circuit breaker for fault tolerance
+        """
         self.circuit_breaker = circuit_breaker
 
     def get_internal_context(self, mission: OutreachMission) -> Dict[str, object]:

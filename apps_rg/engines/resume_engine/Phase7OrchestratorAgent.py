@@ -23,6 +23,16 @@ class Phase7OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
     """
 
     def __init__(self, ctx: ResumeEngineContext, budget_limit: float = 1.0) -> None:
+        """
+        Initialize Phase 7 orchestrator.
+        
+        Args:
+            ctx: Resume engine context for coordination
+            budget_limit: Budget limit for cost prediction (default 1.0)
+        
+        Initializes all Phase 7 governance components including dependency
+        arbitration, documentation enforcement, and dashboard generation.
+        """
         self.ctx = ctx
 
         self.dependency = DependencyArbiter(ctx)

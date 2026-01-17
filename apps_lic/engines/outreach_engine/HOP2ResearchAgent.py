@@ -39,16 +39,25 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         memory_store: VectorMemoryStore,
         search_client: Any = None,
         llm_client: Any = None
-    ):
-        super().__init__()
-        self.config = config["research_agent"]
-        self.memory_store = memory_store
-        self.search_client = search_client
-        self.llm_client = llm_client
+    ) -> None:
+        """
+        Initialize HOP-2 research agent.
         
-        self.vector_params = self.config["vector_store_query_params"]
-        self.fallback_params = self.config["fallback_rag_params"]
-        self.critique_params = self.config["cache_critique_params"]
+        Args:
+            config: Configuration dictionary with research_agent settings
+            memory_store: Vector memory store for cached intelligence
+            search_client: Optional search client for fallback RAG
+            llm_client: Optional LLM client for synthesis
+        """
+        super().__init__()
+        self.config: Dict[str, Any] = config["research_agent"]
+        self.memory_store: VectorMemoryStore = memory_store
+        self.search_client: Any = search_client
+        self.llm_client: Any = llm_client
+        
+        self.vector_params: Dict[str, Any] = self.config["vector_store_query_params"]
+        self.fallback_params: Dict[str, Any] = self.config["fallback_rag_params"]
+        self.critique_params: Dict[str, Any] = self.config["cache_critique_params"]
     
     async def execute(self, state_mgr: StateManager) -> str:
         """Execute HOP-2: Research synthesis with vector-first strategy"""

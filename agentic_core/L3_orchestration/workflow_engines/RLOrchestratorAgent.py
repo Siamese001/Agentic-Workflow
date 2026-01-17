@@ -46,14 +46,20 @@ class RLOrchestratorAgent(SovereignBaseAgent):
     Offline buffer updates every N cycles — stable learning.
     """
 
-    def __init__(self, layers: List[str], fallback_orchestrator=None) -> None:
-        """Initialize the instance."""
-        self.name = "RLOrchestratorAgent"
-        self.project_root = get_validated_project_root()
-        self.layers = layers
-        self.n_actions = len(layers)
-        self.layer_idx = {layer: i for i, layer in enumerate(layers)}
-        self.input_dim = self.n_actions + 2
+    def __init__(self, layers: List[str], fallback_orchestrator: Optional[Any] = None) -> None:
+        """
+        Initialize RL orchestrator.
+        
+        Args:
+            layers: List of layer names for action selection
+            fallback_orchestrator: Optional fallback orchestrator
+        """
+        self.name: str = "RLOrchestratorAgent"
+        self.project_root: Any = get_validated_project_root()
+        self.layers: List[str] = layers
+        self.n_actions: int = len(layers)
+        self.layer_idx: Dict[str, int] = {layer: i for i, layer in enumerate(layers)}
+        self.input_dim: int = self.n_actions + 2
 
         self.model = PPOActorCritic(self.input_dim, self.n_actions)
         self.optimizer = optim.Adam(self.model.parameters(), lr=3e-4)

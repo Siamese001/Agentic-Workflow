@@ -32,6 +32,17 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     
     def __init__(self, config: Dict[str, Any], llm_client: Any = None, tool: CodeInterpreterTool = None) -> None:
+        """
+        Initialize HOP-5 generation agent.
+        
+        Args:
+            config: Configuration dictionary containing generation_agent settings
+            llm_client: Optional LLM client for generation
+            tool: Optional code interpreter tool for advanced generation
+        
+        Loads generation prompts from config/prompts_LIC.json for
+        N-candidate message generation.
+        """
         super().__init__()
         self.config = config["generation_agent"]
         self.llm_client = llm_client
@@ -41,7 +52,19 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             self.prompts = json.load(f)
     
     async def execute(self, state_mgr: StateManager, temperature: float = None) -> str:
-        """Execute HOP-5: Generate message candidates"""
+        """
+        Execute HOP-5: Generate message candidates.
+        
+        Args:
+            state_mgr: State manager for reading/writing HOP states
+            temperature: Optional temperature override for generation
+        
+        Returns:
+            Path to generated drafts state file
+        
+        Generates N candidates for C-level archetypes, scores them using
+        Fast Loop, and selects the best candidate.
+        """
         print(f"\n{'='*80}")
         print("HOP-5: GENERATION AGENT")
         print(f"{'='*80}\n")

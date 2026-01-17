@@ -25,7 +25,12 @@ from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import Subatomic
 
 
 class TaskPriority(Enum):
-    """Priority levels for proactive tasks."""
+    """
+    Priority levels for proactive tasks.
+    
+    Defines the urgency and importance of tasks identified by the
+    proactive scheduler, from critical to background priority.
+    """
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -34,7 +39,12 @@ class TaskPriority(Enum):
 
 
 class HandoffReason(Enum):
-    """Reasons for handoff to human."""
+    """
+    Reasons for handoff to human.
+    
+    Defines the specific conditions that trigger a handoff request
+    when the agent reaches its capability limits or encounters risks.
+    """
     CAPABILITY_LIMIT = "capability_limit"
     CONFIDENCE_LOW = "confidence_low"
     HIGH_RISK = "high_risk"
@@ -94,6 +104,15 @@ class ProactiveScheduler:
     """
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
+        """
+        Initialize proactive scheduler.
+        
+        Args:
+            ctx: Resume engine context for coordination
+        
+        Sets up task tracking, pattern recognition, and autonomous
+        task identification capabilities.
+        """
         self.ctx = ctx
         self._tasks: List[ProactiveTask] = []
         self._task_counter = 0

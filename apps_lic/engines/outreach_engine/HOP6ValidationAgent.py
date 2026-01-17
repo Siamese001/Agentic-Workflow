@@ -32,6 +32,16 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     
     def __init__(self, config: Dict[str, Any], toolkit: ValidationToolkit = None) -> None:
+        """
+        Initialize HOP-6 validation agent.
+        
+        Args:
+            config: Configuration dictionary containing validation_agent settings
+            toolkit: Optional validation toolkit for advanced checks
+        
+        Loads validation rules from config/validator_rules_LIC.json for
+        rule-based message validation.
+        """
         super().__init__()
         self.config = config["validation_agent"]
         self.toolkit = toolkit
@@ -40,7 +50,18 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             self.rules = json.load(f)
     
     async def execute(self, state_mgr: StateManager) -> str:
-        """Execute HOP-6: Validate generated message"""
+        """
+        Execute HOP-6: Validate generated message.
+        
+        Args:
+            state_mgr: State manager for reading/writing HOP states
+        
+        Returns:
+            Path to validation report state file
+        
+        Validates the generated draft against configured rules including
+        placeholder checks, tone validation, and compliance requirements.
+        """
         print(f"\n{'='*80}")
         print("HOP-6: VALIDATION AGENT")
         print(f"{'='*80}\n")
@@ -85,7 +106,18 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         return output_path
     
     def _validate_draft(self, text: str, draft: Dict[str, Any], research: Dict[str, Any], grounding: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Run all validation rules from config"""
+        """
+        Run all validation rules from config.
+        
+        Args:
+            text: Draft message text to validate
+            draft: Draft metadata including word count and tone
+            research: Research context from HOP-2
+            grounding: Grounding data from HOP-3
+        
+        Returns:
+            List of validation results with passed status, severity, and messages
+        """
         results = []
         
         # 1. Placeholder check (CRITICAL)

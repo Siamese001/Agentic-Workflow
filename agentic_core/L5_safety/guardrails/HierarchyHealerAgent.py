@@ -79,98 +79,109 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         non_approved_l1 = actual_l1 - approved_l1
         
         for bad_l1 in non_approved_l1:
-            bad_path = agentic_core_path / bad_l1
-            print(f"   [!] Non-approved L1 folder: {bad_l1}")
-            
-            # Find best target based on folder name heuristics
-            target_l1 = get_best_target_l1(bad_l1, approved_l1)
-            target_path = agentic_core_path / target_l1
-            
-            # Relocate all files from non-approved folder
-            for py_file in bad_path.rglob("*.py"):
-                # Skip files allowed to exist in multiple directories (from SSOT)
-                if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
-                    continue
-                try:
-                    # Determine target L2 folder
-                    target_l2 = get_best_target_l2(target_l1, py_file.name)
-                    final_target = target_path / target_l2
-                    final_target.mkdir(parents=True, exist_ok=True)
-                    
-                    dest = final_target / py_file.name
-                    if not dest.exists():
-                        shutil.move(str(py_file), str(dest))
-                        print(f"      [✓] RELOCATED: {py_file.name} -> {target_l1}/{target_l2}/")
-                        results["files_relocated"] += 1
-                    else:
-                        print(f"      [!] SKIP (exists): {py_file.name}")
-                except Exception as e:
-                    results["errors"].append(f"{py_file.name}: {e}")
-            
-            # Try to remove empty folder tree
-            try:
-                self._remove_empty_dirs(bad_path)
-                if not bad_path.exists():
-                    print(f"      [✓] REMOVED empty folder: {bad_l1}")
-                    results["folders_removed"] += 1
-            except Exception as e:
-                results["errors"].append(f"Remove {bad_l1}: {e}")
+            self._heal_l1_folder(bad_l1, agentic_core_path, approved_l1, results)
         
         # Phase 2: Check L2 subfolders within approved L1 folders
         for l1_name in approved_l1:
-            l1_path = agentic_core_path / l1_name
-            if not l1_path.exists():
-                continue
-            
-            approved_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
-            if not approved_l2:
-                continue  # No L2 enforcement for this L1
-            
-            actual_l2 = {
-                p.name for p in l1_path.iterdir() 
-                if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
-            }
-            non_approved_l2 = actual_l2 - approved_l2
-            
-            for bad_l2 in non_approved_l2:
-                bad_path = l1_path / bad_l2
-                print(f"   [!] Non-approved L2 folder: {l1_name}/{bad_l2}")
-                
-                # Find best target L2 folder
-                target_l2 = get_best_target_l2(l1_name, bad_l2)
-                target_path = l1_path / target_l2
-                target_path.mkdir(parents=True, exist_ok=True)
-                
-                # Relocate all files
-                for py_file in bad_path.rglob("*.py"):
-                    # Skip files allowed to exist in multiple directories (from SSOT)
-                    if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
-                        continue
-                    try:
-                        dest = target_path / py_file.name
-                        if not dest.exists():
-                            shutil.move(str(py_file), str(dest))
-                            print(f"      [✓] RELOCATED: {py_file.name} -> {l1_name}/{target_l2}/")
-                            results["files_relocated"] += 1
-                        else:
-                            print(f"      [!] SKIP (exists): {py_file.name}")
-                    except Exception as e:
-                        results["errors"].append(f"{py_file.name}: {e}")
-                
-                # Try to remove empty folder
-                try:
-                    self._remove_empty_dirs(bad_path)
-                    if not bad_path.exists():
-                        print(f"      [✓] REMOVED empty folder: {l1_name}/{bad_l2}")
-                        results["folders_removed"] += 1
-                except Exception as e:
-                    results["errors"].append(f"Remove {l1_name}/{bad_l2}: {e}")
+            self._heal_l2_folders(l1_name, agentic_core_path, results)
         
         print(f"   [HIERARCHY HEALING COMPLETE] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed")
         if results["errors"]:
             print(f"   [!] {len(results['errors'])} errors occurred during healing")
         
         return results
+
+    def _heal_l1_folder(self, bad_l1: str, agentic_core_path: Path, approved_l1: set, results: Dict[str, Any]) -> None:
+        """Heal non-approved L1 folder by relocating files and removing empty folder."""
+        bad_path = agentic_core_path / bad_l1
+        print(f"   [!] Non-approved L1 folder: {bad_l1}")
+        
+        # Find best target based on folder name heuristics
+        target_l1 = get_best_target_l1(bad_l1, approved_l1)
+        target_path = agentic_core_path / target_l1
+        
+        # Relocate all files from non-approved folder
+        for py_file in bad_path.rglob("*.py"):
+            if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
+                continue
+            self._relocate_file_to_l1(py_file, target_l1, target_path, results)
+        
+        # Try to remove empty folder tree
+        self._cleanup_empty_folder(bad_path, bad_l1, results)
+    
+    def _relocate_file_to_l1(self, py_file: Path, target_l1: str, target_path: Path, results: Dict[str, Any]) -> None:
+        """Relocate a single file to approved L1 folder."""
+        try:
+            target_l2 = get_best_target_l2(target_l1, py_file.name)
+            final_target = target_path / target_l2
+            final_target.mkdir(parents=True, exist_ok=True)
+            
+            dest = final_target / py_file.name
+            if not dest.exists():
+                shutil.move(str(py_file), str(dest))
+                print(f"      [✓] RELOCATED: {py_file.name} -> {target_l1}/{target_l2}/")
+                results["files_relocated"] += 1
+            else:
+                print(f"      [!] SKIP (exists): {py_file.name}")
+        except Exception as e:
+            results["errors"].append(f"{py_file.name}: {e}")
+    
+    def _heal_l2_folders(self, l1_name: str, agentic_core_path: Path, results: Dict[str, Any]) -> None:
+        """Heal non-approved L2 folders within an approved L1 folder."""
+        l1_path = agentic_core_path / l1_name
+        if not l1_path.exists():
+            return
+        
+        approved_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
+        if not approved_l2:
+            return  # No L2 enforcement for this L1
+        
+        actual_l2 = {
+            p.name for p in l1_path.iterdir() 
+            if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
+        }
+        non_approved_l2 = actual_l2 - approved_l2
+        
+        for bad_l2 in non_approved_l2:
+            self._heal_single_l2_folder(l1_name, l1_path, bad_l2, results)
+    
+    def _heal_single_l2_folder(self, l1_name: str, l1_path: Path, bad_l2: str, results: Dict[str, Any]) -> None:
+        """Heal a single non-approved L2 folder."""
+        bad_path = l1_path / bad_l2
+        print(f"   [!] Non-approved L2 folder: {l1_name}/{bad_l2}")
+        
+        # Find best target L2 folder
+        target_l2 = get_best_target_l2(l1_name, bad_l2)
+        target_path = l1_path / target_l2
+        target_path.mkdir(parents=True, exist_ok=True)
+        
+        # Relocate all files
+        for py_file in bad_path.rglob("*.py"):
+            if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
+                continue
+            try:
+                dest = target_path / py_file.name
+                if not dest.exists():
+                    shutil.move(str(py_file), str(dest))
+                    print(f"      [✓] RELOCATED: {py_file.name} -> {l1_name}/{target_l2}/")
+                    results["files_relocated"] += 1
+                else:
+                    print(f"      [!] SKIP (exists): {py_file.name}")
+            except Exception as e:
+                results["errors"].append(f"{py_file.name}: {e}")
+        
+        # Try to remove empty folder
+        self._cleanup_empty_folder(bad_path, f"{l1_name}/{bad_l2}", results)
+    
+    def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: Dict[str, Any]) -> None:
+        """Remove empty folder tree after relocation."""
+        try:
+            self._remove_empty_dirs(folder_path)
+            if not folder_path.exists():
+                print(f"      [✓] REMOVED empty folder: {folder_label}")
+                results["folders_removed"] += 1
+        except Exception as e:
+            results["errors"].append(f"Remove {folder_label}: {e}")
 
     def _remove_empty_dirs(self, path: Path) -> None:
         """
