@@ -37,14 +37,14 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     5. Update Redis state registry
     """
 
-    def __init__(self, McpRouterAgent) -> None:
+    def __init__(self, McpRouterAgent: Any) -> None:
         """
         Initialize Git Safety Handler.
         
         Args:
             McpRouterAgent: MCPRouter instance for MCP calls
         """
-        self.router = McpRouterAgent
+        self.router: Any = McpRouterAgent
         Logger.info('[OK] Git Safety Handler initialized')
 
     async def create_rollback_point(self, file_path: str) -> str:
@@ -97,6 +97,9 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         
         Args:
             file_paths: List of file paths to stage
+        
+        Returns:
+            True if staging succeeded, False otherwise
             
         Returns:
             True if successful, False otherwise

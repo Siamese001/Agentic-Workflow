@@ -34,28 +34,55 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 @dataclass
 class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-    """Brief description of functionality and purpose."""
+    """
+    Sprawl Inspector - Pre-Flight Architectural Survey.
+    
+    Identifies low-density folders and excessive breadth for consolidation.
+    Implements Key 49 (Universal Depth Law) and Key 41 (Modular Atomicity).
+    """
 
-    def __init__(self, target_path=AGENTIC_CORE_DIR) -> None:
-        """Initialize the instance."""
-        self.root = Path(target_path)
-        self.MAX_BREADTH = 7
-        self.MIN_FILES = 3
-        self.report = {'metadata': {'target': target_path, 'timestamp': datetime.now().isoformat(), 'user': os.getenv('USERNAME', 'unknown')}, 'violations': [], 'flattening_candidates': []}
+    def __init__(self, target_path: Path = AGENTIC_CORE_DIR) -> None:
+        """
+        Initialize sprawl inspector.
+        
+        Args:
+            target_path: Root directory to inspect for sprawl violations
+        """
+        self.root: Path = Path(target_path)
+        self.MAX_BREADTH: int = 7
+        self.MIN_FILES: int = 3
+        self.report: Dict[str, Any] = {
+            'metadata': {
+                'target': str(target_path),
+                'timestamp': datetime.now().isoformat(),
+                'user': os.getenv('USERNAME', 'unknown')
+            },
+            'violations': [],
+            'flattening_candidates': []
+        }
 
-    def inspect(self) -> Any:
-        """Scan directory tree for sprawl violations."""
+    def inspect(self) -> Dict[str, Any]:
+        """
+        Scan directory tree for sprawl violations.
+        
+        Returns:
+            Report dictionary with violations and flattening candidates
+        """
         for root, dirs, files in os.walk(self.root):
-            p: Any = Path(root)
-            py_files: Any = [f for f in files if f.endswith('.py')]
+            p: Path = Path(root)
+            py_files: list[str] = [f for f in files if f.endswith('.py')]
             if len(dirs) > self.MAX_BREADTH:
                 self.report['violations'].append({'path': str(p), 'type': 'Breadth Violation', 'count': len(dirs), 'msg': f"Found {len(dirs)} subfolders. Violates 'Magic 7' rule."})
             if 0 < len(py_files) < self.MIN_FILES and (not dirs) and (p != self.root):
                 self.report['flattening_candidates'].append({'folder': str(p), 'files': py_files, 'file_count': len(py_files), 'reason': 'Low Signal Density (Fragmented)'})
         return self.report
 
-    def print_summary(self) -> Any:
-        """Print human-readable summary."""
+    def print_summary(self) -> None:
+        """
+        Print human-readable summary of sprawl violations.
+        
+        Displays breadth violations and flattening candidates.
+        """
         print('\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n' + '=' * 70)
         print('🔍 PROJECT SPRAWL REPORT')
         print('=' * 70)

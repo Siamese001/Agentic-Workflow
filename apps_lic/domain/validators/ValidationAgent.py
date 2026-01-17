@@ -20,6 +20,15 @@ class ValidationAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     
     def __init__(self, circuit_breaker: 'utils.CircuitBreaker') -> None:
+        """
+        Initialize validation agent.
+        
+        Args:
+            circuit_breaker: Circuit breaker for fault tolerance
+        
+        Sets up comprehensive validation framework with 107 rules including
+        placeholder detection, diversity validation, and content cleanliness.
+        """
         self.circuit_breaker = circuit_breaker
         self.status = "IDLE" # Using simple string, could be AgentStatus enum
         

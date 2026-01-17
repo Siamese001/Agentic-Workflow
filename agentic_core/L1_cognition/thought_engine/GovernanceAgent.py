@@ -341,19 +341,38 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         sanitized: Any = []
         for item in self.root_dir.iterdir():
             if item.is_file():
-                if item.name not in self.ALLOWED_ROOT_FILES:
-                    violations.append(f'Unauthorized file at root: {item.name}')
-                    if auto_sanitize:
-                        action: Any = self._sanitize_root_file(item)
-                        sanitized.append(f'{item.name} -> {action}')
+                self._check_root_file(item, violations, sanitized, auto_sanitize)
             if item.is_dir():
-                if not item.name.startswith('.') and item.name not in self.ALLOWED_ROOT_FOLDERS:
-                    violations.append(f'Unauthorized directory at root: {item.name}')
+                self._check_root_directory(item, violations)
         if sanitized:
             LOGGER.info(f'Root sanitation completed: {len(sanitized)} items processed')
             for action in sanitized:
                 LOGGER.info(f'  {action}')
         return violations
+
+    def _check_root_file(self, file_path: Path, violations: List[str], sanitized: List[str], auto_sanitize: bool) -> None:
+        if file_path.name not in self.ALLOWED_ROOT_FILES:
+            violations.append(f'Unauthorized file at root: {file_path.name}')
+            if auto_sanitize:
+                action = self._sanitize_root_file(file_path)
+                sanitized.append(f'{file_path.name} -> {action}')
+
+    def _check_root_directory(self, dir_path: Path, violations: List[str]) -> None:
+        if not dir_path.name.startswith('.') and dir_path.name not in self.ALLOWED_ROOT_FOLDERS:
+            violations.append(f'Unauthorized directory at root: {dir_path.name}')
+
+    def _check_root_file(self, item: Path, violations: List, sanitized: List, auto_sanitize: bool) -> None:
+        """Check if root file is authorized and sanitize if needed."""
+        if item.name not in self.ALLOWED_ROOT_FILES:
+            violations.append(f'Unauthorized file at root: {item.name}')
+            if auto_sanitize:
+                action: Any = self._sanitize_root_file(item)
+                sanitized.append(f'{item.name} -> {action}')
+    
+    def _check_root_directory(self, item: Path, violations: List) -> None:
+        """Check if root directory is authorized."""
+        if not item.name.startswith('.') and item.name not in self.ALLOWED_ROOT_FOLDERS:
+            violations.append(f'Unauthorized directory at root: {item.name}')
 
     def _sanitize_root_file(self, file_path: Path) -> str:
         """

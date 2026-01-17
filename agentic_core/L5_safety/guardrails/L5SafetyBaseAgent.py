@@ -79,16 +79,21 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         r'DAN\s+mode',
     ]
     
-    def __init__(self, project_root=None, ctx=None, **kwargs) -> None:
+    def __init__(self, project_root: Optional[Any] = None, ctx: Optional[Any] = None, **kwargs: Any) -> None:
         """
         Initialize with cooperative MRO inheritance.
+        
+        Args:
+            project_root: Optional project root directory
+            ctx: Optional validation context
+            **kwargs: Additional keyword arguments passed to parent classes
         
         MRO HARDENING: Passes **kwargs up the chain to ensure all
         mixins in the MRO are properly initialized.
         """
         super().__init__(**kwargs)  # Propagate up MRO chain
-        self.project_root = project_root
-        self._l5_ctx = ctx
+        self.project_root: Optional[Any] = project_root
+        self._l5_ctx: Optional[Any] = ctx
     
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L5 compliance."""

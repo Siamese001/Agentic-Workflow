@@ -85,12 +85,17 @@ DUST_THRESHOLD = 40
 class ImportUpdater(ast.NodeVisitor):
     """AST engine to verify and suggest import updates."""
     def __init__(self, target_symbols: Optional[Set[str]] = None) -> None:
-        """Initialize the instance."""
-        self.target_symbols = target_symbols or set()
-        self.found_usage = False
+        """
+        Initialize import updater.
+        
+        Args:
+            target_symbols: Optional set of symbols to track
+        """
+        self.target_symbols: Set[str] = target_symbols or set()
+        self.found_usage: bool = False
         self.imported_modules: Set[str] = set()
         self.used_names: Set[str] = set()
-        self.last_import_lineno = 0
+        self.last_import_lineno: int = 0
 
     def visit_Import(self, node: ast.Import) -> Any:
         """Execute visit_Import operation."""
@@ -436,66 +441,88 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             if file_path.name in ALLOWED_DUPLICATE_FILENAMES:
                 continue
 
-            if "Suggested placement:" not in msg and "Invalid depth" not in msg:
+            if not self._has_move_guidance(msg):
                 continue  # Skip if no clear target
 
-            # Extract target path from guidance
-            if "Suggested placement:" in msg:
-                # Split to get just the path string after the label
-                target_str = msg.split("Suggested placement:")[-1].strip().split()[0]
-            else:
-                # Fallback: use current L1/L2 and correct depth 4 parts
-                rel = file_path.relative_to(self.project_root)
-                parts = list(rel.parts)
-                target_str = "/".join(parts[:3]) if len(parts) >= 3 else parts[0]
-
-            target_path = self.project_root / target_str / file_path.name
+            # Extract target path and create action
+            target_path = self._resolve_target_path(file_path, msg)
+            action = self._create_move_action(file_path, target_path, msg)
             
-            action = {
-                "type": "MOVE",
-                "source": str(file_path),
-                "target": str(target_path),
-                "reason": msg,
-                "applied": False
-            }
-
+            # Execute move if applicable
             if target_path.exists():
                 action["reason"] += " [BLOCKED: target exists]"
             elif self.dry_run:
                 action["applied"] = True
                 action["note"] = "DRY-RUN"
             else:
-                try:
-                    target_path.parent.mkdir(parents=True, exist_ok=True)
-                    self._backup_file(file_path)
-                    shutil.move(str(file_path), str(target_path))
-                    action["applied"] = True
-                    self.moves_applied += 1
-                    Logger.info(f"[HEALED] Moved {file_path.name} -> {target_str}/")
-                    
-                    # [CANON COMPLIANCE] Track change for sovereign audit trail
-                    self.change_tracker.record(
-                        agent="HealerAgent — File Mover",
-                        file_path=target_path,
-                        description=f"Moved from {file_path} (reason: {msg[:50]}...)"
-                    )
-                    
-                    # [HARDENING 9] Log structural change
-                    if self.audit:
-                        self.audit.log_structural_change(
-                            agent_name=self.__class__.__name__,
-                            operation="move",
-                            source_files=[str(file_path)],
-                            target_files=[str(target_path)],
-                            reason=msg,
-                            applied=True
-                        )
-                except Exception as e:
-                    action["reason"] += f" [FAILED: {e}]"
+                self._execute_file_move(file_path, target_path, msg, action)
 
             actions.append(action)
 
         return actions
+    
+    def _has_move_guidance(self, msg: str) -> bool:
+        """Check if message contains move guidance."""
+        return "Suggested placement:" in msg or "Invalid depth" in msg
+    
+    def _resolve_target_path(self, file_path: Path, msg: str) -> Path:
+        """Resolve target path from guidance message."""
+        if "Suggested placement:" in msg:
+            # Split to get just the path string after the label
+            target_str = msg.split("Suggested placement:")[-1].strip().split()[0]
+        else:
+            # Fallback: use current L1/L2 and correct depth 4 parts
+            rel = file_path.relative_to(self.project_root)
+            parts = list(rel.parts)
+            target_str = "/".join(parts[:3]) if len(parts) >= 3 else parts[0]
+        
+        return self.project_root / target_str / file_path.name
+    
+    def _create_move_action(self, file_path: Path, target_path: Path, msg: str) -> Dict[str, Any]:
+        """Create move action dictionary."""
+        return {
+            "type": "MOVE",
+            "source": str(file_path),
+            "target": str(target_path),
+            "reason": msg,
+            "applied": False
+        }
+    
+    def _execute_file_move(self, file_path: Path, target_path: Path, msg: str, action: Dict[str, Any]) -> None:
+        """Execute file move with tracking and audit logging."""
+        try:
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            self._backup_file(file_path)
+            shutil.move(str(file_path), str(target_path))
+            action["applied"] = True
+            self.moves_applied += 1
+            Logger.info(f"[HEALED] Moved {file_path.name} -> {target_path.parent}/")
+            
+            # Track change and log
+            self._track_move_change(file_path, target_path, msg)
+            
+        except Exception as e:
+            action["reason"] += f" [FAILED: {e}]"
+    
+    def _track_move_change(self, file_path: Path, target_path: Path, msg: str) -> None:
+        """Track move change for audit trail."""
+        # [CANON COMPLIANCE] Track change for sovereign audit trail
+        self.change_tracker.record(
+            agent="HealerAgent — File Mover",
+            file_path=target_path,
+            description=f"Moved from {file_path} (reason: {msg[:50]}...)"
+        )
+        
+        # [HARDENING 9] Log structural change
+        if self.audit:
+            self.audit.log_structural_change(
+                agent_name=self.__class__.__name__,
+                operation="move",
+                source_files=[str(file_path)],
+                target_files=[str(target_path)],
+                reason=msg,
+                applied=True
+            )
 
     def heal_unused_imports(self, import_violations: List[Tuple[Path, List[str]]]) -> List[Dict[str, Any]]:
         """Remove unused imports (high confidence only)."""
@@ -505,53 +532,67 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             if not unused:
                 continue
 
-            action = {
-                "type": "CLEAN_IMPORTS",
-                "file": str(file_path),
-                "removed": [],
-                "applied": False
-            }
-
+            action = self._create_import_action(file_path)
+            
             if self.dry_run:
                 action["removed"] = [m.split(": ")[-1] for m in unused]
                 action["applied"] = True
             else:
-                try:
-                    self._backup_file(file_path)
-                    content = file_path.read_text(encoding="utf-8")
-                    lines = content.splitlines()
-                    new_lines = []
-                    
-                    for line in lines:
-                        keep = True
-                        for u in unused:
-                            # Extract module/name after the confidence tag
-                            import_name = u.split(": ")[-1].split()[0]
-                            if import_name in line and ("import " in line or "from " in line):
-                                keep = False
-                                action["removed"].append(line.strip())
-                                break
-                        if keep:
-                            new_lines.append(line)
-
-                    if action["removed"]:
-                        file_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
-                        action["applied"] = True
-                        self.imports_cleaned += len(action["removed"])
-                        
-                        # [CANON COMPLIANCE] Track change for sovereign audit trail
-                        self.change_tracker.record(
-                            agent="HealerAgent — Import Cleaner",
-                            file_path=file_path,
-                            description=f"Removed {len(action['removed'])} unused imports"
-                        )
-
-                except Exception as e:
-                    action["reason"] = str(e)
+                self._remove_unused_imports(file_path, unused, action)
 
             actions.append(action)
 
         return actions
+    
+    def _create_import_action(self, file_path: Path) -> Dict[str, Any]:
+        """Create import cleaning action dictionary."""
+        return {
+            "type": "CLEAN_IMPORTS",
+            "file": str(file_path),
+            "removed": [],
+            "applied": False
+        }
+    
+    def _remove_unused_imports(self, file_path: Path, unused: List[str], action: Dict[str, Any]) -> None:
+        """Remove unused imports from file."""
+        try:
+            self._backup_file(file_path)
+            content = file_path.read_text(encoding="utf-8")
+            lines = content.splitlines()
+            
+            new_lines = self._filter_import_lines(lines, unused, action)
+            
+            if action["removed"]:
+                file_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+                action["applied"] = True
+                self.imports_cleaned += len(action["removed"])
+                
+                # [CANON COMPLIANCE] Track change for sovereign audit trail
+                self.change_tracker.record(
+                    agent="HealerAgent — Import Cleaner",
+                    file_path=file_path,
+                    description=f"Removed {len(action['removed'])} unused imports"
+                )
+
+        except Exception as e:
+            action["reason"] = str(e)
+    
+    def _filter_import_lines(self, lines: List[str], unused: List[str], action: Dict[str, Any]) -> List[str]:
+        """Filter out unused import lines."""
+        new_lines = []
+        for line in lines:
+            if self._should_keep_line(line, unused, action):
+                new_lines.append(line)
+        return new_lines
+    
+    def _should_keep_line(self, line: str, unused: List[str], action: Dict[str, Any]) -> bool:
+        """Check if line should be kept (not an unused import)."""
+        for u in unused:
+            import_name = u.split(": ")[-1].split()[0]
+            if import_name in line and ("import " in line or "from " in line):
+                action["removed"].append(line.strip())
+                return False
+        return True
 
     def _extract_symbols(self, content: str) -> Set[str]:
         """AST symbol extraction for fusion and fission logic."""

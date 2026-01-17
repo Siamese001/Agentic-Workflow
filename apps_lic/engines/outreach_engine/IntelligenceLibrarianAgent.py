@@ -50,10 +50,10 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
     
     def __init__(
         self,
-        search_client: Any = None,
-        llm_client: Any = None,
-        memory_store: VectorMemoryStore = None
-    ):
+        search_client: Optional[Any] = None,
+        llm_client: Optional[Any] = None,
+        memory_store: Optional[VectorMemoryStore] = None
+    ) -> None:
         """
         Initialize Librarian with API clients and vector store
         
@@ -63,14 +63,15 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
             memory_store: Vector database for persistent storage
         """
         super().__init__()  # MCPHardenedMixin init
-        self.search_client = search_client
-        self.llm_client = llm_client
-        self.memory_store = memory_store
+        self.search_client: Optional[Any] = search_client
+        self.llm_client: Optional[Any] = llm_client
+        self.memory_store: Optional[VectorMemoryStore] = memory_store
         
         # Configure Gemini embedding API
-        self.embedding_model = "models/embedding-001"
+        self.embedding_model: str = "models/embedding-001"
         
-        print(f"[Librarian] Initialized with vector store: {memory_store.collection_name}")
+        if memory_store:
+            print(f"[Librarian] Initialized with vector store: {memory_store.collection_name}")
     
     async def research_company(
         self,

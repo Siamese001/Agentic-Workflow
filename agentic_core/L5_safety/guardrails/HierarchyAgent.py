@@ -181,94 +181,11 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         non_approved_l2 = actual_layers_l2 - approved_layers_l2
         
         for bad_layer_l2 in non_approved_l2:
-            bad_path = agentic_core_path / bad_layer_l2
-            
-            # Detection-First: Count all violations
-            for py_file in bad_path.rglob("*.py"):
-                if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
-                    continue
-                results["violations_found"] += 1
-                Logger.warning(f"   [!] MISPLACED FILE: {py_file.name} in illegal layer '{bad_layer_l2}'")
-                
-                if self.healing_enabled:
-                    try:
-                        target_layer_l2 = get_best_target_l1(bad_layer_l2, approved_layers_l2)
-                        target_path = agentic_core_path / target_layer_l2
-                        target_territory_l3 = get_best_target_l2(target_layer_l2, py_file.name)
-                        final_target = target_path / target_territory_l3
-                        final_target.mkdir(parents=True, exist_ok=True)
-                        
-                        dest = final_target / py_file.name
-                        if not dest.exists():
-                            shutil.move(str(py_file), str(dest))
-                            Logger.info(f"      [✓] RELOCATED: {py_file.name} -> {target_layer_l2}/{target_territory_l3}/")
-                            results["files_relocated"] += 1
-                        else:
-                            Logger.info(f"      [!] SKIP (exists): {py_file.name}")
-                    except Exception as e:
-                        results["errors"].append(f"{py_file.name}: {e}")
-            
-            # Try to remove empty folder tree (only if healing)
-            if self.healing_enabled:
-                try:
-                    self._remove_empty_dirs(bad_path)
-                    if not bad_path.exists():
-                        Logger.info(f"      [✓] REMOVED empty folder: {bad_layer_l2}")
-                        results["folders_removed"] += 1
-                except Exception as e:
-                    results["errors"].append(f"Remove {bad_layer_l2}: {e}")
+            self._relocate_l2_layer_files(agentic_core_path, bad_layer_l2, approved_layers_l2, results)
         
         # Phase 2: Check L3 sub-territories within approved L2 Layers
         for layer_l2_name in approved_layers_l2:
-            layer_l2_path = agentic_core_path / layer_l2_name
-            if not layer_l2_path.exists():
-                continue
-            
-            approved_territories_l3 = set(CORE_SUBFOLDER_MAP.get(layer_l2_name, []))
-            if not approved_territories_l3:
-                continue
-            
-            actual_territories_l3 = {
-                p.name for p in layer_l2_path.iterdir() 
-                if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
-            }
-            non_approved_l3 = actual_territories_l3 - approved_territories_l3
-            
-            for bad_territory_l3 in non_approved_l3:
-                bad_path = layer_l2_path / bad_territory_l3
-                
-                # Detection-First: Count all violations
-                for py_file in bad_path.rglob("*.py"):
-                    if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
-                        continue
-                    results["violations_found"] += 1
-                    Logger.warning(f"   [!] MISPLACED FILE: {py_file.name} in illegal territory '{layer_l2_name}/{bad_territory_l3}'")
-                    
-                    if self.healing_enabled:
-                        try:
-                            target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
-                            target_path = layer_l2_path / target_territory_l3
-                            target_path.mkdir(parents=True, exist_ok=True)
-                            
-                            dest = target_path / py_file.name
-                            if not dest.exists():
-                                shutil.move(str(py_file), str(dest))
-                                Logger.info(f"      [✓] RELOCATED: {py_file.name} -> {layer_l2_name}/{target_territory_l3}/")
-                                results["files_relocated"] += 1
-                            else:
-                                Logger.info(f"      [!] SKIP (exists): {py_file.name}")
-                        except Exception as e:
-                            results["errors"].append(f"{py_file.name}: {e}")
-                
-                # Try to remove empty folder tree (only if healing)
-                if self.healing_enabled:
-                    try:
-                        self._remove_empty_dirs(bad_path)
-                        if not bad_path.exists():
-                            Logger.info(f"      [✓] REMOVED empty folder: {layer_l2_name}/{bad_territory_l3}")
-                            results["folders_removed"] += 1
-                    except Exception as e:
-                        results["errors"].append(f"Remove {layer_l2_name}/{bad_territory_l3}: {e}")
+            self._relocate_l3_territory_files(agentic_core_path, layer_l2_name, results)
         
         if results["violations_found"] > 0:
             Logger.info(f"HierarchyAgent: [RELOCATION] Found {results['violations_found']} misplaced files")
@@ -276,6 +193,99 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 Logger.info(f"HierarchyAgent: [RELOCATION] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed")
         
         return results
+
+    def _relocate_l2_layer_files(self, agentic_core_path: Path, bad_layer_l2: str, approved_layers_l2: set, results: Dict[str, Any]) -> None:
+        """Relocate files from non-approved L2 layer."""
+        bad_path = agentic_core_path / bad_layer_l2
+        
+        for py_file in bad_path.rglob("*.py"):
+            if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
+                continue
+            results["violations_found"] += 1
+            Logger.warning(f"   [!] MISPLACED FILE: {py_file.name} in illegal layer '{bad_layer_l2}'")
+            
+            if self.healing_enabled:
+                self._relocate_file_to_l2(py_file, bad_layer_l2, agentic_core_path, approved_layers_l2, results)
+        
+        if self.healing_enabled:
+            self._cleanup_empty_folder(bad_path, bad_layer_l2, results)
+    
+    def _relocate_file_to_l2(self, py_file: Path, bad_layer_l2: str, agentic_core_path: Path, approved_layers_l2: set, results: Dict[str, Any]) -> None:
+        """Relocate a single file to approved L2 layer."""
+        try:
+            target_layer_l2 = get_best_target_l1(bad_layer_l2, approved_layers_l2)
+            target_path = agentic_core_path / target_layer_l2
+            target_territory_l3 = get_best_target_l2(target_layer_l2, py_file.name)
+            final_target = target_path / target_territory_l3
+            final_target.mkdir(parents=True, exist_ok=True)
+            
+            dest = final_target / py_file.name
+            if not dest.exists():
+                shutil.move(str(py_file), str(dest))
+                Logger.info(f"      [✓] RELOCATED: {py_file.name} -> {target_layer_l2}/{target_territory_l3}/")
+                results["files_relocated"] += 1
+            else:
+                Logger.info(f"      [!] SKIP (exists): {py_file.name}")
+        except Exception as e:
+            results["errors"].append(f"{py_file.name}: {e}")
+    
+    def _relocate_l3_territory_files(self, agentic_core_path: Path, layer_l2_name: str, results: Dict[str, Any]) -> None:
+        """Relocate files from non-approved L3 territories."""
+        layer_l2_path = agentic_core_path / layer_l2_name
+        if not layer_l2_path.exists():
+            return
+        
+        approved_territories_l3 = set(CORE_SUBFOLDER_MAP.get(layer_l2_name, []))
+        if not approved_territories_l3:
+            return
+        
+        actual_territories_l3 = {
+            p.name for p in layer_l2_path.iterdir() 
+            if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
+        }
+        non_approved_l3 = actual_territories_l3 - approved_territories_l3
+        
+        for bad_territory_l3 in non_approved_l3:
+            bad_path = layer_l2_path / bad_territory_l3
+            
+            for py_file in bad_path.rglob("*.py"):
+                if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
+                    continue
+                results["violations_found"] += 1
+                Logger.warning(f"   [!] MISPLACED FILE: {py_file.name} in illegal territory '{layer_l2_name}/{bad_territory_l3}'")
+                
+                if self.healing_enabled:
+                    self._relocate_file_to_l3(py_file, layer_l2_name, layer_l2_path, bad_territory_l3, results)
+            
+            if self.healing_enabled:
+                self._cleanup_empty_folder(bad_path, f"{layer_l2_name}/{bad_territory_l3}", results)
+    
+    def _relocate_file_to_l3(self, py_file: Path, layer_l2_name: str, layer_l2_path: Path, bad_territory_l3: str, results: Dict[str, Any]) -> None:
+        """Relocate a single file to approved L3 territory."""
+        try:
+            target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
+            target_path = layer_l2_path / target_territory_l3
+            target_path.mkdir(parents=True, exist_ok=True)
+            
+            dest = target_path / py_file.name
+            if not dest.exists():
+                shutil.move(str(py_file), str(dest))
+                Logger.info(f"      [✓] RELOCATED: {py_file.name} -> {layer_l2_name}/{target_territory_l3}/")
+                results["files_relocated"] += 1
+            else:
+                Logger.info(f"      [!] SKIP (exists): {py_file.name}")
+        except Exception as e:
+            results["errors"].append(f"{py_file.name}: {e}")
+    
+    def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: Dict[str, Any]) -> None:
+        """Remove empty folder tree after relocation."""
+        try:
+            self._remove_empty_dirs(folder_path)
+            if not folder_path.exists():
+                Logger.info(f"      [✓] REMOVED empty folder: {folder_label}")
+                results["folders_removed"] += 1
+        except Exception as e:
+            results["errors"].append(f"Remove {folder_label}: {e}")
 
     # ========================================================================
     # DEPTH ENFORCEMENT (from HierarchyEnforcerAgent)

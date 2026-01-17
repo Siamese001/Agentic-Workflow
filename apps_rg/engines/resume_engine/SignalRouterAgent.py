@@ -160,7 +160,15 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
 
     @staticmethod
     def create_all_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
-        """Create all available agents."""
+        """
+        Create all available agents.
+        
+        Args:
+            ctx: Resume engine context
+        
+        Returns:
+            List of all resume agents
+        """
         return [
             ContentQualityAgent(ctx),
             FactCheckAgent(ctx),
@@ -173,7 +181,16 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
 
     @staticmethod
     def create_agents_by_name(ctx: ResumeEngineContext, names: List[str]) -> List[ResumeAgent]:
-        """Create specific agents by name."""
+        """
+        Create specific agents by name.
+        
+        Args:
+            ctx: Resume engine context
+            names: List of agent class names to create
+        
+        Returns:
+            List of requested agents
+        """
         agent_map = {
             "ContentQualityAgent": ContentQualityAgent,
             "FactCheckAgent": FactCheckAgent,
@@ -194,7 +211,15 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
 
     @staticmethod
     def create_quality_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
-        """Create quality-focused agents."""
+        """
+        Create quality-focused agents.
+        
+        Args:
+            ctx: Resume engine context
+        
+        Returns:
+            List of quality-focused agents
+        """
         return [
             ContentQualityAgent(ctx),
             FactCheckAgent(ctx),
@@ -203,7 +228,15 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
 
     @staticmethod
     def create_compliance_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
-        """Create compliance-focused agents."""
+        """
+        Create compliance-focused agents.
+        
+        Args:
+            ctx: Resume engine context
+        
+        Returns:
+            List of compliance-focused agents
+        """
         return [
             BrandComplianceAgent(ctx),
             SectionBalanceAgent(ctx),
@@ -219,14 +252,29 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
 class HealingCycle:
     """Manages a single healing cycle."""
 
-    def __init__(self, ctx: ResumeEngineContext, cycle_number: int):
-        self.ctx = ctx
-        self.cycle_number = cycle_number
+    def __init__(self, ctx: ResumeEngineContext, cycle_number: int) -> None:
+        """
+        Initialize healing cycle.
+        
+        Args:
+            ctx: Resume engine context
+            cycle_number: Current cycle number (1-indexed)
+        """
+        self.ctx: ResumeEngineContext = ctx
+        self.cycle_number: int = cycle_number
         self.start_time: Optional[float] = None
         self.end_time: Optional[float] = None
 
     async def execute(self, strategy: HealingStrategy) -> CycleResult:
-        """Execute the healing cycle with the given strategy."""
+        """
+        Execute the healing cycle with the given strategy.
+        
+        Args:
+            strategy: Healing strategy to apply
+        
+        Returns:
+            CycleResult with cycle execution details
+        """
         import time
         self.start_time = time.time()
 
@@ -282,7 +330,15 @@ class HealingCycle:
         )
 
     def _build_agenda(self, strategy: HealingStrategy) -> List[ResumeAgent]:
-        """Build the agent agenda based on strategy."""
+        """
+        Build the agent agenda based on strategy.
+        
+        Args:
+            strategy: Healing strategy to apply
+        
+        Returns:
+            List of agents to execute
+        """
         if strategy == HealingStrategy.FULL_DIAGNOSTIC:
             return AgentFactory.create_all_agents(self.ctx)
 
@@ -309,7 +365,12 @@ class HealingCycle:
         return AgentFactory.create_all_agents(self.ctx)
 
     def _check_rollback_conditions(self) -> bool:
-        """Check if rollback should be triggered."""
+        """
+        Check if rollback should be triggered.
+        
+        Returns:
+            True if rollback conditions are met, False otherwise
+        """
         # Rollback on critical signals
         if SignalRouterAgent.has_critical_signal(self.ctx.signals):
             return True
@@ -322,8 +383,12 @@ class HealingCycle:
 
         return False
 
-    def _execute_rollback(self):
-        """Execute rollback of all changes."""
+    def _execute_rollback(self) -> None:
+        """
+        Execute rollback of all changes.
+        
+        Reverts resume to last backup and clears critical signals.
+        """
         print(f"   🚨 Cycle {self.cycle_number}: Triggering rollback...")
         self.ctx.rollback_all()
 
@@ -375,20 +440,36 @@ async def run_self_healing_mission(
 class AutomaticRollback:
     """Handles automatic rollback on critical failures."""
 
-    def __init__(self, ctx: ResumeEngineContext):
-        self.ctx = ctx
-        self.rollback_count = 0
-        self.max_rollbacks = 3
+    def __init__(self, ctx: ResumeEngineContext) -> None:
+        """
+        Initialize automatic rollback handler.
+        
+        Args:
+            ctx: Resume engine context
+        """
+        self.ctx: ResumeEngineContext = ctx
+        self.rollback_count: int = 0
+        self.max_rollbacks: int = 3
 
     def should_rollback(self) -> bool:
-        """Determine if rollback should be triggered."""
+        """
+        Determine if rollback should be triggered.
+        
+        Returns:
+            True if rollback should be triggered, False otherwise
+        """
         if self.rollback_count >= self.max_rollbacks:
             return False  # Prevent infinite rollback loop
 
         return SignalRouterAgent.has_critical_signal(self.ctx.signals)
 
     def execute_rollback(self) -> bool:
-        """Execute rollback and return success status."""
+        """
+        Execute rollback and return success status.
+        
+        Returns:
+            True if rollback was executed, False otherwise
+        """
         if not self.should_rollback():
             return False
 

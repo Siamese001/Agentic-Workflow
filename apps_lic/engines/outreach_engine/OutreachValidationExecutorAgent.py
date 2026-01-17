@@ -41,7 +41,7 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
         similarity_thresholds: Dict[str, float],
         forbidden_verbs: List[str],
         forbidden_filler_phrases: List[str],
-    ):
+    ) -> None:
         """Initialize outreach validation executor.
 
         Args:
@@ -57,8 +57,8 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
             similarity_thresholds=similarity_thresholds,
         )
 
-        self.forbidden_verbs = [v.lower() for v in forbidden_verbs]
-        self.forbidden_filler_phrases = [p.lower() for p in forbidden_filler_phrases]
+        self.forbidden_verbs: List[str] = [v.lower() for v in forbidden_verbs]
+        self.forbidden_filler_phrases: List[str] = [p.lower() for p in forbidden_filler_phrases]
 
         LOGGER.info(
             f"OutreachValidationExecutorAgent initialized: "

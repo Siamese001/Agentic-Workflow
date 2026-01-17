@@ -23,6 +23,12 @@ class MessageDiversityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, He
     MIN_DIVERSITY_THRESHOLD = 0.85  # Messages must be <85% similar
     
     def __init__(self) -> None:
+        """
+        Initialize message diversity validator.
+        
+        Sets up TF-IDF vectorizer for similarity analysis and initializes
+        message history tracking.
+        """
         self.message_history: List[str] = []
         self.vectorizer = TfidfVectorizer()
     
@@ -57,9 +63,19 @@ class MessageDiversityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             return True, 0.0, ""
     
     def add_to_history(self, message: str) -> None:
-        """Add message to history"""
+        """
+        Add message to history for future diversity checks.
+        
+        Args:
+            message: Message text to add to history
+        """
         self.message_history.append(message)
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """
+        Invoke healing chain via super().
+        
+        Returns:
+            Dictionary with healing results including violations, fixed, errors, skipped
+        """
+        return super().heal_repository()

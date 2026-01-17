@@ -37,7 +37,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         config_dir: Optional[Path] = None,
         master_password: Optional[str] = None,
         env_prefix: str = "AGENTIC_"
-    ):
+    ) -> None:
         """Initialize the secure config manager.
         
         Args:
@@ -45,9 +45,9 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             master_password: Optional master password for encryption
             env_prefix: Prefix for environment variables
         """
-        self.config_dir = config_dir or Path.home() / ".agentic_workflow" / "config"
+        self.config_dir: Path = config_dir or Path.home() / ".agentic_workflow" / "config"
         self.config_dir.mkdir(parents=True, exist_ok=True)
-        self.env_prefix = env_prefix
+        self.env_prefix: str = env_prefix
         
         # Initialize encryption
         self._init_encryption(master_password)

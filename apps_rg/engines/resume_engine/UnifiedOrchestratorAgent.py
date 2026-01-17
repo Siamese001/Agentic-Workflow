@@ -30,7 +30,12 @@ from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin i
 
 
 class SecurityLevel(Enum):
-    """Security check levels."""
+    """
+    Security check levels for scanning.
+    
+    Defines the intensity and thoroughness of security checks,
+    from basic validation to paranoid-level scrutiny.
+    """
     BASIC = "basic"
     STANDARD = "standard"
     STRICT = "strict"
@@ -38,7 +43,12 @@ class SecurityLevel(Enum):
 
 
 class AnalysisType(Enum):
-    """Types of semantic analysis."""
+    """
+    Types of semantic analysis.
+    
+    Defines the different aspects of code that can be analyzed
+    for semantic consistency and quality.
+    """
     DOCSTRING = "docstring"
     CONTENT = "content"
     STRUCTURE = "structure"
@@ -46,7 +56,12 @@ class AnalysisType(Enum):
 
 
 class RefactorType(Enum):
-    """Types of refactoring suggestions."""
+    """
+    Types of refactoring suggestions.
+    
+    Defines the various refactoring patterns that can be recommended
+    to improve code structure and maintainability.
+    """
     EXTRACT_METHOD = "extract_method"
     EXTRACT_CLASS = "extract_class"
     RENAME = "rename"
@@ -55,7 +70,12 @@ class RefactorType(Enum):
 
 
 class PhaseType(Enum):
-    """Types of execution phases."""
+    """
+    Types of execution phases.
+    
+    Defines how phases can be executed in the orchestration workflow,
+    including sequential, parallel, and conditional execution.
+    """
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
     CONDITIONAL = "conditional"

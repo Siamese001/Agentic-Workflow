@@ -81,21 +81,45 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
         self.generic_visit(node)
         
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
-        """Track function definitions."""
+        """
+        Track function definitions.
+        
+        Args:
+            node: FunctionDef AST node
+        
+        Returns:
+            Result of generic_visit
+        """
         self.defined_names.add(node.name)
         self.defined_functions.add(node.name)
         self.definition_line_numbers[node.name] = node.lineno
         self.generic_visit(node)
         
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> Any:
-        """Track async function definitions."""
+        """
+        Track async function definitions.
+        
+        Args:
+            node: AsyncFunctionDef AST node
+        
+        Returns:
+            Result of generic_visit
+        """
         self.defined_names.add(node.name)
         self.defined_functions.add(node.name)
         self.definition_line_numbers[node.name] = node.lineno
         self.generic_visit(node)
         
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
-        """Track class definitions and their methods."""
+        """
+        Track class definitions and their methods.
+        
+        Args:
+            node: ClassDef AST node
+        
+        Returns:
+            Result of generic_visit
+        """
         self.defined_names.add(node.name)
         self.defined_classes.add(node.name)
         self.definition_line_numbers[node.name] = node.lineno

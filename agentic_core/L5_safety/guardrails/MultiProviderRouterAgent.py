@@ -50,14 +50,19 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
     """Production router with intelligent provider selection and failover."""
 
     def __init__(self, config: Optional[RouterConfig] = None) -> None:
-        """Initialize the instance."""
-        self.config = config or self._default_config()
-        self.clients = {}
-        self.health_status = {}
-        self.circuit_breakers = {}
-        self.usage_stats = {}
-        self.request_count = 0
-        self._lock = threading.Lock()
+        """
+        Initialize multi-provider router.
+        
+        Args:
+            config: Optional router configuration (uses defaults if not provided)
+        """
+        self.config: RouterConfig = config or self._default_config()
+        self.clients: Dict[Provider, Any] = {}
+        self.health_status: Dict[Provider, bool] = {}
+        self.circuit_breakers: Dict[Provider, int] = {}
+        self.usage_stats: Dict[Provider, Dict[str, Any]] = {}
+        self.request_count: int = 0
+        self._lock: threading.Lock = threading.Lock()
 
         # Initialize clients
         self._initialize_clients()
@@ -233,30 +238,40 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             provider = Provider(result["provider"])
             response = result["response"]
 
-            if provider == Provider.OPENAI:
-                # OpenAI already returns structured data
-                return result
-            elif provider == Provider.ANTHROPIC:
-                # Parse JSON from Anthropic response
-                try:
-                    if hasattr(response, 'content') and response.content:
-                        content = response.content[0].text
-                        structured_data = json.loads(content)
-                        result["structured_data"] = structured_data
-                except Exception as e:
-                    result["success"] = False
-                    result["error"] = f"Failed to parse structured output: {e}"
-            elif provider == Provider.GOOGLE_VERTEX:
-                # Parse JSON from Vertex response
-                try:
-                    content = response.text
-                    structured_data = json.loads(content)
-                    result["structured_data"] = structured_data
-                except Exception as e:
-                    result["success"] = False
-                    result["error"] = f"Failed to parse structured output: {e}"
+            self._parse_structured_output(provider, response, result)
 
         return result
+
+    def _parse_structured_output(self, provider: Provider, response: Any, result: Dict[str, object]) -> None:
+        """Parse structured output based on provider."""
+        if provider == Provider.OPENAI:
+            # OpenAI already returns structured data
+            return
+        elif provider == Provider.ANTHROPIC:
+            self._parse_anthropic_structured(response, result)
+        elif provider == Provider.GOOGLE_VERTEX:
+            self._parse_vertex_structured(response, result)
+    
+    def _parse_anthropic_structured(self, response: Any, result: Dict[str, object]) -> None:
+        """Parse JSON from Anthropic response."""
+        try:
+            if hasattr(response, 'content') and response.content:
+                content = response.content[0].text
+                structured_data = json.loads(content)
+                result["structured_data"] = structured_data
+        except Exception as e:
+            result["success"] = False
+            result["error"] = f"Failed to parse structured output: {e}"
+    
+    def _parse_vertex_structured(self, response: Any, result: Dict[str, object]) -> None:
+        """Parse JSON from Vertex response."""
+        try:
+            content = response.text
+            structured_data = json.loads(content)
+            result["structured_data"] = structured_data
+        except Exception as e:
+            result["success"] = False
+            result["error"] = f"Failed to parse structured output: {e}"
 
     def batch_completion(
         self,

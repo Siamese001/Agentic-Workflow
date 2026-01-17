@@ -39,7 +39,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 class OutreachTraceLevel(Enum):
-    """Trace levels for observability."""
+    """
+    Trace levels for observability.
+    
+    Defines the severity levels for execution tracing in outreach campaigns,
+    from debug information to critical errors.
+    """
     DEBUG = "debug"
     INFO = "info"
     WARNING = "warning"
@@ -48,7 +53,12 @@ class OutreachTraceLevel(Enum):
 
 
 class OutreachMetricType(Enum):
-    """Types of metrics."""
+    """
+    Types of metrics for outreach observability.
+    
+    Defines the different metric types that can be collected during
+    outreach campaign execution.
+    """
     COUNTER = "counter"
     GAUGE = "gauge"
     HISTOGRAM = "histogram"

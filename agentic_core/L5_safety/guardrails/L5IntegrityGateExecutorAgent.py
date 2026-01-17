@@ -333,18 +333,15 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         """
         # Extract text content for checking
         text_content = self._extract_text_content(content)
-        # Check for empty/Missing content
+        # Run all fast validation checks
+        self._execute_fast_validation_checks(content, text_content, result)
+
+    def _execute_fast_validation_checks(self, content: Dict[str, Any], text_content: str, result: ValidationResult) -> None:
+        """Execute all fast validation checks."""
         self._check_required_fields(content, result)
-
-        # Check for fluff language
         self._check_fluff_language_fast(text_content, result)
-
-        # Check for vague claims without metrics
         self._check_vague_claims_fast(text_content, result)
-        # Check for Metric format issues
         self._check_metric_format_fast(content, result)
-
-        # Check for structural issues
         self._check_structure_fast(content, result)
 
     def _run_deep_checks(self, content: Dict[str, Any], result: ValidationResult) -> None:

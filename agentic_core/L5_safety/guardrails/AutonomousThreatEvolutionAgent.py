@@ -42,14 +42,19 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 @dataclass
 class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """L5: Self-healing security agent"""
-    def __init__(self, SafetyEngine=None) -> None:
-        """Initialize the instance."""
-        self.safety = SafetyEngine
+    def __init__(self, SafetyEngine: Optional[Any] = None) -> None:
+        """
+        Initialize autonomous threat evolution agent.
+        
+        Args:
+            SafetyEngine: Optional safety engine instance
+        """
+        self.safety: Optional[Any] = SafetyEngine
         # Use relative pathing to stay within the AGENTIC_CORE_DIR root gravity
-        self.log_path = Path("observability/logs/threat_detections.json")
-        self.evolution_interval = 3600  
-        self.running = True
-        self.confidence_threshold = 0.78
+        self.log_path: Path = Path("observability/logs/threat_detections.json")
+        self.evolution_interval: int = 3600  
+        self.running: bool = True
+        self.confidence_threshold: float = 0.78
 
     async def run(self) -> Dict[str, Any]:
         """Standardized entry point for L6 Coordinator"""

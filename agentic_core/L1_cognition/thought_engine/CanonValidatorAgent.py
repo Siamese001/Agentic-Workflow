@@ -89,10 +89,18 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         redis_port: int = 6379,
         qdrant_host: str = "localhost",
         qdrant_port: int = 6333
-    ):
-        """Initialize the Canon Validator with hybrid cache."""
+    ) -> None:
+        """
+        Initialize the Canon Validator with hybrid cache.
+        
+        Args:
+            redis_host: Redis server hostname
+            redis_port: Redis server port
+            qdrant_host: Qdrant server hostname
+            qdrant_port: Qdrant server port
+        """
         super().__init__()
-        self.db_manager = HybridDatabaseManager(
+        self.db_manager: HybridDatabaseManager = HybridDatabaseManager(
             redis_host=redis_host,
             redis_port=redis_port,
             qdrant_host=qdrant_host,

@@ -74,7 +74,7 @@ class TestPilotAgent(HealerMixin, MCPHardenedMixin):
     for detecting deep logic failures.
     """
 
-    def __init__(self, test_paths: List[str]=None, enable_conversational_repair: bool=True):
+    def __init__(self, test_paths: Optional[List[str]] = None, enable_conversational_repair: bool = True) -> None:
         """
         Initialize TestPilot.
 
@@ -82,9 +82,9 @@ class TestPilotAgent(HealerMixin, MCPHardenedMixin):
             test_paths: Paths to test directories
             enable_conversational_repair: Whether to enable multi-agent debate for failures
         """
-        self.test_paths = test_paths or [TESTS_DIR]
-        self.property_violations = []
-        self.enable_conversational_repair = enable_conversational_repair
+        self.test_paths: List[str] = test_paths or [TESTS_DIR]
+        self.property_violations: List[Any] = []
+        self.enable_conversational_repair: bool = enable_conversational_repair
         if self.enable_conversational_repair:
             from agentic_core.ConversationalRepair import get_conversational_repair
             self.ConversationalRepair = get_conversational_repair()
@@ -249,15 +249,32 @@ class TestPilotAgent(HealerMixin, MCPHardenedMixin):
         """Generate a property test for a specific function."""
         func_name = func['name']
         args = func['args']
+        
         if 'sort' in func_name.lower():
-            return f'\n@settings(max_examples=100)\n@given(st.lists(st.integers()))\ndef test_{func_name}_sorted_idempotent(lst):\n    result = module.{func_name}(lst.copy())\n    assert module.{func_name}(result) == result\n'
+            return self._generate_sort_test(func_name)
         elif 'json' in func_name.lower() or 'serialize' in func_name.lower():
-            return f'\n@settings(max_examples=100)\n@given(st.dictionaries(st.text(), st.integers()))\ndef test_{func_name}_roundtrip(data):\n    result = module.{func_name}(data)\n    if isinstance(result, str):\n        assert json.loads(result) == data\n'
+            return self._generate_json_test(func_name)
         elif 'reverse' in func_name.lower():
-            return f'\n@settings(max_examples=100)\n@given(st.lists(st.integers()))\ndef test_{func_name}_double_reverse(lst):\n    result = module.{func_name}(lst)\n    assert module.{func_name}(result) == lst\n'
+            return self._generate_reverse_test(func_name)
         else:
-            strategy = self._get_strategy_for_args(args)
-            return f"\n@settings(max_examples=50)\n@given({strategy})\ndef test_{func_name}_properties({', '.join(args)}):\n    # Just check the function doesn't crash\n    result = module.{func_name}({', '.join(args)})\n    assert result is not None\n"
+            return self._generate_generic_test(func_name, args)
+
+    def _generate_sort_test(self, func_name: str) -> str:
+        """Generate test for sort functions."""
+        return f'\n@settings(max_examples=100)\n@given(st.lists(st.integers()))\ndef test_{func_name}_sorted_idempotent(lst):\n    result = module.{func_name}(lst.copy())\n    assert module.{func_name}(result) == result\n'
+    
+    def _generate_json_test(self, func_name: str) -> str:
+        """Generate test for JSON/serialization functions."""
+        return f'\n@settings(max_examples=100)\n@given(st.dictionaries(st.text(), st.integers()))\ndef test_{func_name}_roundtrip(data):\n    result = module.{func_name}(data)\n    if isinstance(result, str):\n        assert json.loads(result) == data\n'
+    
+    def _generate_reverse_test(self, func_name: str) -> str:
+        """Generate test for reverse functions."""
+        return f'\n@settings(max_examples=100)\n@given(st.lists(st.integers()))\ndef test_{func_name}_double_reverse(lst):\n    result = module.{func_name}(lst)\n    assert module.{func_name}(result) == lst\n'
+    
+    def _generate_generic_test(self, func_name: str, args: List[str]) -> str:
+        """Generate generic property test."""
+        strategy = self._get_strategy_for_args(args)
+        return f"\n@settings(max_examples=50)\n@given({strategy})\ndef test_{func_name}_properties({', '.join(args)}):\n    # Just check the function doesn't crash\n    result = module.{func_name}({', '.join(args)})\n    assert result is not None\n"
 
     def _get_strategy_for_args(self, args: List[str]) -> str:
         """Get appropriate Hypothesis strategy for function arguments."""

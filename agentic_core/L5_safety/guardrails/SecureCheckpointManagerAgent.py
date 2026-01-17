@@ -42,7 +42,7 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         checkpoint_dir: Path,
         encryption_key: Optional[bytes] = None,
         integrity_key: Optional[bytes] = None
-    ):
+    ) -> None:
         """Initialize the secure Checkpoint manager.
         
         Args:
@@ -51,16 +51,16 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
             encryption_key: Optional key for encryption (generated if not provided)
             integrity_key: Optional key for HMAC (generated if not provided)
         """
-        self.hop_id = hop_id
-        self.checkpoint_dir = Path(checkpoint_dir)
+        self.hop_id: str = hop_id
+        self.checkpoint_dir: Path = Path(checkpoint_dir)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         
         # Generate or use provided keys
-        self.encryption_key = encryption_key or self._generate_key()
-        self.integrity_key = integrity_key or self._generate_key()
+        self.encryption_key: bytes = encryption_key or self._generate_key()
+        self.integrity_key: bytes = integrity_key or self._generate_key()
         
         # Initialize cipher
-        self.cipher = Fernet(self.encryption_key)
+        self.cipher: Fernet = Fernet(self.encryption_key)
         
         Logger.debug(f"Initialized SecureCheckpointManagerAgent for hop {hop_id}")
     

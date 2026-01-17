@@ -38,28 +38,41 @@ class CoverageAgent(SovereignBaseAgent):
     """CoverageAgent agent for autonomous operations."""
     def __init__(
         self,
-        layers: list[str] = None,
+        layers: Optional[List[str]] = None,
         threshold_entropy: float = 2.2,  # Tuned lower than max for early triggers (base-2; ~12 layers → max ~3.58)
         dashboard_api_url: str = "http://localhost:8000/api/metrics",
         intervention_mode: str = "full_active",  # Options: "report" (log only), "bias_only", "full_active" (bias + inject)
         bias_weight: float = 4.0,                # Selection score multiplier (tunable; 3-5 recommended)
         bias_duration_cycles: int = 30,          # How many orchestration cycles to sustain bias
         synthetic_tasks_per_trigger: int = 10,   # Safe no-ops injected per act() imbalance detection
-        priority_boost_layers: List[str] = None, # Ordered forced exploration (Phase roadmap)
-    ):
-        self.name = "CoverageAgent"
-        self.layers = layers or [
+        priority_boost_layers: Optional[List[str]] = None, # Ordered forced exploration (Phase roadmap)
+    ) -> None:
+        """
+        Initialize coverage agent.
+        
+        Args:
+            layers: Optional list of layer names to monitor
+            threshold_entropy: Entropy threshold for triggering interventions
+            dashboard_api_url: URL for dashboard metrics API
+            intervention_mode: Mode of intervention (report/bias_only/full_active)
+            bias_weight: Selection score multiplier for biased layers
+            bias_duration_cycles: Number of cycles to sustain bias
+            synthetic_tasks_per_trigger: Number of synthetic tasks per trigger
+            priority_boost_layers: Ordered list of layers for forced exploration
+        """
+        self.name: str = "CoverageAgent"
+        self.layers: List[str] = layers or [
             "L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration",
             "L4_state", "L5_safety", "config", "schemas", "prompt_governance",
             "observability", "utils", "apps_rg", "apps_lic", "apps_shared"
         ]  # SSOT-derived major territories from blueprint
-        self.threshold_entropy = threshold_entropy
-        self.dashboard_api_url = dashboard_api_url
-        self.intervention_mode = intervention_mode
-        self.bias_weight = bias_weight
-        self.bias_duration_cycles = bias_duration_cycles
-        self.synthetic_tasks_per_trigger = synthetic_tasks_per_trigger
-        self.priority_boost_layers = priority_boost_layers or [
+        self.threshold_entropy: float = threshold_entropy
+        self.dashboard_api_url: str = dashboard_api_url
+        self.intervention_mode: str = intervention_mode
+        self.bias_weight: float = bias_weight
+        self.bias_duration_cycles: int = bias_duration_cycles
+        self.synthetic_tasks_per_trigger: int = synthetic_tasks_per_trigger
+        self.priority_boost_layers: List[str] = priority_boost_layers or [
             "L5_safety",    # Phase 2 target (highest risk)
             "L4_state",     # Phase 3
             "L1_cognition", # Phase 4

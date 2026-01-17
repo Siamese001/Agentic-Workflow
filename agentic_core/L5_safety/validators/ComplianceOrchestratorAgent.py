@@ -399,20 +399,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
                     continue
                 
                 # Try to instantiate with various signatures
-                instance = None
-                try:
-                    instance = attr(self.project_root)
-                except TypeError:
-                    try:
-                        instance = attr()
-                    except Exception:
-                        # Try with context=None for some agents
-                        try:
-                            instance = attr(context=None)
-                        except Exception:
-                            pass
-                except Exception:
-                    pass
+                instance = self._try_instantiate_agent(attr)
                 
                 if instance is None:
                     continue
@@ -422,19 +409,38 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
                 discovered += 1
                 
                 # Categorize based on capabilities
-                if hasattr(instance, "heal_violation"):
-                    self._atomic_validators.append(instance)
-                elif hasattr(instance, "execute") or hasattr(instance, "run"):
-                    if "monitor" in attr_name.lower():
-                        self._monitors.append(instance)
-                    else:
-                        self._batch_validators.append(instance)
+                self._categorize_agent(instance, attr_name)
                         
         except Exception as e:
             # [VERBOSE] Log import errors for debugging
             print(f"      [!] IMPORT FAILED: {agent_file.name}: {e}")
         
         return discovered
+
+    def _try_instantiate_agent(self, agent_class: type) -> Optional[Any]:
+        """Try to instantiate agent with various signatures."""
+        try:
+            return agent_class(self.project_root)
+        except TypeError:
+            try:
+                return agent_class()
+            except Exception:
+                try:
+                    return agent_class(context=None)
+                except Exception:
+                    return None
+        except Exception:
+            return None
+    
+    def _categorize_agent(self, instance: Any, attr_name: str) -> None:
+        """Categorize agent based on capabilities."""
+        if hasattr(instance, "heal_violation"):
+            self._atomic_validators.append(instance)
+        elif hasattr(instance, "execute") or hasattr(instance, "run"):
+            if "monitor" in attr_name.lower():
+                self._monitors.append(instance)
+            else:
+                self._batch_validators.append(instance)
 
     def _discover_agents_in_path(self, module_prefix: str, path: Path) -> int:
         """Discover and instantiate agents from a specific path."""

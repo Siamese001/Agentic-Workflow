@@ -42,17 +42,17 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         self,
         default_mode: ReasoningMode = ReasoningMode.REACT,
         enable_adaptive_routing: bool = True,
-    ):
+    ) -> None:
         """Initialize reasoning router.
         
         Args:
             default_mode: Default reasoning mode if no specific match
             enable_adaptive_routing: Enable adaptive strategy selection
         """
-        self.default_mode = default_mode
-        self.enable_adaptive_routing = enable_adaptive_routing
+        self.default_mode: ReasoningMode = default_mode
+        self.enable_adaptive_routing: bool = enable_adaptive_routing
         
-        self._strategy_map = {
+        self._strategy_map: Dict[TaskType, ReasoningMode] = {
             TaskType.TOOL_USE: ReasoningMode.REACT,
             TaskType.QUESTION_ANSWERING: ReasoningMode.CHAIN_OF_THOUGHT,
             TaskType.CLASSIFICATION: ReasoningMode.SHOTGUN,

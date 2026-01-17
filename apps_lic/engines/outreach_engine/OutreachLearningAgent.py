@@ -25,7 +25,12 @@ from .context import OutreachEngineContext
 
 
 class OutreachConfidenceLevel(Enum):
-    """Confidence levels for outreach decisions."""
+    """
+    Confidence levels for outreach decisions.
+    
+    Defines the confidence thresholds used to categorize the reliability
+    of outreach decisions and predictions.
+    """
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"

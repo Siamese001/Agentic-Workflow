@@ -92,17 +92,21 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                 with open(file_path, 'r', encoding='utf-8') as f:
                     lines: Any = f.readlines()
                 for line_num, line in enumerate(lines, 1):
-                    if '\t' in line:
-                        violations.append(f'{file_path}:{line_num}: Tab character found (use 4 spaces)')
-                    stripped_line: Any = line.lstrip(' ')
-                    if stripped_line and line.startswith(' '):
-                        leading_spaces: Any = len(line) - len(stripped_line)
-                        if leading_spaces % 4 != 0:
-                            violations.append(f'{file_path}:{line_num}: Indentation not multiple of 4 ({leading_spaces} spaces)')
+                    self._check_line_indentation(file_path, line_num, line, violations)
             except Exception as e:
                 violations.append(f'{file_path}:0: General Error - {e}')
                 continue
         return (len(violations) == 0, violations)
+
+    def _check_line_indentation(self, file_path: str, line_num: int, line: str, violations: List[str]) -> None:
+        """Check indentation for a single line."""
+        if '\t' in line:
+            violations.append(f'{file_path}:{line_num}: Tab character found (use 4 spaces)')
+        stripped_line: Any = line.lstrip(' ')
+        if stripped_line and line.startswith(' '):
+            leading_spaces: Any = len(line) - len(stripped_line)
+            if leading_spaces % 4 != 0:
+                violations.append(f'{file_path}:{line_num}: Indentation not multiple of 4 ({leading_spaces} spaces)')
 
     def check_key_12_trailing_whitespace(self) -> Tuple[bool, List[str]]:
         """

@@ -606,60 +606,76 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         - Validates .jinja, .json, .yaml, .yml, .md, .txt files
         - Word count validation (min/max per file type)
         """
+        # Early returns for exempt cases
+        exempt_result = self._check_exemptions(file_path)
+        if exempt_result:
+            return exempt_result
+        
+        # Get file type and convention
+        file_type = self._get_file_type(file_path)
+        convention = NAMING_CONVENTIONS.get(file_type)
+        if not convention:
+            return self._validate_basic_naming(file_path)
+        
+        # Validate pattern and word count
+        pattern_result = self._validate_pattern(file_path, file_type, convention)
+        if not pattern_result[0]:
+            return pattern_result
+        
+        word_count_result = self._validate_word_count(file_path, file_type, convention)
+        if not word_count_result[0]:
+            return word_count_result
+        
+        # For Python files, do additional validation
+        if file_path.suffix.lower() == '.py':
+            return self._validate_python_file(file_path, file_type, convention)
+        
+        return True, f"Valid {file_type} naming: {file_path.name}"
+
+    def _check_exemptions(self, file_path: Path) -> Optional[Tuple[bool, str]]:
+        """Check if file is exempt from naming validation."""
         file_name = file_path.name
         suffix = file_path.suffix.lower()
         
-        # Skip exempt files
         if file_name in NAMING_EXEMPT_FILES:
             return True, f"Exempt infrastructure file: {file_name}"
         
-        # Skip exempt directories
         if any(exempt_dir in file_path.parts for exempt_dir in NAMING_EXEMPT_DIRS):
             return True, f"File in exempt directory"
         
-        # Skip files with extensions we don't validate
         if suffix not in VALIDATED_FILE_EXTENSIONS:
             return True, f"Extension {suffix} not in validation scope"
         
-        # Determine file type
-        file_type = self._get_file_type(file_path)
-        
-        # Get naming convention for this file type
-        convention = NAMING_CONVENTIONS.get(file_type)
-        if not convention:
-            # Fall back to basic validation for unknown types
-            return self._validate_basic_naming(file_path)
-        
-        # Validate pattern
+        return None
+    
+    def _validate_pattern(self, file_path: Path, file_type: str, convention: Dict) -> Tuple[bool, str]:
+        """Validate filename against expected pattern."""
         pattern = convention.get('pattern')
-        if pattern and not re.match(pattern, file_name):
+        if pattern and not re.match(pattern, file_path.name):
             return False, (
-                f"NAMING VIOLATION [{file_type}]: '{file_name}' does not match pattern. "
+                f"NAMING VIOLATION [{file_type}]: '{file_path.name}' does not match pattern. "
                 f"Expected: {convention['description']}. "
                 f"Examples: {', '.join(convention.get('examples', []))}"
             )
-        
-        # Validate word count
-        word_count = self._count_words_in_name(file_name)
+        return True, "Pattern valid"
+    
+    def _validate_word_count(self, file_path: Path, file_type: str, convention: Dict) -> Tuple[bool, str]:
+        """Validate word count in filename."""
+        word_count = self._count_words_in_name(file_path.name)
         min_words = convention.get('min_words', 1)
         max_words = convention.get('max_words', 5)
         
         if word_count < min_words:
             return False, (
-                f"NAMING VIOLATION [{file_type}]: '{file_name}' has {word_count} word(s), "
+                f"NAMING VIOLATION [{file_type}]: '{file_path.name}' has {word_count} word(s), "
                 f"minimum is {min_words}. Add more descriptive words."
             )
         if word_count > max_words:
             return False, (
-                f"NAMING VIOLATION [{file_type}]: '{file_name}' has {word_count} word(s), "
+                f"NAMING VIOLATION [{file_type}]: '{file_path.name}' has {word_count} word(s), "
                 f"maximum is {max_words}. Simplify the name."
             )
-        
-        # For Python files, do additional validation
-        if suffix == '.py':
-            return self._validate_python_file(file_path, file_type, convention)
-        
-        return True, f"Valid {file_type} naming: {file_name}"
+        return True, "Word count valid"
 
     # Basic naming validation rules (reduces CC)
     BASIC_NAMING_RULES = [
@@ -682,50 +698,65 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         file_name = file_path.name
         stem = file_path.stem
-        lower_stem = stem.lower()
 
-        # === PASCALCASE ENFORCEMENT FOR AGENT FILES ===
+        # Check if this is an Agent file
         if file_name.endswith('Agent.py'):
-            # Validate PascalCase format
-            if not re.match(r'^[A-Z][a-zA-Z0-9]*Agent$', stem):
-                return False, (
-                    f"AGENT NAMING VIOLATION: '{file_name}' must be PascalCase ending with 'Agent' "
-                    f"(e.g., 'CodeSSOTEnforcerAgent.py', 'NamingAgent.py')"
-                )
-            
-            # Extract agent class from file content
-            try:
-                content = file_path.read_text(encoding="utf-8", errors='ignore')
-                classes, _, _ = self._extract_ast_symbols(content)
-                agent_classes = [c for c in classes if c.endswith('Agent')]
-                
-                if not agent_classes:
-                    return False, (
-                        f"AGENT CLASS VIOLATION: '{file_name}' must contain at least one class ending with 'Agent'"
-                    )
-                
-                # Primary agent class should match filename
-                primary_agent = agent_classes[0]  # First agent class is primary
-                expected_filename = f"{primary_agent}.py"
-                
-                if file_name != expected_filename:
-                    return False, (
-                        f"AGENT NAMING MISMATCH: File '{file_name}' should be '{expected_filename}' "
-                        f"to match primary class '{primary_agent}'"
-                    )
-                
-                # PascalCase agent file is valid - skip further checks
-                return True, f"Valid PascalCase agent file (class: {primary_agent})"
-                
-            except Exception as e:
-                return False, f"AGENT VALIDATION ERROR: Unable to parse '{file_name}': {e}"
+            return self._validate_agent_file(file_path, file_name, stem)
         
-        # === REVERSE CHECK: AGENT CLASSES HIDING IN NON-AGENT.PY FILES ===
-        # This enforces that ALL agent classes must be in *Agent.py files
+        # Check for hidden agent classes in non-Agent files
+        result = self._check_hidden_agent_classes(file_path, file_name)
+        if not result[0]:
+            return result
+        
+        # Enforce snake_case for non-Agent files
+        return self._validate_snake_case(file_name, stem)
+    
+    def _validate_agent_file(self, file_path: Path, file_name: str, stem: str) -> Tuple[bool, str]:
+        """Validate Agent.py files for PascalCase and class matching."""
+        # Validate PascalCase format
+        if not re.match(r'^[A-Z][a-zA-Z0-9]*Agent$', stem):
+            return False, (
+                f"AGENT NAMING VIOLATION: '{file_name}' must be PascalCase ending with 'Agent' "
+                f"(e.g., 'CodeSSOTEnforcerAgent.py', 'NamingAgent.py')"
+            )
+        
+        # Extract and validate agent classes
         try:
             content = file_path.read_text(encoding="utf-8", errors='ignore')
             classes, _, _ = self._extract_ast_symbols(content)
-            # Find classes that look like agents (end with Agent, Handler, Manager, etc.)
+            agent_classes = [c for c in classes if c.endswith('Agent')]
+            
+            if not agent_classes:
+                return False, (
+                    f"AGENT CLASS VIOLATION: '{file_name}' must contain at least one class ending with 'Agent'"
+                )
+            
+            # Validate filename matches primary agent class
+            return self._validate_agent_class_match(file_name, agent_classes)
+            
+        except Exception as e:
+            return False, f"AGENT VALIDATION ERROR: Unable to parse '{file_name}': {e}"
+    
+    def _validate_agent_class_match(self, file_name: str, agent_classes: List[str]) -> Tuple[bool, str]:
+        """Validate that filename matches primary agent class."""
+        primary_agent = agent_classes[0]  # First agent class is primary
+        expected_filename = f"{primary_agent}.py"
+        
+        if file_name != expected_filename:
+            return False, (
+                f"AGENT NAMING MISMATCH: File '{file_name}' should be '{expected_filename}' "
+                f"to match primary class '{primary_agent}'"
+            )
+        
+        return True, f"Valid PascalCase agent file (class: {primary_agent})"
+    
+    def _check_hidden_agent_classes(self, file_path: Path, file_name: str) -> Tuple[bool, str]:
+        """Check for agent classes hiding in non-Agent.py files."""
+        try:
+            content = file_path.read_text(encoding="utf-8", errors='ignore')
+            classes, _, _ = self._extract_ast_symbols(content)
+            
+            # Find classes that look like agents
             agent_suffixes = ('Agent', 'Handler', 'Manager', 'Controller', 'Executor', 
                             'Validator', 'Orchestrator', 'Governor', 'Enforcer', 'Sentinel')
             hidden_agents = [c for c in classes if any(c.endswith(s) for s in agent_suffixes)
@@ -741,7 +772,10 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         except Exception:
             pass  # If we can't parse, continue with other checks
         
-        # === SNAKE_CASE ENFORCEMENT FOR NON-AGENT FILES ===
+        return True, "OK"
+    
+    def _validate_snake_case(self, file_name: str, stem: str) -> Tuple[bool, str]:
+        """Validate snake_case naming for non-Agent files."""
         if re.search(r'[A-Z]', stem):  # Any uppercase letter
             return False, (
                 f"NAMING VIOLATION: '{file_name}' contains uppercase letters "

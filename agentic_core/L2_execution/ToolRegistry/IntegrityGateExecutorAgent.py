@@ -12,7 +12,12 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeoutProtocol
 
 # NAMING FIXED: ValidationRejectionReason → ValidationRejectionReason
 class ValidationRejectionReason(Enum):
-    '''Brief description of functionality and purpose.'''
+    """
+    Enumeration of validation rejection reasons.
+    
+    Defines the specific reasons why content validation may fail,
+    including depth issues, unbound metrics, and language quality problems.
+    """
     
     INSUFFICIENT_DEPTH = "INSUFFICIENT_DEPTH"
     UNBOUND_METRICS = "UNBOUND_METRICS"
@@ -144,41 +149,96 @@ class KeyExecutive:
 
 # NAMING FIXED: StrategicLayer → StrategicLayer
 class StrategicLayer:
-    '''Brief description of functionality and purpose.'''
+    """
+    Strategic layer containing core thesis and initiatives.
+    
+    Attributes:
+        core_thesis: Core strategic thesis
+        strategic_initiatives: List of strategic initiatives
+        financial_proof_points: List of financial proof points
+    """
     
     def __init__(self, core_thesis: str, strategic_initiatives: List[str], financial_proof_points: List[FinancialProofPoint]) -> None:
-        """Initialize the instance."""
+        """
+        Initialize strategic layer.
+        
+        Args:
+            core_thesis: Core strategic thesis
+            strategic_initiatives: List of strategic initiatives
+            financial_proof_points: List of financial proof points
+        """
         self.core_thesis = core_thesis
         self.strategic_initiatives = strategic_initiatives
         self.financial_proof_points = financial_proof_points
 
 # NAMING FIXED: TechnicalLayer → TechnicalLayer
 class TechnicalLayer:
-    '''Brief description of functionality and purpose.'''
+    """
+    Technical layer containing implementation details.
+    
+    Attributes:
+        implementation_summary: Summary of technical implementation
+        key_technologies: List of key technologies used
+    """
     
     def __init__(self, implementation_summary: str, key_technologies: List[KeyTechnology]) -> None:
-        """Initialize the instance."""
+        """
+        Initialize technical layer.
+        
+        Args:
+            implementation_summary: Summary of technical implementation
+            key_technologies: List of key technologies used
+        """
         self.implementation_summary = implementation_summary
         self.key_technologies = key_technologies
 
 # NAMING FIXED: LeadershipLayer → LeadershipLayer
 class LeadershipLayer:
-    '''Brief description of functionality and purpose.'''
+    """
+    Leadership layer containing key executives.
+    
+    Attributes:
+        key_executives: List of key executives
+    """
     
     def __init__(self, key_executives: List[KeyExecutive]) -> None:
-        """Initialize the instance."""
+        """
+        Initialize leadership layer.
+        
+        Args:
+            key_executives: List of key executives
+        """
         self.key_executives = key_executives
 
 # NAMING FIXED: CitationMap → CitationMap
 class CitationMap:
-    '''Brief description of functionality and purpose.'''
+    """
+    Citation map containing source citations.
     
-    def __init__(self, citations: List[Any]) -> None: # Type of citation not specified, just its count is used
+    Attributes:
+        citations: List of source citations
+    """
+    
+    def __init__(self, citations: List[Any]) -> None:
+        """
+        Initialize citation map.
+        
+        Args:
+            citations: List of source citations
+        """
         self.citations = citations
 
 # NAMING FIXED: DeepResearchOutput → DeepResearchOutput
 class DeepResearchOutput:
-    '''Brief description of functionality and purpose.'''
+    """
+    Deep research output containing all layers.
+    
+    Attributes:
+        StrategicLayer: Strategic layer with thesis and initiatives
+        TechnicalLayer: Technical layer with implementation details
+        LeadershipLayer: Leadership layer with key executives
+        CitationMap: Citation map with source citations
+    """
     
     def __init__(
         self,
@@ -186,7 +246,16 @@ class DeepResearchOutput:
         TechnicalLayer: TechnicalLayer,
         LeadershipLayer: LeadershipLayer,
         CitationMap: CitationMap
-    ):
+    ) -> None:
+        """
+        Initialize deep research output.
+        
+        Args:
+            StrategicLayer: Strategic layer with thesis and initiatives
+            TechnicalLayer: Technical layer with implementation details
+            LeadershipLayer: Leadership layer with key executives
+            CitationMap: Citation map with source citations
+        """
         self.StrategicLayer = StrategicLayer
         self.TechnicalLayer = TechnicalLayer
         self.LeadershipLayer = LeadershipLayer
@@ -220,7 +289,12 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
         "service", "API", "database", "network", "protocol"
     }
     def __init__(self, min_depth_score: float = 0.7) -> None:
-        """Initialize the instance."""
+        """
+        Initialize integrity gate executor.
+        
+        Args:
+            min_depth_score: Minimum depth score threshold (0-1, default 0.7)
+        """
         self.min_depth_score = min_depth_score
 
     def _run_self_tests(self) -> bool:

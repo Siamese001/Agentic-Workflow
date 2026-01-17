@@ -68,18 +68,18 @@ class FallbackManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
     - Execution tracking
     """
 
-    def __init__(self, strategy: FallbackStrategy=FallbackStrategy.SEQUENTIAL, enable_logging: bool=True) -> None:
+    def __init__(self, strategy: FallbackStrategy = FallbackStrategy.SEQUENTIAL, enable_logging: bool = True) -> None:
         """Initialize fallback manager.
 
         Args:
             strategy: Fallback strategy
             enable_logging: Enable logging
         """
-        self.strategy = strategy
-        self.enable_logging = enable_logging
+        self.strategy: FallbackStrategy = strategy
+        self.enable_logging: bool = enable_logging
         self._fallback_chains: Dict[str, List[ToolProvider]] = {}
         if self.enable_logging:
-            LOGGER.info('fallback_manager_initialized', extra={'strategy': strategy.value})
+            Logger.info('fallback_manager_initialized', extra={'strategy': strategy.value})
 
     def register_chain(self, tool_name: str, providers: List[ToolProvider]) -> None:
         """Register a fallback chain for a tool.

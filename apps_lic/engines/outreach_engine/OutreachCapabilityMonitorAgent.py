@@ -23,7 +23,12 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 
 
 class OutreachTaskPriority(Enum):
-    """Priority levels for proactive outreach tasks."""
+    """
+    Priority levels for proactive outreach tasks.
+    
+    Defines the urgency and importance of tasks identified by the
+    proactive scheduler for outreach campaigns.
+    """
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -32,7 +37,12 @@ class OutreachTaskPriority(Enum):
 
 
 class OutreachHandoffReason(Enum):
-    """Reasons for handoff to human in outreach."""
+    """
+    Reasons for handoff to human in outreach.
+    
+    Defines the specific conditions that trigger a handoff request
+    when the agent reaches capability limits or encounters compliance issues.
+    """
     CAPABILITY_LIMIT = "capability_limit"
     CONFIDENCE_LOW = "confidence_low"
     HIGH_RISK = "high_risk"
@@ -93,6 +103,15 @@ class OutreachProactiveScheduler:
     """
 
     def __init__(self, ctx: OutreachEngineContext) -> None:
+        """
+        Initialize outreach proactive scheduler.
+        
+        Args:
+            ctx: Outreach engine context for coordination
+        
+        Sets up task tracking and autonomous task identification
+        for outreach campaigns.
+        """
         self.ctx = ctx
         self._tasks: List[OutreachProactiveTask] = []
         self._task_counter = 0

@@ -33,7 +33,12 @@ from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin i
 
 
 class DependencyStatus(Enum):
-    """Status of dependency checks."""
+    """
+    Status of dependency checks.
+    
+    Defines the health status of dependencies including healthy,
+    warning, conflict, and missing states.
+    """
     HEALTHY = "healthy"
     WARNING = "warning"
     CONFLICT = "conflict"
@@ -41,7 +46,12 @@ class DependencyStatus(Enum):
 
 
 class DocComplianceLevel(Enum):
-    """Documentation compliance levels."""
+    """
+    Documentation compliance levels.
+    
+    Defines the levels of documentation completeness from none to
+    complete with type hints and comprehensive docstrings.
+    """
     NONE = "none"
     BASIC = "basic"
     TYPED = "typed"
@@ -49,7 +59,12 @@ class DocComplianceLevel(Enum):
 
 
 class PromptRisk(Enum):
-    """Prompt security risk levels."""
+    """
+    Prompt security risk levels.
+    
+    Defines the risk levels for AI prompt security issues from
+    low to critical severity.
+    """
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"

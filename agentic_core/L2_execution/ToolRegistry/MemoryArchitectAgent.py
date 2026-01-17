@@ -146,19 +146,27 @@ class HealingDiffAnalyzer:
             added_functions: Any = set(after_functions.keys()) - set(before_functions.keys())
             removed_functions: Any = set(before_functions.keys()) - set(after_functions.keys())
             modified_functions: Any = set(before_functions.keys()) & set(after_functions.keys())
-            modifications: Any = []
-            for func_name in modified_functions:
-                before_func: Any = before_functions[func_name]
-                after_func: Any = after_functions[func_name]
-                if before_func['lines'] != after_func['lines'] or before_func['nesting'] != after_func['nesting']:
-                    modifications.append({'function': func_name, 'before': before_func, 'after': after_func, 'line_reduction': before_func['lines'] - after_func['lines'], 'nesting_reduction': before_func['nesting'] - after_func['nesting']})
+            modifications: Any = self._compare_functions(before_functions, after_functions)
             text_diff: Any = list(difflib.unified_diff(success.before_code.split('\n'), success.after_code.split('\n'), lineterm='', n=3))
             return {'added_functions': list(added_functions), 'removed_functions': list(removed_functions), 'modified_functions': modifications, 'text_diff': '\n'.join(text_diff[:50]), 'total_line_reduction': success.before_metrics.get('lines', 0) - success.after_metrics.get('lines', 0), 'total_nesting_reduction': success.before_metrics.get('nesting', 0) - success.after_metrics.get('nesting', 0)}
         except Exception as e:
             self.Logger.error(f'Error analyzing diff: {e}')
             return None
 
-    def _extract_functions(self, tree: ast.AST) -> Dict:
+    def _compare_functions(self, before_functions: Dict, after_functions: Dict) -> List:
+        """Compare before and after functions to identify changes."""
+        added_functions: Any = set(after_functions.keys()) - set(before_functions.keys())
+        removed_functions: Any = set(before_functions.keys()) - set(after_functions.keys())
+        modified_functions: Any = set(before_functions.keys()) & set(after_functions.keys())
+        modifications: Any = []
+        for func in modified_functions:
+            before_func = before_functions[func]
+            after_func = after_functions[func]
+            if before_func['lines'] != after_func['lines'] or before_func['nesting'] != after_func['nesting']:
+                modifications.append({'function': func, 'before': before_func, 'after': after_func})
+        return modifications
+
+    def _extract_functions(self, tree: ast.AST) -> Dict[str, ast.FunctionDef]:
         """Extract function metadata from AST."""
         functions = {}
         for node in ast.walk(tree):

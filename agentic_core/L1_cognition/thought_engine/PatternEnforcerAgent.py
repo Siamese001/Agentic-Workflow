@@ -54,6 +54,18 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         """
         print(f'\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n[>>>] {self.agent.name} ACTIVATED: Pattern Enforcement...')
         keys: Any = [(26, self.check_key_26_no_mutable_defaults), (27, self.check_key_27_prefer_str_join), (28, self.check_key_28_no_bare_except), (29, self.check_key_29_no_assert_in_prod), (30, self.check_key_30_prefer_fstrings), (31, self.check_key_31_no_complex_comprehensions), (32, self.check_key_32_no_dict_keys_check), (33, self.check_key_33_no_float_equality), (34, self.check_key_34_use_is_for_none), (36, self.check_key_36_no_shadowed_builtins), (37, self.check_key_37_no_redundant_self), (38, self.check_key_38_prefer_comprehensions), (39, self.check_key_39_no_useless_return)]
+        self._execute_pattern_checks(keys)
+
+    def _execute_pattern_checks(self, keys: List[Tuple[int, Any]]) -> None:
+        """
+        Helper method to execute pattern checks and report violations.
+        """
+        for key, check_func in keys:
+            passed, details = check_func()
+            self.agent.ctx.report(self.agent.name, key, passed, details)
+
+    def _execute_pattern_checks(self, keys: List[Tuple[int, callable]]) -> None:
+        """Execute all pattern checks and report results."""
         for key, check_func in keys:
             passed, details = check_func()
             self.agent.ctx.report(self.agent.name, key, passed, details)

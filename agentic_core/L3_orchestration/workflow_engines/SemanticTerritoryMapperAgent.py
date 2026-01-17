@@ -33,10 +33,16 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
     using real Gemini embeddings and vector similarity search.
     """
     
-    def __init__(self, project_root: Path, ctx=None) -> None:
-        """Initialize the instance."""
-        self.project_root = project_root
-        self.ctx = ctx
+    def __init__(self, project_root: Path, ctx: Optional[Any] = None) -> None:
+        """
+        Initialize semantic territory mapper.
+        
+        Args:
+            project_root: Project root directory
+            ctx: Optional validation context
+        """
+        self.project_root: Path = project_root
+        self.ctx: Optional[Any] = ctx
         
         # [ETERNAL GATEWAY] Use the dedicated vector agent
         self.pinecone = PineconeSovereignAgent(project_root)

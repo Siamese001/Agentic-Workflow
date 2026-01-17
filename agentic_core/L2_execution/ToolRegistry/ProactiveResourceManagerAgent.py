@@ -92,6 +92,20 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         Returns:
             Tuple of (can_heal, reason)
         """
+        # Check budget constraints
+        budget_check = self._check_budget_constraints(file_path)
+        if not budget_check[0]:
+            return budget_check
+        
+        # Check priority and success rate
+        priority_check = self._check_priority_and_success_rate(violation_key)
+        if not priority_check[0]:
+            return priority_check
+        
+        return (True, 'OK')
+
+    def _check_budget_constraints(self, file_path: str) -> Tuple[bool, str]:
+        """Check budget constraints for healing."""
         if self.global_healing_count >= self.thresholds.global_healing_budget:
             return (False, f'Global healing budget exhausted ({self.global_healing_count}/{self.thresholds.global_healing_budget})')
         file_count: Any = self.file_healing_counts.get(file_path, 0)
@@ -99,6 +113,10 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             return (False, f'Per-file healing limit reached ({file_count}/{self.thresholds.max_healing_per_file})')
         if self.active_healings >= self.thresholds.max_concurrent_heals:
             return (False, f'Max concurrent healings reached ({self.active_healings}/{self.thresholds.max_concurrent_heals})')
+        return (True, 'OK')
+    
+    def _check_priority_and_success_rate(self, violation_key: int) -> Tuple[bool, str]:
+        """Check priority and success rate constraints."""
         budget_utilization: Any = self.global_healing_count / self.thresholds.global_healing_budget
         if budget_utilization >= self.thresholds.budget_critical_threshold:
             priority: Any = self.priority_weights.get(violation_key, 0.5)

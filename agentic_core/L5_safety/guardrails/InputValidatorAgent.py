@@ -20,7 +20,12 @@ Logger = logging.getLogger(__name__)
 
 
 class ValidationType(Enum):
-    """Types of validation."""
+    """
+    Types of validation supported by the input validator.
+    
+    Defines the various data types and formats that can be validated,
+    including primitives, collections, and structured data formats.
+    """
     STRING = "string"
     INTEGER = "integer"
     FLOAT = "float"
@@ -36,7 +41,26 @@ class ValidationType(Enum):
 
 @dataclass
 class ValidationRule:
-    """Rule for validating input."""
+    """
+    Rule for validating input data.
+    
+    Defines validation constraints including type, length, value ranges,
+    patterns, and custom validation logic.
+    
+    Attributes:
+        name: Name of the field being validated
+        validation_type: Type of validation to perform
+        required: Whether the field is required
+        min_length: Minimum length for strings/lists
+        max_length: Maximum length for strings/lists
+        min_value: Minimum value for numbers
+        max_value: Maximum value for numbers
+        pattern: Regex pattern for string validation
+        allowed_values: List of allowed values
+        schema: JSON schema for complex validation
+        custom_validator: Custom validation function
+        sanitize: Whether to sanitize input
+    """
     name: str
     validation_type: ValidationType
     required: bool = True
@@ -137,37 +161,49 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         
         # Check all rules
         for field, rule in self._rules.items():
-            try:
-                value = data.get(field)
-                
-                # Check required
-                if rule.required and value is None:
-                    raise InputValidationError(field, "Field is required")
-                
-                # Skip validation if not required and value is None
-                if value is None and not rule.required:
-                    continue
-                
-                # Validate based on type
-                validated_value = self._validate_field(field, value, rule)
-                validated[field] = validated_value
-                
-            except InputValidationError as e:
-                errors.append(e)
+            self._validate_single_field(field, rule, data, validated, errors)
         
         # Check for unknown fields in strict mode
         if strict:
-            for field in data:
-                if field not in self._rules:
-                    Logger.warning(f"Unknown field in input: {field}")
+            self._check_unknown_fields(data)
         
         # Raise errors if any
-        if errors:
-            error_messages = [f"{e.field}: {e.message}" for e in errors]
-            raise InputValidationError("multiple", f"Validation failed: {', '.join(error_messages)}")
+        self._raise_validation_errors(errors)
         
         return validated
     
+    def _validate_single_field(self, field: str, rule: ValidationRule, data: Dict[str, Any], validated: Dict[str, Any], errors: List[InputValidationError]) -> None:
+        """Validate a single field and add to validated dict or errors list."""
+        try:
+            value = data.get(field)
+            
+            # Check required
+            if rule.required and value is None:
+                raise InputValidationError(field, "Field is required")
+            
+            # Skip validation if not required and value is None
+            if value is None and not rule.required:
+                return
+            
+            # Validate based on type
+            validated_value = self._validate_field(field, value, rule)
+            validated[field] = validated_value
+            
+        except InputValidationError as e:
+            errors.append(e)
+    
+    def _check_unknown_fields(self, data: Dict[str, Any]) -> None:
+        """Check for unknown fields in strict mode."""
+        for field in data:
+            if field not in self._rules:
+                Logger.warning(f"Unknown field in input: {field}")
+    
+    def _raise_validation_errors(self, errors: List[InputValidationError]) -> None:
+        """Raise validation errors if any exist."""
+        if errors:
+            error_messages = [f"{e.field}: {e.message}" for e in errors]
+            raise InputValidationError("multiple", f"Validation failed: {', '.join(error_messages)}")
+
     def _validate_length(self, field: str, value: Any, rule: ValidationRule) -> None:
         """Validate length constraints."""
         if not isinstance(value, (str, list, dict)):

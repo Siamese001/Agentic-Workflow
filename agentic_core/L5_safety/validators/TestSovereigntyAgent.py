@@ -51,12 +51,14 @@ class SovereignSeverity(Enum):
 class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     """L5 specialist — advanced sovereign testing."""
 
-    def __init__(self, ctx=None, *args, _allow_mock: bool = True, **kwargs):
+    def __init__(self, ctx: Optional[any] = None, *args: any, _allow_mock: bool = True, **kwargs: any) -> None:
         """Initialize TestSovereigntyAgent.
         
         Args:
             ctx: Execution context (optional for testing agents)
+            *args: Additional positional arguments
             _allow_mock: If True and ctx is None, use MagicMock (default True for testing agents)
+            **kwargs: Additional keyword arguments
         
         Note: Testing agents have ctx optional by design for standalone validation.
         """
@@ -67,7 +69,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
             else:
                 raise ValueError("ctx is required when _allow_mock=False")
         super().__init__(ctx, *args, **kwargs)
-        self.repo_root = Path.cwd()
+        self.repo_root: Path = Path.cwd()
 
     def get_validation_keys(self) -> List[int]:
         """Return canon keys for test sovereignty."""

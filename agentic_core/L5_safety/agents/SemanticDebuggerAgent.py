@@ -25,23 +25,32 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
     for known healing patterns matching incoming error traces.
     """
 
-    def __init__(self, project_root=None, ctx=None, **kwargs) -> None:
-        """Initialize the instance."""
+    def __init__(self, project_root: Any = None, ctx: Any = None, **kwargs: Any) -> None:
+        """
+        Initialize semantic debugger agent.
+        
+        Args:
+            project_root: Optional project root directory
+            ctx: Optional execution context
+            **kwargs: Additional keyword arguments
+        """
         super().__init__(project_root=project_root, ctx=ctx, **kwargs)
-        self.name = "SemanticDebuggerAgent"
-        self.layer = "L5"
-        self.description = "Analyzes runtime errors using semantic memory to find known fixes."
+        self.name: str = "SemanticDebuggerAgent"
+        self.layer: str = "L5"
+        self.description: str = "Analyzes runtime errors using semantic memory to find known fixes."
 
     def run(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Main execution method.
+        Main execution method for semantic debugging.
 
-        Expected payload:
-        {
-            "error_message": str,
-            "stack_trace": str,
-            "context": str (optional)
-        }
+        Args:
+            payload: Dictionary containing error information
+                - error_message: Error message string
+                - stack_trace: Stack trace string
+                - context: Optional context string
+        
+        Returns:
+            Dictionary with diagnosis results and fix proposals
         """
         Logger.info("Starting Semantic Debugging Session...")
 
@@ -88,8 +97,16 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
             "suggested_reading": [d["id"] for d in docs] if docs else [],
         }
 
-    def _find_healing_patterns(self, error_context: str) -> List:
-        """Wrapper around the Mixin's client to search healing namespace directly."""
+    def _find_healing_patterns(self, error_context: str) -> List[Any]:
+        """
+        Wrapper around the Mixin's client to search healing namespace directly.
+        
+        Args:
+            error_context: Error context string to search for
+        
+        Returns:
+            List of healing patterns matching the error context
+        """
         client = self._get_cognitive_client()
         return client.find_healing_pattern(error_context)
 
