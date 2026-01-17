@@ -20,14 +20,28 @@ class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     Atomic agent: Removes unused imports and variables using autoflake.
     """
 
-    def __init__(self, project_root, ctx: Any) -> None:
-        """Initialize the instance."""
-        self.project_root = Path(project_root)
+    def __init__(self, project_root: str, ctx: Any) -> None:
+        """
+        Initialize the unused cleanup agent.
+        
+        Args:
+            project_root: Root directory of the project
+            ctx: Execution context
+        """
+        self.project_root: Path = Path(project_root)
         self.ctx = ctx
 
-    async def execute(self, file_path: str) -> Any:
-        """Remove unused imports and variables from a single file."""
-        file = Path(file_path)
+    async def execute(self, file_path: str) -> Dict[str, Any]:
+        """
+        Remove unused imports and variables from a single file.
+        
+        Args:
+            file_path: Path to file to clean
+        
+        Returns:
+            Dict with healed status and action taken
+        """
+        file: Path = Path(file_path)
         if not file.exists():
             return {"healed": False}
 

@@ -1,13 +1,14 @@
-from dataclasses import dataclass
 """
 OutreachProactiveAgent - Extracted for one-class-per-file pattern.
 
 Originally from: OutreachCapabilityMonitorAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
+
+Proactively identifies and executes outreach tasks with predictive handoff.
 """
-
-
 from __future__ import annotations
+from dataclasses import dataclass
+from typing import Any, Dict
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
@@ -15,9 +16,24 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """
     Agent that proactively identifies and executes outreach tasks.
+    
+    Combines task scheduling, predictive handoff detection, and capability
+    monitoring to autonomously manage outreach operations.
+    
+    Attributes:
+        name: Agent identifier
+        scheduler: Proactive task scheduler
+        handoff: Predictive handoff detector
+        monitor: Capability monitoring agent
     """
 
-    def __init__(self, ctx: OutreachEngineContext) -> None:
+    def __init__(self, ctx: 'OutreachEngineContext') -> None:
+        """
+        Initialize the proactive outreach agent.
+        
+        Args:
+            ctx: Outreach engine context
+        """
         super().__init__(ctx)
         self.name = "OutreachProactiveAgent"
         self.scheduler = OutreachProactiveScheduler(ctx)
@@ -25,7 +41,15 @@ class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
         self.monitor = OutreachCapabilityMonitorAgent(ctx)
 
     async def execute(self) -> None:
-        """Execute execute operation."""
+        """
+        Execute proactive outreach analysis and task execution.
+        
+        Identifies pending tasks, checks for handoff needs, and auto-executes
+        tasks that don't require human intervention.
+        
+        Raises:
+            HANDOFF_RECOMMENDED signal if predictive handoff is needed
+        """
         print(f"   [{self.name}] Running proactive analysis...")
 
         # Identify tasks
@@ -59,6 +83,16 @@ class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
         self.record_result(True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending")
         print(f"   [{self.name}] ✅ Proactive analysis complete")
 
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+            **kwargs: Additional healing parameters
+        
+        Returns:
+            Dict with healing summary (violations, fixed, errors)
+        """
+        return super().heal_repository(dry_run, execute, **kwargs)

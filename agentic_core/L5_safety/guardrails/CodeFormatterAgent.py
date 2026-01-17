@@ -20,18 +20,32 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     Atomic agent: Enforces consistent formatting using Black + Ruff auto-fix.
     """
 
-    def __init__(self, project_root, ctx: Any) -> None:
-        """Initialize the instance."""
-        self.project_root = Path(project_root)
+    def __init__(self, project_root: str, ctx: Any) -> None:
+        """
+        Initialize the code formatter agent.
+        
+        Args:
+            project_root: Root directory of the project
+            ctx: Execution context
+        """
+        self.project_root: Path = Path(project_root)
         self.ctx = ctx
 
-    async def execute(self, file_path: str) -> Any:
-        """Format a single file using Black and Ruff."""
-        file = Path(file_path)
+    async def execute(self, file_path: str) -> Dict[str, Any]:
+        """
+        Format a single file using Black and Ruff.
+        
+        Args:
+            file_path: Path to file to format
+        
+        Returns:
+            Dict with healed status and action taken
+        """
+        file: Path = Path(file_path)
         if not file.exists():
             return {"healed": False}
 
-        changed = False
+        changed: bool = False
         try:
             # Black formatting
             black_result = subprocess.run(

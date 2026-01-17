@@ -22,56 +22,125 @@ class ValidationRejectionReason(Enum):
 
 # NAMING FIXED: Violation → Violation
 class Violation:
-    '''Brief description of functionality and purpose.'''
+    """
+    Represents a validation violation with reason and message.
+    
+    Attributes:
+        reason: Reason for the validation failure
+        message: Detailed violation message
+    """
     
     def __init__(self, reason: ValidationRejectionReason, message: str) -> None:
-        """Initialize the instance."""
-        self.reason = reason
-        self.message = message
+        """
+        Initialize a validation violation.
+        
+        Args:
+            reason: Reason for the validation failure
+            message: Detailed violation message
+        """
+        self.reason: ValidationRejectionReason = reason
+        self.message: str = message
 
 # NAMING FIXED: IntegrityGateResult → IntegrityGateResult
 class IntegrityGateResult:
-    '''Brief description of functionality and purpose.'''
+    """
+    Result of integrity gate validation.
+    
+    Attributes:
+        passed: Whether validation passed
+        depth_score: Depth quality score (0-1)
+        violations: List of validation violations
+    """
     
     def __init__(self, passed: bool, depth_score: float) -> None:
-        """Initialize the instance."""
-        self.passed = passed
-        self.depth_score = depth_score
+        """
+        Initialize integrity gate result.
+        
+        Args:
+            passed: Whether validation passed
+            depth_score: Depth quality score (0-1)
+        """
+        self.passed: bool = passed
+        self.depth_score: float = depth_score
         self.violations: List[Violation] = []
 
     def add_violation(self, reason: ValidationRejectionReason, message: str) -> None:
-        """Execute add_violation operation."""
+        """
+        Add a validation violation and mark result as failed.
+        
+        Args:
+            reason: Reason for the validation failure
+            message: Detailed violation message
+        """
         self.passed = False
         self.violations.append(Violation(reason, message))
 
 # Nested types for DeepResearchOutput
 # NAMING FIXED: FinancialProofPoint → FinancialProofPoint
 class FinancialProofPoint:
-    '''Brief description of functionality and purpose.'''
+    """
+    Financial metric with value and source citation.
     
-    def __init__(self, metric_name: str, value: str, source_citation: str = None) -> None:
-        """Initialize the instance."""
-        self.metric_name = metric_name
-        self.value = value
-        self.source_citation = source_citation
+    Attributes:
+        metric_name: Name of the financial metric
+        value: Metric value
+        source_citation: Optional source citation
+    """
+    
+    def __init__(self, metric_name: str, value: str, source_citation: Optional[str] = None) -> None:
+        """
+        Initialize financial proof point.
+        
+        Args:
+            metric_name: Name of the financial metric
+            value: Metric value
+            source_citation: Optional source citation
+        """
+        self.metric_name: str = metric_name
+        self.value: str = value
+        self.source_citation: Optional[str] = source_citation
 
 # NAMING FIXED: KeyTechnology → KeyTechnology
 class KeyTechnology:
-    '''Brief description of functionality and purpose.'''
+    """
+    Technology implementation with details and source.
     
-    def __init__(self, technology_name: str, implementation_details: str, source_citation: str = None) -> None:
-        """Initialize the instance."""
-        self.technology_name = technology_name
-        self.implementation_details = implementation_details
-        self.source_citation = source_citation
+    Attributes:
+        technology_name: Name of the technology
+        implementation_details: Implementation details
+        source_citation: Optional source citation
+    """
+    
+    def __init__(self, technology_name: str, implementation_details: str, source_citation: Optional[str] = None) -> None:
+        """
+        Initialize key technology.
+        
+        Args:
+            technology_name: Name of the technology
+            implementation_details: Implementation details
+            source_citation: Optional source citation
+        """
+        self.technology_name: str = technology_name
+        self.implementation_details: str = implementation_details
+        self.source_citation: Optional[str] = source_citation
 
 # NAMING FIXED: KeyExecutive → KeyExecutive
 class KeyExecutive:
-    '''Brief description of functionality and purpose.'''
+    """
+    Key executive information.
+    
+    Attributes:
+        name: Executive name
+    """
     
     def __init__(self, name: str) -> None:
-        """Initialize the instance."""
-        self.name = name
+        """
+        Initialize key executive.
+        
+        Args:
+            name: Executive name
+        """
+        self.name: str = name
 
 # NAMING FIXED: StrategicLayer → StrategicLayer
 class StrategicLayer:

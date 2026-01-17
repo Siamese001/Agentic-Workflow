@@ -1,14 +1,15 @@
-from typing import Any
-from dataclasses import dataclass
 """
 BrandComplianceAgent - Extracted for one-class-per-file pattern.
 
 Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
+
+Ensures brand voice and professional tone in resume content.
 """
-
-
 from __future__ import annotations
+from typing import Any, Dict
+from dataclasses import dataclass
+import json
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
@@ -44,7 +45,17 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
     ]
 
     async def execute(self) -> None:
-        """Execute execute operation."""
+        """
+        Execute brand compliance check.
+        
+        Validates resume content for:
+        - Professional language (no forbidden phrases)
+        - Power verbs in experience section
+        - Consistent professional tone
+        
+        Raises:
+            BRAND_VIOLATION signal if issues found
+        """
         self.log("Checking brand compliance...")
 
         resume = self.ctx.current_resume
@@ -81,6 +92,15 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
             self.remove_signal("BRAND_VIOLATION")
 
     def _to_string(self, content: Any) -> str:
+        """
+        Convert content to string for analysis.
+        
+        Args:
+            content: Content to convert (str, list, dict, or other)
+        
+        Returns:
+            String representation of content
+        """
         if isinstance(content, str):
             return content
         elif isinstance(content, list):
@@ -89,6 +109,16 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
             return json.dumps(content)
         return str(content)
 
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+            **kwargs: Additional healing parameters
+        
+        Returns:
+            Dict with healing summary (violations, fixed, errors)
+        """
+        return super().heal_repository(dry_run, execute, **kwargs)

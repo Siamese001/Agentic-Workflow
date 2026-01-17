@@ -34,7 +34,17 @@ class SectionBalanceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     }
 
     async def execute(self) -> None:
-        """Execute execute operation."""
+        """
+        Execute section balance check.
+        
+        Validates resume for:
+        - Required sections presence
+        - Section length proportions
+        - Content balance across sections
+        
+        Raises:
+            BALANCE_ISSUE signal if sections are imbalanced
+        """
         self.log("Checking section balance...")
 
         resume = self.ctx.current_resume
@@ -76,6 +86,15 @@ class SectionBalanceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             self.remove_signal("BALANCE_ISSUE")
 
     def _to_string(self, content: Any) -> str:
+        """
+        Convert content to string for length calculation.
+        
+        Args:
+            content: Content to convert (str, list, dict, or other)
+        
+        Returns:
+            String representation of content
+        """
         if isinstance(content, str):
             return content
         elif isinstance(content, list):

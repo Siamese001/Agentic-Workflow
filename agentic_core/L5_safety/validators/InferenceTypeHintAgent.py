@@ -22,41 +22,65 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     - Prompt SubAtomicEngine for precise annotations
     - Apply via AST + unparse (preserves formatting)
     """
-    PROMPT_TEMPLATE: Any = '\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nAdd precise Python type hints to the following function/method.\n\nRules:\n- Use concrete types when possible (List[str], Dict[str, int], etc.)\n- Use from __future__ import annotations if needed\n- Preserve all existing code, comments, and formatting\n- Only modify type annotations (parameters and return)\n- If uncertain, use Any from typing\n\nOutput ONLY the fully annotated function (no explanations, no markdown).\n\nFUNCTION:\n{code}\n'
+    PROMPT_TEMPLATE: str = '\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nAdd precise Python type hints to the following function/method.\n\nRules:\n- Use concrete types when possible (List[str], Dict[str, int], etc.)\n- Use from __future__ import annotations if needed\n- Preserve all existing code, comments, and formatting\n- Only modify type annotations (parameters and return)\n- If uncertain, use Any from typing\n\nOutput ONLY the fully annotated function (no explanations, no markdown).\n\nFUNCTION:\n{code}\n'
 
-    def __init__(self, ctx: Any, project_root=None) -> None:
-        """Initialize with mandatory ctx for sovereign operation."""
+    def __init__(self, ctx: Any, project_root: Optional[str] = None) -> None:
+        """
+        Initialize with mandatory ctx for sovereign operation.
+        
+        Args:
+            ctx: Execution context (mandatory)
+            project_root: Optional project root directory
+        
+        Raises:
+            ValueError: If ctx is None
+        """
         if ctx is None:
             raise ValueError("ctx is mandatory for InferenceTypeHintAgent (sovereign agent)")
         self.ctx = ctx
         self.project_root = project_root
 
     async def execute(self, file_path: str) -> Dict[str, Any]:
-        """Execute method for validator compatibility."""
+        """
+        Execute method for validator compatibility.
+        
+        Args:
+            file_path: Path to file to validate
+        
+        Returns:
+            Dict with healed status
+        """
         return await self.heal_violation(Path(file_path), self.ctx)
 
-    async def heal_violation(self, file_path: Path, ctx: Any=None) -> Dict[str, Any]:
+    async def heal_violation(self, file_path: Path, ctx: Optional[Any] = None) -> Dict[str, Any]:
         """
         Per-file healing: invoke LLM for precise type inference.
+        
+        Args:
+            file_path: Path to file to heal
+            ctx: Optional execution context (uses self.ctx if None)
+        
+        Returns:
+            Dict with healed status and functions annotated count
         """
-        ctx: Any = ctx or self.ctx
+        ctx = ctx or self.ctx
         if not getattr(ctx, 'RUN_HIERARCHY_HEALING', False):
             return {'healed': False}
         if not hasattr(ctx, 'engine') or ctx.engine is None:
             print(f'   [!] InferenceTypeHintAgent: SubAtomicEngine not available')
             return {'healed': False}
         try:
-            source: Any = file_path.read_text(encoding='utf-8')
-            tree: Any = ast.parse(source)
+            source: str = file_path.read_text(encoding='utf-8')
+            tree: ast.Module = ast.parse(source)
             targets: List[Dict] = []
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     if node.name.startswith('_'):
                         continue
-                    missing_param: Any = any((arg.annotation is None for arg in node.args.args if arg.arg not in ('self', 'cls')))
-                    missing_return: Any = node.returns is None
+                    missing_param: bool = any((arg.annotation is None for arg in node.args.args if arg.arg not in ('self', 'cls')))
+                    missing_return: bool = node.returns is None
                     if missing_param or missing_return:
-                        code_segment: Any = ast.get_source_segment(source, node)
+                        code_segment: Optional[str] = ast.get_source_segment(source, node)
                         if code_segment:
                             targets.append({'node': node, 'code': code_segment, 'lineno': node.lineno})
             if not targets:

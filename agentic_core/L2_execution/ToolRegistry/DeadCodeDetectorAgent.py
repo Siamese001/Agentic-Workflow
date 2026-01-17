@@ -15,9 +15,15 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, Any
 
 
-def add_parents(node, parent=None) -> Any:
-    """Add parent reference to all AST nodes for upward traversal."""
-    node.parent = parent
+def add_parents(node: ast.AST, parent: Optional[ast.AST] = None) -> None:
+    """
+    Add parent reference to all AST nodes for upward traversal.
+    
+    Args:
+        node: AST node to process
+        parent: Parent node (None for root)
+    """
+    node.parent = parent  # type: ignore
     for child in ast.iter_child_nodes(node):
         add_parents(child, node)
 
@@ -28,33 +34,48 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
     """
     
     def __init__(self, file_path: Path) -> None:
-        """Initialize the instance."""
-        self.file_path = file_path
-        self.imported_names: set[str] = set()
-        self.defined_names: set[str] = set()
-        self.defined_classes: set[str] = set()
+        """
+        Initialize the AST visitor.
+        
+        Args:
+            file_path: Path to file being analyzed
+        """
+        self.file_path: Path = file_path
+        self.imported_names: Set[str] = set()
+        self.defined_names: Set[str] = set()
+        self.defined_classes: Set[str] = set()
         self.class_methods: Dict[str, Set[str]] = {}
         self.used_methods: Dict[str, Set[str]] = {}
-        self.used_names: set[str] = set()
-        self.used_classes: set[str] = set()
-        self.defined_functions: set[str] = set()
-        self.used_functions: set[str] = set()
+        self.used_names: Set[str] = set()
+        self.used_classes: Set[str] = set()
+        self.defined_functions: Set[str] = set()
+        self.used_functions: Set[str] = set()
         self.import_line_numbers: Dict[str, int] = {}
         self.definition_line_numbers: Dict[str, int] = {}
         
-    def visit_Import(self, node: ast.Import) -> Any:
-        """Track import statements and their line numbers."""
+    def visit_Import(self, node: ast.Import) -> None:
+        """
+        Track import statements and their line numbers.
+        
+        Args:
+            node: Import AST node
+        """
         for alias in node.names:
-            name = alias.asname if alias.asname else alias.name
+            name: str = alias.asname if alias.asname else alias.name
             self.imported_names.add(name)
             self.import_line_numbers[name] = node.lineno
         self.generic_visit(node)
         
-    def visit_ImportFrom(self, node: ast.ImportFrom) -> Any:
-        """Track from-import statements."""
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        """
+        Track from-import statements.
+        
+        Args:
+            node: ImportFrom AST node
+        """
         if node.module:
             for alias in node.names:
-                name = alias.asname if alias.asname else alias.name
+                name: str = alias.asname if alias.asname else alias.name
                 self.imported_names.add(name)
                 self.import_line_numbers[name] = node.lineno
         self.generic_visit(node)

@@ -71,13 +71,27 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
-    """Validates input data against schema and rules."""
+    """
+    Validates input data against schema and rules.
+    
+    Provides comprehensive validation including:
+    - Schema-based validation
+    - Type safety checks
+    - Protection against malformed data
+    - JSON/XML attack prevention
+    - Boundary violation detection
+    
+    Attributes:
+        name: Validator name for logging
+        rules: Dictionary of validation rules by field name
+    """
     
     def __init__(self, name: str = "default") -> None:
-        """Initialize the validator.
+        """
+        Initialize the input validator.
         
         Args:
-            name: Validator name for logging
+            name: Validator name for logging (default: 'default')
         """
         self.name = name
         self._rules: Dict[str, ValidationRule] = {}

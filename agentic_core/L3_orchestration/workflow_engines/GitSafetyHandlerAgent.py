@@ -57,8 +57,8 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             Branch name created
         """
-        timestamp: Any = datetime.now().strftime('%Y%m%d_%H%M%S')
-        branch_name: Any = f'fission_backup_{timestamp}'
+        timestamp: str = datetime.now().strftime('%Y%m%d_%H%M%S')
+        branch_name: str = f'fission_backup_{timestamp}'
         Logger.info(f'🛡️  Creating rollback point: {branch_name}')
         try:
             await self.router.call_mcp('gitkraken', {'action': 'create_branch', 'name': branch_name})
@@ -73,10 +73,10 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Verify that the current branch is clean before fission.
         
         Args:
-            file_path: File to check
+            file_path: File to check for uncommitted changes
             
         Returns:
-            True if clean, False otherwise
+            True if working directory is clean, False otherwise
         """
         Logger.info(f'[SCAN] Verifying clean state for {file_path}')
         try:
