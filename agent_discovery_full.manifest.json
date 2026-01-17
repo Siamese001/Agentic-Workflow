@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-17T10:39:44.641012Z",
-  "scan_duration_seconds": 16.78,
+  "generated_at": "2026-01-17T11:40:59.526921Z",
+  "scan_duration_seconds": 19.48,
   "agent_count": 265,
-  "content_hash": "sha256:eb9f0f0f0036bd659785be5b8fffde2477e9810e92c315c30231b394c8edcf9a",
+  "content_hash": "sha256:d5b966e18fe46e338dda63a6508593037b2a8f50801290697191f2a5ecc86dd4",
   "layer_breakdown": {
     "Apps": 61,
     "Base": 1,
@@ -1597,6 +1597,7 @@
     "scripts/phase5_validator.py": "523315be7237b6a15a49599c605a1396",
     "scripts/playwright_verify_total_row.py": "5cfc1e61f2948f1db26c61c6cafbc278",
     "scripts/populate_pinecone_embeddings.py": "7d1a0e06069c498d3ff4ab3fd5d4e243",
+    "scripts/pre_deploy_check.py": "b881b2e905f5ca725628268a4a3f3ee9",
     "scripts/prove_violation_detection.py": "d1a2fb0bb230bf1672bc5bb792a00710",
     "scripts/quick_scan.py": "f6df63a353059c652cba4125cd1830ea",
     "scripts/rca_dashboard_row_collapse.py": "df3c7da088a295ab817a4cc532f177ae",
@@ -1666,7 +1667,7 @@
     "scripts/test_corrected_meta_learning.py": "a46e183801e79d66f1cbf36797e14e2f",
     "scripts/test_dashboard_data_integrity.py": "bf1c6e5fe0a03223069da9a358c9ffc7",
     "scripts/test_dashboard_drilldown.py": "3a3810d68602dbdbd4e1d40ba7465a67",
-    "scripts/test_dashboard_end_to_end.py": "7aaa985d68bb6161c1da0f0d5522103d",
+    "scripts/test_dashboard_end_to_end.py": "806a7bea2febe3e0c5ed3f56c8aceee8",
     "scripts/test_dashboard_generation.py": "c032d78bdab4d2c6c9755e809c14980f",
     "scripts/test_dashboard_playwright_visual.py": "a8e0f01e466394aa68fb0e53e61bda89",
     "scripts/test_dashboard_snapshot_regression.py": "90006833de11f19f82993805e208b48e",
@@ -1748,6 +1749,6 @@
     "scripts/refactor/surgical_deduplication.py": "8294359bfa35272f5aaa44c4b30f0d63",
     "scripts/refactor/verify_integrity.py": "2bfe5aaf42a32e5a9c880b33b8b95217"
   },
-  "hashed_file_count": 1724,
+  "hashed_file_count": 1725,
   "hash_errors": 0
 }
