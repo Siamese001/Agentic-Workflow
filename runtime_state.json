@@ -1,9 +1,9 @@
 {
   "status": "healing",
-  "start_time": "2026-01-17T12:00:31.008205",
+  "start_time": "2026-01-17T16:00:04.495225",
   "end_time": null,
-  "current_agent": "LocationAgent",
-  "current_layer": "L5 \u2013 Safety & Governance",
+  "current_agent": "ConsolidatedOrchestratorAgent",
+  "current_layer": "L3 \u2013 Orchestration & Workflows",
   "agents_order": [
     "LocationAgent \u2192 agentic_core",
     "HierarchyAgent \u2192 agentic_core",
@@ -34,24 +34,44 @@
   "completed_agents": [],
   "events": [
     {
-      "time": "2026-01-17T12:00:31.008205",
+      "time": "2026-01-17T16:00:04.495225",
       "type": "info",
       "message": "Heal mode started (DRY-RUN)"
     },
     {
-      "time": "2026-01-17T12:00:31.008205",
+      "time": "2026-01-17T16:00:04.495225",
       "type": "meta",
       "message": "Meta-learning ACTIVE"
     },
     {
-      "time": "2026-01-17T12:00:31.009747",
+      "time": "2026-01-17T16:00:04.496743",
       "type": "info",
       "message": "Starting domain sweep: agentic_core"
     },
     {
-      "time": "2026-01-17T12:00:31.016127",
+      "time": "2026-01-17T16:00:04.501501",
       "type": "agent_start",
-      "message": "\u2192 Running LocationAgent (L5 \u2013 Safety & Governance) on agentic_core"
+      "message": "\u2192 MISSION CONTROL: Orchestrator taking command of agentic_core"
+    },
+    {
+      "time": "2026-01-17T16:04:27.168161",
+      "type": "agent_end",
+      "message": "\u2713 Orchestrator Mission Complete for agentic_core"
+    },
+    {
+      "time": "2026-01-17T16:04:27.168161",
+      "type": "info",
+      "message": "Domain sweep completed: agentic_core"
+    },
+    {
+      "time": "2026-01-17T16:04:27.173971",
+      "type": "info",
+      "message": "Starting domain sweep: apps_lic"
+    },
+    {
+      "time": "2026-01-17T16:04:27.179692",
+      "type": "agent_start",
+      "message": "\u2192 MISSION CONTROL: Orchestrator taking command of apps_lic"
     }
   ],
   "meta_learning": {

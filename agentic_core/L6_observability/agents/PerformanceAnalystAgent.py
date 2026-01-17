@@ -25,6 +25,12 @@ from agentic_core.L6_observability.L6ObservabilityBaseAgent import (
 from agentic_core.utils.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
+# [SOVEREIGN FACTORY]
+def get_performance_analyst(project_root: Path) -> 'PerformanceAnalystAgent':
+    """Factory function to get PerformanceAnalystAgent instance."""
+    return PerformanceAnalystAgent(project_root=project_root)
+
+
 @dataclass
 class PerformanceAnalystAgent(SubatomicTestingMixin, L6ObservabilityBaseAgent):
     """

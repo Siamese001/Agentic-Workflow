@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from __future__ import annotations
 """
 CheckpointManagerAgent - State Persistence & Checkpoint Management
 
@@ -6,9 +6,7 @@ Manages system checkpoints, state snapshots, and recovery mechanisms.
 Implements parent chain activation for full repository healing integration.
 """
 
-from __future__ import annotations
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from dataclasses import dataclass
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 import logging
@@ -34,6 +32,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 Logger = logging.getLogger(__name__)
 
 
+# [SOVEREIGN FACTORY]
+def get_checkpoint_manager(project_root: Path) -> CheckpointManagerAgent:
+    """Factory function to get CheckpointManagerAgent instance."""
+    return CheckpointManagerAgent(project_root)
+
+
 def timeout(seconds: int) -> Any:
     """Timeout decorator for long-running operations."""
     def decorator(func: Any) -> Any:
@@ -47,7 +51,7 @@ def timeout(seconds: int) -> Any:
 
 
 @dataclass
-class CheckpointManagerAgent(SovereignBaseAgent):
+class CheckpointManagerAgent:
     """Checkpoint management agent with parent chain healing."""
 
     def __init__(self, project_root: Optional[Path] = None) -> None:
@@ -95,21 +99,9 @@ class CheckpointManagerAgent(SovereignBaseAgent):
         _call_path.add(agent_name)
 
         try:
-            # CRITICAL FIRST: Invoke parent healing chain
-            parent_result = super().heal_repository(
-                dry_run=dry_run,
-                execute=execute,
-                depth=depth + 1,
-                max_depth=max_depth,
-                _call_path=_call_path
-            )
-
             # Agent-specific checkpoint validation and healing
             checkpoint_result = self._perform_checkpoint_healing(dry_run, execute)
-
-            # Standardized merge: parent + checkpoint-specific
-            merged = self._merge_healing_results(parent_result, checkpoint_result)
-            return merged
+            return checkpoint_result
 
         finally:
             _call_path.discard(agent_name)

@@ -709,7 +709,7 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return result
         
         # Enforce snake_case for non-Agent files
-        return self._validate_snake_case(file_name, stem)
+        return self._validate_snake_case(file_name, stem, file_path)
     
     def _validate_agent_file(self, file_path: Path, file_name: str, stem: str) -> Tuple[bool, str]:
         """Validate Agent.py files for PascalCase and class matching."""
@@ -774,8 +774,10 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         return True, "OK"
     
-    def _validate_snake_case(self, file_name: str, stem: str) -> Tuple[bool, str]:
+    def _validate_snake_case(self, file_name: str, stem: str, file_path: Path = None) -> Tuple[bool, str]:
         """Validate snake_case naming for non-Agent files."""
+        lower_stem = stem.lower()  # Define at the start for use throughout method
+        
         if re.search(r'[A-Z]', stem):  # Any uppercase letter
             return False, (
                 f"NAMING VIOLATION: '{file_name}' contains uppercase letters "
@@ -785,11 +787,14 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return False, f"NAMING VIOLATION: '{file_name}' contains hyphens (use underscores)"
 
         # === ROOT-LEVEL SOVEREIGN MARKER CHECK ===
-        try:
-            rel_path = file_path.relative_to(self.project_root)
-            is_root_file = len(rel_path.parts) == 1
-        except ValueError:
-            return False, "File outside project root"
+        if file_path:
+            try:
+                rel_path = file_path.relative_to(self.project_root)
+                is_root_file = len(rel_path.parts) == 1
+            except ValueError:
+                return False, "File outside project root"
+        else:
+            is_root_file = False
 
         if is_root_file:
             if file_name in ROOT_PROTECTED_FILES:
