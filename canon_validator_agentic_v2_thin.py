@@ -584,6 +584,22 @@ def main():
             # Phase 3: Cognition Layer - Architectural Governance
             from agentic_core.L1_cognition.thought_engine.GovernanceAgent import get_governance_agent
             
+            # Phase 4: Orchestration Layer - The Mission General
+            from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
+
+            # Phase 5: State & Observability Layer Activation
+            from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import get_checkpoint_manager
+            # Direct import to bypass __init__.py circular dependency
+            import sys
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                "PerformanceAnalystAgentSimple",
+                project_root / "agentic_core" / "L6_observability" / "agents" / "PerformanceAnalystAgentSimple.py"
+            )
+            perf_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(perf_module)
+            get_performance_analyst = perf_module.get_performance_analyst
+            
             # Phase 4.2: Repository-wide Sovereign Sweep across all aligned domains
             domains = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR]
             consolidated_results = []
@@ -650,8 +666,10 @@ def main():
                 _add_event("info", f"Starting domain sweep: {domain}")
                 _save_runtime_state(project_root)
                 
-                # All healing goes through agents directly — no scripts
-                # PHASE 3 ACTIVATION: Foundation (L5) + Execution (L2) + Cognition (L1)
+                # [L3 ACTIVATION] Handing command to ConsolidatedOrchestratorAgent
+                # The manual loop is replaced by the Orchestrator's run_mission()
+                
+                # 1. Assemble the Army
                 agents = [
                     ("LocationAgent", get_location_agent(project_root)),
                     ("HierarchyAgent", get_hierarchy_agent(project_root)),
@@ -661,65 +679,43 @@ def main():
                     ("AutonomyGuardian", get_autonomy_guardian(project_root)),
                 ]
                 
-                domain_summary = {
+                # 2. Summon the General
+                orchestrator = get_consolidated_orchestrator(project_root)
+                
+                # 2.1 Summon the Support Staff (L4 & L6)
+                checkpoint_manager = get_checkpoint_manager(project_root)
+                performance_analyst = get_performance_analyst(project_root)
+
+                # 3. Update State
+                _runtime_state["current_agent"] = "ConsolidatedOrchestratorAgent"
+                _runtime_state["current_layer"] = "L3 – Orchestration & Workflows"
+                _add_event("agent_start", f"→ MISSION CONTROL: Orchestrator taking command of {domain}")
+                _save_runtime_state(project_root)
+                
+                # 4. Execute Mission with Support Infrastructure
+                mission_context = {
+                    "dry_run": not execute_heal,
+                    "execute": execute_heal,
                     "domain": domain,
-                    "agents_run": 0, 
-                    "total_renamed": 0, 
-                    "total_errors": 0,
-                    "total_scanned": 0,
-                    "total_fixed": 0,
-                    "total_violations": 0
+                    "checkpoint_manager": checkpoint_manager,
+                    "performance_analyst": performance_analyst
                 }
                 
-                for agent_name, agent in agents:
-                    print(f"\n   [AGENT] {agent_name}.heal_repository()")
-                    
-                    # Update runtime state - agent starting
-                    layer = AGENT_LAYERS.get(agent_name, "Unknown")
-                    _runtime_state["current_agent"] = agent_name
-                    _runtime_state["current_layer"] = layer
-                    _add_event("agent_start", f"→ Running {agent_name} ({layer}) on {domain}")
-                    _save_runtime_state(project_root)
-                    
-                    try:
-                        result = agent.heal_repository(
-                            dry_run=not execute_heal,
-                            execute=execute_heal,
-                            depth=0,
-                            max_depth=3,
-                            _call_path=None,  # Clean start for each agent
-                        )
-                        domain_summary["agents_run"] += 1
-                        renamed = result.get("renamed", 0)
-                        errors = result.get("errors", 0)
-                        fixed = result.get("fixed", 0)
-                        violations = result.get("violations", 0)
-                        scanned = result.get("scanned", 0)
-                        
-                        domain_summary["total_renamed"] += renamed
-                        domain_summary["total_errors"] += errors
-                        domain_summary["total_fixed"] += fixed
-                        domain_summary["total_violations"] += violations
-                        domain_summary["total_scanned"] += scanned
-                        
-                        # Build detailed completion message
-                        details = []
-                        if scanned: details.append(f"scanned: {scanned}")
-                        if renamed: details.append(f"renamed: {renamed}")
-                        details.append(f"fixed: {fixed}")
-                        details.append(f"violations: {violations}")
-                        detail_str = " | ".join(details)
-                        
-                        _add_event("agent_end", f"✓ {agent_name}: {detail_str}")
-                        _runtime_state["completed_agents"].append(f"{agent_name} → {domain}")
-                        _save_runtime_state(project_root)
-                        
-                    except Exception as e:
-                        print(f"   [!] {agent_name} failed: {e}")
-                        domain_summary["total_errors"] += 1
-                        _add_event("error", f"✗ {agent_name} failed on {domain}: {str(e)[:200]}...")
-                        _runtime_state["completed_agents"].append(f"{agent_name} → {domain}")
-                        _save_runtime_state(project_root)
+                mission_results = orchestrator.run_mission(agents, mission_context)
+                
+                # 5. Process Results (Map back to validator summary format)
+                domain_summary = {
+                    "domain": domain,
+                    "agents_run": len(agents),
+                    "total_renamed": 0,
+                    "total_errors": 0,
+                    "total_scanned": 0,
+                    "total_fixed": mission_results.get("total_fixes", 0),
+                    "total_violations": mission_results.get("total_violations", 0)
+                }
+                
+                _add_event("agent_end", f"✓ Orchestrator Mission Complete for {domain}")
+                _save_runtime_state(project_root)
                 
                 # Calculate domain compliance score
                 total_checks = domain_summary["total_violations"] + domain_summary["total_fixed"]
