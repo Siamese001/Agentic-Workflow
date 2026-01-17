@@ -1,36 +1,57 @@
-from dataclasses import dataclass
-"""
-BudgetAgent - Extracted from SubAtomicAgent.py
+"""BudgetAgent - Token budget tracking and complexity management.
+
 Part of the SubAtomic agent family for code quality enforcement.
+Enforces function size and cyclomatic complexity limits.
 """
-from typing import Any
+from __future__ import annotations
+
+import ast
+import os
+from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
+
 from agentic_core.L1_cognition.thought_engine.SubAtomicAgent import SubAtomicAgent
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Sovereign Agent for token budget tracking and complexity management
 @dataclass
 class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
-    KEYS: 17 (Large Functions), 19 (Complex Functions)
-    ROLE: The Comptroller. Proactively marks functions exceeding size/complexity limits.
+    Budget enforcement agent for code complexity management.
+    
+    Validates Canon Keys:
+        - Key 17: No large functions (exceeding MAX_FUNCTION_LINES)
+        - Key 19: No complex functions (exceeding MAX_CYCLOMATIC_COMPLEXITY)
+    
+    Role:
+        The Comptroller. Proactively marks functions exceeding size/complexity limits.
+    
+    Attributes:
+        ctx: ValidationContext for accessing python_files and reporting.
+        name: Agent name for logging and reporting.
     """
 
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        **kwargs: Any
+    ) -> Dict[str, int]:
         """
-        Autonomous healing method (Canon Key 51 compliance).
+        Execute autonomous healing for Canon Key 51 compliance.
         
         Args:
-            dry_run: If True, only report violations without fixing
-            execute: If True, apply fixes
+            dry_run: If True, only report violations without fixing.
+            execute: If True, apply fixes to detected violations.
+            **kwargs: Additional healing parameters passed to parent.
         
         Returns:
-            Dict with healing summary
+            Dict with keys: violations, fixed, errors.
         """
         super().heal_repository()
-
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     def execute(self) -> None:
@@ -47,8 +68,14 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
 
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """
-        Checks for functions exceeding a maximum number of lines.
-        The limit is configurable via the 'MAX_FUNCTION_LINES' environment variable.
+        Check for functions exceeding maximum line count.
+        
+        The limit is configurable via MAX_FUNCTION_LINES env var (default: 50).
+        
+        Returns:
+            Tuple of (passed: bool, violations: List[str]).
+            - passed: True if no violations found.
+            - violations: List of violation messages with file:line format.
         """
         violations = []
         max_lines = int(os.getenv('MAX_FUNCTION_LINES', '50'))
@@ -73,8 +100,14 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
 
     def check_key_19_no_complex_functions(self) -> Tuple[bool, List[str]]:
         """
-        Checks for functions exceeding a maximum cyclomatic complexity.
-        The limit is configurable via the 'MAX_CYCLOMATIC_COMPLEXITY' environment variable.
+        Check for functions exceeding maximum cyclomatic complexity.
+        
+        The limit is configurable via MAX_CYCLOMATIC_COMPLEXITY env var (default: 10).
+        
+        Returns:
+            Tuple of (passed: bool, violations: List[str]).
+            - passed: True if no violations found.
+            - violations: List of violation messages with file:line format.
         """
         violations = []
         max_complexity = int(os.getenv('MAX_CYCLOMATIC_COMPLEXITY', '10'))
@@ -98,8 +131,15 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
 
     def _calculate_complexity(self, node: ast.FunctionDef) -> int:
         """
-        Calculates a simplified cyclomatic complexity for a given function node.
-        Each 'if', 'for', 'while', 'except', 'elif', 'and', 'or' adds to complexity.
+        Calculate simplified cyclomatic complexity for a function AST node.
+        
+        Complexity increments for: if, for, while, except, elif, and, or.
+        
+        Args:
+            node: AST FunctionDef node to analyze.
+            
+        Returns:
+            Integer complexity score (minimum 1 for the function itself).
         """
         complexity = 1  # Start with 1 for the function itself
         for child in ast.walk(node):

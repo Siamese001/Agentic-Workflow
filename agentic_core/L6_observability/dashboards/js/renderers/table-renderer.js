@@ -64,9 +64,22 @@ function getScoreClass(score) {
 
 // Format HIGH-SIGNAL tooltip with actionable intelligence
 function formatProblemAgentsTooltip(territory, metricKey, metricLabel, threshold = 50) {
-    const agentData = window.realAgentData ? window.realAgentData[territory] : null;
+    // FIX: Try exact match first, then case-insensitive fallback
+    let agentData = window.realAgentData ? window.realAgentData[territory] : null;
+    
+    // Fallback: try to find territory with case-insensitive match
+    if (!agentData && window.realAgentData) {
+        const territories = Object.keys(window.realAgentData);
+        const match = territories.find(t => t.toLowerCase() === territory.toLowerCase());
+        if (match) {
+            agentData = window.realAgentData[match];
+        }
+    }
+    
     if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
-        return `${metricLabel}: No agent data available`;
+        // Debug: show what's available
+        const availableKeys = agentData ? Object.keys(agentData).filter(k => Array.isArray(agentData[k])).join(', ') : 'none';
+        return `${metricLabel}: No data for '${metricKey}' (available: ${availableKeys || 'none'})`;
     }
     
     const values = agentData[metricKey];

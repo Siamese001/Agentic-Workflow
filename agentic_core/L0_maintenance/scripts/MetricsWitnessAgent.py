@@ -1,14 +1,15 @@
-from __future__ import annotations
-from dataclasses import dataclass
-"""
-MetricsWitness – Phase 14 (Dec 30, 2025)
-PascalCase agent responsible for translating raw L6 MetricsAgent data into Sovereign Audit scores.
-Pure read-only – no side effects beyond Metric queries.
-"""
+"""MetricsWitnessAgent - L6 Metrics to Sovereign Audit score translator.
 
-from typing import List, Tuple, Optional, Dict, Any
-from pathlib import Path
+Phase 14 (Dec 30, 2025).
+Translates raw L6 MetricsAgent data into Sovereign Audit scores.
+Pure read-only - no side effects beyond Metric queries.
+"""
+from __future__ import annotations
+
 import logging
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
@@ -21,41 +22,67 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 
 
 @dataclass
-class MetricsWitnessAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, AutonomyMixin,
+class MetricsWitnessAgent(
+    SubatomicTestingMixin,
+    L0MaintenanceBaseAgent,
+    AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,):
+    SelfDiagnosisMixin,
+):
     """
-    Sovereign witness that cross-examines L6 observability metrics against constitutional expectations.
-    Provides audit-ready (score, issues) tuples for Structural SSOT and Healing Resilience dimensions.
-    Zero external dependencies beyond MetricsAgent.
+    Sovereign witness for L6 observability metrics validation.
     
-    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
-
-    Now hardened with:
-      - Proactive Metric recalculation on suspected drift
-      - Adaptive scoring based on system state
-      - Self-diagnosis of MetricsAgent availability
+    Cross-examines L6 observability metrics against constitutional expectations.
+    Provides audit-ready (score, issues) tuples for governance dimensions.
+    
+    Dimensions Validated:
+        - Structural SSOT: Penalizes location/hierarchy violations.
+        - Healing Resilience: Measures successful remediation ratio.
+    
+    Hardening Features:
+        - Proactive Metric recalculation on suspected drift.
+        - Adaptive scoring based on system state.
+        - Self-diagnosis of MetricsAgent availability.
+    
+    Inherits:
+        L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin.
+    
+    Attributes:
+        Logger: Logger instance for this agent.
+        metrics: MetricsAgent instance or None if unavailable.
+        MANDATORY_COMPONENTS: List of required components for self-diagnosis.
     """
 
     def __init__(self, project_root: Path) -> None:
         """
-        Initialise with project root. Gracefully degrades if MetricsAgent unavailable.
+        Initialize with project root.
+        
+        Gracefully degrades if MetricsAgent is unavailable.
+        
+        Args:
+            project_root: Path to project root directory.
         """
-        super().__init__()  # Required for mixins
+        super().__init__()
         self.Logger = logging.getLogger(f"{self.__class__.__name__}")
-
-        # Mandatory component for self-diagnosis
-        self.MANDATORY_COMPONENTS = ["metrics"]
+        self.MANDATORY_COMPONENTS: List[str] = ["metrics"]
+        self.metrics: Optional[Any] = None
 
         try:
             from agentic_core.L6_observability.metrics.MetricsAgent import metrics_agent as MetricsAgentCls
             self.metrics = MetricsAgentCls(project_root)
-        except Exception:  # ImportError or instantiation failure
-            self.metrics = None
+        except Exception:
             self.Logger.warning("MetricsAgent unavailable – witness operating in degraded mode")
 
     def calculate_structural_ssot_score(self) -> Tuple[float, List[str]]:
-        """Structural SSOT dimension: penalises recorded location/hierarchy violations."""
+        """
+        Calculate Structural SSOT dimension score.
+        
+        Penalizes recorded location/hierarchy violations.
+        
+        Returns:
+            Tuple of (score: float, issues: List[str]).
+            Score is 0-100, with 5-point penalty per violation.
+        """
         issues: List[str] = []
         if not self.metrics:
             return 100.0, ["MetricsAgent unavailable – assuming perfect structural compliance"]
@@ -72,7 +99,15 @@ class MetricsWitnessAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, Autonom
         return score, issues
 
     def calculate_healing_resilience_score(self) -> Tuple[float, List[str]]:
-        """Healing Resilience dimension: measures successful remediation ratio."""
+        """
+        Calculate Healing Resilience dimension score.
+        
+        Measures the ratio of successful healing actions to total violations.
+        
+        Returns:
+            Tuple of (score: float, issues: List[str]).
+            Score is 0-100 based on healing success ratio.
+        """
         issues: List[str] = []
         if not self.metrics:
             return 100.0, ["MetricsAgent unavailable – assuming full healing resilience"]
@@ -92,9 +127,15 @@ class MetricsWitnessAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, Autonom
 
         return score, issues
 
-    # === AutonomyMixin Override ===
     async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
-        """Proactively trigger recalculation if metrics appear stale or agent unavailable."""
+        """
+        Detect opportunities for proactive action.
+        
+        Triggers recalculation if metrics appear stale or agent unavailable.
+        
+        Returns:
+            Dict with action details if opportunity detected, None otherwise.
+        """
         if self.metrics is None:
             return {
                 "reason": "metrics_agent_unavailable",
@@ -104,28 +145,73 @@ class MetricsWitnessAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, Autonom
         # Optional future enhancement: detect Metric staleness via timestamp
         return None
 
-    # === AdaptiveExecutionMixin Overrides ===
-    async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_conservative(
+        self,
+        ctx: Any,
+        **context: Dict[str, Any]
+    ) -> Dict[str, Tuple[float, List[str]]]:
+        """
+        Execute in conservative mode with cached/fallback scores.
+        
+        Args:
+            ctx: Execution context.
+            **context: Additional context parameters.
+            
+        Returns:
+            Dict with dimension scores using fallback values.
+        """
         self.Logger.info("Conservative mode: returning cached/fallback scores")
         return {
             "Structural SSOT": (100.0, ["Conservative mode: no live metrics query"]),
             "Healing Resilience": (100.0, ["Conservative mode: assuming full resilience"])
         }
 
-    async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_minimal(
+        self,
+        ctx: Any,
+        **context: Dict[str, Any]
+    ) -> Dict[str, str]:
+        """
+        Execute in minimal mode for resource preservation.
+        
+        Args:
+            ctx: Execution context.
+            **context: Additional context parameters.
+            
+        Returns:
+            Dict with standby status.
+        """
         self.Logger.warning("Minimal mode: witness standing by")
         return {
             "status": "minimal_standby",
             "reason": "resource_preservation"
         }
 
-    async def _execute_standard(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        """Standard mode - calculate all metrics."""
+    async def _execute_standard(
+        self,
+        ctx: Any,
+        **context: Dict[str, Any]
+    ) -> Dict[str, Tuple[float, List[str]]]:
+        """
+        Execute in standard mode with full metrics calculation.
+        
+        Args:
+            ctx: Execution context.
+            **context: Additional context parameters.
+            
+        Returns:
+            Dict with all dimension scores.
+        """
         return {
             "Structural SSOT": self.calculate_structural_ssot_score(),
             "Healing Resilience": self.calculate_healing_resilience_score(),
         }
 
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(self) -> Dict[str, int]:
+        """
+        Execute healing chain via parent class.
+        
+        Returns:
+            Dict with healing results from parent implementation.
+        """
+        return super().heal_repository()

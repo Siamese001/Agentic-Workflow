@@ -1,9 +1,12 @@
+"""BudgetManagerAgent - Core types and infrastructure for Canon Validator.
+
+Provides shared infrastructure components:
+- ValidationContext: Shared memory (Blackboard) for all agents.
+- DependencyGraph: Import and class hierarchy tracking.
+- BudgetManager: Token usage tracking and budget enforcement.
+"""
 from __future__ import annotations
-"""
-Core types and dataclasses for Canon Validator.
-ValidationContext is the shared memory (Blackboard) for all agents.
-DependencyGraph and BudgetManager are infrastructure classes.
-"""
+
 import ast
 import asyncio
 import hashlib
@@ -13,22 +16,40 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
+
 from dotenv import load_dotenv
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 load_dotenv(Path(__file__).parent.parent.parent / '.env')
-allowed_root_files: Any = ROOT_PROTECTED_FILES
+allowed_root_files: Set[str] = ROOT_PROTECTED_FILES
 from agentic_core.prompts import FEW_SHOT_CONCURRENCY, FEW_SHOT_GITOPS, FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_HISTORIAN, FEW_SHOT_HYGIENE, FEW_SHOT_IMPORT_FIXES, FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_REFLECTION_ENHANCED, FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_SAFETY, FEW_SHOT_SHERLOCK, FEW_SHOT_STRATEGIC, FEW_SHOT_STYLE, FEW_SHOT_TESTPILOT, POSITIVE_INSTRUCTIONAL_CONTEXT
 
 class DependencyGraph:
-    """Builds a directed graph of imports and class hierarchies."""
+    """
+    Build a directed graph of imports and class hierarchies.
+    
+    Used for impact analysis to determine which files are affected
+    when a given file is modified.
+    
+    Attributes:
+        graph: Dict mapping file paths to their imports and classes.
+        reverse_graph: Dict mapping module names to files that import them.
+    """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize empty dependency graph."""
         self.graph: Dict[str, Dict[str, List[str]]] = {}
         self.reverse_graph: Dict[str, List[str]] = {}
 
-    def build(self, files: List[str]) -> Any:
-        """Build the dependency graph from a list of Python files."""
+    def build(self, files: List[str]) -> None:
+        """
+        Build the dependency graph from a list of Python files.
+        
+        Args:
+            files: List of Python file paths to analyze.
+        """
         print('   🕸️ Building Holistic Code Graph...')
         for file_path in files:
             self.graph[file_path] = {'imports': [], 'classes': []}
@@ -53,7 +74,15 @@ class DependencyGraph:
                 self.reverse_graph[imp].append(file)
 
     def get_impact_radius(self, file_path: str) -> List[str]:
-        """Returns files that import modules defined in file_path."""
+        """
+        Get files that import modules defined in file_path.
+        
+        Args:
+            file_path: Path to file to check impact for.
+            
+        Returns:
+            List of file paths that would be impacted by changes.
+        """
         impacted: Any = set()
         module_name: Any = file_path.replace('/', '.').replace('\\', '.').replace('.py', '')
         if module_name in self.reverse_graph:
@@ -61,16 +90,41 @@ class DependencyGraph:
         return list(impacted)
 
 class BudgetManager:
-    """Tracks estimated token usage and enforces stops."""
+    """
+    Track estimated token usage and enforce budget limits.
+    
+    Estimates token counts from character lengths and calculates
+    approximate costs based on standard LLM pricing.
+    
+    Attributes:
+        limit: Budget limit in USD.
+        spent: Amount spent so far in USD.
+        input_tokens: Estimated input tokens used.
+        output_tokens: Estimated output tokens used.
+    """
 
-    def __init__(self, limit_usd: float=2.0):
-        self.limit = limit_usd
-        self.spent = 0.0
-        self.input_tokens = 0
-        self.output_tokens = 0
+    def __init__(self, limit_usd: float = 2.0) -> None:
+        """
+        Initialize budget manager.
+        
+        Args:
+            limit_usd: Budget limit in USD (default: 2.0).
+        """
+        self.limit: float = limit_usd
+        self.spent: float = 0.0
+        self.input_tokens: int = 0
+        self.output_tokens: int = 0
 
-    def track(self, prompt: str, response: str) -> Any:
-        """Track token usage from a prompt/response pair."""
+    def track(self, prompt: str, response: str) -> None:
+        """
+        Track token usage from a prompt/response pair.
+        
+        Estimates tokens as characters/4 and calculates cost.
+        
+        Args:
+            prompt: Input prompt text.
+            response: Output response text.
+        """
         in_t: Any = len(prompt) / 4
         out_t: Any = len(response) / 4
         self.input_tokens += in_t
@@ -79,19 +133,45 @@ class BudgetManager:
         self.spent += cost
 
     def check_budget(self) -> bool:
-        """Check if budget is exceeded."""
+        """
+        Check if budget is exceeded.
+        
+        Returns:
+            True if within budget, False if exceeded.
+        """
         if self.spent > self.limit:
             print(f'   💸 BUDGET EXCEEDED (${self.spent:.4f} / ${self.limit}). Halting Intelligence.')
             return False
         return True
 
     def get_status(self) -> str:
-        """Get current budget status string."""
+        """
+        Get current budget status string.
+        
+        Returns:
+            Formatted string with spent/limit and token counts.
+        """
         return f'${self.spent:.4f} / ${self.limit} ({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)'
 
 @dataclass
 class ValidationContext:
-    """Shared memory for all agents with Tri-Brain infrastructure and persistence."""
+    """
+    Shared memory (Blackboard) for all validation agents.
+    
+    Provides Tri-Brain infrastructure with persistence for:
+    - Validation results and signals.
+    - File tracking and modification history.
+    - LLM client management and budget tracking.
+    - Redis caching and healing state.
+    
+    Attributes:
+        results: Dict mapping Canon keys to validation results.
+        signals: Set of signal strings (e.g., 'CRITICAL_FAIL').
+        instructions: List of instruction strings for agents.
+        modified_files: Set of files modified during validation.
+        python_files: List of Python files to validate.
+        refactor_plans: Dict of refactoring plans by file.
+    """
     results: Dict[int, Any] = field(default_factory=dict)
     signals: Set[str] = field(default_factory=set)
     instructions: List[str] = field(default_factory=list)

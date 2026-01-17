@@ -69,11 +69,17 @@ function formatDistributionCell(avg, stats, showStdDev = true) {
         return `<span style="color:#6b7280;">--</span>`;
     }
     
-    // CRITICAL: Hide distribution stats when:
-    // 1. Value is 100% (perfect score - no need to show min/max/stddev)
-    // 2. All values are identical (min === max - no distribution to show)
-    // 3. No stats available or count <= 1
-    if (!stats || stats.count <= 1 || stats.min === stats.max || avg >= 99.9) {
+    // FIX: Only hide distribution stats when:
+    // 1. No stats available or count <= 1 (single agent - no distribution)
+    // 2. All values are BOTH identical AND at 100% (perfect uniform score)
+    // CHANGED: Show min/max/stdev for cells < 100% even if uniform
+    // This ensures users see distribution info for imperfect scores
+    if (!stats || stats.count <= 1) {
+        return `${avg.toFixed(1)}%`;
+    }
+    
+    // Only hide stats if ALL values are identical AND perfect (100%)
+    if (stats.min === stats.max && stats.min >= 99.9) {
         return `${avg.toFixed(1)}%`;
     }
     
@@ -81,7 +87,12 @@ function formatDistributionCell(avg, stats, showStdDev = true) {
     if (showStdDev && stats.stdDev > 0) {
         return `${avg.toFixed(1)}% <span style="font-size:0.8em; color:#6b7280;">(${rangeStr}, σ=${stats.stdDev.toFixed(1)})</span>`;
     }
-    return `${avg.toFixed(1)}% <span style="font-size:0.8em; color:#6b7280;">(${rangeStr})</span>`;
+    // Show range even if stdDev is 0 (uniform non-100% values)
+    if (stats.min !== stats.max) {
+        return `${avg.toFixed(1)}% <span style="font-size:0.8em; color:#6b7280;">(${rangeStr})</span>`;
+    }
+    // Uniform values < 100%: show the uniform value indicator
+    return `${avg.toFixed(1)}% <span style="font-size:0.8em; color:#6b7280;">(all ${stats.min.toFixed(0)}%)</span>`;
 }
 
 // Get worst performer for a territory's metric

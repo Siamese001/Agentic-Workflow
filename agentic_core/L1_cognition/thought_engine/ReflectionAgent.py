@@ -1,50 +1,79 @@
-from __future__ import annotations
-import logging
-'''Brief description of functionality and purpose.'''
+"""ReflectionAgent - Learning from successful execution traces.
 
-'Brief description of functionality and purpose.'
+Responsible for processing successful traces and internalizing them
+to long-term memory (Pinecone) for future reference.
+"""
+from __future__ import annotations
+
+import logging
 import os
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Set
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-Logger: Any = logging.getLogger(__name__)
-
-# DUPLICATE ACCEPTED: App-specific customization valid
-# (different contexts: L1 cognition vs L2 planning vs apps_rg implementations)
-# - Intentional variants for domain-specific behavior
-# - Consolidated 2026-01-06
+Logger = logging.getLogger(__name__)
 
 class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
-    Agent responsible for learning from successful execution traces
-    and consolidating them into long-term memory (Pinecone).
+    Reflection agent for learning from successful execution traces.
+    
+    Processes successful traces and internalizes patterns to long-term
+    memory (Pinecone) for future reference and improved execution.
+    
+    Features:
+        - Trace analysis and pattern identification.
+        - Memory internalization to Pinecone vector store.
+        - Recommendation generation for future executions.
+        - Self-critique of learning cycle quality.
+        - Multi-hop structured research capabilities.
+    
+    Inherits:
+        SubatomicTestingMixin: Testing infrastructure.
+        HealerMixin: Healing capabilities.
+        MCPHardenedMixin: MCP protocol hardening.
+    
+    Attributes:
+        ctx: ValidationContext for orchestrator compatibility.
+        pinecone_client: Pinecone client for vector storage.
+        embedding_model: Model name for generating embeddings.
+        index: Pinecone index for trace storage.
     """
 
-    def __init__(self, ctx: Any=None, pinecone_client: Any=None, embedding_model: Optional[str]=None) -> None:
+    def __init__(
+        self,
+        ctx: Optional[Any] = None,
+        pinecone_client: Optional[Any] = None,
+        embedding_model: Optional[str] = None
+    ) -> None:
         """
         Initialize the ReflectionAgent.
 
         Args:
-            ctx: ValidationContext instance (for orchestrator compatibility)
-            pinecone_client: Pinecone client instance
-            embedding_model: Model name for embeddings
+            ctx: ValidationContext instance for orchestrator compatibility.
+            pinecone_client: Pinecone client instance for vector storage.
+            embedding_model: Model name for embeddings (default: text-embedding-004).
         """
         self.ctx = ctx
         self.pinecone_client = pinecone_client
         self.embedding_model = embedding_model or os.getenv('EMBEDDING_MODEL', 'text-embedding-004')
-        self._local_fallback = {}
+        self._local_fallback: Dict[str, Any] = {}
         self._index_name = os.getenv('PINECONE_INDEX_NAME', 'successful-traces')
-        self.index = None
+        self.index: Optional[Any] = None
         if self.pinecone_client:
             self._initialize_pinecone()
         else:
             Logger.warning('Pinecone not available - using local fallback only')
 
-    def _initialize_pinecone(self):
-        """Initialize Pinecone index for storing traces."""
+    def _initialize_pinecone(self) -> None:
+        """
+        Initialize Pinecone index for storing traces.
+        
+        Creates index if it doesn't exist, otherwise connects to existing.
+        Sets pinecone_client to None on failure.
+        """
         try:
             if not hasattr(self.pinecone_client, 'list_indexes'):
                 Logger.error('Invalid Pinecone client provided.')
@@ -60,17 +89,17 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             Logger.error(f'Failed to initialize Pinecone: {str(e)}')
             self.pinecone_client = None
 
-    async def execute(self, file_path: Optional[str]=None) -> Dict[str, Any]:
+    async def execute(self, file_path: Optional[str] = None) -> Dict[str, Any]:
         """
         Process successful traces and internalize them to memory.
         
-        This method is called by the orchestrator and pulls traces from context.
+        Called by orchestrator. Pulls traces from context and processes them.
 
         Args:
-            file_path: Optional file path (for orchestrator compatibility, not used)
+            file_path: Optional file path (unused, for orchestrator compatibility).
 
         Returns:
-            Processing results
+            Dict with processed count, internalized count, errors, and recommendations.
         """
         successful_traces: Any = []
         if self.ctx and hasattr(self.ctx, 'successful_traces'):
@@ -113,33 +142,74 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return results
 
     async def _analyze_success_pattern(self, trace: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyzes a trace to identify reusable patterns."""
+        """
+        Analyze a trace to identify reusable patterns.
+        
+        Args:
+            trace: Successful execution trace to analyze.
+            
+        Returns:
+            Dict with pattern analysis results.
+        """
         return {'pattern_id': 'success_analysis_01'}
 
     async def _internalize_trace(self, trace: Dict[str, Any], analysis: Dict[str, Any]) -> bool:
-        """Stores analyzed patterns in Pinecone or local fallback."""
+        """
+        Store analyzed patterns in Pinecone or local fallback.
+        
+        Args:
+            trace: Original trace data.
+            analysis: Pattern analysis results.
+            
+        Returns:
+            True if internalization succeeded.
+        """
         return True
 
     async def _generate_recommendations(self, trace: Dict[str, Any], analysis: Dict[str, Any]) -> List[str]:
-        """Generates future execution recommendations."""
+        """
+        Generate recommendations for future executions.
+        
+        Args:
+            trace: Original trace data.
+            analysis: Pattern analysis results.
+            
+        Returns:
+            List of recommendation strings.
+        """
         return []
 
     async def _self_critique(self, results: Dict[str, Any]) -> str:
-        """Evaluates the quality of the learning cycle."""
-        return 'Learning cycle consolidated successfully.'
-
-    # SUPPLEMENTED FROM K25ResearchAgent — multi-hop structured research — merged 2025-12-30
-    async def execute_structured_research(self, topic: str, llm_client: Any = None) -> Dict[str, Any]:
         """
-        Multi-hop research: financial → technical → organizational.
-        Ported from K25ResearchAgent._execute_hop_* methods (lines 79-94).
+        Evaluate the quality of the learning cycle.
         
         Args:
-            topic: Research topic (company name, technology, etc.)
-            llm_client: Optional LLM client for research queries
+            results: Processing results from execute().
             
         Returns:
-            Dict with multi-hop research results and synthesis
+            Critique string describing learning cycle quality.
+        """
+        return 'Learning cycle consolidated successfully.'
+
+    async def execute_structured_research(
+        self,
+        topic: str,
+        llm_client: Optional[Any] = None
+    ) -> Dict[str, Any]:
+        """
+        Execute multi-hop structured research.
+        
+        Performs research across three dimensions:
+            1. Financial/Strategic analysis.
+            2. Technical/Product deep dive.
+            3. Organizational/Leadership evaluation.
+        
+        Args:
+            topic: Research topic (company name, technology, etc.).
+            llm_client: Optional LLM client for research queries.
+            
+        Returns:
+            Dict with multi-hop analysis, synthesis, and completion count.
         """
         hops = [
             ("Financial/Strategic", 
@@ -198,7 +268,16 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         }
 
     async def _synthesize_research(self, research_output: Dict[str, Any], topic: str = "") -> str:
-        """Synthesize multi-hop research into unified insights."""
+        """
+        Synthesize multi-hop research into unified insights.
+        
+        Args:
+            research_output: Results from all research hops.
+            topic: Research topic for context.
+            
+        Returns:
+            Synthesis string summarizing research findings.
+        """
         findings = []
         for hop_name, result in research_output.items():
             if isinstance(result, dict) and "error" not in result:
@@ -210,12 +289,31 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return f"Research synthesis for {topic}: {len(findings)} hops completed successfully. " + " ".join(findings)
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L1 cognition agent - operational only."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """
+        Execute L1 cognition healing operations.
+        
+        Args:
+            dry_run: If True, only report violations without fixing.
+            execute: If True, apply fixes.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum allowed recursion depth.
+            _call_path: Set of agent names already in call chain.
+            
+        Returns:
+            Dict with keys: violations, fixed, errors, skipped.
+        """
         super().heal_repository()
 
-        _call_path = set()
+        if _call_path is None:
+            _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}
@@ -227,6 +325,3 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
-
-from agentic_core.utils.mixins import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

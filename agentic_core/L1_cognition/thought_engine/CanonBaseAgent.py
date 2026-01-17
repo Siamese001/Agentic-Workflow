@@ -1,12 +1,18 @@
-from __future__ import annotations
-import asyncio
-'''Brief description of functionality and purpose.'''
+"""CanonBaseAgent - Base class for all validation agents.
 
-'Brief description of functionality and purpose.'
+Provides shared infrastructure for Canon validation agents including:
+- Verification registry management
+- File hashing and caching
+- LLM-based smart fix capabilities
+"""
+from __future__ import annotations
+
+import asyncio
 import hashlib
 import logging
 import os
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Set
+
 from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -18,20 +24,40 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO').upper())
-Logger: Any = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 class CanonBaseAgent(HealerMixin):
-    """Base class for all validation agents."""
-    VERIFICATION_REGISTRY: dict = {}
+    """
+    Base class for all Canon validation agents.
+    
+    Provides shared infrastructure for validation including:
+        - Verification registry with check functions for all Canon keys.
+        - File hashing for cache invalidation.
+        - Redis caching for validation results.
+        - LLM-based smart fix capabilities with retry logic.
+    
+    Class Attributes:
+        VERIFICATION_REGISTRY: Dict mapping Canon keys to check functions.
+        _registry_built: Flag indicating if registry has been initialized.
+    
+    Instance Attributes:
+        ctx: ValidationContext for file access and reporting.
+        name: Agent name for logging and reporting.
+        layer: Optional layer identifier.
+    """
+    VERIFICATION_REGISTRY: Dict[int, Any] = {}
     _registry_built: bool = False
 
     @classmethod
-    def _init_registry(cls, ctx: ValidationProtocol):
+    def _init_registry(cls, ctx: ValidationProtocol) -> None:
         """
-        Builds the registry once to avoid repetitive agent instantiation.
+        Build the verification registry once.
         
-        GRAVITY COMPLIANCE: Uses dynamic import for L2 StructuralEngineerAgent
-        to avoid L1→L2 static import violation.
+        Initializes VERIFICATION_REGISTRY with check functions for all Canon keys.
+        Uses dynamic import for L2 StructuralEngineerAgent to avoid gravity violation.
+        
+        Args:
+            ctx: ValidationContext for agent initialization.
         """
         if cls._registry_built:
             return
@@ -60,17 +86,43 @@ class CanonBaseAgent(HealerMixin):
         cls.VERIFICATION_REGISTRY = {0: safety.check_key_00_no_hardcoded_secrets, 1: safety.check_key_01_no_todo_fixme, 2: safety.check_key_02_no_print_statements, 3: safety.check_key_03_no_debugger_statements, 4: safety.check_key_04_no_empty_except_blocks, 5: safety.check_key_05_no_bare_except, 6: safety.check_key_06_no_eval_exec, 7: deps.check_key_07_no_star_imports, 8: deps.check_key_08_no_relative_imports, 10: janitor.check_key_10_no_long_lines, 11: janitor.check_key_11_no_trailing_whitespace, 12: janitor.check_key_12_no_missing_newline, 13: janitor.check_key_13_no_tabs, 14: deps.check_key_14_no_duplicate_imports, 15: janitor.check_key_15_no_magic_numbers, 16: janitor.check_key_16_no_deep_nesting, 17: budget.check_key_17_no_large_functions, 18: struct.check_key_18_no_many_parameters, 19: budget.check_key_19_no_complex_functions, 20: struct.check_key_20_no_large_classes, 21: docs.check_key_21_no_missing_docstrings, 22: type_mech.check_key_22_no_missing_type_hints, 23: type_mech.check_key_23_no_unreachable_code, 24: type_mech.check_key_24_no_unused_variables, 25: struct.check_key_25_no_global_variables, 26: pattern.check_key_26_no_mutable_defaults, 27: pattern.check_key_27_prefer_str_join, 28: pattern.check_key_28_no_bare_except, 29: pattern.check_key_29_no_assert_in_prod, 30: pattern.check_key_30_prefer_fstrings, 31: pattern.check_key_31_no_complex_comprehensions, 32: pattern.check_key_32_no_dict_keys_check, 33: pattern.check_key_33_no_float_equality, 34: pattern.check_key_34_use_is_for_none, 36: pattern.check_key_36_no_shadowed_builtins, 37: pattern.check_key_37_no_redundant_self, 38: pattern.check_key_38_prefer_comprehensions, 39: pattern.check_key_39_no_useless_return, 40: arch.check_key_40_no_metaclasses, 41: arch.check_key_41_scoped_nesting, 42: struct.check_key_42_no_large_files, 43: struct.check_key_43_class_density, 44: deps.check_key_44_no_circular_imports, 45: deps.check_key_45_no_unused_imports, 46: struct.check_key_46_no_duplicate_code, 47: naming.check_key_47_naming_conventions, 49: arch.check_key_49_directory_depth, 50: arch.check_key_50_law_of_void}
         cls._registry_built = True
 
-    def __init__(self, context: ValidationProtocol = None, name: str = None, layer: str = None):
+    def __init__(
+        self,
+        context: Optional[ValidationProtocol] = None,
+        name: Optional[str] = None,
+        layer: Optional[str] = None
+    ) -> None:
+        """
+        Initialize the Canon base agent.
+        
+        Args:
+            context: ValidationContext for file access and reporting.
+            name: Agent name (defaults to class name).
+            layer: Optional layer identifier for logging.
+        """
         self.ctx = context
         self.name = name or self.__class__.__name__
         self.layer = layer
 
     def can_run(self) -> bool:
-        """Default: Run unless a critical failure exists."""
+        """
+        Check if agent can run.
+        
+        Returns:
+            True unless CRITICAL_FAIL signal is present in context.
+        """
         return 'CRITICAL_FAIL' not in self.ctx.signals
 
     def get_file_hash(self, file_path: str) -> str:
-        """Calculate SHA-256 hash of a file."""
+        """
+        Calculate SHA-256 hash of a file.
+        
+        Args:
+            file_path: Path to file to hash.
+            
+        Returns:
+            Hex digest of SHA-256 hash, or empty string on error.
+        """
         try:
             with open(file_path, 'rb') as f:
                 return hashlib.sha256(f.read()).hexdigest()
@@ -78,24 +130,52 @@ class CanonBaseAgent(HealerMixin):
             Logger.warning(f'Could not read file {file_path} for hashing: {e}')
             return ''
 
-    def check_cache(self, file_path: str, key: int) -> Optional[dict]:
-        """Check Redis cache for validation result."""
-        file_hash: Any = self.get_file_hash(file_path)
+    def check_cache(self, file_path: str, key: int) -> Optional[Dict[str, Any]]:
+        """
+        Check Redis cache for validation result.
+        
+        Args:
+            file_path: Path to file being validated.
+            key: Canon key number.
+            
+        Returns:
+            Cached result dict or None if not cached.
+        """
+        file_hash = self.get_file_hash(file_path)
         if not file_hash:
             return None
         cache_key: Any = f'{self.name}:{key}:{file_hash}'
         return self.ctx.services.get_cached_result(cache_key)
 
-    def store_cache(self, file_path: str, key: int, result: dict) -> Any:
-        """Store validation result in Redis cache."""
-        file_hash: Any = self.get_file_hash(file_path)
+    def store_cache(self, file_path: str, key: int, result: Dict[str, Any]) -> None:
+        """
+        Store validation result in Redis cache.
+        
+        Args:
+            file_path: Path to file being validated.
+            key: Canon key number.
+            result: Validation result to cache.
+        """
+        file_hash = self.get_file_hash(file_path)
         if not file_hash:
             return
         cache_key: Any = f'{self.name}:{key}:{file_hash}'
         self.ctx.services.cache_result(cache_key, result)
 
     async def smart_fix(self, file_path: str, violation_key: int) -> bool:
-        """Trigger an LLM-based fix for a specific Violation."""
+        """
+        Trigger LLM-based fix for a specific violation.
+        
+        Uses resilient mutation with retry logic to fix violations.
+        Records healing attempts and stores successful patterns.
+        
+        Args:
+            file_path: Path to file with violation.
+            violation_key: Canon key number of the violation.
+            
+        Returns:
+            True if fix was successful, False otherwise.
+        """
         if not self.ctx.intelligence_enabled:
             Logger.debug('Intelligence not enabled, skipping smart fix.')
             return False
@@ -169,17 +249,43 @@ class CanonBaseAgent(HealerMixin):
             print(f'      [ALERT] Healing error for {os.path.basename(file_path)}: {e}', flush=True)
             return False
 
-    def execute(self) -> Any:
-        """Override in subclass."""
+    def execute(self) -> None:
+        """
+        Execute validation checks.
+        
+        Must be overridden in subclass to implement specific checks.
+        
+        Raises:
+            NotImplementedError: Always, as this is abstract.
+        """
         raise NotImplementedError(f'{self.name}.execute() not implemented')
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L1 cognition agent - operational only."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """
+        Execute L1 cognition healing operations.
+        
+        Args:
+            dry_run: If True, only report violations without fixing.
+            execute: If True, apply fixes.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum allowed recursion depth.
+            _call_path: Set of agent names already in call chain.
+            
+        Returns:
+            Dict with keys: violations, fixed, errors, skipped.
+        """
         super().heal_repository()
 
-        _call_path = set()
+        if _call_path is None:
+            _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}

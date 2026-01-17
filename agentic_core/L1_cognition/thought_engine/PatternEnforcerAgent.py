@@ -1,51 +1,78 @@
-from dataclasses import dataclass
-"""
-PatternEnforcerAgent - Extracted from canon_agents_pattern.py
+"""PatternEnforcerAgent - Coding pattern enforcement.
+
+Extracted from canon_agents_pattern.py.
 Enforces coding patterns and best practices across Python files.
 """
 from __future__ import annotations
-import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+
 import ast
 import logging
 import re
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-# GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-from agentic_core.utils.mixins import SubatomicTestingMixin
-# GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from dataclasses import dataclass
+from typing import Any, Callable, List, Optional, Protocol, Tuple
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.mixins import SubatomicTestingMixin
 
-Logger: Any = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
-# NOT_AN_AGENT — legacy L1 class, true agent is PatternEnforcerAgent in L2 — excluded from discovery
+class CanonBaseAgentInterface(Protocol):
+    """Protocol for CanonBaseAgent interface compatibility."""
+    ctx: Any
+    name: str
+    python_files: List[str]
+
+
 @dataclass
 class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
-    Enforces coding patterns and best practices across Python files.
+    Pattern enforcement agent for coding best practices.
 
-    KEYS: 26-39 (Pattern Checks)
-    ROLE: Enforces coding patterns and best practices.
-    
-    DDD Compliance Phase 9A:
-    - Uses composition with CanonBaseAgentInterface
-    - Implementation injected via dependency injection
-    - No direct dependency on L2_Execution layer
+    Validates Canon Keys 26-39:
+        - Key 26: No mutable default arguments.
+        - Key 27: Prefer str.join over string concatenation.
+        - Key 28: No bare except clauses.
+        - Key 29: No assert in production code.
+        - Key 30: Prefer f-strings over .format().
+        - Key 31: No complex comprehensions.
+        - Key 32: No dict.keys() when 'in' suffices.
+        - Key 33: No float equality comparisons.
+        - Key 34: Use 'is' for None comparisons.
+        - Key 36: No shadowed builtins.
+        - Key 37: No redundant self usage.
+        - Key 38: Prefer comprehensions over loops.
+        - Key 39: No useless return statements.
+
+    Note:
+        Uses composition with CanonBaseAgentInterface (DDD Phase 9A).
+
+    Attributes:
+        agent: Injected CanonBaseAgentInterface implementation.
     """
 
     def __init__(self, agent_impl: CanonBaseAgentInterface) -> None:
-        """Initialize with injected agent implementation."""
+        """
+        Initialize with injected agent implementation.
+
+        Args:
+            agent_impl: CanonBaseAgentInterface providing ctx and python_files.
+        """
         self.agent = agent_impl
 
     def __getattr__(self, name: str) -> Any:
-        """Delegate all agent methods to injected implementation - backward compatible."""
+        """
+        Delegate attribute access to injected implementation.
+
+        Provides backward compatibility by forwarding unknown attributes.
+
+        Args:
+            name: Attribute name to look up.
+
+        Returns:
+            Attribute value from agent implementation.
+        """
         return getattr(self.agent, name)
 
     def execute(self) -> Any:
@@ -56,22 +83,27 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         keys: Any = [(26, self.check_key_26_no_mutable_defaults), (27, self.check_key_27_prefer_str_join), (28, self.check_key_28_no_bare_except), (29, self.check_key_29_no_assert_in_prod), (30, self.check_key_30_prefer_fstrings), (31, self.check_key_31_no_complex_comprehensions), (32, self.check_key_32_no_dict_keys_check), (33, self.check_key_33_no_float_equality), (34, self.check_key_34_use_is_for_none), (36, self.check_key_36_no_shadowed_builtins), (37, self.check_key_37_no_redundant_self), (38, self.check_key_38_prefer_comprehensions), (39, self.check_key_39_no_useless_return)]
         self._execute_pattern_checks(keys)
 
-    def _execute_pattern_checks(self, keys: List[Tuple[int, Any]]) -> None:
+    def _execute_pattern_checks(self, keys: List[Tuple[int, Callable[[], Tuple[bool, List[str]]]]]) -> None:
         """
-        Helper method to execute pattern checks and report violations.
+        Execute pattern checks and report violations.
+
+        Args:
+            keys: List of (key_number, check_function) tuples.
         """
         for key, check_func in keys:
             passed, details = check_func()
             self.agent.ctx.report(self.agent.name, key, passed, details)
 
-    def _execute_pattern_checks(self, keys: List[Tuple[int, callable]]) -> None:
-        """Execute all pattern checks and report results."""
-        for key, check_func in keys:
-            passed, details = check_func()
-            self.agent.ctx.report(self.agent.name, key, passed, details)
+    def _parse_file_ast(self, filepath: str) -> Optional[ast.AST]:
+        """
+        Safely parse a Python file into an AST.
 
-    def _parse_file_ast(self, filepath: str) -> ast.AST | None:
-        """Helper to safely parse a Python file into an AST."""
+        Args:
+            filepath: Path to Python file to parse.
+
+        Returns:
+            Parsed AST or None if parsing failed.
+        """
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 return ast.parse(f.read(), filename=filepath)
@@ -83,8 +115,16 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             Logger.error(f'Error parsing AST for {filepath}: {e}')
         return None
 
-    def _read_file_lines(self, filepath: str) -> List[str] | None:
-        """Helper to safely read a Python file line by line."""
+    def _read_file_lines(self, filepath: str) -> Optional[List[str]]:
+        """
+        Safely read a Python file line by line.
+
+        Args:
+            filepath: Path to file to read.
+
+        Returns:
+            List of lines or None if reading failed.
+        """
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 return f.readlines()
@@ -255,5 +295,10 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         return (len(violations) == 0, violations)
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """
+        Execute healing chain via parent class.
+
+        Returns:
+            Dict with healing results from parent implementation.
+        """
+        return super().heal_repository()
