@@ -10,13 +10,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 92.8,
+    "Complexity Health %": 33.0,
     "Typed %": 97.1,
     "Documented %": 98.3,
     "Schema Strictness %": 99.2,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 98.65,
-    "Health": 88.92
+    "Health": 79.95
   },
   {
     "Territory": "Sovereign Base Agent",
@@ -26,13 +26,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 98.0,
+    "Complexity Health %": 72.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 89.7
+    "Health": 85.8
   },
   {
     "Territory": "L6_Observability/Base Agent",
@@ -42,13 +42,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 92.0,
+    "Complexity Health %": 0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 88.8
+    "Health": 75.0
   },
   {
     "Territory": "L6_Observability/Metrics",
@@ -58,13 +58,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 96.0,
+    "Complexity Health %": 76.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Schema Strictness %": 66.7,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 91.67,
-    "Health": 89.4
+    "Health": 86.4
   },
   {
     "Territory": "L6_Observability/Telemetry",
@@ -74,13 +74,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 96.0,
+    "Complexity Health %": 84.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 89.4
+    "Health": 87.6
   },
   {
     "Territory": "L5 Safety/Base Agent",
@@ -90,13 +90,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 92.0,
+    "Complexity Health %": 30.0,
     "Typed %": 90.0,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 97.5,
-    "Health": 88.8
+    "Health": 79.5
   },
   {
     "Territory": "L5 Safety/Validators",
@@ -106,13 +106,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 89.4,
+    "Complexity Health %": 0,
     "Typed %": 98.5,
     "Documented %": 98.3,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.2,
-    "Health": 88.41
+    "Health": 75.0
   },
   {
     "Territory": "L5 Safety/Guardrails",
@@ -122,13 +122,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 91.0,
+    "Complexity Health %": 0,
     "Typed %": 97.6,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.4,
-    "Health": 88.65
+    "Health": 75.0
   },
   {
     "Territory": "L5 Safety/Red Teaming",
@@ -138,13 +138,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 93.0,
+    "Complexity Health %": 56.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 88.95
+    "Health": 83.4
   },
   {
     "Territory": "L5 Safety/Gravity",
@@ -154,13 +154,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 90.0,
+    "Complexity Health %": 41.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 88.5
+    "Health": 81.15
   },
   {
     "Territory": "L4 State/Base Agent",
@@ -170,13 +170,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 94.0,
+    "Complexity Health %": 6.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 89.1
+    "Health": 75.9
   },
   {
     "Territory": "L4 State/Core",
@@ -186,13 +186,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 93.6,
+    "Complexity Health %": 26.2,
     "Typed %": 97.6,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.4,
-    "Health": 89.04
+    "Health": 78.93
   },
   {
     "Territory": "L4 State/Infrastructure",
@@ -202,16 +202,112 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 92.0,
+    "Complexity Health %": 40.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 88.8
+    "Health": 81.0
   },
   {
     "Territory": "L3 Orchestration/Base Agent",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Invocation %": 100.0,
+    "Test %": 100.0,
+    "MCP Hardened %": 100.0,
+    "Complexity Health %": 34.0,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
+    "Schema Strictness %": 100.0,
+    "Canonical Inheritance %": 100.0,
+    "Code Quality Score": 100.0,
+    "Health": 80.1
+  },
+  {
+    "Territory": "L3 Orchestration/Core",
+    "Total": 50,
+    "Compliant": 50,
+    "Heal Cap %": 100.0,
+    "Invocation %": 100.0,
+    "Test %": 100.0,
+    "MCP Hardened %": 100.0,
+    "Complexity Health %": 40.8,
+    "Typed %": 95.9,
+    "Documented %": 99.3,
+    "Schema Strictness %": 100.0,
+    "Canonical Inheritance %": 100.0,
+    "Code Quality Score": 98.8,
+    "Health": 81.12
+  },
+  {
+    "Territory": "L2 Execution/Base Agent",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Invocation %": 100.0,
+    "Test %": 100.0,
+    "MCP Hardened %": 100.0,
+    "Complexity Health %": 20.0,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
+    "Schema Strictness %": 100.0,
+    "Canonical Inheritance %": 100.0,
+    "Code Quality Score": 100.0,
+    "Health": 78.0
+  },
+  {
+    "Territory": "L2 Execution/Core",
+    "Total": 36,
+    "Compliant": 36,
+    "Heal Cap %": 100.0,
+    "Invocation %": 100.0,
+    "Test %": 100.0,
+    "MCP Hardened %": 100.0,
+    "Complexity Health %": 30.0,
+    "Typed %": 97.2,
+    "Documented %": 98.9,
+    "Schema Strictness %": 100.0,
+    "Canonical Inheritance %": 100.0,
+    "Code Quality Score": 99.03,
+    "Health": 79.5
+  },
+  {
+    "Territory": "L1 Cognition/Base Agent",
+    "Total": 1,
+    "Compliant": 1,
+    "Heal Cap %": 100.0,
+    "Invocation %": 100.0,
+    "Test %": 100.0,
+    "MCP Hardened %": 100.0,
+    "Complexity Health %": 2.0,
+    "Typed %": 90.9,
+    "Documented %": 100.0,
+    "Schema Strictness %": 100.0,
+    "Canonical Inheritance %": 100.0,
+    "Code Quality Score": 97.72,
+    "Health": 75.3
+  },
+  {
+    "Territory": "L1 Cognition/Core",
+    "Total": 27,
+    "Compliant": 27,
+    "Heal Cap %": 100.0,
+    "Invocation %": 100.0,
+    "Test %": 100.0,
+    "MCP Hardened %": 100.0,
+    "Complexity Health %": 49.4,
+    "Typed %": 99.1,
+    "Documented %": 100.0,
+    "Schema Strictness %": 100.0,
+    "Canonical Inheritance %": 100.0,
+    "Code Quality Score": 99.78,
+    "Health": 82.41
+  },
+  {
+    "Territory": "L0 Maintenance/Base Agent",
     "Total": 1,
     "Compliant": 1,
     "Heal Cap %": 100.0,
@@ -224,103 +320,7 @@ window.dashboardData = [
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 100.0,
-    "Health": 88.5
-  },
-  {
-    "Territory": "L3 Orchestration/Core",
-    "Total": 50,
-    "Compliant": 50,
-    "Heal Cap %": 100.0,
-    "Invocation %": 100.0,
-    "Test %": 100.0,
-    "MCP Hardened %": 100.0,
-    "Complexity Health %": 93.6,
-    "Typed %": 95.9,
-    "Documented %": 99.3,
-    "Schema Strictness %": 100.0,
-    "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 98.8,
-    "Health": 89.04
-  },
-  {
-    "Territory": "L2 Execution/Base Agent",
-    "Total": 1,
-    "Compliant": 1,
-    "Heal Cap %": 100.0,
-    "Invocation %": 100.0,
-    "Test %": 100.0,
-    "MCP Hardened %": 100.0,
-    "Complexity Health %": 94.0,
-    "Typed %": 100.0,
-    "Documented %": 100.0,
-    "Schema Strictness %": 100.0,
-    "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 100.0,
-    "Health": 89.1
-  },
-  {
-    "Territory": "L2 Execution/Core",
-    "Total": 36,
-    "Compliant": 36,
-    "Heal Cap %": 100.0,
-    "Invocation %": 100.0,
-    "Test %": 100.0,
-    "MCP Hardened %": 100.0,
-    "Complexity Health %": 93.2,
-    "Typed %": 97.2,
-    "Documented %": 98.9,
-    "Schema Strictness %": 100.0,
-    "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 99.03,
-    "Health": 88.98
-  },
-  {
-    "Territory": "L1 Cognition/Base Agent",
-    "Total": 1,
-    "Compliant": 1,
-    "Heal Cap %": 100.0,
-    "Invocation %": 100.0,
-    "Test %": 100.0,
-    "MCP Hardened %": 100.0,
-    "Complexity Health %": 92.0,
-    "Typed %": 90.9,
-    "Documented %": 100.0,
-    "Schema Strictness %": 100.0,
-    "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.72,
-    "Health": 88.8
-  },
-  {
-    "Territory": "L1 Cognition/Core",
-    "Total": 27,
-    "Compliant": 27,
-    "Heal Cap %": 100.0,
-    "Invocation %": 100.0,
-    "Test %": 100.0,
-    "MCP Hardened %": 100.0,
-    "Complexity Health %": 93.8,
-    "Typed %": 99.1,
-    "Documented %": 100.0,
-    "Schema Strictness %": 100.0,
-    "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 99.78,
-    "Health": 89.07
-  },
-  {
-    "Territory": "L0 Maintenance/Base Agent",
-    "Total": 1,
-    "Compliant": 1,
-    "Heal Cap %": 100.0,
-    "Invocation %": 100.0,
-    "Test %": 100.0,
-    "MCP Hardened %": 100.0,
-    "Complexity Health %": 96.0,
-    "Typed %": 100.0,
-    "Documented %": 100.0,
-    "Schema Strictness %": 100.0,
-    "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 100.0,
-    "Health": 98.8
+    "Health": 97.0
   },
   {
     "Territory": "L0 Maintenance/Core",
@@ -330,13 +330,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 93.6,
+    "Complexity Health %": 30.0,
     "Typed %": 99.3,
     "Documented %": 99.3,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 99.65,
-    "Health": 98.08
+    "Health": 79.0
   },
   {
     "Territory": "Apps Lic",
@@ -346,13 +346,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 92.0,
+    "Complexity Health %": 60.2,
     "Typed %": 96.8,
     "Documented %": 95.7,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 98.12,
-    "Health": 88.8
+    "Health": 84.03
   },
   {
     "Territory": "Apps Rg",
@@ -362,13 +362,13 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 94.0,
+    "Complexity Health %": 70.8,
     "Typed %": 93.1,
     "Documented %": 92.4,
     "Schema Strictness %": 100.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 96.38,
-    "Health": 89.1
+    "Health": 85.62
   },
   {
     "Territory": "Apps Shared",
@@ -378,12 +378,12 @@ window.dashboardData = [
     "Invocation %": 100.0,
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
-    "Complexity Health %": 98.0,
+    "Complexity Health %": 90.0,
     "Typed %": 100.0,
     "Documented %": 100.0,
     "Schema Strictness %": 0.0,
     "Canonical Inheritance %": 100.0,
     "Code Quality Score": 75.0,
-    "Health": 89.7
+    "Health": 88.5
   }
 ];

@@ -151,8 +151,16 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
     """Factory for creating outreach agents."""
 
     @staticmethod
-    def create_all_agents(ctx: OutreachEngineContext) -> List[OutreachAgent]:
-        """Create all agents for full diagnostic."""
+    def create_all_agents(ctx: OutreachEngineContext) -> List[Any]:
+        """
+        Create all agents for full diagnostic.
+        
+        Args:
+            ctx: Outreach engine context
+        
+        Returns:
+            List of all outreach agents
+        """
         return [
             LeadQualityAgent(ctx),
             ContactValidatorAgent(ctx),
@@ -164,8 +172,16 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
         ]
 
     @staticmethod
-    def create_quality_agents(ctx: OutreachEngineContext) -> List[OutreachAgent]:
-        """Create quality-focused agents."""
+    def create_quality_agents(ctx: OutreachEngineContext) -> List[Any]:
+        """
+        Create quality-focused agents.
+        
+        Args:
+            ctx: Outreach engine context
+        
+        Returns:
+            List of quality-focused agents
+        """
         return [
             LeadQualityAgent(ctx),
             ContactValidatorAgent(ctx),
@@ -174,8 +190,16 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
         ]
 
     @staticmethod
-    def create_compliance_agents(ctx: OutreachEngineContext) -> List[OutreachAgent]:
-        """Create compliance-focused agents."""
+    def create_compliance_agents(ctx: OutreachEngineContext) -> List[Any]:
+        """
+        Create compliance-focused agents.
+        
+        Args:
+            ctx: Outreach engine context
+        
+        Returns:
+            List of compliance-focused agents
+        """
         return [
             MessageComplianceAgent(ctx),
             DeliverabilityAgent(ctx),
@@ -183,8 +207,17 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
         ]
 
     @staticmethod
-    def create_agents_by_name(ctx: OutreachEngineContext, names: List[str]) -> List[OutreachAgent]:
-        """Create specific agents by name."""
+    def create_agents_by_name(ctx: OutreachEngineContext, names: List[str]) -> List[Any]:
+        """
+        Create specific agents by name.
+        
+        Args:
+            ctx: Outreach engine context
+            names: List of agent class names to create
+        
+        Returns:
+            List of requested agents
+        """
         agent_map = {
             "LeadQualityAgent": LeadQualityAgent,
             "ContactValidatorAgent": ContactValidatorAgent,
@@ -212,14 +245,29 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
 class OutreachHealingCycle:
     """Manages a single healing cycle."""
 
-    def __init__(self, ctx: OutreachEngineContext, cycle_number: int):
-        self.ctx = ctx
-        self.cycle_number = cycle_number
+    def __init__(self, ctx: OutreachEngineContext, cycle_number: int) -> None:
+        """
+        Initialize healing cycle.
+        
+        Args:
+            ctx: Outreach engine context
+            cycle_number: Current cycle number (1-indexed)
+        """
+        self.ctx: OutreachEngineContext = ctx
+        self.cycle_number: int = cycle_number
         self.start_time: Optional[float] = None
         self.end_time: Optional[float] = None
 
     async def execute(self, strategy: OutreachHealingStrategy) -> OutreachCycleResult:
-        """Execute the healing cycle with the given strategy."""
+        """
+        Execute the healing cycle with the given strategy.
+        
+        Args:
+            strategy: Healing strategy to apply
+        
+        Returns:
+            OutreachCycleResult with cycle execution details
+        """
         import time
         self.start_time = time.time()
 
@@ -229,9 +277,9 @@ class OutreachHealingCycle:
         agents = self._build_agenda(strategy)
 
         # Execute agents
-        agents_executed = []
-        passed_agents = []
-        failed_agents = []
+        agents_executed: List[str] = []
+        passed_agents: List[str] = []
+        failed_agents: List[str] = []
 
         for agent in agents:
             try:
@@ -274,8 +322,16 @@ class OutreachHealingCycle:
             duration_ms=duration_ms,
         )
 
-    def _build_agenda(self, strategy: OutreachHealingStrategy) -> List[OutreachAgent]:
-        """Build the agent agenda based on strategy."""
+    def _build_agenda(self, strategy: OutreachHealingStrategy) -> List[Any]:
+        """
+        Build the agent agenda based on strategy.
+        
+        Args:
+            strategy: Healing strategy to apply
+        
+        Returns:
+            List of agents to execute
+        """
         if strategy == OutreachHealingStrategy.FULL_DIAGNOSTIC:
             return OutreachAgentFactory.create_all_agents(self.ctx)
 
@@ -300,7 +356,12 @@ class OutreachHealingCycle:
         return OutreachAgentFactory.create_all_agents(self.ctx)
 
     def _check_rollback_conditions(self) -> bool:
-        """Check if rollback should be triggered."""
+        """
+        Check if rollback should be triggered.
+        
+        Returns:
+            True if rollback conditions are met, False otherwise
+        """
         if OutreachSignalRouterAgent.has_critical_signal(self.ctx.signals):
             return True
 
@@ -311,8 +372,12 @@ class OutreachHealingCycle:
 
         return False
 
-    def _execute_rollback(self):
-        """Execute rollback of all changes."""
+    def _execute_rollback(self) -> None:
+        """
+        Execute rollback of all changes.
+        
+        Reverts campaign to last backup and clears critical signals.
+        """
         print(f"   🚨 Cycle {self.cycle_number}: Triggering rollback...")
         self.ctx.rollback_all()
 
