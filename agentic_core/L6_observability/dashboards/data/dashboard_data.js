@@ -11,11 +11,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 92.8,
-    "Typed %": 95.1,
-    "Documented %": 96.4,
+    "Typed %": 95.4,
+    "Documented %": 96.9,
     "Schema Strictness %": 99.2,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 97.67,
+    "Code Quality Score": 97.88,
     "Health": 88.92
   },
   {
@@ -59,11 +59,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 96.0,
-    "Typed %": 77.8,
-    "Documented %": 88.9,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
     "Schema Strictness %": 66.7,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 83.35,
+    "Code Quality Score": 91.67,
     "Health": 89.4
   },
   {
@@ -379,11 +379,11 @@ window.dashboardData = [
     "Test %": 100.0,
     "MCP Hardened %": 100.0,
     "Complexity Health %": 98.0,
-    "Typed %": 80.0,
-    "Documented %": 20.0,
+    "Typed %": 100.0,
+    "Documented %": 100.0,
     "Schema Strictness %": 0.0,
     "Canonical Inheritance %": 100.0,
-    "Code Quality Score": 50.0,
+    "Code Quality Score": 75.0,
     "Health": 89.7
   }
 ];
