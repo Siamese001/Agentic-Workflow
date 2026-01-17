@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 """
 ConsolidatedOrchestratorAgent - Extracted for one-class-per-file pattern.
@@ -5,9 +6,6 @@ ConsolidatedOrchestratorAgent - Extracted for one-class-per-file pattern.
 Originally from: OrchestratorAgentAndScopeManagerAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
-
-
-from __future__ import annotations
 from typing import Any, Dict, List, Optional
 import ast
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -112,25 +110,68 @@ class ConsolidatedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
         Logger.info(f"{'=' * 60}")
         return results
 
-    async def execute_workflow(self, workflow_id: str, agents: List[Any], context: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
-        """
-        Execute a workflow with the given agents using convergence loop.
-        
-        Args:
-            workflow_id: Unique workflow identifier
-            agents: List of agent instances to execute
-            context: Optional execution context
-            
-        Returns:
-            Workflow execution results
-        """
+    def _init_workflow_state(self, workflow_id: str) -> None:
+        """Initialize workflow state and services."""
         self.state = OrchestratorState(workflow_id=workflow_id, start_time=datetime.now())
         self.healing_service = OrchestratorHealingService(config=self.config, ctx=self.ctx, client=self.client, state=self.state, Logger=Logger)
         self.state_manager = OrchestratorStateManager(config=self.config, ctx=self.ctx, state=self.state, Logger=Logger)
+
+    async def _run_regression_oracle(self) -> None:
+        """Run regression oracle for modified files."""
+        Logger.info(f'\n[🔮] Running Regression Oracle for {len(self.ctx.modified_files)} modified files...')
+        for file_path in self.ctx.modified_files:
+            self.ctx.signals.add(f'FILE_MODIFIED:{file_path}')
+        oracle = get_regression_oracle(self.ctx)
+        await oracle.execute()
+        regression_signals = [s for s in self.ctx.signals if s.startswith('REGRESSION_DETECTED:')]
+        if regression_signals:
+            Logger.error(f'\n[ALERT] REGRESSIONS DETECTED: {len(regression_signals)}')
+            for signal in regression_signals:
+                Logger.error(f'   {signal}')
+            self.state.signals.add('INTERVENTION_REQUIRED')
+
+    async def _execute_single_agent(self, agent: Any) -> None:
+        """Execute a single agent with healing and checkpointing."""
+        Logger.info(f'\n[>>>] Running: {agent.__class__.__name__}')
+        await agent.execute()
+        
+        if self.config.enable_healing and agent.__class__.__name__ in ['SystemArchitect', 'CodeJanitor']:
+            if self.ctx.modified_files:
+                await self._run_regression_oracle()
+        
+        if 'AGENT_FAILURE' in self.ctx.signals:
+            Logger.warning(f'   [!]  Agent failure detected - executing clean slate')
+            self._execute_clean_slate()
+            self.ctx.signals.discard('AGENT_FAILURE')
+        
+        if self.config.enable_checkpointing:
+            await self.state_manager.checkpoint_state(agent.__class__.__name__)
+
+    def _check_cycle_termination(self) -> bool:
+        """Check if workflow should terminate after cycle. Returns True to break."""
+        if self.state_manager.should_terminate():
+            Logger.info('\n[OK] CONVERGENCE ACHIEVED')
+            self.state.status = 'COMPLETED'
+            return True
+        return False
+
+    async def _check_intervention(self) -> bool:
+        """Check and handle intervention. Returns True to break."""
+        if self.config.enable_intervention and 'INTERVENTION_REQUIRED' in self.state.signals:
+            Logger.info('\n✋ INTERVENTION REQUIRED')
+            if not await self.state_manager.handle_intervention():
+                Logger.info('🛑 WORKFLOW VETOED')
+                self.state.status = 'VETOED'
+                return True
+        return False
+
+    async def execute_workflow(self, workflow_id: str, agents: List[Any], context: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
+        """Execute a workflow with the given agents using convergence loop."""
+        self._init_workflow_state(workflow_id)
         Logger.info(f'\n[~] Starting convergence loop...')
         Logger.info(f'   Max cycles: {self.config.max_cycles}')
         Logger.info(f'   Agents: {len(agents)}')
-        context: Any = context or {}
+        
         for cycle in range(self.config.max_cycles):
             self.state.current_cycle = cycle + 1
             self.state.signals.clear()
@@ -138,49 +179,26 @@ class ConsolidatedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
             Logger.info(f"\n{'=' * 60}")
             Logger.info(f'CYCLE {cycle + 1}/{self.config.max_cycles}')
             Logger.info(f"{'=' * 60}")
+            
             for agent in agents:
                 if not self.state_manager.should_run_agent(agent):
                     Logger.debug(f'Skipping agent {agent.__class__.__name__}')
                     continue
                 try:
-                    Logger.info(f'\n[>>>] Running: {agent.__class__.__name__}')
-                    await agent.execute()
-                    if self.config.enable_healing and agent.__class__.__name__ in ['SystemArchitect', 'CodeJanitor']:
-                        if self.ctx.modified_files:
-                            Logger.info(f'\n[🔮] Running Regression Oracle for {len(self.ctx.modified_files)} modified files...')
-                            for file_path in self.ctx.modified_files:
-                                self.ctx.signals.add(f'FILE_MODIFIED:{file_path}')
-                            oracle: Any = get_regression_oracle(self.ctx)
-                            await oracle.execute()
-                            regression_signals: Any = [s for s in self.ctx.signals if s.startswith('REGRESSION_DETECTED:')]
-                            if regression_signals:
-                                Logger.error(f'\n[ALERT] REGRESSIONS DETECTED: {len(regression_signals)}')
-                                for signal in regression_signals:
-                                    Logger.error(f'   {signal}')
-                                self.state.signals.add('INTERVENTION_REQUIRED')
-                    if 'AGENT_FAILURE' in self.ctx.signals:
-                        Logger.warning(f'   [!]  Agent failure detected - executing clean slate')
-                        self._execute_clean_slate()
-                        self.ctx.signals.discard('AGENT_FAILURE')
-                    if self.config.enable_checkpointing:
-                        await self.state_manager.checkpoint_state(agent.__class__.__name__)
+                    await self._execute_single_agent(agent)
                 except Exception as e:
                     Logger.error(f'[X] Agent {agent.__class__.__name__} failed: {e}')
                     self.state.signals.add('AGENT_FAILURE')
                     if self.config.clean_slate:
                         self._execute_clean_slate()
-            if self.state_manager.should_terminate():
-                Logger.info('\n[OK] CONVERGENCE ACHIEVED')
-                self.state.status = 'COMPLETED'
+            
+            if self._check_cycle_termination():
                 break
-            if self.config.enable_intervention and 'INTERVENTION_REQUIRED' in self.state.signals:
-                Logger.info('\n✋ INTERVENTION REQUIRED')
-                if not await self.state_manager.handle_intervention():
-                    Logger.info('🛑 WORKFLOW VETOED')
-                    self.state.status = 'VETOED'
-                    break
+            if await self._check_intervention():
+                break
+        
         self.state.end_time = datetime.now()
-        if self.state.status != 'COMPLETED' and self.state.status != 'VETOED':
+        if self.state.status not in ('COMPLETED', 'VETOED'):
             self.state.status = 'MAX_CYCLES_REACHED'
             Logger.warning(f'\n[!]  Max cycles reached without convergence')
         return self.state_manager.build_results()

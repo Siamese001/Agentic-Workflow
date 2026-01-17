@@ -152,102 +152,67 @@ class FilesystemSSOTReconcilerAgent(SubatomicTestingMixin, L0MaintenanceBaseAgen
     # Core Reconciliation Methods
     # ===================================================================
     
+    def _create_no_drift_result(self) -> Dict[str, Any]:
+        """Create result for no drift detected."""
+        return {"drift_detected": False, "proposals": [], "applied": False}
+
+    def _create_rejected_result(self, proposals: List[Dict], message: str) -> Dict[str, Any]:
+        """Create result for rejected/aborted changes."""
+        return {"drift_detected": True, "proposals": proposals, "applied": False, "message": message}
+
+    def _create_applied_result(self, proposals: List[Dict], results: List[str]) -> Dict[str, Any]:
+        """Create result for successfully applied changes."""
+        return {"drift_detected": True, "proposals": proposals, "applied": True, "results": results}
+
+    def _handle_interactive_approval(self, proposals: List[Dict]) -> Tuple[bool, Optional[Dict[str, Any]]]:
+        """Handle interactive approval flow. Returns (should_apply, early_return_result)."""
+        Logger.info("Interactive mode - requesting user approval")
+        try:
+            approved = self._request_user_approval(proposals)
+            if not approved:
+                Logger.info("User rejected proposed changes")
+                return False, self._create_rejected_result(proposals, "Changes rejected by user")
+            Logger.info("User approved changes - proceeding with application")
+            return True, None
+        except KeyboardInterrupt:
+            Logger.warning("User aborted reconciliation")
+            return False, self._create_rejected_result(proposals, "Reconciliation aborted by user")
+
     async def enforce_gospel(self, auto_apply: bool = False, interactive: bool = True) -> Dict[str, Any]:
-        """
-        Main entry point: Align filesystem to match the Gospel (blueprint).
-        
-        Phase 1: Detect unauthorized (extra) and missing (required) folders.
-        Phase 2: Generate filesystem proposals (mkdir / move).
-        Phase 3: Execute alignment (if auto_apply=True).
-        
-        Args:
-            auto_apply: If True, apply proposals automatically (with backup).
-                       If False (default), dry-run or interactive mode.
-            interactive: If True and drift detected, request user approval.
-        
-        Returns:
-            {
-                "drift_detected": bool,
-                "proposals": List[Dict],
-                "applied": bool,
-                "results": Optional[List[str]]
-            }
-        """
+        """Main entry point: Align filesystem to match the Gospel (blueprint)."""
         Logger.info("Starting SSOT Gospel Enforcement scan...")
         
-        # 1. Scan actual system state
         await self._scan_filesystem()
         await self._scan_agents()
         
-        # 2. Load current blueprint
         current_blueprint = self._load_current_blueprint()
-        
-        # 3. Detect drift
         drift = self._detect_drift(current_blueprint)
         
         if not drift:
             Logger.info("No drift detected - filesystem is aligned")
-            return {
-                "drift_detected": False,
-                "proposals": [],
-                "applied": False
-            }
+            return self._create_no_drift_result()
         
         Logger.warning(f"Drift detected: {len(drift)} discrepancies found")
-        
-        # 4. Generate filesystem alignment proposals
         proposals = self._generate_filesystem_proposals(drift)
         
-        # 5. Phase 2: Interactive approval flow (if not auto-applying)
         if not auto_apply and interactive:
-            Logger.info("Interactive mode - requesting user approval")
-            try:
-                approved = self._request_user_approval(proposals)
-                if not approved:
-                    Logger.info("User rejected proposed changes")
-                    return {
-                        "drift_detected": True,
-                        "proposals": proposals,
-                        "applied": False,
-                        "message": "Changes rejected by user"
-                    }
-                # If approved, proceed as if auto_apply=True
-                Logger.info("User approved changes - proceeding with application")
-                auto_apply = True
-            except KeyboardInterrupt:
-                Logger.warning("User aborted reconciliation")
-                return {
-                    "drift_detected": True,
-                    "proposals": proposals,
-                    "applied": False,
-                    "message": "Reconciliation aborted by user"
-                }
+            should_apply, early_result = self._handle_interactive_approval(proposals)
+            if early_result:
+                return early_result
+            auto_apply = should_apply
         
-        # 6. Apply if auto_apply enabled (Phase 3) or approved (Phase 2)
         if auto_apply:
             Logger.info("Gospel Enforcement active - applying filesystem changes")
-            
             try:
                 results = self._apply_filesystem_alignment(proposals)
-                
                 Logger.info("Filesystem alignment complete")
-                return {
-                    "drift_detected": True,
-                    "proposals": proposals,
-                    "applied": True,
-                    "results": results
-                }
+                return self._create_applied_result(proposals, results)
             except Exception as e:
                 Logger.error(f"Alignment failed: {e}")
                 raise
-        else:
-            Logger.info("Dry-run mode - proposals generated but not applied")
-            return {
-                "drift_detected": True,
-                "proposals": proposals,
-                "applied": False,
-                "message": "Set auto_apply=True to apply changes"
-            }
+        
+        Logger.info("Dry-run mode - proposals generated but not applied")
+        return self._create_rejected_result(proposals, "Set auto_apply=True to apply changes")
     
     async def _scan_filesystem(self) -> None:
         """

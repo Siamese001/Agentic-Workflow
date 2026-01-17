@@ -1,43 +1,40 @@
+"""Duplicate Code Detector Agent - Detects duplicate files and code blocks.
+
+This module provides a batch agent that detects exact duplicate files and
+code blocks across the entire territory using content hashing and AST
+fingerprinting for structural comparison.
+
+Typical usage:
+    agent = DuplicateCodeDetectorAgent(project_root=Path("/path/to/project"))
+    result = await agent.execute(file_types={'.py', '.js'})
+"""
 from __future__ import annotations
-#!/usr/bin/env python3
-"""
-Duplicate Code Detector Agent
-Batch agent: Detects exact duplicate files and code blocks across the entire territory.
-Supports Python, HTML, CSS, JS, JSON, YAML, Markdown, and other text files.
-Uses content hashing for exact duplicates and AST fingerprinting for structural comparison.
-"""
-import hashlib
-import tokenize
+
 import ast
-import json
-from collections import defaultdict
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Set, Tuple
-from dataclasses import dataclass
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.mixins import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+import hashlib
 import logging
+from collections import defaultdict
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
     L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
-Logger = logging.getLogger(__name__)
+Logger: logging.Logger = logging.getLogger(__name__)
+
+# Constants for excluded directories
+UTILS_DIR = "agentic_core/utils"
+ARCHIVES_DIR = "archives"
 
 # Tree-sitter for AST fingerprinting
 try:
@@ -62,10 +59,21 @@ class DuplicateFile:
     rationale: str = ""
 
 
-class DuplicateCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-    """
-    Batch agent: Detects exact duplicate files and code blocks across the entire territory.
-    Supports multiple file types with appropriate hashing strategies.
+class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin):
+    """L5 Safety agent that detects duplicate files and code blocks.
+    
+    This batch agent detects exact duplicate files and code blocks across the
+    entire territory using content hashing and AST fingerprinting.
+    
+    Attributes:
+        project_root: Root directory of the project.
+        ctx: Execution context.
+        min_lines: Minimum block size to flag as duplicate.
+        max_report: Maximum number of duplicates to report.
+        
+    Inherits:
+        SubatomicTestingMixin: Provides testing utilities.
+        HealerMixin: Provides healing chain support.
     """
     
     # Supported file extensions
@@ -409,9 +417,29 @@ class DuplicateCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
         return f'{node.type}({"|" .join(children)})' if children else node.type
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L5 safety agent - operational only."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """Execute L5 safety healing operations.
+        
+        This is an operational agent - no repository healing required.
+        Implements cycle detection and depth limiting.
+        
+        Args:
+            dry_run: If True, only report what would be done (default: True).
+            execute: If True, execute healing actions (default: False).
+            depth: Current recursion depth for cycle detection (default: 0).
+            max_depth: Maximum recursion depth allowed (default: 3).
+            _call_path: Set of agent names in current call chain for cycle detection.
+            
+        Returns:
+            Dictionary with healing results: {"skipped": 1} for operational agents.
+        """
         super().heal_repository()
         
         if _call_path is None:

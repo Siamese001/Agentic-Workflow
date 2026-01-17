@@ -124,91 +124,111 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
             return True
         return self.impl.validate_state()
 
-    async def _execute_healing(self) -> None:
+    def _check_file_for_syntax_error(self, file_path: str) -> Tuple[bool, Optional[SyntaxError]]:
+        """Check a single file for syntax errors.
+        
+        Args:
+            file_path: Path to the Python file to check.
+            
+        Returns:
+            Tuple of (has_error, error_object). If no error, error_object is None.
         """
-        Execute the core healing logic.
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                ast.parse(f.read(), filename=file_path)
+            return False, None
+        except SyntaxError as e:
+            return True, e
+        except (FileNotFoundError, UnicodeDecodeError) as e:
+            print(f"Warning: Could not read or decode {file_path} for healing: {e}", file=sys.stderr)
+            return True, SyntaxError(f"File unreadable/undecodable: {e}")
+
+    def _is_file_excluded(self, file_path: str) -> bool:
+        """Check if file should be excluded from healing.
+        
+        Args:
+            file_path: Path to check.
+            
+        Returns:
+            True if file should be excluded.
+        """
+        excluded_patterns = ['__pycache__', '.git', 'venv', '.venv', 'node_modules']
+        return any(pattern in file_path for pattern in excluded_patterns)
+
+    def _scan_for_syntax_errors(self) -> List[Tuple[str, Optional[SyntaxError]]]:
+        """Scan all Python files for syntax errors.
+        
+        Returns:
+            List of (file_path, error) tuples for files with errors.
+        """
+        syntax_errors = []
+        for file_path in self.ctx.python_files:
+            if self._is_file_excluded(file_path):
+                continue
+            has_error, error_obj = self._check_file_for_syntax_error(file_path)
+            if has_error:
+                syntax_errors.append((file_path, error_obj))
+        return syntax_errors
+
+    async def _attempt_fix_single_file(self, file_path: str, error: SyntaxError) -> bool:
+        """Attempt to fix a single file with syntax error.
+        
+        Args:
+            file_path: Path to the file to fix.
+            error: The SyntaxError object.
+            
+        Returns:
+            True if fix was successful.
+        """
+        lineno = getattr(error, 'lineno', 'unknown')
+        msg = getattr(error, 'msg', str(error))
+        print(f"      [SCAN] Fixing {file_path}:{lineno} – {msg}")
+        return await self.smart_fix(file_path, 48)
+
+    def _get_remaining_errors(self) -> List[str]:
+        """Get list of files that still have syntax errors.
+        
+        Returns:
+            List of file paths with remaining errors.
+        """
+        remaining = []
+        for file_path in self.ctx.python_files:
+            has_error, _ = self._check_file_for_syntax_error(file_path)
+            if has_error:
+                remaining.append(file_path)
+        return remaining
+
+    async def _execute_healing(self) -> None:
+        """Execute the core healing logic.
         
         Scans for syntax errors and attempts LLM-based fixes with retry.
         Reports results to validation context.
         """
-        MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
-
-        def _check_file_for_syntax_error(self, file_path: str) -> Tuple[bool, Optional[SyntaxError]]:
-            """Helper to check a single file for syntax errors."""
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    ast.parse(f.read(), filename=file_path)
-                return False, None
-            except SyntaxError as e:
-                return True, e
-            except (FileNotFoundError, UnicodeDecodeError) as e:
-                print(
-                    f"Warning: Could not read or decode {file_path} for healing: {e}",
-                    file=sys.stderr
-                )
-                # For reporting purposes, treat unreadable/undecodable as a syntax error
-                # to ensure it's flagged and potentially retried.
-                return True, SyntaxError(f"File unreadable/undecodable: {e}")
-
-        def _process_file_for_syntax_error(self, file_path: str) -> Optional[Tuple[str, SyntaxError]]:
-            """Helper to check a single file for syntax errors and return if found."""
-            if is_excluded(file_path):
-                return None
-            has_error, error_obj = self._check_file_for_syntax_error(file_path)
-            if has_error:
-                return (file_path, error_obj)
-            return None
-
-        def _scan_for_syntax_errors(self) -> List[Tuple[str, Optional[SyntaxError]]]:
-            """Helper to scan all Python files for syntax errors."""
-            syntax_errors = []
-            for file_path in self.ctx.python_files:
-                error_info = self._process_file_for_syntax_error(file_path)
-                if error_info:
-                    syntax_errors.append(error_info)
-            return syntax_errors
-
-        async def _attempt_fix_single_file(self, file_path: str, error) -> bool:
-            """Helper to attempt fixing a single file and return success status."""
-            print(f"      [SCAN] Fixing {file_path}:{error.lineno} – {error.msg}")
-            return await self.smart_fix(file_path, 48)
-
+        max_rounds = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
         print(f"\n[>>>] {self.name} ACTIVATED: Investigating Failures...")
         
         round_num = 0
-        # Flag to track if any file was successfully fixed in the current round.
-        # Initialize to True to ensure the loop runs at least once.
-        any_file_healed_in_current_round = True 
+        any_healed = True
 
-        while any_file_healed_in_current_round and round_num < self.MAX_HEALING_ROUNDS:
+        while any_healed and round_num < max_rounds:
             round_num += 1
-            syntax_errors_found_this_round = self._scan_for_syntax_errors()
+            errors = self._scan_for_syntax_errors()
 
-            if not syntax_errors_found_this_round:
-                any_file_healed_in_current_round = False  # No errors found, stop healing attempts
+            if not errors:
                 break
 
-            print(f"   [ALERT] Round {round_num}: Found {len(syntax_errors_found_this_round)} Syntax Blockers. Healing...")
+            print(f"   [ALERT] Round {round_num}: Found {len(errors)} Syntax Blockers. Healing...")
             
-            # Collect results of fixes
-            fix_results = [
-                await self._attempt_fix_single_file(file_path, error)
-                for file_path, error in syntax_errors_found_this_round
-            ]
-            any_file_healed_in_current_round = any(fix_results)
+            fix_results = [await self._attempt_fix_single_file(fp, err) for fp, err in errors]
+            any_healed = any(fix_results)
 
-        # After all healing rounds, perform a final check for any remaining syntax errors
-        remaining_syntax_errors = []
-        for file_path in self.ctx.python_files:
-            has_error, _ = self._check_file_for_syntax_error(file_path)
-            if has_error:
-                remaining_syntax_errors.append(file_path)
+        remaining = self._get_remaining_errors()
 
-        if not remaining_syntax_errors:
+        if not remaining:
             print("   [OK] Architecture verified. Core integrity intact.")
             self.ctx.report(self.name, 48, True, [])
             self.ctx.signal_ast_valid()
         else:
-            print(f"   [X] Critical Failure: {len(remaining_syntax_errors)} files still have syntax errors.")
-            self.ctx.report(self.name, 48, False, remaining_syntax_errors)
+            print(f"   [X] Critical Failure: {len(remaining)} files still have syntax errors.")
+            self.ctx.report(self.name, 48, False, remaining)
             self.ctx.signal_critical_failure()

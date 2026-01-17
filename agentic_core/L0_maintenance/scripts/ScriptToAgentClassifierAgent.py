@@ -115,77 +115,68 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
 
         return Verdict
 
-    def _compute_verdict(
-        self, signals: Dict[str, Any], filename: str
-    ) -> Dict[str, Any]:
-        """
-        Constitutional decision engine.
-        Returns recommended_type with confidence and rationale.
-        """
-        score_script = 0.0
-        score_agent = 0.0
-        rationale: List[str] = []
-
-        # === Script indicators (positive for script) ===
+    def _compute_script_score(self, signals: Dict[str, Any], rationale: List[str]) -> float:
+        """Compute script indicator score."""
+        score = 0.0
         if signals["has_main_guard"]:
-            score_script += 1.0
+            score += 1.0
             rationale.append("Contains if __name__ == '__main__' block → execution entry point")
-
         if signals["has_async_main"]:
-            score_script += 0.9
+            score += 0.9
             rationale.append("Defines async main() with asyncio.run → script pattern")
-
         if signals["top_level_statements"] > 10:
-            score_script += 0.6
+            score += 0.6
             rationale.append(f"High top-level statements ({signals['top_level_statements']}) → procedural")
-
         if signals["side_effect_calls"]:
-            score_script += 0.4 * min(len(signals["side_effect_calls"]) / 5, 1.0)
+            score += 0.4 * min(len(signals["side_effect_calls"]) / 5, 1.0)
             rationale.append(f"Top-level side effects: {signals['side_effect_calls'][:3]}...")
-
         if signals["num_classes"] <= self.MAX_CLASSES_FOR_SCRIPT and signals["num_classes"] > 0:
-            score_script += 0.3
+            score += 0.3
             rationale.append("Few or single class → acceptable in script")
+        return score
 
-        # === Agent indicators (positive for pure agent) ===
+    def _compute_agent_score(self, signals: Dict[str, Any], filename: str, rationale: List[str]) -> float:
+        """Compute agent indicator score."""
+        score = 0.0
         if signals["num_classes"] >= 2:
-            score_agent += 0.8
+            score += 0.8
             rationale.append(f"Multiple classes ({signals['num_classes']}) → better as separate agents")
-
         if signals["num_classes"] == 1 and not signals["has_main_guard"]:
-            score_agent += 0.9
+            score += 0.9
             rationale.append("Single class, no execution block → pure agent pattern")
-
         if signals["line_count"] < self.DUST_LINE_THRESHOLD and signals["num_classes"] == 1:
-            score_agent -= 0.7  # Dust agent → prefer fusion
+            score -= 0.7
             rationale.append(f"Below dust threshold ({signals['line_count']} < {self.DUST_LINE_THRESHOLD}) → fusion candidate")
-
         if signals["line_count"] > self.MONOLITH_LINE_THRESHOLD:
-            score_agent += 0.7 if signals["num_classes"] > 1 else 0.3
+            score += 0.7 if signals["num_classes"] > 1 else 0.3
             rationale.append(f"Monolithic size ({signals['line_count']} lines) → fission recommended")
-
         if filename.startswith("guard_") or filename.startswith("healing_") or "orchestrator" in filename:
-            score_agent += 0.6
+            score += 0.6
             rationale.append("Filename matches sovereign agent pattern")
+        return score
 
-        # === Final Verdict ===
+    def _determine_recommendation(self, signals: Dict[str, Any], score_script: float, score_agent: float) -> Tuple[str, float]:
+        """Determine final recommendation and confidence."""
         total = score_script + score_agent
         if total == 0:
-            confidence = 0.5
-            recommended = "uncertain"
-        else:
-            confidence = max(score_script, score_agent) / total
-            if score_script > score_agent:
-                recommended = "script"
-            elif signals["line_count"] > self.MONOLITH_LINE_THRESHOLD and signals["num_classes"] > 1:
-                recommended = "fission_needed"
-                confidence = max(confidence, 0.85)
-            elif signals["line_count"] < self.DUST_LINE_THRESHOLD and signals["num_classes"] == 1:
-                recommended = "fusion_needed"
-                confidence = max(confidence, 0.8)
-            else:
-                recommended = "agent"
+            return "uncertain", 0.5
+        
+        confidence = max(score_script, score_agent) / total
+        if score_script > score_agent:
+            return "script", confidence
+        if signals["line_count"] > self.MONOLITH_LINE_THRESHOLD and signals["num_classes"] > 1:
+            return "fission_needed", max(confidence, 0.85)
+        if signals["line_count"] < self.DUST_LINE_THRESHOLD and signals["num_classes"] == 1:
+            return "fusion_needed", max(confidence, 0.8)
+        return "agent", confidence
 
+    def _compute_verdict(self, signals: Dict[str, Any], filename: str) -> Dict[str, Any]:
+        """Constitutional decision engine. Returns recommended_type with confidence and rationale."""
+        rationale: List[str] = []
+        score_script = self._compute_script_score(signals, rationale)
+        score_agent = self._compute_agent_score(signals, filename, rationale)
+        recommended, confidence = self._determine_recommendation(signals, score_script, score_agent)
+        
         return {
             "recommended_type": recommended,
             "confidence": round(confidence, 3),
@@ -338,7 +329,6 @@ class _ModuleAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
-       """Execute visit_ClassDef operation."""
         """Execute visit_ClassDef operation."""
         self.num_classes += 1
         self.generic_visit(node)
@@ -376,7 +366,6 @@ class _ClassExtractionVisitor(ast.NodeVisitor):
         self.classes: List[ast.ClassDef] = []
 
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
-       """Execute visit_ClassDef operation."""
         """Execute visit_ClassDef operation."""
         self.classes.append(node)
         self.generic_visit(node)

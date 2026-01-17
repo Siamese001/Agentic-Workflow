@@ -1,79 +1,89 @@
-from __future__ import annotations
-from dataclasses import dataclass
-#!/usr/bin/env python3
-"""
-File Cleanup Agent
-Batch agent: Identifies and removes files with repeated strings in filenames.
-Handles cases like 'data_models_enums_enums_enums' -> keeps only 'data_models_enums'
-"""
-import re
-from pathlib import Path
-from typing import Dict, Any, List, Optional, Set, Tuple
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from collections import defaultdict
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.mixins import SubatomicTestingMixin
+"""File Cleanup Agent - Identifies and removes files with repeated strings in filenames.
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+This module provides a batch agent that identifies and removes files with
+repeated strings in their filenames (e.g., 'data_models_enums_enums_enums').
+It keeps the canonical version and removes duplicates.
+
+Typical usage:
+    agent = FileCleanupAgent(project_root=Path("/path/to/project"), ctx=context)
+    result = await agent.execute()
+"""
+from __future__ import annotations
+
+import re
+from collections import Counter, defaultdict
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import AGENTIC_CORE_DIR
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.mixins import SubatomicTestingMixin
 
 
 @dataclass
-class FileCleanupAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-    """
-    Batch agent: Identifies and removes files with repeated strings in filenames.
-    Detects patterns like 'word_word', 'word_word_word', etc.
+class FileCleanupAgent(SubatomicTestingMixin, HealerMixin):
+    """L5 Safety agent that identifies and removes files with repeated filename strings.
+    
+    This batch agent detects patterns like 'word_word', 'word_word_word' in filenames
+    and removes duplicates while keeping the canonical (least-repeated) version.
+    
+    Attributes:
+        project_root: Root directory of the project.
+        ctx: Execution context with reporting capabilities.
+        dry_run: If True, only report what would be removed (default: True).
+        files_to_remove: List of file paths marked for removal.
+        files_to_keep: Dictionary mapping canonical names to their paths.
+        removed_count: Count of files actually removed.
+        
+    Inherits:
+        SubatomicTestingMixin: Provides testing utilities.
+        HealerMixin: Provides healing chain support.
     """
 
     def __init__(self, project_root: Path, ctx: Any, dry_run: bool = True) -> None:
-        """Initialize the instance."""
-        self.project_root = Path(project_root)
-        self.ctx = ctx
-        self.dry_run = dry_run
+        """Initialize the file cleanup agent.
+        
+        Args:
+            project_root: Root directory of the project.
+            ctx: Execution context with optional scan_directories attribute.
+            dry_run: If True, only report what would be removed (default: True).
+        """
+        self.project_root: Path = Path(project_root)
+        self.ctx: Any = ctx
+        self.dry_run: bool = dry_run
         self.files_to_remove: List[Path] = []
         self.files_to_keep: Dict[str, Path] = {}
-        self.removed_count = 0
+        self.removed_count: int = 0
 
     def _has_repeated_strings(self, filename: str) -> Tuple[bool, Optional[str]]:
-        """
-        Check if filename has repeated consecutive strings OR repeated substrings.
-        Returns (has_repeats, pattern) where pattern is the repeated part.
+        """Check if filename has repeated consecutive strings or repeated substrings.
         
+        Args:
+            filename: Filename to check (without extension).
+            
+        Returns:
+            Tuple of (has_repeats, pattern) where pattern is the repeated part,
+            or (False, None) if no repetition found.
+            
         Examples:
             'enums_enums' -> (True, 'enums')
             'impl_impl_impl' -> (True, 'impl')
             'data_models_enums_enums' -> (True, 'enums')
             'test_data' -> (False, None)
         """
-        # Split by underscore
-        parts = filename.split('_')
+        parts: List[str] = filename.split('_')
         
         # Check for consecutive repeated parts
         for i in range(len(parts) - 1):
             if parts[i] == parts[i + 1] and parts[i]:
                 return True, parts[i]
         
-        # Check for repeated substrings (e.g., 'data_models_enums_enums')
-        # Look for any part that appears more than once
-        from collections import Counter
-        part_counts = Counter(parts)
+        # Check for repeated substrings
+        part_counts: Counter[str] = Counter(parts)
         for part, count in part_counts.items():
-            if count > 1 and part:  # Part appears multiple times
+            if count > 1 and part:
                 return True, part
         
         return False, None
@@ -243,9 +253,30 @@ class FileCleanupAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             return scan_results
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set] = None) -> Dict[str, int]:
-        """L5 safety agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """Execute L5 safety healing operations.
+        
+        This is an operational agent - no repository healing required.
+        Implements cycle detection and depth limiting.
+        
+        Args:
+            dry_run: If True, only report what would be done (default: True).
+            execute: If True, execute healing actions (default: False).
+            depth: Current recursion depth for cycle detection (default: 0).
+            max_depth: Maximum recursion depth allowed (default: 3).
+            _call_path: Set of agent names in current call chain for cycle detection.
+            
+        Returns:
+            Dictionary with healing results: {"skipped": 1} for operational agents.
+        """
+        super().heal_repository()
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -261,9 +292,15 @@ class FileCleanupAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             _call_path.discard(agent_name)
 
 
-def get_file_cleanup_agent(project_root: Path, ctx: Any, dry_run=True) -> Any:
-    """Factory function"""
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-    super().heal_repository()
-
+def get_file_cleanup_agent(project_root: Path, ctx: Any, dry_run: bool = True) -> FileCleanupAgent:
+    """Factory function to create a FileCleanupAgent instance.
+    
+    Args:
+        project_root: Root directory of the project.
+        ctx: Execution context.
+        dry_run: If True, only report what would be removed (default: True).
+        
+    Returns:
+        Configured FileCleanupAgent instance.
+    """
     return FileCleanupAgent(project_root, ctx, dry_run)

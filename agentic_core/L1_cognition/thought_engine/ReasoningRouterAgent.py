@@ -62,78 +62,48 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             TaskType.UNKNOWN: self.default_mode,
         }
     
-    def classify_task(self, Task: str, context: Optional[Dict[str, Any]] = None) -> TaskType:
-        """Classify Task type based on content and context.
-        
-        Args:
-            Task: The Task description
-            context: Optional context with hints
-            
-        Returns:
-            TaskType classification
-        """
+    # Indicator lists for task classification
+    _TOOL_INDICATORS = ["search", "retrieve", "lookup", "find", "fetch", "call", "execute", "run"]
+    _QA_INDICATORS = ["what is", "who is", "when did", "where is", "why", "how", "explain", "describe"]
+    _CLASSIFICATION_INDICATORS = ["classify", "categorize", "is this", "does this", "true or false", "yes or no"]
+    _PLANNING_INDICATORS = ["plan", "strategy", "approach", "steps to", "how to"]
+
+    def _get_task_type_from_context(self, context: Optional[Dict[str, Any]]) -> Optional[TaskType]:
+        """Extract TaskType from context if provided."""
         if context and "TaskType" in context:
             try:
                 return TaskType(context["TaskType"])
             except ValueError:
                 pass
+        return None
+
+    def _match_indicators(self, task_lower: str, indicators: list, task_type: TaskType) -> Optional[TaskType]:
+        """Check if any indicator matches and return task type."""
+        for indicator in indicators:
+            if indicator in task_lower:
+                return task_type
+        return None
+
+    def classify_task(self, Task: str, context: Optional[Dict[str, Any]] = None) -> TaskType:
+        """Classify Task type based on content and context."""
+        context_type = self._get_task_type_from_context(context)
+        if context_type:
+            return context_type
         
         task_lower = Task.lower()
         
-        tool_indicators = [
-            "search",
-            "retrieve",
-            "lookup",
-            "find",
-            "fetch",
-            "call",
-            "execute",
-            "run",
+        # Check indicators in priority order
+        checks = [
+            (self._TOOL_INDICATORS, TaskType.TOOL_USE),
+            (self._CLASSIFICATION_INDICATORS, TaskType.CLASSIFICATION),
+            (self._PLANNING_INDICATORS, TaskType.PLANNING),
+            (self._QA_INDICATORS, TaskType.QUESTION_ANSWERING),
         ]
         
-        qa_indicators = [
-            "what is",
-            "who is",
-            "when did",
-            "where is",
-            "why",
-            "how",
-            "explain",
-            "describe",
-        ]
-        
-        classification_indicators = [
-            "classify",
-            "categorize",
-            "is this",
-            "does this",
-            "true or false",
-            "yes or no",
-        ]
-        
-        planning_indicators = [
-            "plan",
-            "strategy",
-            "approach",
-            "steps to",
-            "how to",
-        ]
-        
-        for indicator in tool_indicators:
-            if indicator in task_lower:
-                return TaskType.TOOL_USE
-        
-        for indicator in classification_indicators:
-            if indicator in task_lower:
-                return TaskType.CLASSIFICATION
-        
-        for indicator in planning_indicators:
-            if indicator in task_lower:
-                return TaskType.PLANNING
-        
-        for indicator in qa_indicators:
-            if indicator in task_lower:
-                return TaskType.QUESTION_ANSWERING
+        for indicators, task_type in checks:
+            result = self._match_indicators(task_lower, indicators, task_type)
+            if result:
+                return result
         
         if len(Task.split()) > 50:
             return TaskType.ANALYSIS
