@@ -31,14 +31,16 @@ CRITICAL: This script MUST be run before any dashboard deployment.
 import subprocess
 import sys
 import os
+import atexit
 import signal
 import time
 import json
 import re
 import socket
+import shutil
 from pathlib import Path
 from datetime import datetime
-from typing import Tuple, List, Dict, Any
+from typing import Tuple, List, Dict, Any, Optional
 
 # =============================================================================
 # CONFIGURATION
@@ -48,34 +50,36 @@ DASHBOARD_DIR = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards
 SCRIPTS_DIR = PROJECT_ROOT / "scripts"
 SERVER_PORT = 8765
 SERVER_TIMEOUT = 10  # seconds to wait for server to start
+FLOAT_TOLERANCE = 1.0  # Percentage points tolerance for floating point comparisons
+GLOBAL_SERVER_PROCESS: Optional[subprocess.Popen] = None
 
 # Add project root to path
-sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(PROJECT_ROOT.resolve()))
 
 # =============================================================================
 # UTILITY FUNCTIONS
 # =============================================================================
 def print_header(text: str, char: str = "="):
     """Print a formatted header."""
-    print(f"\n{char * 70}")
-    print(f" {text}")
-    print(f"{char * 70}\n")
+    print(f"\n{char * 70}", flush=True)
+    print(f" {text}", flush=True)
+    print(f"{char * 70}\n", flush=True)
 
 
 def print_subheader(text: str):
     """Print a formatted subheader."""
-    print(f"\n{'-' * 70}")
-    print(f" {text}")
-    print(f"{'-' * 70}")
+    print(f"\n{'-' * 70}", flush=True)
+    print(f" {text}", flush=True)
+    print(f"{'-' * 70}", flush=True)
 
 
 def print_result(test_name: str, passed: bool, details: str = ""):
     """Print test result."""
     status = "PASSED" if passed else "FAILED"
     symbol = "[PASS]" if passed else "[FAIL]"
-    print(f"  {symbol} {test_name}: {status}")
+    print(f"  {symbol} {test_name}: {status}", flush=True)
     if details:
-        print(f"         {details}")
+        print(f"         {details}", flush=True)
 
 
 def is_port_in_use(port: int) -> bool:
@@ -157,56 +161,150 @@ def run_python_script(script_path: Path, description: str) -> Tuple[bool, str]:
 def stop_dashboard_server() -> bool:
     """Stop any existing dashboard server."""
     print_subheader("STEP 1: Stopping Existing Dashboard Server")
+    global GLOBAL_SERVER_PROCESS
     
     if is_port_in_use(SERVER_PORT):
-        print(f"  Found server on port {SERVER_PORT}, stopping...")
+        print(f"  Found server on port {SERVER_PORT}, stopping...", flush=True)
         kill_process_on_port(SERVER_PORT)
         time.sleep(2)  # Wait for port to be released
         
         if is_port_in_use(SERVER_PORT):
-            print(f"  [WARN] Port {SERVER_PORT} still in use after kill attempt")
+            print(f"  [WARN] Port {SERVER_PORT} still in use after kill attempt", flush=True)
             return False
         else:
-            print(f"  [OK] Server stopped successfully")
+            print(f"  [OK] Server stopped successfully", flush=True)
             return True
     else:
-        print(f"  [OK] No server running on port {SERVER_PORT}")
+        print(f"  [OK] No server running on port {SERVER_PORT}", flush=True)
         return True
 
 
-def start_dashboard_server() -> Tuple[bool, subprocess.Popen]:
-    """Start a fresh dashboard server."""
+def start_dashboard_server() -> Tuple[bool, Optional[subprocess.Popen]]:
+    """Start a production-ready dashboard server using waitress WSGI server."""
     print_subheader("STEP 5: Starting Fresh Dashboard Server")
+    global GLOBAL_SERVER_PROCESS
     
     if is_port_in_use(SERVER_PORT):
-        print(f"  [WARN] Port {SERVER_PORT} already in use")
+        print(f"  [WARN] Port {SERVER_PORT} already in use", flush=True)
         return False, None
     
     try:
-        # Start server in background
+        # Create a waitress server script for production-grade serving
+        server_script = DASHBOARD_DIR / "_temp_server.py"
+        server_script.write_text(f'''
+import os
+import sys
+from waitress import serve
+from wsgiref.simple_server import make_server
+from wsgiref.util import FileWrapper
+import mimetypes
+
+os.chdir(r"{DASHBOARD_DIR}")
+
+class StaticFileApp:
+    """Simple WSGI app to serve static files"""
+    def __init__(self, directory):
+        self.directory = directory
+        
+    def __call__(self, environ, start_response):
+        path = environ.get('PATH_INFO', '/')
+        if path == '/':
+            path = '/autonomy_dashboard.html'
+        
+        # Remove leading slash and resolve path
+        filepath = os.path.join(self.directory, path.lstrip('/'))
+        
+        # Security: prevent directory traversal
+        filepath = os.path.abspath(filepath)
+        if not filepath.startswith(os.path.abspath(self.directory)):
+            start_response('403 Forbidden', [('Content-Type', 'text/plain')])
+            return [b'Forbidden']
+        
+        # Serve file if it exists
+        if os.path.isfile(filepath):
+            mimetype, _ = mimetypes.guess_type(filepath)
+            if mimetype is None:
+                mimetype = 'application/octet-stream'
+            
+            # Override MIME types for common dashboard files
+            if filepath.endswith('.js'):
+                mimetype = 'application/javascript'
+            elif filepath.endswith('.css'):
+                mimetype = 'text/css'
+            elif filepath.endswith('.html'):
+                mimetype = 'text/html'
+            
+            try:
+                with open(filepath, 'rb') as f:
+                    data = f.read()
+                start_response('200 OK', [
+                    ('Content-Type', mimetype),
+                    ('Content-Length', str(len(data))),
+                    ('Cache-Control', 'no-cache, no-store, must-revalidate'),
+                    ('Pragma', 'no-cache'),
+                    ('Expires', '0')
+                ])
+                return [data]
+            except Exception as e:
+                start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
+                return [f'Error reading file: {{e}}'.encode()]
+        else:
+            start_response('404 Not Found', [('Content-Type', 'text/plain')])
+            return [b'File not found']
+
+app = StaticFileApp(r"{DASHBOARD_DIR}")
+print(f"Serving at port {SERVER_PORT}", flush=True)
+serve(app, host='0.0.0.0', port={SERVER_PORT}, threads=6)
+''', encoding='utf-8')
+        
+        # Start waitress server
         server_process = subprocess.Popen(
-            [sys.executable, '-m', 'http.server', str(SERVER_PORT)],
-            cwd=DASHBOARD_DIR,
+            [sys.executable, str(server_script)],
+            cwd=DASHBOARD_DIR.resolve(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == 'win32' else 0
         )
+        GLOBAL_SERVER_PROCESS = server_process
         
         # Wait for server to start
-        print(f"  Starting server on port {SERVER_PORT}...")
+        print(f"  Starting waitress production server on port {SERVER_PORT}...", flush=True)
         for i in range(SERVER_TIMEOUT):
             time.sleep(1)
             if is_port_in_use(SERVER_PORT):
-                print(f"  [OK] Server started successfully (PID: {server_process.pid})")
-                print(f"  [OK] Dashboard URL: http://localhost:{SERVER_PORT}/autonomy_dashboard.html")
+                print(f"  [OK] Waitress server started (PID: {server_process.pid})", flush=True)
+                print(f"  [OK] Dashboard URL: http://localhost:{SERVER_PORT}/autonomy_dashboard.html", flush=True)
                 return True, server_process
         
-        print(f"  [FAIL] Server failed to start within {SERVER_TIMEOUT} seconds")
+        print(f"  [FAIL] Server failed to start within {SERVER_TIMEOUT} seconds", flush=True)
+        server_process.terminate()
+        server_script.unlink(missing_ok=True)
         return False, None
         
     except Exception as e:
-        print(f"  [FAIL] Could not start server: {e}")
+        print(f"  [FAIL] Could not start server: {e}", flush=True)
         return False, None
+
+
+def cleanup_server():
+    """Cleanup function to stop the server on exit - only if tests failed."""
+    global GLOBAL_SERVER_PROCESS
+    # Note: This cleanup is only called if the script exits abnormally
+    # Normal exit is handled in the finally block of main()
+    if GLOBAL_SERVER_PROCESS:
+        print("\n  [CLEANUP] Stopping dashboard server due to abnormal exit...", flush=True)
+        try:
+            GLOBAL_SERVER_PROCESS.terminate()
+            GLOBAL_SERVER_PROCESS.wait(timeout=2)
+        except:
+            try:
+                GLOBAL_SERVER_PROCESS.kill()
+            except:
+                pass
+        GLOBAL_SERVER_PROCESS = None
+
+# Register cleanup for abnormal exits only
+atexit.register(cleanup_server)
 
 
 # =============================================================================
@@ -738,7 +836,7 @@ def main():
     # Track all results
     all_results = {}
     all_passed = True
-    server_process = None
+    global GLOBAL_SERVER_PROCESS
     
     try:
         # =================================================================
@@ -781,10 +879,10 @@ def main():
         # =================================================================
         # STEP 5: Start fresh server
         # =================================================================
-        server_started, server_process = start_dashboard_server()
+        server_started, _ = start_dashboard_server()
         all_results['Server Started'] = server_started
         if not server_started:
-            print("  [WARN] Server not started, E2E tests may fail")
+            print("  [WARN] Server not started, E2E tests may fail", flush=True)
         
         # =================================================================
         # STEP 6: E2E Tests
@@ -825,29 +923,45 @@ def main():
         
         if all_passed:
             print_header("ALL MANDATORY TESTS PASSED", char="=")
-            print("Dashboard is SAFE to deploy.")
-            print(f"\nDashboard URL: http://localhost:{SERVER_PORT}/autonomy_dashboard.html")
-            print("\nCache-Busting Instructions:")
-            print("  1. Hard refresh: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)")
-            print("  2. Or use incognito/private browsing mode")
+            print("Dashboard is SAFE to deploy.", flush=True)
+            print(f"\nDashboard URL: http://localhost:{SERVER_PORT}/autonomy_dashboard.html", flush=True)
+            print(f"Server PID: {GLOBAL_SERVER_PROCESS.pid if GLOBAL_SERVER_PROCESS else 'N/A'}", flush=True)
+            print("\n✅ SERVER LEFT RUNNING - Dashboard is live and accessible", flush=True)
+            print("\nCache-Busting Instructions:", flush=True)
+            print("  1. Hard refresh: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)", flush=True)
+            print("  2. Or use incognito/private browsing mode", flush=True)
+            print("\nTo stop the server manually:", flush=True)
+            print(f"  Stop-Process -Id {GLOBAL_SERVER_PROCESS.pid if GLOBAL_SERVER_PROCESS else 'N/A'}", flush=True)
             return 0
         else:
             print_header("MANDATORY TESTS FAILED", char="!")
-            print("DO NOT DEPLOY until all tests pass!")
-            print("\nFailed test groups:")
+            print("DO NOT DEPLOY until all tests pass!", flush=True)
+            print("\nFailed test groups:", flush=True)
             for test_name, passed in all_results.items():
                 if not passed:
-                    print(f"  - {test_name}")
+                    print(f"  - {test_name}", flush=True)
             return 1
     
     finally:
-        # Don't stop the server if tests passed - leave it running for user
-        if not all_passed and server_process:
-            print("\n  Stopping server due to test failures...")
+        # Only stop the server if tests FAILED
+        # If tests passed, leave server running for user to access dashboard
+        if not all_passed and GLOBAL_SERVER_PROCESS:
+            print("\n  [CLEANUP] Stopping server due to test failures...", flush=True)
             try:
-                server_process.terminate()
+                GLOBAL_SERVER_PROCESS.terminate()
+                GLOBAL_SERVER_PROCESS.wait(timeout=2)
             except:
-                pass
+                try:
+                    GLOBAL_SERVER_PROCESS.kill()
+                except:
+                    pass
+            GLOBAL_SERVER_PROCESS = None
+        elif all_passed and GLOBAL_SERVER_PROCESS:
+            # Tests passed - server stays up
+            # Unregister atexit cleanup so server stays running
+            atexit.unregister(cleanup_server)
+            print(f"\n  ℹ️  Server remains running (PID: {GLOBAL_SERVER_PROCESS.pid})", flush=True)
+            print(f"  Dashboard accessible at: http://localhost:{SERVER_PORT}/autonomy_dashboard.html", flush=True)
 
 
 if __name__ == "__main__":
