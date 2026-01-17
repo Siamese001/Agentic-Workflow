@@ -415,7 +415,7 @@ function renderCodeQualityTable(data) {
                 </thead>
                 <tbody>`;
     
-    // Add TOTAL row first
+    // Add TOTAL row first (simple values, no distribution stats for TOTAL)
     html += `
             <tr style="background: #f8fafc; border-bottom: 3px solid #94a3b8; font-weight: 700; font-size: 1.05em;">
                 <td style="padding: 12px 8px; position: sticky; left: 0; background: #f8fafc; z-index: 5;">TOTAL</td>
@@ -427,10 +427,19 @@ function renderCodeQualityTable(data) {
                 <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow[COLUMNS.CODE_QUALITY])}; font-size: 1.2em;">${totalRow[COLUMNS.CODE_QUALITY].toFixed(1)}</td>
             </tr>`;
     
-    // Render each territory row
+    // Render each territory row with distribution stats (MATCH TABLE 1 FUNCTIONALITY)
     territoryData.forEach(row => {
         const territory = row.Territory;
         const agentCount = row.Total || 0;
+        
+        // Get distribution stats for each metric (SAME AS TABLE 1)
+        const territoryAgents = window.realAgentData ? (window.realAgentData[territory] || {}) : {};
+        const getStats = (key) => computeDistributionStats(territoryAgents[key] || []);
+        
+        const typedStats = getStats('typed');
+        const documentedStats = getStats('documented');
+        const schemaStats = getStats('schemaStrictness');
+        const baseClassStats = getStats('properBase');
         
         // Get metrics with N/A handling
         const typed = row[COLUMNS.TYPED];
@@ -439,29 +448,36 @@ function renderCodeQualityTable(data) {
         const baseClass = row[COLUMNS.CANONICAL_INHERITANCE];
         const quality = row[COLUMNS.CODE_QUALITY];
         
-        // Color coding
-        const typedColor = typed === 'N/A' ? '#6b7280' : getColor(typed);
-        const docColor = documented === 'N/A' ? '#6b7280' : getColor(documented);
-        const schemaColor = schema === 'N/A' ? '#6b7280' : getColor(schema);
-        const baseColor = baseClass === 'N/A' ? '#6b7280' : getColor(baseClass);
-        const qualityColor = quality === 'N/A' ? '#6b7280' : getColor(quality);
-        
-        // Format values
-        const typedVal = typed === 'N/A' ? 'N/A' : typed.toFixed(1) + '%';
-        const docVal = documented === 'N/A' ? 'N/A' : documented.toFixed(1) + '%';
-        const schemaVal = schema === 'N/A' ? 'N/A' : schema.toFixed(1) + '%';
-        const baseVal = baseClass === 'N/A' ? 'N/A' : baseClass.toFixed(1) + '%';
-        const qualityVal = quality === 'N/A' ? 'N/A' : quality.toFixed(1);
+        // Color coding with gradient backgrounds (MATCH TABLE 1)
+        const typedBg = typed === 'N/A' ? 'transparent' : getGradientBg(typed);
+        const docBg = documented === 'N/A' ? 'transparent' : getGradientBg(documented);
+        const schemaBg = schema === 'N/A' ? 'transparent' : getGradientBg(schema);
+        const baseBg = baseClass === 'N/A' ? 'transparent' : getGradientBg(baseClass);
+        const qualityBg = quality === 'N/A' ? 'transparent' : getGradientBg(quality);
         
         html += `
             <tr style="border-bottom: 1px solid #e2e8f0; hover: background-color: #f8fafc;">
                 <td style="padding: 12px 8px; font-weight: 500; position: sticky; left: 0; background: white; z-index: 5;">${territory}</td>
                 <td style="padding: 12px 8px; text-align: center;">${agentCount}</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${typedColor}; font-weight: 600;">${typedVal}</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${docColor}; font-weight: 600;">${docVal}</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${schemaColor}; font-weight: 600;">${schemaVal}</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${baseColor}; font-weight: 600;">${baseVal}</td>
-                <td style="padding: 12px 8px; text-align: center; color: ${qualityColor}; font-weight: 600; font-size: 1.1em;">${qualityVal}</td>
+                <td class="metric-cell" style="padding: 12px 8px; text-align: center; background: ${typedBg};">
+                    <div>${formatDistributionCell(typed, typedStats)}</div>
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(territory, 'typed', 'Typed %', 100)}</div>
+                </td>
+                <td class="metric-cell" style="padding: 12px 8px; text-align: center; background: ${docBg};">
+                    <div>${formatDistributionCell(documented, documentedStats)}</div>
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(territory, 'documented', 'Documented %', 100)}</div>
+                </td>
+                <td class="metric-cell" style="padding: 12px 8px; text-align: center; background: ${schemaBg};">
+                    <div>${formatDistributionCell(schema, schemaStats)}</div>
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(territory, 'schemaStrictness', 'Schema Strictness %', 100)}</div>
+                </td>
+                <td class="metric-cell" style="padding: 12px 8px; text-align: center; background: ${baseBg};">
+                    <div>${formatDistributionCell(baseClass, baseClassStats)}</div>
+                    <div class="custom-tooltip">${formatProblemAgentsTooltip(territory, 'properBase', 'Canonical Inheritance %', 100)}</div>
+                </td>
+                <td class="metric-cell" style="padding: 12px 8px; text-align: center; background: ${qualityBg}; font-size: 1.1em;">
+                    ${quality === 'N/A' ? '<span style="color:#6b7280; font-style:italic;">N/A</span>' : quality.toFixed(1)}
+                </td>
             </tr>`;
     });
     

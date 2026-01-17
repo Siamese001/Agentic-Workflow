@@ -1,23 +1,39 @@
-from dataclasses import dataclass
 """
 ContactValidatorAgent - Extracted for one-class-per-file pattern.
 
 Originally from: LeadQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
-
-
 from __future__ import annotations
+from dataclasses import dataclass
+from typing import Dict, List, Any
+import re
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 @dataclass
-class ContactValidatorAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
-    """Validates contact information."""
+class ContactValidatorAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
+    """
+    Validates contact information.
+    
+    Validates:
+    - Email format using regex pattern
+    - Presence of required contact fields
+    - Email domain validity
+    """
 
     EMAIL_PATTERN = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 
     async def execute(self) -> None:
+        """
+        Execute contact validation.
+        
+        Validates all contacts in context for:
+        - Email presence
+        - Email format validity
+        - Raises CONTACT_VALIDATION_FAILED signal if issues found
+        """
         print(f"   [{self.name}] Validating contacts...")
 
         contacts = self.ctx.contacts
@@ -45,6 +61,16 @@ class ContactValidatorAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMix
             self.record_result(True, "All contacts validated")
             print(f"   [{self.name}] ✅ Contacts validated")
 
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+            **kwargs: Additional healing parameters
+        
+        Returns:
+            Dict with healing summary (violations, fixed, errors)
+        """
+        return super().heal_repository(dry_run, execute, **kwargs)

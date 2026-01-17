@@ -119,7 +119,15 @@ class ProactiveScheduler:
         self._patterns: Dict[str, int] = {}
 
     def identify_tasks(self) -> List[ProactiveTask]:
-        """Identify tasks based on current context."""
+        """
+        Identify tasks based on current context.
+        
+        Analyzes context signals and state to proactively identify
+        tasks that need to be executed.
+        
+        Returns:
+            List of identified proactive tasks
+        """
         tasks = []
 
         # Check for quality issues
@@ -180,7 +188,19 @@ class ProactiveScheduler:
         auto_execute: bool = True,
         requires_approval: bool = False,
     ) -> ProactiveTask:
-        """Create a proactive Task."""
+        """
+        Create a proactive task.
+        
+        Args:
+            name: Task name
+            description: Task description
+            priority: Task priority level
+            auto_execute: Whether task can be auto-executed
+            requires_approval: Whether task requires human approval
+        
+        Returns:
+            Created ProactiveTask instance
+        """
         self._task_counter += 1
         return ProactiveTask(
             task_id=f"task_{self._task_counter}",
@@ -194,7 +214,12 @@ class ProactiveScheduler:
         )
 
     def get_pending_tasks(self) -> List[ProactiveTask]:
-        """Get pending tasks sorted by priority."""
+        """
+        Get pending tasks sorted by priority.
+        
+        Returns:
+            List of pending tasks ordered by priority (CRITICAL first)
+        """
         pending = [t for t in self._tasks if not t.executed]
         priority_order = {
             TaskPriority.CRITICAL: 0,
@@ -205,8 +230,14 @@ class ProactiveScheduler:
         }
         return sorted(pending, key=lambda t: priority_order.get(t.priority, 5))
 
-    def mark_executed(self, task_id: str, result: str = "completed") -> Any:
-        """Mark a Task as executed."""
+    def mark_executed(self, task_id: str, result: str = "completed") -> None:
+        """
+        Mark a task as executed.
+        
+        Args:
+            task_id: ID of task to mark as executed
+            result: Execution result description
+        """
         for Task in self._tasks:
             if Task.task_id == task_id:
                 Task.executed = True
@@ -214,7 +245,12 @@ class ProactiveScheduler:
                 break
 
     def get_auto_executable_tasks(self) -> List[ProactiveTask]:
-        """Get tasks that can be auto-executed."""
+        """
+        Get tasks that can be auto-executed.
+        
+        Returns:
+            List of tasks that can be executed without approval
+        """
         return [t for t in self.get_pending_tasks() if t.auto_execute and not t.requires_approval]
 
 
@@ -232,8 +268,13 @@ class PredictiveHandoff:
         self._request_counter = 0
         self._capability_profiles: Dict[str, CapabilityProfile] = {}
 
-    def register_capability(self, profile: CapabilityProfile) -> Any:
-        """Register an agent's capability profile."""
+    def register_capability(self, profile: CapabilityProfile) -> None:
+        """
+        Register an agent's capability profile.
+        
+        Args:
+            profile: Capability profile to register
+        """
         self._capability_profiles[profile.agent_name] = profile
 
     def predict_handoff_need(
@@ -340,8 +381,12 @@ class PredictiveHandoff:
         """Get all pending handoff requests."""
         return self._handoff_requests
 
-    def clear_handoffs(self) -> Any:
-        """Clear all handoff requests."""
+    def clear_handoffs(self) -> None:
+        """
+        Clear all handoff requests.
+        
+        Removes all pending handoff requests from the queue.
+        """
         self._handoff_requests.clear()
 
 
@@ -365,8 +410,17 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
         success: bool,
         duration_ms: float,
         complexity: int = 1,
-    ) -> Any:
-        """Record an agent execution."""
+    ) -> None:
+        """
+        Record an agent execution.
+        
+        Args:
+            agent_name: Name of agent that executed
+            TaskType: Type of task executed
+            success: Whether execution succeeded
+            duration_ms: Execution duration in milliseconds
+            complexity: Task complexity level (default: 1)
+        """
         self._execution_history.append({
             "agent_name": agent_name,
             "TaskType": TaskType,
@@ -398,7 +452,15 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
             stats["failures"] += 1
 
     def get_success_rate(self, agent_name: str) -> float:
-        """Get success rate for an agent."""
+        """
+        Get success rate for an agent.
+        
+        Args:
+            agent_name: Name of agent
+        
+        Returns:
+            Success rate between 0.0 and 1.0
+        """
         stats = self._agent_stats.get(agent_name, {})
         total = stats.get("total_executions", 0)
         if total == 0:
@@ -406,7 +468,15 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
         return stats.get("successes", 0) / total
 
     def get_capability_profile(self, agent_name: str) -> CapabilityProfile:
-        """Generate a capability profile for an agent."""
+        """
+        Generate a capability profile for an agent.
+        
+        Args:
+            agent_name: Name of agent
+        
+        Returns:
+            Generated capability profile with stats
+        """
         stats = self._agent_stats.get(agent_name, {})
 
         return CapabilityProfile(
@@ -419,7 +489,15 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
         )
 
     def _get_supported_tasks(self, agent_name: str) -> List[str]:
-        """Get list of tasks an agent has successfully completed."""
+        """
+        Get list of tasks an agent has successfully completed.
+        
+        Args:
+            agent_name: Name of agent
+        
+        Returns:
+            List of task types successfully completed
+        """
         tasks = set()
         for execution in self._execution_history:
             if execution["agent_name"] == agent_name and execution["success"]:
@@ -430,7 +508,17 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
         """Get stats for all agents."""
         return self._agent_stats.copy()
 
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+            **kwargs: Additional healing parameters
+        
+        Returns:
+            Dict with healing summary (violations, fixed, errors)
+        """
+        return super().heal_repository(dry_run, execute, **kwargs)
 

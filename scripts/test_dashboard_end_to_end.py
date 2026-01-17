@@ -712,6 +712,211 @@ def run_all_tests() -> bool:
     except Exception as e:
         errors.append(f"Test 12B FAILED: Could not validate territory data: {e}")
     
+    # Test 12C: Table 2 Uses formatDistributionCell (Match Table 1)
+    print("\n" + "─" * 70)
+    print("Running: Table 2 formatDistributionCell Verification")
+    print("─" * 70)
+    
+    try:
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        
+        # Extract renderCodeQualityTable function
+        table2_func_start = html_content.find('function renderCodeQualityTable(')
+        if table2_func_start == -1:
+            errors.append("Test 12C FAILED: renderCodeQualityTable function not found")
+        else:
+            table2_func_end = html_content.find('\nfunction ', table2_func_start + 100)
+            table2_func = html_content[table2_func_start:table2_func_end]
+            
+            table2_issues = []
+            
+            # Verify formatDistributionCell is used in Table 2
+            if 'formatDistributionCell' not in table2_func:
+                table2_issues.append("Table 2 does NOT use formatDistributionCell (Table 1 does)")
+            
+            # Verify computeDistributionStats is used
+            if 'computeDistributionStats' not in table2_func:
+                table2_issues.append("Table 2 does NOT use computeDistributionStats (Table 1 does)")
+            
+            # Verify getGradientBg is used for color formatting
+            if 'getGradientBg' not in table2_func:
+                table2_issues.append("Table 2 does NOT use getGradientBg for color backgrounds (Table 1 does)")
+            
+            # Verify formatProblemAgentsTooltip is used
+            if 'formatProblemAgentsTooltip' not in table2_func:
+                table2_issues.append("Table 2 does NOT use formatProblemAgentsTooltip for tooltips (Table 1 does)")
+            
+            # Verify metric-cell class is used
+            if 'class="metric-cell"' not in table2_func:
+                table2_issues.append("Table 2 does NOT use metric-cell class (Table 1 does)")
+            
+            if table2_issues:
+                errors.append(f"Test 12C FAILED: {len(table2_issues)} Table 2 functionality gaps")
+                for issue in table2_issues:
+                    errors.append(f"  - {issue}")
+                print(f"❌ Test 12C FAILED: Table 2 missing functionality that Table 1 has")
+                for issue in table2_issues:
+                    print(f"   - {issue}")
+            else:
+                print(f"✅ Test 12C PASSED: Table 2 uses same functions as Table 1")
+                print(f"   ✓ formatDistributionCell for min/max/stddev display")
+                print(f"   ✓ computeDistributionStats for calculations")
+                print(f"   ✓ getGradientBg for color formatting")
+                print(f"   ✓ formatProblemAgentsTooltip for tooltips")
+                print(f"   ✓ metric-cell class for styling")
+    
+    except Exception as e:
+        errors.append(f"Test 12C FAILED: {e}")
+    
+    # Test 12D: Table 2 Distribution Stats Display (Min/Max/StdDev)
+    print("\n" + "─" * 70)
+    print("Running: Table 2 Min/Max/StdDev Display Verification")
+    print("─" * 70)
+    
+    try:
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        
+        # Extract renderCodeQualityTable function
+        table2_func_start = html_content.find('function renderCodeQualityTable(')
+        table2_func_end = html_content.find('\nfunction ', table2_func_start + 100)
+        table2_func = html_content[table2_func_start:table2_func_end]
+        
+        dist_issues = []
+        
+        # Verify all Table 2 metrics get distribution stats
+        required_stats = ['typedStats', 'documentedStats', 'schemaStats', 'baseClassStats']
+        for stat in required_stats:
+            if stat not in table2_func:
+                dist_issues.append(f"Missing {stat} calculation")
+        
+        # Verify stats are passed to formatDistributionCell
+        required_calls = [
+            'formatDistributionCell(typed, typedStats)',
+            'formatDistributionCell(documented, documentedStats)',
+            'formatDistributionCell(schema, schemaStats)',
+            'formatDistributionCell(baseClass, baseClassStats)'
+        ]
+        for call in required_calls:
+            if call not in table2_func:
+                dist_issues.append(f"Missing call: {call}")
+        
+        if dist_issues:
+            errors.append(f"Test 12D FAILED: {len(dist_issues)} distribution stat issues in Table 2")
+            for issue in dist_issues:
+                errors.append(f"  - {issue}")
+            print(f"❌ Test 12D FAILED: Table 2 distribution stats incomplete")
+            for issue in dist_issues:
+                print(f"   - {issue}")
+        else:
+            print(f"✅ Test 12D PASSED: Table 2 shows min/max/stddev for all metrics")
+            print(f"   ✓ typedStats with formatDistributionCell")
+            print(f"   ✓ documentedStats with formatDistributionCell")
+            print(f"   ✓ schemaStats with formatDistributionCell")
+            print(f"   ✓ baseClassStats with formatDistributionCell")
+    
+    except Exception as e:
+        errors.append(f"Test 12D FAILED: {e}")
+    
+    # Test 12E: Table 2 Color Formatting Matches Table 1
+    print("\n" + "─" * 70)
+    print("Running: Table 2 Color Formatting Verification")
+    print("─" * 70)
+    
+    try:
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        
+        # Extract both table functions
+        table1_func_start = html_content.find('function renderTerritorySummaryTable(')
+        table1_func_end = html_content.find('\nfunction ', table1_func_start + 100)
+        table1_func = html_content[table1_func_start:table1_func_end]
+        
+        table2_func_start = html_content.find('function renderCodeQualityTable(')
+        table2_func_end = html_content.find('\nfunction ', table2_func_start + 100)
+        table2_func = html_content[table2_func_start:table2_func_end]
+        
+        color_issues = []
+        
+        # Verify Table 2 uses getGradientBg like Table 1
+        table1_gradient_count = table1_func.count('getGradientBg(')
+        table2_gradient_count = table2_func.count('getGradientBg(')
+        
+        if table2_gradient_count == 0:
+            color_issues.append("Table 2 does NOT use getGradientBg (Table 1 uses it for color backgrounds)")
+        elif table2_gradient_count < 4:  # Should have at least 4 metrics with gradient backgrounds
+            color_issues.append(f"Table 2 uses getGradientBg only {table2_gradient_count} times (should be 4+ for all metrics)")
+        
+        # Verify background styling pattern matches
+        if 'background: ${' not in table2_func or 'Bg}' not in table2_func:
+            color_issues.append("Table 2 missing background color styling pattern")
+        
+        if color_issues:
+            errors.append(f"Test 12E FAILED: {len(color_issues)} color formatting issues")
+            for issue in color_issues:
+                errors.append(f"  - {issue}")
+            print(f"❌ Test 12E FAILED: Table 2 color formatting doesn't match Table 1")
+            for issue in color_issues:
+                print(f"   - {issue}")
+        else:
+            print(f"✅ Test 12E PASSED: Table 2 color formatting matches Table 1")
+            print(f"   ✓ Table 1 uses getGradientBg {table1_gradient_count} times")
+            print(f"   ✓ Table 2 uses getGradientBg {table2_gradient_count} times")
+            print(f"   ✓ Both tables use conditional background styling")
+    
+    except Exception as e:
+        errors.append(f"Test 12E FAILED: {e}")
+    
+    # Test 12F: Table 2 Tooltips Match Table 1
+    print("\n" + "─" * 70)
+    print("Running: Table 2 Tooltip Functionality Verification")
+    print("─" * 70)
+    
+    try:
+        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
+        html_content = dashboard_path.read_text(encoding='utf-8')
+        
+        table2_func_start = html_content.find('function renderCodeQualityTable(')
+        table2_func_end = html_content.find('\nfunction ', table2_func_start + 100)
+        table2_func = html_content[table2_func_start:table2_func_end]
+        
+        tooltip_issues = []
+        
+        # Verify Table 2 uses formatProblemAgentsTooltip for all metrics
+        table2_tooltip_count = table2_func.count('formatProblemAgentsTooltip(')
+        
+        if table2_tooltip_count == 0:
+            tooltip_issues.append("Table 2 has NO tooltips (Table 1 has tooltips for all metrics)")
+        elif table2_tooltip_count < 4:  # Should have 4 metrics with tooltips
+            tooltip_issues.append(f"Table 2 has only {table2_tooltip_count} tooltips (should have 4 for Typed/Documented/Schema/BaseClass)")
+        
+        # Verify custom-tooltip class is used
+        if 'class="custom-tooltip"' not in table2_func:
+            tooltip_issues.append("Table 2 missing custom-tooltip class")
+        
+        # Verify tooltip metrics match Table 2 metrics
+        expected_tooltip_metrics = ['typed', 'documented', 'schemaStrictness', 'properBase']
+        for metric in expected_tooltip_metrics:
+            if f"'{metric}'" not in table2_func:
+                tooltip_issues.append(f"Missing tooltip for metric: {metric}")
+        
+        if tooltip_issues:
+            errors.append(f"Test 12F FAILED: {len(tooltip_issues)} tooltip issues")
+            for issue in tooltip_issues:
+                errors.append(f"  - {issue}")
+            print(f"❌ Test 12F FAILED: Table 2 tooltips incomplete")
+            for issue in tooltip_issues:
+                print(f"   - {issue}")
+        else:
+            print(f"✅ Test 12F PASSED: Table 2 tooltips match Table 1 functionality")
+            print(f"   ✓ {table2_tooltip_count} tooltips with formatProblemAgentsTooltip")
+            print(f"   ✓ custom-tooltip class for styling")
+            print(f"   ✓ All 4 metrics have tooltips (typed, documented, schema, baseClass)")
+    
+    except Exception as e:
+        errors.append(f"Test 12F FAILED: {e}")
+    
     # Test 13: Footnote Accuracy Check
     print("\n" + "─" * 70)
     print("Running: Footnote Accuracy Check")

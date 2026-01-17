@@ -1,13 +1,17 @@
-from dataclasses import dataclass
 """
 ATSCompatibilityAgent - Extracted for one-class-per-file pattern.
 
 Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
-
-
 from __future__ import annotations
+from dataclasses import dataclass
+from typing import Dict, List
+import json
+import re
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 @dataclass
 class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ResumeAgent):
@@ -95,8 +99,17 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
             self.record_pass("ATS compatible")
             self.remove_signal("ATS_FAILURE")
 
-    def _calculate_keyword_score(self, resume: Dict, job_desc: str) -> float:
-        """Calculate keyword match score."""
+    def _calculate_keyword_score(self, resume: Dict[str, any], job_desc: str) -> float:
+        """
+        Calculate keyword match score between resume and job description.
+        
+        Args:
+            resume: Resume data dictionary
+            job_desc: Job description text
+        
+        Returns:
+            Float between 0.0 and 1.0 representing keyword match percentage
+        """
         # Extract keywords from job description
         job_words = set(re.findall(r'\b[a-zA-Z]{3,}\b', job_desc.lower()))
 
@@ -113,6 +126,16 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
 
         return matches / len(job_words)
 
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+            **kwargs: Additional healing parameters
+        
+        Returns:
+            Dict with healing summary (violations, fixed, errors)
+        """
+        return super().heal_repository(dry_run, execute, **kwargs)
