@@ -1,5 +1,18 @@
 #!/usr/bin/env python3
 """
+[DEPRECATED] This script is deprecated. Use regenerate_dashboard_full.py instead.
+
+DEPRECATION REASON: This script attempts to parse JSON from HTML which fails.
+It does not use SSOT definitions for calculations.
+
+CANONICAL SSOT: scripts/regenerate_dashboard_full.py
+"""
+import sys
+print("[DEPRECATED] This script is deprecated. Use regenerate_dashboard_full.py instead.")
+sys.exit(1)
+
+# Original code below for reference:
+"""
 Regenerate dashboard territory data from agent_discovery_full.json.
 
 This ensures dashboard data matches the source of truth.

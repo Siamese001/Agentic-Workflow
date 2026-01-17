@@ -17,10 +17,11 @@ from typing import Any, Dict, Optional, Set
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass
-class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin):
+class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """L5 Safety agent that removes unused imports and variables using autoflake.
     
     This atomic agent uses autoflake to clean up unused imports and variables

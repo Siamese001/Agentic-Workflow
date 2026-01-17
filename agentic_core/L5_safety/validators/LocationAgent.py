@@ -181,7 +181,7 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
     return False
 
 
-from agentic_core.bases import L5Agent
+from agentic_core.L5_safety.validators.L5Agent import L5Agent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 @registers_prompt(
@@ -272,12 +272,32 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         self.project_root = project_root.resolve()
         # Validate project root is correct
         self._validate_project_root()
-        # NamingAgent singleton for post-heal validation and auto-healing
-        from agentic_core.utils.naming.naming_agent import get_naming_agent
-        self.naming_agent = get_naming_agent(self.project_root)
-        # ImportAgent singleton for post-heal validation & auto-heal
-        from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
-        self.import_agent = ImportAgent(self.project_root)
+        # Lazy agent references to avoid circular instantiation
+        # These are created on-demand via properties, not in __init__
+        self._naming_agent = None
+        self._import_agent = None
+    
+    @property
+    def naming_agent(self):
+        """Lazy NamingAgent - created on first access to avoid circular init."""
+        if self._naming_agent is None:
+            try:
+                from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
+                self._naming_agent = get_naming_agent(self.project_root)
+            except (ImportError, RecursionError):
+                Logger.warning("NamingAgent not available - post-heal naming validation disabled")
+        return self._naming_agent
+    
+    @property
+    def import_agent(self):
+        """Lazy ImportAgent - created on first access to avoid circular init."""
+        if self._import_agent is None:
+            try:
+                from agentic_core.L5_safety.gravity.ImportAgent import get_import_agent
+                self._import_agent = get_import_agent(self.project_root)
+            except (ImportError, RecursionError):
+                Logger.warning("ImportAgent not available - post-heal import validation disabled")
+        return self._import_agent
 
     def _validate_project_root(self) -> None:
         """
@@ -2237,3 +2257,13 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 
 # PascalCase is now the canonical name
+
+# Singleton getter for canon_validator compatibility
+_location_agent_instance = None
+
+def get_location_agent(project_root):
+    """Get or create LocationAgent singleton."""
+    global _location_agent_instance
+    if _location_agent_instance is None:
+        _location_agent_instance = LocationAgent(project_root)
+    return _location_agent_instance

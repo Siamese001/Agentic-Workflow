@@ -227,6 +227,7 @@ def _update_agent_execution(agent_name: str, layer: str, start_time: float, end_
 
 # Agent layer mapping for UI display
 AGENT_LAYERS = {
+    # L5 Safety & Governance
     "NamingAgent": "L5 – Safety & Governance",
     "AutonomyGuardian": "L5 – Safety & Governance",
     "LocationAgent": "L5 – Safety & Governance",
@@ -234,6 +235,18 @@ AGENT_LAYERS = {
     "StructuralHealerAgent": "L5 – Safety & Governance",
     "ComplianceOrchestratorAgent": "L5 – Safety & Governance",
     "AutonomyGuardianAgent": "L5 – Safety & Governance",
+    
+    # L2 Execution (Future Activation)
+    "ImportAgent": "L2 – Execution & Tools",
+    "StructuralEngineerAgent": "L2 – Execution & Tools",
+    
+    # L1 Cognition (Future Activation)
+    "GovernanceAgent": "L1 – Cognition & Intelligence",
+    "DocumentationAgent": "L1 – Cognition & Intelligence",
+    
+    # L0 Maintenance (Future Activation)
+    "BootstrapAgent": "L0 – Maintenance & Infrastructure",
+    "FilesystemSSOTReconcilerAgent": "L0 – Maintenance & Infrastructure",
 }
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
@@ -559,8 +572,17 @@ def main():
         
         try:
             # Import autonomous agents
+            # Phase 1, 2, & 3: Activate L5 Safety, L2 Execution, and L1 Cognition
             from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
             from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+            from agentic_core.L5_safety.validators.LocationAgent import get_location_agent
+            from agentic_core.L5_safety.guardrails.HierarchyAgent import get_hierarchy_agent
+            
+            # Phase 2: Execution Layer - Import Validation (Gravity Law)
+            from agentic_core.L5_safety.gravity.ImportAgent import get_import_agent
+
+            # Phase 3: Cognition Layer - Architectural Governance
+            from agentic_core.L1_cognition.thought_engine.GovernanceAgent import get_governance_agent
             
             # Phase 4.2: Repository-wide Sovereign Sweep across all aligned domains
             domains = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR]
@@ -575,8 +597,14 @@ def main():
                 pass
             
             # Build agent list for runtime state
+            # CRITICAL ORDER: Location -> Hierarchy -> Naming -> Import -> Governance -> Guardian
+            # Cognition (Governance) runs after structural fixes to ensure higher-level laws are met.
             agents_template = [
+                ("LocationAgent", get_location_agent),
+                ("HierarchyAgent", get_hierarchy_agent),
                 ("NamingAgent", get_naming_agent),
+                ("ImportAgent", get_import_agent),
+                ("GovernanceAgent", get_governance_agent),
                 ("AutonomyGuardian", get_autonomy_guardian),
             ]
             
@@ -623,8 +651,12 @@ def main():
                 _save_runtime_state(project_root)
                 
                 # All healing goes through agents directly — no scripts
+                # PHASE 2 ACTIVATION: Foundation (L5) + Execution (L2)
                 agents = [
+                    ("LocationAgent", get_location_agent(project_root)),
+                    ("HierarchyAgent", get_hierarchy_agent(project_root)),
                     ("NamingAgent", get_naming_agent(project_root)),
+                    ("ImportAgent", get_import_agent(project_root)),
                     ("AutonomyGuardian", get_autonomy_guardian(project_root)),
                 ]
                 

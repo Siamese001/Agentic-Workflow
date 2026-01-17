@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from pydantic import BaseModel, Field
 
-from agentic_core.L5_safety.guardrails.input_validator import InputValidatorAgent
+from agentic_core.L5_safety.guardrails.input_validator import InputValidator as InputValidatorAgent
 from agentic_core.schemas.models.runtime_models import InjectionMatch
 
 # Compatibility aliases

@@ -334,10 +334,11 @@ def registers_prompt(
     """
     Decorator for agents to declare their prompt template dependencies.
     
-    Usage:
+    Usage::
+    
         @registers_prompt("gravity_repair.jinja", purpose="Fixes import violations")
         class ImportAgent:
-            """ImportAgent class."""
+            '''ImportAgent class.'''
             pass
     
     This enables:
