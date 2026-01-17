@@ -1,7 +1,6 @@
 from __future__ import annotations
-from dataclasses import dataclass
 """
-BootstrapAgent: Sovereign Boot Integrity & Neural Link Verifier
+BootstrapAgent: Sovereign Boot Integrity & Neural Link Verifier.
 
 Verifies critical boot dependencies:
 - .env presence and loading (Gravity Anchor)
@@ -14,13 +13,15 @@ Placed in L0_maintenance/scripts per SSOT:
 
 Depth: agentic_core/L0_maintenance/scripts/bootstrap_agent.py -> 4 parts -> compliant
 """
+import logging
 import os
 import urllib.parse
-import redis
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Set
+
+import redis
 from dotenv import load_dotenv
-import logging
-from typing import Any, Dict, List
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -244,12 +245,31 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         return results
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L0 maintenance agent - operational only."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """
+        Execute L0 maintenance healing operations.
+        
+        Args:
+            dry_run: If True, only report violations without fixing.
+            execute: If True, apply fixes.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum allowed recursion depth.
+            _call_path: Set of agent names already in call chain for cycle detection.
+            
+        Returns:
+            Dict with keys: violations, fixed, errors, skipped.
+        """
         super().heal_repository()
 
-        _call_path = set()
+        if _call_path is None:
+            _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}

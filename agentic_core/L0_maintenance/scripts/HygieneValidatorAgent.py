@@ -1,20 +1,21 @@
-from __future__ import annotations
 #!/usr/bin/env python3
+"""HygieneValidatorAgent - Code rot detection and hygiene validation.
+
+Identifies code quality issues:
+1. Dead Code: Orphaned files that are never imported.
+2. Duplication: Files with identical content.
 """
-Hygiene Validator - Detects Code Rot
-Identifies:
-1. Dead Code (Orphaned files that are never imported)
-2. Duplication (Files with identical content)
-"""
+from __future__ import annotations
+
 import ast
 import hashlib
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
 from agentic_core.bases import L0MaintenanceBaseAgent
-
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
@@ -35,18 +36,36 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     """
-    Detects 'Rot' within the system:
-    1. Dead Code (Orphaned files that are never imported)
-    2. Duplication (Files with identical content)
+    Hygiene validation agent for code rot detection.
+    
+    Detects code quality issues:
+        - Dead Code: Orphaned files that are never imported.
+        - Duplication: Files with identical content (MD5 hash).
+    
+    Inherits:
+        L0MaintenanceBaseAgent: HealerMixin, L0DelegationTestingMixin.
+        MCPHardenedMixin: MCP protocol hardening.
+    
+    Attributes:
+        root_path: Path to project root for scanning.
+        all_py_files: List of discovered Python files.
+        import_graph: Dict mapping import targets to importing files.
+        file_hashes: Dict mapping MD5 hashes to file paths.
+        entry_points: Set of standalone file names (not expected to be imported).
     """
 
     def __init__(self, root_path: str) -> None:
+        """
+        Initialize the hygiene validator.
+        
+        Args:
+            root_path: Path to project root directory for scanning.
+        """
         self.root_path = Path(root_path)
-        self.all_py_files = []
-        self.import_graph = defaultdict(set)
-        self.file_hashes = defaultdict(list)
-        # Files that are expected to be standalone (not imported)
-        self.entry_points = {
+        self.all_py_files: List[str] = []
+        self.import_graph: Dict[str, Set[str]] = defaultdict(set)
+        self.file_hashes: Dict[str, List[str]] = defaultdict(list)
+        self.entry_points: Set[str] = {
             "main.py",
             "setup.py",
             "manage.py",
@@ -54,11 +73,15 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
             "conftest.py",
             "__main__.py",
         }
-        # [PHASE 2] L0 Delegated Testing - manual safe call
         self._run_delegated_tests_safe()
     
-    def _run_delegated_tests_safe(self):
-        """Manual delegation for validators (no inheritance conflict)."""
+    def _run_delegated_tests_safe(self) -> None:
+        """
+        Run delegated tests safely.
+        
+        Manual delegation for validators to avoid inheritance conflicts.
+        Logs warning if tests soft-fail but does not halt boot.
+        """
         try:
             from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
             mixin = L0DelegationTestingMixin()
@@ -67,8 +90,13 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
         except Exception:
             pass  # Validators should not halt boot
 
-    def scan(self) -> Dict[str, Any]:
-        """Builds file list and import graph."""
+    def scan(self) -> None:
+        """
+        Scan project and build file list and import graph.
+        
+        Populates all_py_files, import_graph, and file_hashes.
+        Skips virtual environments and cache directories.
+        """
         for root, dirs, files in os.walk(self.root_path):
             # Skip virtual environments and cache directories
             dirs[:] = [
@@ -97,8 +125,14 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
                     # Parse imports for orphan check
                     self._analyze_imports(full_path, rel_path)
 
-    def _analyze_imports(self, full_path: str, rel_path: str):
-        """Parse file and extract all import targets."""
+    def _analyze_imports(self, full_path: str, rel_path: str) -> None:
+        """
+        Parse file and extract all import targets.
+        
+        Args:
+            full_path: Absolute path to the file.
+            rel_path: Relative path from project root.
+        """
         try:
             with open(full_path, "r", encoding="utf-8") as f:
                 tree = ast.parse(f.read())
@@ -113,8 +147,17 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
         except Exception:
             pass  # Skip unparseable files
 
-    def _resolve_import_target(self, node, base_dir) -> List[str]:
-        """Resolve import statement to potential file paths."""
+    def _resolve_import_target(self, node: ast.AST, base_dir: str) -> List[str]:
+        """
+        Resolve import statement to potential file paths.
+        
+        Args:
+            node: AST Import or ImportFrom node.
+            base_dir: Base directory for relative resolution.
+            
+        Returns:
+            List of potential file paths the import could resolve to.
+        """
         targets = []
         module = None
 
@@ -139,7 +182,13 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
         return targets
 
     def get_duplicates(self) -> List[str]:
-        """Returns list of duplicate file violations."""
+        """
+        Get list of duplicate file violations.
+        
+        Returns:
+            List of violation messages for files with identical content.
+            Excludes __init__.py files which are often legitimately similar.
+        """
         violations = []
         for fhash, paths in self.file_hashes.items():
             if len(paths) > 1:
@@ -153,7 +202,11 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
 
     def get_orphans(self) -> List[str]:
         """
-        Returns files that are never imported by anyone else.
+        Get files that are never imported.
+        
+        Returns:
+            List of violation messages for orphaned files.
+            Excludes entry points, test files, and scripts.
         """
         orphans = []
         # Flatten the set of all imported targets
@@ -185,7 +238,14 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
 
 
     def get_orphans_raw(self) -> List[str]:
-        """Returns raw list of orphan file paths for the pruner script."""
+        """
+        Get raw list of orphan file paths.
+        
+        For use by pruner scripts. Returns paths without violation messages.
+        
+        Returns:
+            List of orphan file paths.
+        """
         orphans = []
         imported_targets = set(self.import_graph.keys())
 
@@ -213,8 +273,13 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
 
         return orphans
 
-    def _run_self_tests(self) -> dict:
-        """Run internal self-tests."""
+    def _run_self_tests(self) -> Dict[str, Any]:
+        """
+        Run internal self-tests.
+        
+        Returns:
+            Dict with passed count, failed count, and test details.
+        """
         results = {"passed": 0, "failed": 0, TESTS_DIR: []}
         try:
             assert self is not None
@@ -225,14 +290,18 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
             results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(self) -> Dict[str, int]:
+        """
+        Execute healing chain via parent class.
+        
+        Returns:
+            Dict with healing results from parent implementation.
+        """
+        return super().heal_repository()
 
 
 if __name__ == "__main__":
     import sys
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
     root = sys.argv[1] if len(sys.argv) > 1 else "."
     print(f"Running Hygiene Validator on: {root}")

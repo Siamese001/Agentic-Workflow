@@ -1097,21 +1097,23 @@ def run_all_tests() -> bool:
         
         stats_100_issues = []
         
-        # Verify logic checks for 100% value
-        if 'avg >= 99.9' not in format_func:
-            stats_100_issues.append("formatDistributionCell does NOT check for 100% value (avg >= 99.9)")
-        
-        # Verify logic checks for identical values (min === max)
-        if 'stats.min === stats.max' not in format_func:
-            stats_100_issues.append("formatDistributionCell does NOT check for identical values (min === max)")
-        
-        # Verify logic checks for count <= 1
+        # Verify logic checks for count <= 1 (single agent - no distribution)
         if 'stats.count <= 1' not in format_func:
             stats_100_issues.append("formatDistributionCell does NOT check for single value (count <= 1)")
+        
+        # Verify logic checks for identical values at 100% (min === max && min >= 99.9)
+        # FIX (Jan 17 2026): Changed from separate conditions to combined condition
+        # This ensures min/max/stdev is shown for cells < 100% even if uniform
+        if 'stats.min === stats.max && stats.min >= 99.9' not in format_func:
+            stats_100_issues.append("formatDistributionCell does NOT check for identical values at 100% (stats.min === stats.max && stats.min >= 99.9)")
         
         # Verify early return when conditions met
         if 'return `${avg.toFixed(1)}%`' not in format_func:
             stats_100_issues.append("formatDistributionCell missing early return for perfect scores")
+        
+        # Verify uniform value indicator for < 100% cells (RCA: Jan 17 2026)
+        if '(all ${stats.min.toFixed(0)}%)' not in format_func:
+            stats_100_issues.append("formatDistributionCell missing uniform value indicator for non-100% cells")
         
         # Check that format-utils.js does NOT have duplicate function
         format_utils_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "utils" / "format-utils.js"
@@ -1131,10 +1133,10 @@ def run_all_tests() -> bool:
                 print(f"   - {issue}")
         else:
             print(f"✅ Test 12G PASSED: Distribution stats correctly hidden at 100%")
-            print(f"   ✓ Checks avg >= 99.9 (perfect score)")
-            print(f"   ✓ Checks stats.min === stats.max (identical values)")
             print(f"   ✓ Checks stats.count <= 1 (single value)")
-            print(f"   ✓ Early return without showing min/max/stddev")
+            print(f"   ✓ Checks stats.min === stats.max && stats.min >= 99.9 (identical at 100%)")
+            print(f"   ✓ Shows min/max/stdev for cells < 100% (RCA: Jan 17 2026)")
+            print(f"   ✓ Shows uniform value indicator for non-100% cells")
             print(f"   ✓ No duplicate function in format-utils.js")
     
     except Exception as e:

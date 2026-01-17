@@ -1,15 +1,16 @@
-from __future__ import annotations
-from dataclasses import dataclass
-"""
-GuardianOrchestratorAgent – Sovereign Agent (Phase 15 – Dec 30, 2025)
+"""GuardianOrchestratorAgent - Central L0 guardian coordination.
+
+Sovereign Agent (Phase 15 - Dec 30, 2025).
 SSOT-compliant location: L0_maintenance/scripts/
 Central coordination of all L0 guardians for Sovereign Audit.
-Pure orchestration – zero side effects beyond guardian execution.
+Pure orchestration - zero side effects beyond guardian execution.
 """
+from __future__ import annotations
 
-from typing import List, Tuple, Dict, Callable, Optional, Any
-from pathlib import Path
 import logging
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # PHASE 2.1: L0 Structural Standardization
@@ -23,40 +24,66 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 
 
 @dataclass
-class GuardianOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, AutonomyMixin,
+class GuardianOrchestratorAgent(
+    SubatomicTestingMixin,
+    L0MaintenanceBaseAgent,
+    AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,):
+    SelfDiagnosisMixin,
+):
     """
-    Sovereign orchestrator for all available L0 guardians.
-    Returns standardized (score, issues) tuples for audit dimensions.
-    Extensible: new guardians added via _load_guardians().
+    Sovereign orchestrator for L0 guardian coordination.
     
-    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
-
-    Now hardened with:
-      - Proactive initiation when guardians become available/Missing
-      - Adaptive execution based on system load and failure history
-      - Self-health monitoring of loaded guardians
+    Coordinates all available L0 guardians for Sovereign Audit.
+    Returns standardized (score, issues) tuples for audit dimensions.
+    
+    Guardian Dimensions:
+        - DDD Alignment: Domain-driven design compliance.
+        - Observability Footprint: Telemetry and logging coverage.
+    
+    Hardening Features:
+        - Proactive initiation when guardians become available/missing.
+        - Adaptive execution based on system load and failure history.
+        - Self-health monitoring of loaded guardians.
+    
+    Inherits:
+        L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin.
+    
+    Attributes:
+        target_path: Path to target directory for guardian validation.
+        Logger: Logger instance for this agent.
+        MANDATORY_COMPONENTS: List of required guardian components.
+        ddd_guardian: DDD alignment validation function or None.
+        observability_guardian: Observability validation function or None.
     """
 
     def __init__(self, target_path: Path | str) -> None:
-        """Initialize the instance."""
+        """
+        Initialize the guardian orchestrator.
+        
+        Args:
+            target_path: Path to target directory for guardian validation.
+        """
         self.target_path = Path(target_path)
         self.Logger = logging.getLogger(__name__)
+        super().__init__()
         
-        # === Hardening Initialization ===
-        super().__init__()  # Required for cooperative inheritance
-
-        # Mandatory components for self-diagnosis
-        self.MANDATORY_COMPONENTS = [
+        self.MANDATORY_COMPONENTS: List[str] = [
             "ddd_guardian",
             "observability_guardian",
         ]
-
+        self.ddd_guardian: Optional[Callable[[str], Tuple[float, List[str]]]] = None
+        self.observability_guardian: Optional[Callable[[str], Tuple[float, List[str]]]] = None
+        
         self._load_guardians()
 
-    def _load_guardians(self) -> Any:
-        """Lazy load guardians with constitutional graceful degradation."""
+    def _load_guardians(self) -> None:
+        """
+        Lazy load guardians with constitutional graceful degradation.
+        
+        Attempts to load DDD and Observability guardians.
+        Logs warnings if guardians are unavailable.
+        """
         # DDD Alignment Guardian
         try:
             from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
@@ -74,9 +101,15 @@ class GuardianOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, A
             self.observability_guardian = None
             self.Logger.warning("Observability Footprint guardian not available")
 
-    # === AutonomyMixin Override ===
     async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
-        """Proactively re-run guardians if critical ones are Missing or system state changed."""
+        """
+        Detect opportunities for proactive guardian re-execution.
+        
+        Triggers re-run if critical guardians are missing or system state changed.
+        
+        Returns:
+            Dict with action details if opportunity detected, None otherwise.
+        """
         Missing = []
         if self.ddd_guardian is None:
             Missing.append("ddd_guardian")
@@ -93,17 +126,41 @@ class GuardianOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, A
         # Optional: trigger on sovereignty drop (can integrate with MetricsWitness later)
         return None
 
-    # === AdaptiveExecutionMixin Overrides ===
-    async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        """Execute conservative."""
+    async def _execute_conservative(
+        self,
+        ctx: Any,
+        **context: Dict[str, Any]
+    ) -> Dict[str, Tuple[float, List[str]]]:
+        """
+        Execute in conservative mode with high-impact guardians only.
+        
+        Args:
+            ctx: Execution context.
+            **context: Additional context parameters.
+            
+        Returns:
+            Dict with DDD alignment score only.
+        """
         self.Logger.info("Conservative mode: running only high-impact guardians")
-        # Only run DDD guardian — most critical for sovereignty
         return {
             "DDD Alignment": self.execute_ddd_alignment(),
         }
 
-    async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        """Execute minimal."""
+    async def _execute_minimal(
+        self,
+        ctx: Any,
+        **context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Execute in minimal mode for resource preservation.
+        
+        Args:
+            ctx: Execution context.
+            **context: Additional context parameters.
+            
+        Returns:
+            Dict with skip status and guardian availability.
+        """
         self.Logger.warning("Minimal mode: skipping guardian execution to preserve resources")
         return {
             "status": "skipped",
@@ -114,21 +171,46 @@ class GuardianOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, A
             }
         }
 
-    async def _execute_standard(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        """Standard execution mode - run all available guardians."""
+    async def _execute_standard(
+        self,
+        ctx: Any,
+        **context: Dict[str, Any]
+    ) -> Dict[str, Tuple[float, List[str]]]:
+        """
+        Execute in standard mode with all available guardians.
+        
+        Args:
+            ctx: Execution context.
+            **context: Additional context parameters.
+            
+        Returns:
+            Dict with all guardian dimension scores.
+        """
         return {
             "DDD Alignment": self.execute_ddd_alignment(),
             "Observability Footprint": self.execute_observability_footprint(),
         }
 
     def execute_ddd_alignment(self) -> Tuple[float, List[str]]:
-        """Execute execute_ddd_alignment operation."""
+        """
+        Execute DDD alignment validation.
+        
+        Returns:
+            Tuple of (score: float, issues: List[str]).
+            Returns 100.0 with fallback message if guardian unavailable.
+        """
         if self.ddd_guardian:
             return self.ddd_guardian(str(self.target_path))
         return 100.0, ["DDD Alignment guardian unavailable – assuming perfect alignment"]
 
     def execute_observability_footprint(self) -> Tuple[float, List[str]]:
-        """Execute execute_observability_footprint operation."""
+        """
+        Execute observability footprint validation.
+        
+        Returns:
+            Tuple of (score: float, issues: List[str]).
+            Score is refined with 3-point penalty per issue, minimum 50.
+        """
         if not self.observability_guardian:
             return 100.0, ["Observability Footprint guardian unavailable – assuming full visibility"]
 
@@ -137,16 +219,42 @@ class GuardianOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent, A
         return refined_score, raw_issues
 
     async def get_all_guardian_results(self) -> Dict[str, Tuple[float, List[str]]]:
-        """Consolidated execution – used by Sovereign Court. Now uses adaptive execution."""
+        """
+        Get consolidated results from all guardians.
+        
+        Used by Sovereign Court for audit. Uses adaptive execution.
+        
+        Returns:
+            Dict mapping dimension names to (score, issues) tuples.
+        """
         return await self.execute()
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L0 maintenance agent - operational only."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """
+        Execute L0 maintenance healing operations.
+        
+        Args:
+            dry_run: If True, only report violations without fixing.
+            execute: If True, apply fixes.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum allowed recursion depth.
+            _call_path: Set of agent names already in call chain.
+            
+        Returns:
+            Dict with keys: violations, fixed, errors, skipped.
+        """
         super().heal_repository()
 
-        _call_path = set()
+        if _call_path is None:
+            _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}

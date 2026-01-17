@@ -1,28 +1,44 @@
-from __future__ import annotations
-"""Workflow Integration - SDK integration into workflow orchestration.
+"""WorkflowOrchestratorAgent - SDK integration into workflow orchestration.
 
 Provides integration layer between workflow orchestrator and SDK clients
 for end-to-end agentic workflow execution.
 
-Phase 1C - SDK Integration Layer
+Phase 1C - SDK Integration Layer.
 """
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Set
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.mixins import SubatomicTestingMixin
 from scripts.runtime.shared.agent_executor import AgentExecutor, AgentMessage
 from scripts.runtime.shared.cache_clients import cache_get, cache_set
 from scripts.runtime.shared.multi_provider_clients import Provider
 from scripts.runtime.shared.observability_clients import create_span, setup_tracing
-from scripts.runtime.shared.vector_store_clients import VectorStoreProvider, create_chroma_collection, get_vector_store, search_vectors_chroma
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.mixins import SubatomicTestingMixin
-Logger: Any = logging.getLogger(__name__)
+from scripts.runtime.shared.vector_store_clients import (
+    VectorStoreProvider,
+    create_chroma_collection,
+    get_vector_store,
+    search_vectors_chroma,
+)
+
+Logger = logging.getLogger(__name__)
 
 @dataclass
 class WorkflowContext:
-    """Context for workflow execution with SDK clients."""
+    """
+    Context for workflow execution with SDK clients.
+    
+    Attributes:
+        workflow_id: Unique identifier for the workflow.
+        agent_executor: AgentExecutor instance for agent operations.
+        vector_store: Optional vector store client for knowledge retrieval.
+        cache_client: Optional cache client for result caching.
+        _metadata: Internal metadata dictionary.
+    """
     workflow_id: str
     agent_executor: AgentExecutor
     vector_store: Optional[Any] = None
@@ -78,7 +94,15 @@ def search_vector_store(self: Any, query_embedding: List[float], collection_name
 
 @dataclass
 class HopExecutionContext:
-    """Context for individual hop execution."""
+    """
+    Context for individual hop execution.
+    
+    Attributes:
+        hop_id: Unique identifier for the hop.
+        WorkflowContext: Parent workflow context.
+        inputs: Input data for this hop.
+        outputs: Output data from this hop.
+    """
     hop_id: str
     WorkflowContext: WorkflowContext
     inputs: Dict[str, Any] = field(default_factory=dict)

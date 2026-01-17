@@ -569,6 +569,111 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
     
+    def test_tooltip_data_availability(self) -> Tuple[bool, str]:
+        """Test 12: Verify tooltip data is available for all territories (RCA: Jan 17 2026).
+        
+        Catches bug where tooltips show "No agent data available" due to:
+        - Territory name mismatch between dashboardData and realAgentData
+        - Missing metric arrays (healCap, invocation, etc.)
+        """
+        try:
+            html = self.dashboard_path.read_text(encoding='utf-8')
+            
+            # Extract dashboardData territories
+            start_marker = 'const dashboardData = ['
+            end_marker = '];'
+            start_idx = html.find(start_marker)
+            end_idx = html.find(end_marker, start_idx) + len(end_marker)
+            json_str = html[start_idx + len(start_marker) - 1:end_idx - 1]
+            dashboard_data = json.loads(json_str)
+            dashboard_territories = [r['Territory'] for r in dashboard_data if r['Territory'] != 'TOTAL']
+            
+            # Extract realAgentData
+            real_data_match = re.search(r'const realAgentData = (\{.*?\});', html, re.DOTALL)
+            if not real_data_match:
+                return False, "realAgentData not found"
+            real_data = json.loads(real_data_match.group(1))
+            real_territories = set(real_data.keys())
+            
+            # Required metric arrays for tooltips
+            required_metrics = ['healCap', 'invocation', 'hardened', 'test', 'complexityHealth', 'health', 'agents']
+            
+            issues = []
+            
+            # Check each dashboard territory has matching realAgentData
+            for territory in dashboard_territories:
+                if territory not in real_territories:
+                    # Try case-insensitive match
+                    match = next((t for t in real_territories if t.lower() == territory.lower()), None)
+                    if not match:
+                        issues.append(f"Territory '{territory}' missing from realAgentData")
+                        continue
+                    territory = match  # Use matched name
+                
+                # Check required metric arrays exist
+                territory_data = real_data[territory]
+                for metric in required_metrics:
+                    if metric not in territory_data:
+                        issues.append(f"Territory '{territory}' missing '{metric}' array")
+                    elif metric != 'agents' and not isinstance(territory_data[metric], list):
+                        issues.append(f"Territory '{territory}' '{metric}' is not an array")
+                    elif metric != 'agents' and len(territory_data[metric]) == 0:
+                        issues.append(f"Territory '{territory}' '{metric}' array is empty")
+            
+            if issues:
+                return False, f"Tooltip data issues: {'; '.join(issues[:5])}{'...' if len(issues) > 5 else ''}"
+            
+            return True, f"All {len(dashboard_territories)} territories have complete tooltip data"
+            
+        except Exception as e:
+            return False, f"Exception: {e}"
+    
+    def test_distribution_stats_display(self) -> Tuple[bool, str]:
+        """Test 13: Verify min/max/stdev shown for non-100% cells (RCA: Jan 17 2026).
+        
+        Catches bug where distribution stats (min, max, stddev) not shown for cells < 100%.
+        The fix ensures stats are shown for all imperfect scores.
+        """
+        try:
+            html = self.dashboard_path.read_text(encoding='utf-8')
+            
+            # Check formatDistributionCell function has correct logic
+            if 'function formatDistributionCell' not in html:
+                # Check in external JS files
+                js_path = self.dashboard_path.parent / 'js' / 'utils' / 'math-utils.js'
+                if js_path.exists():
+                    js_content = js_path.read_text(encoding='utf-8')
+                else:
+                    return False, "formatDistributionCell function not found"
+            else:
+                js_content = html
+            
+            # Verify the fix is in place:
+            # 1. Should NOT hide stats when avg >= 99.9 alone
+            # 2. Should only hide when min === max AND min >= 99.9
+            
+            issues = []
+            
+            # Check for the correct condition
+            if 'stats.min === stats.max && stats.min >= 99.9' not in js_content:
+                issues.append("Missing correct condition: 'stats.min === stats.max && stats.min >= 99.9'")
+            
+            # Check for uniform value indicator for < 100%
+            if '(all ${stats.min.toFixed(0)}%)' not in js_content and "(all ${stats.min.toFixed(0)}%)" not in js_content:
+                issues.append("Missing uniform value indicator for non-100% cells")
+            
+            # Verify old buggy condition is NOT present
+            if 'stats.min === stats.max || avg >= 99.9' in js_content:
+                issues.append("Buggy condition still present: 'stats.min === stats.max || avg >= 99.9'")
+            
+            if issues:
+                return False, f"Distribution stats display issues: {'; '.join(issues)}"
+            
+            return True, "Distribution stats display logic is correct"
+            
+        except Exception as e:
+            return False, f"Exception: {e}"
+    
     def run_test(self, name: str, test_func) -> bool:
         """Run a single test and report results."""
         print(f"\n{'─' * 70}")
@@ -603,7 +708,9 @@ class DashboardTestSuite:
             ("Cell-by-Cell Visual Inspection (MANDATORY)", self.test_cell_by_cell_visual_inspection),
             ("No Duplicate Declarations (Phase 1 Guardrail)", self.test_no_duplicate_declarations),
             ("File Metrics Validation (Phase 1 Guardrail)", self.test_file_metrics),
-            ("Source vs Rendered Data (P0 - Critical Gap)", self.test_source_vs_rendered_data)
+            ("Source vs Rendered Data (P0 - Critical Gap)", self.test_source_vs_rendered_data),
+            ("Tooltip Data Availability (RCA: Jan 17 2026)", self.test_tooltip_data_availability),
+            ("Distribution Stats Display (RCA: Jan 17 2026)", self.test_distribution_stats_display),
         ]
         
         for name, test_func in tests:
