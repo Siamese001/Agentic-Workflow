@@ -68,9 +68,15 @@ function formatDistributionCell(avg, stats, showStdDev = true) {
     if (typeof avg !== 'number' || isNaN(avg)) {
         return `<span style="color:#6b7280;">--</span>`;
     }
-    if (!stats || stats.min === stats.max) {
+    
+    // CRITICAL: Hide distribution stats when:
+    // 1. Value is 100% (perfect score - no need to show min/max/stddev)
+    // 2. All values are identical (min === max - no distribution to show)
+    // 3. No stats available or count <= 1
+    if (!stats || stats.count <= 1 || stats.min === stats.max || avg >= 99.9) {
         return `${avg.toFixed(1)}%`;
     }
+    
     const rangeStr = `${stats.min.toFixed(0)}-${stats.max.toFixed(0)}`;
     if (showStdDev && stats.stdDev > 0) {
         return `${avg.toFixed(1)}% <span style="font-size:0.8em; color:#6b7280;">(${rangeStr}, σ=${stats.stdDev.toFixed(1)})</span>`;

@@ -30,24 +30,9 @@ function generateSparkline(values, width = 60, height = 20) {
     `;
 }
 
-function formatDistributionCell(val, stats, isPercent = true) {
-    if (val === "N/A" || val === undefined) return '<span style="color:#9ca3af; font-style:italic;">N/A</span>';
-    
-    const numVal = parseFloat(val);
-    const formatted = isPercent ? numVal.toFixed(1) + '%' : numVal.toFixed(1);
-    
-    // Only show detailed stats if we have distribution data
-    if (stats && stats.count > 1) {
-        return `
-            <div style="font-weight:700;">${formatted}</div>
-            <div style="font-size:0.7em; color:#6b7280; margin-top:2px;">
-                σ=${stats.stdDev.toFixed(1)}<br>
-                ${stats.min.toFixed(0)}-${stats.max.toFixed(0)}
-            </div>
-        `;
-    }
-    return `<div style="font-weight:700;">${formatted}</div>`;
-}
+// REMOVED: Duplicate formatDistributionCell function
+// SSOT is in math-utils.js with correct logic to hide stats at 100%
+// This function was causing inconsistent behavior across tables
 
 function formatOutlierBadge(atZero, belowThreshold, threshold) {
     if (belowThreshold === 0) return '';

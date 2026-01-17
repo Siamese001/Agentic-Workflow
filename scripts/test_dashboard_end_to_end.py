@@ -718,16 +718,22 @@ def run_all_tests() -> bool:
     print("─" * 70)
     
     try:
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
-        
-        # Extract renderCodeQualityTable function
-        table2_func_start = html_content.find('function renderCodeQualityTable(')
-        if table2_func_start == -1:
-            errors.append("Test 12C FAILED: renderCodeQualityTable function not found")
+        # Check table-renderer.js (modular JS architecture)
+        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        if not table_renderer_path.exists():
+            errors.append("Test 12C FAILED: table-renderer.js not found")
         else:
-            table2_func_end = html_content.find('\nfunction ', table2_func_start + 100)
-            table2_func = html_content[table2_func_start:table2_func_end]
+            js_content = table_renderer_path.read_text(encoding='utf-8')
+            
+            # Extract renderCodeQualityTable function
+            table2_func_start = js_content.find('function renderCodeQualityTable(')
+            if table2_func_start == -1:
+                errors.append("Test 12C FAILED: renderCodeQualityTable function not found in table-renderer.js")
+            else:
+                table2_func_end = js_content.find('\nfunction ', table2_func_start + 100)
+                if table2_func_end == -1:
+                    table2_func_end = len(js_content)
+                table2_func = js_content[table2_func_start:table2_func_end]
             
             table2_issues = []
             
@@ -775,13 +781,16 @@ def run_all_tests() -> bool:
     print("─" * 70)
     
     try:
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        # Check table-renderer.js (modular JS architecture)
+        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        js_content = table_renderer_path.read_text(encoding='utf-8')
         
         # Extract renderCodeQualityTable function
-        table2_func_start = html_content.find('function renderCodeQualityTable(')
-        table2_func_end = html_content.find('\nfunction ', table2_func_start + 100)
-        table2_func = html_content[table2_func_start:table2_func_end]
+        table2_func_start = js_content.find('function renderCodeQualityTable(')
+        table2_func_end = js_content.find('\nfunction ', table2_func_start + 100)
+        if table2_func_end == -1:
+            table2_func_end = len(js_content)
+        table2_func = js_content[table2_func_start:table2_func_end]
         
         dist_issues = []
         
@@ -825,17 +834,22 @@ def run_all_tests() -> bool:
     print("─" * 70)
     
     try:
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        # Check table-renderer.js (modular JS architecture)
+        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        js_content = table_renderer_path.read_text(encoding='utf-8')
         
         # Extract both table functions
-        table1_func_start = html_content.find('function renderTerritorySummaryTable(')
-        table1_func_end = html_content.find('\nfunction ', table1_func_start + 100)
-        table1_func = html_content[table1_func_start:table1_func_end]
+        table1_func_start = js_content.find('function renderTerritorySummaryTable(')
+        table1_func_end = js_content.find('\nfunction ', table1_func_start + 100)
+        if table1_func_end == -1:
+            table1_func_end = js_content.find('\n// ', table1_func_start + 100)
+        table1_func = js_content[table1_func_start:table1_func_end]
         
-        table2_func_start = html_content.find('function renderCodeQualityTable(')
-        table2_func_end = html_content.find('\nfunction ', table2_func_start + 100)
-        table2_func = html_content[table2_func_start:table2_func_end]
+        table2_func_start = js_content.find('function renderCodeQualityTable(')
+        table2_func_end = js_content.find('\nfunction ', table2_func_start + 100)
+        if table2_func_end == -1:
+            table2_func_end = js_content.find('\n// ', table2_func_start + 100)
+        table2_func = js_content[table2_func_start:table2_func_end]
         
         color_issues = []
         
@@ -874,12 +888,15 @@ def run_all_tests() -> bool:
     print("─" * 70)
     
     try:
-        dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        # Check table-renderer.js (modular JS architecture)
+        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        js_content = table_renderer_path.read_text(encoding='utf-8')
         
-        table2_func_start = html_content.find('function renderCodeQualityTable(')
-        table2_func_end = html_content.find('\nfunction ', table2_func_start + 100)
-        table2_func = html_content[table2_func_start:table2_func_end]
+        table2_func_start = js_content.find('function renderCodeQualityTable(')
+        table2_func_end = js_content.find('\nfunction ', table2_func_start + 100)
+        if table2_func_end == -1:
+            table2_func_end = len(js_content)
+        table2_func = js_content[table2_func_start:table2_func_end]
         
         tooltip_issues = []
         
@@ -916,6 +933,68 @@ def run_all_tests() -> bool:
     
     except Exception as e:
         errors.append(f"Test 12F FAILED: {e}")
+    
+    # Test 12G: Distribution Stats Hidden at 100% (Both Tables)
+    print("\n" + "─" * 70)
+    print("Running: Distribution Stats Hidden at 100% Verification")
+    print("─" * 70)
+    
+    try:
+        # Check math-utils.js for the correct logic
+        math_utils_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "utils" / "math-utils.js"
+        math_content = math_utils_path.read_text(encoding='utf-8')
+        
+        # Extract formatDistributionCell function
+        func_start = math_content.find('function formatDistributionCell(')
+        func_end = math_content.find('\nfunction ', func_start + 100)
+        if func_end == -1:
+            func_end = math_content.find('\n// ', func_start + 100)
+        format_func = math_content[func_start:func_end]
+        
+        stats_100_issues = []
+        
+        # Verify logic checks for 100% value
+        if 'avg >= 99.9' not in format_func:
+            stats_100_issues.append("formatDistributionCell does NOT check for 100% value (avg >= 99.9)")
+        
+        # Verify logic checks for identical values (min === max)
+        if 'stats.min === stats.max' not in format_func:
+            stats_100_issues.append("formatDistributionCell does NOT check for identical values (min === max)")
+        
+        # Verify logic checks for count <= 1
+        if 'stats.count <= 1' not in format_func:
+            stats_100_issues.append("formatDistributionCell does NOT check for single value (count <= 1)")
+        
+        # Verify early return when conditions met
+        if 'return `${avg.toFixed(1)}%`' not in format_func:
+            stats_100_issues.append("formatDistributionCell missing early return for perfect scores")
+        
+        # Check that format-utils.js does NOT have duplicate function
+        format_utils_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "utils" / "format-utils.js"
+        format_utils_content = format_utils_path.read_text(encoding='utf-8')
+        
+        if 'function formatDistributionCell(' in format_utils_content:
+            # Check if it's the removed/commented version
+            if 'REMOVED: Duplicate formatDistributionCell' not in format_utils_content:
+                stats_100_issues.append("format-utils.js still has duplicate formatDistributionCell function (should be removed)")
+        
+        if stats_100_issues:
+            errors.append(f"Test 12G FAILED: {len(stats_100_issues)} issues with 100% stats hiding logic")
+            for issue in stats_100_issues:
+                errors.append(f"  - {issue}")
+            print(f"❌ Test 12G FAILED: Stats not properly hidden at 100%")
+            for issue in stats_100_issues:
+                print(f"   - {issue}")
+        else:
+            print(f"✅ Test 12G PASSED: Distribution stats correctly hidden at 100%")
+            print(f"   ✓ Checks avg >= 99.9 (perfect score)")
+            print(f"   ✓ Checks stats.min === stats.max (identical values)")
+            print(f"   ✓ Checks stats.count <= 1 (single value)")
+            print(f"   ✓ Early return without showing min/max/stddev")
+            print(f"   ✓ No duplicate function in format-utils.js")
+    
+    except Exception as e:
+        errors.append(f"Test 12G FAILED: {e}")
     
     # Test 13: Footnote Accuracy Check
     print("\n" + "─" * 70)
@@ -2721,7 +2800,7 @@ if __name__ == "__main__":
     
     # MANDATORY: Display cache-busting instructions at start
     print("\n" + "=" * 70)
-    print("⚠️  CRITICAL: DASHBOARD SERVER & CACHE MANAGEMENT")
+    print("WARNING: CRITICAL: DASHBOARD SERVER & CACHE MANAGEMENT")
     print("=" * 70)
     print("\n📋 E2E TEST WORKFLOW:")
     print("   1. ✅ AUTOMATED: Stop and restart dashboard server")
