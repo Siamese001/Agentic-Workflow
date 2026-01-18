@@ -16,6 +16,7 @@ from typing import List, Dict, Any, Set, Optional, Tuple
 import ast
 import logging
 import importlib.util
+import json
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -77,14 +78,10 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         except Exception as e:
             log.warning(f"[AutonomyGuardian] Gemini embedder unavailable: {e}")
         
-        # Resolve modular discovery engine
-        # [FIX] smart_discovery.py is in L0_maintenance/scripts/, not scripts/
-        smart_module_path = self.project_root / "agentic_core" / "L0_maintenance" / "scripts" / "smart_discovery.py"
-        if not smart_module_path.exists():
-            raise FileNotFoundError(f"smart_discovery.py not found at {smart_module_path}")
-        spec = importlib.util.spec_from_file_location("smart_discovery", smart_module_path)
-        self.smart_discovery = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(self.smart_discovery)
+        # [SSOT ALIGNMENT] Remove legacy smart_discovery. 
+        # Guardian now relies on the Canonical Neural Link (agent_discovery_full.json)
+        # which is guaranteed fresh by the Tier 0-3 execution sequence.
+        self.discovery_json_path = self.project_root / AGENT_DISCOVERY_JSON
         
         # Sovereign Territory definitions (Synced with L6 engine)
         self.territories = {
@@ -163,8 +160,9 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
     def generate_compliance_report(self, markdown: bool = True, context: dict = None) -> None:
         """Sovereign Orchestrator: Delegates processing to L6 Modular Engine."""
         today = date.today().strftime("%B %d, %Y")
-        self.smart_discovery.ensure_fresh_discovery()
-        
+        # [SSOT] Discovery is pre-validated by Tier 0-3 run. No forced refresh needed here.
+        log.info("[AutonomyGuardian] Generating compliance report using SSOT discovery data...")
+
         # Shared L6 Logic for SSOT
         data_generator = DashboardDataGenerator(self.project_root, self.territories)
         dashboard_rows, total_row = data_generator.generate_full_report_data()
@@ -211,7 +209,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         Returns:
             Dict with healing summary: {"violations": int, "healed": int, "errors": int, "renamed": int}
         """
-        log.info(f"[AutonomyGuardian] heal_repository(dry_run={dry_run})")
+        log.info(f"[Tier 4 Safety] AutonomyGuardian heal_repository(dry_run={dry_run})")
         
         # Cognitive stats for Dashboard metrics
         self.retrieval_stats = {"hits": 0, "misses": 0, "conf_scores": []}
@@ -237,36 +235,23 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         summary = {"violations": 0, "healed": 0, "errors": 0, "renamed": 0, "fixed": 0}
         
         try:
-            # Scan for agents missing heal_repository method
-            # [FIX] Use discovery JSON instead of rglob to avoid scanning .sovereign_healing_backup
-            import json
-            discovery_path = self.project_root / "agent_discovery_full.json"
+            # [SSOT REFACTOR] Use AGENT_DISCOVERY_JSON instead of manual rglob
+            # This ensures we only heal confirmed agents found by the Sovereign Scan.
             agent_paths = []
-            
-            if discovery_path.exists():
+            if self.discovery_json_path.exists():
                 try:
-                    with open(discovery_path, 'r', encoding='utf-8') as f:
-                        discovery_data = json.load(f)
-                    
-                    # Extract paths from discovery JSON
-                    if isinstance(discovery_data, list):
-                        for entry in discovery_data:
-                            path_str = entry.get("path", "")
+                    with open(self.discovery_json_path, 'r', encoding='utf-8') as f:
+                        agents_data = json.load(f)
+                        for agent in agents_data:
+                            path_str = agent.get("path", "")
                             if path_str:
-                                agent_path = self.project_root / path_str
-                                if agent_path.exists() and not any(pattern in str(agent_path) for pattern in self.exclude_patterns):
-                                    agent_paths.append(agent_path)
-                    elif isinstance(discovery_data, dict):
-                        for name, entry in discovery_data.items():
-                            path_str = entry.get("path", "") if isinstance(entry, dict) else ""
-                            if path_str:
-                                agent_path = self.project_root / path_str
-                                if agent_path.exists() and not any(pattern in str(agent_path) for pattern in self.exclude_patterns):
-                                    agent_paths.append(agent_path)
-                    
-                    log.info(f"[AutonomyGuardian] Using discovery JSON: {len(agent_paths)} agents")
-                except Exception as e:
-                    log.warning(f"[AutonomyGuardian] Failed to load discovery JSON: {e}")
+                                full_path = self.project_root / path_str
+                                if full_path.exists():
+                                    agent_paths.append(full_path)
+                except Exception as json_err:
+                    log.error(f"[AutonomyGuardian] SSOT JSON load failed: {json_err}")
+            else:
+                log.warning("[AutonomyGuardian] SSOT JSON missing! Falling back to restricted scan.")
             
             # Fallback: only scan agentic_core (NOT .sovereign_healing_backup)
             if not agent_paths:
