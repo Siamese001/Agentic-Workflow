@@ -352,7 +352,9 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             rel = file_path.relative_to(self.project_root)
             if not root_check(rel.parts[0]):
                 continue
-            depth = len(rel.parts)
+            # [FIX] Depth = folder level where file resides, not path length
+            # agentic_core/L0_maintenance/scripts/file.md → depth 3 (scripts is level 3)
+            depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
             if depth != expected_depth:
                 violations += 1
                 Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {expected_depth}")
@@ -397,7 +399,9 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             
             rel = file_path.relative_to(self.project_root)
             if rel.parts[0] == "agentic_core":
-                depth = len(rel.parts)
+                # [FIX] Depth = folder level where file resides, not path length
+                # agentic_core/L0_maintenance/scripts/file.md → depth 3 (scripts is level 3)
+                depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
                 if depth != agentic_core_exact_depth:
                     violations += 1
                     Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {agentic_core_exact_depth}")

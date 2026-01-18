@@ -233,9 +233,9 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         
         return recommendations
 
-    def heal_repository(self) -> dict:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
             """Invoke healing chain via super()."""
-            return super().heal_repository()
+            return super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
 
 
 def audit_bias(content: str) -> BiasResult:

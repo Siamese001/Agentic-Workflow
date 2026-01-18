@@ -23,6 +23,23 @@ from typing import Any, Dict, List, Optional, Tuple
 
 Logger = logging.getLogger(__name__)
 
+# Color-coded terminal output
+try:
+    from agentic_core.utils.terminal_colors import (
+        discovery_status, progress_bar, log_status, Colors, print_success, print_warning, print_error
+    )
+    COLORS_AVAILABLE = True
+except ImportError:
+    COLORS_AVAILABLE = False
+    def discovery_status(*args, **kwargs): return ""
+    def progress_bar(*args, **kwargs): return ""
+    def log_status(level, msg, **kwargs): print(f"[{level.upper()}] {msg}")
+    def print_success(msg): print(f"[OK] {msg}")
+    def print_warning(msg): print(f"[WARN] {msg}")
+    def print_error(msg): print(f"[ERR] {msg}")
+    class Colors:
+        RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = BRIGHT_MAGENTA = DIM = ""
+
 # Layer priority for sorting (lower = higher priority, runs first)
 LAYER_PRIORITY = {
     'L0': 0,   # Maintenance - runs first (infrastructure)
@@ -38,6 +55,7 @@ LAYER_PRIORITY = {
 
 # Agents to skip (known problematic or abstract)
 SKIP_AGENTS = {
+    # Abstract base classes
     'SovereignBaseAgent',      # Abstract base
     'L0MaintenanceBaseAgent',  # Abstract base
     'L1CognitionBaseAgent',    # Abstract base
@@ -46,9 +64,21 @@ SKIP_AGENTS = {
     'L4StateBaseAgent',        # Abstract base
     'L5SafetyBaseAgent',       # Abstract base
     'L6ObservabilityBaseAgent', # Abstract base
+    # Mixins (not agents)
     'HealerMixin',             # Mixin, not agent
     'MCPHardenedMixin',        # Mixin, not agent
     'SubatomicTestingMixin',   # Mixin, not agent
+    # Tier 0 & Tier 1 Core Agents (handled in mandatory tiers, not discovery)
+    'SyntaxValidatorAgent',    # Tier 0: Pre-Flight
+    'HygieneGuardianAgent',    # Tier 0: Pre-Flight
+    'TwoPhaseDeduplicationAgent',  # Tier 1: Structural Stabilization
+    'LocationAgent',           # Tier 1: Structural Stabilization
+    'HierarchyAgent',          # Tier 1: Structural Stabilization
+    'NamingAgent',             # Tier 1: Structural Stabilization
+    # Tier 2 Core Agents
+    'ImportAgent',             # Tier 2: Architectural Alignment
+    # Tier 4 Final Safety Gate
+    'AutonomyGuardianAgent',   # Tier 4: Final Safety Gate
 }
 
 
@@ -246,15 +276,15 @@ def build_healing_roster(
     Returns:
         List of (class_name, agent_instance) tuples, sorted by layer
     """
-    Logger.info("[ROSTER] Loading discovery data...")
+    log_status('info', 'Loading discovery data...', source='ROSTER')
     
     # Step 1: Load discovery data
     all_agents = load_discovery_data(project_root)
-    Logger.info(f"[ROSTER] Loaded {len(all_agents)} agents from discovery")
+    log_status('success', f'Loaded {Colors.BRIGHT_CYAN}{len(all_agents)}{Colors.RESET} agents from discovery', source='ROSTER')
     
     # Step 2: Filter for HealerMixin
     healer_agents = filter_healer_agents(all_agents)
-    Logger.info(f"[ROSTER] Filtered to {len(healer_agents)} healer agents")
+    log_status('info', f'Filtered to {Colors.BRIGHT_GREEN}{len(healer_agents)}{Colors.RESET} healer agents', source='ROSTER')
     
     # Step 3: Filter by layer if requested
     if not include_apps:
@@ -264,15 +294,21 @@ def build_healing_roster(
     
     # Step 4: Sort by layer
     sorted_agents = sort_by_layer(healer_agents)
-    Logger.info(f"[ROSTER] Sorted {len(sorted_agents)} agents by layer priority")
+    log_status('info', f'Sorted {len(sorted_agents)} agents by layer priority', source='ROSTER')
     
     # Step 5: Instantiate agents
     roster = []
     instantiation_errors = 0
+    total_to_instantiate = len(sorted_agents) if not max_agents else min(max_agents, len(sorted_agents))
     
-    for agent_data in sorted_agents:
+    print(f"\n{Colors.BRIGHT_CYAN}[ROSTER]{Colors.RESET} Instantiating agents...")
+    for idx, agent_data in enumerate(sorted_agents):
         if max_agents and len(roster) >= max_agents:
             break
+        
+        # Show progress every 10 agents or at key milestones
+        if idx % 10 == 0 or idx == total_to_instantiate - 1:
+            print(f"   {progress_bar(idx, total_to_instantiate, width=30)}")
             
         result = instantiate_agent(agent_data, project_root)
         if result:
@@ -280,14 +316,21 @@ def build_healing_roster(
         else:
             instantiation_errors += 1
     
-    Logger.info(f"[ROSTER] Successfully instantiated {len(roster)} agents ({instantiation_errors} failed)")
+    # Final status
+    if instantiation_errors > 0:
+        log_status('warning', f'Instantiated {Colors.BRIGHT_GREEN}{len(roster)}{Colors.RESET} agents ({Colors.BRIGHT_RED}{instantiation_errors} failed{Colors.RESET})', source='ROSTER')
+    else:
+        log_status('success', f'Instantiated {Colors.BRIGHT_GREEN}{len(roster)}{Colors.RESET} agents (0 failed)', source='ROSTER')
     
-    # Log layer distribution
+    # Log layer distribution with colors
     layer_counts = {}
     for agent_data in sorted_agents[:len(roster)]:
         layer = agent_data.get('layer', 'Unknown')
         layer_counts[layer] = layer_counts.get(layer, 0) + 1
     
+    # Format layer distribution with colors
+    layer_str = ', '.join(f"{Colors.BRIGHT_CYAN}{k}{Colors.RESET}: {v}" for k, v in sorted(layer_counts.items()))
+    log_status('info', f'Layer distribution: {{{layer_str}}}', source='ROSTER')
     Logger.info(f"[ROSTER] Layer distribution: {layer_counts}")
     
     return roster

@@ -238,11 +238,43 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         
         try:
             # Scan for agents missing heal_repository method
-            # Use simple file discovery instead of smart_discovery module
+            # [FIX] Use discovery JSON instead of rglob to avoid scanning .sovereign_healing_backup
+            import json
+            discovery_path = self.project_root / "agent_discovery_full.json"
             agent_paths = []
-            for py_file in self.project_root.rglob("*.py"):
-                if "Agent" in py_file.name and not any(pattern in str(py_file) for pattern in self.exclude_patterns):
-                    agent_paths.append(py_file)
+            
+            if discovery_path.exists():
+                try:
+                    with open(discovery_path, 'r', encoding='utf-8') as f:
+                        discovery_data = json.load(f)
+                    
+                    # Extract paths from discovery JSON
+                    if isinstance(discovery_data, list):
+                        for entry in discovery_data:
+                            path_str = entry.get("path", "")
+                            if path_str:
+                                agent_path = self.project_root / path_str
+                                if agent_path.exists() and not any(pattern in str(agent_path) for pattern in self.exclude_patterns):
+                                    agent_paths.append(agent_path)
+                    elif isinstance(discovery_data, dict):
+                        for name, entry in discovery_data.items():
+                            path_str = entry.get("path", "") if isinstance(entry, dict) else ""
+                            if path_str:
+                                agent_path = self.project_root / path_str
+                                if agent_path.exists() and not any(pattern in str(agent_path) for pattern in self.exclude_patterns):
+                                    agent_paths.append(agent_path)
+                    
+                    log.info(f"[AutonomyGuardian] Using discovery JSON: {len(agent_paths)} agents")
+                except Exception as e:
+                    log.warning(f"[AutonomyGuardian] Failed to load discovery JSON: {e}")
+            
+            # Fallback: only scan agentic_core (NOT .sovereign_healing_backup)
+            if not agent_paths:
+                log.warning("[AutonomyGuardian] Fallback to agentic_core scan (discovery JSON unavailable)")
+                agentic_core_dir = self.project_root / "agentic_core"
+                for py_file in agentic_core_dir.rglob("*.py"):
+                    if "Agent" in py_file.name and not any(pattern in str(py_file) for pattern in self.exclude_patterns):
+                        agent_paths.append(py_file)
             
             for agent_path in agent_paths:
                 if any(pattern in str(agent_path) for pattern in self.exclude_patterns):

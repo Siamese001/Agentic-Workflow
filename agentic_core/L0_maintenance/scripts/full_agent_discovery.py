@@ -100,6 +100,26 @@ logging.basicConfig(
 )
 log = logging.getLogger("full_agent_discovery")
 
+# Color-coded terminal output
+try:
+    from agentic_core.utils.terminal_colors import (
+        discovery_status, progress_bar, phase_header, log_status, Colors,
+        print_success, print_warning, print_error, print_info
+    )
+    COLORS_AVAILABLE = True
+except ImportError:
+    COLORS_AVAILABLE = False
+    def discovery_status(*args, **kwargs): return ""
+    def progress_bar(*args, **kwargs): return ""
+    def phase_header(*args, **kwargs): return f"\n[PHASE] {args[0] if args else ''}"
+    def log_status(level, msg, **kwargs): print(f"[{level.upper()}] {msg}")
+    def print_success(msg): print(f"[OK] {msg}")
+    def print_warning(msg): print(f"[WARN] {msg}")
+    def print_error(msg): print(f"[ERR] {msg}")
+    def print_info(msg): print(f"[INFO] {msg}")
+    class Colors:
+        RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = BRIGHT_MAGENTA = DIM = BOLD = ""
+
 # [HARDENING] Add trace level for deeper diagnostics without cluttering INFO
 TRACE_LEVEL = 5
 logging.addLevelName(TRACE_LEVEL, "TRACE")
@@ -1285,6 +1305,10 @@ def main():
     # This tool is kept only for historical tracking and comparison purposes.
     #
     log.info("=" * 80)
+    print(phase_header("FULL AGENT DISCOVERY", status="running"))
+    mode_color = Colors.BRIGHT_YELLOW if incremental_mode else Colors.BRIGHT_CYAN
+    print(f"   {Colors.DIM}Mode:{Colors.RESET} {mode_color}{'INCREMENTAL' if incremental_mode else 'FULL'}{Colors.RESET} {'(forced)' if force_mode else ''}")
+    log.info("=" * 80)
     log.info("FULL AGENT DISCOVERY STARTED")
     log.info(f"Mode: {'INCREMENTAL' if incremental_mode else 'FULL'} {'(forced)' if force_mode else ''}")
     log.info("=" * 80)
@@ -1406,8 +1430,11 @@ def main():
         [p for p in PROJECT_ROOT.rglob('*.py') if not should_exclude_path(p)],
         key=lambda p: str(p).replace('\\', '/').lower()
     )
+    print(f"\n{Colors.BRIGHT_CYAN}[DISCOVERY]{Colors.RESET} Scanning {Colors.BRIGHT_GREEN}{len(all_py_files)}{Colors.RESET} Python files...")
+    print(f"   {Colors.DIM}→ Excluded vendor/cache/docs via should_exclude_path(){Colors.RESET}")
+    print(f"   {Colors.DIM}→ Including tests/ for TestAgent discovery{Colors.RESET}")
     log.info(f"Scanning {len(all_py_files)} Python files...")
-    log.info(f"   -> Excluded vendor/cache dirs via should_exclude_path()")
+    log.info(f"   -> Excluded vendor/cache/docs via should_exclude_path()")
     log.info(f"   -> Including tests/ for TestAgent discovery (filtered by file patterns)")
     
     # ====================================================================

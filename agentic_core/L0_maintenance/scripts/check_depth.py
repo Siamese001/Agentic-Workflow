@@ -11,11 +11,12 @@ violations: Any = []
 required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
 for py_file in root.glob('agentic_core/**/*.py'):
     rel_path: Any = py_file.relative_to(root)
-    depth: Any = len(rel_path.parts)
-    if depth > REQUIRED_DEPTH + 1:
+    # [FIX] Depth = folder level where file resides, not path length
+    depth: Any = len(rel_path.parts) - 1  # Subtract 1 because file itself is not a level
+    if depth > required_depth:
         violations.append((str(rel_path), depth))
 print(f'Total violations: {len(violations)}')
-print(f'[SSOT] agentic_core required depth: {REQUIRED_DEPTH}')
+print(f'[SSOT] agentic_core required depth: {required_depth}')
 if violations:
     print('\nFirst 20 violations:')
     for path, depth in violations[:20]:

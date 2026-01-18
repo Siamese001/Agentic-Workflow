@@ -16,6 +16,20 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
 
+# Color-coded terminal output
+try:
+    from agentic_core.utils.terminal_colors import (
+        agent_status, progress_bar, log_status, Colors
+    )
+    COLORS_AVAILABLE = True
+except ImportError:
+    COLORS_AVAILABLE = False
+    def agent_status(*args, **kwargs): return f"  {args[0] if args else ''}"
+    def progress_bar(*args, **kwargs): return ""
+    def log_status(level, msg, **kwargs): print(f"[{level.upper()}] {msg}")
+    class Colors:
+        RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = BRIGHT_MAGENTA = DIM = ""
+
 Logger = logging.getLogger(__name__)
 
 
@@ -59,9 +73,10 @@ class ConsolidatedOrchestratorAgent(L3OrchestrationBaseAgent):
         start_mission_time = time.time()
         
         # Phase 6: Layered Sovereign Sweep
-        print(f"\n[L3 ORCHESTRATOR] ⚔️  MISSION START")
-        print(f"   [MODE] {'EXECUTE' if context.get('execute') else 'DRY-RUN'}")
-        print(f"   [COMMAND] Controlling {len(agents)} Autonomous Agents")
+        mode_color = Colors.BRIGHT_RED if context.get('execute') else Colors.BRIGHT_YELLOW
+        print(f"\n{Colors.BRIGHT_MAGENTA}[L3 ORCHESTRATOR]{Colors.RESET} ⚔️  MISSION START")
+        print(f"   {Colors.DIM}[MODE]{Colors.RESET} {mode_color}{'EXECUTE' if context.get('execute') else 'DRY-RUN'}{Colors.RESET}")
+        print(f"   {Colors.DIM}[COMMAND]{Colors.RESET} Controlling {Colors.BRIGHT_CYAN}{len(agents)}{Colors.RESET} Autonomous Agents")
         
         # Log scan mode if present (Phase 6 verification)
         if context.get("scan_mode"):
@@ -69,7 +84,9 @@ class ConsolidatedOrchestratorAgent(L3OrchestrationBaseAgent):
         
         # Sequence by Layer Gravity (L0 -> L5 -> L2 -> L1)
         for i, (agent_name, agent_instance) in enumerate(agents, 1):
-            print(f"\n   [L3 CONTROL] ({i}/{agents_count}) Handing control to: {agent_name}")
+            # Show progress bar
+            print(f"\n   {progress_bar(i-1, agents_count, 'Progress', width=30)}")
+            print(agent_status(agent_name, 'running'))
             agent_start_time = time.time()
 
             try:
@@ -100,8 +117,14 @@ class ConsolidatedOrchestratorAgent(L3OrchestrationBaseAgent):
                 total_fixes += fixes
                 total_violations += violations
                 
-                status = "✅ CLEAN" if violations == 0 else f"⚠️  {violations} ISSUES"
-                print(f"   [L3 REPORT] {agent_name}: {status} (Fixed: {fixes})")
+                duration_ms = int(execution_duration * 1000)
+                print(agent_status(
+                    agent_name,
+                    'success' if violations == 0 else 'warning',
+                    fixes=fixes,
+                    violations=violations,
+                    duration_ms=duration_ms
+                ))
                 
                 mission_log.append({
                     "agent": agent_name, 
@@ -113,7 +136,8 @@ class ConsolidatedOrchestratorAgent(L3OrchestrationBaseAgent):
                 })
                 
             except Exception as e:
-                print(f"   [!] {agent_name} CRITICAL FAILURE: {e}")
+                print(agent_status(agent_name, 'error'))
+                log_status('error', f"{agent_name} CRITICAL FAILURE: {e}")
                 mission_log.append({
                     "agent": agent_name, 
                     "status": "failed", 

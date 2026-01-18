@@ -34,6 +34,21 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
+# Color-coded terminal output
+try:
+    from agentic_core.utils.terminal_colors import (
+        phase_header, tier_summary, agent_status, log_status, Colors
+    )
+    COLORS_AVAILABLE = True
+except ImportError:
+    COLORS_AVAILABLE = False
+    def phase_header(*args, **kwargs): return f"\n[PHASE] {args[0] if args else ''}"
+    def tier_summary(*args, **kwargs): return ""
+    def agent_status(*args, **kwargs): return f"  {args[0] if args else ''}"
+    def log_status(level, msg, **kwargs): print(f"[{level.upper()}] {msg}")
+    class Colors:
+        RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = BRIGHT_MAGENTA = DIM = ""
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -278,6 +293,12 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
         """
         start_time = datetime.now()
         
+        # Color-coded header
+        mode_color = Colors.BRIGHT_RED if execute else Colors.BRIGHT_YELLOW
+        print(f"\n{Colors.BRIGHT_MAGENTA}{'=' * 60}{Colors.RESET}")
+        print(f"{Colors.BRIGHT_MAGENTA}SSOT ORCHESTRATION{Colors.RESET} - Starting validation sequence")
+        print(f"   {Colors.DIM}Mode:{Colors.RESET} {mode_color}{'EXECUTE' if execute else 'DRY-RUN'}{Colors.RESET}")
+        print(f"{Colors.BRIGHT_MAGENTA}{'=' * 60}{Colors.RESET}")
         self.logger.info("=" * 60)
         self.logger.info("SSOT ORCHESTRATION - Starting validation sequence")
         self.logger.info("=" * 60)
@@ -287,41 +308,68 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
         total_fixes = 0
         
         # [TIERED EXECUTION LOOP]
+        tier_num = 0
         for tier_name, agents in self.tiers.items():
+            tier_num += 1
+            print(phase_header(tier_name, phase_num=tier_num, total_phases=len(self.tiers), status="running"))
             self.logger.info(f"\n[{tier_name.upper()}] Starting Sequence...")
             tier_failed = False
+            tier_start = datetime.now()
+            tier_fixes = 0
+            tier_violations = 0
             
             for agent_name in agents:
+                print(agent_status(agent_name, 'running'))
                 self.logger.info(f"   >>> Running {agent_name}...")
                 
                 result = self.run_agent(agent_name, dry_run=dry_run, execute=execute)
                 agent_results.append(result)
+                tier_fixes += result.violations_fixed
+                tier_violations += result.violations_found
                 
                 total_violations += result.violations_found
                 total_fixes += result.violations_fixed
                 
-                # Log result
+                # Log result with colors
                 if result.status == 'PASS':
+                    print(agent_status(agent_name, 'success', fixes=result.violations_fixed, violations=0, duration_ms=int(result.execution_time_ms)))
                     self.logger.info(f"   ✅ {agent_name}: PASS (0 violations)")
                 elif result.status == 'FAIL':
                     tier_failed = True
+                    print(agent_status(agent_name, 'warning' if result.violations_fixed > 0 else 'error', fixes=result.violations_fixed, violations=result.violations_found, duration_ms=int(result.execution_time_ms)))
                     self.logger.warning(
                         f"   ⚠️ {agent_name}: FAIL ({result.violations_found} violations, "
                         f"{result.violations_fixed} fixed)"
                     )
                 else:
                     tier_failed = True
+                    print(agent_status(agent_name, 'error'))
+                    log_status('error', f"{agent_name}: {result.error_message}")
                     self.logger.error(f"   ❌ {agent_name}: ERROR - {result.error_message}")
+            
+            # Print tier summary
+            tier_duration = (datetime.now() - tier_start).total_seconds()
+            print(tier_summary(
+                tier_name.replace("Tier ", "").split(":")[1].strip() if ":" in tier_name else tier_name,
+                tier_num,
+                len(agents),
+                tier_fixes,
+                tier_violations,
+                tier_duration,
+                not tier_failed
+            ))
             
             # [STABILITY GATES]
             # Gate 1: Parseability (Always Fatal if Failed)
             if "Tier 1" in tier_name and tier_failed:
+                log_status('error', '🛑 CRITICAL GATE: Syntax Validation Failed. Aborting Mission.')
                 self.logger.error("🛑 CRITICAL GATE: Syntax Validation Failed. Aborting Mission.")
                 break
                 
             # Gate 2: Structural Stability (Fatal only during Execution)
             # If we are executing fixes and structure is still failing, we cannot run deep logic checks safely.
             if "Tier 2" in tier_name and tier_failed and execute:
+                log_status('error', '🛑 STABILITY GATE: Structural violations persist. Aborting Deep Compliance.')
                 self.logger.error("🛑 STABILITY GATE: Structural violations persist after healing. Aborting Deep Compliance.")
                 break
             

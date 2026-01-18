@@ -681,8 +681,10 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         if expected_depth is not None and actual_depth != expected_depth:
             reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
             return False, f"{reason} VIOLATION ({root_folder}): depth {actual_depth} != {expected_depth}"
-        if root_folder == "agentic_core" and len(parts) != 4:
-            return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} has {len(parts)} parts (expected exactly 4)"
+        # [FIX] Check depth (folder level), not parts count
+        # agentic_core depth 3 means: agentic_core/L0_maintenance/scripts/file.py -> depth 3
+        if root_folder == "agentic_core" and actual_depth != 3:
+            return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} is depth {actual_depth} (expected exactly 3)"
         return True, "OK"
 
     def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> Tuple[bool, str]:

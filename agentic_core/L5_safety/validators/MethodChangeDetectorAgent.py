@@ -144,9 +144,9 @@ class MethodChangeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 methods[node.name] = method_code
         return methods
 
-    def heal_repository(self) -> dict:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
             """Invoke healing chain via super()."""
-            return super().heal_repository()
+            return super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
 
 class RegressionTestGenerator:
     """Generates pytest code and creates test files."""

@@ -346,6 +346,9 @@ class HealerMixin:
             Logger.debug(f"[HEAL_REPOSITORY] {agent_name}: Base heal_repository invoked (dry_run={dry_run})")
             
             # Reset metrics for this healing session if at root
+            # [FIX] Ensure _healer_metrics exists (defensive for agents not calling super().__init__)
+            if not hasattr(self, '_healer_metrics'):
+                self._healer_metrics = {"count": 0, "total_time": 0.0, "success_count": 0}
             if depth == 0:
                 self._healer_metrics["count"] = 0
                 self._healer_metrics["total_time"] = 0.0

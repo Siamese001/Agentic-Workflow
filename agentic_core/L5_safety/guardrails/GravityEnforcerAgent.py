@@ -49,7 +49,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
-from agentic_core.L5_safety.validators.canonical_truth_1 import get_canonical_layer
+# [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
+from agentic_core.L5_safety.validators.canonical_truth import get_canonical_layer
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
