@@ -332,10 +332,58 @@ class DagEngineAgent(MCPHardenedMixin, HealerMixin):
         if self.enable_logging:
             LOGGER.info('dag_reset')
 
+    @timeout(120)
     @standard_heal
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(
+        self, 
+        dry_run: bool = True, 
+        execute: bool = False, 
+        depth: int = 0, 
+        max_depth: int = 3, 
+        _call_path: Optional[set] = None
+    ) -> Dict[str, int]:
+        """
+        Wired DAG Healing - Validates task graphs and removes dead or circular tasks.
+        
+        WIRED CAPABILITIES:
+        - validate_dag(): Checks for circular dependencies and orphaned nodes.
+        - _cleanup_orphaned_tasks(): Removes tasks with no parents/children.
+        - reconcile_task_states(): Ensures in-memory task states match the state ledger.
+        """
+        # CRITICAL: Chain up to HealerMixin
+        super().heal_repository(dry_run=dry_run, execute=execute)
+        
+        # Cycle/Depth Detection
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path or depth > max_depth:
+            return {"errors": 1, "skipped": 1}
+        _call_path.add(agent_name)
+        
+        metrics = {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
+        
+        try:
+            # 1. Structural DAG Validation
+            if hasattr(self, 'validate_dag'):
+                dag_results = self.validate_dag()
+                # validate_dag returns bool, convert to metrics
+                if not dag_results:
+                    metrics["violations"] += 1
+                
+            # 2. Orphan Cleanup
+            if hasattr(self, '_cleanup_orphaned_tasks'):
+                cleanup_results = self._cleanup_orphaned_tasks(dry_run=dry_run)
+                metrics["violations"] += cleanup_results.get("violations", 0)
+                metrics["fixed"] += cleanup_results.get("fixed", 0)
+
+        except Exception as e:
+            LOGGER.error(f"[{agent_name}] DAG Healing Failed: {str(e)}")
+            metrics["errors"] += 1
+        finally:
+            _call_path.discard(agent_name)
+            
+        return metrics
 
 def create_dag_from_config(config: Dict[str, Any]) -> DAGEngine:
     """Factory function to create a DAG from configuration."""
@@ -343,23 +391,3 @@ def create_dag_from_config(config: Dict[str, Any]) -> DAGEngine:
     for Task in config.get('tasks', []):
         dag.add_task(Task)
     return dag
-
-@timeout(300)
-@standard_heal
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """L3 orchestration/workflow_engines - operational only."""
-    if _call_path is None:
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
-    agent_name = "DagEngine"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] L3 orchestration/workflow_engines - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)

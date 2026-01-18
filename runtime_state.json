@@ -1,6 +1,6 @@
 {
   "status": "idle",
-  "start_time": "2026-01-18T15:47:59.541641",
+  "start_time": "2026-01-18T15:57:28.144938",
   "end_time": null,
   "current_agent": null,
   "current_layer": null,
@@ -10,25 +10,26 @@
     "HygieneGuardianAgent",
     "NamingAgent",
     "LocationAgent",
+    "StructuralHealerAgent",
     "GravityEnforcerAgent",
     "TwoPhaseDeduplicationAgent_PhaseB",
     "CodeSSOTEnforcerAgent"
   ],
-  "total_agents": 8,
+  "total_agents": 9,
   "completed_agents": [],
   "events": [
     {
-      "time": "2026-01-18T15:47:59.541641",
+      "time": "2026-01-18T15:57:28.144938",
       "type": "info",
       "message": "Heal mode started (DRY-RUN) - Unified Engine"
     },
     {
-      "time": "2026-01-18T15:47:59.541641",
+      "time": "2026-01-18T15:57:28.144938",
       "type": "meta",
       "message": "Meta-learning ACTIVE"
     },
     {
-      "time": "2026-01-18T15:48:54.484841",
+      "time": "2026-01-18T15:58:15.060173",
       "type": "info",
       "message": "Heal mode completed \u2014 Unified Engine (PARTIAL)"
     }
@@ -77,21 +78,21 @@
       "status": "PASS",
       "fixes": 0,
       "violations": 0,
-      "duration_ms": 2826.401710510254
+      "duration_ms": 1777.3184776306152
     },
     {
       "agent": "TwoPhaseDeduplicationAgent_PhaseA",
       "status": "FAIL",
       "fixes": 0,
       "violations": 1977,
-      "duration_ms": 7367.619752883911
+      "duration_ms": 6097.669363021851
     },
     {
       "agent": "HygieneGuardianAgent",
       "status": "FAIL",
       "fixes": 0,
       "violations": 66,
-      "duration_ms": 630.6321620941162
+      "duration_ms": 569.0932273864746
     },
     {
       "agent": "NamingAgent",
@@ -108,18 +109,25 @@
       "duration_ms": 0.0
     },
     {
+      "agent": "StructuralHealerAgent",
+      "status": "ERROR",
+      "fixes": 0,
+      "violations": 1,
+      "duration_ms": 62.155723571777344
+    },
+    {
       "agent": "GravityEnforcerAgent",
       "status": "FAIL",
       "fixes": 0,
       "violations": 122,
-      "duration_ms": 3779.8523902893066
+      "duration_ms": 2885.305643081665
     },
     {
       "agent": "TwoPhaseDeduplicationAgent_PhaseB",
       "status": "FAIL",
       "fixes": 0,
       "violations": 46,
-      "duration_ms": 40305.466175079346
+      "duration_ms": 35488.65818977356
     },
     {
       "agent": "CodeSSOTEnforcerAgent",

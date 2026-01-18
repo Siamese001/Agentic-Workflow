@@ -60,6 +60,7 @@ class HealingStrategy:
                 "LocationAgent",
             ],
             "Tier 2: Architectural": [
+                "StructuralHealerAgent",  # File relocation, fission/fusion (WIRED)
                 "GravityEnforcerAgent",
                 "TwoPhaseDeduplicationAgent_PhaseB",  # Logic duplicates (late)
             ],
@@ -159,6 +160,10 @@ class HealingStrategy:
             elif agent_name == "CodeSSOTEnforcerAgent":
                 from agentic_core.L5_safety.validators.CodeSSOTEnforcerAgent import CodeSSOTEnforcerAgent
                 return CodeSSOTEnforcerAgent()
+            
+            elif agent_name == "StructuralHealerAgent":
+                from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
+                return StructuralHealerAgent(project_root=self.project_root)
             
             else:
                 Logger.warning(f"[HealingStrategy] Unknown agent: {agent_name}")

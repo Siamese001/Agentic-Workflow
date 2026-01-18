@@ -25,6 +25,7 @@ from agentic_core.L1_cognition.thought_engine.agent_logic import CanonValidatorA
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
@@ -312,7 +313,53 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         content = match.get('content') or match.get('metadata', {}).get('code_snippet', 'Content not available')
         return {'status': status, 'is_valid': True, 'confidence': match.get('similarity', 1.0 if source == 'l1_exact_match' else 0.0), 'source': source, 'matched_pattern': match.get('id'), 'ast_match': source == 'l1_exact_match', 'Recommendation': 'Use existing pattern', 'metadata': match.get('metadata'), 'query_time_ms': (time.time() - start_time) * 1000, 'content': content}
 
+    @timeout(180)
     @standard_heal
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(
+        self, 
+        dry_run: bool = True, 
+        execute: bool = False, 
+        depth: int = 0, 
+        max_depth: int = 3, 
+        _call_path: Optional[set] = None
+    ) -> Dict[str, int]:
+        """
+        Wired Legacy Validation - Checks for structural drift in legacy canon files.
+        
+        WIRED CAPABILITIES:
+        - _validate_legacy_structure(): Detects drift from the original project blueprint.
+        - _reconcile_import_paths(): Fixes broken legacy imports using the new mapping.
+        """
+        # CRITICAL: Chain up to HealerMixin
+        super().heal_repository(dry_run=dry_run, execute=execute)
+        
+        # Cycle/Depth Detection
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path or depth > max_depth:
+            return {"errors": 1, "skipped": 1}
+        _call_path.add(agent_name)
+        
+        metrics = {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
+        
+        try:
+            # 1. Legacy Structural Validation
+            if hasattr(self, '_validate_legacy_structure'):
+                struct_results = self._validate_legacy_structure(dry_run=dry_run)
+                metrics["violations"] += struct_results.get("violations", 0)
+                metrics["fixed"] += struct_results.get("fixed", 0)
+                
+            # 2. Path Reconciliation
+            if hasattr(self, '_reconcile_import_paths'):
+                import_results = self._reconcile_import_paths(dry_run=dry_run)
+                metrics["violations"] += import_results.get("violations", 0)
+                metrics["fixed"] += import_results.get("fixed", 0)
+
+        except Exception as e:
+            Logger.error(f"[{agent_name}] Legacy Healing Failed: {str(e)}")
+            metrics["errors"] += 1
+        finally:
+            _call_path.discard(agent_name)
+            
+        return metrics
