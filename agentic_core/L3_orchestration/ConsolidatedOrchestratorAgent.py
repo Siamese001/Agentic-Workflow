@@ -55,6 +55,10 @@ class ConsolidatedOrchestratorAgent:
         print(f"\n[L3 ORCHESTRATOR] ⚔️  MISSION START: Executing Sovereign Sweep")
         print(f"   [COMMAND] Controlling {len(agents)} Autonomous Agents")
         
+        # Log scan mode if present (Phase 6 verification)
+        if context.get("scan_mode"):
+            print(f"   [CONTEXT] Scan Mode: {context['scan_mode']}")
+        
         for agent_name, agent_instance in agents:
             print(f"\n   [L3 CONTROL] Handing control to: {agent_name}")
             
