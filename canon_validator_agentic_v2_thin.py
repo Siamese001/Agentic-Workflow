@@ -364,6 +364,13 @@ def main():
         default="heal_repository",
         help="Agent method to invoke (default: heal_repository)"
     )
+    parser.add_argument(
+        "--tier",
+        type=int,
+        choices=[0, 1, 2, 3, 4],
+        default=None,
+        help="Run specific healing tier only (0=Pre-Flight, 1=Structural, 2=Architectural, 3=Dynamic, 4=Final Gate)"
+    )
     args = parser.parse_args()
     
     # Global mission timeout: 30 minutes
@@ -579,7 +586,14 @@ def main():
                 return None
 
             # [UNIFIED ENGINE] Create orchestrator with HealingStrategy
-            strategy = HealingStrategy(project_root=project_root)
+            # Support tiered execution via --tier argument
+            strategy = HealingStrategy(project_root=project_root, target_tier=args.tier)
+            
+            # Log tier filtering if active
+            if args.tier is not None:
+                print(f"\n   [TIER FILTER] Running ONLY Tier {args.tier}")
+            else:
+                print(f"\n   [TIER FILTER] Running ALL tiers (0-4)")
             orchestrator = UnifiedOrchestratorAgent(
                 strategy=strategy,
                 project_root=project_root,

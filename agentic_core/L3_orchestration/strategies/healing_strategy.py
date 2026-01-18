@@ -37,14 +37,16 @@ class HealingStrategy:
     Encapsulates the 5-tier healing execution flow from SSOTOrchestratorAgent.
     """
     
-    def __init__(self, project_root: Optional[Path] = None) -> None:
+    def __init__(self, project_root: Optional[Path] = None, target_tier: Optional[int] = None) -> None:
         """
         Initialize the healing strategy.
         
         Args:
             project_root: Root path for the project (defaults to cwd)
+            target_tier: If specified, only run this tier (0-4). None runs all tiers.
         """
         self.project_root = Path(project_root) if project_root else Path.cwd()
+        self.target_tier = target_tier
         self._agents: Dict[str, Any] = {}
         self._dedup_agent: Optional[Any] = None
         
@@ -86,6 +88,39 @@ class HealingStrategy:
         """
         # Filter out empty tiers
         return {k: v for k, v in self._tiers.items() if v}
+    
+    def should_run_tier(self, tier_name: str) -> bool:
+        """
+        Check if a tier should be executed based on target_tier filter.
+        
+        Args:
+            tier_name: Name of the tier (e.g., "Tier 0: Pre-Flight")
+            
+        Returns:
+            True if the tier should run, False to skip
+        """
+        if self.target_tier is None:
+            return True  # No filter, run all tiers
+        
+        # Extract tier number from name (e.g., "Tier 0: Pre-Flight" -> 0)
+        try:
+            tier_num = int(tier_name.split(":")[0].replace("Tier", "").strip())
+            return tier_num == self.target_tier
+        except (ValueError, IndexError):
+            Logger.warning(f"[HealingStrategy] Could not parse tier number from: {tier_name}")
+            return False
+    
+    def get_tier_skip_message(self, tier_name: str) -> str:
+        """
+        Get a message explaining why a tier is being skipped.
+        
+        Args:
+            tier_name: Name of the tier being skipped
+            
+        Returns:
+            Skip message for logging
+        """
+        return f"⏭️  SKIPPING {tier_name} (target_tier={self.target_tier})"
     
     def get_agent(self, agent_name: str) -> Optional[Any]:
         """

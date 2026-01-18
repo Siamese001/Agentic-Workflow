@@ -8,13 +8,13 @@ Prevents import breakage when enforcing strict depth policies
 import ast
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any
+from typing import Dict, List, Optional, Set, Tuple, Any
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.decorators import standard_heal, timeout
 from agentic_core.utils.sovereign_index import SovereignIndex
 
 
@@ -34,12 +34,13 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """Track a file relocation for import healing."""
         self.relocation_map[old_path] = new_path
     
-    def heal_imports_in_file(self, file_path: Path) -> Tuple[bool, str]:
+    def heal_imports_in_file(self, file_path: Path, dry_run: bool = False) -> Tuple[bool, str]:
         """
         Fix all imports in a file that reference relocated modules.
         
         Args:
             file_path: Path to file to heal
+            dry_run: If True, do not write changes to disk
             
         Returns:
             Tuple of (was_healed, message)
@@ -78,7 +79,8 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             content = self._fix_relative_imports(file_path, content)
             
             if content != original_content:
-                file_path.write_text(content, encoding='utf-8')
+                if not dry_run:
+                    file_path.write_text(content, encoding='utf-8')
                 return True, f"Fixed {imports_fixed} import(s)"
             
             return False, "No imports needed healing"
@@ -150,12 +152,13 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         return content
     
-    def heal_all_imports_in_directory(self, directory: Path) -> Dict[str, str]:
+    def heal_all_imports_in_directory(self, directory: Path, dry_run: bool = False) -> Dict[str, str]:
         """
         Heal imports in all Python files in a directory.
         
         Args:
             directory: Directory to scan
+            dry_run: If True, do not write changes
             
         Returns:
             Dict of {file_path: heal_message}
@@ -164,16 +167,55 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         for py_file in directory.rglob("*.py"):
             if py_file.is_file():
-                was_healed, message = self.heal_imports_in_file(py_file)
+                was_healed, message = self.heal_imports_in_file(py_file, dry_run=dry_run)
                 if was_healed:
                     results[str(py_file)] = message
         
         return results
 
+    @timeout(300)
     @standard_heal
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[set] = None
+    ) -> Dict[str, int]:
+        """
+        Import Healing - Fixes broken imports after file relocations.
+        
+        WIRED CAPABILITIES:
+        - heal_all_imports_in_directory(): Scans project for broken imports.
+        """
+        # CRITICAL: Chain up to HealerMixin
+        metrics = super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
+        if not isinstance(metrics, dict):
+            metrics = {"violations": 0, "fixed": 0, "errors": 0}
+        
+        if metrics.get("cycle_detected"):
+            return metrics
+
+        try:
+            # Wired Orphan: heal_all_imports_in_directory
+            # This method now supports dry_run safety
+            results = self.heal_all_imports_in_directory(self.project_root, dry_run=dry_run)
+            
+            metrics["violations"] = metrics.get("violations", 0) + len(results)
+            
+            if not dry_run and execute:
+                metrics["fixed"] = metrics.get("fixed", 0) + len(results)
+            
+        except Exception as e:
+            import logging
+            Logger = logging.getLogger(__name__)
+            Logger.error(f"Import healing failed: {e}")
+            metrics["errors"] = metrics.get("errors", 0) + 1
+            
+        return metrics
 
 
 def get_sovereign_ignore_list() -> Set[str]:
