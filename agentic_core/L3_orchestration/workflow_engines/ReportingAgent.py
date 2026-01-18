@@ -51,6 +51,8 @@ except ImportError:  # MetricsAgent not implemented yet or optional
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 @dataclass
 class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -208,6 +210,7 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return report
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Observability agent - invoke shared healing chain."""
         if _call_path is None:

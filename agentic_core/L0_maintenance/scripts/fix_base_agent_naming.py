@@ -8,6 +8,7 @@ Fix Base Agent naming convention in agent_discovery_full.json.
 """
 import json
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 discovery_file = project_root / "agent_discovery_full.json"

@@ -38,6 +38,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 @dataclass
@@ -57,6 +58,7 @@ class L4Agent(HealerMixin, MCPHardenedMixin):
     name: str = "L4Agent"
     layer: str = "L4"
     
+    @standard_heal
     def heal_repository(self, dry_run: bool = True) -> Dict[str, Any]:
         """Override in subclass to implement healing logic."""
         super().heal_repository(dry_run)

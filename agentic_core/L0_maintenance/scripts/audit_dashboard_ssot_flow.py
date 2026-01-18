@@ -74,6 +74,7 @@ from dashboard_ssot_definitions import (
     calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_avg_cc,
     calc_complexity_health, calc_code_quality_score, calc_health_score
 )
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Verify all column names are defined
 required_columns = [

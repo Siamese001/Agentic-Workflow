@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional, Type, Union
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from functools import wraps
 import inspect
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 
@@ -354,6 +355,7 @@ class SecureErrorHandler:
         raise secure_error
 
     @timeout(300)
+    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,

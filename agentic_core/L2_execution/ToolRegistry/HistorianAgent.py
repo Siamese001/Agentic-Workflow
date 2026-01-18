@@ -105,7 +105,6 @@ if WATCHDOG_AVAILABLE:
             self.cooldown = 0.0
 
         def on_modified(self, event) -> Any:
-           """Execute on_modified operation."""
             """Execute on_modified operation."""
             if event.is_directory: return
             if any(x in event.src_path for x in EXCLUDED_DIRS): return
@@ -128,6 +127,5 @@ else:
             self.loop = loop
 
         def on_modified(self, event) -> Any:
-           """Execute on_modified operation."""
             """Execute on_modified operation."""
             pass

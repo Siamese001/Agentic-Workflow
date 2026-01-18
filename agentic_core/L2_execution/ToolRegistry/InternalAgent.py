@@ -9,6 +9,8 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 
 from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 class LicInternalAgent(SovereignBaseAgent):
     """
@@ -20,6 +22,7 @@ class LicInternalAgent(SovereignBaseAgent):
     REMOVED: manual_rag_input.json (deprecated)
     """
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).

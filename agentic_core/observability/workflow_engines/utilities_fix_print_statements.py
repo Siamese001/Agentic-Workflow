@@ -7,6 +7,8 @@ import os
 import re
 from services.configuration import ConfigurationService
 from typing import Any
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def _should_add_logging_imports(content):
     """Check if logging import and Logger instance already exist in the content."""

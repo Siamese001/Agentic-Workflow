@@ -66,6 +66,8 @@ SKIP_PATHS = {
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 @dataclass
 class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -282,6 +284,7 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         return self.validate_and_fix_ssot_drift(dry_run=True)
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Autonomous code SSOT enforcement."""
         if _call_path is None:

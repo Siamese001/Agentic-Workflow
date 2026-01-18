@@ -27,7 +27,6 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON COMPLIANCE — renamed to TypeHintEnforcementAgent for discovery and sovereignty — 2025-12-30
 class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-   """TypeHintEnforcementAgent agent for autonomous operations."""
     """
     Ensures public functions, methods, and module-level assignments have type hints.
 
@@ -99,6 +98,7 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING FIXED: TypeHintFixerAgent → TypeHintFixerAgent
 
@@ -114,6 +114,7 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     # ... (rest of the class remains the same)
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L5 safety/validators - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

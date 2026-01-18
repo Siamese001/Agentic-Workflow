@@ -62,6 +62,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.CognitiveRecoveryMixin import CognitiveRecoveryMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, CognitiveRecoveryMixin):
     """
@@ -473,6 +474,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         return {'problematic_nodes': problematic_nodes, 'total_mutations': total_mutations, 'successful_mutations': successful_mutations, 'mutation_success_rate': successful_mutations / total_mutations if total_mutations > 0 else 0.0, 'total_nodes_tracked': len(self.node_patterns)}
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

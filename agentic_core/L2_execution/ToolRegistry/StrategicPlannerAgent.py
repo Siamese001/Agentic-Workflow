@@ -26,6 +26,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 # DUPLICATE ACCEPTED: App-specific customization valid
@@ -122,6 +123,7 @@ Output ONLY the plan in Markdown.
         else:
             print("   [OK] Strategy: Maintain current trajectory.")
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

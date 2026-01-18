@@ -19,6 +19,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 Logger: Any = logging.getLogger(__name__)
 
 class ProactiveFissionScanner:

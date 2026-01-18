@@ -13,6 +13,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 exempt: Any = ['__init__.py', '__pycache__']
 allowed_patterns: Any = ['sovereign_config.py', 'tests/', 'test_']

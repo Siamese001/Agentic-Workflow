@@ -24,6 +24,7 @@ Logger: Any = logging.getLogger(__name__)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @dataclass
 class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -183,6 +184,7 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             recommendations.append('CRITICAL: Consider taking agent offline for maintenance')
         return recommendations
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

@@ -12,6 +12,7 @@ import re
 import hashlib
 from pathlib import Path
 from datetime import datetime
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def get_file_hash(filepath):
     """Get SHA256 hash of file to detect changes."""

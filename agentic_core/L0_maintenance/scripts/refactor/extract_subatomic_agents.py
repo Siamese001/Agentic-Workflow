@@ -12,6 +12,7 @@ import ast
 import re
 from pathlib import Path
 from typing import List, Tuple
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Target file
 SOURCE_FILE = Path("agentic_core/L1_cognition/thought_engine/SubAtomicAgent.py")

@@ -18,6 +18,7 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
 from agentic_core.L5_safety.guardrails.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 @dataclass
@@ -35,6 +36,7 @@ class PolicyNeuralAutoImmuneAgent(SubatomicTestingMixin, NeuralAutoImmuneAgent, 
         return {"lockdowns_issued": {}}
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

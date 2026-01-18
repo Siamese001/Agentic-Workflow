@@ -35,6 +35,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 
@@ -68,6 +69,7 @@ class CheckpointManagerAgent(L4StateBaseAgent):
         super().__init__()
 
     @timeout(300)
+    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,

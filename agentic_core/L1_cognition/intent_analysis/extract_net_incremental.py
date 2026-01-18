@@ -5,6 +5,7 @@ import os
 'Brief description of functionality and purpose.'
 import sys
 from typing import Any, List, Dict, Optional
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 def extract_net_incremental() -> None:
     """Extract files that don't exist in sovereign codebase."""

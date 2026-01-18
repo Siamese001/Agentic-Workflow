@@ -33,6 +33,7 @@ from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
@@ -270,6 +271,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             return self.classify_module(file_path)
         return {"error": "no_file_provided"}
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

@@ -10,6 +10,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @dataclass
 class TypeHintFixerAgent(SubatomicTestingMixin, HealerMixin, ast.NodeTransformer, MCPHardenedMixin):
@@ -63,6 +64,7 @@ class TypeHintFixerAgent(SubatomicTestingMixin, HealerMixin, ast.NodeTransformer
                 return new_node
         return node
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

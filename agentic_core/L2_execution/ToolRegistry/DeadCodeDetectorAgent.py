@@ -171,6 +171,8 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 @dataclass
 class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -361,6 +363,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             
         return "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(report)
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
@@ -387,6 +390,7 @@ if __name__ == "__main__":
 
 
 @timeout(300)
+@standard_heal
 def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
     """Utils/core extensions - operational only."""
     if _call_path is None:

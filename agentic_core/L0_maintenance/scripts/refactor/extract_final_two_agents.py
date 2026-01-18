@@ -4,6 +4,7 @@ Extracts HealerAgent and _LegacySafetyInspectorAgent.
 """
 import ast
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def extract_healer_agent():
     """Extract HealerAgent from CanonHealerAgent.py."""

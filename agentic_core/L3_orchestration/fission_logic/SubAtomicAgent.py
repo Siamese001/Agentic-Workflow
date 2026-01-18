@@ -11,6 +11,7 @@ import ast
 import os
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING FIXED: SubAtomicAgent → SubAtomicAgent
 class SubAtomicAgent:
@@ -121,6 +122,7 @@ def get_sub_atomic_agent() -> Any:
     return sub_atomic_agent_impl
 
 @timeout(300)
+@standard_heal
 def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
     """L1 cognition - operational only."""
     if _call_path is None:

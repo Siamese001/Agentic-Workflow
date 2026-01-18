@@ -35,6 +35,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -284,6 +285,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         Logger.info(f"{'=' * 80}\n")
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

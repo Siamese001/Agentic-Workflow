@@ -52,6 +52,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
 from agentic_core.L5_safety.validators.canonical_truth import get_canonical_layer
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 Logger = logging.getLogger(__name__)
 
@@ -246,6 +248,7 @@ class GravityEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
             "status": "FAIL" if all_violations else "PASS"
         }
     
+    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,

@@ -5,6 +5,7 @@ Extracts GenerativeGuardDeprecatedAgent and removes SubAtomicAgent stubs.
 import ast
 from pathlib import Path
 from typing import Tuple
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def extract_generative_guard():
     """Extract GenerativeGuardDeprecatedAgent from CanonHealerAgent.py."""

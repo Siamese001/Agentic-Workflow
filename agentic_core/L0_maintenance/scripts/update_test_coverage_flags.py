@@ -4,6 +4,7 @@ Update has_tests flags in agent_discovery_full.json based on actual test file ex
 """
 import json
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 TESTS_DIR = PROJECT_ROOT / "tests"

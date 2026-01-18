@@ -51,6 +51,7 @@ class BiasResult:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Lightweight Bias Detection for Content Quality.
@@ -233,6 +234,7 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         
         return recommendations
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)

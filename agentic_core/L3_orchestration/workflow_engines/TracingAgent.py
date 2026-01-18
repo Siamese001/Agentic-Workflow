@@ -68,15 +68,11 @@ class Span:
         self.start_time = datetime.now().isoformat(timespec="milliseconds")
 
     def end(self, status: str = "SUCCESS") -> None:
-       """Execute end operation."""
         """Execute end operation."""
         self.end_time = datetime.now().isoformat(timespec="milliseconds")
         self.status = status
 
     def add_event(self, name: str, attributes: Optional[Dict[str, Any]] = None) -> None:
-     """Execute add_event operation."""
-      """Execute add_event operation."""
-       """Execute add_event operation."""
         """Execute add_event operation."""
         event = {
             "name": name,
@@ -86,9 +82,6 @@ class Span:
         self.events.append(event)
 
     def set_attribute(self, key: str, value: Any) -> None:
-     """Execute set_attribute operation."""
-      """Execute set_attribute operation."""
-       """Execute set_attribute operation."""
         """Set a Span attribute."""
         self.attributes[key] = value
 
@@ -350,18 +343,13 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             raise
 
     def set_attribute(self, span_id: str, key: str, value: Any) -> None:
-      """Execute set_attribute operation."""
-       """Execute set_attribute operation."""
-        """Execute set_attribute operation."""
+        """Set an attribute on a span."""
         with self._lock:
             if span_id in self._spans:
                 self._spans[span_id].attributes[key] = value
 
     def add_event(self, span_id: str, name: str, attributes: Optional[Dict[str, Any]] = None) -> None:
-     """Execute add_event operation."""
-      """Execute add_event operation."""
-       """Execute add_event operation."""
-        """Execute add_event operation."""
+        """Add an event to a span."""
         with self._lock:
             if span_id in self._spans:
                 self._spans[span_id].add_event(name, attributes)

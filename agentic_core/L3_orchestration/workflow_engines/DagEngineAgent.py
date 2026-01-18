@@ -74,6 +74,7 @@ class DagExecutionResult:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING CANON COMPLIANCE — renamed to DagEngineAgent for discovery and sovereignty — 2025-12-30
 class DagEngineAgent(MCPHardenedMixin, HealerMixin):
@@ -331,6 +332,7 @@ class DagEngineAgent(MCPHardenedMixin, HealerMixin):
         if self.enable_logging:
             LOGGER.info('dag_reset')
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
@@ -343,6 +345,7 @@ def create_dag_from_config(config: Dict[str, Any]) -> DAGEngine:
     return dag
 
 @timeout(300)
+@standard_heal
 def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
     """L3 orchestration/workflow_engines - operational only."""
     if _call_path is None:

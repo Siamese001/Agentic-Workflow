@@ -8,6 +8,8 @@ import logging
 import os
 from services.configuration import ConfigurationService
 from typing import Any
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 Logger: Any = logging.getLogger(__name__)
 
 def fix_multiline_strings(content: Any) -> Any:

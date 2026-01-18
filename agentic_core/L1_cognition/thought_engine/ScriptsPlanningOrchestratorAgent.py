@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional, Protocol
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 Logger: Any = logging.getLogger(__name__)
 
 class ScriptExecutionPriority(Enum):
@@ -152,6 +153,7 @@ class ScriptsPlanningOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseA
                 total += 60.0 * priority_multipliers.get(Task.priority, 1.0)
         return total
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

@@ -43,10 +43,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 @dataclass
-class L0MaintenanceBaseAgent(HealerMixin, L0DelegationTestingMixin, SovereignBaseAgent):
+class L0MaintenanceBaseAgent(L0DelegationTestingMixin, SovereignBaseAgent):
     """
     Consolidated base for L0 Maintenance agents.
     
@@ -73,6 +74,7 @@ class L0MaintenanceBaseAgent(HealerMixin, L0DelegationTestingMixin, SovereignBas
         """Cooperative MRO initialization."""
         super().__post_init__()
     
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         if _call_path is None:

@@ -23,6 +23,7 @@ from agentic_core.L6_observability.L6ObservabilityBaseAgent import (
     CritiqueReport
 )
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 # [SOVEREIGN FACTORY]
@@ -225,6 +226,7 @@ class PerformanceAnalystAgent(SubatomicTestingMixin, L6ObservabilityBaseAgent):
             'full_analysis': result
         }
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)

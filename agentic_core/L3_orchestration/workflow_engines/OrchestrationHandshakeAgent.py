@@ -17,11 +17,12 @@ from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 from agentic_core.L3_orchestration.workflow_engines.CachedOrchestratorAgent import CachedOrchestratorAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 class OrchestrationHandshakeAgent(CachedOrchestratorAgent, MCPHardenedMixin):
@@ -97,6 +98,7 @@ class OrchestrationHandshakeAgent(CachedOrchestratorAgent, MCPHardenedMixin):
                 break
             context: Any = {'previous_result': outcome['result']}
         return trail
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

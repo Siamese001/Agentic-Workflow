@@ -6,6 +6,7 @@ Ensures all test directories have __init__.py for Python package recognition.
 import os
 from agentic_core.config.blueprint_sovereign.structure_blueprint import TESTS_L2_SUBFOLDER_MAP
 from typing import Any
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def align_tests_structure(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""

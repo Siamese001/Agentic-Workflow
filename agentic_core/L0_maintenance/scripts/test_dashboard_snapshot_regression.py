@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Tuple, Any
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def load_discovery(path: str) -> List[Dict]:
     """Load agent discovery JSON."""

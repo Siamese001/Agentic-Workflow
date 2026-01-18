@@ -42,6 +42,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 
 @dataclass
@@ -52,6 +54,7 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
     """
 
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).

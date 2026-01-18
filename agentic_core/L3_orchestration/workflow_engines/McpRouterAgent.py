@@ -20,6 +20,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -126,6 +127,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     health[mcp] = False
         return health
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

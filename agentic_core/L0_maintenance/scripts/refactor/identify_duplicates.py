@@ -3,6 +3,7 @@ Identify the exact 7 duplicate files to remove for 287 baseline.
 """
 import json
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 report_path = Path('deduplication_report.json')
 with open(report_path) as f:

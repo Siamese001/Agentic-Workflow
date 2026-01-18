@@ -16,6 +16,7 @@ from typing import Any, Dict, Optional, Pattern, Set
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from .L5SafetyBaseAgent import L5SafetyBaseAgent
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 def track_metrics(name: str):
@@ -91,6 +92,7 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
         return text
 
     @timeout(300)
+    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,

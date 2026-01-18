@@ -26,6 +26,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 excluded_dirs: Any = {'.git', '.venv', 'venv', 'env', '__pycache__', 'node_modules', 'build', 'dist', 'eggs', ARCHIVES_DIR, 'data'}
 excluded_files: Any = {'CanonValidatorAgent.py', 'canon_validator_backup.py', 'canon_validator_v2_agentic.py', 'resume_engine.py', 'action_registry.py', 'fix_syntax_errors.py', 'healthcheck.py', 'check_pinecone.py', 'governed_outreach.py', 'fix_security_and_hygiene.py', 'fix_structural_debt.py', 'fix_print_statements.py'}
 

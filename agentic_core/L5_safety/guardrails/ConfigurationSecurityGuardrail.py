@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 logger = logging.getLogger(__name__)
@@ -159,6 +160,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
         assert hasattr(self, "enabled_rules"), "Missing enabled_rules"
         return True
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)

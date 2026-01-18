@@ -32,6 +32,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     get_validated_project_root,
 )
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 Logger = logging.getLogger(__name__)
 

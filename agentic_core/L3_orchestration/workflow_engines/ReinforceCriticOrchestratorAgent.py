@@ -22,6 +22,7 @@ from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent import NervousSystemAgent
 from dataclasses import dataclass
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 class PolicyCriticNet(nn.Module):
@@ -171,6 +172,7 @@ class ReinforceCriticOrchestratorAgent(SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

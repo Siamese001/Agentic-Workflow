@@ -17,6 +17,7 @@ from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator,
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @dataclass
 class PrintStatementValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
@@ -32,6 +33,7 @@ class PrintStatementValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTV
                 self.report('Forbidden print() statement detected', node)
         self.generic_visit(node)
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Optional, Set
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from .L5SafetyBaseAgent import L5SafetyBaseAgent
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 def track_metrics(name: str):
@@ -100,6 +101,7 @@ class BiasDetectorAgent(L5SafetyBaseAgent):
         return result
 
     @timeout(300)
+    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,

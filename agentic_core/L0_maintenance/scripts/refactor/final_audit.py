@@ -70,6 +70,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 layer_counts = Counter(a.get('layer', 'unknown') for a in active_agents)
 
 for layer in sorted(layer_counts.keys()):

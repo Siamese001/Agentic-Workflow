@@ -7,6 +7,7 @@ Validates every cell to ensure data fidelity
 import json
 import re
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def extract_monolithic_data():
     """Extract dashboard data from monolithic backup HTML"""

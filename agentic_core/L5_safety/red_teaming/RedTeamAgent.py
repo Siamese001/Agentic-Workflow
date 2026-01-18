@@ -21,6 +21,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"
@@ -120,6 +121,7 @@ class RedTeamAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             print(f'   [!] Escalation handling failed: {e}')
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Red team agent - operational testing mode only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

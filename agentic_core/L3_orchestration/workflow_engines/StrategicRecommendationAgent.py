@@ -25,6 +25,7 @@ from typing import Any, Dict, List, Optional
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.common.healing.healer_mixin import HealerMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 log = logging.getLogger(__name__)
 
@@ -384,6 +385,7 @@ Output strict JSON:
         result = self.act(plan, dashboard_data)
         return result
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, int]:
         """Invoke healing chain via super()."""
         return super().heal_repository(dry_run=dry_run, **kwargs)

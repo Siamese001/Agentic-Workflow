@@ -24,6 +24,7 @@ SSOT PRINCIPLE:
 from __future__ import annotations
 
 from typing import Dict, Any, List, Optional, Protocol, runtime_checkable
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 @runtime_checkable
@@ -95,6 +96,7 @@ class IHealable(Protocol):
     healing agents must implement.
     """
     
+    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,

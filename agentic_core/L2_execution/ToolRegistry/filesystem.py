@@ -24,6 +24,8 @@ from agentic_core.L2_execution.ToolRegistry.definitions import (
     ReadFileArgs,
     WriteFileArgs,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 # Define a Protocol for the Blackboard interface required by this module

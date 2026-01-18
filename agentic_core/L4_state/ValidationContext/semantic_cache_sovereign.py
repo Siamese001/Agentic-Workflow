@@ -25,6 +25,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7
@@ -105,6 +106,7 @@ class SovereignSemanticCache(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMi
             Logger.info(f'[L4 PURGE] Purged semantic trail for {Path(file_path).name}')
         except Exception:
             pass
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

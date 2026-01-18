@@ -25,6 +25,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger: Any = logging.getLogger('L6.CanonAudit')
 
@@ -152,6 +153,7 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         print('=' * 60 + '\n')
         return {'status': overall_status, 'components': component_results, 'mcp_integration': mcp_results, 'insights': insights, 'timestamp': asyncio.get_event_loop().time()}
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

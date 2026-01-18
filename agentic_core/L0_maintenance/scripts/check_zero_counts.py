@@ -1,6 +1,7 @@
 """Check for any 0-count territory rows in dashboard."""
 import json
 import re
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 html = open('agentic_core/L6_observability/dashboards/autonomy_dashboard.html', encoding='utf-8').read()
 

@@ -23,12 +23,13 @@ from typing import Dict, Optional
 import logging
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class LLMPromptGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class LLMPromptGovernorAgent(SovereignBaseAgent):
     """
     Centralized prompt governance for all LLM interactions.
     
@@ -269,6 +270,7 @@ Return ONLY JSON in this format:
         combined = prompt_dict.get('system', '') + '\n\n' + prompt_dict.get('user', '')
         return hashlib.sha256(combined.encode('utf-8')).hexdigest()
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """Autonomous healing implementation as per Canon Key 51."""
         super().heal_repository()

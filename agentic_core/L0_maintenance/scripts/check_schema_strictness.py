@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 from collections import Counter
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 

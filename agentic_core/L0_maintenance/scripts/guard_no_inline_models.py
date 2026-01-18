@@ -8,6 +8,7 @@ import ast
 import sys
 import logging
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Logger Setup
 Logger = logging.getLogger("sovereign.models")

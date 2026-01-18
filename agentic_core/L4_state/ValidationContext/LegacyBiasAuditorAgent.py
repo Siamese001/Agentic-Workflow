@@ -16,6 +16,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint_2 import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 """Lightweight Bias Detection for Content Quality - Blueprint Reference.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
@@ -41,6 +42,7 @@ class _LegacyBiasAuditorAgent:
     """
     
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).

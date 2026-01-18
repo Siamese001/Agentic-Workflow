@@ -41,6 +41,7 @@ from scripts.dashboard_ssot_definitions import (
     FIELD_MCP_HARDENED, FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT,
     FIELD_SCHEMA_STRICTNESS, FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY
 )
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery
 discovery_file = project_root / "agent_discovery_full.json"

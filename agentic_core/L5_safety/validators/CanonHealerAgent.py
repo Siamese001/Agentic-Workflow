@@ -56,6 +56,7 @@ excluded_dirs = [
 ]
 
 
+@standard_heal
 def heal_repository(dry_run: bool = True, execute: bool = False, **kwargs):
     """
     Autonomous healing implementation as per Canon Key 51.
@@ -153,6 +154,7 @@ from .SystemArchitectAgent import SystemArchitectAgent as SystemArchitect
 # DEPRECATED: Moved to GenerativeGuardAgent.py (Jan 6, 2026)
 # Import for backward compatibility
 from .GenerativeGuardAgent import GenerativeGuardAgent as GenerativeGuard
+from agentic_core.utils.core_extensions.decorators import standard_heal
 # GenerativeGuardDeprecatedAgent extracted to GenerativeGuardDeprecatedAgent.py (Phase B Task 5)
 
 

@@ -20,8 +20,8 @@ from agentic_core.L4_state.ValidationContext import ValidationContext
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.runtime.shared_runtime import log_event
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -37,6 +37,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 logger = logging.getLogger(__name__)
@@ -243,6 +244,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
         assert hasattr(self, "boundary_tests"), "Missing boundary tests"
         return True
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)

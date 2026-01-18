@@ -25,6 +25,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @dataclass
 class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
@@ -61,6 +62,7 @@ class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3Subatom
         return results
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

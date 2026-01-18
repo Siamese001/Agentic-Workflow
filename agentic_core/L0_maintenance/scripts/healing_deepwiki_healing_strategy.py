@@ -15,6 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 Logger: Any = logging.getLogger(__name__)
 

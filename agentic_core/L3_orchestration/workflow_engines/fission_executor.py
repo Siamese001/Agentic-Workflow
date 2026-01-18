@@ -11,6 +11,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 if TYPE_CHECKING:
     from agentic_core.FissionManagerAgent import FissionManagerAgent
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 Logger: Any = logging.getLogger(__name__)
 
 async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 'FissionManagerAgent') -> bool:

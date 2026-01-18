@@ -554,6 +554,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             }
         }
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """Autonomous healing implementation as per Canon Key 51."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
@@ -663,8 +664,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @timeout(300)
+@standard_heal
 def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
     """L5 safety/guardrails - operational only."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
