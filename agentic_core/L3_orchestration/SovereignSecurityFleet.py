@@ -152,7 +152,7 @@ class SovereignSecurityFleet:
         print("\n[4/5] GospelSyncAgent (L0) - Filesystem Synchronization")
         print("-" * 50)
         try:
-            from agentic_core.L0_maintenance.GospelSyncAgent import GospelSyncAgent
+            from archives.location_violations.GospelSyncAgent import GospelSyncAgent
             sync_agent = self._load_agent("GospelSyncAgent", GospelSyncAgent, root_dir=str(self.root))
             if sync_agent:
                 sync_result = sync_agent.perform_sync_audit()

@@ -1,23 +1,29 @@
 from __future__ import annotations
 """
-SSOTOrchestratorAgent - Master SSOT Validation Orchestrator (Phase 2.1)
+SSOTOrchestratorAgent - Master SSOT Validation Orchestrator (Phase 2.2)
 Territory: agentic_core/L3_orchestration/workflow_engines/
 
 RESPONSIBILITIES:
 - Coordinate execution of all SSOT validation agents
 - Implement "Heal-First" protocol (syntax validation before analysis)
+- Implement TWO-PHASE DUPLICATE DETECTION for improved signal
 - Aggregate results from all validators
 - Provide unified SSOT health reporting
 - Manage healing sequence and dependencies
 
-ORCHESTRATES:
-- SyntaxValidatorAgent (L5) - Run FIRST (heal-first protocol)
-- HygieneGuardianAgent (L5) - Empty files, tech debt
-- GravityEnforcerAgent (L5) - Upward imports
-- DuplicateCodeDetectorAgent (L5) - Duplicate files
-- NamingAgent (L5) - Naming conventions
-- LocationAgent (L5) - File placement
-- CodeSSOTEnforcerAgent (L5) - Hard-coded paths
+TWO-PHASE DUPLICATE DETECTION:
+- Phase A (Shallow): Runs IMMEDIATELY after SyntaxValidator - identity collisions
+- Phase B (Deep): Runs AFTER structural healing - logic duplicates
+
+ORCHESTRATES (Updated Sequence):
+1. SyntaxValidatorAgent (L5) - Run FIRST (heal-first protocol)
+2. TwoPhaseDeduplicationAgent Phase A - Identity collisions (early detection)
+3. HygieneGuardianAgent (L5) - Empty files, tech debt
+4. GravityEnforcerAgent (L5) - Upward imports
+5. NamingAgent (L5) - Naming conventions
+6. LocationAgent (L5) - File placement
+7. TwoPhaseDeduplicationAgent Phase B - Logic duplicates (after structural healing)
+8. CodeSSOTEnforcerAgent (L5) - Hard-coded paths
 
 Canon Key 51 Compliance: Includes heal_repository() method
 """
@@ -29,7 +35,7 @@ from datetime import datetime
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -75,14 +81,15 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
     implementing the "Heal-First" protocol where syntax validation
     runs before any other analysis to ensure files are parseable.
     
-    Execution Order:
+    Execution Order (Two-Phase Duplicate Detection):
     1. SyntaxValidatorAgent (CRITICAL - must pass before others)
-    2. HygieneGuardianAgent (cleanup empty files)
-    3. GravityEnforcerAgent (architectural violations)
-    4. DuplicateCodeDetectorAgent (duplicate files)
+    2. TwoPhaseDeduplicationAgent_PhaseA (identity collisions - early detection)
+    3. HygieneGuardianAgent (cleanup empty files)
+    4. GravityEnforcerAgent (architectural violations)
     5. NamingAgent (naming conventions)
     6. LocationAgent (file placement)
-    7. CodeSSOTEnforcerAgent (hard-coded paths)
+    7. TwoPhaseDeduplicationAgent_PhaseB (logic duplicates - after structural healing)
+    8. CodeSSOTEnforcerAgent (hard-coded paths)
     """
     
     def __init__(self, project_root: Path = None) -> None:
@@ -93,15 +100,34 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
         
         # Track agent instances
         self._agents = {}
-        self._execution_order = [
-            'SyntaxValidatorAgent',
-            'HygieneGuardianAgent',
-            'GravityEnforcerAgent',
-            'DuplicateCodeDetectorAgent',
-            'NamingAgent',
-            'LocationAgent',
-            'CodeSSOTEnforcerAgent'
-        ]
+        
+        # Two-phase deduplication agent (shared instance for both phases)
+        self._dedup_agent = None
+        
+        # Updated execution order with two-phase duplicate detection
+        # Phase A runs early (after syntax), Phase B runs late (after structural healing)
+        # [TIERED EXECUTION] Grouped by dependency gravity
+        self.tiers = {
+            "Tier 1: Parseability Gate": ["SyntaxValidatorAgent"],
+            "Tier 2: Identity & Structure": [
+                "TwoPhaseDeduplicationAgent_PhaseA", # Early: identity collisions
+                "HygieneGuardianAgent",
+                "NamingAgent",
+                "LocationAgent"
+            ],
+            "Tier 3: Deep Compliance": [
+                "GravityEnforcerAgent",
+                "TwoPhaseDeduplicationAgent_PhaseB", # Late: logic duplicates
+                "CodeSSOTEnforcerAgent"
+            ]
+        }
+    
+    def _get_dedup_agent(self):
+        """Get or create the shared TwoPhaseDeduplicationAgent instance."""
+        if self._dedup_agent is None:
+            from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+            self._dedup_agent = TwoPhaseDeduplicationAgent(project_root=self.project_root)
+        return self._dedup_agent
     
     def _get_agent(self, agent_name: str) -> Any:
         """
@@ -113,6 +139,10 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
         Returns:
             Agent instance or None if not available
         """
+        # Handle two-phase deduplication specially (shared instance)
+        if agent_name.startswith('TwoPhaseDeduplicationAgent'):
+            return self._get_dedup_agent()
+        
         if agent_name in self._agents:
             return self._agents[agent_name]
         
@@ -127,8 +157,8 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
                 from agentic_core.L5_safety.guardrails.GravityEnforcerAgent import GravityEnforcerAgent
                 agent = GravityEnforcerAgent(project_root=self.project_root)
             elif agent_name == 'DuplicateCodeDetectorAgent':
-                from agentic_core.L5_safety.guardrails.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent
-                agent = DuplicateCodeDetectorAgent()
+                # Legacy support - redirect to TwoPhaseDeduplicationAgent
+                return self._get_dedup_agent()
             elif agent_name == 'NamingAgent':
                 from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
                 agent = NamingAgent()
@@ -180,8 +210,17 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
                     error_message=f"Agent {agent_name} not available"
                 )
             
-            # Run the agent's heal_repository method
-            if hasattr(agent, 'heal_repository'):
+            # Handle two-phase deduplication specially
+            if agent_name == 'TwoPhaseDeduplicationAgent_PhaseA':
+                # Phase A: Shallow duplicate check (identity collisions)
+                self.logger.info("[PHASE A] Running Shallow Duplicate Check...")
+                result = agent.heal_repository(dry_run=dry_run, execute=execute, phase="A")
+            elif agent_name == 'TwoPhaseDeduplicationAgent_PhaseB':
+                # Phase B: Deep SSOT duplicate check (logic duplicates)
+                self.logger.info("[PHASE B] Running Deep SSOT Duplicate Check...")
+                result = agent.heal_repository(dry_run=dry_run, execute=execute, phase="B")
+            elif hasattr(agent, 'heal_repository'):
+                # Standard agent execution
                 result = agent.heal_repository(dry_run=dry_run, execute=execute)
             else:
                 return AgentResult(
@@ -225,8 +264,7 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
     def orchestrate(
         self,
         dry_run: bool = True,
-        execute: bool = False,
-        stop_on_syntax_error: bool = True
+        execute: bool = False
     ) -> OrchestrationReport:
         """
         Orchestrate all SSOT validation agents.
@@ -234,7 +272,6 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
         Args:
             dry_run: If True, only report violations
             execute: If True, attempt to fix violations
-            stop_on_syntax_error: If True, stop if syntax validation fails
             
         Returns:
             OrchestrationReport with comprehensive results
@@ -249,34 +286,46 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
         total_violations = 0
         total_fixes = 0
         
-        for agent_name in self._execution_order:
-            self.logger.info(f"\n>>> Running {agent_name}...")
+        # [TIERED EXECUTION LOOP]
+        for tier_name, agents in self.tiers.items():
+            self.logger.info(f"\n[{tier_name.upper()}] Starting Sequence...")
+            tier_failed = False
             
-            result = self.run_agent(agent_name, dry_run=dry_run, execute=execute)
-            agent_results.append(result)
-            
-            total_violations += result.violations_found
-            total_fixes += result.violations_fixed
-            
-            # Log result
-            if result.status == 'PASS':
-                self.logger.info(f"✅ {agent_name}: PASS (0 violations)")
-            elif result.status == 'FAIL':
-                self.logger.warning(
-                    f"⚠️ {agent_name}: FAIL ({result.violations_found} violations, "
-                    f"{result.violations_fixed} fixed)"
-                )
-            else:
-                self.logger.error(f"❌ {agent_name}: ERROR - {result.error_message}")
-            
-            # Heal-First Protocol: Stop if syntax validation fails
-            if stop_on_syntax_error and agent_name == 'SyntaxValidatorAgent':
-                if result.status == 'FAIL':
-                    self.logger.error(
-                        "CRITICAL: Syntax validation failed. "
-                        "Cannot proceed with other agents until syntax errors are fixed."
+            for agent_name in agents:
+                self.logger.info(f"   >>> Running {agent_name}...")
+                
+                result = self.run_agent(agent_name, dry_run=dry_run, execute=execute)
+                agent_results.append(result)
+                
+                total_violations += result.violations_found
+                total_fixes += result.violations_fixed
+                
+                # Log result
+                if result.status == 'PASS':
+                    self.logger.info(f"   ✅ {agent_name}: PASS (0 violations)")
+                elif result.status == 'FAIL':
+                    tier_failed = True
+                    self.logger.warning(
+                        f"   ⚠️ {agent_name}: FAIL ({result.violations_found} violations, "
+                        f"{result.violations_fixed} fixed)"
                     )
-                    break
+                else:
+                    tier_failed = True
+                    self.logger.error(f"   ❌ {agent_name}: ERROR - {result.error_message}")
+            
+            # [STABILITY GATES]
+            # Gate 1: Parseability (Always Fatal if Failed)
+            if "Tier 1" in tier_name and tier_failed:
+                self.logger.error("🛑 CRITICAL GATE: Syntax Validation Failed. Aborting Mission.")
+                break
+                
+            # Gate 2: Structural Stability (Fatal only during Execution)
+            # If we are executing fixes and structure is still failing, we cannot run deep logic checks safely.
+            if "Tier 2" in tier_name and tier_failed and execute:
+                self.logger.error("🛑 STABILITY GATE: Structural violations persist after healing. Aborting Deep Compliance.")
+                break
+            
+            self.logger.info(f"[{tier_name.upper()}] Sequence Complete.\n")
         
         # Calculate metrics
         execution_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -379,7 +428,8 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[List[str]] = None
+        _call_path: Optional[List[str]] = None,
+        **kwargs
     ) -> Dict[str, Any]:
         """
         Canon Key 51 compliance: Orchestrate all SSOT validators.
@@ -390,6 +440,7 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
             depth: Current recursion depth
             max_depth: Maximum recursion depth
             _call_path: Internal call path tracking
+            **kwargs: Additional arguments for compatibility
             
         Returns:
             Dictionary with orchestration summary
@@ -404,9 +455,12 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
         # Run orchestration
         report = self.orchestrate(dry_run=dry_run, execute=execute)
         
+        # Return standardized format for ConsolidatedOrchestratorAgent
         return {
             "agent": "SSOTOrchestratorAgent",
             "timestamp": report.timestamp,
+            "violations": report.total_violations,  # Standardized key for ConsolidatedOrchestrator
+            "fixed": report.total_fixes,            # Standardized key for ConsolidatedOrchestrator
             "agents_run": report.total_agents_run,
             "agents_passed": report.agents_passed,
             "agents_failed": report.agents_failed,
@@ -414,13 +468,10 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
             "violations_fixed": report.total_fixes,
             "success_rate": report.success_rate,
             "execution_time_ms": report.execution_time_ms,
-            "status": report.overall_status,
-            "dry_run": dry_run,
-            "execute": execute,
-            "summary": f"Ran {report.total_agents_run} agents, found {report.total_violations} violations, fixed {report.total_fixes}"
+            "overall_status": report.overall_status
         }
 
 
-def get_ssot_orchestrator(project_root: Path = None) -> SSOTOrchestratorAgent:
+def get_ssot_orchestrator(project_root):
     """Factory function for SSOTOrchestratorAgent."""
     return SSOTOrchestratorAgent(project_root=project_root)

@@ -26,11 +26,23 @@ Note: StructuralEngineerAgent, SystemArchitectAgent, and RgStrategicPlannerAgent
       have evolved to L2_execution/ToolRegistry/ with healing capabilities.
 """
 
-from .CanonBaseAgent import CanonBaseAgent
-from .ReflectionAgent import RgReflectionAgent as ReflectionAgent
+# Graceful imports with fallbacks for missing modules
+try:
+    from .CanonBaseAgent import CanonBaseAgent
+except ImportError:
+    try:
+        from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+    except ImportError:
+        CanonBaseAgent = None
 
-# Public API surface — expose only what's intended
-__all__ = [
-    "CanonBaseAgent",
-    "ReflectionAgent",
-]
+try:
+    from .ReflectionAgent import RgReflectionAgent as ReflectionAgent
+except ImportError:
+    ReflectionAgent = None
+
+# Public API surface — expose only what's available
+__all__ = []
+if CanonBaseAgent is not None:
+    __all__.append("CanonBaseAgent")
+if ReflectionAgent is not None:
+    __all__.append("ReflectionAgent")

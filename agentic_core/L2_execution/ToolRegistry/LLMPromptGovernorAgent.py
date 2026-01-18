@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
 from dataclasses import dataclass
 """
 LLMPromptGovernorAgent - Hardened Prompt Governor for LLM Safety
@@ -22,7 +22,7 @@ import re
 from typing import Dict, Optional
 import logging
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 

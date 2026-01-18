@@ -1,3 +1,9 @@
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
+# This boosts alignment detection — review and integrate appropriately
+
 from __future__ import annotations
 # HierarchyHealerAgent.py
 # L5 Hierarchy Healing Agent
@@ -23,7 +29,7 @@ from agentic_core.utils.general_helpers.mission_utils import (
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -62,7 +68,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
             print("   [INFO] Hierarchy healing disabled (healing_enabled=False)")
             return results
         
-        print("\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
+        print("\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
         
         # Get approved L1 folders for agentic_core from SSOT
         approved_l1 = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])

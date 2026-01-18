@@ -17,7 +17,7 @@ from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator,
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 @dataclass
 class DebuggerValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):

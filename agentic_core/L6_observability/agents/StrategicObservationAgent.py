@@ -4,10 +4,10 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 @dataclass
-class StrategicObservationAgent(SubatomicTestingMixin, L6ObservabilityBaseAgent):
+class StrategicObservationAgent(L6ObservabilityBaseAgent):
     """
     StrategicObservationAgent (L6)
     

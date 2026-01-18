@@ -9,12 +9,12 @@ CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set, Union
+from typing import Any, Dict, FrozenSet, List, Optional, Protocol, Set, Union
 
 CANON_KEY_EXCEPTIONS: Dict[int, Dict[str, Any]] = {23: {'files': {'agentic_core/L2_execution/mcp/fetch_client_sovereign.py'}, 'patterns': ['if TYPE_CHECKING:', '\\"\\"\\".*requests.*\\"\\"\\"']}, 20: {'files': {'canon_validator_agentic_v2.py', 'pyproject.toml'}, 'patterns': []}}
 ACTIVE_CANON_KEYS: Any = list(range(0, 20))
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {0: ['.'], 1: ['agentic_core/prompt_governance'], 2: ['agentic_core/schemas'], 3: ['agentic_core/L1_cognition'], 4: ['agentic_core/L3_orchestration'], 5: ['agentic_core/L4_state'], 6: ['agentic_core/L5_safety'], 7: ['agentic_core/L0_maintenance'], 8: ['agentic_core/L2_execution', 'agentic_core/patterns', 'agentic_core/semantic_memory', 'agentic_core/knowledge'], 9: ['agentic_core/config', 'agentic_core/runtime'], 10: ['agentic_core/utils', 'agentic_core/L6_observability'], 11: ['apps_shared', 'apps_rg', 'apps_lic'], 12: ['tests'], 13: ['*'], 14: ['*'], 15: ['*'], 16: ['*'], 17: ['*'], 18: ['*'], 19: ['*']}
-SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'L6_observability', 'config', 'schemas', 'prompt_governance', 'runtime', 'utils', 'patterns', 'semantic_memory', 'knowledge']}, 'apps_rg': {'depth': 3, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain']}, 'apps_lic': {'depth': 3, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain', 'core']}, 'apps_shared': {'depth': 2, 'subfolders': ['base_definitions', 'common_utils', 'core_components', 'base_agents', 'models', 'utils', 'P1_core', 'config']}, 'tests': {'depth': 2, 'subfolders': ['unit', 'integration', 'e2e', 'functional', 'fixtures', 'automation', 'core', 'data', 'performance', 'security', 'autogen']}}
+SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'L6_observability', 'config', 'schemas', 'prompt_governance', 'runtime', 'utils', 'patterns', 'semantic_memory', 'knowledge']}, 'apps_rg': {'depth': 3, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain']}, 'apps_lic': {'depth': 3, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain', 'core']}, 'apps_shared': {'depth': 2, 'subfolders': ['base_definitions', 'common_utils', 'core_components', 'base_agents', 'models', 'utils', 'P1_core', 'config']}, 'tests': {'depth': 2, 'subfolders': ['unit', 'integration', 'e2e', 'functional', 'fixtures', 'automation', 'core', 'data', 'performance', 'security', 'autogen']}, '.sovereign_healing_backup': {'depth': 2, 'subfolders': ['filesystem', 'location', 'naming', 'transactions'], 'purpose': 'Backup directory for healing operations', 'volatile': True}}
 # ============================================================================
 # === SSOT: CRITICAL FILE AND DIRECTORY PATHS ===
 # ============================================================================
@@ -30,6 +30,7 @@ SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maint
 # === Agent Discovery Files ===
 AGENT_DISCOVERY_JSON: str = "agent_discovery_full.json"
 AGENT_DISCOVERY_MANIFEST_JSON: str = "agent_discovery_full.manifest.json"
+RUNTIME_STATE_JSON: str = "runtime_state.json"
 
 # === Core Directory Paths ===
 AGENTIC_CORE_DIR: str = "agentic_core"
@@ -66,6 +67,101 @@ TESTS_AUTOGEN_DIR: str = "tests/autogen"
 REPORTS_DIR: str = "reports"
 ARCHIVES_DIR: str = "archives"
 COVERAGE_HTML_DIR: str = "coverage_html"
+
+# ============================================================================
+# === L4 SUBFOLDER MAP (Depth-4 Structure for Complex L3 Folders) ===
+# ============================================================================
+# Some L3 folders have grown beyond manageable size and warrant L4 subfolders.
+# This map defines the approved L4 structure for these folders.
+# Criteria for L4: >50 files, >5 subdirs, or high functional diversity.
+
+L4_SUBFOLDER_MAP: Dict[str, Dict[str, List[str]]] = {
+    # L6_observability/dashboards/ - 13 .py files, 7 subdirs, mixed concerns
+    'dashboards': {
+        'generators': ['dashboard_generators', 'data_generators'],
+        'templates': ['html_templates', 'component_templates'],
+        'components': ['ui_components', 'chart_components'],
+        'data': ['json_data', 'runtime_data'],
+        'tests': ['unit_tests', 'e2e_tests'],
+        'js': ['components', 'controllers', 'renderers', 'utils', 'constants'],
+        'css': ['themes', 'layouts'],
+        'config': ['dashboard_config'],
+    },
+    # L0_maintenance/scripts/ - 181 .py files, 13 subdirs
+    'scripts': {
+        'healing': ['healing_strategies', 'healing_engines'],
+        'validation': ['validators', 'checkers'],
+        'utilities': ['file_utilities', 'code_utilities'],
+        'workflows': ['workflow_scripts', 'pipeline_scripts'],
+        'runtime': ['runtime_scripts', 'shared'],
+        'schemas': ['schema_scripts'],
+        'installation': ['install_scripts'],
+        'documentation': ['doc_generators'],
+        'maintenance': ['maintenance_scripts'],
+        'canon_validator': ['validator_scripts'],
+        'test_utilities': ['test_helpers'],
+        'mixins': ['mixin_scripts'],
+        'logs': ['log_handlers'],
+    },
+    # L3_orchestration/workflow_engines/ - 130 .py files, 5 subdirs
+    'workflow_engines': {
+        'core': ['base_orchestrators', 'orchestration_types'],
+        'dag': ['dag_executors', 'dag_managers'],
+        'rl': ['rl_orchestrators', 'rl_coordinators'],
+        'mission': ['mission_controllers', 'mission_runners'],
+        'mcp': ['mcp_routers', 'mcp_managers'],
+        'safety': ['safety_orchestrators'],
+        'state': ['state_managers'],
+        'rag': ['rag_orchestrators'],
+        'telemetry': ['telemetry_agents', 'metrics_agents'],
+    },
+    # L1_cognition/thought_engine/ - 160 .py files, 6 subdirs
+    'thought_engine': {
+        'reasoning': ['reasoning_engines', 'logic_processors'],
+        'planning': ['planners', 'schedulers'],
+        'memory': ['memory_managers', 'context_handlers'],
+        'analysis': ['analyzers', 'evaluators'],
+        'synthesis': ['synthesizers', 'generators'],
+        'evaluation': ['evaluators', 'scorers'],
+    },
+    # L5_safety/guardrails/ - 79 .py files, 0 subdirs
+    'guardrails': {
+        'security': ['pii_guards', 'injection_guards', 'auth_guards'],
+        'quality': ['code_quality', 'format_guards'],
+        'structural': ['hierarchy_healers', 'structure_guards'],
+        'constitutional': ['constitutional_ai', 'governance_guards'],
+        'resource': ['resource_guards', 'budget_guards'],
+        'mcp': ['mcp_security', 'mcp_guards'],
+        'detection': ['duplicate_detectors', 'threat_detectors'],
+    },
+    # L2_execution/ToolRegistry/ - 145 .py files, 1 subdir
+    'ToolRegistry': {
+        'core': ['registry_core', 'registry_types'],
+        'tools': ['tool_implementations'],
+        'handlers': ['tool_handlers'],
+        'validators': ['tool_validators'],
+        'adapters': ['tool_adapters'],
+    },
+    # utils/core_extensions/ - 98 .py files, 0 subdirs
+    'core_extensions': {
+        'mixins': ['mixin_classes'],
+        'decorators': ['decorator_utils'],
+        'validators': ['validation_utils'],
+        'formatters': ['format_utils'],
+        'helpers': ['general_helpers'],
+    },
+}
+
+# Folders that are approved for L4 depth (depth=4 instead of depth=3)
+L4_APPROVED_FOLDERS: Set[str] = {
+    'agentic_core/L6_observability/dashboards',
+    'agentic_core/L0_maintenance/scripts',
+    'agentic_core/L3_orchestration/workflow_engines',
+    'agentic_core/L1_cognition/thought_engine',
+    'agentic_core/L5_safety/guardrails',
+    'agentic_core/L2_execution/ToolRegistry',
+    'agentic_core/utils/core_extensions',
+}
 
 CORE_SUBFOLDER_MAP: Any = {'L0_maintenance': ['scripts', 'logs', 'benchmarks', 'mixins'], 'L1_cognition': ['thought_engine', 'intent_analysis', 'planning'], 'L2_execution': ['ToolRegistry', 'action_handlers', 'mcp', 'tool_registry'], 'L3_orchestration': ['workflow_engines', 'fission_logic', 'S3_vitality', 'mcp', 'meta_learning', 'interfaces'], 'L4_state': ['ValidationContext', 'ledger', 'filesystem', 'memory', 'validation_context'], 'L5_safety': ['guardrails', 'red_teaming', 'gravity', 'validators', 'agents', 'bases', 'policies', 'utils', 'verifiability'], 'L6_observability': ['dashboards', 'reports', 'metrics', 'telemetry', 'tracing', 'compliance', 'agents'], 'schemas': ['models', 'messages', 'types', 'validators'], 'config': ['blueprint_sovereign', 'environments', 'feature_flags', 'secrets_manager'], 'prompt_governance': ['meta_prompts', 'version_registry', 'rendering', 'templates'], 'runtime': ['shared_runtime', 'environment_setup', 'shared', 'resource_management'], 'utils': ['core_extensions', 'wrappers', 'general_helpers', 'naming', 'deduplicated'], 'patterns': ['agent_roles', 'communication_flow', 'interaction_patterns', 'reasoning_patterns'], 'semantic_memory': ['store', 'embeddings', 'retrieval', 'index'], 'knowledge': ['document_loaders', 'static_index', 'ResearchCache']}
 APPS_RG_SUBFOLDER_MAP: Any = {'logic_nodes': ['node_definitions', 'node_helpers'], 'asset_library': ['asset_definitions', 'asset_helpers'], 'system_flow': ['flow_definitions', 'flow_helpers'], 'engines': ['engine_definitions', 'engine_helpers'], 'templates': ['template_definitions', 'template_helpers']}
@@ -458,7 +554,27 @@ NAMING_EXEMPT_DIRS: frozenset[str] = frozenset({
     'dist', 'build', '.tox', 'logs',
 })
 FORBIDDEN_PATTERNS: Any = [re.compile('^utils\\.py$'), re.compile('^helper\\.py$'), re.compile('^temp\\.py$'), re.compile('.*_v\\d+\\.py$'), re.compile('^main\\.py$'), re.compile('^test\\.py$'), re.compile('.*_final\\.py$'), re.compile('.*_new\\.py$'), re.compile('.*_old\\.py$'), re.compile('.*_copy\\.py$'), re.compile('.*_backup\\.py$'), re.compile('^legacy_.*\\.py$'), re.compile('^.+_\\d+\\.py$'), re.compile('^draft_.*\\.py$')]
-ROOT_PROTECTED_FILES: Any = {'canon_validator_agentic_v2.py', 'canon_validator_agentic_v2_thin.py', 'pyproject.toml', 'README.md', 'langgraph.json', '.env', 'windsurfrules.md', '.gitignore'}
+# Static protected files (hard-coded core infrastructure)
+_STATIC_ROOT_PROTECTED_FILES: FrozenSet[str] = frozenset({
+    'canon_validator_agentic_v2.py',
+    'canon_validator_agentic_v2_thin.py',
+    'pyproject.toml',
+    'README.md',
+    'langgraph.json',
+    '.env',
+    'windsurfrules.md',
+    '.gitignore',
+})
+
+# Dynamic protected files derived from SSOT constants
+_DYNAMIC_ROOT_PROTECTED_FILES: FrozenSet[str] = frozenset({
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    RUNTIME_STATE_JSON,
+})
+
+# Final combined immutable set - Single Source of Truth for all root-level protection
+ROOT_PROTECTED_FILES: FrozenSet[str] = _STATIC_ROOT_PROTECTED_FILES | _DYNAMIC_ROOT_PROTECTED_FILES
 SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset({'.git', '.venv', 'venv', 'venv_stable', '__pycache__', '.pytest_cache', '.ruff_cache', 'node_modules', '.mypy_cache', '.tox', 'archives', 'legacy_code', 'legacy_engines', 'legacy_resume_gen', 'data', 'docs', 'env', 'build', 'dist', '_build', 'Lib', 'site-packages', 'google', 'gapic', 'logging', 'licenses', 'src', 'pip', 'dist-info', 'raw', 'golden_state', 'logs', 'processed', 'shared', 'refs', 'remotes', 'v', 'stubs', '.sovereign_healing_backup', '.idea', '.vscode', '.DS_Store', 'Thumbs.db'})
 FORBIDDEN_FOLDER_PATTERN: Any = re.compile('^\\d+_')
 FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset({'legacy_code', 'legacy_engines', 'legacy_resume_gen', 'old_core'})

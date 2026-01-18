@@ -34,7 +34,7 @@ from threading import Lock
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -131,7 +131,7 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """Append event to log file (JSONL format)."""
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(event) + "\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n")
+                f.write(json.dumps(event) + "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n")
         except Exception as e:
             Logger.warning(f"[TelemetryAgent] Failed to write event to file: {e}")
 

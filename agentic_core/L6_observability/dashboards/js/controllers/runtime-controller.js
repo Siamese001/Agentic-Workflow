@@ -35,6 +35,9 @@ const RuntimeController = {
     },
 
     updateRuntime: async function() {
+        // First, always try to update from runtime_state.json (local file)
+        await this.updateLiveExecutionState();
+        
         try {
             const [metaResp, latencyResp, logsResp] = await Promise.all([
                 fetch('http://localhost:8081/api/meta-learning/activity').catch(() => null),
@@ -49,6 +52,12 @@ const RuntimeController = {
                 const patternEl = document.getElementById('pattern-count');
                 if (expEl) expEl.textContent = meta.total_experiences || '0';
                 if (patternEl) patternEl.textContent = meta.patterns_extracted || '0';
+            } else {
+                // Fallback: Show N/A when API unavailable
+                const expEl = document.getElementById('exp-count');
+                const patternEl = document.getElementById('pattern-count');
+                if (expEl && expEl.textContent === '') expEl.textContent = 'N/A';
+                if (patternEl && patternEl.textContent === '') patternEl.textContent = 'N/A';
             }
 
             // Latency metrics
@@ -58,6 +67,12 @@ const RuntimeController = {
                 const pineconeLatencyEl = document.getElementById('pineconeLatency');
                 if (geminiLatencyEl) geminiLatencyEl.textContent = (latency.gemini_embeddings ?? '--') + 'ms';
                 if (pineconeLatencyEl) pineconeLatencyEl.textContent = (latency.pinecone ?? '--') + 'ms';
+            } else {
+                // Fallback: Show -- when API unavailable
+                const geminiLatencyEl = document.getElementById('geminiLatency');
+                const pineconeLatencyEl = document.getElementById('pineconeLatency');
+                if (geminiLatencyEl && geminiLatencyEl.textContent === '') geminiLatencyEl.textContent = '--';
+                if (pineconeLatencyEl && pineconeLatencyEl.textContent === '') pineconeLatencyEl.textContent = '--';
             }
 
             // Live logs

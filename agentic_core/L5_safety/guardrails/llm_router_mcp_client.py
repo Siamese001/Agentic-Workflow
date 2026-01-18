@@ -6,7 +6,7 @@ L3 routed, L5 shielded, L6 observable.
 """
 import logging
 from typing import Any, Dict, Optional
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

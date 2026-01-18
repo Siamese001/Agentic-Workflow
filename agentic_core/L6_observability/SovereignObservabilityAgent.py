@@ -5,7 +5,7 @@ from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissionMixin
 from agentic_core.utils.core_extensions.context_propagation_mixin import ContextPropagationMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, RedisCacheMixin, EventEmissionMixin, ContextPropagationMixin):
     """

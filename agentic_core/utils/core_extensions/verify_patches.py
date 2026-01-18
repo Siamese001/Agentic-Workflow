@@ -3,7 +3,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 from typing import Any, Tuple
-from . import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location
+from import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location
 
 
 def validate_ast_integrity(file_path: Path) -> Tuple[bool, str]:

@@ -137,7 +137,7 @@ async def main():
         
         # Check if blueprint drift is contributing to sovereignty degradation
         try:
-            from agentic_core.L0_maintenance.scripts.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+            from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
             
             print("\n[BLUEPRINT CHECK] Scanning for SSOT drift...")
             reconciler = FilesystemSSOTReconcilerAgent(project_root_path)

@@ -1,3 +1,9 @@
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
+# This boosts alignment detection — review and integrate appropriately
+
 from __future__ import annotations
 """
 GravityEnforcerAgent - Gravity Law Enforcement (GAP-6 Resolution)
@@ -43,8 +49,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
-from agentic_core.config.blueprint_sovereign.canonical_truth import get_canonical_layer
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.validators.canonical_truth_1 import get_canonical_layer
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
