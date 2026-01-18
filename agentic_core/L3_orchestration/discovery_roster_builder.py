@@ -29,6 +29,7 @@ try:
         discovery_status, progress_bar, log_status, Colors, print_success, print_warning, print_error
     )
     COLORS_AVAILABLE = True
+    from agentic_core.utils.import_utils import path_to_module as centralized_path_to_module
 except ImportError:
     COLORS_AVAILABLE = False
     def discovery_status(*args, **kwargs): return ""
@@ -169,17 +170,21 @@ def sort_by_layer(agents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def path_to_module(file_path: str) -> str:
-    """Convert file path to Python module path."""
-    # Remove .py extension
-    module_path = file_path.replace('.py', '')
+    """Convert file path to Python module path.
     
-    # Convert path separators to dots
-    module_path = module_path.replace('\\', '.').replace('/', '.')
-    
-    # Remove leading dots if any
-    module_path = module_path.lstrip('.')
-    
-    return module_path
+    [SSOT] Delegates to centralized import_utils.path_to_module.
+    This local function is kept for backward compatibility.
+    """
+    # [SSOT] Use centralized utility if available
+    try:
+        from agentic_core.utils.import_utils import path_to_module as _path_to_module
+        return _path_to_module(file_path)
+    except ImportError:
+        # Fallback to inline implementation
+        module_path = file_path.replace('.py', '')
+        module_path = module_path.replace('\\', '.').replace('/', '.')
+        module_path = module_path.lstrip('.')
+        return module_path
 
 
 def instantiate_agent(
