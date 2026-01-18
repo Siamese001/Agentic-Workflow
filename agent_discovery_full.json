@@ -100,9 +100,9 @@
     "territory": "Apps Rg/Engines",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -181,10 +181,10 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "L0MaintenanceBaseAgent"
+      "AdaptiveExecutionMixin",
+      "L0MaintenanceBaseAgent",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -268,9 +268,9 @@
     "territory": "L1 Cognition/Reasoning",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -290,7 +290,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 160,
+    "loc": 168,
     "class_count": 1,
     "description": "\n    Autonomous agent that evolves prompt templates based on performance metrics.\n    \n    Capabilit",
     "pascal_compliant": true,
@@ -304,11 +304,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 45,
+    "cyclomatic_complexity": 48,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "BareExceptValidatorAgent",
@@ -317,9 +317,9 @@
     "territory": "L1 Cognition/Validation",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -358,9 +358,9 @@
     "territory": "L1 Cognition/Validation",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -399,9 +399,9 @@
     "territory": "L1 Cognition/Validation",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -440,9 +440,9 @@
     "territory": "L1 Cognition/Validation",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_ExceptHandler",
@@ -481,9 +481,9 @@
     "territory": "L1 Cognition/Validation",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -797,9 +797,9 @@
     "territory": "L2 Execution/Handlers",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -845,9 +845,9 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Orchestrator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -894,9 +894,9 @@
     "territory": "L2 Execution/Handlers",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -935,9 +935,9 @@
     "territory": "L2 Execution/Handlers",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -977,10 +977,10 @@
     "territory": "L2 Execution/Runners",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
       "HealerMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1027,8 +1027,8 @@
     "territory": "L2 Execution/Handlers",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -1072,9 +1072,9 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1121,9 +1121,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1170,9 +1170,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1212,9 +1212,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -1231,7 +1231,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 151,
+    "loc": 159,
     "class_count": 1,
     "description": "\n    [L2 HEALER] Specialized repair agent for Gravity violations.\n    \n    Receives structured viola",
     "pascal_compliant": true,
@@ -1245,11 +1245,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 30,
+    "cyclomatic_complexity": 35,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "HistorianAgent",
@@ -1299,9 +1299,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1437,9 +1437,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -1632,7 +1632,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 69,
+    "loc": 77,
     "class_count": 1,
     "description": "\n    v12.0: DEMOTED to secondary fact-checker role.\n    Now performs validation searches based on st",
     "pascal_compliant": true,
@@ -1646,11 +1646,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 12,
+    "cyclomatic_complexity": 15,
     "proper_base_class": true,
     "schema_strictness": 0.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "LicRecipientAgent",
@@ -1675,7 +1675,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 68,
+    "loc": 76,
     "class_count": 1,
     "description": "\n    v12.0: DEMOTED to secondary fact-checker role.\n    Now performs validation searches based on st",
     "pascal_compliant": true,
@@ -1689,11 +1689,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 10,
+    "cyclomatic_complexity": 13,
     "proper_base_class": true,
     "schema_strictness": 0.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "LicS2SupervisorAgent",
@@ -1747,9 +1747,9 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Validator",
     "inheritance": [
+      "SubAtomicAgent",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubAtomicAgent"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1843,9 +1843,9 @@
     "territory": "L2 Execution/Handlers",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -1884,9 +1884,9 @@
     "territory": "L2 Execution/Runners",
     "category": "State",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -1971,9 +1971,9 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2060,9 +2060,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2104,10 +2104,10 @@
     "territory": "L2 Execution/Runners",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
       "HealerMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2152,9 +2152,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Healer",
     "inheritance": [
+      "IActionPlane",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "IActionPlane"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2249,9 +2249,9 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2297,9 +2297,9 @@
     "territory": "L2 Execution/Handlers",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2340,9 +2340,9 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Governor",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "can_run",
@@ -2382,9 +2382,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Orchestrator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -2430,10 +2430,10 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -2526,9 +2526,9 @@
     "territory": "L2 Execution/Handlers",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -2612,9 +2612,9 @@
     "territory": "L3 Orchestration/Routing",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2703,9 +2703,9 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2747,9 +2747,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2843,9 +2843,9 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2929,9 +2929,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3020,10 +3020,10 @@
     "category": "Healer",
     "inheritance": [
       "RedisCacheMixin",
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
       "HealerMixin",
-      "PineconeVectorMixin"
+      "PineconeVectorMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3071,8 +3071,8 @@
     "category": "Healer",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3167,9 +3167,9 @@
     "territory": "L3 Orchestration/DAG",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -3207,9 +3207,9 @@
     "territory": "L3 Orchestration/DAG",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -3248,8 +3248,8 @@
     "category": "Healer",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3269,7 +3269,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 156,
+    "loc": 184,
     "class_count": 1,
     "description": "\n    Detects potential deadlocks in asyncio tasks.\n\n    Monitors:\n    - Task execution time\n    - He",
     "pascal_compliant": true,
@@ -3283,11 +3283,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 41,
+    "cyclomatic_complexity": 50,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "FissionManagerAgent",
@@ -3296,9 +3296,9 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3389,9 +3389,9 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3436,9 +3436,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3479,8 +3479,8 @@
     "category": "Healer",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3521,9 +3521,9 @@
     "territory": "L3 Orchestration/Territory",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3609,9 +3609,9 @@
     "territory": "L3 Orchestration/Base Agent",
     "category": "Validator",
     "inheritance": [
+      "SovereignBaseAgent",
       "RedisCacheMixin",
       "PineconeVectorMixin",
-      "SovereignBaseAgent",
       "L3SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -3656,9 +3656,9 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -3696,8 +3696,8 @@
     "territory": "L3 Orchestration/Routing",
     "category": "GenericAgent",
     "inheritance": [
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3740,9 +3740,9 @@
     "territory": "L3 Orchestration/Routing",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3829,9 +3829,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3919,9 +3919,9 @@
     "territory": "L3 Orchestration/Routing",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3969,10 +3969,10 @@
     "category": "Healer",
     "inheritance": [
       "RedisCacheMixin",
-      "MCPHardenedMixin",
       "L3SubatomicTestingMixin",
       "HealerMixin",
-      "PineconeVectorMixin"
+      "PineconeVectorMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4063,8 +4063,8 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "CachedOrchestratorAgent"
+      "CachedOrchestratorAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4192,9 +4192,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4214,7 +4214,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 235,
+    "loc": 243,
     "class_count": 4,
     "description": "\n    The Efficiency Guard - Predictive Cost Auditor\n    \n    Monitors economic ROI of swarm healing ",
     "pascal_compliant": true,
@@ -4228,11 +4228,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 63,
+    "cyclomatic_complexity": 66,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "QLearningOrchestratorAgent",
@@ -4378,9 +4378,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4423,9 +4423,9 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -4463,10 +4463,10 @@
     "territory": "L3 Orchestration/DAG",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "CognitiveRecoveryMixin"
+      "HealerMixin",
+      "CognitiveRecoveryMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4606,9 +4606,9 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4649,9 +4649,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4694,9 +4694,9 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4742,9 +4742,9 @@
     "territory": "L3 Orchestration/DAG",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4878,9 +4878,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4927,10 +4927,10 @@
     "territory": "L3 Orchestration/Territory",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
       "FileSystemEventHandler",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5065,9 +5065,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository"
@@ -5105,9 +5105,9 @@
     "territory": "L3 Orchestration/Core",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5154,9 +5154,9 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5350,10 +5350,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "invocation": "No (missing super)",
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 150,
+    "loc": 153,
     "class_count": 1,
     "description": "Checkpoint management agent with parent chain healing.",
     "pascal_compliant": true,
@@ -5371,7 +5371,7 @@
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Active (no super)"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "FileManagerAgent",
@@ -5424,8 +5424,8 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -5514,9 +5514,9 @@
     "category": "State",
     "inheritance": [
       "RedisCacheMixin",
+      "L4SubatomicTestingMixin",
       "PineconeVectorMixin",
-      "SovereignBaseAgent",
-      "L4SubatomicTestingMixin"
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "recall",
@@ -5608,9 +5608,9 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5751,9 +5751,9 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5773,7 +5773,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 225,
+    "loc": 232,
     "class_count": 5,
     "description": "\n    The Structural Guard - Schema Evolution Agent\n    Monitors all Pydantic definitions and databas",
     "pascal_compliant": true,
@@ -5787,11 +5787,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 62,
+    "cyclomatic_complexity": 68,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SubAtomicRegistryAgent",
@@ -5847,9 +5847,9 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5942,9 +5942,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Guardian",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5991,9 +5991,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6041,10 +6041,10 @@
     "category": "Healer",
     "inheritance": [
       "RedisCacheMixin",
-      "MCPHardenedMixin",
       "SubatomicTestingMixin",
       "HealerMixin",
-      "PineconeVectorMixin"
+      "PineconeVectorMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6134,9 +6134,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6316,9 +6316,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6358,9 +6358,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6499,8 +6499,8 @@
     "territory": "L5 Safety/Guardrails/Core",
     "category": "Guardian",
     "inheritance": [
-      "MCPHardenedMixin",
-      "L5SafetyBaseAgent"
+      "L5SafetyBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "run_async",
@@ -6539,9 +6539,9 @@
     "territory": "L5 Safety/Guardrails/Core",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6581,9 +6581,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6625,9 +6625,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6668,9 +6668,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6717,9 +6717,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Import",
@@ -6759,8 +6759,8 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6805,9 +6805,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6851,10 +6851,10 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "L0MaintenanceBaseAgent"
+      "AdaptiveExecutionMixin",
+      "L0MaintenanceBaseAgent",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6940,9 +6940,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6986,9 +6986,9 @@
     "territory": "L5 Safety/Gravity",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7031,9 +7031,9 @@
     "territory": "L5 Safety/Gravity",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7076,8 +7076,8 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -7093,7 +7093,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 56,
+    "loc": 72,
     "class_count": 2,
     "description": "\n    [L5 VALIDATOR] Unified detection for all gravity laws.\n    \n    Consolidates logic from:\n    - ",
     "pascal_compliant": true,
@@ -7107,11 +7107,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 36,
+    "cyclomatic_complexity": 42,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "GuardianOrchestratorAgent",
@@ -7120,10 +7120,10 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "L0MaintenanceBaseAgent"
+      "AdaptiveExecutionMixin",
+      "L0MaintenanceBaseAgent",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7170,9 +7170,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Analyzer",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7265,9 +7265,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7285,7 +7285,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 235,
+    "loc": 275,
     "class_count": 1,
     "description": "\n    Multi-stage validator for LLM-healed code.\n    \n    Validation Pipeline:\n    1. Syntax check (A",
     "pascal_compliant": true,
@@ -7299,11 +7299,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 35,
+    "cyclomatic_complexity": 50,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "HierarchyAgent",
@@ -7312,9 +7312,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7334,7 +7334,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 654,
+    "loc": 687,
     "class_count": 1,
     "description": "\n    Unified Hierarchy Management Agent\n    \n    Combines capabilities from HierarchyEnforcerAgent a",
     "pascal_compliant": true,
@@ -7348,11 +7348,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 181,
+    "cyclomatic_complexity": 183,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "HierarchyHealerAgent",
@@ -7361,9 +7361,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7383,7 +7383,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 240,
+    "loc": 280,
     "class_count": 1,
     "description": "\n    L5 Hierarchy Healer Agent\n    \n    Heals hierarchy violations by:\n    1. Relocating files from ",
     "pascal_compliant": true,
@@ -7397,11 +7397,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 81,
+    "cyclomatic_complexity": 106,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "HygieneGuardianAgent",
@@ -7410,9 +7410,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7456,8 +7456,8 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "L0MaintenanceBaseAgent"
+      "L0MaintenanceBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7504,9 +7504,9 @@
     "territory": "L5 Safety/Gravity",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7553,9 +7553,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "MetaPathFinder",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -7602,9 +7602,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7645,9 +7645,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7667,7 +7667,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 303,
+    "loc": 327,
     "class_count": 6,
     "description": "\n    Validates input data against schema and rules.\n    \n    Provides comprehensive validation inclu",
     "pascal_compliant": true,
@@ -7681,11 +7681,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 88,
+    "cyclomatic_complexity": 99,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "L5Agent",
@@ -7735,9 +7735,9 @@
     "territory": "L5 Safety/Guardrails/Core",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7928,9 +7928,9 @@
     "territory": "L5 Safety/Guardrails/MCP",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7974,9 +7974,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8017,10 +8017,10 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "AutonomyMixin",
       "SubatomicTestingMixin",
-      "L0MaintenanceBaseAgent",
+      "AutonomyMixin",
       "AdaptiveExecutionMixin",
+      "L0MaintenanceBaseAgent",
       "SelfDiagnosisMixin"
     ],
     "key_methods": [
@@ -8113,9 +8113,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8162,9 +8162,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8211,9 +8211,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8256,9 +8256,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "AutonomyMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
       "HealerMixin",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin"
@@ -8349,10 +8349,10 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "ASTEnforcementMixin",
+      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "ASTEnforcementMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -8399,9 +8399,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "GenericAgent",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "NeuralAutoImmuneAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8462,7 +8462,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 205,
+    "loc": 221,
     "class_count": 2,
     "description": "\n    The 'Seal-Guard' of the Sovereign Architecture.\n    Ensures compliance stays at 99.7%+ by block",
     "pascal_compliant": true,
@@ -8476,11 +8476,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 32,
+    "cyclomatic_complexity": 38,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "PrintStatementValidatorAgent",
@@ -8489,9 +8489,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "CanonASTValidator",
-      "SubatomicTestingMixin"
+      "CanonASTValidator"
     ],
     "key_methods": [
       "visit_Call",
@@ -8578,8 +8578,8 @@
     "territory": "L5 Safety/Guardrails/Core",
     "category": "Guardian",
     "inheritance": [
-      "MCPHardenedMixin",
-      "L5SafetyBaseAgent"
+      "L5SafetyBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "run_async",
@@ -8618,9 +8618,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8662,8 +8662,8 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Validator",
     "inheritance": [
-      "HealerMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8678,10 +8678,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "invocation": "No (missing super)",
+    "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 149,
+    "loc": 153,
     "class_count": 1,
     "description": "L5 Safety agent that generates hostile inputs for security testing.\n    \n    This active defense sys",
     "pascal_compliant": true,
@@ -8699,7 +8699,7 @@
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Active (no super)"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "RedTeamAgent",
@@ -8708,9 +8708,9 @@
     "territory": "L5 Safety/Red Teaming",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "execute",
@@ -8751,9 +8751,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "SubAtomicAgent",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8798,10 +8798,10 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "L0MaintenanceBaseAgent"
+      "AdaptiveExecutionMixin",
+      "L0MaintenanceBaseAgent",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8848,9 +8848,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8892,9 +8892,9 @@
     "territory": "L5 Safety/Guardrails/Core",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8914,7 +8914,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 181,
+    "loc": 188,
     "class_count": 3,
     "description": "Manages secure Checkpoint persistence with encryption and integrity checks.",
     "pascal_compliant": true,
@@ -8928,11 +8928,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 33,
+    "cyclomatic_complexity": 39,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SecureConfigManagerAgent",
@@ -8941,9 +8941,9 @@
     "territory": "L5 Safety/Guardrails/Core",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8990,9 +8990,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9039,9 +9039,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Healer",
     "inheritance": [
-      "L5SafetyBaseAgent",
       "SubatomicTestingMixin",
-      "CognitiveRecoveryMixin"
+      "CognitiveRecoveryMixin",
+      "L5SafetyBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -9082,9 +9082,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9131,9 +9131,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9176,9 +9176,9 @@
     "territory": "L5 Safety/Guardrails/Core",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9225,9 +9225,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9274,9 +9274,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "GenericAgent",
     "inheritance": [
+      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "CanonBaseAgent",
-      "SubatomicTestingMixin"
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -9341,10 +9341,10 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "invocation": "No (missing super)",
+    "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 291,
+    "loc": 295,
     "class_count": 4,
     "description": "\n    Two-Phase Deduplication Agent for improved duplicate detection signal.\n    \n    Phase A (Shallo",
     "pascal_compliant": true,
@@ -9362,7 +9362,7 @@
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true,
-    "healing_implementation": "Active (no super)"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TypeHintEnforcementAgent",
@@ -9371,9 +9371,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9413,10 +9413,10 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Healer",
     "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "NodeTransformer",
-      "SubatomicTestingMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9458,9 +9458,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9536,9 +9536,9 @@
     "territory": "L6_Observability/Base Agent",
     "category": "Analyzer",
     "inheritance": [
+      "ABC",
       "RedisCacheMixin",
       "PineconeVectorMixin",
-      "ABC",
       "SovereignBaseAgent"
     ],
     "key_methods": [
@@ -9658,8 +9658,8 @@
     "territory": "L6_Observability/Metrics",
     "category": "Validator",
     "inheritance": [
-      "L6ObservabilityBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "L6ObservabilityBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -9703,8 +9703,8 @@
     "territory": "L6_Observability/Telemetry",
     "category": "Guardian",
     "inheritance": [
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -9746,11 +9746,11 @@
     "territory": "L6_Observability/Metrics",
     "category": "Analyzer",
     "inheritance": [
-      "RedisCacheMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin",
       "ContextPropagationMixin",
-      "EventEmissionMixin"
+      "RedisCacheMixin",
+      "SubatomicTestingMixin",
+      "EventEmissionMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -9935,7 +9935,7 @@
     "proper_base_class": false,
     "schema_strictness": 0.0,
     "has_metadata": true,
-    "healing_implementation": "Active (no super)"
+    "healing_implementation": "Active (intentional)"
   },
   {
     "class_name": "MockLocationAgent",
@@ -10017,8 +10017,8 @@
     "territory": "Apps Shared",
     "category": "Guardian",
     "inheritance": [
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -10033,7 +10033,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 29,
+    "loc": 37,
     "class_count": 2,
     "description": "\n        Stub NamingAgent for backwards compatibility.\n        \n        Provides minimal implementat",
     "pascal_compliant": true,
@@ -10047,11 +10047,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 5,
+    "cyclomatic_complexity": 8,
     "proper_base_class": true,
     "schema_strictness": 0.0,
     "has_metadata": true,
-    "healing_implementation": "Super only"
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SovereignBaseAgent",

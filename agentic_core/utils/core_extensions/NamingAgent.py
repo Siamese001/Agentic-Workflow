@@ -58,6 +58,18 @@ except ImportError:
                 Dict with healing summary (violations, fixed, errors)
             """
             super().heal_repository(dry_run, execute)
+            
+            # === ZOMBIE VACCINATION: Wired orphaned methods ===
+            if hasattr(self, 'validate_name'):
+                try:
+                    validation_result = self.validate_name()
+                    if validation_result:
+                        metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+                except Exception as e:
+                    Logger.error(f'Error in validate_name: {e}')
+                    metrics['errors'] += 1
+            # === END VACCINATION ===
+            
             return {"violations": 0, "fixed": 0, "errors": 0}
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:

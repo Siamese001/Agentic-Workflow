@@ -1,5 +1,4 @@
-from typing import Any, Dict, Optional, Set
-from dataclasses import dataclass
+from __future__ import annotations
 """
 DeadlockDetectorAgent - Extracted for one-class-per-file pattern.
 
@@ -7,12 +6,15 @@ Originally from: TaskMonitorAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
-
-from __future__ import annotations
+from typing import Any, Dict, Optional, Set
+from dataclasses import dataclass
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.decorators import standard_heal, timeout
 from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+import logging
+
+Logger = logging.getLogger(__name__)
 
 @dataclass
 class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
@@ -247,7 +249,41 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
             "stack_traces": monitor.stack_traces
         }
 
+    @timeout(120)
     @standard_heal
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(
+        self, 
+        dry_run: bool = True, 
+        execute: bool = False, 
+        depth: int = 0, 
+        max_depth: int = 3, 
+        _call_path: Optional[set] = None
+    ) -> Dict[str, int]:
+        """
+        Deadlock Healing - Clears stale tasks and resets corrupted monitors.
+        """
+        metrics = super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
+        if not isinstance(metrics, dict):
+            metrics = {"violations": 0, "fixed": 0, "errors": 0}
+        if metrics.get("cycle_detected"):
+            return metrics
+
+        try:
+            # Check for stale/timeout tasks
+            stale = [k for k, v in self.monitored_tasks.items() if v.status == "TIMEOUT"]
+            metrics["violations"] = metrics.get("violations", 0) + len(stale)
+
+            if execute and not dry_run and stale:
+                # Clear stale tasks
+                for task_id in stale:
+                    if task_id in self.monitored_tasks:
+                        del self.monitored_tasks[task_id]
+                metrics["fixed"] = metrics.get("fixed", 0) + len(stale)
+
+        except Exception as e:
+            Logger.error(f"Deadlock healing failed: {e}")
+            metrics["errors"] = metrics.get("errors", 0) + 1
+            
+        return metrics

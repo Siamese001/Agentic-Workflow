@@ -467,6 +467,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         return results
     
     @timeout(300)
+    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,
@@ -480,14 +481,15 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         """
         Execute two-phase deduplication healing.
         
-        Args:
-            dry_run: If True, only preview actions
-            execute: If True, execute healing
-            phase: "A", "B", or "both"
-            
-        Returns:
-            Dict with healing results
+        WIRED CAPABILITIES:
+        - Phase A: Identity collision detection (exact hashes)
+        - Phase B: Structural logic duplication (AST fingerprints)
         """
+        # CRITICAL: Chain up to HealerMixin for telemetry and safety guards
+        parent_results = super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
+
         if _call_path is None:
             _call_path = set()
         

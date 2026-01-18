@@ -272,10 +272,47 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
             checkpoint_file.replace(quarantine_file)
             Logger.warning(f"Quarantined Checkpoint: {checkpoint_file.name}")
 
+    @timeout(300)
     @standard_heal
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(
+        self, 
+        dry_run: bool = True, 
+        execute: bool = False, 
+        depth: int = 0, 
+        max_depth: int = 3, 
+        _call_path: Optional[set] = None
+    ) -> Dict[str, int]:
+        """
+        Secure Checkpoint Healing - Validates integrity and cleans up old snapshots.
+        
+        WIRED CAPABILITIES:
+        - cleanup_old_checkpoints(): Enforces retention policy.
+        """
+        # CRITICAL: Chain up to HealerMixin
+        metrics = super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
+        if not isinstance(metrics, dict):
+            metrics = {"violations": 0, "fixed": 0, "errors": 0}
+        
+        # Cycle detection handled by super(), check sentinel
+        if metrics.get("cycle_detected"):
+            return metrics
+
+        try:
+            # Wired Orphan: cleanup_old_checkpoints
+            # Only execute cleanup if explicitly requested (destructive action)
+            if execute and not dry_run:
+                self.cleanup_old_checkpoints(keep_count=5)
+                metrics["fixed"] = metrics.get("fixed", 0) + 1 
+            elif dry_run:
+                Logger.debug(f"[{self.__class__.__name__}] DRY-RUN: Would cleanup old checkpoints")
+
+        except Exception as e:
+            Logger.error(f"Checkpoint healing failed: {e}")
+            metrics["errors"] = metrics.get("errors", 0) + 1
+            
+        return metrics
 
 
 # Factory for managing Checkpoint managers
@@ -332,27 +369,3 @@ def get_secure_checkpoint_manager(checkpoint_dir: Optional[Path] = None) -> Secu
     if checkpoint_dir is None:
         checkpoint_dir = Path("checkpoints")
     return CheckpointManagerFactory.get_manager("default", checkpoint_dir)
-
-@timeout(300)
-@standard_heal
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """L5 safety/guardrails - operational only."""
-    if _call_path is None:
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
-    agent_name = "SecureCheckpointManagerAgent"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] L5 safety/guardrails - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)
-
-
-# Add heal_repository as a class method for compliance
-SecureCheckpointManagerAgent.heal_repository = heal_repository

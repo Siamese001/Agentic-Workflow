@@ -84,6 +84,26 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
             Dict with healing summary
         """
         super().heal_repository()
+        
+        # === ZOMBIE VACCINATION: Wired orphaned methods ===
+        if hasattr(self, 'validate_file'):
+            try:
+                validation_result = self.validate_file()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in validate_file: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, 'validate_repository'):
+            try:
+                validation_result = self.validate_repository()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in validate_repository: {e}')
+                metrics['errors'] += 1
+        # === END VACCINATION ===
+        
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 

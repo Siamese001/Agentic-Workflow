@@ -697,27 +697,67 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return results
     
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
-        """Repository healing with parent chain invocation.
-        
-        Includes root directory healing for:
-        - .archived files at root -> archives/root_archived/
-        - Forbidden folders at root (scripts/, logs/, coverage_html/)
+    @standard_heal
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
         """
-        # Set healing_enabled based on dry_run
+        Unified Hierarchy Healing - Enforces structure, relocation, and depth rules.
+        
+        WIRED CAPABILITIES:
+        - heal_hierarchy(): Standard L2/L3 structure and file relocation.
+        - heal_root_violations(): Root-level hygiene (scripts/, logs/, .archived).
+        """
+        # CRITICAL: Chain up to HealerMixin
+        parent_result = super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+            **kwargs
+        )
+
+        # Cycle detection is handled by @standard_heal / super(), but we add safe state management
         original_healing = self.healing_enabled
-        self.healing_enabled = not dry_run
+        # Enable healing if execute=True and dry_run=False
+        should_heal = execute and not dry_run
+        self.healing_enabled = should_heal
         
         try:
-            # Standard hierarchy healing
-            result = self.heal_hierarchy(**kwargs)
+            # 1. Standard Hierarchy Healing
+            result = self.heal_hierarchy(
+                create_structure=True,
+                relocate_files=True, 
+                enforce_depth=True, 
+                purge_orphans=True,
+                execute=execute, 
+                dry_run=dry_run
+            )
             
-            # Root directory healing (new - 2026-01-18)
+            # 2. Root Directory Healing
             root_result = self.heal_root_violations(dry_run=dry_run)
             result["root_healing"] = root_result
             
-            parent_result = super().heal_repository(dry_run=dry_run, **kwargs)
-            return {"hierarchy": result, "parent": parent_result}
+            # Merge metrics
+            metrics = {
+                "violations": result.get("summary", {}).get("violations_found", 0) + root_result.get("violations_found", 0),
+                "fixed": result.get("summary", {}).get("total_actions", 0) + len(root_result.get("actions", [])),
+                "errors": len(result.get("structure", {}).get("errors", [])) + len(root_result.get("errors", [])),
+                "hierarchy_details": result
+            }
+            
+            return {**parent_result, **metrics}
+            
+        except Exception as e:
+            Logger.error(f"Hierarchy healing failed: {e}")
+            return {**parent_result, "errors": parent_result.get("errors", 0) + 1}
         finally:
             self.healing_enabled = original_healing
 

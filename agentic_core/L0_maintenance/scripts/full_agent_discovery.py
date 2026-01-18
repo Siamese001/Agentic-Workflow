@@ -987,13 +987,14 @@ def calculate_cyclomatic_complexity(class_node: ast.ClassDef) -> int:
     return total_cc if total_cc > 0 else 1
 
 
-def detect_healing_implementation(class_node: ast.ClassDef) -> str:
+def detect_healing_implementation(class_node: ast.ClassDef, source: str = "") -> str:
     """
     Behavioral hardening: Classify heal_repository implementation using cyclomatic complexity
     as proxy for actual logic vs. structural zombie/pass-through.
 
     Returns one of:
       - "Active"                -> CC > 1 and has super()       (real logic + proper chain)
+      - "Active (intentional)"  -> CC > 1, no super(), but marked intentional
       - "Active (no super)"     -> CC > 1 and no super()        (real logic but breaks chain)
       - "Super only"            -> CC == 1 and has super()      (zombie/pass-through)
       - "Stub"                  -> CC == 1 and no super()       (empty or trivial)
@@ -1025,6 +1026,10 @@ def detect_healing_implementation(class_node: ast.ClassDef) -> str:
         if has_super:
             return "Active"
         else:
+            # Check for intentional bypass comment to distinguish from accidental rogues
+            # Note: ast.unparse() doesn't preserve comments, so check source directly
+            if source and "# CANON: INTENTIONAL_CHAIN_BREAK" in source:
+                return "Active (intentional)"
             return "Active (no super)"
     else:  # cc == 1 -> linear/no control flow
         if has_super:
@@ -1727,7 +1732,7 @@ def main():
             is_used = proper_base_class or has_healing or mcp_hardened
             
             # Behavioral hardening: Classify heal_repository implementation
-            healing_impl = detect_healing_implementation(node)
+            healing_impl = detect_healing_implementation(node, source)
             
             # Determine territory (layer + subdirectory)
             # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
