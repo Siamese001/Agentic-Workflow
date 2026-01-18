@@ -212,13 +212,24 @@ class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             except Exception:
                 pass
         
-        # Fallback to rglob if JSON not found
-        for py_file in self.project_root.rglob("*Agent.py"):
-            if any(ex in str(py_file) for ex in {"__pycache__", ".git", "archives"}):
-                continue
-            stem = py_file.stem
-            if stem.endswith("Agent"):
-                stems.add(stem)
+        # [SSOT] Fallback: use ssot_discovery utility if JSON direct load failed
+        try:
+            from agentic_core.utils.ssot_discovery import get_agent_names
+            stems = get_agent_names(self.project_root)
+            if stems:
+                return stems
+        except ImportError:
+            pass
+        
+        # Final fallback: scan only agentic_core (NOT project root)
+        agentic_core_dir = self.project_root / "agentic_core"
+        if agentic_core_dir.exists():
+            for py_file in agentic_core_dir.rglob("*Agent.py"):
+                if any(ex in str(py_file) for ex in {"__pycache__", ".git", "archives"}):
+                    continue
+                stem = py_file.stem
+                if stem.endswith("Agent"):
+                    stems.add(stem)
         return stems
 
     def _get_hierarchy_agent(self) -> Any:

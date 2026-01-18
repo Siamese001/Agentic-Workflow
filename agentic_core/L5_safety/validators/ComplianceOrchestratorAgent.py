@@ -149,93 +149,48 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
         - MetaLearningAgent → L3_orchestration/workflow_engines
         - SovereignForensicsAgent → L3_orchestration/workflow_engines
         """
-        print(f"\n[FULL AGENT DISCOVERY] Using full_agent_discovery.py logic (240 target)...")
+        print(f"\n[FULL AGENT DISCOVERY] Using SSOT agent_discovery_full.json...")
         print(f"   [MANDATORY COUNT] Expecting {len(self.MANDATORY_AGENTS)} critical agents")
         
-        # [DEPRECATED] Old scans replaced with full_agent_discovery.py logic
-        # Import and use the comprehensive discovery from scripts/full_agent_discovery.py
+        # [SSOT] Use centralized discovery utility instead of rglob scans
         try:
-            from scripts.full_agent_discovery_1 import is_agent_class, extract_bases, EXCLUDED_DIRS
-            print(f"   [OK] Loaded full_agent_discovery.py detection logic")
+            from agentic_core.utils.ssot_discovery import get_agent_paths, load_agent_discovery
+            agent_paths = get_agent_paths(self.project_root, exclude_patterns=['test_', 'mock_', 'stub_'])
+            agent_files = agent_paths
+            ast_agent_count = len(agent_paths)
+            print(f"   [SSOT] Loaded {ast_agent_count} agents from discovery JSON")
         except ImportError:
-            # Fallback: inline the is_agent_class function
-            EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv'}
+            # Fallback: load discovery JSON directly
+            import json
+            discovery_path = self.project_root / "agent_discovery_full.json"
+            agent_files = []
+            ast_agent_count = 0
             
-            def extract_bases(class_node) -> Any:
-                """Execute extract_bases operation."""
-                bases = set()
-                for base in class_node.bases:
-                    if isinstance(base, ast.Name):
-                        bases.add(base.id)
-                    elif isinstance(base, ast.Attribute):
-                        bases.add(base.attr)
-                return bases
-            
-            def is_agent_class(class_node, bases) -> Any:
-                """Comprehensive agent detection - matches full_agent_discovery.py (240 target)."""
-                name = class_node.name
-                # Skip test/mock patterns unless they have Agent in name
-                if name.startswith(('Test', 'Mock', 'Stub', 'Fake', 'Dummy')) and 'Agent' not in name:
-                    return False
-                # Pattern 1: Ends with Agent
-                if name.endswith('Agent'):
-                    return True
-                # Pattern 2: Agent-like suffixes (core roles)
-                agent_suffixes = ('Executor', 'Validator', 'Enforcer', 'Guardian', 'Sentinel',
-                    'Inspector', 'Architect', 'Healer', 'Oracle', 'Curator', 'Router', 
-                    'Orchestrator', 'Conductor', 'Guard', 'Detector', 'Hunter', 'Fixer',
-                    'Reconciler', 'Mapper', 'Classifier', 'Auditor', 'Monitor', 'Witness')
-                if name.endswith(agent_suffixes):
-                    return True
-                # Pattern 3: Contains 'Agent'
-                if 'Agent' in name:
-                    return True
-                # Pattern 4: Inherits from agent bases
-                agent_bases = {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-                    'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
-                    'HealerMixin', 'SubatomicTestingMixin', 'ExecutionCanonBaseAgent',
-                    'CognitionCanonBaseAgent', 'MCPHardenedMixin', 'BaseAgent'}
-                if bases & agent_bases:
-                    return True
-                # Pattern 5: Testing/Healing mixins
-                if name.endswith('Mixin') and any(x in name for x in ['Testing', 'Healing', 'Delegation', 'Autonomy', 'Hardened']):
-                    return True
-                # Pattern 6: Sovereign patterns
-                if name.startswith('Sovereign') and any(x in name for x in ['Agent', 'Client', 'Store', 'Cache', 'Orchestrator']):
-                    return True
-                return False
-            print(f"   [FALLBACK] Using inline is_agent_class (full_agent_discovery.py logic)")
-        
-        # Scan ALL Python files in project root
-        all_py_files = list(self.project_root.rglob('*.py'))
-        print(f"   [FULL SCAN] Scanning {len(all_py_files)} Python files in entire project...")
-        
-        agent_files = []
-        ast_agent_count = 0
-        
-        for py_file in all_py_files:
-            if any(ex in str(py_file) for ex in EXCLUDED_DIRS):
-                continue
-            if py_file.name.startswith("__"):
-                continue
-            
-            try:
-                source = py_file.read_text(encoding='utf-8', errors='replace')
-                tree = ast.parse(source)
-                has_agent_class = False
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        bases = extract_bases(node)
-                        if is_agent_class(node, bases):
-                            # Skip base classes themselves
-                            if node.name not in {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-                                'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent', 'ABC', 'Protocol'}:
-                                has_agent_class = True
-                                ast_agent_count += 1
-                if has_agent_class:
-                    agent_files.append(py_file)
-            except (SyntaxError, UnicodeDecodeError):
-                continue
+            if discovery_path.exists():
+                try:
+                    with open(discovery_path, 'r', encoding='utf-8') as f:
+                        discovery_data = json.load(f)
+                    
+                    if isinstance(discovery_data, list):
+                        for entry in discovery_data:
+                            path_str = entry.get("path", "")
+                            if path_str:
+                                agent_path = self.project_root / path_str
+                                if agent_path.exists():
+                                    agent_files.append(agent_path)
+                                    ast_agent_count += 1
+                    elif isinstance(discovery_data, dict):
+                        for name, entry in discovery_data.items():
+                            path_str = entry.get("path", "") if isinstance(entry, dict) else ""
+                            if path_str:
+                                agent_path = self.project_root / path_str
+                                if agent_path.exists():
+                                    agent_files.append(agent_path)
+                                    ast_agent_count += 1
+                    
+                    print(f"   [SSOT FALLBACK] Loaded {ast_agent_count} agents from discovery JSON")
+                except Exception as e:
+                    print(f"   [ERROR] Failed to load discovery JSON: {e}")
         
         print(f"   [FULL SCAN] Found {ast_agent_count} Agent classes in {len(agent_files)} files")
         
@@ -823,15 +778,26 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
         # Build from SOVEREIGN_REGISTRY structure
         for root_folder, config in SOVEREIGN_REGISTRY.items():
             if root_folder == 'agentic_core':
-                for layer in config.get('subfolders', []):
-                    layer_path = self.project_root / root_folder / layer
-                    if layer_path.exists():
-                        for py_file in layer_path.rglob('*.py'):
-                            try:
-                                rel = py_file.relative_to(self.project_root)
-                                self.allowed_agents.add(str(rel))
-                            except ValueError:
-                                pass
+                # [SSOT] Use discovery JSON instead of rglob
+                try:
+                    from agentic_core.utils.ssot_discovery import load_agent_discovery
+                    agents = load_agent_discovery(self.project_root)
+                    for agent in agents:
+                        path_str = agent.get("path", "")
+                        if path_str:
+                            self.allowed_agents.add(path_str)
+                except ImportError:
+                    # Fallback: load discovery JSON directly
+                    import json
+                    discovery_path = self.project_root / "agent_discovery_full.json"
+                    if discovery_path.exists():
+                        with open(discovery_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                        if isinstance(data, list):
+                            for entry in data:
+                                path_str = entry.get("path", "")
+                                if path_str:
+                                    self.allowed_agents.add(path_str)
         
         Logger.info(f"[SECURITY] Agent allowlist built: {len(self.allowed_agents)} registered paths")
     

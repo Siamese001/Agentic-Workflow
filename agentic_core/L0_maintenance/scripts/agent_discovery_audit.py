@@ -275,45 +275,53 @@ def main():
     
     agents = []
     
-    # Discover all Agent files
-    for py_file in AGENTIC_CORE.rglob('*Agent.py'):
-        if '__pycache__' in str(py_file):
-            continue
-        if '.sovereign_healing_backup' in str(py_file):
-            continue
+    # [SSOT] Use agent_discovery_full.json instead of rglob
+    discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
+    if discovery_path.exists():
+        import json
+        with open(discovery_path, 'r', encoding='utf-8') as f:
+            discovery_data = json.load(f)
         
-        try:
-            source = py_file.read_text(encoding='utf-8', errors='replace')
-            tree = ast.parse(source)
-        except Exception as e:
-            print(f'[PARSE ERROR] {py_file.name}: {e}')
-            continue
-        
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ClassDef) and node.name.endswith('Agent'):
-                # Skip snake_case aliases
-                if node.name.islower() or '_' in node.name:
-                    if not node.name[0].isupper():
-                        continue
-                
-                rel_path = py_file.relative_to(PROJECT_ROOT)
-                module_path = str(rel_path).replace(os.sep, '.').replace('.py', '')
-                layer = infer_layer(py_file)
-                methods = extract_methods(node)
-                loc = count_loc(source)
-                fingerprint = generate_fingerprint(node)
-                
-                agents.append({
-                    'name': node.name,
-                    'module': module_path,
-                    'file': str(rel_path),
-                    'layer': layer,
-                    'methods': methods,
-                    'loc': loc,
-                    'fingerprint': fingerprint,
-                    'line': node.lineno,
-                    'abs_path': str(py_file)
-                })
+        for entry in discovery_data:
+            path_str = entry.get("path", "")
+            if not path_str:
+                continue
+            py_file = PROJECT_ROOT / path_str
+            if not py_file.exists():
+                continue
+            
+            try:
+                source = py_file.read_text(encoding='utf-8', errors='replace')
+                tree = ast.parse(source)
+            except Exception as e:
+                print(f'[PARSE ERROR] {py_file.name}: {e}')
+                continue
+            
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef) and node.name.endswith('Agent'):
+                    # Skip snake_case aliases
+                    if node.name.islower() or '_' in node.name:
+                        if not node.name[0].isupper():
+                            continue
+                    
+                    rel_path = py_file.relative_to(PROJECT_ROOT)
+                    module_path = str(rel_path).replace(os.sep, '.').replace('.py', '')
+                    layer = infer_layer(py_file)
+                    methods = extract_methods(node)
+                    loc = count_loc(source)
+                    fingerprint = generate_fingerprint(node)
+                    
+                    agents.append({
+                        'name': node.name,
+                        'module': module_path,
+                        'file': str(rel_path),
+                        'layer': layer,
+                        'methods': methods,
+                        'loc': loc,
+                        'fingerprint': fingerprint,
+                        'line': node.lineno,
+                        'abs_path': str(py_file)
+                    })
     
     # Sort by layer then name
     agents.sort(key=lambda x: (x['layer'], x['name']))

@@ -273,6 +273,31 @@ class FilesystemSSOTReconcilerAgent(
         """
         Logger.info("Scanning agents for canonical signals...")
         
+        # [SSOT] Use agent_discovery_full.json instead of rglob
+        discovery_path = self.project_root / "agent_discovery_full.json"
+        if discovery_path.exists():
+            try:
+                import json
+                with open(discovery_path, 'r', encoding='utf-8') as f:
+                    discovery_data = json.load(f)
+                
+                for entry in discovery_data:
+                    class_name = entry.get("class_name", "") or entry.get("name", "")
+                    if class_name and class_name.endswith("Agent"):
+                        self.actual_agents.add(class_name)
+                        
+                        # Extract signal tokens from class name
+                        name_lower = class_name.replace("Agent", "").lower()
+                        if name_lower:
+                            self.actual_signals.add(name_lower)
+                            Logger.debug(f"Extracted signal '{name_lower}' from {class_name}")
+                
+                Logger.info(f"[SSOT] Loaded {len(self.actual_agents)} agents from discovery JSON")
+                return  # Skip rglob fallback
+            except Exception as e:
+                Logger.warning(f"[SSOT] Failed to load discovery JSON: {e}")
+        
+        # Fallback: scan only agentic_core (not project root)
         agentic_core = self.project_root / "agentic_core"
         
         for py_file in agentic_core.rglob("*agent*.py"):
