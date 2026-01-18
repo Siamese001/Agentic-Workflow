@@ -35,6 +35,7 @@ import json
 import os
 import re
 import subprocess
+from abc import abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -74,16 +75,17 @@ def get_subatomic_engine(gemini_client: Any) -> Any:
 
 # Unified Base Class
 @dataclass
-class L2ExecutionBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Unified L2 base class - replaces CanonBaseAgent + SubAtomicAgent.
     
-    MRO HARDENING:
-    - SubatomicTestingMixin: First (L2-specific testing)
-    - RedisCacheMixin: Second (caching infrastructure)
-    - PineconeVectorMixin: Third (vector infrastructure)
-    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    PHASE 3 MRO HARDENING:
+    - RedisCacheMixin: First (caching infrastructure)
+    - PineconeVectorMixin: Second (vector infrastructure)
+    - SovereignBaseAgent: Last (root - includes InfrastructureMixin with SubatomicTestingMixin)
     
-    MRO: SubatomicTestingMixin -> RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
+    Note: SubatomicTestingMixin is now inherited via SovereignBaseAgent -> InfrastructureMixin
+    
+    MRO: RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> InfrastructureMixin -> ... -> object
     
     Features:
     - Async execution (mandatory)
