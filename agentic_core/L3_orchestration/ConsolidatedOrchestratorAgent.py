@@ -1,163 +1,117 @@
-"""ConsolidatedOrchestratorAgent — The General (Phase 4 Integration)
+"""ConsolidatedOrchestratorAgent — The General (Phase 3 Migration)
 
-Coordinates all sub-orchestrators and ensures the Mission is executed
-according to the Prime Directive.
+PHASE 3 MIGRATION:
+This class is now a thin wrapper around UnifiedOrchestratorAgent for backward compatibility.
+All orchestration logic has been moved to:
+- UnifiedOrchestratorAgent: Generic execution engine
+- HealingStrategy: 5-tier healing logic
 
-Phase 4 Activation:
-- run_mission() method for executing Sovereign Healing Mission
-- Factory function get_consolidated_orchestrator()
+Legacy scripts that import get_consolidated_orchestrator() will continue to work,
+but they now use the unified orchestration system under the hood.
 """
 from __future__ import annotations
 
 import logging
-import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-
-from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
-from agentic_core.utils.result_utils import normalize_agent_result, extract_violations, extract_fixes
-
-# Color-coded terminal output
-try:
-    from agentic_core.utils.terminal_colors import (
-        agent_status, progress_bar, log_status, Colors
-    )
-    COLORS_AVAILABLE = True
-except ImportError:
-    COLORS_AVAILABLE = False
-    def agent_status(*args, **kwargs): return f"  {args[0] if args else ''}"
-    def progress_bar(*args, **kwargs): return ""
-    def log_status(level, msg, **kwargs): print(f"[{level.upper()}] {msg}")
-    class Colors:
-        RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = BRIGHT_MAGENTA = DIM = ""
 
 Logger = logging.getLogger(__name__)
 
 
-# [SOVEREIGN FACTORY]
-def get_consolidated_orchestrator(project_root):
-    """Factory function to get ConsolidatedOrchestratorAgent instance."""
-    return ConsolidatedOrchestratorAgent(project_root)
-
-
-class ConsolidatedOrchestratorAgent(L3OrchestrationBaseAgent):
+def get_consolidated_orchestrator(project_root: Path = None):
     """
-    The General.
-    Coordinates all sub-orchestrators and ensures the Mission is executed
-    according to the Prime Directive.
+    Factory function to get a UnifiedOrchestratorAgent configured with HealingStrategy.
+    
+    PHASE 3 MIGRATION: This now returns a UnifiedOrchestratorAgent instead of
+    ConsolidatedOrchestratorAgent. The interface is compatible for most use cases.
+    
+    Args:
+        project_root: Root path for the project (defaults to cwd)
+        
+    Returns:
+        UnifiedOrchestratorAgent configured with HealingStrategy
+    """
+    from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+    from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+    
+    project_root = Path(project_root) if project_root else Path.cwd()
+    strategy = HealingStrategy(project_root=project_root)
+    
+    return UnifiedOrchestratorAgent(
+        strategy=strategy,
+        project_root=project_root,
+        name="ConsolidatedOrchestrator"
+    )
+
+
+class ConsolidatedOrchestratorAgent:
+    """
+    DEPRECATED: Use UnifiedOrchestratorAgent with HealingStrategy instead.
+    
+    This class is maintained for backward compatibility only.
+    New code should use:
+        from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+        from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+        
+        orchestrator = UnifiedOrchestratorAgent(strategy=HealingStrategy(project_root))
     """
     
     def __init__(self, project_root: Path = None):
-        """Initialize the Consolidated Orchestrator."""
+        """Initialize the Consolidated Orchestrator wrapper."""
+        import warnings
+        warnings.warn(
+            "ConsolidatedOrchestratorAgent is deprecated. Use UnifiedOrchestratorAgent with HealingStrategy instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        
         self.project_root = Path(project_root) if project_root else Path.cwd()
-        self.Logger = logging.getLogger(__name__)
-        super().__init__()
+        self._unified_orchestrator = get_consolidated_orchestrator(self.project_root)
     
-    def run_mission(self, agents: List[Tuple[str, Any]], context: Dict[str, Any] = None) -> Dict[str, Any]:
+    def run_mission(self, agents: List[Tuple[str, Any]] = None, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Executes the Sovereign Healing Mission.
         
+        PHASE 3 MIGRATION: This now delegates to UnifiedOrchestratorAgent.run_mission().
+        
         Args:
-            agents (list): List of (name, agent_instance) tuples to execute.
-            context (dict): Runtime context and flags.
+            agents: DEPRECATED - Ignored. Agents are now determined by HealingStrategy.
+            context: Runtime context and flags (dry_run, execute, etc.)
             
         Returns:
-            dict: Mission execution summary.
+            dict: Mission execution summary compatible with legacy format.
         """
         if context is None:
             context = {}
-            
-        mission_log = []
-        total_fixes = 0
-        total_violations = 0
-        agents_count = len(agents)
-        start_mission_time = time.time()
         
-        # Phase 6: Layered Sovereign Sweep
-        mode_color = Colors.BRIGHT_RED if context.get('execute') else Colors.BRIGHT_YELLOW
-        print(f"\n{Colors.BRIGHT_MAGENTA}[L3 ORCHESTRATOR]{Colors.RESET} ⚔️  MISSION START")
-        print(f"   {Colors.DIM}[MODE]{Colors.RESET} {mode_color}{'EXECUTE' if context.get('execute') else 'DRY-RUN'}{Colors.RESET}")
-        print(f"   {Colors.DIM}[COMMAND]{Colors.RESET} Controlling {Colors.BRIGHT_CYAN}{len(agents)}{Colors.RESET} Autonomous Agents")
+        # Delegate to unified orchestrator
+        result = self._unified_orchestrator.run_mission(context)
         
-        # Log scan mode if present (Phase 6 verification)
-        if context.get("scan_mode"):
-            print(f"   [CONTEXT] Scan Mode: {context['scan_mode']}")
-        
-        # Sequence by Layer Gravity (L0 -> L5 -> L2 -> L1)
-        for i, (agent_name, agent_instance) in enumerate(agents, 1):
-            # Show progress bar
-            print(f"\n   {progress_bar(i-1, agents_count, 'Progress', width=30)}")
-            print(agent_status(agent_name, 'running'))
-            agent_start_time = time.time()
-
-            try:
-                # Execute the agent's healing method
-                # We assume a standard interface: heal_repository(**kwargs)
-                # Pass only standard arguments to ensure compatibility with all agents
-                result = agent_instance.heal_repository(
-                    dry_run=context.get('dry_run', True),
-                    execute=context.get('execute', False)
-                )
-                
-                # [SSOT] Use centralized result normalization utility
-                execution_duration = time.time() - agent_start_time
-                duration_ms = int(execution_duration * 1000)
-                normalized = normalize_agent_result(agent_name, result, duration_ms)
-                
-                # Handle skipped results
-                if normalized.is_skipped:
-                    print(f"   [L3 SKIP] {agent_name}: Returned None (skipped)")
-                    mission_log.append({"agent": agent_name, "status": "skipped", "reason": "None result"})
-                    continue
-                
-                fixes = normalized.violations_fixed
-                violations = normalized.violations_found
-                total_fixes += fixes
-                total_violations += violations
-                
-                print(agent_status(
-                    agent_name,
-                    'success' if violations == 0 else 'warning',
-                    fixes=fixes,
-                    violations=violations,
-                    duration_ms=duration_ms
-                ))
-                
-                mission_log.append({
-                    "agent": agent_name, 
-                    "status": normalized.status.lower(), 
-                    "fixed": fixes, 
-                    "violations": violations,
-                    "duration_sec": round(execution_duration, 3),
-                    "result": result
-                })
-                
-            except Exception as e:
-                print(agent_status(agent_name, 'error'))
-                log_status('error', f"{agent_name} CRITICAL FAILURE: {e}")
-                mission_log.append({
-                    "agent": agent_name, 
-                    "status": "failed", 
-                    "error": str(e),
-                    "duration_sec": round(time.time() - agent_start_time, 3)
-                })
-
-        # [STABILITY GATE SIGNAL]
-        # Mission is stable if no violations remain OR we are in dry-run mode
-        is_stable = total_violations == 0 or not context.get('execute', False)
-        mission_duration = time.time() - start_mission_time
-
-        print(f"\n[L3 ORCHESTRATOR] 🏁 MISSION COMPLETE")
+        # Map to legacy format for backward compatibility
         return {
-            "mission_log": mission_log,
-            "total_fixes": total_fixes,
-            "total_violations": total_violations,
-            "is_stable": is_stable,
-            "duration_sec": round(mission_duration, 3)
+            "mission_log": [
+                {
+                    "agent": r.get("agent_name", "unknown"),
+                    "status": r.get("status", "unknown").lower(),
+                    "fixed": r.get("violations_fixed", 0),
+                    "violations": r.get("violations_found", 0),
+                    "duration_sec": r.get("execution_time_ms", 0) / 1000,
+                }
+                for r in result.get("agent_results", [])
+            ],
+            "total_fixes": result.get("total_fixed", 0),
+            "total_violations": result.get("total_violations", 0),
+            "is_stable": result.get("is_stable", True),
+            "duration_sec": result.get("execution_time_ms", 0) / 1000,
         }
     
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None, **kwargs) -> Dict[str, Any]:
         """L3 Orchestrator - delegates to run_mission when called directly."""
-        print(f"[ConsolidatedOrchestratorAgent] L3 Orchestration - ready for mission control")
-        # Standardized return for ConsolidatedOrchestrator when acting as an agent
-        return {"agent": "ConsolidatedOrchestratorAgent", "status": "ready", "fixed": 0, "violations": 0}
+        context = {"dry_run": dry_run, "execute": execute}
+        result = self.run_mission(context=context)
+        return {
+            "agent": "ConsolidatedOrchestratorAgent",
+            "status": "PASS" if result.get("is_stable") else "FAIL",
+            "fixed": result.get("total_fixes", 0),
+            "violations": result.get("total_violations", 0),
+        }
