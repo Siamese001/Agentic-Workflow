@@ -14,7 +14,8 @@ PROJECT_ROOT = Path(__file__).parent.parent
 DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
 
 sys.path.insert(0, str(PROJECT_ROOT))
-from agentic_core.L5_safety.validators.canonical_truth_1 import calculate_health_score
+# [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
+from agentic_core.L5_safety.validators.canonical_truth import calculate_health_score
 
 
 def main():

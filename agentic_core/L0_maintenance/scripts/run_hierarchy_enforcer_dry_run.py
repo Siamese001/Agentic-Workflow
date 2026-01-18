@@ -66,7 +66,8 @@ def validate_depth_precision(project_root: Path) -> dict:
         if not rel.parts[0].startswith("apps_"):
             continue
         
-        depth = len(rel.parts)
+        # [FIX] Depth = folder level where file resides, not path length
+        depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
         if depth != apps_exact_depth:
             violations.append({
                 "file": str(rel),
@@ -89,7 +90,8 @@ def validate_tests_depth(project_root: Path) -> dict:
         if rel.parts[0] != "tests":
             continue
         
-        depth = len(rel.parts)
+        # [FIX] Depth = folder level where file resides, not path length
+        depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
         if depth != tests_exact_depth:
             violations.append({
                 "file": str(rel),
@@ -114,7 +116,8 @@ def validate_universal_depth(project_root: Path) -> dict:
         
         rel = file_path.relative_to(project_root)
         if rel.parts[0] == "agentic_core":
-            depth = len(rel.parts)
+            # [FIX] Depth = folder level where file resides, not path length
+            depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
             if depth != agentic_core_exact_depth:
                 violations.append({
                     "file": str(rel),

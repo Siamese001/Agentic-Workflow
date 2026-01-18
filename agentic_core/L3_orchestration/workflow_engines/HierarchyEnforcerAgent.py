@@ -120,7 +120,8 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
             if not rel.parts[0].startswith("apps_"):
                 continue
 
-            depth = len(rel.parts)
+            # [FIX] Depth = folder level where file resides, not path length
+            depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
             if depth != apps_exact_depth:
                 # ARCHIVE THE DRIFT
                 archive_path = self.archive_root / "apps_depth" / rel
@@ -157,7 +158,8 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
             if rel.parts[0] != "tests":
                 continue
 
-            depth = len(rel.parts)
+            # [FIX] Depth = folder level where file resides, not path length
+            depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
             if depth != tests_exact_depth:
                 # ARCHIVE THE DRIFT
                 archive_path = self.archive_root / "tests_depth" / rel
@@ -198,7 +200,8 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
             rel = file_path.relative_to(self.project_root)
             if rel.parts[0] == "agentic_core":
-                depth = len(rel.parts)
+                # [FIX] Depth = folder level where file resides, not path length
+                depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
                 if depth != agentic_core_exact_depth:
                     # [ARCHIVE UNIVERSAL DRIFT]
                     archive_path = self.archive_root / "non_python" / rel

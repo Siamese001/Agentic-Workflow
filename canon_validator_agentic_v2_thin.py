@@ -30,6 +30,26 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     get_validated_project_root,
 )
 
+# Color-coded terminal output for progress visibility
+try:
+    from agentic_core.utils.terminal_colors import (
+        phase_header, tier_summary, mission_header, mission_summary,
+        agent_status, progress_bar, log_status, Colors, heartbeat
+    )
+    COLORS_AVAILABLE = True
+except ImportError:
+    COLORS_AVAILABLE = False
+    def phase_header(*args, **kwargs): return f"\n[PHASE] {args[0] if args else ''}"
+    def tier_summary(*args, **kwargs): return ""
+    def mission_header(*args, **kwargs): return "\n[MISSION START]"
+    def mission_summary(*args, **kwargs): return "\n[MISSION COMPLETE]"
+    def agent_status(*args, **kwargs): return f"  {args[0] if args else ''}"
+    def progress_bar(*args, **kwargs): return ""
+    def log_status(level, msg, **kwargs): print(f"[{level.upper()}] {msg}")
+    def heartbeat(i): return "."
+    class Colors:
+        RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = DIM = ""
+
 # Define missing directory constants
 APPS_SHARED_DIR = "apps_shared"
 APPS_LIC_DIR = "apps_lic"
@@ -544,12 +564,15 @@ def main():
             from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
             from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import get_checkpoint_manager
             
-            # [MANDATORY CORE] Direct Imports for Stabilization
+            # [MANDATORY CORE] Direct Imports for Tiers 0 & 1
+            from agentic_core.L5_safety.validators.SyntaxValidatorAgent import get_syntax_validator
+            from agentic_core.L5_safety.validators.HygieneGuardianAgent import get_hygiene_guardian
             from agentic_core.L5_safety.validators.LocationAgent import get_location_agent
             from agentic_core.L5_safety.guardrails.HierarchyAgent import get_hierarchy_agent
             from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
             from agentic_core.L5_safety.gravity.ImportAgent import get_import_agent
             from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+            from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import get_two_phase_deduplication_agent
 
             # Placeholder for missing GovernanceAgent
             def get_governance_agent_stub(root): return None
@@ -567,8 +590,15 @@ def main():
                 return None
 
             # --- TIER ASSEMBLY ---
+            # TIER 0: Parseability & Hygiene (The Pre-Flight Gate)
+            mandatory_preflight = [
+                ("SyntaxValidatorAgent", get_syntax_validator(project_root)),
+                ("HygieneGuardianAgent", get_hygiene_guardian(project_root)),
+            ]
+
             # TIER 1: Structural Stabilization (MUST pass for mission to continue)
             mandatory_structural = [
+                ("TwoPhaseDeduplicationAgent_PhaseA", get_two_phase_deduplication_agent(project_root)),
                 ("LocationAgent", get_location_agent(project_root)),
                 ("HierarchyAgent", get_hierarchy_agent(project_root)),
                 ("NamingAgent", get_naming_agent(project_root)),
@@ -585,8 +615,9 @@ def main():
             full_roster = build_healing_roster(project_root)
             
             # Exclude already run mandatory agents from the discovery roster
-            mandatory_names = {name for name, _ in mandatory_structural} | {name for name, _ in mandatory_architectural}
+            mandatory_names = {name for name, _ in mandatory_preflight} | {name for name, _ in mandatory_structural} | {name for name, _ in mandatory_architectural}
             mandatory_names.add("AutonomyGuardian") # Reserved for Tier 4
+            mandatory_names.add("TwoPhaseDeduplicationAgent") # Handled in Tier 1
             
             discovery_roster = [a for a in full_roster if a[0] not in mandatory_names]
             
@@ -607,7 +638,7 @@ def main():
             }
             
             gemini_active = hasattr(final_safety[0][1], 'gemini_embedder') and final_safety[0][1].gemini_embedder is not None
-            all_active_agents = mandatory_structural + mandatory_architectural + discovery_roster + final_safety
+            all_active_agents = mandatory_preflight + mandatory_structural + mandatory_architectural + discovery_roster + final_safety
             
             # Initialize runtime state for dashboard
             _runtime_state.update({
@@ -624,7 +655,45 @@ def main():
             _save_runtime_state(project_root)
 
             # --- MISSION EXECUTION: TIERED FLOW ---
-            print(f"\n[MISSION] TIER 1: Structural Stabilization (Mandatory)")
+            print(mission_header("SOVEREIGN HEAL", execute=execute_heal))
+            
+            # TIER 0: Pre-Flight (Syntax & Hygiene)
+            print(phase_header("Parseability & Hygiene (Pre-Flight)", phase_num=0, total_phases=5, status="running"))
+            tier0_start = datetime.now()
+            t0_results = orchestrator.run_mission(mandatory_preflight, mission_context)
+            tier0_end = datetime.now()
+            _runtime_state["execution_timeline"].append({
+                "tier": 0,
+                "name": "Parseability & Hygiene",
+                "start": tier0_start.isoformat(),
+                "end": tier0_end.isoformat(),
+                "agents": [name for name, _ in mandatory_preflight],
+                "fixes": t0_results.get("total_fixes", 0),
+                "violations": t0_results.get("total_violations", 0),
+                "success": t0_results.get("is_stable", True)
+            })
+            tier0_duration = (tier0_end - tier0_start).total_seconds()
+            print(tier_summary(
+                "Parseability & Hygiene", 0,
+                len(mandatory_preflight),
+                t0_results.get("total_fixes", 0),
+                t0_results.get("total_violations", 0),
+                tier0_duration,
+                t0_results.get("is_stable", True)
+            ))
+            _save_runtime_state(project_root)
+            
+            # [SYNTAX GATE] Abort if Tier 0 has unfixable syntax errors
+            if execute_heal and not t0_results.get("is_stable", True):
+                _add_event("error", "CRITICAL: Tier 0 syntax/hygiene failures. Aborting Mission.")
+                _save_runtime_state(project_root)
+                log_status("error", "MISSION ABORTED: Repository has fatal syntax errors.")
+                log_status("error", f"Tier 0 violations: {t0_results.get('total_violations', 0)}")
+                log_status("warning", "Fix syntax errors before proceeding.")
+                return
+            
+            # TIER 1: Structural Stabilization
+            print(phase_header("Structural Stabilization", phase_num=1, total_phases=5, status="running"))
             tier1_start = datetime.now()
             t1_results = orchestrator.run_mission(mandatory_structural, mission_context)
             tier1_end = datetime.now()
@@ -638,18 +707,27 @@ def main():
                 "violations": t1_results.get("total_violations", 0),
                 "success": t1_results.get("total_violations", 0) == 0 if execute_heal else True
             })
+            tier1_duration = (tier1_end - tier1_start).total_seconds()
+            print(tier_summary(
+                "Structural Stabilization", 1,
+                len(mandatory_structural),
+                t1_results.get("total_fixes", 0),
+                t1_results.get("total_violations", 0),
+                tier1_duration,
+                t1_results.get("total_violations", 0) == 0 or not execute_heal
+            ))
             _save_runtime_state(project_root)
             
             # [STABILITY GATE] Abort if Tier 1 structural violations remain unfixed
             if execute_heal and t1_results.get("total_violations", 0) > 0:
                 _add_event("error", "CRITICAL: Tier 1 structural violations persist. Mission Aborted.")
                 _save_runtime_state(project_root)
-                print("\n[!] MISSION ABORTED: Repository filesystem is unstable.")
-                print(f"    Tier 1 violations: {t1_results.get('total_violations', 0)}")
-                print(f"    Fix these structural issues before proceeding.")
+                log_status("error", "MISSION ABORTED: Repository filesystem is unstable")
+                log_status("error", f"Tier 1 violations: {t1_results.get('total_violations', 0)}")
+                log_status("warning", "Fix these structural issues before proceeding")
                 return
             
-            print(f"\n[MISSION] TIER 2: Architectural Alignment (Mandatory)")
+            print(phase_header("Architectural Alignment", phase_num=2, total_phases=5, status="running"))
             tier2_start = datetime.now()
             t2_results = orchestrator.run_mission(mandatory_architectural, mission_context)
             tier2_end = datetime.now()
@@ -663,9 +741,18 @@ def main():
                 "violations": t2_results.get("total_violations", 0),
                 "success": True
             })
+            tier2_duration = (tier2_end - tier2_start).total_seconds()
+            print(tier_summary(
+                "Architectural Alignment", 2,
+                len(mandatory_architectural),
+                t2_results.get("total_fixes", 0),
+                t2_results.get("total_violations", 0),
+                tier2_duration,
+                True
+            ))
             _save_runtime_state(project_root)
             
-            print(f"\n[MISSION] TIER 3: Deep Domain Healing ({len(discovery_roster)} Discovery Agents)")
+            print(phase_header(f"Deep Domain Healing ({len(discovery_roster)} agents)", phase_num=3, total_phases=5, status="running"))
             tier3_start = datetime.now()
             t3_results = orchestrator.run_mission(discovery_roster, mission_context)
             tier3_end = datetime.now()
@@ -679,9 +766,18 @@ def main():
                 "violations": t3_results.get("total_violations", 0),
                 "success": True
             })
+            tier3_duration = (tier3_end - tier3_start).total_seconds()
+            print(tier_summary(
+                "Deep Domain Healing", 3,
+                len(discovery_roster),
+                t3_results.get("total_fixes", 0),
+                t3_results.get("total_violations", 0),
+                tier3_duration,
+                True
+            ))
             _save_runtime_state(project_root)
             
-            print(f"\n[MISSION] TIER 4: Final Safety Gate")
+            print(phase_header("Final Safety Gate", phase_num=4, total_phases=5, status="running"))
             tier4_start = datetime.now()
             t4_results = orchestrator.run_mission(final_safety, mission_context)
             tier4_end = datetime.now()
@@ -695,11 +791,20 @@ def main():
                 "violations": t4_results.get("total_violations", 0),
                 "success": True
             })
+            tier4_duration = (tier4_end - tier4_start).total_seconds()
+            print(tier_summary(
+                "Final Safety Gate", 4,
+                len(final_safety),
+                t4_results.get("total_fixes", 0),
+                t4_results.get("total_violations", 0),
+                tier4_duration,
+                True
+            ))
             _save_runtime_state(project_root)
             
-            # Consolidate results for reporting
-            total_fixes = t1_results["total_fixes"] + t2_results["total_fixes"] + t3_results["total_fixes"] + t4_results["total_fixes"]
-            total_violations = t1_results["total_violations"] + t2_results["total_violations"] + t3_results["total_violations"] + t4_results["total_violations"]
+            # Consolidate results for reporting (include Tier 0)
+            total_fixes = t0_results["total_fixes"] + t1_results["total_fixes"] + t2_results["total_fixes"] + t3_results["total_fixes"] + t4_results["total_fixes"]
+            total_violations = t0_results["total_violations"] + t1_results["total_violations"] + t2_results["total_violations"] + t3_results["total_violations"] + t4_results["total_violations"]
             
             consolidated_results = [{
                 "domain": "Sovereign Repository",
@@ -731,8 +836,17 @@ def main():
 
 def report_consolidated_summary(results, gemini_active):
     """Phase 4.5: Generates the Consolidated Sovereign Health Report."""
+    # Calculate totals for mission_summary
+    total_agents = sum(r.get("agents_run", 0) for r in results)
+    total_fixed = sum(r.get("total_fixed", 0) for r in results)
+    total_violations = sum(r.get("total_violations", 0) for r in results)
+    total_errors = sum(r.get("total_errors", 0) for r in results)
+    
+    success = total_violations == 0
+    print(mission_summary(total_agents, total_fixed, total_violations, total_errors, 0, success))
+    
     print("\n" + "="*60)
-    print("FINAL CONSOLIDATED SOVEREIGN HEALTH REPORT")
+    print(f"{Colors.BRIGHT_CYAN if COLORS_AVAILABLE else ''}FINAL CONSOLIDATED SOVEREIGN HEALTH REPORT{Colors.RESET if COLORS_AVAILABLE else ''}")
     print("="*60)
     
     # Aggregate cross-domain metrics

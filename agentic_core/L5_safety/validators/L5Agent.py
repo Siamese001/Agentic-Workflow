@@ -56,10 +56,10 @@ class L5Agent(HealerMixin, MCPHardenedMixin):
     name: str = "L5Agent"
     layer: str = "L5"
     
-    def heal_repository(self, dry_run: bool = True) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """Override in subclass to implement healing logic."""
-        super().heal_repository(dry_run)
-        return {"status": "not_implemented", "agent": self.name}
+        super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
+        return {"status": "not_implemented", "agent": self.name, "violations": 0, "fixed": 0}
     
     def _run_self_tests(self) -> Dict[str, Any]:
         """Override in subclass to implement self-tests."""
