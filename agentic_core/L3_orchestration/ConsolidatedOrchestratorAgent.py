@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
+from agentic_core.utils.result_utils import normalize_agent_result, extract_violations, extract_fixes
 
 # Color-coded terminal output
 try:
@@ -98,26 +99,22 @@ class ConsolidatedOrchestratorAgent(L3OrchestrationBaseAgent):
                     execute=context.get('execute', False)
                 )
                 
-                # Handle None or invalid results
-                if result is None:
+                # [SSOT] Use centralized result normalization utility
+                execution_duration = time.time() - agent_start_time
+                duration_ms = int(execution_duration * 1000)
+                normalized = normalize_agent_result(agent_name, result, duration_ms)
+                
+                # Handle skipped results
+                if normalized.is_skipped:
                     print(f"   [L3 SKIP] {agent_name}: Returned None (skipped)")
                     mission_log.append({"agent": agent_name, "status": "skipped", "reason": "None result"})
                     continue
                 
-                # Standardize result extraction
-                # [SSOT] Primary keys: 'fixed' and 'violations' for 270+ agent compatibility
-                if isinstance(result, dict):
-                    fixes = result.get('fixed') or result.get('violations_fixed') or result.get('renamed') or 0
-                    violations = result.get('violations') or result.get('violations_found') or result.get('errors') or 0
-                else:
-                    fixes = 0
-                    violations = 0
-                
-                execution_duration = time.time() - agent_start_time
+                fixes = normalized.violations_fixed
+                violations = normalized.violations_found
                 total_fixes += fixes
                 total_violations += violations
                 
-                duration_ms = int(execution_duration * 1000)
                 print(agent_status(
                     agent_name,
                     'success' if violations == 0 else 'warning',
@@ -128,7 +125,7 @@ class ConsolidatedOrchestratorAgent(L3OrchestrationBaseAgent):
                 
                 mission_log.append({
                     "agent": agent_name, 
-                    "status": "success", 
+                    "status": normalized.status.lower(), 
                     "fixed": fixes, 
                     "violations": violations,
                     "duration_sec": round(execution_duration, 3),

@@ -34,6 +34,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.result_utils import (
+    AgentResult as CentralizedAgentResult,
+    normalize_agent_result,
+    extract_violations,
+    extract_fixes,
+)
 
 # Color-coded terminal output
 try:
@@ -247,19 +253,15 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
                     error_message=f"Agent {agent_name} missing heal_repository()"
                 )
             
-            # Calculate execution time
+            # [SSOT] Use centralized result normalization utility
             execution_time = (datetime.now() - start_time).total_seconds() * 1000
-            
-            # Extract results
-            violations_found = result.get('violations_found', 0)
-            violations_fixed = result.get('violations_fixed', 0)
-            status = result.get('status', 'UNKNOWN')
+            normalized = normalize_agent_result(agent_name, result, int(execution_time))
             
             return AgentResult(
                 agent_name=agent_name,
-                status=status,
-                violations_found=violations_found,
-                violations_fixed=violations_fixed,
+                status=normalized.status if normalized.status != "UNKNOWN" else result.get('status', 'UNKNOWN'),
+                violations_found=normalized.violations_found,
+                violations_fixed=normalized.violations_fixed,
                 execution_time_ms=execution_time,
                 details=result
             )
