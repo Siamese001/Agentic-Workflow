@@ -1,6 +1,6 @@
 from __future__ import annotations
 import ast
-from typing import Any
+from typing import Any, Dict, Optional
 '''Brief description of functionality and purpose.'''
 
 import asyncio
@@ -364,9 +364,61 @@ class MemoryLeakDetectorAgent(HealerMixin):
         self.ctx.write_compliant_file(report_path, report_content)
 
     @standard_heal
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[set] = None
+    ) -> Dict[str, int]:
+        """
+        Memory Leak Healing - Scans for resource leaks and applies fixes.
+        
+        WIRED CAPABILITIES:
+        - _scan_and_fix(): Detects and fixes resource leaks (naked opens, etc.).
+        """
+        # CRITICAL: Chain up to HealerMixin
+        metrics = super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
+        if not isinstance(metrics, dict):
+            metrics = {"violations": 0, "fixed": 0, "errors": 0}
+        
+        if metrics.get("cycle_detected"):
+            return metrics
+
+        try:
+            # Wired Orphan: _scan_and_fix
+            # This requires an async loop and a valid context
+            if hasattr(self, 'ctx') and self.ctx:
+                # Get target files from context or default to empty
+                target_files = getattr(self.ctx, 'python_files', [])
+                
+                if target_files:
+                    # Run async scan synchronously
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    
+                    try:
+                        for file_path in target_files:
+                            if not file_path.endswith('.py'):
+                                continue
+                                
+                            # For safety in this healer wrapper, we only run if explicitly executed
+                            if execute and not dry_run:
+                                result = loop.run_until_complete(self._scan_and_fix(file_path))
+                                if result:
+                                    metrics["fixed"] = metrics.get("fixed", 0) + 1
+                                    metrics["violations"] = metrics.get("violations", 0) + len(result.get('leaks', []))
+                    finally:
+                        loop.close()
+            
+        except Exception as e:
+            print(f"[{self.name}] Leak healing failed: {e}")
+            metrics["errors"] = metrics.get("errors", 0) + 1
+            
+        return metrics
 
 
 # NAMING FIXED: DeadlockAnalyzer → DeadlockAnalyzer

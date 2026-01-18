@@ -186,11 +186,11 @@ class HealingStrategy:
             
             elif agent_name == "NamingAgent":
                 from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
-                return NamingAgent()
+                return NamingAgent(project_root=self.project_root)
             
             elif agent_name == "LocationAgent":
                 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-                return LocationAgent()
+                return LocationAgent(project_root=self.project_root)
             
             elif agent_name == "CodeSSOTEnforcerAgent":
                 from agentic_core.L5_safety.validators.CodeSSOTEnforcerAgent import CodeSSOTEnforcerAgent
