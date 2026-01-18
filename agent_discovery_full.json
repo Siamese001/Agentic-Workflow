@@ -42,7 +42,8 @@
     "cyclomatic_complexity": 19,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DispatchResumeToolsAgent",
@@ -89,7 +90,8 @@
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SafetyExecutorAgent",
@@ -128,7 +130,8 @@
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "L0MaintenanceBaseAgent",
@@ -138,7 +141,6 @@
     "category": "Validator",
     "inheritance": [
       "L0DelegationTestingMixin",
-      "HealerMixin",
       "SovereignBaseAgent"
     ],
     "key_methods": [
@@ -152,7 +154,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 43,
+    "loc": 45,
     "class_count": 1,
     "description": "\n    Consolidated base for L0 Maintenance agents.\n    \n    MRO HARDENING:\n    - HealerMixin: First (",
     "pascal_compliant": true,
@@ -169,7 +171,8 @@
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "ScriptToAgentClassifierAgent",
@@ -178,10 +181,10 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "L0MaintenanceBaseAgent",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "L0MaintenanceBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -201,7 +204,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 247,
+    "loc": 249,
     "class_count": 3,
     "description": "\n    Sovereign classifier for script vs agent constitutional compliance.\n    Uses static analysis (A",
     "pascal_compliant": true,
@@ -218,7 +221,45 @@
     "cyclomatic_complexity": 48,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "TestAgent",
+    "path": "agentic_core\\L0_maintenance\\scripts\\TestAgent.py",
+    "layer": "L0",
+    "territory": "L0 Maintenance/Core",
+    "category": "Validator",
+    "inheritance": [
+      "InitTrackerMixin",
+      "L5SafetyBaseAgent"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 216,
+    "class_count": 2,
+    "description": "Test agent to verify initialization chain.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true,
+    "healing_implementation": "Inherited"
   },
   {
     "class_name": "AutonomousPromptEvolutionAgent",
@@ -266,7 +307,8 @@
     "cyclomatic_complexity": 45,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "BareExceptValidatorAgent",
@@ -289,7 +331,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 19,
+    "loc": 21,
     "class_count": 1,
     "description": "\n    Key 5: Detects bare except: statements (catching all exceptions).\n    ",
     "pascal_compliant": true,
@@ -306,7 +348,8 @@
     "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DangerousBuiltinsValidatorAgent",
@@ -329,7 +372,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 19,
+    "loc": 21,
     "class_count": 1,
     "description": "\n    Key 42: Detects dangerous builtin functions (compile, __import__, globals, locals).\n    ",
     "pascal_compliant": true,
@@ -346,7 +389,8 @@
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DebuggerValidatorAgent",
@@ -369,7 +413,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 24,
+    "loc": 26,
     "class_count": 1,
     "description": "\n    Key 3: Detects breakpoint() and pdb.set_trace() using AST.\n    ",
     "pascal_compliant": true,
@@ -386,7 +430,8 @@
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "EmptyExceptValidatorAgent",
@@ -409,7 +454,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 20,
+    "loc": 22,
     "class_count": 1,
     "description": "\n    Key 4: Detects empty except blocks (except: pass).\n    ",
     "pascal_compliant": true,
@@ -426,7 +471,8 @@
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "EvalExecValidatorAgent",
@@ -449,7 +495,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 20,
+    "loc": 22,
     "class_count": 1,
     "description": "\n    Key 6: Detects eval() and exec() calls using AST.\n    ",
     "pascal_compliant": true,
@@ -466,7 +512,8 @@
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "L1CognitionBaseAgent",
@@ -476,8 +523,8 @@
     "category": "Validator",
     "inheritance": [
       "RedisCacheMixin",
-      "SovereignBaseAgent",
-      "PineconeVectorMixin"
+      "PineconeVectorMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "_init_registry",
@@ -514,7 +561,8 @@
     "cyclomatic_complexity": 49,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "L1CognitionExerciserAgent",
@@ -560,7 +608,8 @@
     "cyclomatic_complexity": 26,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "PromptRegistryAgent",
@@ -607,7 +656,8 @@
     "cyclomatic_complexity": 39,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Stub"
   },
   {
     "class_name": "ScriptsPlanningOrchestratorAgent",
@@ -616,8 +666,8 @@
     "territory": "L1 Cognition/Planning",
     "category": "Healer",
     "inheritance": [
-      "L0MaintenanceBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "L0MaintenanceBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -634,7 +684,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 123,
+    "loc": 125,
     "class_count": 5,
     "description": "Orchestrator for planning script execution operations.\n    \n    Inherits from L0MaintenanceBaseAgent",
     "pascal_compliant": true,
@@ -651,7 +701,8 @@
     "cyclomatic_complexity": 28,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "BaseAgent",
@@ -688,7 +739,8 @@
     "cyclomatic_complexity": 3,
     "proper_base_class": false,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Inherited"
   },
   {
     "class_name": "BootstrapAgent",
@@ -697,8 +749,8 @@
     "territory": "L2 Execution/Runners",
     "category": "Validator",
     "inheritance": [
-      "L0MaintenanceBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "L0MaintenanceBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -735,7 +787,8 @@
     "cyclomatic_complexity": 37,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "DeadCodeDetectorAgent",
@@ -765,7 +818,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 254,
+    "loc": 258,
     "class_count": 2,
     "description": "\n    Sovereign dead code auditor that identifies unused code across the project.\n    Enhanced with c",
     "pascal_compliant": true,
@@ -782,7 +835,8 @@
     "cyclomatic_complexity": 45,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DependencyDiplomatAgent",
@@ -791,8 +845,8 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Orchestrator",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -813,7 +867,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 213,
+    "loc": 217,
     "class_count": 3,
     "description": "\n    The Dependency Diplomat - Graph Optimizer\n    \n    Maintains live DAG of imports in Redis.\n    ",
     "pascal_compliant": true,
@@ -830,7 +884,8 @@
     "cyclomatic_complexity": 61,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "DocEnforcerAgent",
@@ -839,8 +894,8 @@
     "territory": "L2 Execution/Handlers",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -853,7 +908,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 12,
+    "loc": 14,
     "class_count": 1,
     "description": "ROLE: Documentation Surgeon.",
     "pascal_compliant": true,
@@ -870,7 +925,8 @@
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DriftDetectorAgent",
@@ -911,7 +967,8 @@
     "cyclomatic_complexity": 13,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DynamicModelRouterAgent",
@@ -920,9 +977,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Validator",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent",
       "HealerMixin",
-      "MCPHardenedMixin",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -943,7 +1000,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 273,
+    "loc": 276,
     "class_count": 4,
     "description": "\n    The Throttler - Dynamic Model Router\n    \n    Analyzes file complexity before healing and route",
     "pascal_compliant": true,
@@ -960,7 +1017,8 @@
     "cyclomatic_complexity": 43,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "DynamicSealAgent",
@@ -1004,7 +1062,8 @@
     "cyclomatic_complexity": 35,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "FallbackManagerAgent",
@@ -1035,7 +1094,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 118,
+    "loc": 120,
     "class_count": 4,
     "description": "Manages automatic fallback chains for tool providers.\n\n    Features:\n    - Ordered Provider sequence",
     "pascal_compliant": true,
@@ -1052,7 +1111,8 @@
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "GitAgent",
@@ -1100,7 +1160,8 @@
     "cyclomatic_complexity": 66,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "GlobalComplianceAggregatorAgent",
@@ -1124,7 +1185,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 35,
+    "loc": 37,
     "class_count": 1,
     "description": "Naming/Compliance: Global Compliance Aggregation",
     "pascal_compliant": true,
@@ -1141,7 +1202,8 @@
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "GravityHealerAgent",
@@ -1169,7 +1231,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 149,
+    "loc": 151,
     "class_count": 1,
     "description": "\n    [L2 HEALER] Specialized repair agent for Gravity violations.\n    \n    Receives structured viola",
     "pascal_compliant": true,
@@ -1186,7 +1248,49 @@
     "cyclomatic_complexity": 30,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "HistorianAgent",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\HistorianAgent.py",
+    "layer": "L2",
+    "territory": "L2 Execution/Runners",
+    "category": "Validator",
+    "inheritance": [
+      "SovereignBaseAgent"
+    ],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "record_event",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 72,
+    "class_count": 3,
+    "description": "\n    ROLE: Records all validation events to a Markdown log file.\n    ",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 66.7,
+    "documented_pct": 66.7,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 7,
+    "proper_base_class": true,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "ImportHealerAgent",
@@ -1215,7 +1319,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 110,
+    "loc": 113,
     "class_count": 1,
     "description": "\n    Automatically fixes import statements when files are moved.\n    Critical for preventing breakag",
     "pascal_compliant": true,
@@ -1232,7 +1336,8 @@
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "IntegrityGateExecutorAgent",
@@ -1262,7 +1367,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 234,
+    "loc": 236,
     "class_count": 12,
     "description": "Executor for integrity gate validation.\n\n    Validates research outputs against quality criteria inc",
     "pascal_compliant": true,
@@ -1279,7 +1384,8 @@
     "cyclomatic_complexity": 37,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "InterfaceBoundaryAgent",
@@ -1304,7 +1410,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 81,
+    "loc": 84,
     "class_count": 1,
     "description": "\n    The Architect Agent.\n    Prevents L0 utilities from polluting the upper layers by enforcing int",
     "pascal_compliant": true,
@@ -1321,7 +1427,8 @@
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "L2Agent",
@@ -1343,7 +1450,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 16,
+    "loc": 18,
     "class_count": 1,
     "description": "\n    Consolidated base for L2 Execution agents.\n    \n    Guaranteed Capabilities:\n    - heal_reposit",
     "pascal_compliant": true,
@@ -1360,7 +1467,8 @@
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "L2ExecutionBaseAgent",
@@ -1370,9 +1478,8 @@
     "category": "Validator",
     "inheritance": [
       "RedisCacheMixin",
-      "SovereignBaseAgent",
       "PineconeVectorMixin",
-      "SubatomicTestingMixin"
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "__post_init__",
@@ -1390,15 +1497,15 @@
     "has_memory": true,
     "has_healing": true,
     "invocation": "Yes",
-    "testing": "Self",
+    "testing": "None",
     "has_subatomic": true,
-    "loc": 167,
+    "loc": 168,
     "class_count": 2,
-    "description": "Unified L2 base class - replaces CanonBaseAgent + SubAtomicAgent.\n    \n    MRO HARDENING:\n    - Suba",
+    "description": "Unified L2 base class - replaces CanonBaseAgent + SubAtomicAgent.\n    \n    PHASE 3 MRO HARDENING:\n  ",
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1409,7 +1516,8 @@
     "cyclomatic_complexity": 40,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "LLMPromptGovernorAgent",
@@ -1418,8 +1526,7 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Validator",
     "inheritance": [
-      "SovereignBaseAgent",
-      "SubatomicTestingMixin"
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -1435,15 +1542,15 @@
     "has_memory": false,
     "has_healing": true,
     "invocation": "Yes",
-    "testing": "Self",
+    "testing": "None",
     "has_subatomic": true,
-    "loc": 105,
+    "loc": 107,
     "class_count": 1,
     "description": "\n    Centralized prompt governance for all LLM interactions.\n    \n    Enforces:\n    - Consistent saf",
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -1454,7 +1561,8 @@
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "LicInternalAgent",
@@ -1481,7 +1589,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 165,
+    "loc": 168,
     "class_count": 1,
     "description": "\n    v12.0: UPGRADED to primary intelligence-gathering unit.\n    NOW LOADS: \n    - master_resume.jso",
     "pascal_compliant": true,
@@ -1498,7 +1606,8 @@
     "cyclomatic_complexity": 38,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "LicOrganizationAgent",
@@ -1523,7 +1632,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 67,
+    "loc": 69,
     "class_count": 1,
     "description": "\n    v12.0: DEMOTED to secondary fact-checker role.\n    Now performs validation searches based on st",
     "pascal_compliant": true,
@@ -1540,7 +1649,8 @@
     "cyclomatic_complexity": 12,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "LicRecipientAgent",
@@ -1565,7 +1675,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 66,
+    "loc": 68,
     "class_count": 1,
     "description": "\n    v12.0: DEMOTED to secondary fact-checker role.\n    Now performs validation searches based on st",
     "pascal_compliant": true,
@@ -1582,7 +1692,8 @@
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "LicS2SupervisorAgent",
@@ -1609,7 +1720,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 189,
+    "loc": 191,
     "class_count": 1,
     "description": "\n    v12.0: Updated coordination logic for strategic alignment workflow.\n    Now manages entity extr",
     "pascal_compliant": true,
@@ -1626,7 +1737,8 @@
     "cyclomatic_complexity": 54,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "MemoryArchitectAgent",
@@ -1635,9 +1747,9 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -1657,7 +1769,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 380,
+    "loc": 383,
     "class_count": 5,
     "description": "\n    Autonomous Knowledge Distillation Agent\n    \n    Monitors healing successes and automatically d",
     "pascal_compliant": true,
@@ -1674,7 +1786,55 @@
     "cyclomatic_complexity": 69,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
+  },
+  {
+    "class_name": "MemoryLeakDetectorAgent",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\MemoryLeakDetectorAgent.py",
+    "layer": "L2",
+    "territory": "L2 Execution/Handlers",
+    "category": "Healer",
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "_scan_and_fix",
+      "_detect_leaks",
+      "_analyze_leak_context",
+      "_is_in_with_block",
+      "_has_close_call",
+      "_prioritize_leaks",
+      "_generate_leak_free_code",
+      "_save_safety_report"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 499,
+    "class_count": 3,
+    "description": "ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 12.5,
+    "documented_pct": 87.5,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 74,
+    "proper_base_class": true,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "NamingEnforcerAgent",
@@ -1683,8 +1843,8 @@
     "territory": "L2 Execution/Handlers",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -1697,7 +1857,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 12,
+    "loc": 14,
     "class_count": 1,
     "description": "ROLE: Semantic Naming Guardian.",
     "pascal_compliant": true,
@@ -1714,7 +1874,8 @@
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "OmniContextAgent",
@@ -1723,8 +1884,8 @@
     "territory": "L2 Execution/Runners",
     "category": "State",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -1737,7 +1898,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 13,
+    "loc": 15,
     "class_count": 1,
     "description": "\n    ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.\n    ",
     "pascal_compliant": true,
@@ -1754,7 +1915,8 @@
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "PeerIntelligenceAuditorAgent",
@@ -1782,7 +1944,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 114,
+    "loc": 116,
     "class_count": 7,
     "description": "\n    K.2.5 - Multi-Hop RAG Analysis Agent\n\n    RAG Intensity Constraint:\n    - MUST run 24 searches ",
     "pascal_compliant": true,
@@ -1799,7 +1961,8 @@
     "cyclomatic_complexity": 34,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "ProactiveResourceManagerAgent",
@@ -1847,7 +2010,8 @@
     "cyclomatic_complexity": 72,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "RgStrategicPlannerAgent",
@@ -1869,7 +2033,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 56,
+    "loc": 58,
     "class_count": 1,
     "description": "\n    ROLE: High-level strategist.\n    Analyzes aggregated signals/violations and generates multi-ste",
     "pascal_compliant": true,
@@ -1886,7 +2050,8 @@
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SafeSystemCommandExecutorAgent",
@@ -1912,7 +2077,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 145,
+    "loc": 147,
     "class_count": 4,
     "description": "\n    A secure system command executor that prevents destructive actions\n    and logs attempts. This ",
     "pascal_compliant": true,
@@ -1929,7 +2094,8 @@
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SherlockAgent",
@@ -1938,9 +2104,9 @@
     "territory": "L2 Execution/Runners",
     "category": "Validator",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent",
       "HealerMixin",
-      "MCPHardenedMixin",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -1959,7 +2125,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 78,
+    "loc": 80,
     "class_count": 1,
     "description": "\n    ROLE: Root Cause Analysis. Triggered when TestPilot fails.\n    Analyzes cross-file dependencies",
     "pascal_compliant": true,
@@ -1976,7 +2142,8 @@
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SovereignActionPlaneAgent",
@@ -2007,7 +2174,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 232,
+    "loc": 235,
     "class_count": 3,
     "description": "Sovereign action plane with Toolsmith and Sandbox.",
     "pascal_compliant": true,
@@ -2024,7 +2191,8 @@
     "cyclomatic_complexity": 51,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SovereignPineconeStoreAgent",
@@ -2054,7 +2222,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 124,
+    "loc": 126,
     "class_count": 1,
     "description": "\n    ADAPTER: Legacy Interface -> New MCP Client.\n    Maintains backward compatibility for 'add_text",
     "pascal_compliant": true,
@@ -2071,7 +2239,8 @@
     "cyclomatic_complexity": 26,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SovereignRedisOrchestratorAgent",
@@ -2101,7 +2270,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 107,
+    "loc": 109,
     "class_count": 1,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
@@ -2118,7 +2287,8 @@
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SprawlInspectorAgent",
@@ -2143,7 +2313,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 80,
+    "loc": 84,
     "class_count": 1,
     "description": "\n    Sprawl Inspector - Pre-Flight Architectural Survey.\n    \n    Identifies low-density folders and",
     "pascal_compliant": true,
@@ -2160,7 +2330,8 @@
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "StrategistAgent",
@@ -2169,8 +2340,8 @@
     "territory": "L2 Execution/Coordinators",
     "category": "Governor",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -2184,7 +2355,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 19,
+    "loc": 21,
     "class_count": 1,
     "description": "\n    ROLE: Proactive Architecture. Identifies code smells and proposes refactors.\n    ",
     "pascal_compliant": true,
@@ -2201,7 +2372,8 @@
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "StructuralEngineerAgent",
@@ -2210,8 +2382,8 @@
     "territory": "L2 Execution/Runners",
     "category": "Orchestrator",
     "inheritance": [
-      "CanonBaseAgent",
       "MCPHardenedMixin",
+      "CanonBaseAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -2248,7 +2420,8 @@
     "cyclomatic_complexity": 52,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SystemArchitectAgent",
@@ -2258,8 +2431,8 @@
     "category": "Healer",
     "inheritance": [
       "HealerMixin",
-      "CanonBaseAgent",
       "MCPHardenedMixin",
+      "CanonBaseAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -2296,7 +2469,8 @@
     "cyclomatic_complexity": 66,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "ToolsmithAgent",
@@ -2325,7 +2499,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 226,
+    "loc": 250,
     "class_count": 4,
     "description": "\n    Creates and manages tools dynamically.\n    Features:\n    - Generates tools from specifications\n",
     "pascal_compliant": true,
@@ -2339,10 +2513,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 56,
+    "cyclomatic_complexity": 64,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TypeEnforcerAgent",
@@ -2351,8 +2526,8 @@
     "territory": "L2 Execution/Handlers",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -2365,7 +2540,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 12,
+    "loc": 14,
     "class_count": 1,
     "description": "ROLE: Type Guardian. Enforces PEP 484.",
     "pascal_compliant": true,
@@ -2382,7 +2557,8 @@
     "cyclomatic_complexity": 2,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "ActorCriticOrchestratorAgent",
@@ -2409,7 +2585,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 128,
+    "loc": 130,
     "class_count": 2,
     "description": "\n    DEPRECATED: Use UnifiedWorkflowEngine instead.\n    \n    Sub-atomic A2C learner: Actor policy + ",
     "pascal_compliant": true,
@@ -2426,7 +2602,8 @@
     "cyclomatic_complexity": 21,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "AgentPermissionManagerAgent",
@@ -2454,7 +2631,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 108,
+    "loc": 110,
     "class_count": 1,
     "description": "Manages agent permissions with Control Plane integration.\n\n    Provides:\n    - Identity-based Permis",
     "pascal_compliant": true,
@@ -2471,7 +2648,8 @@
     "cyclomatic_complexity": 30,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "AgentRegistryValidatorAgent",
@@ -2515,7 +2693,8 @@
     "cyclomatic_complexity": 21,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "ArchitectureGovernorAgent",
@@ -2541,7 +2720,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 55,
+    "loc": 57,
     "class_count": 1,
     "description": "\n    L3 Orchestration: Architecture Pattern Enforcement\n    Ensures code follows canonical architect",
     "pascal_compliant": true,
@@ -2558,7 +2737,8 @@
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "AutonomicMonitorAgent",
@@ -2588,7 +2768,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 100,
+    "loc": 102,
     "class_count": 1,
     "description": "Autonomic immune system for agent health monitoring.\n\n    Features:\n    - Runtime metrics monitoring",
     "pascal_compliant": true,
@@ -2605,7 +2785,56 @@
     "cyclomatic_complexity": 39,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "BenchmarkingAgent",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\BenchmarkingAgent.py",
+    "layer": "L3",
+    "territory": "L3 Orchestration/Monitoring",
+    "category": "Healer",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "heal_repository",
+      "__init__",
+      "benchmark",
+      "benchmark_async",
+      "start_timer",
+      "end_timer",
+      "time_function",
+      "time_function_async",
+      "record_result",
+      "_alert_performance_degradation"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 235,
+    "class_count": 5,
+    "description": "\n    Measures and tracks performance metrics.\n\n    Features:\n    - Function timing with context mana",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 85.7,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 33,
+    "proper_base_class": true,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "CachedOrchestratorAgent",
@@ -2635,7 +2864,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 78,
+    "loc": 80,
     "class_count": 1,
     "description": "\n    Sovereign L3 orchestration base \u2014 Redis cache for all decisions and state.\n    ",
     "pascal_compliant": true,
@@ -2652,17 +2881,16 @@
     "cyclomatic_complexity": 17,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "ConsolidatedOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\ConsolidatedOrchestratorAgent.py",
     "layer": "L3",
     "territory": "L3 Orchestration/Workflow",
-    "category": "Orchestrator",
-    "inheritance": [
-      "L3OrchestrationBaseAgent"
-    ],
+    "category": "Healer",
+    "inheritance": [],
     "key_methods": [
       "__init__",
       "run_mission",
@@ -2672,14 +2900,14 @@
     "has_memory": false,
     "has_healing": true,
     "invocation": "No (missing super)",
-    "testing": "Self",
+    "testing": "None",
     "has_subatomic": false,
-    "loc": 58,
+    "loc": 54,
     "class_count": 1,
-    "description": "\n    The General.\n    Coordinates all sub-orchestrators and ensures the Mission is executed\n    acco",
+    "description": "\n    DEPRECATED: Use UnifiedOrchestratorAgent with HealingStrategy instead.\n    \n    This class is m",
     "pascal_compliant": true,
     "external_touch": false,
-    "mcp_hardened": true,
+    "mcp_hardened": false,
     "has_tests": false,
     "typed_pct": 66.7,
     "documented_pct": 100.0,
@@ -2688,10 +2916,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 10,
-    "proper_base_class": true,
+    "cyclomatic_complexity": 5,
+    "proper_base_class": false,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Stub"
   },
   {
     "class_name": "CoordinateObservabilityOperationsAgent",
@@ -2716,7 +2945,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 77,
+    "loc": 80,
     "class_count": 4,
     "description": "Orchestrator for operations domain.",
     "pascal_compliant": true,
@@ -2733,7 +2962,8 @@
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "CoverageAgent",
@@ -2779,7 +3009,8 @@
     "cyclomatic_complexity": 27,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DAGManagerAgent",
@@ -2788,11 +3019,11 @@
     "territory": "L3 Orchestration/DAG",
     "category": "Healer",
     "inheritance": [
-      "PineconeVectorMixin",
-      "L3SubatomicTestingMixin",
       "RedisCacheMixin",
+      "MCPHardenedMixin",
+      "L3SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2812,7 +3043,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 151,
+    "loc": 153,
     "class_count": 1,
     "description": "Manages the dynamic DAG with mutation capabilities.\n    \n    HARDENED: Redis caching + Pinecone vect",
     "pascal_compliant": true,
@@ -2829,7 +3060,8 @@
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "DAGMutatorAgent",
@@ -2860,7 +3092,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 307,
+    "loc": 310,
     "class_count": 8,
     "description": "Handles the actual graph mutations.",
     "pascal_compliant": true,
@@ -2877,7 +3109,8 @@
     "cyclomatic_complexity": 46,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DagEngineAgent",
@@ -2907,7 +3140,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 237,
+    "loc": 254,
     "class_count": 5,
     "description": "Lightweight DAG engine for workflow execution.\n\n    Features:\n    - Task dependency management\n    -",
     "pascal_compliant": true,
@@ -2921,10 +3154,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 65,
+    "cyclomatic_complexity": 72,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "DagExecutorAgent",
@@ -2946,7 +3180,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 46,
+    "loc": 48,
     "class_count": 3,
     "description": "Executes Directed Acyclic Graphs of operations.",
     "pascal_compliant": true,
@@ -2963,7 +3197,8 @@
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DagRuntimeInspectorAgent",
@@ -2985,7 +3220,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 35,
+    "loc": 37,
     "class_count": 2,
     "description": "Diagnostics engine for inspection domain.",
     "pascal_compliant": true,
@@ -3002,7 +3237,8 @@
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "DeadlockDetectorAgent",
@@ -3033,7 +3269,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 153,
+    "loc": 156,
     "class_count": 1,
     "description": "\n    Detects potential deadlocks in asyncio tasks.\n\n    Monitors:\n    - Task execution time\n    - He",
     "pascal_compliant": true,
@@ -3050,7 +3286,8 @@
     "cyclomatic_complexity": 41,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "FissionManagerAgent",
@@ -3081,7 +3318,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 201,
+    "loc": 204,
     "class_count": 2,
     "description": "\n    L3 Orchestration Layer: Manages transition from healing to atomic fission.\n    \n    Triggers wh",
     "pascal_compliant": true,
@@ -3098,7 +3335,8 @@
     "cyclomatic_complexity": 56,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "GeneralExerciserAgent",
@@ -3124,7 +3362,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 43,
+    "loc": 45,
     "class_count": 1,
     "description": "\n    Generalized sub-atomic exerciser base: Config-driven no-op cycles for any layer.\n    Subclasses",
     "pascal_compliant": true,
@@ -3141,7 +3379,8 @@
     "cyclomatic_complexity": 8,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "GitSafetyHandlerAgent",
@@ -3170,7 +3409,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 103,
+    "loc": 105,
     "class_count": 1,
     "description": "\n    L5 Safety Layer: Uses GitKraken MCP to manage rollback points\n    and hardened commits for Atom",
     "pascal_compliant": true,
@@ -3187,7 +3426,8 @@
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "HallucinationDetectorAgent",
@@ -3211,7 +3451,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 20,
+    "loc": 22,
     "class_count": 1,
     "description": "Stub implementation of hallucination detector.",
     "pascal_compliant": true,
@@ -3228,7 +3468,8 @@
     "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "HardenedWorkflowOrchestratorAgent",
@@ -3253,7 +3494,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 49,
+    "loc": 51,
     "class_count": 1,
     "description": "\n    Thin wrapper for Hardened Workflow Orchestrator.\n    Delegates to ConsolidatedOrchestratorAgent",
     "pascal_compliant": true,
@@ -3270,7 +3511,8 @@
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "HierarchyEnforcerAgent",
@@ -3316,7 +3558,8 @@
     "cyclomatic_complexity": 48,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "L3Agent",
@@ -3339,7 +3582,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 33,
+    "loc": 35,
     "class_count": 1,
     "description": "\n    Consolidated base for L3 Orchestration agents.\n    \n    Guaranteed Capabilities:\n    - heal_rep",
     "pascal_compliant": true,
@@ -3356,7 +3599,8 @@
     "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "L3OrchestrationBaseAgent",
@@ -3366,8 +3610,8 @@
     "category": "Validator",
     "inheritance": [
       "RedisCacheMixin",
-      "SovereignBaseAgent",
       "PineconeVectorMixin",
+      "SovereignBaseAgent",
       "L3SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -3402,7 +3646,8 @@
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "LicWorkflowOrchestratorAgent",
@@ -3441,7 +3686,8 @@
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "McpConnectionManagerAgent",
@@ -3467,7 +3713,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 79,
+    "loc": 82,
     "class_count": 1,
     "description": "Sovereign MCP Connection Manager \u2014 single source of truth",
     "pascal_compliant": true,
@@ -3484,7 +3730,8 @@
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "McpRouterAgent",
@@ -3511,7 +3758,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 59,
+    "loc": 61,
     "class_count": 1,
     "description": "\n    L3 Orchestration switchboard: Hardens the L1-L5 stack by routing\n    specific layer failures to",
     "pascal_compliant": true,
@@ -3528,7 +3775,8 @@
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "MetaCoverageOptimizerAgent",
@@ -3554,7 +3802,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 107,
+    "loc": 109,
     "class_count": 1,
     "description": "\n    Sub-atomic meta-responsibility: Autonomously optimize coverage parameters for sustained high en",
     "pascal_compliant": true,
@@ -3571,7 +3819,8 @@
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "MetricsAgent",
@@ -3619,7 +3868,8 @@
     "cyclomatic_complexity": 49,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "MockAgent",
@@ -3642,7 +3892,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 717,
+    "loc": 721,
     "class_count": 9,
     "description": "MockAgent agent for autonomous operations.",
     "pascal_compliant": true,
@@ -3659,7 +3909,8 @@
     "cyclomatic_complexity": 4,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "ModelRouterAgent",
@@ -3690,7 +3941,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 93,
+    "loc": 95,
     "class_count": 1,
     "description": "Dynamic model router for cost-optimized LLM selection.\n\n    Features:\n    - Complexity-based routing",
     "pascal_compliant": true,
@@ -3707,7 +3958,8 @@
     "cyclomatic_complexity": 37,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "NervousSystemAgent",
@@ -3716,11 +3968,11 @@
     "territory": "L3 Orchestration/Workflow",
     "category": "Healer",
     "inheritance": [
-      "PineconeVectorMixin",
-      "L3SubatomicTestingMixin",
       "RedisCacheMixin",
+      "MCPHardenedMixin",
+      "L3SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3757,7 +4009,8 @@
     "cyclomatic_complexity": 106,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "NervousSystemPhaseOrchestratorAgent",
@@ -3783,7 +4036,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 717,
+    "loc": 721,
     "class_count": 9,
     "description": "Orchestrates the execution of all phases within a mission cycle.",
     "pascal_compliant": true,
@@ -3800,7 +4053,51 @@
     "cyclomatic_complexity": 30,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "OrchestrationHandshakeAgent",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\OrchestrationHandshakeAgent.py",
+    "layer": "L3",
+    "territory": "L3 Orchestration/Workflow",
+    "category": "Healer",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "CachedOrchestratorAgent"
+    ],
+    "key_methods": [
+      "__init__",
+      "discover_capable_agents",
+      "delegate_task",
+      "execute_mission",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 71,
+    "class_count": 1,
+    "description": "\n    Sovereign handshake protocol \u2014 now with deep L3 caching.\n    Renamed from OrchestrationHandshak",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 80.0,
+    "documented_pct": 80.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 19,
+    "proper_base_class": true,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "OrchestratorAgentAndScopeManagerAgent",
@@ -3840,7 +4137,8 @@
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "PPOOrchestratorAgent",
@@ -3867,7 +4165,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 127,
+    "loc": 129,
     "class_count": 2,
     "description": "\n    DEPRECATED: Use UnifiedWorkflowEngine instead.\n    \n    Sub-atomic PPO learner: Clipped proxima",
     "pascal_compliant": true,
@@ -3884,7 +4182,8 @@
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "PredictiveCostAuditorAgent",
@@ -3893,8 +4192,8 @@
     "territory": "L3 Orchestration/Monitoring",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -3915,7 +4214,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 233,
+    "loc": 235,
     "class_count": 4,
     "description": "\n    The Efficiency Guard - Predictive Cost Auditor\n    \n    Monitors economic ROI of swarm healing ",
     "pascal_compliant": true,
@@ -3932,7 +4231,8 @@
     "cyclomatic_complexity": 63,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "QLearningOrchestratorAgent",
@@ -3960,7 +4260,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 129,
+    "loc": 131,
     "class_count": 1,
     "description": "\n    DEPRECATED: Use UnifiedWorkflowEngine instead.\n    \n    Sub-atomic tabular Q-learner: Off-polic",
     "pascal_compliant": true,
@@ -3977,7 +4277,8 @@
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "RLOrchestratorAgent",
@@ -4005,7 +4306,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 126,
+    "loc": 128,
     "class_count": 2,
     "description": "\n    Sub-atomic learned orchestrator: PPO policy for layer/agent selection maximizing long-term cove",
     "pascal_compliant": true,
@@ -4022,7 +4323,8 @@
     "cyclomatic_complexity": 24,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "ReinforceCriticOrchestratorAgent",
@@ -4049,7 +4351,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 115,
+    "loc": 117,
     "class_count": 2,
     "description": "\n    Sub-atomic REINFORCE with learned critic baseline: Policy gradient + value baseline.\n    Reduce",
     "pascal_compliant": true,
@@ -4066,7 +4368,8 @@
     "cyclomatic_complexity": 14,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "ReportingAgent",
@@ -4093,7 +4396,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 94,
+    "loc": 97,
     "class_count": 1,
     "description": "\n    Autonomous diagnostic agent for compliance reporting and visualization.\n    Operates independen",
     "pascal_compliant": true,
@@ -4110,7 +4413,8 @@
     "cyclomatic_complexity": 21,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "RgResumeOrchestratorAgent",
@@ -4132,7 +4436,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 61,
+    "loc": 64,
     "class_count": 1,
     "description": "Orchestrate the multi-hop resume generation workflow.",
     "pascal_compliant": true,
@@ -4149,52 +4453,8 @@
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "SSOTOrchestratorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\SSOTOrchestratorAgent.py",
-    "layer": "L3",
-    "territory": "L3 Orchestration/Workflow",
-    "category": "Validator",
-    "inheritance": [
-      "HealerMixin",
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "_get_dedup_agent",
-      "_get_agent",
-      "run_agent",
-      "orchestrate",
-      "record_result",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": true,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 274,
-    "class_count": 3,
-    "description": "\n    [L3 ORCHESTRATOR] Master SSOT validation orchestrator.\n    \n    Coordinates all SSOT validation",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 85.7,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 38,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SelfRecoveringOrchestratorAgent",
@@ -4204,9 +4464,9 @@
     "category": "Healer",
     "inheritance": [
       "HealerMixin",
-      "CognitiveRecoveryMixin",
       "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "CognitiveRecoveryMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4226,7 +4486,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 363,
+    "loc": 365,
     "class_count": 4,
     "description": "\n    Orchestrator that automatically recovers from workflow failures.\n    \n    Features:\n    - Autom",
     "pascal_compliant": true,
@@ -4243,7 +4503,8 @@
     "cyclomatic_complexity": 102,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SemanticGatekeeperAgent",
@@ -4271,7 +4532,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 76,
+    "loc": 78,
     "class_count": 1,
     "description": "\n    Gatekeeper that controls agent execution with concurrency limits and timeouts.\n    ",
     "pascal_compliant": true,
@@ -4288,7 +4549,8 @@
     "cyclomatic_complexity": 13,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SemanticTerritoryMapperAgent",
@@ -4334,7 +4596,8 @@
     "cyclomatic_complexity": 40,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SignatureVerifierAgent",
@@ -4359,7 +4622,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 50,
+    "loc": 53,
     "class_count": 2,
     "description": "function class for inspection domain.",
     "pascal_compliant": true,
@@ -4376,7 +4639,8 @@
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SovereignCanonAuditorAgent",
@@ -4403,7 +4667,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 117,
+    "loc": 119,
     "class_count": 1,
     "description": "\n    Sovereign Canon Auditor using DeepWiki MCP.\n    Performs self-verification of critical system c",
     "pascal_compliant": true,
@@ -4420,7 +4684,8 @@
     "cyclomatic_complexity": 16,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SovereignRagOrchestratorAgent",
@@ -4467,7 +4732,8 @@
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "StrategicRecommendationAgent",
@@ -4495,7 +4761,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 219,
+    "loc": 221,
     "class_count": 1,
     "description": "\n    L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic r",
     "pascal_compliant": true,
@@ -4512,7 +4778,8 @@
     "cyclomatic_complexity": 58,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SubatomicHopAgent",
@@ -4542,7 +4809,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 161,
+    "loc": 163,
     "class_count": 2,
     "description": "\n    Sovereign SubatomicHop with Dependency Injection.\n    \n    This is a 'Pure Engine.' It has no k",
     "pascal_compliant": true,
@@ -4559,7 +4826,8 @@
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TaskMonitorAgent",
@@ -4583,7 +4851,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 79,
+    "loc": 81,
     "class_count": 1,
     "description": "Monitors a single asyncio Task.",
     "pascal_compliant": true,
@@ -4600,7 +4868,8 @@
     "cyclomatic_complexity": 10,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "TelemetryAgent",
@@ -4631,7 +4900,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 160,
+    "loc": 163,
     "class_count": 1,
     "description": "\n    Autonomous telemetry emission agent.\n    Collects and emits structured events for sovereign obs",
     "pascal_compliant": true,
@@ -4648,7 +4917,8 @@
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TerritoryChangeHandlerAgent",
@@ -4658,8 +4928,8 @@
     "category": "Healer",
     "inheritance": [
       "HealerMixin",
-      "FileSystemEventHandler",
       "MCPHardenedMixin",
+      "FileSystemEventHandler",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -4690,7 +4960,8 @@
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TerritoryHealerAgent",
@@ -4736,7 +5007,8 @@
     "cyclomatic_complexity": 68,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TestPilotAgent",
@@ -4783,7 +5055,8 @@
     "cyclomatic_complexity": 101,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TokenBudgetInspectorAgent",
@@ -4805,7 +5078,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 35,
+    "loc": 37,
     "class_count": 2,
     "description": "Diagnostics engine for inspection domain.",
     "pascal_compliant": true,
@@ -4822,7 +5095,57 @@
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "TracingAgent",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\TracingAgent.py",
+    "layer": "L3",
+    "territory": "L3 Orchestration/Core",
+    "category": "Healer",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "_setup_sovereign_tracer",
+      "get_tracer",
+      "_ensure_export_dir",
+      "_get_export_filepath",
+      "export_trace_to_file",
+      "set_sample_probability",
+      "force_sample_trace",
+      "create_span",
+      "set_attribute"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 265,
+    "class_count": 5,
+    "description": "\n    Autonomous distributed tracing agent.\n    Manages trace context and Span lifecycle.\n    \n    So",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 93.8,
+    "documented_pct": 93.8,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": true
+    },
+    "cyclomatic_complexity": 65,
+    "proper_base_class": true,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TrackObservabilityCostAgent",
@@ -4847,7 +5170,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 48,
+    "loc": 51,
     "class_count": 2,
     "description": "function class for standard domain.",
     "pascal_compliant": true,
@@ -4864,7 +5187,50 @@
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "UnifiedOrchestratorAgent",
+    "path": "agentic_core\\L3_orchestration\\unified_orchestrator.py",
+    "layer": "L3",
+    "territory": "L3 Orchestration/Workflow",
+    "category": "Orchestrator",
+    "inheritance": [
+      "InfrastructureMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "run_mission",
+      "validate_stability",
+      "_execute_agent_safely",
+      "_log_summary"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 249,
+    "class_count": 4,
+    "description": "\n    Unified Orchestration Engine implementing IOrchestrator.\n    \n    This engine uses the Strategy",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": false,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 22,
+    "proper_base_class": false,
+    "schema_strictness": 100.0,
+    "has_metadata": true,
+    "healing_implementation": "Inherited"
   },
   {
     "class_name": "AutonomousCheckpointManagerAgent",
@@ -4894,7 +5260,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 226,
+    "loc": 229,
     "class_count": 3,
     "description": "\n    Manages state checkpoints with automatic recovery capabilities.\n    \n    Features:\n    - Automa",
     "pascal_compliant": true,
@@ -4911,7 +5277,8 @@
     "cyclomatic_complexity": 59,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "AutonomousStateGuardianAgent",
@@ -4958,7 +5325,8 @@
     "cyclomatic_complexity": 38,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "CheckpointManagerAgent",
@@ -4985,7 +5353,7 @@
     "invocation": "No (missing super)",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 148,
+    "loc": 150,
     "class_count": 1,
     "description": "Checkpoint management agent with parent chain healing.",
     "pascal_compliant": true,
@@ -5002,7 +5370,8 @@
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active (no super)"
   },
   {
     "class_name": "FileManagerAgent",
@@ -5028,7 +5397,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 141,
+    "loc": 143,
     "class_count": 1,
     "description": "Filesystem operations agent with parent chain healing.",
     "pascal_compliant": true,
@@ -5045,7 +5414,8 @@
     "cyclomatic_complexity": 30,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "GravityStateAgent",
@@ -5075,7 +5445,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 149,
+    "loc": 152,
     "class_count": 2,
     "description": "\n    [L4 STATE] Tracks gravity healing operations and prevents re-flagging.\n    \n    Maintains persi",
     "pascal_compliant": true,
@@ -5092,7 +5462,8 @@
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "L4Agent",
@@ -5115,7 +5486,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 33,
+    "loc": 35,
     "class_count": 1,
     "description": "\n    Consolidated base for L4 State agents.\n    \n    Guaranteed Capabilities:\n    - heal_repository(",
     "pascal_compliant": true,
@@ -5132,7 +5503,8 @@
     "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "L4StateBaseAgent",
@@ -5142,8 +5514,8 @@
     "category": "State",
     "inheritance": [
       "RedisCacheMixin",
-      "SovereignBaseAgent",
       "PineconeVectorMixin",
+      "SovereignBaseAgent",
       "L4SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -5181,7 +5553,8 @@
     "cyclomatic_complexity": 47,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "L4StateExerciserAgent",
@@ -5225,7 +5598,8 @@
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "MemoryManagerAgent",
@@ -5256,7 +5630,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 188,
+    "loc": 211,
     "class_count": 1,
     "description": "\n    Manages JSON-based persistence for validation state.\n    \n    Features:\n    - Load/save convers",
     "pascal_compliant": true,
@@ -5270,10 +5644,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 54,
+    "cyclomatic_complexity": 61,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "PineconeSovereignAgent",
@@ -5320,7 +5695,8 @@
     "cyclomatic_complexity": 63,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "RedisSovereignAgent",
@@ -5348,7 +5724,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 91,
+    "loc": 93,
     "class_count": 1,
     "description": "\n    Sovereign Redis controller \u2014 hardened, monitored, eternal.\n    ",
     "pascal_compliant": true,
@@ -5365,7 +5741,8 @@
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SchemaEvolverAgent",
@@ -5374,8 +5751,8 @@
     "territory": "L4 State/Core",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -5396,7 +5773,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 220,
+    "loc": 225,
     "class_count": 5,
     "description": "\n    The Structural Guard - Schema Evolution Agent\n    Monitors all Pydantic definitions and databas",
     "pascal_compliant": true,
@@ -5413,7 +5790,8 @@
     "cyclomatic_complexity": 62,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SubAtomicRegistryAgent",
@@ -5442,7 +5820,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 133,
+    "loc": 137,
     "class_count": 1,
     "description": "\n    Sovereign method registry \u2014 live, hybrid-indexed, eternal.\n    Now with Redis sovereign caching",
     "pascal_compliant": true,
@@ -5459,7 +5837,8 @@
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "ValidationContextManagerAgent",
@@ -5488,7 +5867,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 194,
+    "loc": 197,
     "class_count": 2,
     "description": "\n    Manages ValidationContext persistence and history.\n    ",
     "pascal_compliant": true,
@@ -5505,7 +5884,8 @@
     "cyclomatic_complexity": 28,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "AdversarialProbeAgent",
@@ -5535,7 +5915,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 144,
+    "loc": 146,
     "class_count": 1,
     "description": "\n    Red team agent specializing in adversarial attacks and probing.\n    Executes strategic attack p",
     "pascal_compliant": true,
@@ -5552,7 +5932,8 @@
     "cyclomatic_complexity": 24,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "AdversarialRedTeamerAgent",
@@ -5561,8 +5942,8 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Guardian",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -5583,7 +5964,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 208,
+    "loc": 210,
     "class_count": 3,
     "description": "\n    The Skeptic - Adversarial Red Team Agent\n\n    Acts as counter-agent to CodeJanitor and SystemAr",
     "pascal_compliant": true,
@@ -5600,7 +5981,8 @@
     "cyclomatic_complexity": 44,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "AutonomousThreatEvolutionAgent",
@@ -5631,7 +6013,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 117,
+    "loc": 120,
     "class_count": 1,
     "description": "L5: Self-healing security agent",
     "pascal_compliant": true,
@@ -5648,7 +6030,8 @@
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "AutonomyGuardianAgent",
@@ -5657,11 +6040,11 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Healer",
     "inheritance": [
-      "PineconeVectorMixin",
-      "SubatomicTestingMixin",
       "RedisCacheMixin",
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5681,7 +6064,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 282,
+    "loc": 295,
     "class_count": 1,
     "description": "\n    Sovereign guardian for agent autonomy enforcement.\n    \n    Responsibilities:\n    1. Validate a",
     "pascal_compliant": true,
@@ -5695,10 +6078,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 77,
+    "cyclomatic_complexity": 83,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "BaseClassEnforcerAgent",
@@ -5740,7 +6124,8 @@
     "cyclomatic_complexity": 27,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "BiasAuditorAgent",
@@ -5767,7 +6152,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 153,
+    "loc": 155,
     "class_count": 4,
     "description": "Lightweight Bias Detection for Content Quality.\n    \n    Simple pattern-based bias detection for ris",
     "pascal_compliant": true,
@@ -5784,7 +6169,8 @@
     "cyclomatic_complexity": 18,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "BiasDetectorAgent",
@@ -5807,7 +6193,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 49,
+    "loc": 51,
     "class_count": 1,
     "description": "L5 Safety agent that runs local bias detection with dynamic constitution rules.\n    \n    This agent ",
     "pascal_compliant": true,
@@ -5824,7 +6210,104 @@
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "BoundaryTestingAgent",
+    "path": "agentic_core\\L5_safety\\red_teaming\\BoundaryTestingAgent.py",
+    "layer": "L5",
+    "territory": "L5 Safety/Red Teaming",
+    "category": "Healer",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "__post_init__",
+      "act",
+      "_execute_boundary_test",
+      "_test_empty_input",
+      "_test_null_input",
+      "_test_max_length",
+      "_test_special_characters",
+      "_test_unicode_edge_cases",
+      "_test_numeric_boundaries",
+      "_test_type_mismatches"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 185,
+    "class_count": 1,
+    "description": "\n    Red team agent specializing in boundary and edge case testing.\n    Tests system limits and unex",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 91.7,
+    "documented_pct": 91.7,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 26,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "ChaosEngineeringAgent",
+    "path": "agentic_core\\L5_safety\\red_teaming\\ChaosEngineeringAgent.py",
+    "layer": "L5",
+    "territory": "L5 Safety/Red Teaming",
+    "category": "Healer",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "__post_init__",
+      "act",
+      "_execute_chaos_scenario",
+      "_test_network_failure",
+      "_test_high_latency",
+      "_test_resource_exhaustion",
+      "_test_cascading_failure",
+      "_test_timeout",
+      "_test_partial_failure",
+      "_test_recovery"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 161,
+    "class_count": 1,
+    "description": "\n    Red team agent specializing in chaos engineering and fault injection.\n    Tests system resilien",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 90.0,
+    "documented_pct": 90.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 24,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "CodeFormatterAgent",
@@ -5848,7 +6331,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 65,
+    "loc": 67,
     "class_count": 1,
     "description": "L5 Safety agent that enforces consistent formatting using Black + Ruff.\n    \n    This atomic agent a",
     "pascal_compliant": true,
@@ -5865,7 +6348,8 @@
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "CodeSSOTEnforcerAgent",
@@ -5896,7 +6380,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 93,
+    "loc": 95,
     "class_count": 1,
     "description": "\n    Ultra high-signal code-level SSOT enforcer using AST analysis.\n    \n    Enforces that code uses",
     "pascal_compliant": true,
@@ -5913,7 +6397,8 @@
     "cyclomatic_complexity": 56,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "ComplianceOrchestratorAgent",
@@ -5942,8 +6427,8 @@
     "has_healing": true,
     "invocation": "Yes",
     "testing": "None",
-    "has_subatomic": true,
-    "loc": 539,
+    "has_subatomic": false,
+    "loc": 518,
     "class_count": 1,
     "description": "\n    L5 Sovereign Compliance Orchestrator\n\n    Single responsibility:\n      - Discover all validator",
     "pascal_compliant": true,
@@ -5957,10 +6442,11 @@
       "metrics": true,
       "tracing": true
     },
-    "cyclomatic_complexity": 181,
+    "cyclomatic_complexity": 171,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "CompositeGuardrailAgent",
@@ -5986,7 +6472,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 235,
+    "loc": 237,
     "class_count": 10,
     "description": "\n    Unified guardrail agent - membrane pattern composition.\n    \n    Chains 21 canonical guardrails",
     "pascal_compliant": true,
@@ -6003,7 +6489,48 @@
     "cyclomatic_complexity": 18,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
+  },
+  {
+    "class_name": "ConstitutionalReviewerAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\ConstitutionalReviewerAgent.py",
+    "layer": "L5",
+    "territory": "L5 Safety/Guardrails/Core",
+    "category": "Guardian",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "L5SafetyBaseAgent"
+    ],
+    "key_methods": [
+      "run_async",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 111,
+    "class_count": 2,
+    "description": "Performs final constitutional review of the output.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 8,
+    "proper_base_class": true,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "CostGovernorAgent",
@@ -6027,7 +6554,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 48,
+    "loc": 50,
     "class_count": 2,
     "description": "L5 Safety agent that tracks and limits LLM spend across models and tools.\n    \n    This financial gu",
     "pascal_compliant": true,
@@ -6044,7 +6571,8 @@
     "cyclomatic_complexity": 7,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "DependencyPruningAgent",
@@ -6070,7 +6598,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 100,
+    "loc": 102,
     "class_count": 1,
     "description": "L5 Safety agent that detects and removes unused Python dependencies.\n    \n    This batch agent uses ",
     "pascal_compliant": true,
@@ -6087,7 +6615,8 @@
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "DocstringComplianceAgent",
@@ -6112,7 +6641,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 79,
+    "loc": 81,
     "class_count": 1,
     "description": "\n    Ensures public functions, classes, and modules have docstrings.\n\n    Rules:\n    - Module-level ",
     "pascal_compliant": true,
@@ -6129,7 +6658,8 @@
     "cyclomatic_complexity": 22,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "DuplicateCodeDetectorAgent",
@@ -6177,7 +6707,8 @@
     "cyclomatic_complexity": 64,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "ExternalHttpValidatorAgent",
@@ -6201,7 +6732,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 27,
+    "loc": 29,
     "class_count": 1,
     "description": "\n    Key 23: Detects forbidden HTTP library imports (requests, urllib, httpx).\n    Automatically han",
     "pascal_compliant": true,
@@ -6218,7 +6749,8 @@
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "FileCleanupAgent",
@@ -6246,7 +6778,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 157,
+    "loc": 159,
     "class_count": 1,
     "description": "L5 Safety agent that identifies and removes files with repeated filename strings.\n    \n    This batc",
     "pascal_compliant": true,
@@ -6263,7 +6795,8 @@
     "cyclomatic_complexity": 42,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "FilesystemAgent",
@@ -6308,7 +6841,8 @@
     "cyclomatic_complexity": 51,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "FilesystemSSOTReconcilerAgent",
@@ -6317,10 +6851,10 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "L0MaintenanceBaseAgent",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin",
+      "L0MaintenanceBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -6340,7 +6874,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 617,
+    "loc": 635,
     "class_count": 2,
     "description": "Filesystem-level SSOT enforcer - treats blueprint as the Gospel.\n    \n    Inherits from L0Maintenanc",
     "pascal_compliant": true,
@@ -6354,10 +6888,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 147,
+    "cyclomatic_complexity": 155,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "GapClosureArchitectAgent",
@@ -6395,7 +6930,8 @@
     "cyclomatic_complexity": 1,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "GitHygieneAgent",
@@ -6423,7 +6959,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 124,
+    "loc": 126,
     "class_count": 1,
     "description": "L5 Safety agent that enforces Git repository hygiene.\n    \n    This batch agent audits repository he",
     "pascal_compliant": true,
@@ -6440,7 +6976,8 @@
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "GravityEnforcerAgent",
@@ -6467,7 +7004,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 174,
+    "loc": 180,
     "class_count": 2,
     "description": "\n    [L5 GUARDRAIL] Gravity law enforcement agent.\n    \n    Enforces dependency gravity rules to pre",
     "pascal_compliant": true,
@@ -6484,7 +7021,8 @@
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "GravityLeakRepairAgent",
@@ -6528,7 +7066,52 @@
     "cyclomatic_complexity": 23,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
+  },
+  {
+    "class_name": "GravityValidatorAgent",
+    "path": "agentic_core\\L5_safety\\validators\\GravityValidatorAgent.py",
+    "layer": "L5",
+    "territory": "L5 Safety/Validators/Structure",
+    "category": "Validator",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
+    ],
+    "key_methods": [
+      "heal_repository",
+      "__init__",
+      "_get_layer_rank",
+      "detect_violations",
+      "validate_file",
+      "validate_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 56,
+    "class_count": 2,
+    "description": "\n    [L5 VALIDATOR] Unified detection for all gravity laws.\n    \n    Consolidates logic from:\n    - ",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 66.7,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 36,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "GuardianOrchestratorAgent",
@@ -6537,10 +7120,10 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "L0MaintenanceBaseAgent",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin",
+      "L0MaintenanceBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -6577,7 +7160,8 @@
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "HallucinationHunterAgent",
@@ -6586,8 +7170,8 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Analyzer",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -6625,7 +7209,8 @@
     "cyclomatic_complexity": 59,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "HealValidatorAgent",
@@ -6670,7 +7255,8 @@
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Inherited"
   },
   {
     "class_name": "HealValidatorAgent",
@@ -6716,7 +7302,8 @@
     "cyclomatic_complexity": 35,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "HierarchyAgent",
@@ -6764,7 +7351,8 @@
     "cyclomatic_complexity": 181,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "HierarchyHealerAgent",
@@ -6812,7 +7400,8 @@
     "cyclomatic_complexity": 81,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "HygieneGuardianAgent",
@@ -6840,7 +7429,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 175,
+    "loc": 181,
     "class_count": 2,
     "description": "\n    [L5 VALIDATOR] Code hygiene and cleanliness validator.\n    \n    Detects code smells, empty file",
     "pascal_compliant": true,
@@ -6857,7 +7446,8 @@
     "cyclomatic_complexity": 46,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "HygieneValidatorAgent",
@@ -6866,8 +7456,8 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "L0MaintenanceBaseAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "L0MaintenanceBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -6904,7 +7494,8 @@
     "cyclomatic_complexity": 48,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "ImportAgent",
@@ -6952,7 +7543,8 @@
     "cyclomatic_complexity": 123,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "ImportLockAgent",
@@ -6962,8 +7554,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "MetaPathFinder"
+      "MetaPathFinder",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -7000,7 +7592,8 @@
     "cyclomatic_complexity": 31,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "InferenceTypeHintAgent",
@@ -7025,7 +7618,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 89,
+    "loc": 91,
     "class_count": 1,
     "description": "\n    Uses LLM inference to add accurate type hints to functions/methods.\n\n    Why gated (not ungated",
     "pascal_compliant": true,
@@ -7042,7 +7635,8 @@
     "cyclomatic_complexity": 29,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "InputValidatorAgent",
@@ -7073,7 +7667,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 301,
+    "loc": 303,
     "class_count": 6,
     "description": "\n    Validates input data against schema and rules.\n    \n    Provides comprehensive validation inclu",
     "pascal_compliant": true,
@@ -7090,7 +7684,8 @@
     "cyclomatic_complexity": 88,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "L5Agent",
@@ -7113,7 +7708,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 33,
+    "loc": 35,
     "class_count": 1,
     "description": "\n    Consolidated base for L5 Safety agents.\n    \n    Guaranteed Capabilities:\n    - heal_repository",
     "pascal_compliant": true,
@@ -7130,7 +7725,8 @@
     "cyclomatic_complexity": 3,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "L5IntegrityGateExecutorAgent",
@@ -7161,7 +7757,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 437,
+    "loc": 439,
     "class_count": 7,
     "description": "\n    L5+ Integrity Gate Executor with Two-Pass Validation.\n\n    Canon Validator Pattern:\n        # P",
     "pascal_compliant": true,
@@ -7178,7 +7774,8 @@
     "cyclomatic_complexity": 78,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "L5SafetyBaseAgent",
@@ -7188,8 +7785,8 @@
     "category": "Validator",
     "inheritance": [
       "RedisCacheMixin",
-      "SovereignBaseAgent",
-      "PineconeVectorMixin"
+      "PineconeVectorMixin",
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -7209,7 +7806,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 160,
+    "loc": 162,
     "class_count": 1,
     "description": "Base class for L5 Safety agents with healing capability.\n    \n    MRO HARDENING:\n    - RedisCacheMix",
     "pascal_compliant": true,
@@ -7226,7 +7823,8 @@
     "cyclomatic_complexity": 35,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "L5SafetyExerciserAgent",
@@ -7272,7 +7870,8 @@
     "cyclomatic_complexity": 25,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "LocationAgent",
@@ -7281,8 +7880,8 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "MCPHardenedMixin",
-      "L5Agent"
+      "L5Agent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7319,7 +7918,8 @@
     "cyclomatic_complexity": 446,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "MCPGuardianAgent",
@@ -7364,7 +7964,8 @@
     "cyclomatic_complexity": 35,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "MethodChangeDetectorAgent",
@@ -7389,7 +7990,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 261,
+    "loc": 264,
     "class_count": 6,
     "description": "Detects method changes between two versions of a file.",
     "pascal_compliant": true,
@@ -7406,7 +8007,8 @@
     "cyclomatic_complexity": 17,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "MetricsWitnessAgent",
@@ -7415,10 +8017,10 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
+      "AutonomyMixin",
+      "SubatomicTestingMixin",
       "L0MaintenanceBaseAgent",
       "AdaptiveExecutionMixin",
-      "SubatomicTestingMixin",
-      "AutonomyMixin",
       "SelfDiagnosisMixin"
     ],
     "key_methods": [
@@ -7454,7 +8056,8 @@
     "cyclomatic_complexity": 15,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "MultiProviderRouterAgent",
@@ -7483,7 +8086,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 500,
+    "loc": 503,
     "class_count": 4,
     "description": "Production router with intelligent provider selection and failover.",
     "pascal_compliant": true,
@@ -7500,7 +8103,8 @@
     "cyclomatic_complexity": 95,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "NamingAgent",
@@ -7531,7 +8135,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 1161,
+    "loc": 1170,
     "class_count": 2,
     "description": "\n    Autonomous agent for naming law compliance.\n    Operates after LocationAgent (assumes file is i",
     "pascal_compliant": true,
@@ -7545,10 +8149,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 356,
+    "cyclomatic_complexity": 359,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "NamingLawHealerAgent",
@@ -7579,7 +8184,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 161,
+    "loc": 164,
     "class_count": 1,
     "description": "\n    L1 Cognition: High-Signal Naming Law Healer \u2014 Key 49 Sovereign Enforcement\n    The \"Naming Surg",
     "pascal_compliant": true,
@@ -7596,7 +8201,8 @@
     "cyclomatic_complexity": 48,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "NamingNormalizationAgent",
@@ -7640,7 +8246,8 @@
     "cyclomatic_complexity": 26,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "NeuralAutoImmuneAgent",
@@ -7649,11 +8256,11 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Healer",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "SubatomicTestingMixin",
       "AutonomyMixin",
-      "HealerMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "HealerMixin",
+      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin"
     ],
     "key_methods": [
@@ -7674,7 +8281,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 214,
+    "loc": 216,
     "class_count": 1,
     "description": "\n    Sovereign auto-immune response \u2014 isolates territories after repeated breaches.\n    Now hardened",
     "pascal_compliant": true,
@@ -7691,7 +8298,8 @@
     "cyclomatic_complexity": 49,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "PIISanitizerAgent",
@@ -7714,7 +8322,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 58,
+    "loc": 60,
     "class_count": 1,
     "description": "L5 Safety agent that performs local PII detection using regex heuristics.\n    \n    This agent detect",
     "pascal_compliant": true,
@@ -7731,7 +8339,8 @@
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "PascalSovereigntyEnforcerAgent",
@@ -7740,10 +8349,10 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
+      "ASTEnforcementMixin",
       "MCPHardenedMixin",
       "CanonBaseAgent",
-      "SubatomicTestingMixin",
-      "ASTEnforcementMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7780,7 +8389,8 @@
     "cyclomatic_complexity": 67,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "PolicyNeuralAutoImmuneAgent",
@@ -7789,8 +8399,8 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "GenericAgent",
     "inheritance": [
-      "NeuralAutoImmuneAgent",
       "MCPHardenedMixin",
+      "NeuralAutoImmuneAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -7804,7 +8414,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 34,
+    "loc": 36,
     "class_count": 1,
     "description": "PolicyNeuralAutoImmuneAgent agent for autonomous operations.",
     "pascal_compliant": true,
@@ -7821,7 +8431,8 @@
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "PreCommitSovereignAgent",
@@ -7830,8 +8441,8 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "L0MaintenanceBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "L0MaintenanceBaseAgent"
     ],
     "key_methods": [
       "heal_repository",
@@ -7868,7 +8479,8 @@
     "cyclomatic_complexity": 32,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "PrintStatementValidatorAgent",
@@ -7891,7 +8503,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 34,
+    "loc": 36,
     "class_count": 1,
     "description": "\n    Key 2: Detects print() statements using AST.\n    Automatically ignores TYPE_CHECKING blocks via",
     "pascal_compliant": true,
@@ -7908,7 +8520,96 @@
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "PromptInjectionAgent",
+    "path": "agentic_core\\L5_safety\\red_teaming\\PromptInjectionAgent.py",
+    "layer": "L5",
+    "territory": "L5 Safety/Red Teaming",
+    "category": "Healer",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "__post_init__",
+      "act",
+      "_test_attack_vector",
+      "_test_direct_override",
+      "_test_token_smuggling",
+      "_test_context_window_abuse",
+      "_test_role_playing_jailbreak",
+      "_test_indirect_injection",
+      "_test_encoding_tricks",
+      "_test_instruction_hierarchy_confusion"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 156,
+    "class_count": 1,
+    "description": "\n    Red team agent specializing in prompt injection attack detection.\n    Tests system resilience a",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 90.0,
+    "documented_pct": 90.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 22,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "PromptInjectionDetectorAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\PromptInjectionDetectorAgent.py",
+    "layer": "L5",
+    "territory": "L5 Safety/Guardrails/Core",
+    "category": "Guardian",
+    "inheritance": [
+      "MCPHardenedMixin",
+      "L5SafetyBaseAgent"
+    ],
+    "key_methods": [
+      "run_async",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 96,
+    "class_count": 3,
+    "description": "Detects prompt-injection attacks.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 6,
+    "proper_base_class": true,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "PythonFileSovereigntyEnforcerAgent",
@@ -7934,7 +8635,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 95,
+    "loc": 98,
     "class_count": 1,
     "description": "\n    L5 Safety agent - enforces dedicated ClassNameAgent.py file naming standard.\n    \n    Technical",
     "pascal_compliant": true,
@@ -7951,7 +8652,8 @@
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "RedSentinelAgent",
@@ -7996,7 +8698,8 @@
     "cyclomatic_complexity": 37,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active (no super)"
   },
   {
     "class_name": "RedTeamAgent",
@@ -8021,7 +8724,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 102,
+    "loc": 104,
     "class_count": 1,
     "description": "\n    Sovereign red-teaming agent for guardrail penetration testing.\n\n    Safety model:\n    - Only ac",
     "pascal_compliant": true,
@@ -8038,7 +8741,8 @@
     "cyclomatic_complexity": 20,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "RegressionOracleAgent",
@@ -8047,8 +8751,8 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "SubAtomicAgent",
       "MCPHardenedMixin",
+      "SubAtomicAgent",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -8067,7 +8771,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 185,
+    "loc": 187,
     "class_count": 1,
     "description": "\n    The Regression Oracle - Automated Test Synthesizer\n    \n    Subscribes to AtomicBlackboard FILE",
     "pascal_compliant": true,
@@ -8084,7 +8788,8 @@
     "cyclomatic_complexity": 50,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "RgHealingOrchestratorAgent",
@@ -8093,10 +8798,10 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "L0MaintenanceBaseAgent",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "L0MaintenanceBaseAgent"
     ],
     "key_methods": [
       "__init__",
@@ -8133,7 +8838,8 @@
     "cyclomatic_complexity": 45,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SafetyInspectorAgent",
@@ -8176,7 +8882,8 @@
     "cyclomatic_complexity": 36,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SecureCheckpointManagerAgent",
@@ -8207,7 +8914,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 177,
+    "loc": 181,
     "class_count": 3,
     "description": "Manages secure Checkpoint persistence with encryption and integrity checks.",
     "pascal_compliant": true,
@@ -8224,7 +8931,8 @@
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SecureConfigManagerAgent",
@@ -8255,7 +8963,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 247,
+    "loc": 268,
     "class_count": 1,
     "description": "Manages secure configuration with encrypted storage.",
     "pascal_compliant": true,
@@ -8269,10 +8977,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 67,
+    "cyclomatic_complexity": 77,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SelfUpdatingSafetyEngineAgent",
@@ -8303,7 +9012,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 240,
+    "loc": 243,
     "class_count": 6,
     "description": "\n    Safety engine that learns and adapts to new threats.\n    \n    Features:\n    - Automatic threat ",
     "pascal_compliant": true,
@@ -8320,7 +9029,8 @@
     "cyclomatic_complexity": 64,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SemanticDebuggerAgent",
@@ -8329,9 +9039,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Healer",
     "inheritance": [
-      "CognitiveRecoveryMixin",
       "L5SafetyBaseAgent",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "CognitiveRecoveryMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8345,7 +9055,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 55,
+    "loc": 57,
     "class_count": 1,
     "description": "\n    L5 Safety Agent responsible for performing Just-In-Time Root Cause Analysis (RCA).\n\n    It util",
     "pascal_compliant": true,
@@ -8362,7 +9072,8 @@
     "cyclomatic_complexity": 8,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "StructuralHealerAgent",
@@ -8393,7 +9104,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 914,
+    "loc": 953,
     "class_count": 2,
     "description": "\n    Autonomous Conductor for structural healing.\n    ",
     "pascal_compliant": true,
@@ -8407,10 +9118,11 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 250,
+    "cyclomatic_complexity": 264,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "SyntaxValidatorAgent",
@@ -8437,7 +9149,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 148,
+    "loc": 154,
     "class_count": 2,
     "description": "\n    [L5 VALIDATOR] Python syntax validation agent.\n    \n    Prevents unparseable code from entering",
     "pascal_compliant": true,
@@ -8454,7 +9166,8 @@
     "cyclomatic_complexity": 29,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TestCoverageGuardianAgent",
@@ -8502,7 +9215,8 @@
     "cyclomatic_complexity": 67,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "TestGeneratorAgent",
@@ -8533,7 +9247,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 195,
+    "loc": 197,
     "class_count": 1,
     "description": "\n    Autonomous agent that generates subatomic tests for agent classes.\n    \n    Capabilities:\n    -",
     "pascal_compliant": true,
@@ -8550,7 +9264,8 @@
     "cyclomatic_complexity": 54,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "TestSovereigntyAgent",
@@ -8598,7 +9313,8 @@
     "cyclomatic_complexity": 33,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "TwoPhaseDeduplicationAgent",
@@ -8645,7 +9361,50 @@
     "cyclomatic_complexity": 57,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active (no super)"
+  },
+  {
+    "class_name": "TypeHintEnforcementAgent",
+    "path": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
+    "layer": "L5",
+    "territory": "L5 Safety/Validators/Content",
+    "category": "Healer",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "heal_violation"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 72,
+    "class_count": 2,
+    "description": "\n    Ensures public functions, methods, and module-level assignments have type hints.\n\n    Rules:\n  ",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 0.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 8,
+    "proper_base_class": true,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Inherited"
   },
   {
     "class_name": "TypeHintFixerAgent",
@@ -8654,9 +9413,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Healer",
     "inheritance": [
-      "NodeTransformer",
       "HealerMixin",
       "MCPHardenedMixin",
+      "NodeTransformer",
       "SubatomicTestingMixin"
     ],
     "key_methods": [
@@ -8672,7 +9431,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 40,
+    "loc": 42,
     "class_count": 1,
     "description": "\n    AST transformer that adds Missing type hints to public symbols.\n    ",
     "pascal_compliant": true,
@@ -8689,7 +9448,8 @@
     "cyclomatic_complexity": 14,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "UnusedCleanupAgent",
@@ -8713,7 +9473,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 58,
+    "loc": 60,
     "class_count": 1,
     "description": "L5 Safety agent that removes unused imports and variables using autoflake.\n    \n    This atomic agen",
     "pascal_compliant": true,
@@ -8730,7 +9490,44 @@
     "cyclomatic_complexity": 9,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
+  },
+  {
+    "class_name": "FailingAgent",
+    "path": "tests\\test_l6_observability_agents.py",
+    "layer": "L6",
+    "territory": "L6_Observability/Metrics",
+    "category": "GenericAgent",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 244,
+    "class_count": 8,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
   },
   {
     "class_name": "L6ObservabilityBaseAgent",
@@ -8739,11 +9536,10 @@
     "territory": "L6_Observability/Base Agent",
     "category": "Analyzer",
     "inheritance": [
-      "SovereignBaseAgent",
+      "RedisCacheMixin",
       "PineconeVectorMixin",
       "ABC",
-      "SubatomicTestingMixin",
-      "RedisCacheMixin"
+      "SovereignBaseAgent"
     ],
     "key_methods": [
       "__post_init__",
@@ -8761,7 +9557,7 @@
     "has_memory": true,
     "has_healing": true,
     "invocation": "Yes",
-    "testing": "Self",
+    "testing": "None",
     "has_subatomic": true,
     "loc": 308,
     "class_count": 3,
@@ -8769,7 +9565,7 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -8780,7 +9576,8 @@
     "cyclomatic_complexity": 59,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Active"
   },
   {
     "class_name": "MockSovereignAgent",
@@ -8798,7 +9595,7 @@
     "invocation": "Inherited",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 61,
+    "loc": 63,
     "class_count": 2,
     "description": "MockSovereignAgent agent for autonomous operations.",
     "pascal_compliant": true,
@@ -8815,7 +9612,44 @@
     "cyclomatic_complexity": 1,
     "proper_base_class": false,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Inherited"
+  },
+  {
+    "class_name": "MockSovereignAgent",
+    "path": "tests\\test_l6_observability_agents.py",
+    "layer": "L6",
+    "territory": "L6_Observability/Metrics",
+    "category": "GenericAgent",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 244,
+    "class_count": 8,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
   },
   {
     "class_name": "PerformanceAnalystAgent",
@@ -8824,8 +9658,8 @@
     "territory": "L6_Observability/Metrics",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "L6ObservabilityBaseAgent"
+      "L6ObservabilityBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8842,7 +9676,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 124,
+    "loc": 126,
     "class_count": 1,
     "description": "\n    The Performance Critic - Skeptical analyst for agent performance.\n    \n    MISSION: Hunt down p",
     "pascal_compliant": true,
@@ -8859,7 +9693,8 @@
     "cyclomatic_complexity": 19,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "RuntimeTelemetryAgent",
@@ -8884,7 +9719,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 61,
+    "loc": 63,
     "class_count": 2,
     "description": "\n    THE PERFORMANCE GUARDIAN\n    Ensures architectural purity does not sacrifice operational speed.",
     "pascal_compliant": true,
@@ -8901,7 +9736,8 @@
     "cyclomatic_complexity": 8,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SovereignObservabilityAgent",
@@ -8910,11 +9746,11 @@
     "territory": "L6_Observability/Metrics",
     "category": "Analyzer",
     "inheritance": [
-      "ContextPropagationMixin",
-      "SubatomicTestingMixin",
-      "EventEmissionMixin",
       "RedisCacheMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin",
+      "ContextPropagationMixin",
+      "EventEmissionMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -8929,7 +9765,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 47,
+    "loc": 49,
     "class_count": 1,
     "description": "\n    L6 Observability Agent: The Consumer (Report 4.3 Part C).\n    \n    Responsible for reading the ",
     "pascal_compliant": true,
@@ -8946,7 +9782,8 @@
     "cyclomatic_complexity": 11,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "StrategicObservationAgent",
@@ -8970,7 +9807,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 30,
+    "loc": 32,
     "class_count": 1,
     "description": "\n    StrategicObservationAgent (L6)\n    \n    Responsible for high-level monitoring of agentic workfl",
     "pascal_compliant": true,
@@ -8987,7 +9824,191 @@
     "cyclomatic_complexity": 6,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "BrokenAgent",
+    "path": "scripts\\test_discovery_roster_builder_hardening.py",
+    "layer": "Unknown",
+    "territory": "Unknown",
+    "category": "GenericAgent",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 269,
+    "class_count": 2,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
+  },
+  {
+    "class_name": "FakeHealerAgent",
+    "path": "scripts\\test_discovery_roster_builder_hardening.py",
+    "layer": "Unknown",
+    "territory": "Unknown",
+    "category": "Healer",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "some_other_method"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 269,
+    "class_count": 2,
+    "description": "Agent that claims HealerMixin in JSON but lacks heal_repository at runtime.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 2,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Inherited"
+  },
+  {
+    "class_name": "MockAgent",
+    "path": "scripts\\test_consolidated_orchestrator_stability.py",
+    "layer": "Unknown",
+    "territory": "Unknown",
+    "category": "Orchestrator",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "heal_repository"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "No (missing super)",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 170,
+    "class_count": 1,
+    "description": "Mock agent for testing orchestrator behavior.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 4,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": true,
+    "healing_implementation": "Active (no super)"
+  },
+  {
+    "class_name": "MockLocationAgent",
+    "path": "scripts\\test_5tier_execution.py",
+    "layer": "Unknown",
+    "territory": "Unknown",
+    "category": "Governor",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "heal_repository"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "No (missing super)",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 149,
+    "class_count": 2,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 2,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Stub"
+  },
+  {
+    "class_name": "TestAgent",
+    "path": "scripts\\test_log_analysis_fixes.py",
+    "layer": "Unknown",
+    "territory": "Unknown",
+    "category": "Healer",
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 214,
+    "class_count": 1,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": true,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
   },
   {
     "class_name": "NamingAgent",
@@ -9029,17 +10050,17 @@
     "cyclomatic_complexity": 5,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
   },
   {
     "class_name": "SovereignBaseAgent",
     "path": "agentic_core\\utils\\core_extensions\\SovereignBaseAgent.py",
     "layer": "Utils",
     "territory": "Sovereign Base Agent",
-    "category": "Governor",
+    "category": "Healer",
     "inheritance": [
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "InfrastructureMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -9057,15 +10078,15 @@
     "has_memory": false,
     "has_healing": true,
     "invocation": "Yes",
-    "testing": "Self",
+    "testing": "None",
     "has_subatomic": true,
-    "loc": 41,
+    "loc": 39,
     "class_count": 1,
-    "description": "\n    Sovereign Single Source of Truth (SSOT) Root.\n    \n    MCPHardenedMixin is now global to all ag",
+    "description": "\n    Sovereign Single Source of Truth (SSOT) Root.\n    \n    InfrastructureMixin consolidates all sta",
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
-    "has_tests": true,
+    "has_tests": false,
     "typed_pct": 100.0,
     "documented_pct": 100.0,
     "observability": {
@@ -9073,9 +10094,270 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 14,
+    "cyclomatic_complexity": 13,
     "proper_base_class": true,
     "schema_strictness": 100.0,
-    "has_metadata": true
+    "has_metadata": true,
+    "healing_implementation": "Super only"
+  },
+  {
+    "class_name": "BrokenAgent",
+    "path": "tests\\core\\architecture\\test_phase1_hardening.py",
+    "layer": "tests",
+    "territory": "tests",
+    "category": "GenericAgent",
+    "inheritance": [
+      "InfrastructureMixin"
+    ],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 191,
+    "class_count": 12,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
+  },
+  {
+    "class_name": "FastAgent",
+    "path": "tests\\test_runtime_telemetry_agent.py",
+    "layer": "tests",
+    "territory": "tests",
+    "category": "GenericAgent",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 128,
+    "class_count": 7,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
+  },
+  {
+    "class_name": "MockAgent",
+    "path": "tests\\test_runtime_telemetry_agent.py",
+    "layer": "tests",
+    "territory": "tests",
+    "category": "GenericAgent",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 128,
+    "class_count": 7,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
+  },
+  {
+    "class_name": "ProperAgent",
+    "path": "tests\\core\\architecture\\test_phase1_hardening.py",
+    "layer": "tests",
+    "territory": "tests",
+    "category": "GenericAgent",
+    "inheritance": [
+      "InfrastructureMixin"
+    ],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 191,
+    "class_count": 12,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
+  },
+  {
+    "class_name": "ResetAgent",
+    "path": "tests\\core\\architecture\\test_phase1_hardening.py",
+    "layer": "tests",
+    "territory": "tests",
+    "category": "GenericAgent",
+    "inheritance": [
+      "InfrastructureMixin"
+    ],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 191,
+    "class_count": 12,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
+  },
+  {
+    "class_name": "SlowAgent",
+    "path": "tests\\test_runtime_telemetry_agent.py",
+    "layer": "tests",
+    "territory": "tests",
+    "category": "GenericAgent",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 128,
+    "class_count": 7,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
+  },
+  {
+    "class_name": "StatusAgent",
+    "path": "tests\\core\\architecture\\test_phase1_hardening.py",
+    "layer": "tests",
+    "territory": "tests",
+    "category": "GenericAgent",
+    "inheritance": [
+      "InfrastructureMixin"
+    ],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "invocation": "Inherited",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 191,
+    "class_count": 12,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": false,
+    "typed_pct": 0.0,
+    "documented_pct": 0.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 1,
+    "proper_base_class": false,
+    "schema_strictness": 0.0,
+    "has_metadata": false,
+    "healing_implementation": "Inherited"
   }
 ]
