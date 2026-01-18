@@ -296,10 +296,45 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
         lines.extend(['', '=' * 80])
         return '\n'.join(lines)
 
+    @timeout(300)
     @standard_heal
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(
+        self, 
+        dry_run: bool = True, 
+        execute: bool = False, 
+        depth: int = 0, 
+        max_depth: int = 3, 
+        _call_path: Optional[set] = None
+    ) -> Dict[str, int]:
+        """
+        Cost Audit Healing - Generates thermal maps and efficiency reports.
+        """
+        metrics = super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
+        if not isinstance(metrics, dict):
+            metrics = {"violations": 0, "fixed": 0, "errors": 0}
+        if metrics.get("cycle_detected"):
+            return metrics
+
+        try:
+            # 1. Perform Audit
+            self._audit_files()
+            
+            # 2. Generate Report
+            report = self._generate_cost_report()
+            
+            # 3. Log findings
+            self._display_report(report)
+            
+            metrics["violations"] = metrics.get("violations", 0) + len(report.healing_sinks)
+
+        except Exception as e:
+            Logger.error(f"Cost audit failed: {e}")
+            metrics["errors"] = metrics.get("errors", 0) + 1
+            
+        return metrics
+
 _cost_auditor = None
 
 def get_cost_auditor(ctx: Any) -> PredictiveCostAuditor:
@@ -308,20 +343,3 @@ def get_cost_auditor(ctx: Any) -> PredictiveCostAuditor:
     if _cost_auditor is None:
         _cost_auditor = PredictiveCostAuditor(ctx)
     return _cost_auditor
-
-@timeout(300)
-def _module_heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """Observability metrics - module-level operational stub."""
-    if _call_path is None:
-        _call_path = set()
-    agent_name = "PredictiveCostAuditor"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] Observability metrics - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)

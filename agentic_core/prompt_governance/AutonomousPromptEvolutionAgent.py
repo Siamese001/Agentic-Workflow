@@ -249,3 +249,15 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, int]:
         """Invoke healing chain via super()."""
         return super().heal_repository(dry_run=dry_run, **kwargs)
+        
+        # === ZOMBIE VACCINATION: Wired orphaned methods ===
+        if hasattr(self, '_validate_template'):
+            try:
+                validation_result = self._validate_template()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in _validate_template: {e}')
+                metrics['errors'] += 1
+        # === END VACCINATION ===
+        

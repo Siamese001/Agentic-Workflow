@@ -329,4 +329,48 @@ class HealValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, int]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
+        
+        # === ZOMBIE VACCINATION: Wired orphaned methods ===
+        if hasattr(self, 'validate_healed_code'):
+            try:
+                validation_result = self.validate_healed_code()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in validate_healed_code: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, '_validate_syntax'):
+            try:
+                validation_result = self._validate_syntax()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in _validate_syntax: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, '_validate_dangerous_patterns'):
+            try:
+                validation_result = self._validate_dangerous_patterns()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in _validate_dangerous_patterns: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, '_validate_static_analysis'):
+            try:
+                validation_result = self._validate_static_analysis()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in _validate_static_analysis: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, '_validate_diff_sanity'):
+            try:
+                validation_result = self._validate_diff_sanity()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in _validate_diff_sanity: {e}')
+                metrics['errors'] += 1
+        # === END VACCINATION ===
+        
         return {"healed": 0, "skipped": 0, "parent": result}

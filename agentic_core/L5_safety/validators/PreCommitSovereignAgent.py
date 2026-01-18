@@ -81,6 +81,26 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
             Dict with healing summary
         """
         super().heal_repository()
+        
+        # === ZOMBIE VACCINATION: Wired orphaned methods ===
+        if hasattr(self, 'validate_staged_files'):
+            try:
+                validation_result = self.validate_staged_files()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in validate_staged_files: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, 'validate_sovereignty'):
+            try:
+                validation_result = self.validate_sovereignty()
+                if validation_result:
+                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+            except Exception as e:
+                Logger.error(f'Error in validate_sovereignty: {e}')
+                metrics['errors'] += 1
+        # === END VACCINATION ===
+        
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 

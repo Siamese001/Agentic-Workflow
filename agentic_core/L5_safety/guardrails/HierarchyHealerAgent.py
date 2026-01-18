@@ -377,4 +377,48 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
+        
+        # === ZOMBIE VACCINATION: Wired orphaned methods ===
+        if hasattr(self, 'heal_hierarchy_violations') and not dry_run and execute:
+            try:
+                mutation_result = self.heal_hierarchy_violations()
+                if mutation_result:
+                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+            except Exception as e:
+                Logger.error(f'Error in heal_hierarchy_violations: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, '_heal_l1_folder') and not dry_run and execute:
+            try:
+                mutation_result = self._heal_l1_folder()
+                if mutation_result:
+                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+            except Exception as e:
+                Logger.error(f'Error in _heal_l1_folder: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, '_heal_l2_folders') and not dry_run and execute:
+            try:
+                mutation_result = self._heal_l2_folders()
+                if mutation_result:
+                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+            except Exception as e:
+                Logger.error(f'Error in _heal_l2_folders: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, '_heal_single_l2_folder') and not dry_run and execute:
+            try:
+                mutation_result = self._heal_single_l2_folder()
+                if mutation_result:
+                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+            except Exception as e:
+                Logger.error(f'Error in _heal_single_l2_folder: {e}')
+                metrics['errors'] += 1
+        if hasattr(self, '_cleanup_empty_folder') and not dry_run and execute:
+            try:
+                mutation_result = self._cleanup_empty_folder()
+                if mutation_result:
+                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+            except Exception as e:
+                Logger.error(f'Error in _cleanup_empty_folder: {e}')
+                metrics['errors'] += 1
+        # === END VACCINATION ===
+        
         return {"healed": 0, "skipped": 0, "parent": result}

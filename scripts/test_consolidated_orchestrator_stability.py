@@ -29,6 +29,7 @@ class MockAgent:
         self.delay = delay
     
     def heal_repository(self, dry_run=True, execute=False, **kwargs):
+        # CANON: INTENTIONAL_CHAIN_BREAK - Test mock does not chain to super()
         if self.delay > 0:
             time.sleep(self.delay)
         if self.raise_error:

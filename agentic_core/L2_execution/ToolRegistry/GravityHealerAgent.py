@@ -55,6 +55,18 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
             Dict with healing summary
         """
         super().heal_repository()
+        
+        # === ZOMBIE VACCINATION: Wired orphaned methods ===
+        if hasattr(self, 'heal_file') and not dry_run and execute:
+            try:
+                mutation_result = self.heal_file()
+                if mutation_result:
+                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+            except Exception as e:
+                Logger.error(f'Error in heal_file: {e}')
+                metrics['errors'] += 1
+        # === END VACCINATION ===
+        
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 

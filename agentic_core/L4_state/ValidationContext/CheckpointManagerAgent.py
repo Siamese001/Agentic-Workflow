@@ -80,17 +80,12 @@ class CheckpointManagerAgent(L4StateBaseAgent):
     ) -> Dict[str, int]:
         """
         Repository-wide checkpoint healing - invoke shared chain.
-        
-        Args:
-            dry_run: Preview changes without executing
-            execute: Execute healing operations
-            depth: Current recursion depth
-            max_depth: Maximum recursion depth
-            _call_path: Set of agent names in current call path (cycle detection)
-            
-        Returns:
-            Healing results with metrics
         """
+        # CRITICAL: Chain up to HealerMixin
+        super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
+
         if _call_path is None:
             _call_path = set()
 

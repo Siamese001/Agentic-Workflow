@@ -198,6 +198,7 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         return results
 
     @timeout(300)
+    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,
@@ -209,18 +210,12 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         """Execute L5 safety healing operations.
         
         This is an operational agent - no repository healing required.
-        Implements cycle detection and depth limiting.
-        
-        Args:
-            dry_run: If True, only report what would be done (default: True).
-            execute: If True, execute healing actions (default: False).
-            depth: Current recursion depth for cycle detection (default: 0).
-            max_depth: Maximum recursion depth allowed (default: 3).
-            _call_path: Set of agent names in current call chain for cycle detection.
-            
-        Returns:
-            Dictionary with healing results: {"skipped": 1} for operational agents.
         """
+        # CRITICAL: Chain up to HealerMixin
+        super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
+
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
