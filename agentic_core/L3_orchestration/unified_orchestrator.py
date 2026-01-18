@@ -243,6 +243,12 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
             tiers = self.strategy.get_tiers()
             
             for tier_num, (tier_name, agent_names) in enumerate(tiers.items(), 1):
+                # Check if this tier should be executed (tier filtering)
+                if hasattr(self.strategy, 'should_run_tier') and not self.strategy.should_run_tier(tier_name):
+                    skip_msg = self.strategy.get_tier_skip_message(tier_name) if hasattr(self.strategy, 'get_tier_skip_message') else f"⏭️  SKIPPING {tier_name}"
+                    self.logger.info(f"\n{skip_msg}")
+                    continue
+                
                 self.logger.info(f"\n[TIER {tier_num}/{len(tiers)}] {tier_name}")
                 
                 tier_results: List[Dict[str, Any]] = []

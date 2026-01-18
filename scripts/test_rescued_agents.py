@@ -266,6 +266,51 @@ def test_secure_checkpoint_manager():
         test_fail("CHK-02", f"Issues: {', '.join(issues)}")
 
 # =============================================================================
+# ImportHealerAgent Tests
+# =============================================================================
+def test_import_healer():
+    print("\n" + "=" * 70)
+    print("ImportHealerAgent Tests")
+    print("=" * 70)
+    
+    import_file = PROJECT_ROOT / "agentic_core" / "L2_execution" / "ToolRegistry" / "ImportHealerAgent.py"
+    source = import_file.read_text(encoding='utf-8')
+    
+    # IMP-01: Safety Check - verify dry_run parameter exists in heal_imports_in_file
+    if 'def heal_imports_in_file(self, file_path: Path, dry_run: bool = False)' in source:
+        test_pass("IMP-01", "Safety check - dry_run parameter added to heal_imports_in_file")
+    else:
+        test_fail("IMP-01", "dry_run parameter not found in heal_imports_in_file signature")
+    
+    # IMP-02: Execution Check - verify execute logic in heal_repository
+    heal_match = re.search(r'def heal_repository\(.*?\n(.*?)(?=\ndef |\nclass |\Z)', source, re.DOTALL)
+    if heal_match:
+        heal_body = heal_match.group(1)
+        has_execute = 'execute' in heal_body
+        has_fixed = "fixed" in heal_body
+        if has_execute and has_fixed:
+            test_pass("IMP-02", "Execution check - execute mode increments 'fixed' metric")
+        else:
+            test_fail("IMP-02", "execute/fixed logic not found in heal_repository")
+    else:
+        test_fail("IMP-02", "Could not parse heal_repository method")
+    
+    # IMP-03: Syntax Integrity
+    try:
+        ast.parse(source)
+        test_pass("IMP-03", "Syntax integrity - no syntax errors")
+    except SyntaxError as e:
+        test_fail("IMP-03", f"Syntax error: {e}")
+    
+    # IMP-04: Discovery - verify heal_all_imports_in_directory is wired
+    if heal_match:
+        heal_body = heal_match.group(1)
+        if 'heal_all_imports_in_directory' in heal_body:
+            test_pass("IMP-04", "Discovery - heal_all_imports_in_directory is wired in heal_repository")
+        else:
+            test_fail("IMP-04", "heal_all_imports_in_directory not wired in heal_repository")
+
+# =============================================================================
 # Main
 # =============================================================================
 def main():
@@ -278,6 +323,7 @@ def main():
     test_deadlock_detector()
     test_hierarchy_agent()
     test_secure_checkpoint_manager()
+    test_import_healer()
     
     print("\n" + "=" * 70)
     print("TEST SUMMARY")

@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-01-18T23:08:13.020916Z",
-  "scan_duration_seconds": 18.23,
+  "generated_at": "2026-01-18T23:20:01.753453Z",
+  "scan_duration_seconds": 18.05,
   "agent_count": 230,
-  "content_hash": "sha256:3e646a4c2140db6014261ea997ffd04b03a6d07dd020d337b9222124b04f8160",
+  "content_hash": "sha256:c3c9c4667a6e71a3f3a72a933bbb2aa9117406668f739b22dc79cf2b76c70a5b",
   "layer_breakdown": {
     "Apps": 3,
     "L0": 3,
@@ -778,7 +778,7 @@
     "agentic_core/L2_execution/ToolRegistry/healer_executive.py": "0e77419c28b5d0bdc444e4de9bb27ef2",
     "agentic_core/L2_execution/ToolRegistry/HistorianAgent.py": "bfad779610eed3b362dbc7e9a4f9c9d0",
     "agentic_core/L2_execution/ToolRegistry/hybrid_retriever.py": "adbdfb6a13bd4a8fa383409906858b9e",
-    "agentic_core/L2_execution/ToolRegistry/ImportHealerAgent.py": "ff8d2beecbbe0d299bb8253e83ebce86",
+    "agentic_core/L2_execution/ToolRegistry/ImportHealerAgent.py": "4945b7c22eea3162033571342b4cd39c",
     "agentic_core/L2_execution/ToolRegistry/IntegrityGateExecutorAgent.py": "78a3f9085530ce425bc189532c538ca5",
     "agentic_core/L2_execution/ToolRegistry/InterfaceBoundaryAgent.py": "a950a6d896c744026e95c81f8878e3e3",
     "agentic_core/L2_execution/ToolRegistry/InternalAgent.py": "117bbddde47cf925126b179c49744ee7",
@@ -1525,6 +1525,7 @@
     "scripts/test_discovery_roster_builder_hardening.py": "6ff9789ac0e1f1f625617e8544ca3ed5",
     "scripts/test_full_agent_discovery_hardening.py": "b4a51d713bc6a37527e37e5877f7e024",
     "scripts/test_log_analysis_fixes.py": "d20878dc8ca7059d7ea303decb7b278a",
+    "scripts/test_rescued_agents.py": "e8f95ca7d6041a75279a0efe543b7626",
     "scripts/test_ssot_hardening.py": "24b3d325db79cc866fdab67997dc2685",
     "scripts/test_ssot_orchestrator_stability_gates.py": "2bc60effc80b04ae24801444d1170453",
     "scripts/test_ssot_rglob_elimination.py": "b3d5f185c6fd3c57e8516770d3a4b649",
@@ -1544,6 +1545,6 @@
     "tests/test_ssot_logic.py": "7f1820c24908142ca4d24b3bacf764eb",
     "tests/test_toxic_dependency_auditor.py": "6fbc207e3869634d8f3b92c9b221db2a"
   },
-  "hashed_file_count": 1519,
+  "hashed_file_count": 1520,
   "hash_errors": 0
 }
