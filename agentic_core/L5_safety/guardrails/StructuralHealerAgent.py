@@ -136,6 +136,7 @@ class ImportUpdater(ast.NodeVisitor):
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @dataclass
 class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -1352,11 +1353,27 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L5 safety agent - operational only."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    @standard_heal
+    def heal_repository(
+        self, 
+        dry_run: bool = True, 
+        execute: bool = False, 
+        depth: int = 0, 
+        max_depth: int = 3, 
+        _call_path: Optional[set] = None
+    ) -> Dict[str, int]:
+        """
+        Sovereign structural healing - file relocation, fission/fusion, import sync.
+        
+        WIRED CAPABILITIES:
+        - heal_file_moves(): Relocate misplaced files per LocationAgent signals
+        - heal_oversized_files(): Fission files > 800 LOC
+        - heal_undersized_files(): Fusion files < 80 LOC
+        """
+        # CRITICAL FIRST: Shared HealerMixin chain
         super().heal_repository()
         
+        # Cycle detection
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -1365,10 +1382,53 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         if depth > max_depth:
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
+        
+        violations = 0
+        fixed = 0
+        errors = 0
+        
         try:
-            print(f"[{agent_name}] L5 safety - operational only")
-            return {"skipped": 1}
+            # Enable staging for atomic operations
+            if execute and not dry_run:
+                if hasattr(self, 'enable_staging'):
+                    self.enable_staging()
+            
+            # 1. Detect and heal file location violations
+            if hasattr(self, 'heal_file_moves'):
+                location_result = self.heal_file_moves(dry_run=dry_run)
+                violations += location_result.get('violations', 0)
+                fixed += location_result.get('fixed', 0)
+            
+            # 2. Detect and heal oversized files (fission)
+            # Defensive check: ensure method exists before call
+            if hasattr(self, '_heal_oversized_files'):
+                fission_result = self._heal_oversized_files(dry_run=dry_run)
+                violations += fission_result.get('violations', 0)
+                fixed += fission_result.get('fixed', 0)
+            
+            # 3. Commit staged changes if executing
+            if execute and not dry_run and getattr(self, 'staging_active', False):
+                if hasattr(self, 'commit_heals'):
+                    commit_result = self.commit_heals()
+                    if not commit_result.get('committed'):
+                        errors += 1
+                        
+        except Exception as e:
+            Logger.error(f"[{agent_name}] Healing failed: {e}")
+            errors += 1
+            if getattr(self, 'staging_active', False) and hasattr(self, 'rollback'):
+                self.rollback()
+                
         finally:
             _call_path.discard(agent_name)
+            if hasattr(self, '_cleanup_staging'):
+                self._cleanup_staging()
+        
+        return {
+            "violations": violations,
+            "fixed": fixed,
+            "errors": errors,
+            "skipped": 0,
+        }
 
 # PascalCase is now the canonical name
