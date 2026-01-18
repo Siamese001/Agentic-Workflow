@@ -266,6 +266,92 @@ def test_secure_checkpoint_manager():
         test_fail("CHK-02", f"Issues: {', '.join(issues)}")
 
 # =============================================================================
+# ScriptsPlanningOrchestratorAgent Tests
+# =============================================================================
+def test_scripts_planning_orchestrator():
+    print("\n" + "=" * 70)
+    print("ScriptsPlanningOrchestratorAgent Tests")
+    print("=" * 70)
+    
+    scripts_file = PROJECT_ROOT / "agentic_core" / "L1_cognition" / "thought_engine" / "ScriptsPlanningOrchestratorAgent.py"
+    source = scripts_file.read_text(encoding='utf-8')
+    
+    # PLAN-01: Health Check - verify _validate_tasks is wired in heal_repository
+    heal_match = re.search(r'def heal_repository\(.*?\n(.*?)(?=\ndef |\nclass |\Z)', source, re.DOTALL)
+    if heal_match:
+        heal_body = heal_match.group(1)
+        if '_validate_tasks' in heal_body and 'diagnostic_task' in heal_body:
+            test_pass("PLAN-01", "Health check - _validate_tasks diagnostic is wired in heal_repository")
+        else:
+            test_fail("PLAN-01", "_validate_tasks diagnostic not found in heal_repository")
+    else:
+        test_fail("PLAN-01", "Could not parse heal_repository method")
+    
+    # PLAN-02: Validation Logic - verify error handling exists
+    if heal_match:
+        heal_body = heal_match.group(1)
+        if 'except Exception' in heal_body and 'errors' in heal_body:
+            test_pass("PLAN-02", "Validation logic - error handling exists in heal_repository")
+        else:
+            test_fail("PLAN-02", "Error handling not found in heal_repository")
+    
+    # PLAN-03: Syntax Integrity
+    try:
+        ast.parse(source)
+        test_pass("PLAN-03", "Syntax integrity - no syntax errors")
+    except SyntaxError as e:
+        test_fail("PLAN-03", f"Syntax error: {e}")
+    
+    # PLAN-04: Discovery - verify proper signature with dry_run/execute
+    if 'def heal_repository(' in source and 'dry_run: bool' in source and 'execute: bool' in source:
+        test_pass("PLAN-04", "Discovery - heal_repository has proper signature with dry_run/execute")
+    else:
+        test_fail("PLAN-04", "heal_repository missing proper signature")
+
+# =============================================================================
+# MemoryLeakDetectorAgent Tests
+# =============================================================================
+def test_memory_leak_detector():
+    print("\n" + "=" * 70)
+    print("MemoryLeakDetectorAgent Tests")
+    print("=" * 70)
+    
+    leak_file = PROJECT_ROOT / "agentic_core" / "L2_execution" / "ToolRegistry" / "MemoryLeakDetectorAgent.py"
+    source = leak_file.read_text(encoding='utf-8')
+    
+    # LEAK-01: Syntax Integrity
+    try:
+        ast.parse(source)
+        test_pass("LEAK-01", "Syntax integrity - no syntax errors")
+    except SyntaxError as e:
+        test_fail("LEAK-01", f"Syntax error: {e}")
+    
+    # LEAK-02: Structure Check - verify new signature with dry_run
+    if 'def heal_repository(' in source and 'dry_run: bool' in source and 'execute: bool' in source:
+        test_pass("LEAK-02", "Structure check - heal_repository has proper signature")
+    else:
+        test_fail("LEAK-02", "heal_repository missing proper signature")
+    
+    # LEAK-03: Execution Safety - verify _scan_and_fix is wired
+    heal_match = re.search(r'def heal_repository\(.*?\n(.*?)(?=\ndef |\nclass |\Z)', source, re.DOTALL)
+    if heal_match:
+        heal_body = heal_match.group(1)
+        if '_scan_and_fix' in heal_body:
+            test_pass("LEAK-03", "Execution safety - _scan_and_fix is wired in heal_repository")
+        else:
+            test_fail("LEAK-03", "_scan_and_fix not wired in heal_repository")
+    else:
+        test_fail("LEAK-03", "Could not parse heal_repository method")
+    
+    # LEAK-04: Discovery - verify error handling exists
+    if heal_match:
+        heal_body = heal_match.group(1)
+        if 'except Exception' in heal_body and 'errors' in heal_body:
+            test_pass("LEAK-04", "Discovery - error handling exists in heal_repository")
+        else:
+            test_fail("LEAK-04", "Error handling not found in heal_repository")
+
+# =============================================================================
 # ImportHealerAgent Tests
 # =============================================================================
 def test_import_healer():
@@ -323,6 +409,8 @@ def main():
     test_deadlock_detector()
     test_hierarchy_agent()
     test_secure_checkpoint_manager()
+    test_scripts_planning_orchestrator()
+    test_memory_leak_detector()
     test_import_healer()
     
     print("\n" + "=" * 70)
