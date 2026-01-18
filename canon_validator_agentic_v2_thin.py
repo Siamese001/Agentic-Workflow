@@ -560,22 +560,11 @@ def main():
         print(f"   [MODE] {mode_str}")
         
         try:
-            # [L3 MISSION ORCHESTRATION] Tiered Execution Logic
-            from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
+            # [PHASE 3] UNIFIED ORCHESTRATION - Strategy Pattern
+            # The 5-tier logic is now encapsulated in HealingStrategy
+            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+            from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
             from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import get_checkpoint_manager
-            
-            # [MANDATORY CORE] Direct Imports for Tiers 0 & 1
-            from agentic_core.L5_safety.validators.SyntaxValidatorAgent import get_syntax_validator
-            from agentic_core.L5_safety.validators.HygieneGuardianAgent import get_hygiene_guardian
-            from agentic_core.L5_safety.validators.LocationAgent import get_location_agent
-            from agentic_core.L5_safety.guardrails.HierarchyAgent import get_hierarchy_agent
-            from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
-            from agentic_core.L5_safety.gravity.ImportAgent import get_import_agent
-            from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
-            from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import get_two_phase_deduplication_agent
-
-            # Placeholder for missing GovernanceAgent
-            def get_governance_agent_stub(root): return None
             
             # Helper to safely load Performance Analyst (L6)
             def get_performance_analyst_safe(root):
@@ -589,236 +578,95 @@ def main():
                 except: pass
                 return None
 
-            # --- TIER ASSEMBLY ---
-            # TIER 0: Parseability & Hygiene (The Pre-Flight Gate)
-            mandatory_preflight = [
-                ("SyntaxValidatorAgent", get_syntax_validator(project_root)),
-                ("HygieneGuardianAgent", get_hygiene_guardian(project_root)),
-            ]
-
-            # TIER 1: Structural Stabilization (MUST pass for mission to continue)
-            mandatory_structural = [
-                ("TwoPhaseDeduplicationAgent_PhaseA", get_two_phase_deduplication_agent(project_root)),
-                ("LocationAgent", get_location_agent(project_root)),
-                ("HierarchyAgent", get_hierarchy_agent(project_root)),
-                ("NamingAgent", get_naming_agent(project_root)),
-            ]
+            # [UNIFIED ENGINE] Create orchestrator with HealingStrategy
+            strategy = HealingStrategy(project_root=project_root)
+            orchestrator = UnifiedOrchestratorAgent(
+                strategy=strategy,
+                project_root=project_root,
+                name="SovereignHealOrchestrator"
+            )
             
-            # TIER 2: Architectural Alignment
-            mandatory_architectural = [
-                ("ImportAgent", get_import_agent(project_root)),
-                ("GovernanceAgent", get_governance_agent_stub(project_root)),
-            ]
-            
-            # TIER 3: Deep Domain Healing (Discovery Roster)
-            from agentic_core.L3_orchestration.discovery_roster_builder import build_healing_roster
-            full_roster = build_healing_roster(project_root)
-            
-            # Exclude already run mandatory agents from the discovery roster
-            mandatory_names = {name for name, _ in mandatory_preflight} | {name for name, _ in mandatory_structural} | {name for name, _ in mandatory_architectural}
-            mandatory_names.add("AutonomyGuardian") # Reserved for Tier 4
-            mandatory_names.add("TwoPhaseDeduplicationAgent") # Handled in Tier 1
-            
-            discovery_roster = [a for a in full_roster if a[0] not in mandatory_names]
-            
-            # TIER 4: Final Safety Gate
-            final_safety = [("AutonomyGuardian", get_autonomy_guardian(project_root))]
-
-            # [MISSION CONTROL] Summon General & Support
-            orchestrator = get_consolidated_orchestrator(project_root)
             checkpoint_manager = get_checkpoint_manager(project_root)
             performance_analyst = get_performance_analyst_safe(project_root)
             
+            # Build mission context
             mission_context = {
                 "dry_run": not execute_heal,
                 "execute": execute_heal,
                 "checkpoint_manager": checkpoint_manager,
                 "performance_analyst": performance_analyst,
-                "scan_mode": "tiered_sovereign_sweep"
+                "scan_mode": "unified_sovereign_sweep"
             }
             
-            gemini_active = hasattr(final_safety[0][1], 'gemini_embedder') and final_safety[0][1].gemini_embedder is not None
-            all_active_agents = mandatory_preflight + mandatory_structural + mandatory_architectural + discovery_roster + final_safety
+            # Get tier info for runtime state
+            tiers = strategy.get_tiers()
+            all_agent_names = []
+            for tier_agents in tiers.values():
+                all_agent_names.extend(tier_agents)
+            
+            # Check for Gemini activation
+            gemini_active = False
+            try:
+                from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+                guardian = get_autonomy_guardian(project_root)
+                gemini_active = hasattr(guardian, 'gemini_embedder') and guardian.gemini_embedder is not None
+            except: pass
             
             # Initialize runtime state for dashboard
             _runtime_state.update({
                 "status": "healing",
                 "start_time": datetime.now().isoformat(),
-                "agents_order": [name for name, _ in all_active_agents],
-                "total_agents": len(all_active_agents),
+                "agents_order": all_agent_names,
+                "total_agents": len(all_agent_names),
                 "completed_agents": [],
                 "events": [],
-                "execution_timeline": []  # Track tier execution
+                "execution_timeline": []
             })
-            _add_event("info", f"Heal mode started ({mode_str})")
+            _add_event("info", f"Heal mode started ({mode_str}) - Unified Engine")
             _add_event("meta", f"Meta-learning {'ACTIVE' if gemini_active else 'INACTIVE'}")
             _save_runtime_state(project_root)
 
-            # --- MISSION EXECUTION: TIERED FLOW ---
-            print(mission_header("SOVEREIGN HEAL", execute=execute_heal))
+            # --- UNIFIED MISSION EXECUTION ---
+            print(mission_header("SOVEREIGN HEAL (UNIFIED)", execute=execute_heal))
             
-            # TIER 0: Pre-Flight (Syntax & Hygiene)
-            print(phase_header("Parseability & Hygiene (Pre-Flight)", phase_num=0, total_phases=5, status="running"))
-            tier0_start = datetime.now()
-            t0_results = orchestrator.run_mission(mandatory_preflight, mission_context)
-            tier0_end = datetime.now()
-            _runtime_state["execution_timeline"].append({
-                "tier": 0,
-                "name": "Parseability & Hygiene",
-                "start": tier0_start.isoformat(),
-                "end": tier0_end.isoformat(),
-                "agents": [name for name, _ in mandatory_preflight],
-                "fixes": t0_results.get("total_fixes", 0),
-                "violations": t0_results.get("total_violations", 0),
-                "success": t0_results.get("is_stable", True)
-            })
-            tier0_duration = (tier0_end - tier0_start).total_seconds()
-            print(tier_summary(
-                "Parseability & Hygiene", 0,
-                len(mandatory_preflight),
-                t0_results.get("total_fixes", 0),
-                t0_results.get("total_violations", 0),
-                tier0_duration,
-                t0_results.get("is_stable", True)
-            ))
+            mission_start = datetime.now()
+            results = orchestrator.run_mission(mission_context)
+            mission_end = datetime.now()
+            
+            # Update runtime state with execution timeline from results
+            for i, agent_result in enumerate(results.get("agent_results", [])):
+                _runtime_state["execution_timeline"].append({
+                    "agent": agent_result.get("agent_name", f"agent_{i}"),
+                    "status": agent_result.get("status", "UNKNOWN"),
+                    "fixes": agent_result.get("violations_fixed", 0),
+                    "violations": agent_result.get("violations_found", 0),
+                    "duration_ms": agent_result.get("execution_time_ms", 0)
+                })
             _save_runtime_state(project_root)
             
-            # [SYNTAX GATE] Abort if Tier 0 has unfixable syntax errors
-            if execute_heal and not t0_results.get("is_stable", True):
-                _add_event("error", "CRITICAL: Tier 0 syntax/hygiene failures. Aborting Mission.")
-                _save_runtime_state(project_root)
-                log_status("error", "MISSION ABORTED: Repository has fatal syntax errors.")
-                log_status("error", f"Tier 0 violations: {t0_results.get('total_violations', 0)}")
-                log_status("warning", "Fix syntax errors before proceeding.")
-                return
-            
-            # TIER 1: Structural Stabilization
-            print(phase_header("Structural Stabilization", phase_num=1, total_phases=5, status="running"))
-            tier1_start = datetime.now()
-            t1_results = orchestrator.run_mission(mandatory_structural, mission_context)
-            tier1_end = datetime.now()
-            _runtime_state["execution_timeline"].append({
-                "tier": 1,
-                "name": "Structural Stabilization",
-                "start": tier1_start.isoformat(),
-                "end": tier1_end.isoformat(),
-                "agents": [name for name, _ in mandatory_structural],
-                "fixes": t1_results.get("total_fixes", 0),
-                "violations": t1_results.get("total_violations", 0),
-                "success": t1_results.get("total_violations", 0) == 0 if execute_heal else True
-            })
-            tier1_duration = (tier1_end - tier1_start).total_seconds()
-            print(tier_summary(
-                "Structural Stabilization", 1,
-                len(mandatory_structural),
-                t1_results.get("total_fixes", 0),
-                t1_results.get("total_violations", 0),
-                tier1_duration,
-                t1_results.get("total_violations", 0) == 0 or not execute_heal
-            ))
-            _save_runtime_state(project_root)
-            
-            # [STABILITY GATE] Abort if Tier 1 structural violations remain unfixed
-            if execute_heal and t1_results.get("total_violations", 0) > 0:
-                _add_event("error", "CRITICAL: Tier 1 structural violations persist. Mission Aborted.")
-                _save_runtime_state(project_root)
-                log_status("error", "MISSION ABORTED: Repository filesystem is unstable")
-                log_status("error", f"Tier 1 violations: {t1_results.get('total_violations', 0)}")
-                log_status("warning", "Fix these structural issues before proceeding")
-                return
-            
-            print(phase_header("Architectural Alignment", phase_num=2, total_phases=5, status="running"))
-            tier2_start = datetime.now()
-            t2_results = orchestrator.run_mission(mandatory_architectural, mission_context)
-            tier2_end = datetime.now()
-            _runtime_state["execution_timeline"].append({
-                "tier": 2,
-                "name": "Architectural Alignment",
-                "start": tier2_start.isoformat(),
-                "end": tier2_end.isoformat(),
-                "agents": [name for name, _ in mandatory_architectural],
-                "fixes": t2_results.get("total_fixes", 0),
-                "violations": t2_results.get("total_violations", 0),
-                "success": True
-            })
-            tier2_duration = (tier2_end - tier2_start).total_seconds()
-            print(tier_summary(
-                "Architectural Alignment", 2,
-                len(mandatory_architectural),
-                t2_results.get("total_fixes", 0),
-                t2_results.get("total_violations", 0),
-                tier2_duration,
-                True
-            ))
-            _save_runtime_state(project_root)
-            
-            print(phase_header(f"Deep Domain Healing ({len(discovery_roster)} agents)", phase_num=3, total_phases=5, status="running"))
-            tier3_start = datetime.now()
-            t3_results = orchestrator.run_mission(discovery_roster, mission_context)
-            tier3_end = datetime.now()
-            _runtime_state["execution_timeline"].append({
-                "tier": 3,
-                "name": "Deep Domain Healing",
-                "start": tier3_start.isoformat(),
-                "end": tier3_end.isoformat(),
-                "agents": [name for name, _ in discovery_roster],
-                "fixes": t3_results.get("total_fixes", 0),
-                "violations": t3_results.get("total_violations", 0),
-                "success": True
-            })
-            tier3_duration = (tier3_end - tier3_start).total_seconds()
-            print(tier_summary(
-                "Deep Domain Healing", 3,
-                len(discovery_roster),
-                t3_results.get("total_fixes", 0),
-                t3_results.get("total_violations", 0),
-                tier3_duration,
-                True
-            ))
-            _save_runtime_state(project_root)
-            
-            print(phase_header("Final Safety Gate", phase_num=4, total_phases=5, status="running"))
-            tier4_start = datetime.now()
-            t4_results = orchestrator.run_mission(final_safety, mission_context)
-            tier4_end = datetime.now()
-            _runtime_state["execution_timeline"].append({
-                "tier": 4,
-                "name": "Final Safety Gate",
-                "start": tier4_start.isoformat(),
-                "end": tier4_end.isoformat(),
-                "agents": [name for name, _ in final_safety],
-                "fixes": t4_results.get("total_fixes", 0),
-                "violations": t4_results.get("total_violations", 0),
-                "success": True
-            })
-            tier4_duration = (tier4_end - tier4_start).total_seconds()
-            print(tier_summary(
-                "Final Safety Gate", 4,
-                len(final_safety),
-                t4_results.get("total_fixes", 0),
-                t4_results.get("total_violations", 0),
-                tier4_duration,
-                True
-            ))
-            _save_runtime_state(project_root)
-            
-            # Consolidate results for reporting (include Tier 0)
-            total_fixes = t0_results["total_fixes"] + t1_results["total_fixes"] + t2_results["total_fixes"] + t3_results["total_fixes"] + t4_results["total_fixes"]
-            total_violations = t0_results["total_violations"] + t1_results["total_violations"] + t2_results["total_violations"] + t3_results["total_violations"] + t4_results["total_violations"]
+            # Map MissionResult to reporting format
+            total_fixes = results.get("total_fixed", 0)
+            total_violations = results.get("total_violations", 0)
+            agents_run = len(results.get("agent_results", []))
             
             consolidated_results = [{
                 "domain": "Sovereign Repository",
-                "agents_run": len(all_active_agents),
+                "agents_run": agents_run,
                 "total_fixed": total_fixes,
                 "total_violations": total_violations,
                 "compliance_score": 100 if (total_fixes + total_violations) == 0 else int((1 - total_violations / max(total_fixes + total_violations, 1)) * 100)
             }]
             
+            # Log abort info if mission was aborted
+            if results.get("aborted"):
+                _add_event("warning", f"Mission aborted: {results.get('abort_reason', 'Unknown')}")
+                log_status("warning", f"Mission aborted: {results.get('abort_reason', 'Unknown')}")
+            
             # Finalize runtime state
             _runtime_state["status"] = "idle"
             _runtime_state["current_agent"] = None
             _runtime_state["current_layer"] = None
-            _add_event("info", "Heal mode completed — full sweep finished")
+            _add_event("info", f"Heal mode completed — Unified Engine ({results.get('status', 'UNKNOWN')})")
             _save_runtime_state(project_root)
             
             # Phase 4.5: Autonomous Executive Summary
