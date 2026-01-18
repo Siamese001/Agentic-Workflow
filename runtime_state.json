@@ -1,9 +1,9 @@
 {
-  "status": "healing",
-  "start_time": "2026-01-17T16:00:04.495225",
+  "status": "idle",
+  "start_time": "2026-01-17T16:44:41.807687",
   "end_time": null,
-  "current_agent": "ConsolidatedOrchestratorAgent",
-  "current_layer": "L3 \u2013 Orchestration & Workflows",
+  "current_agent": null,
+  "current_layer": null,
   "agents_order": [
     "LocationAgent \u2192 agentic_core",
     "HierarchyAgent \u2192 agentic_core",
@@ -34,44 +34,99 @@
   "completed_agents": [],
   "events": [
     {
-      "time": "2026-01-17T16:00:04.495225",
+      "time": "2026-01-17T16:44:41.807687",
       "type": "info",
       "message": "Heal mode started (DRY-RUN)"
     },
     {
-      "time": "2026-01-17T16:00:04.495225",
+      "time": "2026-01-17T16:44:41.807687",
       "type": "meta",
       "message": "Meta-learning ACTIVE"
     },
     {
-      "time": "2026-01-17T16:00:04.496743",
+      "time": "2026-01-17T16:44:41.808272",
       "type": "info",
       "message": "Starting domain sweep: agentic_core"
     },
     {
-      "time": "2026-01-17T16:00:04.501501",
+      "time": "2026-01-17T16:44:41.818577",
       "type": "agent_start",
       "message": "\u2192 MISSION CONTROL: Orchestrator taking command of agentic_core"
     },
     {
-      "time": "2026-01-17T16:04:27.168161",
+      "time": "2026-01-17T16:49:13.963401",
       "type": "agent_end",
       "message": "\u2713 Orchestrator Mission Complete for agentic_core"
     },
     {
-      "time": "2026-01-17T16:04:27.168161",
+      "time": "2026-01-17T16:49:13.964520",
       "type": "info",
       "message": "Domain sweep completed: agentic_core"
     },
     {
-      "time": "2026-01-17T16:04:27.173971",
+      "time": "2026-01-17T16:49:13.971911",
       "type": "info",
       "message": "Starting domain sweep: apps_lic"
     },
     {
-      "time": "2026-01-17T16:04:27.179692",
+      "time": "2026-01-17T16:49:13.975814",
       "type": "agent_start",
       "message": "\u2192 MISSION CONTROL: Orchestrator taking command of apps_lic"
+    },
+    {
+      "time": "2026-01-17T16:54:09.970891",
+      "type": "agent_end",
+      "message": "\u2713 Orchestrator Mission Complete for apps_lic"
+    },
+    {
+      "time": "2026-01-17T16:54:09.970891",
+      "type": "info",
+      "message": "Domain sweep completed: apps_lic"
+    },
+    {
+      "time": "2026-01-17T16:54:09.977026",
+      "type": "info",
+      "message": "Starting domain sweep: apps_rg"
+    },
+    {
+      "time": "2026-01-17T16:54:09.982330",
+      "type": "agent_start",
+      "message": "\u2192 MISSION CONTROL: Orchestrator taking command of apps_rg"
+    },
+    {
+      "time": "2026-01-17T16:58:20.613472",
+      "type": "agent_end",
+      "message": "\u2713 Orchestrator Mission Complete for apps_rg"
+    },
+    {
+      "time": "2026-01-17T16:58:20.614228",
+      "type": "info",
+      "message": "Domain sweep completed: apps_rg"
+    },
+    {
+      "time": "2026-01-17T16:58:20.623782",
+      "type": "info",
+      "message": "Starting domain sweep: scripts"
+    },
+    {
+      "time": "2026-01-17T16:58:20.630046",
+      "type": "agent_start",
+      "message": "\u2192 MISSION CONTROL: Orchestrator taking command of scripts"
+    },
+    {
+      "time": "2026-01-17T17:02:01.373939",
+      "type": "agent_end",
+      "message": "\u2713 Orchestrator Mission Complete for scripts"
+    },
+    {
+      "time": "2026-01-17T17:02:01.373939",
+      "type": "info",
+      "message": "Domain sweep completed: scripts"
+    },
+    {
+      "time": "2026-01-17T17:02:01.378049",
+      "type": "info",
+      "message": "Heal mode completed \u2014 full sweep finished"
     }
   ],
   "meta_learning": {

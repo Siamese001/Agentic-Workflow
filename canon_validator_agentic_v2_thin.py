@@ -244,6 +244,12 @@ AGENT_LAYERS = {
     "GovernanceAgent": "L1 – Cognition & Intelligence",
     "DocumentationAgent": "L1 – Cognition & Intelligence",
     
+    # L4 State & Memory (Phase 5 Activation)
+    "CheckpointManagerAgent": "L4 – State & Memory",
+    
+    # L6 Observability & Metrics (Phase 5 Activation)
+    "PerformanceAnalystAgent": "L6 – Observability & Metrics",
+    
     # L0 Maintenance (Future Activation)
     "BootstrapAgent": "L0 – Maintenance & Infrastructure",
     "FilesystemSSOTReconcilerAgent": "L0 – Maintenance & Infrastructure",
@@ -666,11 +672,13 @@ def main():
                 _add_event("info", f"Starting domain sweep: {domain}")
                 _save_runtime_state(project_root)
                 
-                # [L3 ACTIVATION] Handing command to ConsolidatedOrchestratorAgent
-                # The manual loop is replaced by the Orchestrator's run_mission()
+                # [PHASE 6: FULL INTEGRATION]
+                # Dynamic Layer-Based Sweep Architecture
                 
-                # 1. Assemble the Army
-                agents = [
+                # 1. Assemble the Army (Core Agents + Support)
+                # This list represents the "Verified Active Duty" roster.
+                # Future: Dynamically populate this from discovery results.
+                active_roster = [
                     ("LocationAgent", get_location_agent(project_root)),
                     ("HierarchyAgent", get_hierarchy_agent(project_root)),
                     ("NamingAgent", get_naming_agent(project_root)),
@@ -698,15 +706,17 @@ def main():
                     "execute": execute_heal,
                     "domain": domain,
                     "checkpoint_manager": checkpoint_manager,
-                    "performance_analyst": performance_analyst
+                    "performance_analyst": performance_analyst,
+                    "scan_mode": "leveraged"  # Signal to leverage single scan
                 }
                 
-                mission_results = orchestrator.run_mission(agents, mission_context)
+                # [L3 COMMAND] Execute the Full Sweep
+                mission_results = orchestrator.run_mission(active_roster, mission_context)
                 
                 # 5. Process Results (Map back to validator summary format)
                 domain_summary = {
                     "domain": domain,
-                    "agents_run": len(agents),
+                    "agents_run": len(active_roster),
                     "total_renamed": 0,
                     "total_errors": 0,
                     "total_scanned": 0,
