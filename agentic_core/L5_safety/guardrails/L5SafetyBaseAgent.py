@@ -18,7 +18,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 import logging
 import re
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 

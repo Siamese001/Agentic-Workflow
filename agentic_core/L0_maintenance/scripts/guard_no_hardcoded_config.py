@@ -114,7 +114,7 @@ def main() -> Any:
         sys.exit(0)
     else:
         print(f'❌ VIOLATIONS: {violations}/{total} files have hardcoded config')
-        print('\nFix by importing: from agentic_core.config.blueprint_sovereign.sovereign_config import config')
+        print('\nFix by importing: from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config')
         sys.exit(1)
 if __name__ == '__main__':
     main()

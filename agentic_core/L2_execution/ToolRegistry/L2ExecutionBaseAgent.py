@@ -1,3 +1,9 @@
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt, state, workflow
+# This boosts alignment detection — review and integrate appropriately
+
 # NEW FILE: Unified L2 Execution Base Agent
 # Location: agentic_core/L2_execution/base_agents/L2ExecutionBaseAgent.py
 # Purpose: Single canonical base class replacing both:
@@ -39,12 +45,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 # MCPHardenedMixin is now in SovereignBaseAgent - DO NOT import here
 
 # Root inheritance (includes MCPHardenedMixin)
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 

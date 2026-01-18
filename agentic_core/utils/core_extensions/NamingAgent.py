@@ -5,7 +5,7 @@ Re-exported from L5_safety for backwards compatibility.
 """
 from typing import Dict, Any, Optional
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 TREE_SITTER_AVAILABLE = False  # Stub - tree-sitter not required for tests
 

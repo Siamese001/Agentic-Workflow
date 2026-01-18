@@ -50,3 +50,6 @@ temp_*/              # Automated sprawl - strictly ignored
 # [L6 PHYSICS] ARCHITECTURAL NOISE
 0[0-9]_*/            # Numbered migration folders (Forbidden Root Folders)
 core/                # Unauthorized sprawl directory
+
+# Test coverage output
+coverage_html/

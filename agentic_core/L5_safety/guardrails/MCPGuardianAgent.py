@@ -25,7 +25,7 @@ Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.mixins import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 @dataclass
 class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -140,7 +140,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 for match in matches:
                     file_violations.append({
                         "file": str(py_file.relative_to(self.project_root)),
-                        "line": content[:match.start()].count("\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n") + 1,
+                        "line": content[:match.start()].count("\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n") + 1,
                         "type": ViolationType,
                         "Severity": "CRITICAL",
                         "match": match.group(0)

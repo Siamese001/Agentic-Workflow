@@ -10,7 +10,7 @@ sys.path.append(str(REPO_ROOT))
 from canon_validator_agentic_v2 import run_mission as run_healing
 
 # 2. Sequential Import Link
-from agentic_core.L0_maintenance.scripts.sovereign_auditor_v3 import main as run_audit
+from agentic_core.L5_safety.validators.sovereign_auditor_v3 import main as run_audit
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,

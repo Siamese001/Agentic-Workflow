@@ -1927,6 +1927,11 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
                 file_path = getattr(violation, 'file_path', None) or violation[0]
                 msg = getattr(violation, 'message', None) or violation[1]
             
+            # Skip protected root files
+            if file_path.name in ROOT_PROTECTED_FILES:
+                Logger.info(f"[LocationAgent] Skipping protected root file: {file_path.name}")
+                continue
+            
             # Skip already-archived files
             archive_markers = ('.archived', '.backup', '.old', '.copy')
             if any(file_path.name.lower().endswith(marker) for marker in archive_markers):

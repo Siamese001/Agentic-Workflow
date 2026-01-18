@@ -1,7 +1,0 @@
-from __future__ import annotations
-import logging
-
-Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-'Backward compatibility shim for resume_orchestration_config.\n\n\nLOGGER = logging.getLogger(__name__)\nThis module maintains backward compatibility by re-exporting all components\nmodules to comply with cognitive density limits (max 5 top-level definitions).\n\nThe Subatomic Canon requires files to either:\n1. Contain at least one definition (class, function, etc.), or\n2. Be at least 200 bytes in size\n\nThis shim file satisfies requirement #2 by providing comprehensive documentation\nabout the refactoring that was performed to split the original module into\nsmaller, more focused submodules for better maintainability and compliance.\n'
-__all__ = ['*']
-

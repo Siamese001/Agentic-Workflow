@@ -7,7 +7,7 @@ Tool ID Prefix: ACT-001
 import logging
 import json
 from typing import Any, Dict, List, Optional
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

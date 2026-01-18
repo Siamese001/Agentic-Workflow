@@ -14,7 +14,7 @@ These tests enforce the Single Source of Truth principle.
 import pytest
 from pathlib import Path
 
-from agentic_core.config.blueprint_sovereign.canonical_truth import (
+from agentic_core.L5_safety.validators.canonical_truth_1 import (
     calculate_health_score,
     get_canonical_layer,
     validate_health_components,
@@ -356,7 +356,7 @@ class TestSSOTEnforcement:
             # Should NOT have inline weight calculations
             assert "(heal_cap_pct * 0.30)" not in content, "Dashboard has hardcoded health weights"
             # SHOULD import from canonical_truth
-            assert "from agentic_core.config.blueprint_sovereign.canonical_truth import calculate_health_score" in content, \
+            assert "from agentic_core.L5_safety.validators.canonical_truth_1 import calculate_health_score" in content, \
                 "Dashboard should import canonical health function"
     
     def test_no_hardcoded_health_weights_in_tests(self):
@@ -367,7 +367,7 @@ class TestSSOTEnforcement:
             # Should NOT have inline weight calculations
             assert "(heal_cap * 0.30)" not in content, "E2E tests have hardcoded health weights"
             # SHOULD import from canonical_truth
-            assert "from agentic_core.config.blueprint_sovereign.canonical_truth import calculate_health_score" in content, \
+            assert "from agentic_core.L5_safety.validators.canonical_truth_1 import calculate_health_score" in content, \
                 "E2E tests should import canonical health function"
 
 

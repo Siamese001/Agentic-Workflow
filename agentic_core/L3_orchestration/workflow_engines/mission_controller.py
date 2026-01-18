@@ -30,7 +30,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SCOPE_SUMMARY_EXCLUSIONS,
 )
-from agentic_core.config.blueprint_sovereign.mission_preflight import MissionPreflight
+from agentic_core.L5_safety.validators.mission_preflight_1 import MissionPreflight
 from agentic_core.utils.general_helpers.mission_utils import (
     dynamic_import,
     get_layer_rank,
@@ -1204,7 +1204,7 @@ class MissionController:
         
         try:
             # Import and run the filesystem SSOT reconciler
-            from agentic_core.L0_maintenance.scripts.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+            from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
             
             # Determine reconciliation mode
             auto_apply = os.getenv("RECONCILE_BLUEPRINT_AUTO_APPLY", "false").lower() in ("true", "1", "yes")

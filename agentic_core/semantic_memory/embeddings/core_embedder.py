@@ -9,7 +9,7 @@ from typing import Any, List
 import hashlib
 import openai
 from cachetools import LRUCache
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # Global deterministic embedding cache (LRU in-memory; extend to diskcache if needed)
 _embedding_cache: LRUCache = LRUCache(maxsize=10000)  # ~10k entries × 6KB ≈ 60MB RAM

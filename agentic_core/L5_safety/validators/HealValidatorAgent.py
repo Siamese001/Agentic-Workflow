@@ -202,7 +202,7 @@ class HealValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         for pattern, description in DANGEROUS_PATTERNS:
             matches = re.finditer(pattern, code, re.MULTILINE | re.IGNORECASE)
             for match in matches:
-                line_num = code[:match.start()].count('\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\n') + 1
+                line_num = code[:match.start()].count('\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n') + 1
                 detected_patterns.append({
                     "pattern": description,
                     "line": line_num,

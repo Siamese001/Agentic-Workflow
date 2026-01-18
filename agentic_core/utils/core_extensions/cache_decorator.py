@@ -23,7 +23,7 @@ import logging
 import time
 from typing import Any, Callable
 
-from agentic_core.config.flags import CACHE_METRICS_ENABLED
+from archives.location_violations.flags import CACHE_METRICS_ENABLED
 from agentic_core.L6_observability.metrics.cache_metrics import get_cache_metrics
 
 log = logging.getLogger(__name__)

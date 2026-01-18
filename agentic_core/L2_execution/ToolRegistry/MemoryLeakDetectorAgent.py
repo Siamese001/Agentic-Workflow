@@ -36,7 +36,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
             re.IGNORECASE
         ),
         'global_list_append': re.compile(
-            r'^[A-Z_]+\s*=\s*\[\]\s*\nfrom agentic_core.utils.mixins import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n.*\.append\(',
+            r'^[A-Z_]+\s*=\s*\[\]\s*\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n.*\.append\(',
             re.IGNORECASE | re.MULTILINE
         ),
         'file_no_close': re.compile(

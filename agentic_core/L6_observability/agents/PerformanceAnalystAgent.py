@@ -22,7 +22,7 @@ from agentic_core.L6_observability.L6ObservabilityBaseAgent import (
     AgentPerformanceMetrics,
     CritiqueReport
 )
-from agentic_core.utils.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # [SOVEREIGN FACTORY]

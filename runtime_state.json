@@ -1,137 +1,108 @@
 {
-  "status": "idle",
-  "start_time": "2026-01-17T16:44:41.807687",
+  "status": "healing",
+  "start_time": "2026-01-18T12:57:29.770636",
   "end_time": null,
   "current_agent": null,
   "current_layer": null,
   "agents_order": [
-    "LocationAgent \u2192 agentic_core",
-    "HierarchyAgent \u2192 agentic_core",
-    "NamingAgent \u2192 agentic_core",
-    "ImportAgent \u2192 agentic_core",
-    "GovernanceAgent \u2192 agentic_core",
-    "AutonomyGuardian \u2192 agentic_core",
-    "LocationAgent \u2192 apps_lic",
-    "HierarchyAgent \u2192 apps_lic",
-    "NamingAgent \u2192 apps_lic",
-    "ImportAgent \u2192 apps_lic",
-    "GovernanceAgent \u2192 apps_lic",
-    "AutonomyGuardian \u2192 apps_lic",
-    "LocationAgent \u2192 apps_rg",
-    "HierarchyAgent \u2192 apps_rg",
-    "NamingAgent \u2192 apps_rg",
-    "ImportAgent \u2192 apps_rg",
-    "GovernanceAgent \u2192 apps_rg",
-    "AutonomyGuardian \u2192 apps_rg",
-    "LocationAgent \u2192 scripts",
-    "HierarchyAgent \u2192 scripts",
-    "NamingAgent \u2192 scripts",
-    "ImportAgent \u2192 scripts",
-    "GovernanceAgent \u2192 scripts",
-    "AutonomyGuardian \u2192 scripts"
+    "LocationAgent",
+    "HierarchyAgent",
+    "NamingAgent",
+    "ImportAgent",
+    "GovernanceAgent",
+    "ScriptToAgentClassifierAgent",
+    "PromptRegistryAgent",
+    "DependencyDiplomatAgent",
+    "DriftDetectorAgent",
+    "DynamicSealAgent",
+    "GlobalComplianceAggregatorAgent",
+    "GravityHealerAgent",
+    "ImportHealerAgent",
+    "InterfaceBoundaryAgent",
+    "L2Agent",
+    "LicInternalAgent",
+    "RgStrategicPlannerAgent",
+    "SovereignRedisOrchestratorAgent",
+    "SprawlInspectorAgent",
+    "StructuralEngineerAgent",
+    "AgentRegistryValidatorAgent",
+    "ArchitectureGovernorAgent",
+    "ConsolidatedOrchestratorAgent",
+    "DagEngineAgent",
+    "DagExecutorAgent",
+    "DagRuntimeInspectorAgent",
+    "FissionManagerAgent",
+    "GitSafetyHandlerAgent",
+    "HallucinationDetectorAgent",
+    "L3Agent",
+    "McpConnectionManagerAgent",
+    "McpRouterAgent",
+    "SSOTOrchestratorAgent",
+    "SelfRecoveringOrchestratorAgent",
+    "SovereignRagOrchestratorAgent",
+    "StrategicRecommendationAgent",
+    "TaskMonitorAgent",
+    "TelemetryAgent",
+    "TokenBudgetInspectorAgent",
+    "AutonomousCheckpointManagerAgent",
+    "AutonomousStateGuardianAgent",
+    "CheckpointManagerAgent",
+    "GravityStateAgent",
+    "L4Agent",
+    "MemoryManagerAgent",
+    "AdversarialRedTeamerAgent",
+    "AutonomousThreatEvolutionAgent",
+    "AutonomyGuardianAgent",
+    "BiasAuditorAgent",
+    "BiasDetectorAgent",
+    "CodeSSOTEnforcerAgent",
+    "DuplicateCodeDetectorAgent",
+    "FilesystemSSOTReconcilerAgent",
+    "GravityLeakRepairAgent",
+    "GuardianOrchestratorAgent",
+    "HealValidatorAgent",
+    "HierarchyHealerAgent",
+    "L5Agent",
+    "L5IntegrityGateExecutorAgent",
+    "MCPGuardianAgent",
+    "MethodChangeDetectorAgent",
+    "PIISanitizerAgent",
+    "RedSentinelAgent",
+    "RgHealingOrchestratorAgent",
+    "SelfUpdatingSafetyEngineAgent",
+    "StructuralHealerAgent",
+    "TestGeneratorAgent",
+    "TwoPhaseDeduplicationAgent",
+    "RuntimeTelemetryAgent",
+    "SovereignObservabilityAgent",
+    "AutonomyGuardian"
   ],
-  "total_agents": 24,
+  "total_agents": 71,
   "completed_agents": [],
   "events": [
     {
-      "time": "2026-01-17T16:44:41.807687",
+      "time": "2026-01-18T12:57:29.770636",
       "type": "info",
       "message": "Heal mode started (DRY-RUN)"
     },
     {
-      "time": "2026-01-17T16:44:41.807687",
+      "time": "2026-01-18T12:57:29.770636",
       "type": "meta",
       "message": "Meta-learning ACTIVE"
-    },
-    {
-      "time": "2026-01-17T16:44:41.808272",
-      "type": "info",
-      "message": "Starting domain sweep: agentic_core"
-    },
-    {
-      "time": "2026-01-17T16:44:41.818577",
-      "type": "agent_start",
-      "message": "\u2192 MISSION CONTROL: Orchestrator taking command of agentic_core"
-    },
-    {
-      "time": "2026-01-17T16:49:13.963401",
-      "type": "agent_end",
-      "message": "\u2713 Orchestrator Mission Complete for agentic_core"
-    },
-    {
-      "time": "2026-01-17T16:49:13.964520",
-      "type": "info",
-      "message": "Domain sweep completed: agentic_core"
-    },
-    {
-      "time": "2026-01-17T16:49:13.971911",
-      "type": "info",
-      "message": "Starting domain sweep: apps_lic"
-    },
-    {
-      "time": "2026-01-17T16:49:13.975814",
-      "type": "agent_start",
-      "message": "\u2192 MISSION CONTROL: Orchestrator taking command of apps_lic"
-    },
-    {
-      "time": "2026-01-17T16:54:09.970891",
-      "type": "agent_end",
-      "message": "\u2713 Orchestrator Mission Complete for apps_lic"
-    },
-    {
-      "time": "2026-01-17T16:54:09.970891",
-      "type": "info",
-      "message": "Domain sweep completed: apps_lic"
-    },
-    {
-      "time": "2026-01-17T16:54:09.977026",
-      "type": "info",
-      "message": "Starting domain sweep: apps_rg"
-    },
-    {
-      "time": "2026-01-17T16:54:09.982330",
-      "type": "agent_start",
-      "message": "\u2192 MISSION CONTROL: Orchestrator taking command of apps_rg"
-    },
-    {
-      "time": "2026-01-17T16:58:20.613472",
-      "type": "agent_end",
-      "message": "\u2713 Orchestrator Mission Complete for apps_rg"
-    },
-    {
-      "time": "2026-01-17T16:58:20.614228",
-      "type": "info",
-      "message": "Domain sweep completed: apps_rg"
-    },
-    {
-      "time": "2026-01-17T16:58:20.623782",
-      "type": "info",
-      "message": "Starting domain sweep: scripts"
-    },
-    {
-      "time": "2026-01-17T16:58:20.630046",
-      "type": "agent_start",
-      "message": "\u2192 MISSION CONTROL: Orchestrator taking command of scripts"
-    },
-    {
-      "time": "2026-01-17T17:02:01.373939",
-      "type": "agent_end",
-      "message": "\u2713 Orchestrator Mission Complete for scripts"
-    },
-    {
-      "time": "2026-01-17T17:02:01.373939",
-      "type": "info",
-      "message": "Domain sweep completed: scripts"
-    },
-    {
-      "time": "2026-01-17T17:02:01.378049",
-      "type": "info",
-      "message": "Heal mode completed \u2014 full sweep finished"
     }
   ],
   "meta_learning": {
-    "gemini_active": true,
-    "note": "Experiences embedded on success"
+    "enabled": false,
+    "total_experiences": 0,
+    "patterns_extracted": 0,
+    "strategy_weights": {
+      "cot": 1.0,
+      "tot": 1.0,
+      "react": 1.0,
+      "reflection": 1.0
+    },
+    "recent_experiences": [],
+    "pattern_history": []
   },
   "redis": {
     "connected": false,
@@ -158,5 +129,33 @@
     "avg_similarity": 0.0,
     "recent_queries": []
   },
-  "execution_timeline": []
+  "execution_timeline": [
+    {
+      "tier": 1,
+      "name": "Structural Stabilization",
+      "start": "2026-01-18T12:57:29.772260",
+      "end": "2026-01-18T13:02:43.591525",
+      "agents": [
+        "LocationAgent",
+        "HierarchyAgent",
+        "NamingAgent"
+      ],
+      "fixes": 22,
+      "violations": 0,
+      "success": true
+    },
+    {
+      "tier": 2,
+      "name": "Architectural Alignment",
+      "start": "2026-01-18T13:02:43.593130",
+      "end": "2026-01-18T13:04:30.087534",
+      "agents": [
+        "ImportAgent",
+        "GovernanceAgent"
+      ],
+      "fixes": 0,
+      "violations": 70783,
+      "success": true
+    }
+  ]
 }

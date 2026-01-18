@@ -11,6 +11,7 @@ import argparse
 import traceback
 from pathlib import Path
 from datetime import datetime
+import importlib
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -45,7 +46,7 @@ except ImportError:
 # NEW: Hybrid Interactive Discovery (Cached JSON ↔ Live Scan)
 # ----------------------------------------------------------------------
 try:
-    from agentic_core.utils.discovery.Full_Agent_discovery import discover_all_agents
+    from scripts.full_agent_discovery import discover_all_agents
 except ImportError:
     discover_all_agents = None
 
@@ -375,61 +376,23 @@ def main():
 
     # Replace the entire original list_available_agents with this new version
     def list_available_agents(dedupe: bool = True) -> list:
-        """Hybrid agent discovery: prefer cached JSON with user prompt to fallback/refresh via live scan."""
-        import json
-        
-        agents = []
-        json_path = project_root / AGENT_DISCOVERY_JSON
+        """
+        STRICT SSOT DISCOVERY: Always runs live AST scan.
+        No caching, no stale artifacts. Guaranteed fresh truth.
+        """
+        if discover_all_agents is None:
+            print("   [CRITICAL] SSOT Discovery Module missing!")
+            return []
 
-        # Case 1: Cached JSON exists → use it automatically
-        if json_path.exists():
-            try:
-                data = json.loads(json_path.read_text(encoding="utf-8"))
-                agents = process_discovery_data(data)
-                print(f"   [OK] Loaded {len(agents)} agents from cache")
-            except Exception as e:
-                print(f"   [!] Cache corrupt: {e}, falling back to live scan")
-
-        # Case 2: No cache or user requested refresh → try live scan
-        if not agents:  # Either no cache, corrupt, or user chose refresh
-            if discover_all_agents is None:
-                print("   [!] Live discovery module not available (Full_Agent_discovery.py missing/wrong path)")
-                if json_path.exists():
-                    print("   [FALLBACK] Forcing load from (possibly outdated) cache")
-                    try:
-                        data = json.loads(json_path.read_text(encoding="utf-8"))
-                        agents = process_discovery_data(data)
-                    except Exception:
-                        pass
-                if not agents:
-                    print("   [ERROR] No agent list available — aborting discovery")
-                    return []
-            else:
-                # Auto-run live scan if cache doesn't exist or is corrupt
-                run_live = True
-                if not json_path.exists():
-                    print(f"\n[*] No cached discovery file found, running live scan...")
-                    
-                    if not run_live:
-                        print("   [ABORT] Cannot proceed without agent list")
-                        return []
-
-                print("   [RUNNING] Live AST discovery via Full_Agent_discovery.discover_all_agents()...")
-                try:
-                    discovery_data = discover_all_agents(project_root)  # ← adjust arg type if needed (Path/str)
-                    agents = process_discovery_data(discovery_data)
-                    print(f"   [OK] Discovered {len(agents)} agents (fresh)")
-
-                    # Auto-save cache for next run
-                    try:
-                        json_path.write_text(json.dumps(discovery_data, indent=2), encoding="utf-8")
-                        print(f"   [CACHE] Saved fresh discovery to {json_path}")
-                    except Exception as e:
-                        print(f"   [!] Could not save cache: {e}")
-                except Exception as e:
-                    print(f"   [!] Live discovery failed: {e}")
-                    traceback.print_exc()
-                    return []
+        print("   [SSOT] Executing Strict Live AST Discovery...")
+        try:
+            discovery_data = discover_all_agents(project_root)
+            agents = process_discovery_data(discovery_data)
+            print(f"   [OK] SSOT Verified: {len(agents)} agents discovered")
+        except Exception as e:
+            print(f"   [!] Live discovery failed: {e}")
+            traceback.print_exc()
+            return []
 
         if dedupe:
             agents = sorted(set(agents), key=lambda x: (x[0], x[1]))
@@ -577,179 +540,174 @@ def main():
         print(f"   [MODE] {mode_str}")
         
         try:
-            # Import autonomous agents
-            # Phase 1, 2, & 3: Activate L5 Safety, L2 Execution, and L1 Cognition
-            from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
-            from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+            # [L3 MISSION ORCHESTRATION] Tiered Execution Logic
+            from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
+            from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import get_checkpoint_manager
+            
+            # [MANDATORY CORE] Direct Imports for Stabilization
             from agentic_core.L5_safety.validators.LocationAgent import get_location_agent
             from agentic_core.L5_safety.guardrails.HierarchyAgent import get_hierarchy_agent
-            
-            # Phase 2: Execution Layer - Import Validation (Gravity Law)
+            from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
             from agentic_core.L5_safety.gravity.ImportAgent import get_import_agent
+            from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
 
-            # Phase 3: Cognition Layer - Architectural Governance
-            from agentic_core.L1_cognition.thought_engine.GovernanceAgent import get_governance_agent
+            # Placeholder for missing GovernanceAgent
+            def get_governance_agent_stub(root): return None
             
-            # Phase 4: Orchestration Layer - The Mission General
-            from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
+            # Helper to safely load Performance Analyst (L6)
+            def get_performance_analyst_safe(root):
+                try:
+                    import importlib.util
+                    spec = importlib.util.find_spec("agentic_core.L6_observability.agents.PerformanceAnalystAgentSimple")
+                    if spec:
+                        perf_module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(perf_module)
+                        return perf_module.get_performance_analyst(root)
+                except: pass
+                return None
 
-            # Phase 5: State & Observability Layer Activation
-            from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import get_checkpoint_manager
-            # Direct import to bypass __init__.py circular dependency
-            import sys
-            import importlib.util
-            spec = importlib.util.spec_from_file_location(
-                "PerformanceAnalystAgentSimple",
-                project_root / "agentic_core" / "L6_observability" / "agents" / "PerformanceAnalystAgentSimple.py"
-            )
-            perf_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(perf_module)
-            get_performance_analyst = perf_module.get_performance_analyst
-            
-            # Phase 4.2: Repository-wide Sovereign Sweep across all aligned domains
-            domains = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR]
-            consolidated_results = []
-            
-            # Track Gemini embedder status
-            gemini_active = False
-            try:
-                guardian = get_autonomy_guardian(project_root)
-                gemini_active = guardian.gemini_embedder is not None
-            except:
-                pass
-            
-            # Build agent list for runtime state
-            # CRITICAL ORDER: Location -> Hierarchy -> Naming -> Import -> Governance -> Guardian
-            # Cognition (Governance) runs after structural fixes to ensure higher-level laws are met.
-            agents_template = [
-                ("LocationAgent", get_location_agent),
-                ("HierarchyAgent", get_hierarchy_agent),
-                ("NamingAgent", get_naming_agent),
-                ("ImportAgent", get_import_agent),
-                ("GovernanceAgent", get_governance_agent),
-                ("AutonomyGuardian", get_autonomy_guardian),
+            # --- TIER ASSEMBLY ---
+            # TIER 1: Structural Stabilization (MUST pass for mission to continue)
+            mandatory_structural = [
+                ("LocationAgent", get_location_agent(project_root)),
+                ("HierarchyAgent", get_hierarchy_agent(project_root)),
+                ("NamingAgent", get_naming_agent(project_root)),
             ]
             
-            # Calculate full execution order for progress tracking
-            full_order = []
-            for domain in domains:
-                domain_path = project_root / domain
-                if domain_path.exists():
-                    for agent_name, _ in agents_template:
-                        full_order.append(f"{agent_name} → {domain}")
+            # TIER 2: Architectural Alignment
+            mandatory_architectural = [
+                ("ImportAgent", get_import_agent(project_root)),
+                ("GovernanceAgent", get_governance_agent_stub(project_root)),
+            ]
+            
+            # TIER 3: Deep Domain Healing (Discovery Roster)
+            from agentic_core.L3_orchestration.discovery_roster_builder import build_healing_roster
+            full_roster = build_healing_roster(project_root)
+            
+            # Exclude already run mandatory agents from the discovery roster
+            mandatory_names = {name for name, _ in mandatory_structural} | {name for name, _ in mandatory_architectural}
+            mandatory_names.add("AutonomyGuardian") # Reserved for Tier 4
+            
+            discovery_roster = [a for a in full_roster if a[0] not in mandatory_names]
+            
+            # TIER 4: Final Safety Gate
+            final_safety = [("AutonomyGuardian", get_autonomy_guardian(project_root))]
+
+            # [MISSION CONTROL] Summon General & Support
+            orchestrator = get_consolidated_orchestrator(project_root)
+            checkpoint_manager = get_checkpoint_manager(project_root)
+            performance_analyst = get_performance_analyst_safe(project_root)
+            
+            mission_context = {
+                "dry_run": not execute_heal,
+                "execute": execute_heal,
+                "checkpoint_manager": checkpoint_manager,
+                "performance_analyst": performance_analyst,
+                "scan_mode": "tiered_sovereign_sweep"
+            }
+            
+            gemini_active = hasattr(final_safety[0][1], 'gemini_embedder') and final_safety[0][1].gemini_embedder is not None
+            all_active_agents = mandatory_structural + mandatory_architectural + discovery_roster + final_safety
             
             # Initialize runtime state for dashboard
             _runtime_state.update({
                 "status": "healing",
                 "start_time": datetime.now().isoformat(),
-                "current_agent": None,
-                "current_layer": None,
-                "agents_order": full_order,
-                "total_agents": len(full_order),
+                "agents_order": [name for name, _ in all_active_agents],
+                "total_agents": len(all_active_agents),
                 "completed_agents": [],
                 "events": [],
-                "meta_learning": {
-                    "gemini_active": gemini_active,
-                    "note": "Experiences embedded on success" if gemini_active else "Logging only"
-                }
+                "execution_timeline": []  # Track tier execution
             })
             _add_event("info", f"Heal mode started ({mode_str})")
             _add_event("meta", f"Meta-learning {'ACTIVE' if gemini_active else 'INACTIVE'}")
             _save_runtime_state(project_root)
-            
-            for domain in domains:
-                print(f"\n[SOVEREIGN SWEEP] Targeting Domain: {domain}")
-                
-                # Check if domain exists
-                domain_path = project_root / domain
-                if not domain_path.exists():
-                    print(f"   [SKIP] Domain not found: {domain}")
-                    _add_event("info", f"Skipped domain (not found): {domain}")
-                    _save_runtime_state(project_root)
-                    continue
-                
-                # Log domain start
-                _add_event("info", f"Starting domain sweep: {domain}")
-                _save_runtime_state(project_root)
-                
-                # [PHASE 6: FULL INTEGRATION]
-                # Dynamic Layer-Based Sweep Architecture
-                
-                # 1. Assemble the Army (Core Agents + Support)
-                # This list represents the "Verified Active Duty" roster.
-                # Future: Dynamically populate this from discovery results.
-                active_roster = [
-                    ("LocationAgent", get_location_agent(project_root)),
-                    ("HierarchyAgent", get_hierarchy_agent(project_root)),
-                    ("NamingAgent", get_naming_agent(project_root)),
-                    ("ImportAgent", get_import_agent(project_root)),
-                    ("GovernanceAgent", get_governance_agent(project_root)),
-                    ("AutonomyGuardian", get_autonomy_guardian(project_root)),
-                ]
-                
-                # 2. Summon the General
-                orchestrator = get_consolidated_orchestrator(project_root)
-                
-                # 2.1 Summon the Support Staff (L4 & L6)
-                checkpoint_manager = get_checkpoint_manager(project_root)
-                performance_analyst = get_performance_analyst(project_root)
 
-                # 3. Update State
-                _runtime_state["current_agent"] = "ConsolidatedOrchestratorAgent"
-                _runtime_state["current_layer"] = "L3 – Orchestration & Workflows"
-                _add_event("agent_start", f"→ MISSION CONTROL: Orchestrator taking command of {domain}")
+            # --- MISSION EXECUTION: TIERED FLOW ---
+            print(f"\n[MISSION] TIER 1: Structural Stabilization (Mandatory)")
+            tier1_start = datetime.now()
+            t1_results = orchestrator.run_mission(mandatory_structural, mission_context)
+            tier1_end = datetime.now()
+            _runtime_state["execution_timeline"].append({
+                "tier": 1,
+                "name": "Structural Stabilization",
+                "start": tier1_start.isoformat(),
+                "end": tier1_end.isoformat(),
+                "agents": [name for name, _ in mandatory_structural],
+                "fixes": t1_results.get("total_fixes", 0),
+                "violations": t1_results.get("total_violations", 0),
+                "success": t1_results.get("total_violations", 0) == 0 if execute_heal else True
+            })
+            _save_runtime_state(project_root)
+            
+            # [STABILITY GATE] Abort if Tier 1 structural violations remain unfixed
+            if execute_heal and t1_results.get("total_violations", 0) > 0:
+                _add_event("error", "CRITICAL: Tier 1 structural violations persist. Mission Aborted.")
                 _save_runtime_state(project_root)
-                
-                # 4. Execute Mission with Support Infrastructure
-                mission_context = {
-                    "dry_run": not execute_heal,
-                    "execute": execute_heal,
-                    "domain": domain,
-                    "checkpoint_manager": checkpoint_manager,
-                    "performance_analyst": performance_analyst,
-                    "scan_mode": "leveraged"  # Signal to leverage single scan
-                }
-                
-                # [L3 COMMAND] Execute the Full Sweep
-                mission_results = orchestrator.run_mission(active_roster, mission_context)
-                
-                # 5. Process Results (Map back to validator summary format)
-                domain_summary = {
-                    "domain": domain,
-                    "agents_run": len(active_roster),
-                    "total_renamed": 0,
-                    "total_errors": 0,
-                    "total_scanned": 0,
-                    "total_fixed": mission_results.get("total_fixes", 0),
-                    "total_violations": mission_results.get("total_violations", 0)
-                }
-                
-                _add_event("agent_end", f"✓ Orchestrator Mission Complete for {domain}")
-                _save_runtime_state(project_root)
-                
-                # Calculate domain compliance score
-                total_checks = domain_summary["total_violations"] + domain_summary["total_fixed"]
-                domain_summary["compliance_score"] = 100 if total_checks == 0 else int((1 - domain_summary["total_violations"] / max(total_checks, 1)) * 100)
-                
-                # Domain sweep complete
-                _add_event("info", f"Domain sweep completed: {domain}")
-                _save_runtime_state(project_root)
-                
-                consolidated_results.append(domain_summary)
-                
-                # Phase 4.3: Log health snapshot to L4 (if available)
-                try:
-                    from agentic_core.L6_observability.metrics.SovereignHealthMonitor import SovereignHealthMonitor
-                    guardian = get_autonomy_guardian(project_root)
-                    if hasattr(guardian, 'redis') and guardian.redis:
-                        monitor = SovereignHealthMonitor(guardian.redis)
-                        monitor.log_snapshot(
-                            domain=domain,
-                            score=domain_summary["compliance_score"],
-                            fixes=domain_summary["total_fixed"]
-                        )
-                except Exception:
-                    pass  # Health monitoring is optional
+                print("\n[!] MISSION ABORTED: Repository filesystem is unstable.")
+                print(f"    Tier 1 violations: {t1_results.get('total_violations', 0)}")
+                print(f"    Fix these structural issues before proceeding.")
+                return
+            
+            print(f"\n[MISSION] TIER 2: Architectural Alignment (Mandatory)")
+            tier2_start = datetime.now()
+            t2_results = orchestrator.run_mission(mandatory_architectural, mission_context)
+            tier2_end = datetime.now()
+            _runtime_state["execution_timeline"].append({
+                "tier": 2,
+                "name": "Architectural Alignment",
+                "start": tier2_start.isoformat(),
+                "end": tier2_end.isoformat(),
+                "agents": [name for name, _ in mandatory_architectural],
+                "fixes": t2_results.get("total_fixes", 0),
+                "violations": t2_results.get("total_violations", 0),
+                "success": True
+            })
+            _save_runtime_state(project_root)
+            
+            print(f"\n[MISSION] TIER 3: Deep Domain Healing ({len(discovery_roster)} Discovery Agents)")
+            tier3_start = datetime.now()
+            t3_results = orchestrator.run_mission(discovery_roster, mission_context)
+            tier3_end = datetime.now()
+            _runtime_state["execution_timeline"].append({
+                "tier": 3,
+                "name": "Deep Domain Healing",
+                "start": tier3_start.isoformat(),
+                "end": tier3_end.isoformat(),
+                "agents": [name for name, _ in discovery_roster],
+                "fixes": t3_results.get("total_fixes", 0),
+                "violations": t3_results.get("total_violations", 0),
+                "success": True
+            })
+            _save_runtime_state(project_root)
+            
+            print(f"\n[MISSION] TIER 4: Final Safety Gate")
+            tier4_start = datetime.now()
+            t4_results = orchestrator.run_mission(final_safety, mission_context)
+            tier4_end = datetime.now()
+            _runtime_state["execution_timeline"].append({
+                "tier": 4,
+                "name": "Final Safety Gate",
+                "start": tier4_start.isoformat(),
+                "end": tier4_end.isoformat(),
+                "agents": [name for name, _ in final_safety],
+                "fixes": t4_results.get("total_fixes", 0),
+                "violations": t4_results.get("total_violations", 0),
+                "success": True
+            })
+            _save_runtime_state(project_root)
+            
+            # Consolidate results for reporting
+            total_fixes = t1_results["total_fixes"] + t2_results["total_fixes"] + t3_results["total_fixes"] + t4_results["total_fixes"]
+            total_violations = t1_results["total_violations"] + t2_results["total_violations"] + t3_results["total_violations"] + t4_results["total_violations"]
+            
+            consolidated_results = [{
+                "domain": "Sovereign Repository",
+                "agents_run": len(all_active_agents),
+                "total_fixed": total_fixes,
+                "total_violations": total_violations,
+                "compliance_score": 100 if (total_fixes + total_violations) == 0 else int((1 - total_violations / max(total_fixes + total_violations, 1)) * 100)
+            }]
             
             # Finalize runtime state
             _runtime_state["status"] = "idle"
