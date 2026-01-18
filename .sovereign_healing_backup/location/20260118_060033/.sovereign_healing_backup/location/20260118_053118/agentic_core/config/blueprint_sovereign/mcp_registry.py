@@ -1,0 +1,60 @@
+from __future__ import annotations
+"""
+Sovereign MCP Registry – Phase 13 (Dec 26, 2025)
+Canonical SSOT for all MCP server configurations across L0-L6.
+
+This registry enforces:
+- Layer-specific MCP assignments (L0-L6)
+- Mode validation (local, remote, mocked)
+- Capability tracking for sovereignty alignment
+- Constitutional compliance for all integrations
+"""
+from enum import Enum
+from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field
+
+class McpServerMode(str, Enum):
+    """Deployment mode for MCP servers."""
+    LOCAL: Any = 'local'
+    'Local execution via npx or binary'
+    REMOTE: Any = 'remote'
+    'Remote API endpoint'
+    MOCKED: Any = 'mocked'
+    'Mock implementation for testing'
+
+class McpServerConfig(BaseModel):
+    """Configuration for a single MCP server integration."""
+    name: str = Field(..., description='Unique MCP server identifier')
+    target_layer: str = Field(..., description='Primary L0-L6 layer assignment')
+    mode: MCPServerMode = Field(default=MCPServerMode.LOCAL, description='Deployment mode')
+    capabilities: List[str] = Field(default_factory=list, description='Sovereign capabilities provided')
+    command: str = Field(..., description='Execution command (npx, python, etc.)')
+    args: List[str] = Field(default_factory=list, description='Command arguments')
+    env: Dict[str, str] = Field(default_factory=dict, description='Environment variables')
+    description: Optional[str] = Field(None, description='Human-readable purpose')
+    sovereignty_impact: Optional[str] = Field(None, description='Impact on system sovereignty')
+SOVEREIGN_MCP_REGISTRY: Dict[str, MCPServerConfig] = {'pinecone': MCPServerConfig(name='pinecone', target_layer='L4', mode=MCPServerMode.LOCAL, capabilities=['semantic_memory', 'reranking', 'inference'], command='npx', args=['-y', '@pinecone-database/mcp-server'], description='Vector database for semantic memory and reranking', sovereignty_impact='HIGH - Replaces custom Pinecone wrapper, enables inference'), 'sequential_thinking': MCPServerConfig(name='sequential_thinking', target_layer='L1', mode=MCPServerMode.LOCAL, capabilities=['hypothesis_branching', 'logic_pruning', 'dynamic_reasoning'], command='npx', args=['-y', '@modelcontextprotocol/server-sequential-thinking'], description='Dynamic reasoning chains with hypothesis management', sovereignty_impact='CRITICAL - Enhances L1 cognition with structured reasoning'), 'brave_search': MCPServerConfig(name='brave_search', target_layer='L2', mode=MCPServerMode.LOCAL, capabilities=['web_search', 'real_time_data'], command='npx', args=['-y', '@modelcontextprotocol/server-brave-search'], env={'BRAVE_API_KEY': ''}, description='Real-time web search for L2 tool execution', sovereignty_impact='MEDIUM - Enables external knowledge retrieval'), 'playwright': MCPServerConfig(name='playwright', target_layer='L2', mode=MCPServerMode.LOCAL, capabilities=['browser_automation', 'ui_testing', 'screenshot'], command='npx', args=['-y', '@modelcontextprotocol/server-playwright'], description='Browser automation for UI testing and validation', sovereignty_impact='MEDIUM - Enables automated UI verification'), 'memory': MCPServerConfig(name='memory', target_layer='L4', mode=MCPServerMode.LOCAL, capabilities=['knowledge_graph', 'entity_persistence', 'relation_tracking'], command='npx', args=['-y', '@modelcontextprotocol/server-memory'], description='Knowledge graph for entity and relation persistence', sovereignty_impact='HIGH - Structured memory beyond vector embeddings'), 'deepwiki': MCPServerConfig(name='deepwiki', target_layer='L6', mode=MCPServerMode.LOCAL, capabilities=['codebase_documentation', 'repo_analysis'], command='npx', args=['-y', '@modelcontextprotocol/server-deepwiki'], description='Codebase documentation and analysis for observability', sovereignty_impact='MEDIUM - Enhances L6 audit trail with repo insights'), 'fetch': MCPServerConfig(name='fetch', target_layer='L2', mode=MCPServerMode.LOCAL, capabilities=['content_ingestion', 'url_fetch', 'youtube_transcript'], command='npx', args=['-y', '@modelcontextprotocol/server-fetch'], description='Content ingestion from URLs and YouTube', sovereignty_impact='LOW - Utility for content retrieval'), 'figma': MCPServerConfig(name='figma', target_layer='L2', mode=MCPServerMode.LOCAL, capabilities=['design_to_code', 'ui_generation'], command='npx', args=['-y', '@modelcontextprotocol/server-figma'], env={'FIGMA_ACCESS_TOKEN': ''}, description='Design-to-code generation from Figma', sovereignty_impact='LOW - Specialized use case for UI generation')}
+
+def get_mcps_by_layer(layer: str) -> List[MCPServerConfig]:
+    """Get all MCP servers assigned to a specific layer."""
+    return [mcp for mcp in SOVEREIGN_MCP_REGISTRY.values() if mcp.target_layer == layer]
+
+def get_mcp_by_capability(capability: str) -> List[MCPServerConfig]:
+    """Find MCP servers providing a specific capability."""
+    return [mcp for mcp in SOVEREIGN_MCP_REGISTRY.values() if capability in mcp.capabilities]
+valid_layers: Any = {'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'}
+
+def validate_mcp_registry() -> List[str]:
+    """Validate MCP registry for constitutional compliance."""
+    violations: Any = []
+    for name, config in SOVEREIGN_MCP_REGISTRY.items():
+        if config.target_layer not in VALID_LAYERS:
+            violations.append(f"MCP '{name}' has invalid layer: {config.target_layer}")
+        if not config.command:
+            violations.append(f"MCP '{name}' Missing command")
+    return violations
+_violations = validate_mcp_registry()
+if _violations:
+    import warnings
+    for Violation in _violations:
+        warnings.warn(f'MCP Registry Violation: {Violation}')
