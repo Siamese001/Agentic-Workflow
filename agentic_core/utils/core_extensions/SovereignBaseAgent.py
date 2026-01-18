@@ -2,51 +2,58 @@
 SovereignBaseAgent - Sovereign Single Source of Truth (SSOT) Root.
 
 Provides foundational capabilities for agents with sovereign authority.
-MCPHardenedMixin is now global to ALL agents via root injection.
+InfrastructureMixin consolidates HealerMixin, MCPHardenedMixin, and SubatomicTestingMixin.
+
+PHASE 2 MIGRATION:
+- Replaced individual mixins with InfrastructureMixin (unified gatekeeper)
+- InfrastructureMixin provides: healing, MCP hardening, subatomic testing
+- State verification via _infra_initialized flag
 
 MRO HARDENING:
 - This is the ROOT of the agent hierarchy
-- MCPHardenedMixin is injected HERE so all agents get MCP hardening
+- InfrastructureMixin is injected HERE so all agents get full infrastructure
 - Layer bases add specialized mixins BEFORE SovereignBaseAgent
-- MRO Flow: Specialized -> Layer -> SovereignBaseAgent -> MCPHardenedMixin -> object
+- MRO Flow: Specialized -> Layer -> SovereignBaseAgent -> InfrastructureMixin -> object
 """
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 import logging
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SovereignBaseAgent(SubatomicTestingMixin, MCPHardenedMixin):
+class SovereignBaseAgent(InfrastructureMixin):
     """
     Sovereign Single Source of Truth (SSOT) Root.
     
-    MCPHardenedMixin is now global to all agents via root injection.
-    This ensures EVERY agent in the L0-L6 hierarchy has MCP hardening.
+    InfrastructureMixin consolidates all standard agent capabilities:
+    - HealerMixin: Autonomous repair capability
+    - MCPHardenedMixin: MCP protocol hardening
+    - SubatomicTestingMixin: Self-testing capability
+    
+    This ensures EVERY agent in the L0-L6 hierarchy has full infrastructure.
     
     MRO HARDENING:
-    - SovereignBaseAgent inherits from MCPHardenedMixin
+    - SovereignBaseAgent inherits from InfrastructureMixin
     - Layer bases inherit from SovereignBaseAgent (+ specialized mixins)
     - Concrete agents inherit from layer bases (+ more specialized mixins)
-    - MRO: Specialized -> Layer -> SovereignBaseAgent -> MCPHardenedMixin -> object
+    - MRO: Specialized -> Layer -> SovereignBaseAgent -> InfrastructureMixin -> object
     """
     name: str = "SovereignAgent"
     
     def __post_init__(self) -> None:
         """
-        Initialize sovereign agent with MCP hardening.
+        Initialize sovereign agent with infrastructure.
         
-        The root stops the super() chain or passes to MCPHardenedMixin.
+        Triggers InfrastructureMixin gatekeeper logic via super().__init__().
         
         MRO AUDITOR: Sets _sovereign_initialized sentinel for propagation verification.
         """
-        # 1. Cooperative super() call (propagate to MCPHardenedMixin if it has __post_init__)
-        if hasattr(super(), "__post_init__"):
-            super().__post_init__()
+        # 1. Cooperative super() call - triggers InfrastructureMixin.__init__()
+        super().__init__()
         
         # 2. Set Sentinel for MRO Auditor - verifies initialization chain reached root
         self._sovereign_initialized = True
