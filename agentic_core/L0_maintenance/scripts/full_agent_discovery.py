@@ -987,6 +987,79 @@ def calculate_cyclomatic_complexity(class_node: ast.ClassDef) -> int:
     return total_cc if total_cc > 0 else 1
 
 
+def detect_healing_implementation(class_node: ast.ClassDef) -> str:
+    """
+    Behavioral hardening: Classify heal_repository implementation using cyclomatic complexity
+    as proxy for actual logic vs. structural zombie/pass-through.
+
+    Returns one of:
+      - "Active"                -> CC > 1 and has super()       (real logic + proper chain)
+      - "Active (no super)"     -> CC > 1 and no super()        (real logic but breaks chain)
+      - "Super only"            -> CC == 1 and has super()      (zombie/pass-through)
+      - "Stub"                  -> CC == 1 and no super()       (empty or trivial)
+      - "Inherited"             -> no method defined
+    """
+    heal_method = get_method(class_node, 'heal_repository')
+
+    if heal_method is None:
+        return "Inherited"
+
+    # Compute cyclomatic complexity of the method
+    visitor = _CCVisitor()
+    visitor.visit(heal_method)
+    cc = visitor.cc
+
+    # Detect presence of super().heal_repository() call anywhere in method
+    has_super = False
+    for node in ast.walk(heal_method):
+        if (isinstance(node, ast.Call) and
+            isinstance(node.func, ast.Attribute) and
+            node.func.attr == 'heal_repository' and
+            isinstance(node.func.value, ast.Call) and
+            isinstance(node.func.value.func, ast.Name) and
+            node.func.value.func.id == 'super'):
+            has_super = True
+            break
+
+    if cc > 1:
+        if has_super:
+            return "Active"
+        else:
+            return "Active (no super)"
+    else:  # cc == 1 -> linear/no control flow
+        if has_super:
+            return "Super only"
+        else:
+            # Distinguish true stubs (pass, return None, return {"skipped": ...})
+            body = heal_method.body
+            meaningful_nodes = []
+            for i, stmt in enumerate(body):
+                if i == 0 and isinstance(stmt, ast.Expr) and isinstance(stmt.value, (ast.Str, ast.Constant)):
+                    continue  # Skip docstring
+                if isinstance(stmt, ast.Pass):
+                    continue  # Skip pass
+                if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant) and stmt.value.value is Ellipsis:
+                    continue  # Skip ...
+                meaningful_nodes.append(stmt)
+
+            if not meaningful_nodes:
+                return "Stub"
+            
+            # Check for simple return None or return literal dict (common in stubs)
+            if len(meaningful_nodes) == 1 and isinstance(meaningful_nodes[0], ast.Return):
+                ret_val = meaningful_nodes[0].value
+                if ret_val is None:
+                    return "Stub"
+                if isinstance(ret_val, ast.Constant) and ret_val.value is None:
+                    return "Stub"
+                # Check for return {"skipped": True} style stubs
+                if isinstance(ret_val, ast.Dict):
+                    return "Stub"
+
+            # Default linear non-super code to Stub for this metric
+            return "Stub"
+
+
 def count_loc(source: str) -> int:
     """Count non-blank, non-comment lines."""
     count = 0
@@ -1653,6 +1726,9 @@ def main():
             # PHASE 3: Usage detection (simplified - agents with proper base are considered "in use")
             is_used = proper_base_class or has_healing or mcp_hardened
             
+            # Behavioral hardening: Classify heal_repository implementation
+            healing_impl = detect_healing_implementation(node)
+            
             # Determine territory (layer + subdirectory)
             # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
             # Phase 3.2: Only canonical *BaseAgent classes are base classes, not L-series alternatives
@@ -1719,6 +1795,7 @@ def main():
                 FIELD_PROPER_BASE_CLASS: proper_base_class,  # Gravity signal
                 FIELD_SCHEMA_STRICTNESS: schema_strictness,  # Hardened signal
                 'has_metadata': has_metadata,  # PHASE 3: Metadata compliance (not yet in SSOT)
+                'healing_implementation': healing_impl,  # NEW: Behavioral vs structural healing
             })
     
     if incremental_mode:
@@ -1834,6 +1911,15 @@ def main():
     
     log.info(f"Healing: {healing_count}/{len(agents)} ({100*healing_count//len(agents) if agents else 0}%)")
     log.info(f"Testing: {testing_count}/{len(agents)} ({100*testing_count//len(agents) if agents else 0}%)")
+    
+    # NEW: Behavioral healing breakdown
+    healing_impl_counts = defaultdict(int)
+    for a in agents:
+        healing_impl_counts[a.get('healing_implementation', 'Unknown')] += 1
+    log.info("Healing implementation breakdown:")
+    for status, count in sorted(healing_impl_counts.items()):
+        pct = 100 * count / len(agents) if agents else 0
+        log.info(f"  {status.ljust(20)}: {count} ({pct:.1f}%)")
     
     if parse_errors:
         log.warning(f"Parse errors (skipped): {len(parse_errors)}")
