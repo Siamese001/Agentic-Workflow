@@ -19,6 +19,7 @@ import logging
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 log = logging.getLogger(__name__)
 
@@ -54,6 +55,7 @@ class WorkflowCoordinator(HealerMixin, MCPHardenedMixin, ABC):
         """Primary coordination method."""
         raise NotImplementedError
     
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, int]:
         """Preserve full healing chain."""
         return super().heal_repository(dry_run=dry_run, **kwargs)

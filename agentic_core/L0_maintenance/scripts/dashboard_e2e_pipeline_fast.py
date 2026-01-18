@@ -24,6 +24,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
     DASHBOARD_DIR
 )
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 class FastDashboardE2EPipeline:
     """Fast automated dashboard pipeline."""

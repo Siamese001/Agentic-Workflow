@@ -61,6 +61,8 @@ class tool_template:
     CLASS_TEMPLATE: Any = '\nclass {name}:\n    """\n    {description}\n    """\n\n    def __init__(self{init_params}) -> None:\n        """Initialize the {name} tool."""\n{init_body}\n    async def execute{method_params} -> {return_type}:\n        """\n        Execute the tool.\n\n        Args:\n{method_param_docs}\n        Returns:\n            {return_description}\n        """\n        # Implementation\n        {method_implementation}\n'
 
 from agentic_core.bases import L2Agent
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 class ToolsmithAgent(L2Agent):
     """
@@ -270,6 +272,7 @@ class ToolsmithAgent(L2Agent):
         return stats
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

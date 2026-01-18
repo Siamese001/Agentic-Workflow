@@ -37,11 +37,13 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING FIXED: RgResumeOrchestratorAgent → RgResumeOrchestratorAgent
 class RgResumeOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Orchestrate the multi-hop resume generation workflow."""
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
@@ -87,6 +89,7 @@ def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None
 
 
 @timeout(300)
+@standard_heal
 def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
     """L3 orchestration agent - operational only."""
     super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

@@ -12,6 +12,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 root: Any = Path('C:/Git/Agentic-Workflow')
 rewire_map: Any = [('agentic_core\\.agents', 'agentic_core.L2_execution.tool_registry'), ('agentic_core\\.tools', 'agentic_core.L2_execution.P2_tools'), ('agentic_core\\.interfaces', 'agentic_core.L1_cognition.P1_interfaces'), ('agentic_core\\.domain', 'agentic_core.L1_cognition.P2_domain'), ('agentic_core\\.L1_cognition\\.action_registry_modules', 'agentic_core.L1_cognition.P1_sensing.action_registry_modules'), ('agentic_core\\.state', 'agentic_core.L4_state.S1_store'), ('agentic_core\\.infra', 'agentic_core.L3_orchestration.S3_vitality'), ('agentic_core\\.security', 'agentic_core.L5_safety.P4_security'), ('from apps_rg\\.L3_orchestration\\.l5_autonomous_orchestrator import WorkflowSnapshot', '')]

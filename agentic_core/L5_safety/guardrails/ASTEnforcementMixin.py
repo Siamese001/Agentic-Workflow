@@ -28,6 +28,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 
 class ASTEnforcementMixin:

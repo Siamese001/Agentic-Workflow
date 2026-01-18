@@ -35,6 +35,8 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 
 # [PHASE 3] Default-on healing mixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 # NOT_AN_AGENT — Base class for agents, not a true agent itself — excluded from agent discovery
@@ -42,6 +44,7 @@ class SubAtomicAgent(SubatomicTestingMixin, HealerMixin):
     """Base class for all validation agents with async support."""
 
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).

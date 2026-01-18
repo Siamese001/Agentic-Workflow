@@ -10,6 +10,8 @@ import logging
 import os
 import re
 from typing import Any
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def fix_indentation_errors(file_path: Any) -> Any:
     """Fix indentation errors in a Python file."""

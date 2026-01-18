@@ -3,6 +3,7 @@ from __future__ import annotations
 """Fix indentation errors in canon_validator_engine.py"""
 
 import re
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 def fix_indentation_errors():

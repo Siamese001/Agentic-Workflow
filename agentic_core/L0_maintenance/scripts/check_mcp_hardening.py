@@ -8,6 +8,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from scripts.dashboard_ssot_definitions import calc_hardened_pct
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery
 with open(project_root / "agent_discovery_full.json", 'r', encoding='utf-8') as f:

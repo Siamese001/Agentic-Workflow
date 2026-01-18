@@ -14,6 +14,7 @@ from agentic_core.L4_state.ValidationContext import ValidationContext
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 logger = logging.getLogger(__name__)
@@ -198,6 +199,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
         assert hasattr(self, "attack_patterns"), "Missing attack patterns"
         return True
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)

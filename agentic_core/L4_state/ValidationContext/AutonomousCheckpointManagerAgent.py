@@ -51,6 +51,8 @@ class RecoveryResult:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class AutonomousCheckpointManagerAgent(MCPHardenedMixin, HealerMixin):
@@ -307,6 +309,7 @@ class AutonomousCheckpointManagerAgent(MCPHardenedMixin, HealerMixin):
         return None
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L4 state agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

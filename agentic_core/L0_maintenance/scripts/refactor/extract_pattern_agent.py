@@ -11,6 +11,7 @@ Also removes SubAtomicAgent stub and adds proper import.
 import ast
 from pathlib import Path
 from typing import Tuple
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 SOURCE_FILE = Path("agentic_core/L1_cognition/thought_engine/canon_agents_pattern.py")
 TARGET_DIR = Path("agentic_core/L1_cognition/thought_engine")

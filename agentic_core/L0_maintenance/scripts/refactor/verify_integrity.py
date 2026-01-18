@@ -17,6 +17,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load both files
 with open(AGENT_DISCOVERY_JSON) as f:

@@ -11,6 +11,8 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 @dataclass
 class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
@@ -245,6 +247,7 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
             "stack_traces": monitor.stack_traces
         }
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

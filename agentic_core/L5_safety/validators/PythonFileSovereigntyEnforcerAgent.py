@@ -35,6 +35,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 
 @dataclass
@@ -111,6 +113,7 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
             print(f"[ERROR] git mv failed {old_path} → {new_path}: {e}")
             return False
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set[str]] = None) -> Dict[str, int]:
         """Healer chain entrypoint."""
         if _call_path is None:

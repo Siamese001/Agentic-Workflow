@@ -14,6 +14,7 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 Logger: Any = logging.getLogger(__name__)
 
 class DeterministicCleaner:

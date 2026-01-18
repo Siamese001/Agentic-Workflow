@@ -8,6 +8,7 @@ import os
 import re
 from typing import Any, Dict, List, Optional, Protocol
 from services.configuration import ConfigurationService
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 Logger: Any = logging.getLogger(__name__)
 'Fix TODO/FIXME comments in Python files.'
 Logger: Any = logging.getLogger(__name__)

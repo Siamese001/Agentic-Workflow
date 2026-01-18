@@ -19,6 +19,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -196,6 +197,7 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
             Logger.error(f'[L4 PINECONE MCP] Health check failed: {e}')
             return {'status': 'unhealthy', 'error': str(e)}
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

@@ -17,6 +17,7 @@ _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_m
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class DangerousBuiltinsValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
@@ -31,6 +32,7 @@ class DangerousBuiltinsValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonA
                 self.report(f'Dangerous builtin {node.func.id}() detected (potential security risk)', node)
         self.generic_visit(node)
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

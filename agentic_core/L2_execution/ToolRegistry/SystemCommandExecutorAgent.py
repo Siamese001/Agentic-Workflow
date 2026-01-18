@@ -14,6 +14,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 # NAMING FIXED: Logger → Logger
@@ -139,6 +140,7 @@ class SafeSystemCommandExecutorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         # Always return a non-zero exit code for blocked destructive actions
         return 1, "", f"SECURITY BLOCKED: Destructive command '{command}' was prevented by policy."
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

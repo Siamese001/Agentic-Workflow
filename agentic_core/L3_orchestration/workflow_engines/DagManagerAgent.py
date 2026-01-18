@@ -9,6 +9,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
     """Manages the dynamic DAG with mutation capabilities.
@@ -250,6 +251,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
         }
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

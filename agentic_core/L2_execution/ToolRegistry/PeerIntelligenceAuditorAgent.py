@@ -18,6 +18,7 @@ class PeerIntelligenceConfig:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import IntegrityGateExecutorAgent
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class PeerIntelligenceResult:
     """Brief description of functionality and purpose."""
@@ -182,6 +183,7 @@ class PeerIntelligenceAuditorAgent(HealerMixin):
             return ValidationResult(gate_id='VG_RAG_INTENSITY', PASSED=True, SEVERITY='INFO', MESSAGE=f'RAG intensity satisfied: {total_searches} searches across {len(hops)} hops', SIGNATURE=f'RAG:OK:{total_searches}', DETAILS={'total_searches': total_searches, 'total_hops': len(hops), 'searches_per_hop': [len(hop.search_queries) for hop in hops]})
         return ValidationResult(gate_id='VG_RAG_INTENSITY', PASSED=False, SEVERITY='BLOCK', MESSAGE=f'BLOCKED: Insufficient RAG intensity - {total_searches} searches across {len(hops)} hops (expected {self.config.total_searches} searches across {self.config.total_hops} hops)', DETAILS={'total_searches': total_searches, 'expected_searches': self.config.total_searches, 'total_hops': len(hops), 'expected_hops': self.config.total_hops})
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

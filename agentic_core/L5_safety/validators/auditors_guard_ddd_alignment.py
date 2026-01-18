@@ -21,6 +21,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 
 def check_bounded_contexts(filepath: Path) -> List[str]:

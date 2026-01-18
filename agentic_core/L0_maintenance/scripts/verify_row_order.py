@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Verify dashboard row order"""
 import json
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load dashboard_data.js
 with open('agentic_core/L6_observability/dashboards/data/dashboard_data.js', encoding='utf-8') as f:

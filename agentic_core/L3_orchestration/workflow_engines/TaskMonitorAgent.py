@@ -71,6 +71,7 @@ class TaskMonitorAgent(HealerMixin):
                     return "Unable to get stack trace"
         return "Task completed"
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
@@ -81,6 +82,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 # Global instance

@@ -17,6 +17,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Path to log file (project root)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]

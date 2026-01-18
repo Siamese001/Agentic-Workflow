@@ -23,6 +23,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / AGENTIC_CORE_DIR
 type_fixes: Any = [(':\\s*STR\\b', ': str'), (':\\s*FLOAT\\b', ': float'), (':\\s*BOOL\\b', ': bool'), ('->\\s*STR\\b', '-> str'), ('->\\s*FLOAT\\b', '-> float'), ('->\\s*BOOL\\b', '-> bool')]

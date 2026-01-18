@@ -5,6 +5,7 @@ Session 5 - Critical Issue Resolution
 """
 import re
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def fix_dataclass_underscores(file_path: Path) -> tuple[int, list[str]]:
     """Remove all underscore prefixes from dataclass fields."""

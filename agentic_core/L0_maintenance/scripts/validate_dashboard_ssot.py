@@ -13,6 +13,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     DASHBOARD_DIR,
     get_validated_project_root
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 # Patterns that indicate hardcoded dashboard paths
 HARDCODED_PATTERNS = [

@@ -12,6 +12,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     validate_no_duplicate_prefix,
 )
 from typing import Any
+from agentic_core.utils.sovereign_index import SovereignIndex
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 scripts_dir: Any = CORE / 'L0_maintenance/scripts'

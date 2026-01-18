@@ -5,6 +5,7 @@ import os
 'Brief description of functionality and purpose.'
 import sys
 from typing import Any, List, Dict, Optional
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
     """Analyze legacy files and categorize them."""

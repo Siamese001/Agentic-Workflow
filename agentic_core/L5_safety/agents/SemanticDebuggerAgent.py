@@ -12,6 +12,7 @@ import logging
 from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
 from agentic_core.utils.core_extensions.CognitiveRecoveryMixin import CognitiveRecoveryMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 
@@ -110,6 +111,7 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
         client = self._get_cognitive_client()
         return client.find_healing_pattern(error_context)
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)

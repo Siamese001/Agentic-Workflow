@@ -20,6 +20,7 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @dataclass
 class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
@@ -274,6 +275,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
         return None
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

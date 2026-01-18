@@ -24,6 +24,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
 repo: Any = Path('c:/Git/Agentic-Workflow')
 review_pending: Any = REPO / 'config/review_pending'
 approved_folders: Any = [AGENTIC_CORE_DIR, 'schemas', 'runtime', 'prompt_governance', 'config', 'observability', SCRIPTS_DIR, '09_apps', 'shared', 'shared_engine_ops']

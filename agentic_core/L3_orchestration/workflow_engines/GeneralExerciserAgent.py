@@ -16,6 +16,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import get_vali
 from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 from dataclasses import dataclass
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 @dataclass
@@ -73,6 +74,7 @@ class GeneralExerciserAgent(SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

@@ -11,6 +11,7 @@ import json
 import re
 from pathlib import Path
 from typing import List, Tuple
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
 data = json.load(open('agent_discovery_full.json'))

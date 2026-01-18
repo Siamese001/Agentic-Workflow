@@ -36,6 +36,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 load_dotenv()
 Logger: Any = logging.getLogger(__name__)

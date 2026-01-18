@@ -22,6 +22,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealerAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NOT_AN_AGENT — utility healer class, not a true agent — excluded from agent discovery
 class _BlueprintHierarchyHealerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -56,6 +57,7 @@ class _BlueprintHierarchyHealerAgent(MCPHardenedMixin, SubatomicTestingMixin, He
                 return {"healed": True, "move_to": str(new_path), "reason": "Depth-4 Alignment"}
         return {"healed": False}
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

@@ -24,6 +24,8 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L1_cognition.thought_engine.agent_logic import CanonValidatorAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Legacy L4 connectivity variant - use L1 canonical for full implementation.
@@ -310,6 +312,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         content = match.get('content') or match.get('metadata', {}).get('code_snippet', 'Content not available')
         return {'status': status, 'is_valid': True, 'confidence': match.get('similarity', 1.0 if source == 'l1_exact_match' else 0.0), 'source': source, 'matched_pattern': match.get('id'), 'ast_match': source == 'l1_exact_match', 'Recommendation': 'Use existing pattern', 'metadata': match.get('metadata'), 'query_time_ms': (time.time() - start_time) * 1000, 'content': content}
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

@@ -5,6 +5,7 @@ import os
 'Brief description of functionality and purpose.'
 import sys
 from typing import Any, List, Dict, Optional
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 def get_existing_files() -> Set[str]:
     """Get set of all Python files in sovereign codebase."""

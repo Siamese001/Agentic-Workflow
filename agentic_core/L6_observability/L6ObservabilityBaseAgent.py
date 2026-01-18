@@ -75,7 +75,7 @@ class CritiqueReport:
 
 
 @dataclass
-class L6ObservabilityBaseAgent(SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent, ABC):
+class L6ObservabilityBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent, ABC):
     """
     Base class for L6 Observability agents - The Skeptical Analysts.
     

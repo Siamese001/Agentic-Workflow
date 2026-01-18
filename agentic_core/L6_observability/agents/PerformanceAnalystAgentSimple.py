@@ -11,6 +11,7 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 import time
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 
@@ -53,6 +54,7 @@ class PerformanceAnalystAgentSimple:
         """Get all collected metrics."""
         return self.metrics
         
+    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,

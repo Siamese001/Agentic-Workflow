@@ -4,6 +4,7 @@ Renames _SystemArchitect_Deprecated to SystemArchitectDeprecatedAgent.
 """
 import ast
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def extract_system_architect_deprecated():
     """Extract and rename _SystemArchitect_Deprecated from CanonHealerAgent.py."""

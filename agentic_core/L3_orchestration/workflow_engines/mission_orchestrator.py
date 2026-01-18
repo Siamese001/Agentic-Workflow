@@ -56,6 +56,7 @@ def check_import_waterfall_violations(file_path, project_root):
 
 # [L2 KNOWLEDGE]
 from agentic_core.knowledge.rag_manager import get_rag_manager
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 # [HELPERS]
 def dynamic_import(module_path, class_name):

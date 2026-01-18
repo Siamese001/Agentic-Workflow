@@ -18,6 +18,7 @@ _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_m
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @dataclass
 class BareExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
@@ -31,6 +32,7 @@ class BareExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
             self.report('Bare except: statement detected (should specify exception type)', node)
         self.generic_visit(node)
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

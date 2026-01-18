@@ -442,6 +442,7 @@ class NervousSystemPhaseExecution:
                         "details": f"Agent {self.name} executed successfully"
                     }
 
+                @standard_heal
                 def heal_repository(self) -> dict:
                         """Invoke healing chain via super()."""
                         return super().heal_repository()
@@ -1086,6 +1087,7 @@ class NervousSystemPhaseOrchestratorAgent(HealerMixin):
         
         return converged, errors
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
@@ -1097,3 +1099,5 @@ from agentic_core.L3_orchestration.bases.L3OrchestrationBaseAgent import L3Subat
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file

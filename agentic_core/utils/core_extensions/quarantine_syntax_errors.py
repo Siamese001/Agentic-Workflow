@@ -23,6 +23,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.sovereign_index import SovereignIndex
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / AGENTIC_CORE_DIR
 quarantine: Any = ROOT / 'quarantine_syntax_errors'

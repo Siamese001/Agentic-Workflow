@@ -4,6 +4,7 @@ Compares current discovery vs backup to identify missing agents
 """
 import json
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def main():
     current_path = Path("agent_discovery_full.json")

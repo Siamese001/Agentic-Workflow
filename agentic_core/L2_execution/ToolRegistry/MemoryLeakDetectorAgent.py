@@ -10,6 +10,8 @@ import re
 import time
 from collections import defaultdict
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 # NAMING FIXED: MemoryLeakDetectorAgent → MemoryLeakDetectorAgent
@@ -361,6 +363,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
 
         self.ctx.write_compliant_file(report_path, report_content)
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
@@ -379,12 +382,10 @@ class DeadlockAnalyzer(ast.NodeVisitor):
         self.lock_acquisitions = []  # Track all lock.acquire() calls
 
     def visit_Module(self, node) -> Any:
-       """Execute visit_Module operation."""
         """Visit the module and analyze all functions."""
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node) -> Any:
-       """Execute visit_FunctionDef operation."""
         """Analyze a function for lock acquisition patterns."""
         old_function = self.current_function
         old_sequence = self.current_sequence
@@ -413,12 +414,10 @@ class DeadlockAnalyzer(ast.NodeVisitor):
         self.current_sequence = old_sequence
 
     def visit_AsyncFunctionDef(self, node) -> Any:
-       """Execute visit_AsyncFunctionDef operation."""
         """Analyze async functions for lock patterns."""
         self.visit_FunctionDef(node)
 
     def visit_With(self, node) -> Any:
-       """Execute visit_With operation."""
         """Analyze 'with' statements for lock acquisitions."""
         for item in node.items:
             lock_name = self._extract_lock_name(item.context_expr)
@@ -436,12 +435,10 @@ class DeadlockAnalyzer(ast.NodeVisitor):
                 self.current_sequence.pop()
 
     def visit_AsyncWith(self, node) -> Any:
-       """Execute visit_AsyncWith operation."""
         """Analyze 'async with' statements."""
         self.visit_With(node)
 
     def visit_Call(self, node) -> Any:
-       """Execute visit_Call operation."""
         """Check for .acquire() calls without timeout."""
         if isinstance(node.func, ast.Attribute):
             if node.func.attr == 'acquire':

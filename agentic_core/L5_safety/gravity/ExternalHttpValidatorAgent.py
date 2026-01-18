@@ -23,6 +23,7 @@ _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_m
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class ExternalHttpValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
@@ -48,6 +49,7 @@ class ExternalHttpValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTVal
                 self.report(f'Forbidden HTTP library import: from {node.module} (use MCP fetch_client_sovereign instead)', node)
         self.generic_visit(node)
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

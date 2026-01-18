@@ -19,6 +19,7 @@ class SovereignDependencyError(Exception):
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
@@ -221,6 +222,7 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
         self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_cleanup', ROLE=self.role, event_type='CLEANUP_COMPLETE', PAYLOAD={'zero_trust': True}, TIMESTAMP=time.time()))
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L3 orchestration agent - operational only."""
         if _call_path is None:

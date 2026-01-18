@@ -123,6 +123,8 @@ class BenchmarkSuite:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # NAMING FIXED: BenchmarkingAgent → BenchmarkingAgent
 class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
@@ -137,6 +139,7 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
     """
 
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
@@ -172,11 +175,9 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
             Decorated function
         """
         def decorator(func: Callable) -> Callable:
-           """Execute decorator operation."""
             """Execute decorator operation."""
             @wraps(func)
             def wrapper(*args, **kwargs) -> Any:
-               """Execute wrapper operation."""
                 """Execute wrapper operation."""
                 return self.time_function(name, func, metadata, *args, **kwargs)
             return wrapper
@@ -194,11 +195,9 @@ class BenchmarkingAgent(HealerMixin, MCPHardenedMixin):
             Decorated function
         """
         def decorator(func: Callable) -> Callable:
-           """Execute decorator operation."""
             """Execute decorator operation."""
             @wraps(func)
             async def wrapper(*args, **kwargs) -> Any:
-               """Execute wrapper operation."""
                 """Execute wrapper operation."""
                 return await self.time_function_async(name, func, metadata, *args, **kwargs)
             return wrapper

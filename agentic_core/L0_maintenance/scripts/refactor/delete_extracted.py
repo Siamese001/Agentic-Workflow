@@ -1,6 +1,7 @@
 """Delete all extracted agent files from surgical extraction."""
 import json
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 log_path = Path('surgical_extraction_log.json')
 with open(log_path) as f:

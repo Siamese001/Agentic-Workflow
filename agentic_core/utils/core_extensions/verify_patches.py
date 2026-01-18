@@ -3,7 +3,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 from typing import Any, Tuple
-from import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location
+from agentic_core.config.blueprint_sovereign.structure_blueprint import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location
 
 
 def validate_ast_integrity(file_path: Path) -> Tuple[bool, str]:
@@ -50,6 +50,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 validator_path: Any = root / 'canon_validator_agentic_v2.py'
 with open(validator_path, 'r', encoding='utf-8') as f:

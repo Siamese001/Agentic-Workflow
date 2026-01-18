@@ -11,6 +11,7 @@ Extracts DocumentationAgent and _LegacyNamingAgent to sovereign files.
 import ast
 from pathlib import Path
 from typing import List, Tuple
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 SOURCE_FILE = Path("agentic_core/L1_cognition/thought_engine/canon_agents_quality.py")
 TARGET_DIR = Path("agentic_core/L1_cognition/thought_engine")

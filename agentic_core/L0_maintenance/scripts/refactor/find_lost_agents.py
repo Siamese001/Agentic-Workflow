@@ -39,6 +39,7 @@ print()
 
 # Check for duplicates in extraction
 from collections import Counter
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 agent_names = list(log['extractions'].keys())
 duplicates = {name: count for name, count in Counter(agent_names).items() if count > 1}
 

@@ -12,6 +12,7 @@ import json
 import sys
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 # Classes to rename: old_name -> new_name
 RENAMES = {

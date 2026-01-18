@@ -10,6 +10,8 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # NOT_AN_AGENT — legacy L1 class removed 2026-01-06, use utils canonical
 # from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
@@ -59,6 +61,7 @@ class _LegacyNamingAgent(SubAtomicAgent):
             except Exception:
                 continue
         return (len(violations) == 0, violations)
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

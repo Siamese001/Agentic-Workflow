@@ -2,6 +2,7 @@
 """Analyze the remaining 36 agents that need MCP hardening."""
 import json
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 data = json.load(open('agent_discovery_full.json'))
 remaining = [a for a in data if not a.get('mcp_hardened')]

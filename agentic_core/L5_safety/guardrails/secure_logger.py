@@ -10,6 +10,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Union
 from pathlib import Path
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Patterns for sensitive data detection
 SENSITIVE_PATTERNS = [

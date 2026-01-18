@@ -17,6 +17,7 @@ from enum import Enum
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.common.healing.healer_mixin import HealerMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class ExecutionPhase(Enum):
     PLANNING = "planning"
@@ -42,6 +43,7 @@ class IOrchestratorAgent(ABC, MCPHardenedMixin, HealerMixin, SubatomicTestingMix
 
     @abstractmethod
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).

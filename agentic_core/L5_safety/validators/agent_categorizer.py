@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 from collections import defaultdict
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 
 class AgentCategorizer:

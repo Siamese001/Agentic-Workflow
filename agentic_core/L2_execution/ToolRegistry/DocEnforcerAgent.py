@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @dataclass
 class DocEnforcerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
@@ -20,6 +21,7 @@ class DocEnforcerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Documentation Standards...")
         await asyncio.sleep(0)
 
+    @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()

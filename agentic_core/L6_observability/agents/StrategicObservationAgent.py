@@ -5,6 +5,7 @@ from datetime import datetime
 
 from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 @dataclass
 class StrategicObservationAgent(L6ObservabilityBaseAgent):
@@ -65,6 +66,7 @@ class StrategicObservationAgent(L6ObservabilityBaseAgent):
         """Implementation of L6BaseAgent abstract method."""
         return True
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)

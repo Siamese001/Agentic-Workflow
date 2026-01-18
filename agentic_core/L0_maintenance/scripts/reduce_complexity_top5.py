@@ -7,6 +7,7 @@ import ast
 import json
 from pathlib import Path
 from typing import List, Tuple
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def analyze_method_complexity(file_path: Path) -> List[Tuple[str, int]]:
     """Analyze complexity of each method in a file."""

@@ -19,6 +19,7 @@ from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent
 @dataclass
@@ -153,6 +154,7 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
             ctx.report("RedisCache", 1, True, f"Redis online ({mem})")
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:

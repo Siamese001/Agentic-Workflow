@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -112,6 +113,7 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             return {'healed': False}
 
     @timeout(300)
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Autonomous docstring compliance enforcement."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

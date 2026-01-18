@@ -93,6 +93,8 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 class MethodChangeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """Detects method changes between two versions of a file."""
@@ -144,6 +146,7 @@ class MethodChangeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 methods[node.name] = method_code
         return methods
 
+    @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
