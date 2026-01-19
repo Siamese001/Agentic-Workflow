@@ -49,7 +49,7 @@ def check_file(filepath: Path) -> bool:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
             violations.append((line_no, desc, 'Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client'))
-    llm_sdk_patterns: Any = [('\\bimport\\s+openai\\b', 'Direct openai import'), ('\\bfrom\\s+openai\\s+import\\b', 'Direct openai import'), ('\\bimport\\s+anthropic\\b', 'Direct anthropic import'), ('\\bfrom\\s+anthropic\\s+import\\b', 'Direct anthropic import'), ('\\bimport\\s+google\\.generativeai\\b', 'Direct google.generativeai import'), ('\\bgenai\\.GenerativeModel\\b', 'Direct genai.GenerativeModel usage')]
+    llm_sdk_patterns: Any = [('\\bimport\\s+openai\\b', 'Direct openai import'), ('\\bfrom\\s+openai\\s+import\\b', 'Direct openai import'), ('\\bimport\\s+anthropic\\b', 'Direct anthropic import'), ('\\bfrom\\s+anthropic\\s+import\\b', 'Direct anthropic import'), ('\\bimport\\s+google\\.generativeai\\b', 'Deprecated google.generativeai import - use google.genai'), ('\\bgenai\\.GenerativeModel\\b', 'Deprecated genai.GenerativeModel - use genai.Client')]
     for pattern, desc in llm_sdk_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1

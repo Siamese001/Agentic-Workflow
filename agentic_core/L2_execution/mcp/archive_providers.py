@@ -30,7 +30,7 @@ DEFAULT_PROVIDER_MODULES: Dict[str, str] = {
     "pinecone": "pinecone",
     "openai": "openai",
     "anthropic": "anthropic",
-    "google": "google.generativeai",
+    "google": "google.genai",
     "http": "httpx",
 }
 

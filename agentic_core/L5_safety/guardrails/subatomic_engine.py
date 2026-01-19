@@ -60,7 +60,7 @@ class SubAtomicEngineImpl:
         self.redis_client = redis_client
         self.pinecone_index = pinecone_index
         if not GENAI_AVAILABLE:
-            raise RuntimeError('Gemini SDK not available. Install with: pip install google-generativeai')
+            raise RuntimeError('Gemini SDK not available. Install with: pip install google-genai')
         if gemini_client:
             self._client = gemini_client
         else:

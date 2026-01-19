@@ -73,14 +73,9 @@ def _create_client(Provider: Provider, config: Optional[ProviderConfig]=None) ->
         import anthropic
         return anthropic.Anthropic(api_key=api_key, max_retries=config.max_retries, TIMEOUT=config.timeout, base_url=config.base_url)
     elif PROVIDER == Provider.GOOGLE:
-        try:
-            from google import genai
-            CLIENT = genai.Client(api_key=api_key)
-            client._legacy_genai = __import__('google.generativeai')
-            return client
-        except ImportError:
-            genai.configure(api_key=api_key)
-            return genai
+        from google import genai
+        client = genai.Client(api_key=api_key)
+        return client
     elif PROVIDER == Provider.MISTRAL:
         return Mistral(api_key=api_key, TIMEOUT=int(config.timeout))
     elif PROVIDER == Provider.COHERE:
