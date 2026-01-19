@@ -14,12 +14,18 @@ from typing import Set, Dict, List, Tuple
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
+@pytest.fixture
+def disable_path_shield():
+    """Marker fixture to disable path shield in conftest."""
+    pass
+
+
 class TestDependencyIsolation:
     """
     Tests to verify that relocated utilities don't have forbidden dependencies.
     """
 
-    def test_apps_shared_no_apps_lic_imports(self):
+    def test_apps_shared_no_apps_lic_imports(self, disable_path_shield):
         """
         TC-001: Verify apps_shared utilities don't import from apps_lic.
         This prevents circular dependencies after relocation.
@@ -50,7 +56,7 @@ class TestDependencyIsolation:
             msg = "\n".join([f"  {v[0]}: {v[1]}" for v in violations])
             pytest.fail(f"apps_shared has forbidden imports from apps_lic:\n{msg}")
 
-    def test_apps_shared_no_apps_rg_imports(self):
+    def test_apps_shared_no_apps_rg_imports(self, disable_path_shield):
         """
         TC-002: Verify apps_shared utilities don't import from apps_rg.
         apps_shared should only depend on agentic_core and stdlib.
@@ -166,7 +172,7 @@ class TestRelocationCandidate:
     Tests to validate if a file is a valid candidate for relocation to apps_shared.
     """
 
-    def test_duplicate_code_detector_isolation(self):
+    def test_duplicate_code_detector_isolation(self, disable_path_shield):
         """
         TC-005: Verify DuplicateCodeDetectorAgent can run with only agentic_core dependencies.
         """

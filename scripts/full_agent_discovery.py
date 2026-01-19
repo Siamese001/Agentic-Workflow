@@ -138,6 +138,13 @@ OUTPUT_JSON = CANONICAL_JSON
 # ============================================================================
 # HARDENED EXCLUSION LISTS (Multi-factor negative signals)
 # ============================================================================
+# Import SSOT exclusions from structure_blueprint
+try:
+    from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
+    SSOT_EXCLUDED = set(GLOBAL_EXCLUDED_DIRS)
+except ImportError:
+    SSOT_EXCLUDED = set()
+
 # These directories are NEVER scanned for agents (fast path exclusion)
 EXCLUDED_DIRS = {
     # Build/cache artifacts
@@ -150,7 +157,9 @@ EXCLUDED_DIRS = {
     'coverage_html', 'htmlcov', '.coverage',
     # Project-specific exclusions
     'archives', '.sovereign_healing_backup', 'reports',
-}
+    # Test territory exclusion (CRITICAL: prevents test files from polluting manifest)
+    'tests',
+} | SSOT_EXCLUDED
 
 # Filename patterns that indicate non-agent files (case-insensitive)
 EXCLUDED_FILENAME_PATTERNS = {
