@@ -21,7 +21,7 @@ import pytest
 
 from agentic_core.L6_observability.agents.RuntimeTelemetryAgent import RuntimeTelemetryAgent
 from agentic_core.L6_observability.agents.PerformanceAnalystAgent import PerformanceAnalystAgent
-from agentic_core.L6_observability.L6ObservabilityBaseAgent import (
+from archives.location_violations.L6ObservabilityBaseAgent import (
     L6ObservabilityBaseAgent,
     AgentPerformanceMetrics,
     CritiqueReport

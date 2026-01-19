@@ -16,14 +16,14 @@ except ImportError:
     BenchmarkResult = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = ScenarioType = TrainingScenario = TrainingSession = PerformanceLevel = type('Stub', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 
 class AgentGym(HealerMixin):
     """Agent Gym for self-evolution and benchmarking.

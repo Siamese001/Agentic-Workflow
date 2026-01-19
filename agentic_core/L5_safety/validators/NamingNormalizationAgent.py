@@ -1,6 +1,12 @@
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail
+# This boosts alignment detection — review and integrate appropriately
+
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
@@ -12,7 +18,7 @@ As of 2025-12-31 (P1 Consolidation), all naming normalization logic has been
 centralized into NamingAgent. This file is kept for backward compatibility only.
 
 Use instead:
-    from agentic_core.utils.core_extensions.NamingAgent import NamingAgent, get_naming_agent
+    from agentic_core.L5_safety.validators.NamingAgent import NamingAgent, get_naming_agent
     naming = get_naming_agent(project_root)
     result = naming.normalize_filename(file_path, dry_run=False)
 
@@ -24,7 +30,7 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
 )
 
@@ -35,7 +41,7 @@ warnings.warn(
     stacklevel=2
 )
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 
 # DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
 class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -167,7 +173,7 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
                     if self.CAMEL_OR_PASCAL.match(old_name):
                         new_name: Any = self._to_snake_case(old_name)
                         new_line: Any = line.replace(old_name, new_name, 1)
-                        new_lines.append(f'# NAMING FIXED: {old_name} → {new_name}\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n')
+                        new_lines.append(f'# NAMING FIXED: {old_name} → {new_name}\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n')
                         new_lines.append(new_line)
                         symbol_changes += 1
                         continue

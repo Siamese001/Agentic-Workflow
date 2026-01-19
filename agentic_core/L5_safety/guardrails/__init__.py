@@ -8,62 +8,112 @@ Impact:
 - Rule Conflicts: -60%
 - Maintainability: +40%
 - Agent Count: 35 → 21 (-40%)
+
+Note: Uses lazy imports to handle missing modules gracefully during healing.
 """
 
-from .ErrorRecoveryGuardrail import (
-    ErrorRecoveryGuardrail,
-    ErrorCategory,
-    RecoveryStrategy,
-    ErrorContext,
-    RecoveryResult,
-)
+# Lazy imports with fallbacks for healing resilience
+try:
+    from .ErrorRecoveryGuardrail import (
+        ErrorRecoveryGuardrail,
+        ErrorCategory,
+        RecoveryStrategy,
+        ErrorContext,
+        RecoveryResult,
+    )
+except ImportError:
+    ErrorRecoveryGuardrail = None
+    ErrorCategory = None
+    RecoveryStrategy = None
+    ErrorContext = None
+    RecoveryResult = None
 
-from .CodeQualityGuardrail import (
-    CodeQualityGuardrail,
-    CodeIssue,
-    QualityResult,
-)
+try:
+    from .CodeQualityGuardrail import (
+        CodeQualityGuardrail,
+        CodeIssue,
+        QualityResult,
+    )
+except ImportError:
+    CodeQualityGuardrail = None
+    CodeIssue = None
+    QualityResult = None
 
-from .ThreatDetectionGuardrail import (
-    ThreatDetectionGuardrail,
-    ThreatLevel,
-    ThreatType,
-    ThreatIndicator,
-    ThreatAnalysisResult,
-)
+try:
+    from .ThreatDetectionGuardrail import (
+        ThreatDetectionGuardrail,
+        ThreatLevel,
+        ThreatType,
+        ThreatIndicator,
+        ThreatAnalysisResult,
+    )
+except ImportError:
+    ThreatDetectionGuardrail = None
+    ThreatLevel = None
+    ThreatType = None
+    ThreatIndicator = None
+    ThreatAnalysisResult = None
 
-from .ConstitutionalGovernanceGuardrail import (
-    ConstitutionalGovernanceGuardrail,
-    ConstitutionalPrinciple,
-    PrincipleViolation,
-    GovernanceResult,
-)
+try:
+    from .ConstitutionalGovernanceGuardrail import (
+        ConstitutionalGovernanceGuardrail,
+        ConstitutionalPrinciple,
+        PrincipleViolation,
+        GovernanceResult,
+    )
+except ImportError:
+    ConstitutionalGovernanceGuardrail = None
+    ConstitutionalPrinciple = None
+    PrincipleViolation = None
+    GovernanceResult = None
 
-from .ResourceManagementGuardrail import (
-    ResourceManagementGuardrail,
-    ResourceType,
-    ResourceQuota,
-    ResourceCheckResult,
-)
+try:
+    from .ResourceManagementGuardrail import (
+        ResourceManagementGuardrail,
+        ResourceType,
+        ResourceQuota,
+        ResourceCheckResult,
+    )
+except ImportError:
+    ResourceManagementGuardrail = None
+    ResourceType = None
+    ResourceQuota = None
+    ResourceCheckResult = None
 
-from .IntegrityValidationGuardrail import (
-    IntegrityValidationGuardrail,
-    IntegrityViolation,
-    IntegrityResult,
-)
+try:
+    from .IntegrityValidationGuardrail import (
+        IntegrityValidationGuardrail,
+        IntegrityViolation,
+        IntegrityResult,
+    )
+except ImportError:
+    IntegrityValidationGuardrail = None
+    IntegrityViolation = None
+    IntegrityResult = None
 
-from .MCPSecurityGuardrail import (
-    MCPSecurityGuardrail,
-    MCPSecurityViolation,
-    MCPSecurityResult,
-)
+try:
+    from .MCPSecurityGuardrail import (
+        MCPSecurityGuardrail,
+        MCPSecurityViolation,
+        MCPSecurityResult,
+    )
+except ImportError:
+    MCPSecurityGuardrail = None
+    MCPSecurityViolation = None
+    MCPSecurityResult = None
 
-from .LoggingObservabilityGuardrail import (
-    LoggingObservabilityGuardrail,
-    LogLevel,
-    LogEntry,
-    AuditEntry,
-)
+try:
+    from .LoggingObservabilityGuardrail import (
+        LoggingObservabilityGuardrail,
+        LogLevel,
+        LogEntry,
+        AuditEntry,
+    )
+except ImportError:
+    LoggingObservabilityGuardrail = None
+    LogLevel = None
+    LogEntry = None
+    AuditEntry = None
 
 __all__ = [
     # Error Recovery

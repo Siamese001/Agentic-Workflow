@@ -7,7 +7,7 @@ import json
 import re
 from pathlib import Path
 from typing import List, Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 data = json.load(open('agent_discovery_full.json'))
 remaining = [a for a in data if not a.get('mcp_hardened')]
@@ -94,13 +94,13 @@ for agent in remaining:
         content = content.replace(old_class_def, new_class_def)
         
         # Add import
-        if 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin' not in content:
+        if 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin' not in content:
             lines = content.split('\n')
             insert_idx = 0
             for i, line in enumerate(lines):
                 if line.strip().startswith('import ') or line.strip().startswith('from '):
                     insert_idx = i + 1
-            lines.insert(insert_idx, 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin')
+            lines.insert(insert_idx, 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin')
             content = '\n'.join(lines)
         
         # Write back

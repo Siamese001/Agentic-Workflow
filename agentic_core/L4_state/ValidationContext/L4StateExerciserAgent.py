@@ -7,7 +7,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import tempfile
 from pathlib import Path
@@ -15,7 +15,7 @@ from typing import List, Any
 import uuid
 import time
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
     safe_path_join,
 )

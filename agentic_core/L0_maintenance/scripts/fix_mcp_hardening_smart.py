@@ -7,7 +7,7 @@ import re
 import ast
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
 data = json.load(open('agent_discovery_full.json'))
@@ -52,7 +52,7 @@ def add_mcp_import(content: str) -> str:
     if 'MCPHardenedMixin' in content:
         return content
     
-    import_line = 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n'
+    import_line = 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n'
     
     lines = content.split('\n')
     insert_idx = 0

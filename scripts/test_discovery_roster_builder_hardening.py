@@ -21,7 +21,7 @@ from unittest.mock import patch, MagicMock
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L3_orchestration.discovery_roster_builder import (
+from archives.location_violations.discovery_roster_builder import (
     filter_healer_agents,
     sort_by_layer,
     instantiate_agent,

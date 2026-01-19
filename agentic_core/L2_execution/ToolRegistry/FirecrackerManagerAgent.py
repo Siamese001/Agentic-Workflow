@@ -12,11 +12,11 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L2_execution.ToolRegistry.firecracker_manager_types import VMConfig, VMInstance, VMProvider, VMStatus
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 

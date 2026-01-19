@@ -55,7 +55,7 @@ def _get_gravity_leak_repair_agent():
         "violations": [
             {
                 "line": 118,
-                "old": "from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent",
+                "old": "from agentic_core.config.blueprint_sovereign.TestSovereigntyAgent import TestSovereigntyAgent",
                 "new": """
 def _get_test_sovereignty_agent():
     \"\"\"Lazy load TestSovereigntyAgent to avoid L0 → L5 dependency.\"\"\"

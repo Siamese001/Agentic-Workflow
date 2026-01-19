@@ -4,7 +4,7 @@ Check depth violations using SSOT.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 from pathlib import Path
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
 root: Any = Path('c:/Git/Agentic-Workflow')
 violations: Any = []

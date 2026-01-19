@@ -12,7 +12,7 @@ from collections import defaultdict
 REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
 
-from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTValidator
+from agentic_core.L5_safety.gravity.unified_validator import UnifiedSSOTValidator
 
 def main():
     """Analyze remaining import violations."""

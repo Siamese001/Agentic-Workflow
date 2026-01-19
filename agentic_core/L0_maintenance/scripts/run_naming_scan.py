@@ -9,7 +9,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root))
 
-from agentic_core.utils.core_extensions.NamingAgent import NamingAgent, get_naming_agent
+from agentic_core.L5_safety.validators.NamingAgent import NamingAgent, get_naming_agent
 
 print("=" * 80)
 print("NAMING AGENT SCAN - Duplicate Detection")

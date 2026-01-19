@@ -9,7 +9,7 @@ import ast
 import sys
 from pathlib import Path
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 exempt: Any = {'agentic_core/schemas/models/core_contracts.py'}
 
 class SovereignModelVisitor(ast.NodeVisitor):

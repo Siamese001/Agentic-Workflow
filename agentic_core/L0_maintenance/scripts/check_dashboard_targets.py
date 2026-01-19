@@ -1,7 +1,7 @@
 """Check if Target values are present in dashboard data."""
 import re
 import json
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 with open('reports/autonomy_dashboard.html', 'r', encoding='utf-8') as f:
     html = f.read()

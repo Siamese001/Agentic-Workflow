@@ -1,3 +1,9 @@
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail, memory, prompt, workflow
+# This boosts alignment detection — review and integrate appropriately
+
 from __future__ import annotations
 """
 ScriptToAgentClassifierAgent – Sovereign Agent (Phase 17 – Dec 30, 2025)
@@ -33,7 +39,7 @@ from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,

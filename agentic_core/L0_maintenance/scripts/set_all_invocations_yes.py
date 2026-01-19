@@ -7,7 +7,7 @@ termination point of the heal chain.
 """
 import json
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
 discovery_path = Path('agent_discovery_full.json')

@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-'Gap Closure Architect - Leadership Competencies with Gap Filling (K.9).\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n\nThis agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,\nenforcing Industry-First ranking and 24-30 word descriptions.\n\nSub-Atomic Agent Name: GapClosureArchitect\nLegacy K-Node: K.9 (K.8 in some versions)\n'
+'Gap Closure Architect - Leadership Competencies with Gap Filling (K.9).\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n\nThis agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,\nenforcing Industry-First ranking and 24-30 word descriptions.\n\nSub-Atomic Agent Name: GapClosureArchitect\nLegacy K-Node: K.9 (K.8 in some versions)\n'
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
 # PHASE 2.1: L0 Structural Standardization

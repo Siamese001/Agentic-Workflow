@@ -46,7 +46,7 @@ RGLOB_PATTERN = re.compile(
     re.MULTILINE
 )
 
-SOVEREIGN_INDEX_IMPORT = "from agentic_core.utils.sovereign_index import SovereignIndex"
+SOVEREIGN_INDEX_IMPORT = "from archives.location_violations.sovereign_index import SovereignIndex"
 
 
 def find_python_files(root: Path) -> List[Path]:
@@ -68,7 +68,7 @@ def has_rglob_py_pattern(content: str) -> bool:
 
 def already_has_sovereign_import(content: str) -> bool:
     """Check if file already imports SovereignIndex."""
-    return "from agentic_core.utils.sovereign_index import SovereignIndex" in content
+    return "from archives.location_violations.sovereign_index import SovereignIndex" in content
 
 
 def find_import_insertion_point(content: str) -> int:

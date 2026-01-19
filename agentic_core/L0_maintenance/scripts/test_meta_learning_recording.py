@@ -28,7 +28,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 def manually_heal_canon_healer():
     """Manually add heal_repository() to CanonHealerAgent.py to test Meta-Learning."""

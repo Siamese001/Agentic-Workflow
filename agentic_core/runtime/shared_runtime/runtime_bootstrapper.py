@@ -9,7 +9,7 @@ from agentic_core.L1_cognition.boundaries.SemanticGatekeeper import SemanticGate
 from agentic_core.L1_cognition.thought_engine.StructuredEngine import StructuredEngine
 from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
 from agentic_core.L2_execution.ToolRegistry.mcp_manager import MCPConnectionManager
-from agentic_core.L3_orchestration.fission_logic.FissionManagerAgent import FissionManagerAgent
+from archives.void_violations.FissionManagerAgent import FissionManagerAgent
 from agentic_core.L3_orchestration.workflow_engines.SupremeCourt import SupremeCourt
 from agentic_core.L4_state.audit_trails.genealogy import GenealogyRegistry
 from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter
@@ -21,7 +21,7 @@ from agentic_core.L5_safety.validators.CostGovernor import CostGovernor
 from agentic_core.runtime.P1_core.SubatomicHop import SubatomicHop
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

@@ -8,7 +8,7 @@ import shutil
 from datetime import datetime
 from typing import Any
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -24,7 +24,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 target_root: Any = AGENTIC_CORE_DIR
 legacy_folders: Any = ['P1_core', 'P2_tools', 'P3_engines', 'P4_agents', 'P5_healing', 'P1_domain', 'P1_interfaces', 'P2_domain', 'P3_aggregation', 'P5_meta', 'boundaries', 'discovery', 'identity', 'inference', 'planning', 'planning_logic', 'mcp', 'sandbox', 'tools', 'event_bus', 'framework', 'handoff_logic', 'health', 'P5_workflow', 'protocol', 'security', 'training', 'automation', 'migrations', 'cache', 'checkpoints', 'filesystem', 'memory', 'persistence_layer', 'S1_store', 'semantic', 'session_manager', 'vector', 'P1_red_team', 'P4_security', 'audit_logs', 'gravity', 'policy', 'validators']
 

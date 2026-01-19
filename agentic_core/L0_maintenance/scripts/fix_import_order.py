@@ -5,7 +5,7 @@ Ensure SubatomicTestingMixin import comes AFTER __future__ imports.
 """
 import re
 from pathlib import Path
-from agentic_core.utils.sovereign_index import SovereignIndex
+from archives.location_violations.sovereign_index import SovereignIndex
 
 # Find all Python files that have the problematic import pattern
 problematic_pattern = r'from agentic_core\.utils\.core_extensions\.subatomic_testing_mixin import SubatomicTestingMixin\s*\n.*from __future__'

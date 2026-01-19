@@ -40,8 +40,8 @@ def main():
         # 1. agent_capability_supplement.py - incomplete import
         root / "agentic_core/L0_maintenance/scripts/agent_capability_supplement.py": [
             (
-                "from agent_discovery_audit import (\n\nfrom agentic_core.config.blueprint_sovereign.structure_blueprint import (",
-                "from agentic_core.config.blueprint_sovereign.structure_blueprint import ("
+                "from agent_discovery_audit import (\n\nfrom agentic_core.L5_safety.validators.structure_blueprint import (",
+                "from agentic_core.L5_safety.validators.structure_blueprint import ("
             ),
             (
                 "    get_validated_project_root,\n)\n    PROJECT_ROOT,\n    AGENTIC_CORE,\n    ASTNormalizer,\n    generate_fingerprint,\n)",
@@ -112,8 +112,8 @@ def main():
         # 6. OrchestrationHandshakeAgent.py - import inside multi-line import
         root / "agentic_core/L3_orchestration/workflow_engines/OrchestrationHandshakeAgent.py": [
             (
-                "from agentic_core.config.blueprint_sovereign.structure_blueprint import (\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n    SOVEREIGN_REGISTRY,",
-                "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.config.blueprint_sovereign.structure_blueprint import (\n    SOVEREIGN_REGISTRY,"
+                "from agentic_core.L5_safety.validators.structure_blueprint import (\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n    SOVEREIGN_REGISTRY,",
+                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.L5_safety.validators.structure_blueprint import (\n    SOVEREIGN_REGISTRY,"
             ),
         ],
         
@@ -144,48 +144,48 @@ def main():
         # 8. ConstitutionalReviewerAgent.py - import inside multi-line import
         root / "agentic_core/L5_safety/guardrails/ConstitutionalReviewerAgent.py": [
             (
-                "from agentic_core.config.blueprint_sovereign.structure_blueprint import (\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
-                "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.config.blueprint_sovereign.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
+                "from agentic_core.L5_safety.validators.structure_blueprint import (\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
+                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.L5_safety.validators.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
             ),
         ],
         
         # 9. PromptInjectionDetectorAgent.py - import inside multi-line import
         root / "agentic_core/L5_safety/guardrails/PromptInjectionDetectorAgent.py": [
             (
-                "from agentic_core.config.blueprint_sovereign.structure_blueprint import (\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
-                "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.config.blueprint_sovereign.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
+                "from agentic_core.L5_safety.validators.structure_blueprint import (\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
+                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.L5_safety.validators.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
             ),
         ],
         
         # 10. BoundaryTestingAgent.py - import inside multi-line import
         root / "agentic_core/L5_safety/red_teaming/BoundaryTestingAgent.py": [
             (
-                "from agentic_core.config.blueprint_sovereign.structure_blueprint import (\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
-                "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.config.blueprint_sovereign.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
+                "from agentic_core.L5_safety.validators.structure_blueprint import (\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
+                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.L5_safety.validators.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
             ),
         ],
         
         # 11. ChaosEngineeringAgent.py - import inside multi-line import
         root / "agentic_core/L5_safety/red_teaming/ChaosEngineeringAgent.py": [
             (
-                "from agentic_core.config.blueprint_sovereign.structure_blueprint import (\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
-                "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.config.blueprint_sovereign.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
+                "from agentic_core.L5_safety.validators.structure_blueprint import (\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
+                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.L5_safety.validators.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
             ),
         ],
         
         # 12. PromptInjectionAgent.py - import inside multi-line import
         root / "agentic_core/L5_safety/red_teaming/PromptInjectionAgent.py": [
             (
-                "from agentic_core.config.blueprint_sovereign.structure_blueprint import (\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
-                "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.config.blueprint_sovereign.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
+                "from agentic_core.L5_safety.validators.structure_blueprint import (\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n    AGENT_DISCOVERY_JSON,",
+                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.L5_safety.validators.structure_blueprint import (\n    AGENT_DISCOVERY_JSON,"
             ),
         ],
         
         # 13. GravityValidatorAgent.py - import inside multi-line import
         root / "agentic_core/L5_safety/validators/GravityValidatorAgent.py": [
             (
-                "from agentic_core.config.blueprint_sovereign.structure_blueprint import (\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n    CORE_SUBFOLDER_MAP,",
-                "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.config.blueprint_sovereign.structure_blueprint import (\n    CORE_SUBFOLDER_MAP,"
+                "from agentic_core.L5_safety.validators.structure_blueprint import (\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n    CORE_SUBFOLDER_MAP,",
+                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.L5_safety.validators.structure_blueprint import (\n    CORE_SUBFOLDER_MAP,"
             ),
         ],
         
@@ -201,7 +201,7 @@ def main():
         root / "agentic_core/utils/core_extensions/verify_patches.py": [
             (
                 "from import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location",
-                "from agentic_core.config.blueprint_sovereign.structure_blueprint import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location"
+                "from agentic_core.L5_safety.validators.structure_blueprint import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location"
             ),
         ],
     }

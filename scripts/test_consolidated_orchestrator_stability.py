@@ -17,7 +17,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import ConsolidatedOrchestratorAgent
+from archives.location_violations.ConsolidatedOrchestratorAgent import ConsolidatedOrchestratorAgent
 
 
 class MockAgent:

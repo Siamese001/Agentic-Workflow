@@ -36,7 +36,7 @@ EXCLUDED_DIRS = {
     "venv",
 }
 
-DECORATOR_IMPORT = "from agentic_core.utils.core_extensions.decorators import standard_heal"
+DECORATOR_IMPORT = "from agentic_core.L5_safety.validators.decorators import standard_heal"
 DECORATOR_NAME = "@standard_heal"
 
 
@@ -68,7 +68,7 @@ def already_has_decorator(content: str) -> bool:
 
 def already_has_import(content: str) -> bool:
     """Check if the standard_heal import already exists."""
-    return "from agentic_core.utils.core_extensions.decorators import standard_heal" in content
+    return "from agentic_core.L5_safety.validators.decorators import standard_heal" in content
 
 
 def find_import_insertion_point(content: str) -> int:

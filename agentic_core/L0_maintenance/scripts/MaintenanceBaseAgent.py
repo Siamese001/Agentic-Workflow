@@ -30,7 +30,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -136,7 +136,7 @@ class L0DelegationMixin(MCPHardenedMixin):
     async def _delegate_to_specialist(self, operation: str, error: str, context: Dict) -> Dict:
         """Delegate failure analysis to TestSovereigntyAgent."""
         try:
-            # from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
+            # from agentic_core.config.blueprint_sovereign.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
             import importlib
             module = importlib.import_module('agentic_core.L5_safety.validators.TestSovereigntyAgent')
             TestSovereigntyAgent = module.TestSovereigntyAgent
@@ -159,7 +159,7 @@ class L0DelegationMixin(MCPHardenedMixin):
     async def _delegate_healing_to_specialist(self, healed_code: str, context: Dict) -> Dict:
         """Delegate healed code validation to TestSovereigntyAgent."""
         try:
-#             from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
+#             from agentic_core.config.blueprint_sovereign.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
             
             specialist = TestSovereigntyAgent()
             result = await specialist.execute({

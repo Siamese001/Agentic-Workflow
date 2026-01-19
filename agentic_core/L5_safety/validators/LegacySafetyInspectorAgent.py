@@ -18,7 +18,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 
 try:
     from agentic_core.L1_cognition.thought_engine.canon_validators_ast import validate_print_statements, validate_debugger, validate_empty_except, validate_bare_except, validate_eval_exec
@@ -53,7 +53,7 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         Executes the security audit by running all defined checks.
         Reports findings to the context and signals security status.
         """
-        print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Security Audit...')
+        print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Security Audit...')
         keys: Any = [(0, self.check_key_00_no_hardcoded_secrets), (1, self.check_key_01_no_todo_fixme), (2, self.check_key_02_no_print_statements), (3, self.check_key_03_no_debugger_statements), (4, self.check_key_04_no_empty_except_blocks), (5, self.check_key_05_no_bare_except), (6, self.check_key_06_no_eval_exec)]
         for key, check_func in keys:
             passed, details = check_func()

@@ -17,7 +17,7 @@ import time
 from typing import Any, Optional
 
 from archives.location_violations.flags import USE_REDIS_CACHE, CACHE_METRICS_ENABLED, GRACEFUL_DEGRADATION
-from agentic_core.L6_observability.metrics.cache_metrics import get_cache_metrics
+from agentic_core.observability.cache_metrics import get_cache_metrics
 
 log = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ class RedisCacheMixin:
             return None
         if self._redis_client is None:
             try:
-                from agentic_core.L4_state.ValidationContext.caching_redis_mcp_client import get_redis_client
+                from agentic_core.L2_execution.mcp.caching_redis_mcp_client import get_redis_client
                 self._redis_client = get_redis_client()
             except Exception as e:
                 if not GRACEFUL_DEGRADATION:

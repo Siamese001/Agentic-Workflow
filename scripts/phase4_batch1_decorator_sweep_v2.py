@@ -40,7 +40,7 @@ EXCLUDED_DIRS = {
     "venv",
 }
 
-STANDARD_HEAL_IMPORT = "from agentic_core.utils.core_extensions.decorators import standard_heal"
+STANDARD_HEAL_IMPORT = "from agentic_core.L5_safety.validators.decorators import standard_heal"
 
 
 def find_python_files(root: Path) -> List[Path]:
@@ -62,7 +62,7 @@ def has_heal_repository(content: str) -> bool:
 
 def already_has_standard_heal_import(content: str) -> bool:
     """Check if file already imports standard_heal."""
-    return "from agentic_core.utils.core_extensions.decorators import standard_heal" in content
+    return "from agentic_core.L5_safety.validators.decorators import standard_heal" in content
 
 
 def already_has_decorator(content: str) -> bool:

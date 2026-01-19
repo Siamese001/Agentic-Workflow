@@ -4,7 +4,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 Logger: Any = logging.getLogger(__name__)
 
 def _load_json_config(filename: str, description: str, required: bool=True) -> Dict[str, object]:

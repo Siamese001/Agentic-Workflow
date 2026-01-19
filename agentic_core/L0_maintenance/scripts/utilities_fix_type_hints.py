@@ -6,7 +6,7 @@ import os
 import re
 from typing import Any, Dict, List, Optional, Protocol
 from services.configuration import ConfigurationService
-from agentic_core.utils.sovereign_index import SovereignIndex
+from archives.location_violations.sovereign_index import SovereignIndex
 Logger: Any = logging.getLogger(__name__)
 
 def add_type_hints_to_file(filepath: str) -> int:

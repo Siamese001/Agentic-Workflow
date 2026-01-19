@@ -14,7 +14,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import pytest
-from agentic_core.utils.result_utils import (
+from archives.location_violations.result_utils import (
     AgentResult,
     normalize_agent_result,
     aggregate_results,

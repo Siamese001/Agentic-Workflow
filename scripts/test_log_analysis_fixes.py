@@ -260,7 +260,7 @@ def test_5_mixin_metrics_check():
     
     # Test actual instantiation
     try:
-        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+        from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
         
         class TestAgent(HealerMixin):
             pass

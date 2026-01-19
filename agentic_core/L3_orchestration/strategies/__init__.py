@@ -7,7 +7,7 @@ Each strategy encapsulates the specific logic of what agents to run and in what 
 Available Strategies:
     - HealingStrategy: Tiered healing execution (Pre-Flight, Structural, etc.)
 """
-from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+from archives.void_violations.healing_strategy import HealingStrategy
 
 __all__ = [
     "HealingStrategy",

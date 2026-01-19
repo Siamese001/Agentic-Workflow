@@ -7,7 +7,7 @@ import json
 import ast
 from pathlib import Path
 from typing import List, Dict
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 

@@ -55,7 +55,7 @@ SIMPLE_READ_PATTERN_ALT = re.compile(
     re.MULTILINE
 )
 
-SAFE_IO_IMPORT = "from agentic_core.utils.file_utils import safe_read_file"
+SAFE_IO_IMPORT = "from archives.location_violations.file_utils import safe_read_file"
 
 
 def find_python_files(root: Path) -> List[Path]:
@@ -77,7 +77,7 @@ def has_simple_read_pattern(content: str) -> bool:
 
 def already_has_safe_io_import(content: str) -> bool:
     """Check if file already imports safe_read_file."""
-    return "from agentic_core.utils.file_utils import safe_read_file" in content
+    return "from archives.location_violations.file_utils import safe_read_file" in content
 
 
 def find_import_insertion_point(content: str) -> int:

@@ -310,7 +310,7 @@ class ArchitectureGovernor:
         }
 
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+        from agentic_core.L5_safety.validators.structure_blueprint import (
             MAX_DEPTH,
             MAX_LINES,
             MIN_DEPTH,
