@@ -36,7 +36,9 @@ class TestDependencyIsolation:
         
         violations = []
         
-        for py_file in apps_shared_dir.rglob("*.py"):
+        # Phase 6.8: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(apps_shared_dir):
             try:
                 content = py_file.read_text(encoding='utf-8', errors='ignore')
                 tree = ast.parse(content)
@@ -67,7 +69,9 @@ class TestDependencyIsolation:
         
         violations = []
         
-        for py_file in apps_shared_dir.rglob("*.py"):
+        # Phase 6.8: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(apps_shared_dir):
             try:
                 content = py_file.read_text(encoding='utf-8', errors='ignore')
                 tree = ast.parse(content)
@@ -122,7 +126,9 @@ class TestCircularDependencyPrevention:
         deps = {}
         known_territories = {'agentic_core', 'apps_shared', 'apps_rg', 'apps_lic', 'tests', 'scripts'}
         
-        for py_file in territory_dir.rglob("*.py"):
+        # Phase 6.8: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(territory_dir):
             imports = self._extract_imports(py_file)
             external = imports & known_territories
             if external:

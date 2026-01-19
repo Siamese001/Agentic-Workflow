@@ -177,7 +177,9 @@ def test_tc15_performance_delta():
     start_rglob = time.perf_counter()
     for _ in range(10):
         rglob_files = []
-        for py_file in PROJECT_ROOT.rglob("*.py"):
+        # Phase 6.8: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(PROJECT_ROOT):
             path_parts = py_file.parts
             skip = False
             for part in path_parts:

@@ -26,10 +26,11 @@ def flatten_annexed() -> Any:
         for stage_dir in layer_path.iterdir():
             if not stage_dir.is_dir() or stage_dir.name == '__pycache__':
                 continue
-            for subdir in stage_dir.rglob('*'):
-                if subdir.is_file() and subdir.suffix == '.py':
-                    rel_path: Any = subdir.relative_to(CORE)
-                    parts: Any = rel_path.parts
+            # Phase 6.8: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files
+            for subdir in get_python_files(stage_dir):
+                rel_path: Any = subdir.relative_to(CORE)
+                parts: Any = rel_path.parts
                     if len(parts) > REQUIRED_DEPTH - 1:
                         target: Any = CORE / parts[0] / parts[1] / subdir.name
                         if target.exists():

@@ -22,8 +22,10 @@ def rewire_synapses() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] STARTING GLOBAL SYNAPTIC REWIRE...')
     rewired_count: Any = 0
-    for py_file in ROOT.rglob('*.py'):
-        if any((p in str(py_file) for p in ['legacy_code', '.venv', 'data'])):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(ROOT):
+        if 'legacy_code' in str(py_file) or 'data' in str(py_file):
             continue
         try:
             with open(py_file, 'r', encoding='utf-8') as f:

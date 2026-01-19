@@ -34,7 +34,9 @@ def run_type_medic() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] SOVEREIGN TYPE MEDIC: Initiating Clean Sweep...')
     modified_files: Any = 0
-    for py_file in CORE.rglob('*.py'):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(CORE):
         if py_file.name == '__init__.py' or 'legacy' in str(py_file):
             continue
         try:

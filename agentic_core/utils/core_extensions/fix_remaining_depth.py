@@ -23,8 +23,10 @@ def move_remaining() -> Any:
         stage: Any = knowledge_dir / 'P1_core'
         stage.mkdir(exist_ok=True)
         (stage / '__init__.py').write_text('"""Stage module."""\n')
-        for f in knowledge_dir.glob('*.py'):
-            if f.name != '__init__.py':
+        # Phase 6.8: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for f in get_python_files(knowledge_dir):
+            if f.name != '__init__.py' and f.parent == knowledge_dir:
                 target: Any = stage / f.name
                 if not target.exists():
                     shutil.move(str(f), str(target))
@@ -35,8 +37,10 @@ def move_remaining() -> Any:
         stage: Any = thought_nodes / 'P1_core'
         stage.mkdir(exist_ok=True)
         (stage / '__init__.py').write_text('"""Stage module."""\n')
-        for f in thought_nodes.glob('*.py'):
-            if f.name != '__init__.py':
+        # Phase 6.8: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for f in get_python_files(thought_nodes):
+            if f.name != '__init__.py' and f.parent == thought_nodes:
                 target: Any = stage / f.name
                 if not target.exists():
                     shutil.move(str(f), str(target))

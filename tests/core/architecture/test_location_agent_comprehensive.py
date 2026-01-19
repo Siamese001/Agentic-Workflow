@@ -126,7 +126,9 @@ def test_case_1_shallow_nesting_fix():
             test_pass("ACTION", f"Moved to {expected_target.relative_to(test_root)}")
         else:
             # Check alternative location
-            nested_files = list((test_root / "agentic_core" / "L2_execution").rglob("_TestOrphanedRunner.py"))
+            # Phase 6.8: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files
+            nested_files = [f for f in get_python_files(test_root / "agentic_core" / "L2_execution") if f.name == "_TestOrphanedRunner.py"]
             if nested_files and "depth_aligned" in str(nested_files[0]):
                 test_pass("ACTION", f"Moved to {nested_files[0].relative_to(test_root)}")
             else:
@@ -140,7 +142,10 @@ def test_case_1_shallow_nesting_fix():
             test_fail("CLEANUP", "Old file still exists")
         
         # Verify NOT in archives
-        archives = list((test_root / "archives").rglob("_TestOrphanedRunner.py"))
+        # Phase 6.8: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        archives_dir = test_root / "archives"
+        archives = [f for f in get_python_files(archives_dir) if f.name == "_TestOrphanedRunner.py"] if archives_dir.exists() else []
         if not archives:
             test_pass("NO_ARCHIVE", "File NOT in archives")
         else:

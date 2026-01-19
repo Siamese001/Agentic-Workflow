@@ -88,8 +88,10 @@ def test_inheritance_audit():
         # Check it's NOT in live agentic_core (excluding archives)
         live_path = PROJECT_ROOT / "agentic_core"
         found_in_live = False
-        for py_file in live_path.rglob(f"{deprecated}.py"):
-            if "archives" not in str(py_file) and "__pycache__" not in str(py_file):
+        # Phase 6.8: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(live_path):
+            if py_file.name == f"{deprecated}.py":
                 found_in_live = True
                 test_fail(f"DEPRECATED_{deprecated}", f"Still in live codebase: {py_file}")
                 break
@@ -271,8 +273,10 @@ def test_orchestrator_count():
         "orchestrator.py",  # Protocol/interface file (IOrchestrator)
     ]
     
-    for py_file in agentic_core.rglob("*Orchestrator*.py"):
-        if "archives" in str(py_file) or "__pycache__" in str(py_file):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(agentic_core):
+        if "Orchestrator" not in py_file.name:
             continue
         
         filename = py_file.name.lower()
@@ -313,8 +317,10 @@ def test_baseagent_count():
     agentic_core = PROJECT_ROOT / "agentic_core"
     baseagent_files = []
     
-    for py_file in agentic_core.rglob("*BaseAgent*.py"):
-        if "archives" not in str(py_file) and "__pycache__" not in str(py_file):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(agentic_core):
+        if "BaseAgent" in py_file.name:
             baseagent_files.append(py_file)
     
     # Target: 8 BaseAgents (the approved layer bases)

@@ -14,9 +14,9 @@ def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
     net_incremental: Any = []
     duplicates: Any = []
     all_files: Any = []
-    for py_file in source_dir.rglob('*.py'):
-        if '__pycache__' in py_file.parts or '.git' in py_file.parts:
-            continue
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(source_dir):
         filename: Any = py_file.name
         all_files.append(filename)
         if filename in existing_filenames:

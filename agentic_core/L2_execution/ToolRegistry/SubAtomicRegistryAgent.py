@@ -65,8 +65,10 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
     def extract_methods(self) -> List[Dict]:
         """Deep crawl of all .py files to find callables"""
         methods = []
-        for py_file in self.root.rglob("*.py"):
-            if "env" in str(py_file) or "archives" in str(py_file): continue
+        # Phase 6.8: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.root):
+            if "archives" in str(py_file): continue
             try:
                 tree = ast.parse(py_file.read_text())
                 for node in ast.walk(tree):

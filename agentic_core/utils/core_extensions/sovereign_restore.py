@@ -53,7 +53,9 @@ def sovereign_restore() -> Any:
         for stage_dir in layer_dir.iterdir():
             if not stage_dir.is_dir():
                 continue
-            for py_file in stage_dir.glob('*.py'):
+            # Phase 6.8: Use ssot_discovery instead of glob
+            from agentic_core.utils.ssot_discovery import get_python_files
+            for py_file in get_python_files(stage_dir):
                 if py_file.name == '__init__.py':
                     continue
                 classes: Any = get_class_names(py_file)

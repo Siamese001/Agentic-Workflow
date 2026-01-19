@@ -33,7 +33,9 @@ def quarantine_all_broken() -> Any:
     print('[*] QUARANTINE: Scanning for all syntax-broken files...')
     QUARANTINE.mkdir(exist_ok=True)
     quarantined: Any = 0
-    for py_file in CORE.rglob('*.py'):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(CORE):
         try:
             content: Any = py_file.read_text(encoding='utf-8')
             ast.parse(content)
