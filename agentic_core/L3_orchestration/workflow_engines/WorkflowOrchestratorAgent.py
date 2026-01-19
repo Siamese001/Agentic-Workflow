@@ -208,50 +208,52 @@ def execute_hop_with_agent(hop_id: str, WorkflowContext: WorkflowContext, hop_fu
 class LicWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """Workflow orchestrator with SDK integration."""
 
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def __init__(self, workflow_id: str = None, provider: Any = None, model: Optional[str] = None) -> None:
+        """Initialize workflow orchestrator.
 
-def __init__(self: Any, workflow_id: str, Provider: Provider, model: Optional[str]) -> None:
-    """Initialize workflow orchestrator.
+        Args:
+            workflow_id: Unique workflow identifier
+            provider: LLM Provider to use
+            model: Optional model name
+        """
+        self.workflow_id = workflow_id or "default"
+        self.context = {}
+        self.hops: List[Dict[str, Any]] = []
 
-    Args:
-        workflow_id: Unique workflow identifier
-        Provider: LLM Provider to use
-        model: Optional model name
-    """
-    self.workflow_id = workflow_id
-    SELF.CONTEXT = create_workflow_context(workflow_id=workflow_id, PROVIDER=Provider, MODEL=model)
-    self.hops: List[Dict[str, Any]] = []
+    def register_hop(self, hop_id: str, hop_function: Any, dependencies: Optional[List[str]] = None) -> None:
+        """Register a hop in the workflow.
 
-def register_hop(self: Any, hop_id: str, hop_function: Any, dependencies: Optional[List[str]]) -> None:
-    """Register a hop in the workflow.
+        Args:
+            hop_id: Hop identifier
+            hop_function: Hop execution function
+            dependencies: Optional list of dependency hop IDs
+        """
+        self.hops.append({'id': hop_id, 'function': hop_function, 'dependencies': dependencies or []})
 
-    Args:
-        hop_id: Hop identifier
-        hop_function: Hop execution function
-        dependencies: Optional list of dependency hop IDs
-    """
-    self.hops.append({'id': hop_id, 'function': hop_function, 'dependencies': dependencies or []})
+    def execute(self, inputs: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Execute the workflow.
 
-def execute(self: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
-    """Execute the workflow.
+        Args:
+            inputs: Initial workflow inputs
 
-    Args:
-        inputs: Initial workflow inputs
-
-    Returns:
-        Final workflow outputs
-    """
-    with create_span(f'workflow.{self.workflow_id}') as Span:
-        current_inputs: Any = inputs
+        Returns:
+            Final workflow outputs
+        """
+        inputs = inputs or {}
+        outputs: Dict[str, Any] = {}
+        current_inputs = inputs
         for hop in self.hops:
-            hop_outputs: Any = execute_hop_with_agent(hop_id=hop['id'], WorkflowContext=self.context, hop_function=hop['function'], INPUTS=current_inputs)
+            hop_outputs = hop['function'](current_inputs) if hop['function'] else {}
             outputs.update(hop_outputs)
-            current_inputs: Any = hop_outputs
+            current_inputs = hop_outputs
         return outputs
 
-def create_workflow_orchestrator(workflow_id: str, Provider: Provider=Provider.OPENAI, model: Optional[str]=None) -> LicWorkflowOrchestratorAgent:
+    def heal_repository(self) -> dict:
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
+
+
+def create_workflow_orchestrator(workflow_id: str, provider: Any = None, model: Optional[str] = None) -> LicWorkflowOrchestratorAgent:
     """Create workflow orchestrator with SDK clients.
 
     Args:

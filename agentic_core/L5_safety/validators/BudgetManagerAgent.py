@@ -581,29 +581,32 @@ async def resilient_mutation(self, agent_name: str, Task: str, code: str='', fil
                 await asyncio.sleep(2 ** attempt)
     return current_code
 
-def _clean_llm_code(self, raw_code: str) -> str:
-    """Extracts code from Chain-of-Thought responses."""
-    raw_code = re.sub('<reasoning>.*?</reasoning>', '', raw_code, flags=re.DOTALL)
-    code_match = re.search('```(?:python)?\\n(.*?)```', raw_code, re.DOTALL)
-    if code_match:
-        return code_match.group(1).strip()
-    if raw_code.strip().startswith('```'):
-        return raw_code.strip().strip('`').replace('python', '', 1).strip()
-    return raw_code.strip()
+class BudgetManagerAgent:
+    """Budget Manager Agent - wraps budget management with healing capabilities."""
 
-@timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set] = None) -> Dict[str, int]:
-    """L0 maintenance - operational only."""
-    if _call_path is None:
-        _call_path = set()
-    agent_name = "BudgetManager"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] L0 maintenance - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)
+    def _clean_llm_code(self, raw_code: str) -> str:
+        """Extracts code from Chain-of-Thought responses."""
+        raw_code = re.sub('<reasoning>.*?</reasoning>', '', raw_code, flags=re.DOTALL)
+        code_match = re.search('```(?:python)?\\n(.*?)```', raw_code, re.DOTALL)
+        if code_match:
+            return code_match.group(1).strip()
+        if raw_code.strip().startswith('```'):
+            return raw_code.strip().strip('`').replace('python', '', 1).strip()
+        return raw_code.strip()
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set] = None) -> Dict[str, int]:
+        """L0 maintenance - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = "BudgetManagerAgent"
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L0 maintenance - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
