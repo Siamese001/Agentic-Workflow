@@ -115,7 +115,9 @@ def main() -> Any:
     print(f'Target: {target_path}')
     print(f"Mode: {('DRY RUN' if args.dry_run else 'LIVE HEALING')}")
     print(f"{'=' * 70}\n")
-    python_files: Any = [p for p in target_path.rglob('*.py') if p.is_file() and '__pycache__' not in str(p)]
+    # Operation Zero: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    python_files: Any = list(get_python_files(target_path))
     print(f'[SCAN] Found {len(python_files)} Python files\n')
     healed_count: Any = 0
     total_imports: Any = 0

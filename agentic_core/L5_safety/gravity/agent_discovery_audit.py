@@ -198,7 +198,9 @@ def count_usages_ast(agent_name: str, agent_file: Path) -> Dict[str, Any]:
     """Sovereign AST-based usage counting (excludes orchestrator discovery)"""
     usages = {'real': 0, 'string_ref': 0, 'files': set()}
 
-    for py_file in tqdm(list(PROJECT_ROOT.rglob('*.py')), desc=f"Scanning {agent_name}", leave=False):
+    # Operation Zero: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in tqdm(list(get_python_files(PROJECT_ROOT)), desc=f"Scanning {agent_name}", leave=False):
         if any(ex in str(py_file) for ex in EXCLUDED_DIRS):
             continue
         if py_file == agent_file:

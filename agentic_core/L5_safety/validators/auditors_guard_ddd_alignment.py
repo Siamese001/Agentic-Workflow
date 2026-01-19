@@ -58,7 +58,8 @@ def validate_ddd_alignment(target_dir: str) -> Tuple[float, List[str]]:
     """Brief description of functionality and purpose."""
     issues: Any = []
     total_files: Any = 0
-    for path in Path(target_dir).rglob('*.py'):
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for path in get_python_files(Path(target_dir)):
         if 'tests' in str(path):
             continue
         total_files += 1

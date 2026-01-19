@@ -109,7 +109,9 @@ You are {role}. Your objective is {objective}.
         template_dir = Path("./templates/prompts")
         template_dir.mkdir(parents=True, exist_ok=True)
         
-        for file_path in template_dir.glob("*.xml"):
+        from agentic_core.utils.ssot_discovery import get_data_files
+        xml_files = [f for f in get_data_files(template_dir, extensions=['.xml'])]
+        for file_path in xml_files:
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     template_content = f.read()

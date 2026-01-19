@@ -87,10 +87,9 @@ def main():
         if not territory.exists():
             continue
         
-        for py_file in territory.rglob('*.py'):
-            # Skip certain directories
-            if any(x in str(py_file) for x in ['__pycache__', '.git', 'archives']):
-                continue
+        # Operation Zero: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(territory):
             
             if add_ssot_import(py_file):
                 print(f"[UPDATED] {py_file.relative_to(PROJECT_ROOT)}")

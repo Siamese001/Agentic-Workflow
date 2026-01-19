@@ -300,7 +300,9 @@ class FilesystemSSOTReconcilerAgent(
         # Fallback: scan only agentic_core (not project root)
         agentic_core = self.project_root / "agentic_core"
         
-        for py_file in agentic_core.rglob("*agent*.py"):
+        # Sub-20: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_agent_files
+        for py_file in get_agent_files(agentic_core):
             if any(skip in py_file.parts for skip in ["__pycache__", ".git", "archives"]):
                 continue
             

@@ -89,7 +89,9 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
 
     def _build_fan_in_map(self):
         """Walks all python files to see who imports what."""
-        for py_file in self.root.glob("agentic_core/**/*.py"):
+        # Operation Zero: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.root / "agentic_core"):
             current_module = self._get_module_name(py_file)
             imports = self._extract_internal_imports(py_file)
             

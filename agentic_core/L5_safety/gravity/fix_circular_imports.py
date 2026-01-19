@@ -121,7 +121,9 @@ def main() -> Any:
     print('=' * 80)
     print(f'Root: {agentic_core_root}')
     print()
-    py_files: Any = list(agentic_core_root.rglob('*.py'))
+    # Operation Zero: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    py_files: Any = list(get_python_files(agentic_core_root))
     print(f'Found {len(py_files)} Python files')
     print()
     total_changes: Any = 0

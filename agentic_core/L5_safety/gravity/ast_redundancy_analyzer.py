@@ -226,9 +226,9 @@ def find_agent_classes(base_path: str) -> List[AgentInfo]:
         search_paths.append(apps_shared)
     
     for search_base in search_paths:
-        for py_file in search_base.rglob('*.py'):
-            if '__pycache__' in str(py_file):
-                continue
+        # Operation Zero: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(search_base):
             if '.venv' in str(py_file):
                 continue
                 

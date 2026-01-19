@@ -253,10 +253,9 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
         all_violations = []
         files_scanned = 0
         
-        for py_file in self.root.rglob("*.py"):
-            # Skip excluded directories
-            if any(skip in py_file.parts for skip in ["__pycache__", ".git", "archives", ".venv"]):
-                continue
+        # Operation Zero: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.root):
                 
             files_scanned += 1
             violations = await self.detect_violations(py_file)

@@ -119,7 +119,9 @@ Current date: December 24, 2025
         self.healed_count = 0
         self.healed_files = []
         
-        for py_file in self.root.rglob("*.py"):
+        # Sub-20: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.root):
             # Skip protected files and __init__ files
             if py_file.name == "__init__.py" or self._is_protected_file(py_file):
                 continue

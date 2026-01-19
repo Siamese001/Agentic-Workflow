@@ -133,7 +133,8 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             (r'secret\s*=\s*["\'](?!.*getenv)[\w\-]+["\']', "HARDCODED_SECRET"),
         ]
         
-        for py_file in self.project_root.rglob("*.py"):
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.project_root):
             if "test" in str(py_file) or "__pycache__" in str(py_file):
                 continue
             

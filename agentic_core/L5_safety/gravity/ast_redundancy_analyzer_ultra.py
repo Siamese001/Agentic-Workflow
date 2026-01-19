@@ -156,7 +156,9 @@ def extract_layer(file_path: Path) -> str:
 
 def find_agents() -> List[AgentInfo]:
     agents = []
-    for py_file in AGENTIC_CORE.rglob("*Agent.py"):
+    # Operation Zero: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_agent_files
+    for py_file in get_agent_files(AGENTIC_CORE):
         if any(ex in str(py_file) for ex in EXCLUDED_DIRS):
             continue
 
