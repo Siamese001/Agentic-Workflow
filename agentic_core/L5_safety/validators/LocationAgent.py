@@ -19,7 +19,7 @@ Placed in L5_safety/validators per semantic_l2_registry purpose:
   "Canon constitution validators, structural policy enforcement..."
 """
 from pathlib import Path
-from typing import List, Tuple, Dict, Any, Optional
+from typing import List, Tuple, Dict, Any, Optional, Union
 from dataclasses import dataclass
 from datetime import datetime
 import re
@@ -28,6 +28,32 @@ import logging
 import ast
 
 Logger = logging.getLogger(__name__)
+
+# Performance optimization: Use SovereignIndex instead of rglob
+try:
+    from archives.location_violations.sovereign_index import SovereignIndex
+    SOVEREIGN_INDEX_AVAILABLE = True
+except ImportError:
+    SOVEREIGN_INDEX_AVAILABLE = False
+    SovereignIndex = None
+
+
+def _get_python_files(project_root: Path) -> List[Path]:
+    """
+    Get all Python files using SovereignIndex (cached) or fallback to rglob.
+    
+    This is a performance optimization to prevent timeouts during healing.
+    SovereignIndex caches the file list, making subsequent calls O(1).
+    """
+    if SOVEREIGN_INDEX_AVAILABLE:
+        try:
+            index = SovereignIndex.get_instance(project_root)
+            return index.get_files("*.py")
+        except Exception as e:
+            Logger.warning(f"[LocationAgent] SovereignIndex failed, falling back to rglob: {e}")
+    
+    # Fallback to rglob (slower but always works)
+    return list(project_root.rglob("*.py"))
 
 # ============================================================================
 # L5 SOVEREIGN STRUCTURAL SSOT (Violation 5 Resolution)
@@ -69,7 +95,7 @@ def is_path_compliant(
         >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
         False
     """
-    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    from agentic_core.L5_safety.validators.structure_blueprint import (
         ROOT_WHITELIST,
         FORBIDDEN_ROOT_FOLDERS,
         FORBIDDEN_FOLDER_PATTERN,
@@ -121,7 +147,7 @@ def is_path_compliant(
     return True
 
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     ROOT_WHITELIST,                    # = set(sovereign_registry.keys())
     FORBIDDEN_ROOT_FOLDERS,
     FORBIDDEN_FOLDER_PATTERN,          # ^\\d+_
@@ -161,7 +187,7 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
     """Check if file/line is excepted from key validation."""
     import fnmatch
     import re
-    from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
+    from agentic_core.L5_safety.validators.structure_blueprint import CANON_KEY_EXCEPTIONS
     exceptions = CANON_KEY_EXCEPTIONS.get(key_id, {})
     if not exceptions:
         return False
@@ -182,7 +208,7 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
 
 
 from agentic_core.L5_safety.validators.L5Agent import L5Agent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 @registers_prompt(
     template_name="file_placement.jinja",
@@ -282,7 +308,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         """Lazy NamingAgent - created on first access to avoid circular init."""
         if self._naming_agent is None:
             try:
-                from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
+                from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent
                 self._naming_agent = get_naming_agent(self.project_root)
             except (ImportError, RecursionError):
                 Logger.warning("NamingAgent not available - post-heal naming validation disabled")
@@ -742,9 +768,9 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         # 1. Check sovereign root existence
         all_violations.extend(self.validate_sovereign_roots())
 
-        # 2. Scan files
+        # 2. Scan files (using SovereignIndex for performance)
         if files is None:
-            files = list(self.project_root.rglob("*.py"))
+            files = _get_python_files(self.project_root)
 
         _, file_violations = self.enforce_void_compliance(files)
         all_violations.extend(file_violations)
@@ -900,7 +926,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         fix_count = 0
 
         try:
-            for py_file in self.project_root.rglob("*.py"):
+            for py_file in _get_python_files(self.project_root):
                 if py_file == new_path or py_file == old_path:
                     continue  # Skip self
                 if any(part in {".git", "__pycache__", "archives"} for part in py_file.parts):
@@ -942,7 +968,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
             remaining_count = 0
 
             validation_pattern = re.compile(rf"{re.escape(old_module)}")
-            for py_file in self.project_root.rglob("*.py"):
+            for py_file in _get_python_files(self.project_root):
                 if any(part in {".git", "__pycache__", "archives"} for part in py_file.parts):
                     continue
 
@@ -2148,7 +2174,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         
         Full location compliance scan with automatic cleanup, post-heal validation,
         import fixing, and batch verification.
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
         
         Args:
             files: Optional list of files to scan (defaults to all .py files)
