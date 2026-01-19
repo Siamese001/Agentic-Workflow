@@ -1,0 +1,64 @@
+{
+  "timestamp": "20260119_173935",
+  "tests": {
+    "self_tests": {
+      "passed": 4,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "test_instantiation",
+          "status": "passed"
+        },
+        {
+          "name": "test_hash_calculation",
+          "status": "passed"
+        },
+        {
+          "name": "test_marker_detection",
+          "status": "passed"
+        },
+        {
+          "name": "test_duplicate_detection",
+          "status": "passed"
+        }
+      ]
+    },
+    "gap4_duplicates": {
+      "status": "FAIL",
+      "duplicates_found": 0,
+      "test_duplicate_detected": false,
+      "details": []
+    },
+    "orphan_detection": {
+      "status": "FAIL",
+      "orphans_found": 0,
+      "test_orphan_detected": false,
+      "details": []
+    },
+    "marker_scanning": {
+      "status": "FAIL",
+      "total_markers_found": 0,
+      "test_file_markers": 0,
+      "marker_types_found": [],
+      "expected_markers": [
+        "TODO",
+        "HACK",
+        "FIXME",
+        "BUG",
+        "XXX"
+      ],
+      "all_expected_found": false,
+      "details": []
+    },
+    "full_validation": {
+      "status": "PASS",
+      "total_violations": 0,
+      "summary": {
+        "duplicate_count": 0,
+        "empty_file_count": 0,
+        "tech_debt_count": 0,
+        "orphan_count": 0
+      }
+    }
+  }
+}

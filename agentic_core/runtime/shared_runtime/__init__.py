@@ -24,8 +24,27 @@ Future Curation Roadmap:
 """
 
 # Public API surface — expose only what's intended
-from .reflection_engine import ReflectionEngine, CritiqueResult, ValidationCriterion, ReflectionConfig, MutationRequest
-from .signal_enhancer import SignalEnhancer, SignalQuality, SignalAssessment, QualityThresholds, ClaimAnalysis
+# Graceful imports - some modules may not exist yet
+try:
+    from .reflection_engine import ReflectionEngine, CritiqueResult, ValidationCriterion, ReflectionConfig, MutationRequest
+except ImportError:
+    ReflectionEngine = None
+    CritiqueResult = None
+    ValidationCriterion = None
+    ReflectionConfig = None
+    MutationRequest = None
+
+try:
+    from .signal_enhancer import SignalEnhancer, SignalQuality, SignalAssessment, QualityThresholds, ClaimAnalysis
+except ImportError:
+    SignalEnhancer = None
+    SignalQuality = None
+    SignalAssessment = None
+    QualityThresholds = None
+    ClaimAnalysis = None
+
+# AST Validator base class
+from .ast_validator import CanonASTValidator, parse_and_validate
 
 __all__ = [
     "ReflectionEngine",
@@ -38,4 +57,6 @@ __all__ = [
     "SignalAssessment",
     "QualityThresholds",
     "ClaimAnalysis",
+    "CanonASTValidator",
+    "parse_and_validate",
 ]

@@ -1,3 +1,22 @@
+"""@deprecated
+DEPRECATED: Use UnifiedASTValidatorAgent instead.
+
+This agent has been consolidated into UnifiedASTValidatorAgent as part of
+Phase 1 consolidation (2026-01-19). This file is retained for backward
+compatibility during the transition period.
+
+Migration:
+    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
+        UnifiedASTValidatorAgent,
+        validate_bare_except,
+    )
+"""
+import warnings
+warnings.warn(
+    "BareExceptValidatorAgent is deprecated. Use UnifiedASTValidatorAgent instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.

@@ -1,3 +1,24 @@
+"""@deprecated
+DEPRECATED: Use UnifiedHygieneValidatorAgent instead.
+
+This agent has been consolidated into UnifiedHygieneValidatorAgent as part of
+Phase 2 consolidation (2026-01-19). This file is retained for backward
+compatibility during the transition period.
+
+Migration:
+    from agentic_core.L5_safety.validators.UnifiedHygieneValidatorAgent import (
+        UnifiedHygieneValidatorAgent,
+        find_duplicates,
+        find_orphans,
+        scan_tech_debt,
+    )
+"""
+import warnings
+warnings.warn(
+    "HygieneGuardianAgent is deprecated. Use UnifiedHygieneValidatorAgent instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.

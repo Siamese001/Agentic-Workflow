@@ -1,0 +1,141 @@
+{
+  "timestamp": "20260119_173954",
+  "tests": {
+    "self_tests": {
+      "passed": 4,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "test_instantiation",
+          "status": "passed"
+        },
+        {
+          "name": "test_hash_calculation",
+          "status": "passed"
+        },
+        {
+          "name": "test_marker_detection",
+          "status": "passed"
+        },
+        {
+          "name": "test_duplicate_detection",
+          "status": "passed"
+        }
+      ]
+    },
+    "gap4_duplicates": {
+      "status": "FAIL",
+      "duplicates_found": 0,
+      "test_duplicate_detected": false,
+      "details": []
+    },
+    "orphan_detection": {
+      "status": "FAIL",
+      "orphans_found": 0,
+      "test_orphan_detected": false,
+      "details": []
+    },
+    "marker_scanning": {
+      "status": "PASS",
+      "total_markers_found": 18,
+      "test_file_markers": 18,
+      "marker_types_found": [
+        "TODO",
+        "HACK",
+        "XXX",
+        "FIXME",
+        "BUG"
+      ],
+      "expected_markers": [
+        "TODO",
+        "FIXME",
+        "HACK",
+        "BUG",
+        "XXX"
+      ],
+      "all_expected_found": true,
+      "details": [
+        {
+          "file": "marker_test_file.py",
+          "line": 12,
+          "type": "TODO",
+          "content": "# TODO: This is a TODO marker on line 12",
+          "severity": "LOW"
+        },
+        {
+          "file": "marker_test_file.py",
+          "line": 18,
+          "type": "FIXME",
+          "content": "# FIXME: This is a FIXME marker on line 19",
+          "severity": "LOW"
+        },
+        {
+          "file": "marker_test_file.py",
+          "line": 21,
+          "type": "FIXME",
+          "content": "return 42  # FIXME: Return value should be calculated",
+          "severity": "LOW"
+        },
+        {
+          "file": "marker_test_file.py",
+          "line": 24,
+          "type": "HACK",
+          "content": "# HACK: This is a HACK marker on line 26",
+          "severity": "LOW"
+        },
+        {
+          "file": "marker_test_file.py",
+          "line": 27,
+          "type": "HACK",
+          "content": "# HACK: Temporary workaround for issue #123",
+          "severity": "LOW"
+        },
+        {
+          "file": "marker_test_file.py",
+          "line": 31,
+          "type": "XXX",
+          "content": "# XXX: This is a XXX marker on line 33",
+          "severity": "LOW"
+        },
+        {
+          "file": "marker_test_file.py",
+          "line": 34,
+          "type": "XXX",
+          "content": "pass  # XXX: Needs implementation",
+          "severity": "LOW"
+        },
+        {
+          "file": "marker_test_file.py",
+          "line": 37,
+          "type": "BUG",
+          "content": "# BUG: This is a BUG marker on line 39",
+          "severity": "LOW"
+        },
+        {
+          "file": "marker_test_file.py",
+          "line": 40,
+          "type": "BUG",
+          "content": "# BUG: Division by zero possible here",
+          "severity": "LOW"
+        },
+        {
+          "file": "marker_test_file.py",
+          "line": 48,
+          "type": "TODO",
+          "content": "# TODO: Initialize properly",
+          "severity": "LOW"
+        }
+      ]
+    },
+    "full_validation": {
+      "status": "FAIL",
+      "total_violations": 18,
+      "summary": {
+        "duplicate_count": 0,
+        "empty_file_count": 0,
+        "tech_debt_count": 18,
+        "orphan_count": 0
+      }
+    }
+  }
+}
