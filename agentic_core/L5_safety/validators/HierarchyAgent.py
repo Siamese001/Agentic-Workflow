@@ -369,11 +369,53 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 violations += 1
                 Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {expected_depth}")
                 if self.healing_enabled:
-                    archived += self._archive_depth_violation(file_path, rel, depth, expected_depth, archive_subdir, label)
+                    archived += self._heal_depth_violation(file_path, rel, depth, expected_depth)
         return violations if not self.healing_enabled else archived
 
-    def _archive_depth_violation(self, file_path: Path, rel: Path, depth: int, expected: int, subdir: str, label: str) -> int:
-        """Archive a file for depth violation."""
+    def _heal_depth_violation(self, file_path: Path, rel: Path, depth: int, expected: int) -> int:
+        """
+        Smart depth re-alignment instead of archiving.
+        
+        Strategy:
+        - DEEP Violation (> expected): Flatten by moving up.
+        - SHALLOW Violation (< expected): Nest by adding 'depth_aligned' spacers.
+        """
+        try:
+            if depth > expected:
+                # DEEP: Flatten (move up) - Keep the filename, remove intermediate folders
+                # Logic: Take first 'expected' parts + filename
+                new_parts = rel.parts[:expected] + (rel.parts[-1],)
+                target_path = self.project_root.joinpath(*new_parts)
+                action = "FLATTENED"
+            else:
+                # SHALLOW: Nest (add depth_aligned spacers)
+                deficit = expected - depth
+                spacers = tuple(["depth_aligned"] * deficit)
+                # Logic: Insert spacers before the filename
+                new_parts = rel.parts[:-1] + spacers + (rel.parts[-1],)
+                target_path = self.project_root.joinpath(*new_parts)
+                action = "NESTED"
+            
+            # Safety Check: Don't overwrite existing files without verification
+            if target_path.exists():
+                # Fallback to legacy archive if target exists to prevent data loss
+                return self._legacy_archive_depth_violation(file_path, rel, depth, expected, "collision", "COLLISION")
+
+            # Execute Move
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            file_path.rename(target_path)
+            
+            # Log the healing action
+            Logger.info(f"  [HEALED] {action}: {rel} -> {target_path.relative_to(self.project_root)}")
+            return 1
+            
+        except Exception as e:
+            # Failsafe: If healing fails, log error
+            Logger.error(f"  [ERROR] Healing failed for {rel}: {e}")
+            return 0
+
+    def _legacy_archive_depth_violation(self, file_path: Path, rel: Path, depth: int, expected: int, subdir: str, label: str) -> int:
+        """Legacy archive method - only used as fallback when smart healing has collision."""
         try:
             archive_path = self.archive_root / subdir / rel
             archive_path.parent.mkdir(parents=True, exist_ok=True)
@@ -426,19 +468,8 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {agentic_core_exact_depth}")
                     
                     if self.healing_enabled:
-                        try:
-                            archive_path = self.archive_root / "universal_depth" / rel
-                            archive_path.parent.mkdir(parents=True, exist_ok=True)
-                            
-                            header = f"# UNIVERSAL DEPTH VIOLATION — {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-                            header += f"# {rel} was depth {depth}, but MUST be {agentic_core_exact_depth}.\n\n"
-                            
-                            content = file_path.read_text(encoding="utf-8", errors="ignore")
-                            archive_path.write_text(header + content, encoding="utf-8")
-                            file_path.unlink()
-                            archived += 1
-                        except Exception:
-                            pass
+                        # Use smart depth re-alignment instead of archiving
+                        archived += self._heal_depth_violation(file_path, rel, depth, agentic_core_exact_depth)
         
         return violations if not self.healing_enabled else archived
 
