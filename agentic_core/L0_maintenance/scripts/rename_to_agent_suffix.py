@@ -161,8 +161,9 @@ def main():
     root = Path("C:/Git/Agentic-Workflow")
     
     # Find all Python files
-    py_files = list(root.rglob("*.py"))
-    py_files = [f for f in py_files if ".venv" not in str(f) and "__pycache__" not in str(f)]
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    py_files = list(get_python_files(root))
     
     total_changes = 0
     files_changed = 0

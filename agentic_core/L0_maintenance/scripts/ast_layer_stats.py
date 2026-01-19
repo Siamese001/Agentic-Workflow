@@ -71,7 +71,9 @@ def find_test_file(agent_path: Path, agent_class: str) -> bool:
         f"test_{agent_name.lower()}.py",
     ]
     
-    for test_file in tests_dir.rglob("test_*.py"):
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for test_file in [f for f in get_python_files(tests_dir) if f.name.startswith('test_')]:
         if test_file.name in patterns:
             return True
         # Also check if the test file imports this agent
@@ -189,12 +191,12 @@ def main():
         PROJECT_ROOT / APPS_SHARED_DIR,
     ]
     
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
     for scan_dir in scan_dirs:
         if not scan_dir.exists():
             continue
-        for py_file in scan_dir.rglob('*.py'):
-            if '__pycache__' in str(py_file):
-                continue
+        for py_file in get_python_files(scan_dir):
             
             for agent in analyze_file(py_file):
                 layer = agent['layer']

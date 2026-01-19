@@ -51,7 +51,9 @@ class RescueReviewer:
             path = self.root / folder
             if not path.exists():
                 continue
-            for py_file in path.rglob('*.py'):
+            # Phase 6.6: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files
+            for py_file in get_python_files(path):
                 try:
                     f_hash = hashlib.sha256(py_file.read_bytes()).hexdigest()
                     rel_path = str(py_file.relative_to(self.root))
@@ -68,7 +70,9 @@ class RescueReviewer:
             return
         print(f'\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---')
         from agentic_core.L5_safety.validators.structure_blueprint import CANON_SIGNALS, CANON_KEY_TO_FOLDER_MAP
-        for arch_file in self.archive_path.rglob('*.py'):
+        # Phase 6.6: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for arch_file in get_python_files(self.archive_path):
             rel: Any = arch_file.relative_to(self.archive_path)
             content: Any = arch_file.read_text(encoding='utf-8', errors='ignore')
             f_hash: Any = hashlib.sha256(content.encode()).hexdigest()

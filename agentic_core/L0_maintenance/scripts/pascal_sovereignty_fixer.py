@@ -38,7 +38,9 @@ def find_snake_case_classes(repo_root: Path, target_prefixes: List[str]) -> Dict
     """Find all snake_case class definitions and build rename mapping."""
     mapping = {}
     
-    for path in repo_root.rglob('*.py'):
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for path in get_python_files(repo_root):
         if not any(prefix in str(path) for prefix in target_prefixes):
             continue
         try:
@@ -110,7 +112,9 @@ def main():
     fixed_count = 0
     total_changes = 0
     
-    for path in repo_root.rglob('*.py'):
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for path in get_python_files(repo_root):
         if not any(prefix in str(path) for prefix in target_prefixes):
             continue
         

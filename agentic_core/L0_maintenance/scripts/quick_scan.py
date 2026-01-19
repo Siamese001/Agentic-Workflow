@@ -40,8 +40,9 @@ def progress_bar(current, total, width=40):
     sys.stdout.flush()
 
 # Scan tests
-test_files = list(Path(TESTS_UNIT_DIR).rglob('*.py'))
-test_files = [f for f in test_files if '__pycache__' not in str(f)]
+# Phase 6.7: Use ssot_discovery instead of rglob
+from agentic_core.utils.ssot_discovery import get_python_files
+test_files = list(get_python_files(Path(TESTS_UNIT_DIR)))
 
 skip_pattern = re.compile(r'@pytest\.mark\.skip')
 total_files_with_skips = 0

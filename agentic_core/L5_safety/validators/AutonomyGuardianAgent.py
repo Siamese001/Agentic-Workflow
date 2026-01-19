@@ -120,10 +120,12 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
     def _check_forbidden_runner_scripts(self, violations: List[Tuple[Path, str]]) -> None:
         """Check for forbidden runner scripts."""
+        # Phase 6.7: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
         for dir_path in self.forbidden_dirs:
             dir_obj = self.project_root / dir_path
             if dir_obj.exists():
-                for py_file in dir_obj.rglob("*.py"):
+                for py_file in get_python_files(dir_obj):
                     if any(p in py_file.stem.lower() for p in self.forbidden_patterns):
                         violations.append((py_file, "FORBIDDEN_RUNNER_SCRIPT"))
     
@@ -257,9 +259,9 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             if not agent_paths:
                 log.warning("[AutonomyGuardian] Fallback to agentic_core scan (discovery JSON unavailable)")
                 agentic_core_dir = self.project_root / "agentic_core"
-                for py_file in agentic_core_dir.rglob("*.py"):
-                    if "Agent" in py_file.name and not any(pattern in str(py_file) for pattern in self.exclude_patterns):
-                        agent_paths.append(py_file)
+                # Phase 6.7: Use ssot_discovery instead of rglob
+                from agentic_core.utils.ssot_discovery import get_agent_files
+                agent_paths = list(get_agent_files(agentic_core_dir))
             
             for agent_path in agent_paths:
                 if any(pattern in str(agent_path) for pattern in self.exclude_patterns):

@@ -1589,7 +1589,9 @@ def run_all_tests() -> bool:
         js_dir = get_validated_project_root() / DASHBOARD_DIR / 'js'
         all_js_content = html_content
         if js_dir.exists():
-            for js_file in js_dir.rglob('*.js'):
+            # Phase 6.6: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_data_files
+            for js_file in get_data_files(js_dir, extensions=['.js']):
                 try:
                     all_js_content += js_file.read_text(encoding='utf-8')
                 except Exception:
@@ -2041,7 +2043,9 @@ def run_all_tests() -> bool:
         js_dir = get_validated_project_root() / DASHBOARD_DIR / 'js'
         all_js_content = html_content
         if js_dir.exists():
-            for js_file in js_dir.rglob('*.js'):
+            # Phase 6.6: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_data_files
+            for js_file in get_data_files(js_dir, extensions=['.js']):
                 try:
                     all_js_content += js_file.read_text(encoding='utf-8')
                 except Exception:
@@ -2094,7 +2098,9 @@ def run_all_tests() -> bool:
         js_dir = get_validated_project_root() / DASHBOARD_DIR / 'js'
         all_js_content = html_content
         if js_dir.exists():
-            for js_file in js_dir.rglob('*.js'):
+            # Phase 6.6: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_data_files
+            for js_file in get_data_files(js_dir, extensions=['.js']):
                 try:
                     all_js_content += js_file.read_text(encoding='utf-8')
                 except Exception:

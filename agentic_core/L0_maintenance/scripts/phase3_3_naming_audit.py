@@ -17,10 +17,9 @@ def load_discovery():
 def find_all_agent_files():
     """Find all Python files ending in Agent.py"""
     root = Path('.')
-    agent_files = []
-    
-    for pattern in ['agentic_core/**/*Agent.py', 'apps_*/**/*Agent.py']:
-        agent_files.extend(root.glob(pattern))
+    # Phase 6.7: Use ssot_discovery instead of glob
+    from agentic_core.utils.ssot_discovery import get_agent_files
+    agent_files = get_agent_files(root)
     
     return agent_files
 

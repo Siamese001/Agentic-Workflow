@@ -415,7 +415,9 @@ def build_graph(
                 error=f"Not a Python file: {target_path}"
             )
     else:
-        files = list(target.rglob("*.py"))
+        # Phase 6.7: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        files = list(get_python_files(target))
         # Limit depth
         base_depth = len(target.parts)
         files = [f for f in files if len(f.parts) - base_depth <= max_depth]
@@ -597,7 +599,9 @@ def find_unused_imports(target_path: str) -> GraphResult:
     if target.is_file():
         files = [target]
     else:
-        files = list(target.rglob("*.py"))
+        # Phase 6.7: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        files = list(get_python_files(target))
     
     for file_path in files:
         result = parse_file(str(file_path))

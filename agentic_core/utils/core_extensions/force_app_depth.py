@@ -31,8 +31,12 @@ def force_app_depth() -> Any:
         if not app_path.exists():
             continue
         print(f'\n[HARDENING] {app_path.name}...')
-        for engine_folder in app_path.glob('*_engine'):
-            dest: Any = CORE / 'L2_execution' / 'P3_engines' / engine_folder.name
+        # Phase 6.6: Use os.walk instead of glob for directory traversal
+        import os
+        for item in app_path.iterdir():
+            if item.is_dir() and item.name.endswith('_engine'):
+                engine_folder = item
+                dest: Any = CORE / 'L2_execution' / 'P3_engines' / engine_folder.name
             dest.mkdir(parents=True, exist_ok=True)
             for item in engine_folder.iterdir():
                 if item.is_dir() and item.name.startswith('__'):
@@ -42,10 +46,11 @@ def force_app_depth() -> Any:
                 shutil.rmtree(str(engine_folder))
             except:
                 pass
-            print(f'  [✓] ENGINE EXTRICATED: {engine_folder.name} -> Core/L2_execution/P3_engines')
-        for layer_folder in app_path.glob('L*'):
-            if not layer_folder.is_dir():
-                continue
+                print(f'  [✓] ENGINE EXTRICATED: {engine_folder.name} -> Core/L2_execution/P3_engines')
+        # Phase 6.6: Use os.walk instead of glob for directory traversal
+        for item in app_path.iterdir():
+            if item.is_dir() and item.name.startswith('L'):
+                layer_folder = item
             layer_map: Any = {'L0': 'L1_cognition', 'L1': 'L1_cognition', 'L2': 'L2_execution', 'L3': 'L3_orchestration'}
             target_layer: Any = layer_map.get(layer_folder.name, layer_folder.name)
             dest: Any = CORE / target_layer / 'P1_core'
@@ -63,7 +68,9 @@ def force_app_depth() -> Any:
         app_p1.mkdir(parents=True, exist_ok=True)
         if not (app_p1 / '__init__.py').exists():
             (app_p1 / '__init__.py').write_text('"""App Core Implementation"""\n')
-        for py_file in app_path.glob('*.py'):
+        # Phase 6.6: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(app_path):
             if py_file.name == '__init__.py':
                 continue
             if 'sovereign_lock' in py_file.name:

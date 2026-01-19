@@ -49,14 +49,17 @@ SKIP_DIRS = {'.git', '__pycache__', 'node_modules', '.pytest_cache', 'coverage_h
 
 def find_files_to_update(root: Path) -> List[Path]:
     """Find all files that may need updating."""
-    files = []
-    for path in root.rglob('*'):
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    files = list(get_python_files(root)) + list(get_data_files(root, extensions=['.json', '.md', '.yaml', '.yml']))
+    
+    # Filter by CODE_EXTENSIONS and skip directories
+    filtered_files = []
+    for path in files:
         if path.is_file() and path.suffix in CODE_EXTENSIONS:
-            # Skip directories
-            if any(skip in path.parts for skip in SKIP_DIRS):
-                continue
-            files.append(path)
-    return files
+            if not any(skip in path.parts for skip in SKIP_DIRS):
+                filtered_files.append(path)
+    return filtered_files
 
 
 def update_file_content(file_path: Path, rename_map: Dict[str, str], dry_run: bool = True) -> Tuple[bool, int]:

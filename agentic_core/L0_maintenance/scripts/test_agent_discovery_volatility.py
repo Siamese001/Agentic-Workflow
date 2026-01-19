@@ -112,8 +112,10 @@ def run_tests():
     # =========================================================================
     # TEST 4: Deterministic file ordering (sorted)
     # =========================================================================
-    all_py_files_1 = sorted([p for p in PROJECT_ROOT.rglob('*.py') if not should_exclude_path(p)])
-    all_py_files_2 = sorted([p for p in PROJECT_ROOT.rglob('*.py') if not should_exclude_path(p)])
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    all_py_files_1 = sorted(get_python_files(PROJECT_ROOT))
+    all_py_files_2 = sorted(get_python_files(PROJECT_ROOT))
     
     test_result(
         "File ordering is deterministic",

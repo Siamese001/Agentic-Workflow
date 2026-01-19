@@ -59,7 +59,9 @@ class ColoredProgress:
         if not test_dir.exists():
             return 0, 0
         
-        test_files = list(test_dir.rglob('*.py'))
+        # Phase 6.7: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        test_files = list(get_python_files(test_dir))
         
         if HAS_TQDM:
             iterator = tqdm(test_files, desc=f"{ColoredProgress.CYAN}Scanning tests{ColoredProgress.RESET}", 
@@ -92,7 +94,9 @@ class ColoredProgress:
         skip_pattern = re.compile(r'@pytest\.mark\.skip\([^)]*\)\s*\n')
         
         test_dir = Path(TESTS_UNIT_DIR)
-        test_files = [f for f in test_dir.rglob('*.py') if '__pycache__' not in str(f)]
+        # Phase 6.7: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        test_files = list(get_python_files(test_dir))
         
         if HAS_TQDM:
             color = ColoredProgress.YELLOW if dry_run else ColoredProgress.GREEN
