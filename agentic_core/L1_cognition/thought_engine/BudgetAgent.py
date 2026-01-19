@@ -16,7 +16,7 @@ import os
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
-from agentic_core.L1_cognition.thought_engine.SubAtomicAgent import SubAtomicAgent
+from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin

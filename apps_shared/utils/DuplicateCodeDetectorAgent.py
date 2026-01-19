@@ -36,7 +36,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -67,6 +67,7 @@ class DuplicateFile:
     rationale: str = ""
 
 
+@dataclass
 class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """L5 Safety agent that detects duplicate files and code blocks.
     
@@ -82,7 +83,12 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
     Inherits:
         SubatomicTestingMixin: Provides testing utilities.
         HealerMixin: Provides healing chain support.
+        MCPHardenedMixin: Provides MCP hardening and telemetry.
     """
+    
+    def __post_init__(self):
+        """Initialize mixins after dataclass initialization."""
+        super().__init__()
     
     # Supported file extensions
     SUPPORTED_EXTENSIONS = {
@@ -116,6 +122,9 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             project_root: Optional project root directory
             ctx: Optional validation context
         """
+        # Initialize mixins first
+        super().__init__()
+        
         self.project_root: Path = Path(project_root) if project_root else Path.cwd()
         self.ctx: Optional[Any] = ctx
         self.min_lines: int = 10  # Minimum block size to flag

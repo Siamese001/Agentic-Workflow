@@ -10,7 +10,7 @@ import hashlib
 import logging
 import os
 from typing import Any, Dict, List, Optional, Protocol
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -47,7 +47,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     # [PHASE 2] Redis/Pinecone integration
     _cache_prefix: str = "l1_cognition"
     _namespace: str = "l1_patterns"
-    VERIFICATION_REGISTRY: dict = {}
+    VERIFICATION_REGISTRY: dict = field(default_factory=dict)
     _registry_built: bool = False
 
     @classmethod

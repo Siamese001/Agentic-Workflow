@@ -15,7 +15,7 @@ import ast
 from dataclasses import dataclass
 from typing import List, Tuple
 
-from agentic_core.L1_cognition.thought_engine.SubAtomicAgent import SubAtomicAgent
+from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
