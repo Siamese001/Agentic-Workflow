@@ -51,7 +51,9 @@ def main() -> Any:
         folder_path: Any = Path(folder)
         if not folder_path.exists():
             continue
-        for py_file in folder_path.rglob('*.py'):
+        # Absolute Zero: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(folder_path):
             if '__pycache__' in str(py_file):
                 continue
             depth: Any = get_depth(py_file, folder_path)

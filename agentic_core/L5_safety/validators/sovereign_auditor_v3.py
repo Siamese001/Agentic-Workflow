@@ -47,7 +47,9 @@ def validate_schema_ssot(target_path: str) -> tuple[float, list[str]]:
     schema_dir = Path(target_path) / "schemas"
     if not schema_dir.exists(): return 100.0, []
     issues = []
-    json_files = list(schema_dir.rglob("*.json"))
+    # Absolute Zero: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_data_files
+    json_files = list(get_data_files(schema_dir, extensions=['.json']))
     failures = sum(1 for jf in json_files if not _is_valid_json(jf, issues))
     score = 100.0 * (1 - (failures / len(json_files))) if json_files else 100.0
     return score, issues

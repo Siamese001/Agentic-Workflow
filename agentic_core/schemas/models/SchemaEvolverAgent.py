@@ -136,7 +136,9 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
             schema_path = Path(schema_dir)
             if not schema_path.exists():
                 continue
-            for py_file in schema_path.rglob('*.py'):
+            # Absolute Zero: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files
+            for py_file in get_python_files(schema_path):
                 self._scan_file_for_schemas(str(py_file))
 
     def _scan_file_for_schemas(self, file_path: str) -> Any:
