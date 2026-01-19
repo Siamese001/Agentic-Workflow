@@ -95,9 +95,13 @@ def load_all_js_content() -> str:
     project_root = get_validated_project_root()
     js_dir = project_root / DASHBOARD_DIR / 'js'
     
+    # Phase 6.3: Use centralized helper to collect all JS files
+    from agentic_core.utils.ssot_discovery import get_data_files
     all_js = ""
+    
+    # Collect JS files from js directory
     if js_dir.exists():
-        for js_file in sorted(js_dir.rglob('*.js')):
+        for js_file in sorted(get_data_files(js_dir, extensions=['.js'])):
             try:
                 all_js += js_file.read_text(encoding='utf-8') + "\n"
             except Exception:
@@ -106,7 +110,7 @@ def load_all_js_content() -> str:
     # Also include inline JS from data files
     data_dir = project_root / DASHBOARD_DIR / 'data'
     if data_dir.exists():
-        for js_file in sorted(data_dir.rglob('*.js')):
+        for js_file in sorted(get_data_files(data_dir, extensions=['.js'])):
             try:
                 all_js += js_file.read_text(encoding='utf-8') + "\n"
             except Exception:
@@ -482,21 +486,24 @@ def test_table_rendering_elements() -> Tuple[bool, List[str]]:
         # This ensures we validate the actual JS architecture, not inline HTML fallbacks
         js_content = ""
         
+        # Phase 6.3: Use ssot_discovery for all JS file collection
+        from agentic_core.utils.ssot_discovery import get_data_files
+        
         # Priority 1: Check renderers directory (primary location for table functions)
         renderers_dir = js_dir / 'renderers'
         if renderers_dir.exists():
-            for js_file in sorted(renderers_dir.glob('*.js')):
+            for js_file in sorted(get_data_files(renderers_dir, extensions=['.js'])):
                 js_content += js_file.read_text(encoding='utf-8') + "\n"
         
         # Priority 2: Check utils directory
         utils_dir = js_dir / 'utils'
         if utils_dir.exists():
-            for js_file in sorted(utils_dir.glob('*.js')):
+            for js_file in sorted(get_data_files(utils_dir, extensions=['.js'])):
                 js_content += js_file.read_text(encoding='utf-8') + "\n"
         
         # Priority 3: Check root js directory
         if js_dir.exists():
-            for js_file in sorted(js_dir.glob('*.js')):
+            for js_file in sorted(get_data_files(js_dir, extensions=['.js'])):
                 js_content += js_file.read_text(encoding='utf-8') + "\n"
         
         # RCA FIX: Check functions in JS files ONLY (not HTML)
@@ -1761,7 +1768,8 @@ def run_all_tests() -> bool:
         js_dir = get_validated_project_root() / DASHBOARD_DIR / 'js'
         all_js_content = html_content  # Start with HTML
         if js_dir.exists():
-            for js_file in js_dir.rglob('*.js'):
+            from agentic_core.utils.ssot_discovery import get_data_files
+            for js_file in get_data_files(js_dir, extensions=['.js']):
                 try:
                     all_js_content += js_file.read_text(encoding='utf-8')
                 except Exception:
@@ -2226,8 +2234,9 @@ def run_all_tests() -> bool:
         # Check JS files have been modified recently (within last hour)
         js_dir = project_root / DASHBOARD_DIR / "js"
         if js_dir.exists():
+            from agentic_core.utils.ssot_discovery import get_data_files
             stale_js_files = []
-            for js_file in js_dir.rglob("*.js"):
+            for js_file in get_data_files(js_dir, extensions=['.js']):
                 file_age = datetime.now().timestamp() - js_file.stat().st_mtime
                 if file_age > 3600:  # 1 hour
                     stale_js_files.append(f"{js_file.name} ({int(file_age/60)} min old)")
@@ -2238,7 +2247,8 @@ def run_all_tests() -> bool:
         # Check data files
         data_dir = project_root / DASHBOARD_DIR / "data"
         if data_dir.exists():
-            for data_file in data_dir.glob("*.js"):
+            from agentic_core.utils.ssot_discovery import get_data_files
+            for data_file in get_data_files(data_dir, extensions=['.js']):
                 file_age = datetime.now().timestamp() - data_file.stat().st_mtime
                 if file_age > 600:  # 10 minutes
                     cache_issues.append(f"Data file {data_file.name} is {int(file_age/60)} min old - may need regeneration")
@@ -2552,7 +2562,8 @@ def run_all_tests() -> bool:
         # Check 3: HTML includes modular JS files
         js_dir = project_root / DASHBOARD_DIR / 'js'
         if js_dir.exists():
-            js_files = list(js_dir.glob('*.js'))
+            from agentic_core.utils.ssot_discovery import get_data_files
+            js_files = list(get_data_files(js_dir, extensions=['.js']))
             for js_file in js_files[:5]:  # Check first 5
                 if js_file.name not in html and f'js/{js_file.name}' not in html:
                     # Not a critical error - some JS may be optional
@@ -2813,7 +2824,8 @@ def count_actual_agents() -> int:
         agent_file_count = 0
         excluded_patterns = {'__pycache__', '.git', 'test_', 'conftest', '__init__', 'mixin'}
         
-        for py_file in agentic_core.rglob('*.py'):
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(agentic_core):
             filename = py_file.stem.lower()
             path_str = str(py_file).lower()
             

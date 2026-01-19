@@ -197,19 +197,19 @@ def test_5_heal_root_violations_moves_archived_files() -> Tuple[bool, str]:
         agent = HierarchyAgent(temp_dir, healing_enabled=True)
         
         # Count archived files before
-        archived_before = list(temp_dir.glob("*.archived")) + list(temp_dir.glob("*.backup"))
+        archived_before = [f for f in temp_dir.iterdir() if f.suffix in ['.archived', '.backup']]
         count_before = len(archived_before)
         
         # Heal
         results = agent.heal_root_violations(dry_run=False)
         
         # Count archived files after
-        archived_after = list(temp_dir.glob("*.archived")) + list(temp_dir.glob("*.backup"))
+        archived_after = [f for f in temp_dir.iterdir() if f.suffix in ['.archived', '.backup']]
         count_after = len(archived_after)
         
         # Check archives folder
         archives_dir = temp_dir / "archives" / "root_archived"
-        moved_files = list(archives_dir.glob("*")) if archives_dir.exists() else []
+        moved_files = list(archives_dir.iterdir()) if archives_dir.exists() else []
         
         if count_after > 0:
             return False, f"Still {count_after} archived files at root (expected 0)"
@@ -237,7 +237,7 @@ def test_6_heal_root_violations_merges_scripts() -> Tuple[bool, str]:
         
         # Count scripts before
         scripts_root = temp_dir / "scripts"
-        scripts_before = list(scripts_root.rglob("*.py")) if scripts_root.exists() else []
+        scripts_before = get_python_files(scripts_root) if scripts_root.exists() else []
         count_before = len(scripts_before)
         
         # Heal
@@ -245,7 +245,7 @@ def test_6_heal_root_violations_merges_scripts() -> Tuple[bool, str]:
         
         # Check SSOT location
         ssot_scripts = temp_dir / "agentic_core" / "L0_maintenance" / "scripts"
-        scripts_after = list(ssot_scripts.rglob("*.py")) if ssot_scripts.exists() else []
+        scripts_after = get_python_files(ssot_scripts) if ssot_scripts.exists() else []
         
         if results["scripts_files_moved"] < count_before:
             return False, f"Only moved {results['scripts_files_moved']} of {count_before} scripts"
@@ -270,15 +270,15 @@ def test_7_heal_root_violations_merges_logs() -> Tuple[bool, str]:
         
         # Count logs before
         logs_root = temp_dir / "logs"
-        logs_before = list(logs_root.rglob("*")) if logs_root.exists() else []
-        file_count_before = len([f for f in logs_before if f.is_file()])
+        logs_before = get_files(logs_root) if logs_root.exists() else []
+        file_count_before = len(logs_before)
         
         # Heal
         results = agent.heal_root_violations(dry_run=False)
         
         # Check SSOT location
         ssot_logs = temp_dir / "agentic_core" / "L0_maintenance" / "logs"
-        logs_after = list(ssot_logs.rglob("*")) if ssot_logs.exists() else []
+        logs_after = get_files(ssot_logs) if ssot_logs.exists() else []
         
         if results["logs_files_moved"] < file_count_before:
             return False, f"Only moved {results['logs_files_moved']} of {file_count_before} logs"
@@ -335,7 +335,7 @@ def test_9_heal_root_violations_dry_run_no_changes() -> Tuple[bool, str]:
         agent = HierarchyAgent(temp_dir, healing_enabled=False)
         
         # Count files before
-        archived_before = len(list(temp_dir.glob("*.archived")))
+        archived_before = len([f for f in temp_dir.iterdir() if f.suffix == '.archived'])
         scripts_before = (temp_dir / "scripts").exists()
         logs_before = (temp_dir / "logs").exists()
         
@@ -343,7 +343,7 @@ def test_9_heal_root_violations_dry_run_no_changes() -> Tuple[bool, str]:
         results = agent.heal_root_violations(dry_run=True)
         
         # Count files after
-        archived_after = len(list(temp_dir.glob("*.archived")))
+        archived_after = len([f for f in temp_dir.iterdir() if f.suffix == '.archived'])
         scripts_after = (temp_dir / "scripts").exists()
         logs_after = (temp_dir / "logs").exists()
         
@@ -457,8 +457,8 @@ def test_12_heal_removes_empty_folders() -> Tuple[bool, str]:
             pass
         elif folders_removed == 0 and scripts_exists and logs_exists:
             # Check if they're empty
-            scripts_files = list((temp_dir / "scripts").rglob("*"))
-            logs_files = list((temp_dir / "logs").rglob("*"))
+            scripts_files = get_python_files(temp_dir / "scripts") if (temp_dir / "scripts").exists() else []
+            logs_files = get_files(temp_dir / "logs") if (temp_dir / "logs").exists() else []
             if scripts_files or logs_files:
                 return False, "Folders not removed and still contain files"
         
