@@ -40,14 +40,14 @@ def purge_volatile_state() -> Any:
     except Exception as e:
         print(f'   [!] Redis not reachable for flush: {e}')
     try:
-        import glob
-        pyc_files: Any = list(root.rglob('*.pyc')) + list(root.rglob('*.pyo'))
+        from agentic_core.utils.ssot_discovery import get_data_files
+        pyc_files: Any = list(get_data_files(root, extensions=['.pyc'])) + list(get_data_files(root, extensions=['.pyo']))
         for pyc_file in pyc_files:
             try:
                 pyc_file.unlink()
                 purged_count += 1
-            except:
-                pass
+            except Exception as e:
+                print(f'   [!] Failed to remove {pyc_file}: {e}')
         if pyc_files:
             print(f'   [OK] Purged {len(pyc_files)} bytecode files')
     except:

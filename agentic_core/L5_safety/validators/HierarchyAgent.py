@@ -351,8 +351,11 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """Generic depth enforcement using dispatch pattern."""
         expected_depth = SOVEREIGN_REGISTRY.get(root_key, {}).get("depth", 2)
         archived, violations = 0, 0
-        for file_path in self.project_root.rglob("*"):
-            if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
+        # Phase 6.5: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+        all_files = list(get_python_files(self.project_root)) + list(get_data_files(self.project_root, extensions=['.json', '.md', '.yaml', '.yml']))
+        for file_path in all_files:
+            if file_path.is_dir():
                 continue
             rel = file_path.relative_to(self.project_root)
             if not root_check(rel.parts[0]):
@@ -445,9 +448,11 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         archived = 0
         violations = 0
         
-        target_exts = {".json", ".md", ".yaml", ".yml", ".toml", ".txt"}
-        for file_path in self.project_root.rglob("*"):
-            if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
+        # Phase 6.5: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_data_files
+        target_exts = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
+        for file_path in get_data_files(self.project_root, extensions=target_exts):
+            if file_path.is_dir():
                 continue
             
             if file_path.suffix.lower() not in target_exts:
@@ -1026,8 +1031,11 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         Logger.info(f"HierarchyAgent: Merging {folder_name}/ -> {ssot_target}/")
         
+        # Phase 6.5: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
         # Iterate through all files in root folder
-        for src_file in root_folder.rglob("*"):
+        all_files = list(get_python_files(root_folder)) + list(get_data_files(root_folder, extensions=['.json', '.md', '.yaml', '.yml', '.txt', '.log']))
+        for src_file in all_files:
             if src_file.is_dir():
                 continue
             

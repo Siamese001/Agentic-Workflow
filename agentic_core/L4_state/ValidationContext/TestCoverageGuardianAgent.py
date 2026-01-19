@@ -167,7 +167,9 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         if not core_path.exists():
             return []
         
-        for py_file in core_path.rglob("*.py"):
+        # Phase 6.5: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(core_path):
             if "__init__" in str(py_file):
                 continue
             rel_path = py_file.relative_to(self.project_root)
@@ -274,7 +276,9 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         """Find classes with mutable state in core layers (L3, L4)."""
         candidates = []
         target_layers = ["L4_state", "L3_orchestration", "L2_execution"]
-        for py_file in (self.project_root / AGENTIC_CORE_DIR).rglob("*.py"):
+        # Phase 6.5: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.project_root / AGENTIC_CORE_DIR):
             if not any(layer in str(py_file) for layer in target_layers):
                 continue
             rel_path = py_file.relative_to(self.project_root)
@@ -425,7 +429,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             line_cov >= self.min_line_coverage
             and branch_cov >= self.min_branch_coverage
             and mut_score >= self.min_mutation_score
-            and (state_gen > 0 or list(self.test_dir.glob("test_stateful_*.py")))
+            and (state_gen > 0 or len([f for f in get_python_files(self.test_dir) if f.name.startswith("test_stateful_")]) > 0)
         )
 
         # Save history

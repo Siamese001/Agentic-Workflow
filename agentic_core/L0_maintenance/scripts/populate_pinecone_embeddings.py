@@ -170,7 +170,8 @@ class PineconePopulator:
             print(f"  ⚠️  {CORE_EXTENSIONS_DIR} not found. Skipping.")
             return
             
-        for file_path in CORE_EXTENSIONS_DIR.glob("*.py"):
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for file_path in get_python_files(CORE_EXTENSIONS_DIR):
             if file_path.name.startswith("__"):
                 continue
                 
@@ -433,7 +434,8 @@ class PineconePopulator:
             print(f"  ⚠️  {BLUEPRINT_DIR} not found. Skipping.")
             return
             
-        for file_path in BLUEPRINT_DIR.glob("*.py"):
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for file_path in get_python_files(BLUEPRINT_DIR):
             if file_path.name.startswith("__"):
                 continue
                 

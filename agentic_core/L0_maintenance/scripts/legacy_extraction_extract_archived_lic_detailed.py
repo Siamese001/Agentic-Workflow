@@ -22,16 +22,19 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
 )
 from archives.location_violations.sovereign_index import SovereignIndex
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.ssot_discovery import get_python_files
 sovereign_roots: Any = {AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, 'schemas', 'prompt_governance', 'observability', 'config', 'data', ARCHIVES_DIR}
 
 def get_existing_filenames() -> Set[str]:
     """Get set of all Python filenames in sovereign codebase."""
     existing: Any = set()
     repo_root: Any = Path('.')
-    for root in SOVEREIGN_ROOTS:
+    for root in sovereign_roots:
         root_path: Any = repo_root / root
         if root_path.exists():
-            for py_file in root_path.rglob('*.py'):
+            # Phase 6.4: Use ssot_discovery instead of rglob
+            for py_file in get_python_files(root_path):
                 existing.add(py_file.name)
     return existing
 Logger: Any = logging.getLogger(__name__)
@@ -43,9 +46,8 @@ def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
     net_incremental: Any = []
     duplicates: Any = []
     all_files: Any = []
-    for py_file in source_dir.rglob('*.py'):
-        if '__pycache__' in py_file.parts or '.git' in py_file.parts:
-            continue
+    # Phase 6.4: Use ssot_discovery instead of rglob
+    for py_file in get_python_files(source_dir):
         filename: Any = py_file.name
         all_files.append(filename)
         if filename in existing_filenames:
@@ -63,9 +65,8 @@ def extract_net_incremental() -> None:
     staging_dir.mkdir()
     existing_filenames: Any = get_existing_filenames()
     extracted_files: Any = []
-    for py_file in source_dir.rglob('*.py'):
-        if '__pycache__' in py_file.parts or '.git' in py_file.parts:
-            continue
+    # Phase 6.4: Use ssot_discovery instead of rglob
+    for py_file in get_python_files(source_dir):
         filename: Any = py_file.name
         if filename not in existing_filenames:
             dest_path: Any = staging_dir / filename

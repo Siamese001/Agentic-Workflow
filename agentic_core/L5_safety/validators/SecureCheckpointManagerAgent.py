@@ -182,8 +182,11 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         latest_checkpoint = None
         latest_time = 0
         
+        # Phase 6.6: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_data_files
         # Find all secure Checkpoint files
-        for checkpoint_file in self.checkpoint_dir.glob(f"{self.hop_id}_*.secure"):
+        all_secure = [f for f in get_data_files(self.checkpoint_dir, extensions=['.secure']) if f.name.startswith(f"{self.hop_id}_")]
+        for checkpoint_file in all_secure:
             try:
                 Checkpoint = await self._load_checkpoint_file(checkpoint_file)
                 
@@ -249,10 +252,13 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         Args:
             keep_count: Number of recent checkpoints to keep per stage
         """
+        # Phase 6.6: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_data_files
         # Group checkpoints by stage
         stage_checkpoints = {}
         
-        for checkpoint_file in self.checkpoint_dir.glob(f"{self.hop_id}_*.secure"):
+        all_secure = [f for f in get_data_files(self.checkpoint_dir, extensions=['.secure']) if f.name.startswith(f"{self.hop_id}_")]
+        for checkpoint_file in all_secure:
             stage = checkpoint_file.stem.split("_")[-1]
             if stage not in stage_checkpoints:
                 stage_checkpoints[stage] = []
@@ -270,10 +276,13 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
     
     def quarantine_all_checkpoints(self) -> None:
         """Quarantine all checkpoints for this hop (emergency measure)."""
+        # Phase 6.6: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_data_files
         quarantine_dir = self.checkpoint_dir / "quarantine"
         quarantine_dir.mkdir(exist_ok=True)
         
-        for checkpoint_file in self.checkpoint_dir.glob(f"{self.hop_id}_*.secure"):
+        all_secure = [f for f in get_data_files(self.checkpoint_dir, extensions=['.secure']) if f.name.startswith(f"{self.hop_id}_")]
+        for checkpoint_file in all_secure:
             quarantine_file = quarantine_dir / checkpoint_file.name
             checkpoint_file.replace(quarantine_file)
             Logger.warning(f"Quarantined Checkpoint: {checkpoint_file.name}")

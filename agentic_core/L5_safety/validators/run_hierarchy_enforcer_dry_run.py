@@ -58,8 +58,11 @@ def validate_depth_precision(project_root: Path) -> dict:
     apps_exact_depth = SOVEREIGN_REGISTRY["apps_rg"]["depth"]
     violations = []
     
-    for file_path in project_root.rglob("*"):
-        if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
+    # Phase 6.5: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    all_files = list(get_python_files(project_root)) + list(get_data_files(project_root, extensions=['.json', '.md', '.yaml', '.yml']))
+    for file_path in all_files:
+        if file_path.is_dir():
             continue
         
         rel = file_path.relative_to(project_root)
@@ -82,8 +85,11 @@ def validate_tests_depth(project_root: Path) -> dict:
     tests_exact_depth = SOVEREIGN_REGISTRY["tests"]["depth"]
     violations = []
     
-    for file_path in project_root.rglob("*"):
-        if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
+    # Phase 6.5: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    all_files = list(get_python_files(project_root)) + list(get_data_files(project_root, extensions=['.json', '.md', '.yaml', '.yml']))
+    for file_path in all_files:
+        if file_path.is_dir():
             continue
         
         rel = file_path.relative_to(project_root)
@@ -106,9 +112,11 @@ def validate_universal_depth(project_root: Path) -> dict:
     agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
     violations = []
     
-    target_exts = {".json", ".md", ".yaml", ".yml", ".toml", ".txt"}
-    for file_path in project_root.rglob("*"):
-        if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
+    # Phase 6.5: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_data_files
+    target_exts = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
+    for file_path in get_data_files(project_root, extensions=target_exts):
+        if file_path.is_dir():
             continue
         
         if file_path.suffix.lower() not in target_exts:
