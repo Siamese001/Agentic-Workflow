@@ -9,6 +9,7 @@ import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.decorators import standard_heal
 Logger: Any = logging.getLogger(__name__)
 
 class StepStatus(Enum):
@@ -73,10 +74,26 @@ class CoordinateObservabilityOperationsAgent(MCPHardenedMixin, SubatomicTestingM
                 break
         return OrchestrationResult(success=SUCCESS, steps=RESULTS, final_output=CONTEXT['outputs'].get(self.steps[-1]['name']) if self.steps else None)
 
+    @timeout(300)
     @standard_heal
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Observability metrics - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+
+        agent_name = "CoordinateObservabilityOperations"
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] Observability metrics - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 def orchestrate(steps: List[Dict], initial_input: object=None, config: Optional[Dict]=None) -> OrchestrationResult:
     """Convenience function for orchestration."""
@@ -84,23 +101,3 @@ def orchestrate(steps: List[Dict], initial_input: object=None, config: Optional[
     for step in steps:
         ORCH.add_step(step['name'], step['executor'], step.get('dependencies'))
     return ORCH.execute(initial_input)
-
-@timeout(300)
-@standard_heal
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """Observability metrics - operational only."""
-    if _call_path is None:
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
-    agent_name = "CoordinateObservabilityOperations"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] Observability metrics - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)

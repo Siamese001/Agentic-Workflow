@@ -22,6 +22,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -34,26 +35,6 @@ def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
         SovereignRagOrchestratorAgent instance
     """
     return SovereignRagOrchestratorAgent()
-
-
-@timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """L3 orchestration/workflow_engines - operational only."""
-    if _call_path is None:
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
-    agent_name = "SovereignRagOrchestratorAgent"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] L3 orchestration/workflow_engines - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)
 
 
 @dataclass
@@ -208,6 +189,24 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     def get_config(self) -> Dict[str, Any]:
         """Get current configuration"""
         return {'faithfulness_threshold': self.faithfulness_threshold, 'max_hops': self.max_hops, 'base_top_k': self.base_top_k, 'threshold_adaptation_rate': self.threshold_adaptation_rate, 'performance_window': self.performance_window}
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+
+    @timeout(300)
+    @standard_heal
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L3 orchestration/workflow_engines - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+
+        agent_name = "SovereignRagOrchestratorAgent"
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L3 orchestration/workflow_engines - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
