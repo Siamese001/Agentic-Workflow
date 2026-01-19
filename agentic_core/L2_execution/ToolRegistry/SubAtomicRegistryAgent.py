@@ -9,6 +9,9 @@ from dataclasses import dataclass
 #!/usr/bin/env python3
 """
 SubAtomicRegistry - Live Semantic Index of Every Method
+
+Updated 2026-01-19: Added UNIFIED_AGENT_MAPPING for consolidated agent architecture.
+Maps legacy micro-agent keys to unified handlers for backward compatibility.
 """
 
 import ast
@@ -17,9 +20,10 @@ import hashlib
 import importlib
 import inspect
 import json
+import logging
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional, Type
 
 from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -37,6 +41,104 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.sovereign_index import SovereignIndex
 from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+Logger = logging.getLogger(__name__)
+
+
+# =============================================================================
+# UNIFIED AGENT MAPPING (Post-Consolidation Registry)
+# =============================================================================
+# Maps legacy micro-agent keys to consolidated unified handlers.
+# This ensures backward compatibility for dynamic agent instantiation.
+
+def _get_unified_agent_mapping() -> Dict[str, Type]:
+    """
+    Lazy-load unified agent mapping to avoid circular imports.
+    
+    Returns:
+        Dictionary mapping legacy agent IDs to unified agent classes.
+    """
+    # Import unified agents lazily to avoid circular dependencies
+    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
+    from agentic_core.L5_safety.validators.UnifiedHygieneValidatorAgent import UnifiedHygieneValidatorAgent
+    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import UnifiedCheckpointManagerAgent
+    from agentic_core.L5_safety.validators.CodeStandardsEnforcerAgent import CodeStandardsEnforcerAgent
+    from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import UnifiedStateManagementAgent
+    
+    return {
+        # Phase 1: L1 AST Validator Consolidation
+        "BareExceptValidator": UnifiedASTValidatorAgent,
+        "BareExceptValidatorAgent": UnifiedASTValidatorAgent,
+        "EmptyExceptValidator": UnifiedASTValidatorAgent,
+        "EmptyExceptValidatorAgent": UnifiedASTValidatorAgent,
+        "EvalExecValidator": UnifiedASTValidatorAgent,
+        "EvalExecValidatorAgent": UnifiedASTValidatorAgent,
+        "DangerousBuiltinsValidator": UnifiedASTValidatorAgent,
+        "DangerousBuiltinsValidatorAgent": UnifiedASTValidatorAgent,
+        "DebuggerValidator": UnifiedASTValidatorAgent,
+        "DebuggerValidatorAgent": UnifiedASTValidatorAgent,
+        
+        # Phase 2: L5 Hygiene Validator Consolidation
+        "HygieneGuardian": UnifiedHygieneValidatorAgent,
+        "HygieneGuardianAgent": UnifiedHygieneValidatorAgent,
+        "HygieneValidator": UnifiedHygieneValidatorAgent,
+        "HygieneValidatorAgent": UnifiedHygieneValidatorAgent,
+        
+        # Phase 3: L4 Checkpoint Manager Consolidation
+        "CheckpointManager": UnifiedCheckpointManagerAgent,
+        "CheckpointManagerAgent": UnifiedCheckpointManagerAgent,
+        "AutonomousCheckpointManager": UnifiedCheckpointManagerAgent,
+        "AutonomousCheckpointManagerAgent": UnifiedCheckpointManagerAgent,
+        
+        # Phase 4: L5 Code Standards Enforcer Consolidation
+        "BaseClassEnforcer": CodeStandardsEnforcerAgent,
+        "BaseClassEnforcerAgent": CodeStandardsEnforcerAgent,
+        "PatternEnforcer": CodeStandardsEnforcerAgent,
+        "PatternEnforcerAgent": CodeStandardsEnforcerAgent,
+        "TypeHintEnforcement": CodeStandardsEnforcerAgent,
+        "TypeHintEnforcementAgent": CodeStandardsEnforcerAgent,
+        
+        # Phase 5: L4 State Management Consolidation
+        "ManifestManager": UnifiedStateManagementAgent,
+        "ManifestManagerAgent": UnifiedStateManagementAgent,
+        "MemoryManager": UnifiedStateManagementAgent,
+        "MemoryManagerAgent": UnifiedStateManagementAgent,
+        "AutonomousStateGuardian": UnifiedStateManagementAgent,
+        "AutonomousStateGuardianAgent": UnifiedStateManagementAgent,
+    }
+
+
+def get_unified_agent_class(agent_id: str) -> Type:
+    """
+    Returns the unified agent class for a given legacy agent ID.
+    Ensures backward compatibility for dynamic agent instantiation.
+    
+    Args:
+        agent_id: Legacy agent identifier (e.g., "BareExceptValidator")
+        
+    Returns:
+        Unified agent class that handles the legacy agent's functionality
+        
+    Raises:
+        ValueError: If agent_id is not found in the mapping
+    """
+    mapping = _get_unified_agent_mapping()
+    
+    if agent_id in mapping:
+        Logger.info(f"Registry: Mapping legacy agent '{agent_id}' to Unified Class.")
+        return mapping[agent_id]
+    
+    raise ValueError(f"Agent ID '{agent_id}' not found in unified agent registry.")
+
+
+def is_legacy_agent(agent_id: str) -> bool:
+    """Check if an agent ID refers to a deprecated legacy agent."""
+    try:
+        mapping = _get_unified_agent_mapping()
+        return agent_id in mapping
+    except ImportError:
+        return False
+
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 @dataclass

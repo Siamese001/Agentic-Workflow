@@ -6,9 +6,9 @@
     "territory": "Apps Rg/Engines",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -141,10 +141,10 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
       "L0MaintenanceBaseAgent",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -190,8 +190,8 @@
     "territory": "L0 Maintenance/Core",
     "category": "Validator",
     "inheritance": [
-      "L5SafetyBaseAgent",
-      "InitTrackerMixin"
+      "InitTrackerMixin",
+      "L5SafetyBaseAgent"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -220,54 +220,14 @@
     "has_metadata": true
   },
   {
-    "class_name": "BareExceptValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\BareExceptValidatorAgent.py",
-    "layer": "L1",
-    "territory": "L1 Cognition/Validation",
-    "category": "Validator",
-    "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
-    ],
-    "key_methods": [
-      "visit_ExceptHandler",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 21,
-    "class_count": 1,
-    "description": "\n    Key 5: Detects bare except: statements (catching all exceptions).\n    ",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 4,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
     "class_name": "BudgetAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\BudgetAgent.py",
     "layer": "L1",
     "territory": "L1 Cognition/Planning",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -301,166 +261,6 @@
     },
     "cyclomatic_complexity": 22,
     "proper_base_class": false,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "DangerousBuiltinsValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\DangerousBuiltinsValidatorAgent.py",
-    "layer": "L1",
-    "territory": "L1 Cognition/Validation",
-    "category": "Validator",
-    "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
-    ],
-    "key_methods": [
-      "visit_Call",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 21,
-    "class_count": 1,
-    "description": "\n    Key 42: Detects dangerous builtin functions (compile, __import__, globals, locals).\n    ",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 5,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "DebuggerValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\DebuggerValidatorAgent.py",
-    "layer": "L1",
-    "territory": "L1 Cognition/Validation",
-    "category": "Validator",
-    "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
-    ],
-    "key_methods": [
-      "visit_Call",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 26,
-    "class_count": 1,
-    "description": "\n    Key 3: Detects breakpoint() and pdb.set_trace() using AST.\n    ",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 10,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "EmptyExceptValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\EmptyExceptValidatorAgent.py",
-    "layer": "L1",
-    "territory": "L1 Cognition/Validation",
-    "category": "Validator",
-    "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
-    ],
-    "key_methods": [
-      "visit_ExceptHandler",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 22,
-    "class_count": 1,
-    "description": "\n    Key 4: Detects empty except blocks (except: pass).\n    ",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 6,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "EvalExecValidatorAgent",
-    "path": "agentic_core\\L1_cognition\\thought_engine\\EvalExecValidatorAgent.py",
-    "layer": "L1",
-    "territory": "L1 Cognition/Validation",
-    "category": "Validator",
-    "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
-    ],
-    "key_methods": [
-      "visit_Call",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 22,
-    "class_count": 1,
-    "description": "\n    Key 6: Detects eval() and exec() calls using AST.\n    ",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 5,
-    "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
   },
@@ -513,9 +313,9 @@
     "territory": "L1 Cognition/Base Agent",
     "category": "Validator",
     "inheritance": [
-      "RedisCacheMixin",
+      "SovereignBaseAgent",
       "PineconeVectorMixin",
-      "SovereignBaseAgent"
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "_init_registry",
@@ -607,8 +407,8 @@
     "territory": "L1 Cognition/Planning",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -722,7 +522,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 232,
+    "loc": 233,
     "class_count": 5,
     "description": "\n    The Structural Guard - Schema Evolution Agent\n    Monitors all Pydantic definitions and databas",
     "pascal_compliant": true,
@@ -748,8 +548,8 @@
     "territory": "L1 Cognition/Reasoning",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -781,6 +581,50 @@
       "tracing": false
     },
     "cyclomatic_complexity": 58,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true
+  },
+  {
+    "class_name": "UnifiedASTValidatorAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\UnifiedASTValidatorAgent.py",
+    "layer": "L1",
+    "territory": "L1 Cognition/Validation",
+    "category": "Validator",
+    "inheritance": [
+      "CanonASTValidator",
+      "HealerMixin",
+      "SubatomicTestingMixin"
+    ],
+    "key_methods": [
+      "__post_init__",
+      "visit_ExceptHandler",
+      "visit_Call",
+      "heal_repository",
+      "validate_all",
+      "_run_self_tests"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 209,
+    "class_count": 1,
+    "description": "\n    Unified AST validator replacing 5 micro-agents.\n    \n    Validates:\n    - Key 3: Debugger state",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 46,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -832,9 +676,9 @@
     "territory": "L2 Execution/Base Agent",
     "category": "Validator",
     "inheritance": [
-      "RedisCacheMixin",
+      "SovereignBaseAgent",
       "PineconeVectorMixin",
-      "SovereignBaseAgent"
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -1037,7 +881,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 137,
+    "loc": 190,
     "class_count": 1,
     "description": "\n    Sovereign method registry \u2014 live, hybrid-indexed, eternal.\n    Now with Redis sovereign caching",
     "pascal_compliant": true,
@@ -1051,7 +895,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 32,
+    "cyclomatic_complexity": 31,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1277,13 +1121,18 @@
     "path": "agentic_core\\L3_orchestration\\UnifiedOrchestratorAgent.py",
     "layer": "L3",
     "territory": "L3 Orchestration/Workflow",
-    "category": "Orchestrator",
+    "category": "Validator",
     "inheritance": [
       "L3OrchestrationBaseAgent"
     ],
     "key_methods": [
       "__init__",
-      "dispatch"
+      "strategies",
+      "dispatch",
+      "run_mission",
+      "run_agent",
+      "get_available_agents",
+      "validate_mission"
     ],
     "has_tools": false,
     "has_memory": false,
@@ -1291,161 +1140,23 @@
     "invocation": "Inherited",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 36,
-    "class_count": 1,
+    "loc": 156,
+    "class_count": 2,
     "description": "\n    The Central Nervous System for Agentic Workflow.\n    \n    Architecture: Strategy Pattern\n    - ",
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true,
     "has_tests": false,
-    "typed_pct": 50.0,
-    "documented_pct": 50.0,
+    "typed_pct": 85.7,
+    "documented_pct": 85.7,
     "observability": {
       "logging": true,
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 5,
+    "cyclomatic_complexity": 21,
     "proper_base_class": true,
     "schema_strictness": 0.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "AutonomousCheckpointManagerAgent",
-    "path": "agentic_core\\L4_state\\ValidationContext\\AutonomousCheckpointManagerAgent.py",
-    "layer": "L4",
-    "territory": "L4 State/Core",
-    "category": "Validator",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "_run_self_tests",
-      "_load_checkpoints",
-      "_save_checkpoint_index",
-      "_calculate_file_hash",
-      "_generate_checkpoint_id",
-      "create_checkpoint",
-      "auto_checkpoint_if_needed",
-      "verify_checkpoint",
-      "rollback_to_checkpoint"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": false,
-    "loc": 229,
-    "class_count": 3,
-    "description": "\n    Manages state checkpoints with automatic recovery capabilities.\n    \n    Features:\n    - Automa",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 59,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "AutonomousStateGuardianAgent",
-    "path": "agentic_core\\L4_state\\ValidationContext\\AutonomousStateGuardianAgent.py",
-    "layer": "L4",
-    "territory": "L4 State/Core",
-    "category": "Healer",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "_run_self_tests",
-      "awaken",
-      "load_meta_state",
-      "save_meta_state",
-      "verify_checkpoint_integrity",
-      "detect_state_corruption",
-      "initiate_self_repair",
-      "_log_corruption_event",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": false,
-    "loc": 181,
-    "class_count": 1,
-    "description": "\n    L4 State Guardian that autonomously monitors and repairs state corruption.\n    \n    Features:\n ",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 38,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "CheckpointManagerAgent",
-    "path": "agentic_core\\L4_state\\ValidationContext\\CheckpointManagerAgent.py",
-    "layer": "L4",
-    "territory": "L4 State/Core",
-    "category": "Validator",
-    "inheritance": [
-      "L4StateBaseAgent"
-    ],
-    "key_methods": [
-      "__init__",
-      "heal_repository",
-      "_perform_checkpoint_healing",
-      "_validate_checkpoints",
-      "_recover_corrupted_checkpoints",
-      "_remove_corrupted_checkpoints",
-      "_merge_healing_results",
-      "_run_self_tests"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": false,
-    "loc": 153,
-    "class_count": 1,
-    "description": "Checkpoint management agent with parent chain healing.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 33,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
     "has_metadata": true
   },
   {
@@ -1496,9 +1207,9 @@
     "category": "State",
     "inheritance": [
       "L4SubatomicTestingMixin",
-      "RedisCacheMixin",
+      "SovereignBaseAgent",
       "PineconeVectorMixin",
-      "SovereignBaseAgent"
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "recall",
@@ -1582,63 +1293,15 @@
     "has_metadata": true
   },
   {
-    "class_name": "MemoryManagerAgent",
-    "path": "agentic_core\\L4_state\\ValidationContext\\MemoryManagerAgent.py",
-    "layer": "L4",
-    "territory": "L4 State/Core",
-    "category": "Validator",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "load_conversation_history",
-      "save_conversation_history",
-      "clear_conversation_history",
-      "load_validation_results",
-      "save_validation_results",
-      "load_agent_state",
-      "save_agent_state",
-      "load_memory",
-      "save_memory"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 211,
-    "class_count": 1,
-    "description": "\n    Manages JSON-based persistence for validation state.\n    \n    Features:\n    - Load/save convers",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 61,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
     "class_name": "TestCoverageGuardianAgent",
     "path": "agentic_core\\L4_state\\ValidationContext\\TestCoverageGuardianAgent.py",
     "layer": "L4",
     "territory": "L4 State/Core",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1658,7 +1321,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 346,
+    "loc": 348,
     "class_count": 1,
     "description": "\n    Ultimate verification agent: Enforces comprehensive test coverage with branch, mutation, and pr",
     "pascal_compliant": true,
@@ -1672,7 +1335,99 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 70,
+    "cyclomatic_complexity": 71,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true
+  },
+  {
+    "class_name": "UnifiedCheckpointManagerAgent",
+    "path": "agentic_core\\L4_state\\ValidationContext\\UnifiedCheckpointManagerAgent.py",
+    "layer": "L4",
+    "territory": "L4 State/Core",
+    "category": "Validator",
+    "inheritance": [
+      "L4StateBaseAgent"
+    ],
+    "key_methods": [
+      "__post_init__",
+      "create_checkpoint",
+      "create_checkpoint_async",
+      "_generate_checkpoint_id",
+      "_save_sync",
+      "_save_async",
+      "_mirror_checkpoint_sync",
+      "_mirror_checkpoint",
+      "verify_integrity",
+      "_attempt_recovery"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 463,
+    "class_count": 3,
+    "description": "\n    Unified L4 Checkpoint Guardian.\n    \n    Handles synchronous legacy checkpoints and autonomous ",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 78,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true
+  },
+  {
+    "class_name": "UnifiedStateManagementAgent",
+    "path": "agentic_core\\L4_state\\ValidationContext\\UnifiedStateManagementAgent.py",
+    "layer": "L4",
+    "territory": "L4 State/Core",
+    "category": "Healer",
+    "inheritance": [
+      "L4StateBaseAgent"
+    ],
+    "key_methods": [
+      "__post_init__",
+      "_ensure_infrastructure",
+      "manifest_path",
+      "manifest_path",
+      "manifest_backup",
+      "manifest_backup",
+      "_load_manifest",
+      "_save_manifest",
+      "_write_manifest_raw",
+      "_read_manifest_raw"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 525,
+    "class_count": 3,
+    "description": "\n    Unified L4 State Controller.\n    \n    Manages the manifest inventory, physical memory cleanup, ",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 81.8,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 117,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -1777,9 +1532,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Guardian",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1825,9 +1580,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1873,11 +1628,11 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Healer",
     "inheritance": [
-      "RedisCacheMixin",
-      "PineconeVectorMixin",
       "HealerMixin",
       "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "RedisCacheMixin",
+      "MCPHardenedMixin",
+      "PineconeVectorMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1911,49 +1666,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 83,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "BaseClassEnforcerAgent",
-    "path": "agentic_core\\L5_safety\\validators\\BaseClassEnforcerAgent.py",
-    "layer": "L5",
-    "territory": "L5 Safety/Validators/Structure",
-    "category": "Validator",
-    "inheritance": [
-      "L5Agent"
-    ],
-    "key_methods": [
-      "__post_init__",
-      "scan_violations",
-      "heal_repository",
-      "_heal_single_agent",
-      "validate",
-      "_run_self_tests"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": false,
-    "loc": 217,
-    "class_count": 1,
-    "description": "\n    Enforces one-base-class-per-layer inheritance pattern.\n    \n    Validates that agents in layer ",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 27,
+    "cyclomatic_complexity": 79,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2218,9 +1931,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "RedisCacheMixin",
+      "HealerMixin",
       "PineconeVectorMixin",
-      "HealerMixin"
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2254,7 +1967,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 149,
+    "cyclomatic_complexity": 148,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2266,9 +1979,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2307,9 +2020,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2344,6 +2057,53 @@
       "tracing": false
     },
     "cyclomatic_complexity": 56,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true
+  },
+  {
+    "class_name": "CodeStandardsEnforcerAgent",
+    "path": "agentic_core\\L5_safety\\validators\\CodeStandardsEnforcerAgent.py",
+    "layer": "L5",
+    "territory": "L5 Safety/Validators/Structure",
+    "category": "Validator",
+    "inheritance": [
+      "CanonASTValidator",
+      "L5Agent"
+    ],
+    "key_methods": [
+      "__post_init__",
+      "validate_repository",
+      "visit_ClassDef",
+      "visit_FunctionDef",
+      "visit_AsyncFunctionDef",
+      "visit_Call",
+      "visit_Compare",
+      "visit_Assert",
+      "visit_Return",
+      "_check_layer_inheritance"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 450,
+    "class_count": 2,
+    "description": "\n    Unified Code Standards Enforcer (Phase 4 Consolidation).\n    \n    Consolidates BaseClassEnforce",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 79,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2438,9 +2198,9 @@
     "territory": "L5 Safety/Guardrails/Core",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2479,8 +2239,8 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2526,9 +2286,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2569,8 +2329,8 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "execute",
@@ -2611,9 +2371,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "CanonASTValidator",
       "HealerMixin",
-      "CanonASTValidator"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "visit_Import",
@@ -2652,8 +2412,8 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2685,7 +2445,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 42,
+    "cyclomatic_complexity": 40,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -2714,7 +2474,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 143,
+    "loc": 146,
     "class_count": 1,
     "description": "Filesystem operations agent with parent chain healing.",
     "pascal_compliant": true,
@@ -2757,7 +2517,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 256,
+    "loc": 259,
     "class_count": 1,
     "description": "\n    Autonomous agent for physical filesystem purity.\n    Targets technical debt markers in non-Pyth",
     "pascal_compliant": true,
@@ -2783,10 +2543,10 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "L0MaintenanceBaseAgent",
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "L0MaintenanceBaseAgent",
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2806,7 +2566,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": true,
-    "loc": 635,
+    "loc": 636,
     "class_count": 2,
     "description": "Filesystem-level SSOT enforcer - treats blueprint as the Gospel.\n    \n    Inherits from L0Maintenanc",
     "pascal_compliant": true,
@@ -2877,8 +2637,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2924,9 +2684,9 @@
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2969,9 +2729,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2987,7 +2747,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 180,
+    "loc": 181,
     "class_count": 2,
     "description": "\n    [L5 GUARDRAIL] Gravity law enforcement agent.\n    \n    Enforces dependency gravity rules to pre",
     "pascal_compliant": true,
@@ -3013,9 +2773,9 @@
     "territory": "L5 Safety/Gravity",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3057,8 +2817,8 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -3078,7 +2838,7 @@
     "class_count": 2,
     "description": "\n    [L5 VALIDATOR] Unified detection for all gravity laws.\n    \n    Consolidates logic from:\n    - ",
     "pascal_compliant": true,
-    "external_touch": true,
+    "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 100.0,
@@ -3088,7 +2848,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 42,
+    "cyclomatic_complexity": 40,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3148,9 +2908,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3194,9 +2954,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3216,7 +2976,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 709,
+    "loc": 716,
     "class_count": 1,
     "description": "\n    Unified Hierarchy Management Agent\n    \n    Combines capabilities from HierarchyEnforcerAgent a",
     "pascal_compliant": true,
@@ -3230,7 +2990,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 193,
+    "cyclomatic_complexity": 189,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -3242,9 +3002,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3284,98 +3044,6 @@
     "has_metadata": true
   },
   {
-    "class_name": "HygieneGuardianAgent",
-    "path": "agentic_core\\L5_safety\\validators\\HygieneGuardianAgent.py",
-    "layer": "L5",
-    "territory": "L5 Safety/Validators/Structure",
-    "category": "Validator",
-    "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "check_for_empty_files",
-      "check_for_todo_markers",
-      "check_for_unused_imports",
-      "scan_directory",
-      "validate_repository",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 182,
-    "class_count": 2,
-    "description": "\n    [L5 VALIDATOR] Code hygiene and cleanliness validator.\n    \n    Detects code smells, empty file",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 46,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "HygieneValidatorAgent",
-    "path": "agentic_core\\L5_safety\\gravity\\HygieneValidatorAgent.py",
-    "layer": "L5",
-    "territory": "L5 Safety/Validators/Content",
-    "category": "Validator",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "L0MaintenanceBaseAgent"
-    ],
-    "key_methods": [
-      "__init__",
-      "_run_delegated_tests_safe",
-      "scan",
-      "_analyze_imports",
-      "_resolve_import_target",
-      "get_duplicates",
-      "_should_skip_file",
-      "_is_file_imported",
-      "_find_orphan_files",
-      "get_orphans"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": false,
-    "loc": 165,
-    "class_count": 1,
-    "description": "\n    Hygiene validation agent for code rot detection.\n    \n    Detects code quality issues:\n        ",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 48,
-    "proper_base_class": true,
-    "schema_strictness": 0.0,
-    "has_metadata": true
-  },
-  {
     "class_name": "ImportAgent",
     "path": "agentic_core\\L5_safety\\gravity\\ImportAgent.py",
     "layer": "L5",
@@ -3383,8 +3051,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3404,11 +3072,11 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 476,
+    "loc": 478,
     "class_count": 4,
     "description": "\n    Autonomous agent for import convention and gravity compliance.\n    Requires file content access",
     "pascal_compliant": true,
-    "external_touch": true,
+    "external_touch": false,
     "mcp_hardened": true,
     "has_tests": true,
     "typed_pct": 88.9,
@@ -3430,9 +3098,9 @@
     "territory": "L5 Safety/Gravity",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "MetaPathFinder",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -3478,9 +3146,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3660,9 +3328,9 @@
     "territory": "L5 Safety/Base Agent",
     "category": "Validator",
     "inheritance": [
-      "RedisCacheMixin",
+      "SovereignBaseAgent",
       "PineconeVectorMixin",
-      "SovereignBaseAgent"
+      "RedisCacheMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3754,8 +3422,8 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "L5Agent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "L5Agent"
     ],
     "key_methods": [
       "__init__",
@@ -3775,7 +3443,7 @@
     "invocation": "Yes",
     "testing": "None",
     "has_subatomic": false,
-    "loc": 1307,
+    "loc": 1302,
     "class_count": 2,
     "description": "\n    Autonomous agent responsible for territorial integrity.\n    Run independently or as first stage",
     "pascal_compliant": true,
@@ -3801,9 +3469,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3820,7 +3488,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 161,
+    "loc": 162,
     "class_count": 1,
     "description": "\n    L5 Safety Guardian for MCP integration compliance.\n    \n    Validates that all MCP integrations",
     "pascal_compliant": true,
@@ -3847,8 +3515,8 @@
     "category": "Validator",
     "inheritance": [
       "MCPHardenedMixin",
-      "SubAtomicAgent",
-      "HealerMixin"
+      "HealerMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -3894,9 +3562,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3936,11 +3604,11 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "AutonomyMixin",
-      "SubatomicTestingMixin",
-      "SelfDiagnosisMixin",
       "L0MaintenanceBaseAgent",
-      "AdaptiveExecutionMixin"
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
+      "SubatomicTestingMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3984,8 +3652,8 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Guardian",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -4000,7 +3668,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 37,
+    "loc": 40,
     "class_count": 2,
     "description": "\n        Stub NamingAgent for backwards compatibility.\n        \n        Provides minimal implementat",
     "pascal_compliant": true,
@@ -4048,7 +3716,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 164,
+    "loc": 165,
     "class_count": 1,
     "description": "\n    L1 Cognition: High-Signal Naming Law Healer \u2014 Key 49 Sovereign Enforcement\n    The \"Naming Surg",
     "pascal_compliant": true,
@@ -4119,11 +3787,11 @@
     "category": "Healer",
     "inheritance": [
       "HealerMixin",
-      "AutonomyMixin",
-      "SubatomicTestingMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
+      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "AdaptiveExecutionMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4203,101 +3871,6 @@
     "has_metadata": true
   },
   {
-    "class_name": "PascalSovereigntyEnforcerAgent",
-    "path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
-    "layer": "L5",
-    "territory": "L5 Safety/Validators/Content",
-    "category": "Validator",
-    "inheritance": [
-      "ASTEnforcementMixin",
-      "SubatomicTestingMixin",
-      "HealerMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "get_validation_keys",
-      "execute",
-      "_purge_layer",
-      "_ast_audit",
-      "_audit_snake_case",
-      "_purge_snake_case",
-      "_run_critique_tests",
-      "_emit_event",
-      "heal_repository"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 230,
-    "class_count": 2,
-    "description": "L5 Safety agent \u2014 enforces PascalCase as eternal sole SSOT.\n    \n    Uses ASTEnforcementMixin for ul",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": false,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 67,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
-    "class_name": "PatternEnforcerAgent",
-    "path": "agentic_core\\L5_safety\\validators\\PatternEnforcerAgent.py",
-    "layer": "L5",
-    "territory": "L5 Safety/Validators/Content",
-    "category": "Validator",
-    "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "__getattr__",
-      "execute",
-      "_execute_pattern_checks",
-      "_parse_file_ast",
-      "_read_file_lines",
-      "_check_ast_pattern",
-      "check_key_26_no_mutable_defaults",
-      "check_key_27_prefer_str_join",
-      "check_key_28_no_bare_except"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Yes",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 168,
-    "class_count": 2,
-    "description": "\n    Pattern enforcement agent for coding best practices.\n\n    Validates Canon Keys 26-39:\n        -",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 100.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 88,
-    "proper_base_class": true,
-    "schema_strictness": 100.0,
-    "has_metadata": true
-  },
-  {
     "class_name": "PineconeSovereignAgent",
     "path": "agentic_core\\L5_safety\\validators\\PineconeSovereignAgent.py",
     "layer": "L5",
@@ -4351,9 +3924,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "GenericAgent",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "NeuralAutoImmuneAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4392,8 +3965,8 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "L0MaintenanceBaseAgent"
+      "L0MaintenanceBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -4439,9 +4012,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "CanonASTValidator",
       "HealerMixin",
-      "CanonASTValidator"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "visit_Call",
@@ -4566,9 +4139,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4583,7 +4156,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 98,
+    "loc": 99,
     "class_count": 1,
     "description": "\n    L5 Safety agent - enforces dedicated ClassNameAgent.py file naming standard.\n    \n    Technical",
     "pascal_compliant": true,
@@ -4609,8 +4182,8 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4741,9 +4314,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4787,9 +4360,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4852,7 +4425,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 188,
+    "loc": 194,
     "class_count": 3,
     "description": "Manages secure Checkpoint persistence with encryption and integrity checks.",
     "pascal_compliant": true,
@@ -4866,7 +4439,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 39,
+    "cyclomatic_complexity": 42,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -4926,9 +4499,9 @@
     "territory": "L5 Safety/Guardrails/Threat",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4974,9 +4547,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
       "CognitiveRecoveryMixin",
-      "L5SafetyBaseAgent"
+      "L5SafetyBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5016,9 +4589,9 @@
     "territory": "L5 Safety/Gravity",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5038,7 +4611,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 953,
+    "loc": 954,
     "class_count": 2,
     "description": "\n    Autonomous Conductor for structural healing.\n    ",
     "pascal_compliant": true,
@@ -5052,7 +4625,7 @@
       "metrics": true,
       "tracing": false
     },
-    "cyclomatic_complexity": 264,
+    "cyclomatic_complexity": 263,
     "proper_base_class": true,
     "schema_strictness": 100.0,
     "has_metadata": true
@@ -5064,9 +4637,9 @@
     "territory": "L5 Safety/Validators/Content",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5082,7 +4655,7 @@
     "invocation": "Yes",
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 154,
+    "loc": 155,
     "class_count": 2,
     "description": "\n    [L5 VALIDATOR] Python syntax validation agent.\n    \n    Prevents unparseable code from entering",
     "pascal_compliant": true,
@@ -5149,9 +4722,9 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5191,57 +4764,16 @@
     "has_metadata": true
   },
   {
-    "class_name": "TypeHintEnforcementAgent",
-    "path": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
-    "layer": "L5",
-    "territory": "L5 Safety/Validators/Content",
-    "category": "Healer",
-    "inheritance": [
-      "MCPHardenedMixin",
-      "HealerMixin",
-      "SubatomicTestingMixin"
-    ],
-    "key_methods": [
-      "__init__",
-      "execute",
-      "heal_violation"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "invocation": "Inherited",
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 72,
-    "class_count": 2,
-    "description": "\n    Ensures public functions, methods, and module-level assignments have type hints.\n\n    Rules:\n  ",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true,
-    "has_tests": true,
-    "typed_pct": 0.0,
-    "documented_pct": 100.0,
-    "observability": {
-      "logging": true,
-      "metrics": true,
-      "tracing": false
-    },
-    "cyclomatic_complexity": 8,
-    "proper_base_class": true,
-    "schema_strictness": 0.0,
-    "has_metadata": true
-  },
-  {
     "class_name": "TypeHintFixerAgent",
     "path": "agentic_core\\L5_safety\\validators\\TypeHintFixerAgent.py",
     "layer": "L5",
     "territory": "L5 Safety/Validators/Content",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
       "HealerMixin",
-      "NodeTransformer"
+      "NodeTransformer",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5282,8 +4814,8 @@
     "territory": "L5 Safety/Validators/Structure",
     "category": "Orchestrator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -5323,15 +4855,61 @@
     "has_metadata": true
   },
   {
+    "class_name": "UnifiedHygieneValidatorAgent",
+    "path": "agentic_core\\L5_safety\\validators\\UnifiedHygieneValidatorAgent.py",
+    "layer": "L5",
+    "territory": "L5 Safety/Validators/Content",
+    "category": "Validator",
+    "inheritance": [
+      "L5Agent"
+    ],
+    "key_methods": [
+      "__post_init__",
+      "validate_repository",
+      "_scan_repository",
+      "_get_file_hash",
+      "_analyze_imports",
+      "_find_duplicates",
+      "_find_empty_files",
+      "_scan_markers",
+      "_find_orphans",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 367,
+    "class_count": 2,
+    "description": "\n    Unified Code Hygiene Validator (Phase 2 Consolidation).\n    \n    Consolidates HygieneGuardianAg",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 71,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true
+  },
+  {
     "class_name": "UnusedCleanupAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\UnusedCleanupAgent.py",
     "layer": "L5",
     "territory": "L5 Safety/Guardrails/Hygiene",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5454,8 +5032,8 @@
     "territory": "L6_Observability/Metrics",
     "category": "Validator",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "L6ObservabilityBaseAgent"
+      "L6ObservabilityBaseAgent",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5498,8 +5076,8 @@
     "territory": "L6_Observability/Telemetry",
     "category": "Guardian",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "heal_repository",
@@ -5702,9 +5280,9 @@
     "territory": "Apps Shared",
     "category": "Healer",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__post_init__",
@@ -5750,9 +5328,9 @@
     "territory": "tests",
     "category": "GenericAgent",
     "inheritance": [
-      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
       "CanonBaseAgent",
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
