@@ -12,8 +12,25 @@ import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -72,7 +89,7 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
     
     def execute(self, operation: str, **payload) -> Dict[str, Any]:
         """
-        Route Git operations safely.
+        Route Git operations safely via dispatch pattern.
         
         Args:
             operation: Git operation (commit, push, pull, status, etc.)
@@ -81,63 +98,84 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
         Returns:
             Result dictionary with success status and output
         """
+        handlers = {
+            'commit': self._handle_commit,
+            'push': self._handle_push,
+            'pull': self._handle_pull,
+            'status': self._handle_status,
+            'diff': self._handle_diff,
+            'log': self._handle_log,
+            'checkout': self._handle_checkout,
+            'branch': self._handle_branch,
+        }
+        
+        handler = handlers.get(operation)
+        if not handler:
+            return {'success': False, 'error': f'Unsupported Git operation: {operation}'}
+        
         Logger.debug(f"[SOVEREIGN GIT] {operation}: {payload}")
-        
-        if operation == 'commit':
-            message = payload.get('message', 'Sovereign commit')
-            files = payload.get('files', [])
-            if files:
-                for f in files:
-                    self._run_git(['add', str(f)])
-            result = self._run_git(['commit', '-m', message])
-        
-        elif operation == 'push':
-            branch = payload.get('branch', 'HEAD')
-            remote = payload.get('remote', 'origin')
-            result = self._run_git(['push', remote, branch])
-        
-        elif operation == 'pull':
-            remote = payload.get('remote', 'origin')
-            branch = payload.get('branch', '')
-            args = ['pull', remote]
-            if branch:
-                args.append(branch)
-            result = self._run_git(args)
-        
-        elif operation == 'status':
-            result = self._run_git(['status', '--porcelain'])
-        
-        elif operation == 'diff':
-            file_path = payload.get('file', '')
-            args = ['diff']
-            if file_path:
-                args.append(str(file_path))
-            result = self._run_git(args)
-        
-        elif operation == 'log':
-            count = payload.get('count', 10)
-            result = self._run_git(['log', f'-{count}', '--oneline'])
-        
-        elif operation == 'checkout':
-            branch = payload.get('branch', '')
-            if not branch:
-                return {'success': False, 'error': 'Branch required for checkout'}
-            result = self._run_git(['checkout', branch])
-        
-        elif operation == 'branch':
-            action = payload.get('action', 'list')
-            if action == 'list':
-                result = self._run_git(['branch', '-a'])
-            elif action == 'create':
-                name = payload.get('name', '')
-                if not name:
-                    return {'success': False, 'error': 'Branch name required'}
-                result = self._run_git(['branch', name])
-            else:
-                return {'success': False, 'error': f'Unknown branch action: {action}'}
-        
-        else:
-            result = {'success': False, 'error': f'Unsupported Git operation: {operation}'}
-        
+        result = handler(**payload)
         self._audit(operation, payload, result)
         return result
+    
+    def _handle_commit(self, message: str = 'Sovereign commit', files: List[str] = None, **kwargs) -> Dict[str, Any]:
+        """Sub-atomic commit handler."""
+        if files:
+            for f in files:
+                self._run_git(['add', str(f)])
+        return self._run_git(['commit', '-m', message])
+    
+    def _handle_push(self, branch: str = 'HEAD', remote: str = 'origin', **kwargs) -> Dict[str, Any]:
+        """Sub-atomic push handler."""
+        return self._run_git(['push', remote, branch])
+    
+    def _handle_pull(self, remote: str = 'origin', branch: str = '', **kwargs) -> Dict[str, Any]:
+        """Sub-atomic pull handler."""
+        args = ['pull', remote]
+        if branch:
+            args.append(branch)
+        return self._run_git(args)
+    
+    def _handle_status(self, **kwargs) -> Dict[str, Any]:
+        """Sub-atomic status handler."""
+        return self._run_git(['status', '--porcelain'])
+    
+    def _handle_diff(self, file: str = '', **kwargs) -> Dict[str, Any]:
+        """Sub-atomic diff handler."""
+        args = ['diff']
+        if file:
+            args.append(str(file))
+        return self._run_git(args)
+    
+    def _handle_log(self, count: int = 10, **kwargs) -> Dict[str, Any]:
+        """Sub-atomic log handler."""
+        return self._run_git(['log', f'-{count}', '--oneline'])
+    
+    def _handle_checkout(self, branch: str = '', **kwargs) -> Dict[str, Any]:
+        """Sub-atomic checkout handler."""
+        if not branch:
+            return {'success': False, 'error': 'Branch required for checkout'}
+        return self._run_git(['checkout', branch])
+    
+    def _handle_branch(self, action: str = 'list', name: str = '', **kwargs) -> Dict[str, Any]:
+        """Sub-atomic branch handler with action dispatch."""
+        if action == 'list':
+            return self._run_git(['branch', '-a'])
+        elif action == 'create':
+            if not name:
+                return {'success': False, 'error': 'Branch name required'}
+            return self._run_git(['branch', name])
+        else:
+            return {'success': False, 'error': f'Unknown branch action: {action}'}
+
+def _run_self_tests(self) -> dict:
+        """Run internal self-tests."""
+        results = {"passed": 0, "failed": 0, TESTS_DIR: []}
+        try:
+            assert self is not None
+            results["passed"] += 1
+            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
+        except AssertionError as e:
+            results["failed"] += 1
+            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+        return results

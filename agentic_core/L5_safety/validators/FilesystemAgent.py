@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 """
 FileSystemAgent: Sovereign Non-Python File Naming Enforcer
 
@@ -17,9 +18,9 @@ DEPRECATED operations (use HealerAgent instead):
 - run_with_cleanup() -> Use FilesystemAgent.run() + HealerAgent
 
 For file operations, use:
-    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
+    from agentic_core.L5_safety.gravity.StructuralHealerAgent import StructuralHealerAgent
     violations = FilesystemAgent(project_root).run()  # Detection only
-    healer = HealerAgent(project_root)
+    healer = StructuralHealerAgent(project_root)
     healer.heal_file_moves(violations)  # Execution
 
 Placed in L5_safety/validators per SSOT extension:
@@ -35,25 +36,27 @@ from pathlib import Path
 from typing import List, Tuple, Dict, Any, Set
 from datetime import datetime
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     FORBIDDEN_PATTERNS,
     HEALING_CONFIG,
     SOVEREIGN_EXCLUDED_FOLDERS,
     CANON_KEY_TO_FOLDER_MAP
 )
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
 
 Logger = logging.getLogger(__name__)
 
 
+@dataclass
 class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Autonomous agent for physical filesystem purity.
     Targets technical debt markers in non-Python files with auto-remediation.
     """
     def __init__(self, project_root: Path, dry_run: bool = False) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         self.forbidden_patterns = FORBIDDEN_PATTERNS
         # REGEX: Catches repeated markers like .archived.archived or .old.old
@@ -372,7 +375,7 @@ class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                     counts["errors"] += 1
                     print(f"  [!] ERROR on {file_path.name}: {e}")
             
-            print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
+            print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
             return counts
         finally:
             _call_path.discard(agent_name)

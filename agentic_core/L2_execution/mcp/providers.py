@@ -1,5 +1,4 @@
-from __future__ import annotations
-"""MCP Provider mappings and defaults.
+"""MCP provider mappings and defaults.
 
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
@@ -9,7 +8,7 @@ from typing import Dict, Optional
 
 
 class ProviderType(Enum):
-    """Supported MCP Provider types."""
+    """Supported MCP provider types."""
     STUB = "stub"
     REDIS = "redis"
     CHROMADB = "chromadb"
@@ -48,41 +47,41 @@ DEFAULT_PROVIDER_CLASSES: Dict[str, str] = {
 }
 
 
-def get_default_module(Provider: str) -> Optional[str]:
-    """Get default module name for a Provider.
+def get_default_module(provider: str) -> Optional[str]:
+    """Get default module name for a provider.
     
     Args:
-        Provider: Provider type string
+        provider: Provider type string
         
     Returns:
         Module name or None if stub
     """
-    return DEFAULT_PROVIDER_MODULES.get(Provider.lower())
+    return DEFAULT_PROVIDER_MODULES.get(provider.lower())
 
 
-def get_default_class(Provider: str) -> Optional[str]:
-    """Get default class name for a Provider.
+def get_default_class(provider: str) -> Optional[str]:
+    """Get default class name for a provider.
     
     Args:
-        Provider: Provider type string
+        provider: Provider type string
         
     Returns:
         Class name or None
     """
-    return DEFAULT_PROVIDER_CLASSES.get(Provider.lower())
+    return DEFAULT_PROVIDER_CLASSES.get(provider.lower())
 
 
 def register_provider(
-    Provider: str,
+    provider: str,
     module: str,
     class_name: str,
 ) -> None:
-    """Register a custom Provider mapping.
+    """Register a custom provider mapping.
     
     Args:
-        Provider: Provider identifier
+        provider: Provider identifier
         module: Python module path
         class_name: Class name within module
     """
-    DEFAULT_PROVIDER_MODULES[Provider.lower()] = module
-    DEFAULT_PROVIDER_CLASSES[Provider.lower()] = class_name
+    DEFAULT_PROVIDER_MODULES[provider.lower()] = module
+    DEFAULT_PROVIDER_CLASSES[provider.lower()] = class_name

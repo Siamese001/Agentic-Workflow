@@ -1,3 +1,27 @@
+
+# TODO: GRAVITY VIOLATION AUTO-HEALED
+# Downstream imports removed — move shared logic to apps_shared or sovereign utils
+# Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_rg']. Move shared logic to apps_shared or sovereign utils.
+# Removed: apps_rg.engines.tone
+
+
+# TODO: GRAVITY VIOLATION AUTO-HEALED
+# Downstream imports removed — move shared logic to apps_shared or sovereign utils
+# Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_lic']. Move shared logic to apps_shared or sovereign utils.
+# Removed: apps_lic.engines.runtime_shared
+
+
+# TODO: GRAVITY VIOLATION AUTO-HEALED
+# Downstream imports removed — move shared logic to apps_shared or sovereign utils
+# Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_lic']. Move shared logic to apps_shared or sovereign utils.
+# Removed: apps_lic.engines.profiles
+
+
+# TODO: GRAVITY VIOLATION AUTO-HEALED
+# Downstream imports removed — move shared logic to apps_shared or sovereign utils
+# Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_lic']. Move shared logic to apps_shared or sovereign utils.
+# Removed: apps_lic.engines.messaging
+
 from __future__ import annotations
 """
 Sovereign Core Contracts Registry – Final SSOT Import Point (Phase 2C Complete)
@@ -24,7 +48,6 @@ from agentic_core.schemas.models.context_passport import (
 )
 
 # 14. Legacy Registry from core_contracts.py
-from agentic_core.schemas.models.core_contracts import CORE_CONTRACTS_REGISTRY
 
 # 12. Golden State & Benchmarking
 from agentic_core.schemas.models.golden_state import (
@@ -51,7 +74,6 @@ from agentic_core.schemas.models.messaging import (
 from agentic_core.schemas.models.metacognition import Hypothesis, MetacognitionReport
 
 # 10. System Profiles
-from agentic_core.schemas.models.profiles import BudgetProfile, SafetyProfile
 
 # 4. Reasoning & Cognitive Core
 from agentic_core.schemas.models.reasoning import (
@@ -62,7 +84,7 @@ from agentic_core.schemas.models.reasoning import (
 )
 
 # 7. Micro-Runtime & Execution
-from agentic_core.schemas.models.runtime_micro import (
+from agentic_core.L4_state.ValidationContext.runtime_micro import (
     HopState,
     MicroCheckpoint,
     MicroStage,
@@ -89,14 +111,14 @@ from agentic_core.schemas.models.runtime_shared import (
 from agentic_core.schemas.models.simulation import SimOutcome, SimScenario
 
 # 6. Style & Generation
-from agentic_core.schemas.models.tone import (
+from agentic_core.schemas.models.style import (
     GenerationConfig,
     StyleProfile,
     ToneType,
 )
 
 # 3. Tool Arguments
-from agentic_core.schemas.models.tool_args import (
+from agentic_core.L5_safety.validators.tool_args import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ExecuteCommandArgs,

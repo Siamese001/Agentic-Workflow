@@ -10,6 +10,8 @@ import logging
 import os
 import re
 from typing import Any
+from archives.location_violations.sovereign_index import SovereignIndex
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 def fix_indentation_errors(file_path: Any) -> Any:
     """Fix indentation errors in a Python file."""

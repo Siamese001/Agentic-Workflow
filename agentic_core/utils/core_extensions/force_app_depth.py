@@ -8,14 +8,21 @@ from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
+    get_validated_project_root,
+    safe_path_join,
 )
+from archives.location_violations.sovereign_index import SovereignIndex
 
-root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
-apps: Any = [ROOT / 'apps_lic', ROOT / 'apps_rg']
+# FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations
+PROJECT_ROOT = get_validated_project_root()
+CORE = safe_path_join(PROJECT_ROOT, 'agentic_core')
+APPS = [
+    safe_path_join(PROJECT_ROOT, 'apps_lic'),
+    safe_path_join(PROJECT_ROOT, 'apps_rg')
+]
 
 def force_app_depth() -> Any:
     """Brief description of functionality and purpose."""

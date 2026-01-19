@@ -8,6 +8,25 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+from archives.location_violations.sovereign_index import SovereignIndex
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
+
 def fix_split_strings_in_file(filepath: Any) -> Any:
     """Fix split string literals in a single file."""
     try:
@@ -56,7 +75,7 @@ def fix_all_python_files(root_dir: Any) -> Any:
     """Fix split strings in all Python files under root_dir."""
     root_path: Any = Path(root_dir)
     fixed_count: Any = 0
-    target_dirs: Any = ['agentic_core', '16_runtime_runtime', '19_runtime_pipeline']
+    target_dirs: Any = [AGENTIC_CORE_DIR, '16_runtime_runtime', '19_runtime_pipeline']
     for target_dir in target_dirs:
         dir_path: Any = root_path / target_dir
         if dir_path.exists():

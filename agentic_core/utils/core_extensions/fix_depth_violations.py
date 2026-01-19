@@ -8,14 +8,18 @@ from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
+    get_validated_project_root,
+    safe_path_join,
 )
+from archives.location_violations.sovereign_index import SovereignIndex
 
-root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
-stage_mappings: Any = {'L1_cognition': 'P1_core', 'L2_execution': 'P1_core', 'L3_orchestration': 'P1_core', 'L4_state': 'P1_core', 'L5_safety': 'P1_core', 'memory': 'P1_core', 'patterns': 'P1_core', 'runtime': 'P1_core', 'utils': 'P1_core'}
+# FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations
+PROJECT_ROOT = get_validated_project_root()
+CORE = safe_path_join(PROJECT_ROOT, 'agentic_core')
+STAGE_MAPPINGS: Any = {'L1_cognition': 'P1_core', 'L2_execution': 'P1_core', 'L3_orchestration': 'P1_core', 'L4_state': 'P1_core', 'L5_safety': 'P1_core', 'memory': 'P1_core', 'patterns': 'P1_core', 'runtime': 'P1_core', 'utils': 'P1_core'}
 
 def fix_depth_violations() -> Any:
     """Move shallow files into proper stage subdirectories."""

@@ -1,0 +1,163 @@
+/* Layout and Grid Systems */
+
+body {
+    background: var(--background);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+header {
+    margin-bottom: 40px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.subtitle {
+    color: var(--text-light);
+    font-size: 1.1em;
+}
+
+.timestamp {
+    color: var(--text-light);
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.charts-grid.full-width {
+    grid-template-columns: 1fr;
+    margin-bottom: 40px;
+}
+
+.dashboard-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+
+.tab-content {
+    display: block;
+}
+
+.gauge-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+#lastUpdated {
+    color: var(--light-text);
+    font-size: 0.9em;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Responsive Breakpoints */
+
+@media (max-width: 1200px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8em;
+    }
+
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-tabs {
+        flex-direction: column;
+    }
+
+    .nav-tab {
+        border-bottom: none;
+        border-left: 3px solid transparent;
+        padding-left: 15px;
+    }
+
+    .nav-tab.active {
+        border-bottom: none;
+        border-left-color: var(--accent-blue);
+    }
+}
+
+pre {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+    border: 1px solid #dee2e6;
+    color: #333;
+    font-size: 0.85em;
+}
+
+/* Meta-Learning Panel Styles */
+.meta-learning-section .experience-item {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border-left-width: 4px;
+}
+
+.reward-high { border-left-color: #10b981; background: #ecfdf5; }
+.reward-medium { border-left-color: #f59e0b; background: #fffbeb; }
+.reward-low { border-left-color: #ef4444; background: #fef2f2; }
+
+.redis-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-box {
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.stat-label { font-size: 0.8em; color: #64748b; text-transform: uppercase; }
+.stat-value { font-size: 1.4em; font-weight: bold; color: #334155; }
+.text-success { color: #10b981; }
+.text-warning { color: #f59e0b; }
+.text-danger { color: #ef4444; }
+
+.log-entry.cache-hit { background-color: #ecfdf5; }
+.log-entry.cache-miss { background-color: #fef2f2; }

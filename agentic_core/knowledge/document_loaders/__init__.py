@@ -1,3 +1,1 @@
-from __future__ import annotations
-'''Brief description of functionality and purpose.'''
-
+"""agentic_core.knowledge.document_loaders - Document loader implementations."""

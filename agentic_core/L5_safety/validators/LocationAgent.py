@@ -19,7 +19,7 @@ Placed in L5_safety/validators per semantic_l2_registry purpose:
   "Canon constitution validators, structural policy enforcement..."
 """
 from pathlib import Path
-from typing import List, Tuple, Dict, Any, Optional
+from typing import List, Tuple, Dict, Any, Optional, Union
 from dataclasses import dataclass
 from datetime import datetime
 import re
@@ -29,7 +29,125 @@ import ast
 
 Logger = logging.getLogger(__name__)
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+# Performance optimization: Use SovereignIndex instead of rglob
+try:
+    from agentic_core.utils.sovereign_index import SovereignIndex
+    SOVEREIGN_INDEX_AVAILABLE = True
+except ImportError:
+    SOVEREIGN_INDEX_AVAILABLE = False
+    SovereignIndex = None
+
+
+def _get_python_files(project_root: Path) -> List[Path]:
+    """
+    Get all Python files using SovereignIndex (cached) or fallback to rglob.
+    
+    This is a performance optimization to prevent timeouts during healing.
+    SovereignIndex caches the file list, making subsequent calls O(1).
+    """
+    if SOVEREIGN_INDEX_AVAILABLE:
+        try:
+            index = SovereignIndex.get_instance(project_root)
+            return index.get_files("*.py")
+        except Exception as e:
+            Logger.warning(f"[LocationAgent] SovereignIndex failed, falling back to rglob: {e}")
+    
+    # Fallback to rglob (slower but always works)
+    return list(project_root.rglob("*.py"))
+
+# ============================================================================
+# L5 SOVEREIGN STRUCTURAL SSOT (Violation 5 Resolution)
+# ============================================================================
+# Supreme Court function for path compliance - L3/L2 agents MUST delegate here
+# This is the canonical implementation for structural validation
+# ============================================================================
+
+def is_path_compliant(
+    file_path: Union[str, Path],
+    project_root: Optional[Path] = None
+) -> bool:
+    """
+    L5 Sovereign Structural SSOT - Hard-enforcement of path validity.
+    
+    This is the Supreme Court for structural compliance. All L3 and L2 agents
+    that need to validate file paths MUST call this function instead of
+    implementing their own path validation logic.
+    
+    Enforces:
+    1. Path must be within project root
+    2. Root folder must be in SOVEREIGN_REGISTRY (whitelist)
+    3. Depth must not exceed MAX_ALLOWED_DEPTH per root
+    4. No forbidden root folders (legacy_*, old_*)
+    5. No numbered folder prefixes (^\d+_)
+    
+    Args:
+        file_path: Path to validate (str or Path)
+        project_root: Optional project root (auto-detected if None)
+        
+    Returns:
+        True if path is structurally compliant, False otherwise
+        
+    Example:
+        >>> is_path_compliant('agentic_core/L5_safety/validators/LocationAgent.py')
+        True
+        >>> is_path_compliant('legacy_code/old_agent.py')
+        False
+        >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
+        False
+    """
+    from agentic_core.L5_safety.validators.structure_blueprint import (
+        ROOT_WHITELIST,
+        FORBIDDEN_ROOT_FOLDERS,
+        FORBIDDEN_FOLDER_PATTERN,
+        SOVEREIGN_REGISTRY,
+        get_validated_project_root,
+    )
+    
+    # Auto-detect project root if not provided
+    if project_root is None:
+        project_root = get_validated_project_root()
+    
+    # Convert to Path object
+    path = Path(file_path)
+    
+    # 1. Must be within project root
+    try:
+        if not path.is_absolute():
+            path = project_root / path
+        rel_path = path.relative_to(project_root)
+    except (ValueError, RuntimeError):
+        # Path is outside project root
+        return False
+    
+    parts = rel_path.parts
+    if not parts:
+        return False
+    
+    root_folder = parts[0]
+    
+    # 2. Root folder must be whitelisted (in SOVEREIGN_REGISTRY)
+    if root_folder not in ROOT_WHITELIST:
+        return False
+    
+    # 3. Depth restriction check
+    max_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get('depth', 3)
+    if len(parts) > max_depth:
+        return False
+    
+    # 4. Forbidden root folders check
+    if root_folder in FORBIDDEN_ROOT_FOLDERS:
+        return False
+    
+    # 5. Forbidden numbered folder pattern check (^\d+_)
+    for part in parts:
+        if FORBIDDEN_FOLDER_PATTERN.match(part):
+            return False
+    
+    # All checks passed
+    return True
+
+
+from agentic_core.L5_safety.validators.structure_blueprint import (
     ROOT_WHITELIST,                    # = set(sovereign_registry.keys())
     FORBIDDEN_ROOT_FOLDERS,
     FORBIDDEN_FOLDER_PATTERN,          # ^\\d+_
@@ -60,6 +178,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     MIN_ALIGNMENT_SCORE,
     DEFAULT_APP_HEALING_TARGET,
     DEFAULT_CORE_HEALING_TERRITORY,
+    GLOBAL_EXCLUDED_DIRS,              # Production Lens SSOT
+    is_path_allowed,                   # SSOT path validation helper
 )
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
@@ -69,7 +189,7 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
     """Check if file/line is excepted from key validation."""
     import fnmatch
     import re
-    from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
+    from agentic_core.L5_safety.validators.structure_blueprint import CANON_KEY_EXCEPTIONS
     exceptions = CANON_KEY_EXCEPTIONS.get(key_id, {})
     if not exceptions:
         return False
@@ -89,15 +209,15 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
     return False
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.validators.L5Agent import L5Agent
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 @registers_prompt(
     template_name="file_placement.jinja",
     purpose="Enforces territory/file placement rules",
     territory="templates"
 )
-class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class LocationAgent(L5Agent, MCPHardenedMixin):
     """
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.
@@ -176,15 +296,36 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         severity: int = 5
 
     def __init__(self, project_root: Path) -> None:
+        """Initialize the instance."""
         self.project_root = project_root.resolve()
         # Validate project root is correct
         self._validate_project_root()
-        # NamingAgent singleton for post-heal validation and auto-healing
-        from agentic_core.utils.naming.naming_agent import get_naming_agent
-        self.naming_agent = get_naming_agent(self.project_root)
-        # ImportAgent singleton for post-heal validation & auto-heal
-        from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
-        self.import_agent = ImportAgent(self.project_root)
+        # Lazy agent references to avoid circular instantiation
+        # These are created on-demand via properties, not in __init__
+        self._naming_agent = None
+        self._import_agent = None
+    
+    @property
+    def naming_agent(self):
+        """Lazy NamingAgent - created on first access to avoid circular init."""
+        if self._naming_agent is None:
+            try:
+                from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent
+                self._naming_agent = get_naming_agent(self.project_root)
+            except (ImportError, RecursionError):
+                Logger.warning("NamingAgent not available - post-heal naming validation disabled")
+        return self._naming_agent
+    
+    @property
+    def import_agent(self):
+        """Lazy ImportAgent - created on first access to avoid circular init."""
+        if self._import_agent is None:
+            try:
+                from agentic_core.L5_safety.gravity.ImportAgent import get_import_agent
+                self._import_agent = get_import_agent(self.project_root)
+            except (ImportError, RecursionError):
+                Logger.warning("ImportAgent not available - post-heal import validation disabled")
+        return self._import_agent
 
     def _validate_project_root(self) -> None:
         """
@@ -235,7 +376,7 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         if not result[0]:
             return result
             
-        result = self._validate_root_whitelist(root_folder)
+        result = self._validate_root_whitelist(root_folder, rel_path)
         if not result[0]:
             return result
             
@@ -299,28 +440,8 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def _check_forbidden_imports(self, tree: ast.AST, current_l1: str, rel_path: Path) -> Tuple[bool, str]:
         """Check for forbidden app imports and layer violations."""
-        forbidden_app_import = False
-        forbidden_layer_import = None
+        forbidden_app_import, forbidden_layer_import = self._scan_imports_for_violations(tree, current_l1)
         
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
-                modules = []
-                if isinstance(node, ast.Import):
-                    modules = [alias.name for alias in node.names]
-                elif isinstance(node, ast.ImportFrom) and node.module:
-                    modules = [node.module]
-
-                for module in modules:
-                    if module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES:
-                        forbidden_app_import = True
-                    if current_l1 and module.startswith("agentic_core.") and len(module.split(".")) > 2:
-                        imported_l1 = module.split(".")[1]
-                        if imported_l1 in LAYER_FORBIDDEN_IMPORTS.get(current_l1, set()):
-                            forbidden_layer_import = f"{current_l1} → {imported_l1}"
-                            
-                if forbidden_app_import or forbidden_layer_import:
-                    break
-
         if forbidden_app_import:
             return False, (
                 f"GRAVITY VIOLATION (AST-resolved): Imports from apps_* modules forbidden in agentic_core. "
@@ -333,13 +454,65 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             )
             
         return True, "OK"
+    
+    def _scan_imports_for_violations(self, tree: ast.AST, current_l1: str) -> Tuple[bool, Optional[str]]:
+        """Scan AST for forbidden imports and return violation flags."""
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                modules = self._extract_modules_from_node(node)
+                
+                for module in modules:
+                    if self._is_forbidden_app_import(module):
+                        return True, None
+                    
+                    layer_violation = self._check_layer_import_violation(module, current_l1)
+                    if layer_violation:
+                        return False, layer_violation
+        
+        return False, None
+    
+    def _extract_modules_from_node(self, node: ast.AST) -> List[str]:
+        """Extract module names from import node."""
+        if isinstance(node, ast.Import):
+            return [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            return [node.module]
+        return []
+    
+    def _is_forbidden_app_import(self, module: str) -> bool:
+        """Check if module is a forbidden app import."""
+        return module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES
+    
+    def _check_layer_import_violation(self, module: str, current_l1: str) -> Optional[str]:
+        """Check for layer import violations and return violation description."""
+        if not current_l1:
+            return None
+        
+        if module.startswith("agentic_core.") and len(module.split(".")) > 2:
+            imported_l1 = module.split(".")[1]
+            if imported_l1 in LAYER_FORBIDDEN_IMPORTS.get(current_l1, set()):
+                return f"{current_l1} → {imported_l1}"
+        
+        return None
 
     def _check_semantic_alignment(self, tree: ast.AST, current_territory: str, rel_path: Path) -> Tuple[bool, str]:
         """Check semantic alignment between file location and content."""
         if not current_territory:
             return True, "OK"
             
-        # Simplified semantic scoring
+        # Calculate semantic scores
+        app_rg_score, app_lic_score, territory_scores = self._calculate_semantic_scores(tree)
+        
+        # Check for app-specific violations
+        result = self._check_app_domain_violation(app_rg_score, app_lic_score, rel_path)
+        if not result[0]:
+            return result
+        
+        # Check territory alignment
+        return self._check_territory_alignment(current_territory, territory_scores, rel_path)
+    
+    def _calculate_semantic_scores(self, tree: ast.AST) -> Tuple[float, float, Dict[str, float]]:
+        """Calculate semantic scores for app and territory alignment."""
         app_rg_score = 0.0
         app_lic_score = 0.0
         territory_scores: Dict[str, float] = {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
@@ -355,8 +528,11 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     for terms in cats.values():
                         if any(t in name for t in terms):
                             territory_scores[terr] += 1.0
-
-        # App-specific violation check
+        
+        return app_rg_score, app_lic_score, territory_scores
+    
+    def _check_app_domain_violation(self, app_rg_score: float, app_lic_score: float, rel_path: Path) -> Tuple[bool, str]:
+        """Check for app-specific domain violations."""
         total_app_score = app_rg_score + app_lic_score
         if total_app_score >= AST_DOMAIN_HIT_THRESHOLD:
             dominant = "apps_rg" if app_rg_score >= app_lic_score else "apps_lic"
@@ -366,23 +542,27 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 f"Strong application signals (RG: {app_rg_score:.2f}, LIC: {app_lic_score:.2f}). "
                 f"Move to '{target}/'. File: {rel_path}"
             )
-
-        # Territory alignment check
+        return True, "OK"
+    
+    def _check_territory_alignment(self, current_territory: str, territory_scores: Dict[str, float], rel_path: Path) -> Tuple[bool, str]:
+        """Check territory alignment between file location and content."""
+        if not territory_scores:
+            return True, "OK"
+        
         current_score = territory_scores.get(current_territory, 0.0)
-        if territory_scores:
-            best_territory = max(territory_scores, key=territory_scores.get)
-            max_other = max((s for t, s in territory_scores.items() if t != current_territory), default=0.0)
+        best_territory = max(territory_scores, key=territory_scores.get)
+        max_other = max((s for t, s in territory_scores.items() if t != current_territory), default=0.0)
 
-            if current_score < MIN_ALIGNMENT_SCORE and max_other >= MIN_ALIGNMENT_SCORE:
-                return False, (
-                    f"TERRITORY ALIGNMENT WEAK: Current '{current_territory}' score {current_score:.2f} < {MIN_ALIGNMENT_SCORE}. "
-                    f"Lacks semantic signals — refactor or move to '{best_territory}'. File: {rel_path}"
-                )
-            if max_other > current_score + TERRITORY_MISMATCH_THRESHOLD:
-                return False, (
-                    f"TERRITORY MISMATCH VIOLATION: Stronger signals for '{best_territory}' ({max_other:.2f}) "
-                    f"vs current ({current_score:.2f}). Move to agentic_core/{best_territory}. File: {rel_path}"
-                )
+        if current_score < MIN_ALIGNMENT_SCORE and max_other >= MIN_ALIGNMENT_SCORE:
+            return False, (
+                f"TERRITORY ALIGNMENT WEAK: Current '{current_territory}' score {current_score:.2f} < {MIN_ALIGNMENT_SCORE}. "
+                f"Lacks semantic signals — refactor or move to '{best_territory}'. File: {rel_path}"
+            )
+        if max_other > current_score + TERRITORY_MISMATCH_THRESHOLD:
+            return False, (
+                f"TERRITORY MISMATCH VIOLATION: Stronger signals for '{best_territory}' ({max_other:.2f}) "
+                f"vs current ({current_score:.2f}). Move to agentic_core/{best_territory}. File: {rel_path}"
+            )
 
         return True, "OK"
 
@@ -402,33 +582,37 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return True, "OK"
 
+    # Healing strategy dispatch table (reduces CC by eliminating if/elif chains)
+    HEALING_STRATEGIES = {
+        "APP-SPECIFIC IN CORE VIOLATION": "_heal_app_specific_violation",
+        "AST DOMAIN VIOLATION": "_heal_app_specific_violation",
+        "TERRITORY MISMATCH VIOLATION": "_heal_territory_mismatch",
+        "TERRITORY ALIGNMENT WEAK": "_heal_territory_mismatch",
+        "BROKEN BACKUP FILE": "_heal_broken_backup",
+    }
+
     def _apply_healing_strategy(
         self, file_path: Path, msg: str, archives_root: Path, dry_run: bool,
         affected_paths: List[Path], import_touched_paths: List[Path]
     ) -> Dict[str, Any]:
         """Apply appropriate healing strategy based on violation message."""
-        # === APP-SPECIFIC / AST DOMAIN LEAK HEALING ===
-        if "APP-SPECIFIC IN CORE VIOLATION" in msg or "AST DOMAIN VIOLATION" in msg:
-            return self._heal_app_specific_violation(
-                file_path, msg, dry_run, affected_paths, import_touched_paths
-            )
+        # Check dispatch table for matching strategy
+        for pattern, method_name in self.HEALING_STRATEGIES.items():
+            if pattern in msg:
+                method = getattr(self, method_name)
+                if method_name == "_heal_broken_backup":
+                    return method(file_path, dry_run, affected_paths)
+                return method(file_path, msg, dry_run, affected_paths, import_touched_paths)
+        
+        # Fallback to archiving
+        return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
-        # === TERRITORY MISMATCH HEALING ===
-        elif "TERRITORY MISMATCH VIOLATION" in msg or "TERRITORY ALIGNMENT WEAK" in msg:
-            return self._heal_territory_mismatch(
-                file_path, msg, dry_run, affected_paths, import_touched_paths
-            )
-
-        # === BROKEN BACKUP DELETE ===
-        elif "BROKEN BACKUP FILE" in msg:
-            result = self.safe_delete(file_path, dry_run=dry_run)
-            if result.get("applied") and not dry_run:
-                affected_paths.append(file_path)
-            return result
-
-        # === FALLBACK ARCHIVING (Legacy behavior) ===
-        else:
-            return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
+    def _heal_broken_backup(self, file_path: Path, dry_run: bool, affected_paths: List[Path]) -> Dict[str, Any]:
+        """Heal broken backup files by deletion."""
+        result = self.safe_delete(file_path, dry_run=dry_run)
+        if result.get("applied") and not dry_run:
+            affected_paths.append(file_path)
+        return result
 
     def _heal_app_specific_violation(
         self, file_path: Path, msg: str, dry_run: bool,
@@ -469,21 +653,24 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         else:
             return {"action_taken": "SKIPPED: Could not parse target territory"}
 
+    # Archive subfolder mapping (reduces CC)
+    ARCHIVE_SUBFOLDERS = {
+        "VOID VIOLATION": "void_violations",
+        "GRAVITY": "void_violations",
+        "DEPTH VIOLATION": "depth_violations",
+        "LAYER PREFIX VIOLATION": "naming_violations",
+    }
+
     def _heal_via_archiving(
         self, file_path: Path, msg: str, archives_root: Path, 
         dry_run: bool, affected_paths: List[Path]
     ) -> Dict[str, Any]:
         """Heal violations by archiving to appropriate subfolder."""
-        if "VOID VIOLATION" in msg or "GRAVITY" in msg:
-            target_subdir = archives_root / "void_violations"
-        elif "DEPTH VIOLATION" in msg:
-            target_subdir = archives_root / "depth_violations"
-        elif "LAYER PREFIX VIOLATION" in msg:
-            target_subdir = archives_root / "naming_violations"
-        else:
-            target_subdir = archives_root / "location_violations"
-            
-        target_path = target_subdir / file_path.name
+        subfolder = next(
+            (sf for pattern, sf in self.ARCHIVE_SUBFOLDERS.items() if pattern in msg),
+            "location_violations"
+        )
+        target_path = archives_root / subfolder / file_path.name
         move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
         if "MOVED" in move_result.get("action_taken", ""):
             move_result["action_taken"] = move_result["action_taken"].replace("MOVED", "ARCHIVED")
@@ -509,8 +696,15 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             
         return True, "OK"
 
-    def _validate_root_whitelist(self, root_folder: str) -> Tuple[bool, str]:
-        """Validate root folder is in whitelist."""
+    def _validate_root_whitelist(self, root_folder: str, rel_path: Path = None) -> Tuple[bool, str]:
+        """Validate path is within an allowed sovereign territory using SSOT helper."""
+        # Use is_path_allowed for nested path validation (SSOT fix)
+        if rel_path is not None:
+            if not is_path_allowed(str(rel_path)):
+                return False, f"VOID VIOLATION: Path '{rel_path}' not in sovereign territory"
+            return True, "OK"
+        
+        # Fallback to root-only check
         if root_folder not in ROOT_WHITELIST:
             return False, f"VOID VIOLATION: Unapproved root folder '{root_folder}'"
         return True, "OK"
@@ -518,17 +712,14 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def _validate_depth_requirements(self, parts: tuple, root_folder: str, rel_path: Path) -> Tuple[bool, str]:
         """Validate depth requirements from sovereign registry."""
         expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth")
-        actual_depth = len(parts) - 1  # exclude filename
-
+        actual_depth = len(parts) - 1
         if expected_depth is not None and actual_depth != expected_depth:
             reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
             return False, f"{reason} VIOLATION ({root_folder}): depth {actual_depth} != {expected_depth}"
-
-        # Special strict depth for agentic_core (Canon Key 3/12 hardening)
-        if root_folder == "agentic_core":
-            if len(parts) != 4:
-                return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} has {len(parts)} parts (expected exactly 4: root/L1/L2/file.py)"
-                
+        # [FIX] Check depth (folder level), not parts count
+        # agentic_core depth 3 means: agentic_core/L0_maintenance/scripts/file.py -> depth 3
+        if root_folder == "agentic_core" and actual_depth != 3:
+            return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} is depth {actual_depth} (expected exactly 3)"
         return True, "OK"
 
     def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> Tuple[bool, str]:
@@ -586,9 +777,9 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         # 1. Check sovereign root existence
         all_violations.extend(self.validate_sovereign_roots())
 
-        # 2. Scan files
+        # 2. Scan files (using SovereignIndex for performance)
         if files is None:
-            files = list(self.project_root.rglob("*.py"))
+            files = _get_python_files(self.project_root)
 
         _, file_violations = self.enforce_void_compliance(files)
         all_violations.extend(file_violations)
@@ -744,7 +935,7 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         fix_count = 0
 
         try:
-            for py_file in self.project_root.rglob("*.py"):
+            for py_file in _get_python_files(self.project_root):
                 if py_file == new_path or py_file == old_path:
                     continue  # Skip self
                 if any(part in {".git", "__pycache__", "archives"} for part in py_file.parts):
@@ -786,7 +977,7 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             remaining_count = 0
 
             validation_pattern = re.compile(rf"{re.escape(old_module)}")
-            for py_file in self.project_root.rglob("*.py"):
+            for py_file in _get_python_files(self.project_root):
                 if any(part in {".git", "__pycache__", "archives"} for part in py_file.parts):
                     continue
 
@@ -1055,64 +1246,59 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return final_scores["app_rg"], final_scores["app_lic"], final_scores["territories"]
 
     def _collect_ast_increments(self, tree: ast.AST) -> dict:
-        """Phase 1: Pure AST walk — collect raw risk increments (CC ~25)."""
-        increments = {
-            "app_rg": 0.0,
-            "app_lic": 0.0,
-            "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
-        }
-
+        """Phase 1: Pure AST walk — collect raw risk increments."""
+        increments = {"app_rg": 0.0, "app_lic": 0.0, "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}}
+        
         for node in ast.walk(tree):
-            # Class/Function names — full weight
             if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
-                name = node.name.lower()
-                if any(t in name for t in APP_RG_AST_TERMS):
-                    increments["app_rg"] += 1.0
-                if any(t in name for t in APP_LIC_AST_TERMS):
-                    increments["app_lic"] += 1.0
-                for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                    for terms in cats.values():
-                        if any(t in name for t in terms):
-                            increments["territories"][terr] += 1.0
-
-            # Arguments — medium weight
+                self._score_identifier(node.name.lower(), 1.0, increments)
             elif isinstance(node, ast.arguments):
-                for arg in node.args + getattr(node, "kwonlyargs", []) + getattr(node, "posonlyargs", []):
-                    if arg.arg and arg.arg not in {"self", "cls"}:
-                        a = arg.arg.lower()
-                        if any(t in a for t in APP_RG_VARIABLE_TERMS):
-                            increments["app_rg"] += VARIABLE_HIT_WEIGHT
-                        if any(t in a for t in APP_LIC_VARIABLE_TERMS):
-                            increments["app_lic"] += VARIABLE_HIT_WEIGHT
-                        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                            for terms in cats.values():
-                                if any(t in a for t in terms):
-                                    increments["territories"][terr] += VARIABLE_HIT_WEIGHT
-
-            # Assignment targets — medium weight
+                self._score_arguments(node, increments)
             elif isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        v = target.id.lower()
-                        if any(t in v for t in APP_RG_VARIABLE_TERMS):
-                            increments["app_rg"] += VARIABLE_HIT_WEIGHT
-                        if any(t in v for t in APP_LIC_VARIABLE_TERMS):
-                            increments["app_lic"] += VARIABLE_HIT_WEIGHT
-                        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                            for terms in cats.values():
-                                if any(t in v for t in terms):
-                                    increments["territories"][terr] += VARIABLE_HIT_WEIGHT
-
-            # String literals — low weight
+                self._score_assignments(node, increments)
             elif isinstance(node, ast.Constant) and isinstance(node.value, str) and len(node.value) > 8:
-                text = node.value.lower()
-                increments["app_rg"] += sum(1 for t in APP_RG_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-                increments["app_lic"] += sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-                for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                    for terms in cats.values():
-                        increments["territories"][terr] += sum(1 for t in terms if t in text) * STRING_HIT_WEIGHT
-
+                self._score_string(node.value.lower(), increments)
         return increments
+
+    def _score_identifier(self, name: str, weight: float, increments: dict) -> None:
+        """Score an identifier against app/territory terms."""
+        if any(t in name for t in APP_RG_AST_TERMS):
+            increments["app_rg"] += weight
+        if any(t in name for t in APP_LIC_AST_TERMS):
+            increments["app_lic"] += weight
+        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
+            if any(t in name for terms in cats.values() for t in terms):
+                increments["territories"][terr] += weight
+
+    def _score_arguments(self, node: ast.arguments, increments: dict) -> None:
+        """Score function arguments."""
+        all_args = node.args + getattr(node, "kwonlyargs", []) + getattr(node, "posonlyargs", [])
+        for arg in all_args:
+            if arg.arg and arg.arg not in {"self", "cls"}:
+                self._score_variable(arg.arg.lower(), increments)
+
+    def _score_assignments(self, node: ast.Assign, increments: dict) -> None:
+        """Score assignment targets."""
+        for target in node.targets:
+            if isinstance(target, ast.Name):
+                self._score_variable(target.id.lower(), increments)
+
+    def _score_variable(self, name: str, increments: dict) -> None:
+        """Score a variable name."""
+        if any(t in name for t in APP_RG_VARIABLE_TERMS):
+            increments["app_rg"] += VARIABLE_HIT_WEIGHT
+        if any(t in name for t in APP_LIC_VARIABLE_TERMS):
+            increments["app_lic"] += VARIABLE_HIT_WEIGHT
+        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
+            if any(t in name for terms in cats.values() for t in terms):
+                increments["territories"][terr] += VARIABLE_HIT_WEIGHT
+
+    def _score_string(self, text: str, increments: dict) -> None:
+        """Score a string literal."""
+        increments["app_rg"] += sum(1 for t in APP_RG_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
+        increments["app_lic"] += sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
+        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
+            increments["territories"][terr] += sum(1 for terms in cats.values() for t in terms if t in text) * STRING_HIT_WEIGHT
 
     def _aggregate_ast_increments(self, initial_scores: dict, increments: dict) -> dict:
         """Phase 2: Simple aggregation (CC ~5)."""
@@ -1180,84 +1366,7 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             # === GRAVITY LIMITED AUTO-HEAL (Safe removal + TODO) ===
             gravity_heal_actions = []
             if total_gravity > 0:
-                for grav in gravity_issues:
-                    path = Path(grav["path"]) if isinstance(grav["path"], str) else grav["path"]
-                    msg = grav["issue"]
-
-                    try:
-                        content = path.read_text(encoding="utf-8")
-                        lines = content.splitlines()
-
-                        # Extract downstream roots from message
-                        downstream_match = re.search(r"downstream roots: \[(.*?)\]", msg)
-                        if not downstream_match:
-                            downstream_match = re.search(r"apps_[a-z_]+", msg)
-                            if downstream_match:
-                                downstream_roots = [downstream_match.group(0)]
-                            else:
-                                continue
-                        else:
-                            downstream_roots = [r.strip().strip("'\"") for r in downstream_match.group(1).split(",")]
-
-                        # Find and remove offending import lines
-                        new_lines = []
-                        removed = False
-                        removed_modules = []
-                        for line in lines:
-                            if any(root in line for root in downstream_roots) and line.strip().startswith(("import ", "from ")):
-                                removed = True
-                                match = re.match(r"^(import|from)\s+([a-zA-Z0-9_.]+)", line.strip())
-                                if match:
-                                    removed_modules.append(match.group(2))
-                                continue
-                            new_lines.append(line)
-
-                        if removed:
-                            todo_block = [
-                                "",
-                                "# TODO: GRAVITY VIOLATION AUTO-HEALED",
-                                "# Downstream imports removed — move shared logic to apps_shared or sovereign utils",
-                                "# Original violation: " + msg[:200],
-                                "# Removed: " + ", ".join(removed_modules),
-                                "",
-                            ]
-                            # Insert after potential shebang/docstring
-                            insert_idx = 0
-                            if new_lines and new_lines[0].startswith("#!"):
-                                insert_idx = 1
-                            if len(new_lines) > insert_idx and new_lines[insert_idx].strip().startswith('"""'):
-                                try:
-                                    for i, l in enumerate(new_lines[insert_idx:], insert_idx):
-                                        if i > insert_idx and '"""' in l:
-                                            insert_idx = i + 1
-                                            break
-                                except StopIteration:
-                                    pass
-
-                            new_lines = new_lines[:insert_idx] + todo_block + new_lines[insert_idx:]
-                            new_content = "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n".join(new_lines)
-
-                            # Backup + write
-                            backup_dir = self._init_backup_dir() / "gravity_auto_heal"
-                            backup_dir.mkdir(parents=True, exist_ok=True)
-                            backup_path = backup_dir / path.relative_to(self.project_root)
-                            backup_path.parent.mkdir(parents=True, exist_ok=True)
-                            shutil.copy2(path, backup_path)
-
-                            path.write_text(new_content, encoding="utf-8")
-
-                            gravity_heal_actions.append({
-                                "type": "GRAVITY_AUTO_HEAL",
-                                "file": grav["file"],
-                                "removed_imports": removed_modules,
-                            })
-
-                    except Exception as e:
-                        gravity_heal_actions.append({
-                            "type": "GRAVITY_HEAL_ERROR",
-                            "file": grav["file"],
-                            "error": str(e),
-                        })
+                gravity_heal_actions = self._heal_gravity_violations(gravity_issues)
 
                 if gravity_heal_actions:
                     full_report["import_gravity_auto_heal_applied"] = True
@@ -1290,6 +1399,108 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             Logger.error(f"[LocationAgent] Import validation failed: {e}")
 
         return full_report
+
+    def _heal_gravity_violations(self, gravity_issues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Helper method to heal gravity violations by removing offending imports."""
+        gravity_heal_actions = []
+        for grav in gravity_issues:
+            path = Path(grav["path"]) if isinstance(grav["path"], str) else grav["path"]
+            msg = grav["issue"]
+            
+            try:
+                downstream_roots = self._extract_downstream_roots(msg)
+                if not downstream_roots:
+                    continue
+                
+                content = path.read_text(encoding="utf-8")
+                lines = content.splitlines()
+                
+                new_lines, removed_modules = self._remove_offending_imports(lines, downstream_roots)
+                
+                if removed_modules:
+                    new_content = self._insert_gravity_heal_todo(new_lines, msg, removed_modules)
+                    self._backup_and_write_file(path, new_content)
+                    
+                    gravity_heal_actions.append({
+                        "type": "GRAVITY_AUTO_HEAL",
+                        "file": grav["file"],
+                        "removed_imports": removed_modules,
+                    })
+            
+            except Exception as e:
+                gravity_heal_actions.append({
+                    "type": "GRAVITY_HEAL_ERROR",
+                    "file": grav["file"],
+                    "error": str(e),
+                })
+        
+        return gravity_heal_actions
+    
+    def _extract_downstream_roots(self, msg: str) -> List[str]:
+        """Extract downstream roots from gravity violation message."""
+        downstream_match = re.search(r"downstream roots: \[(.*?)\]", msg)
+        if downstream_match:
+            return [r.strip().strip("'\"") for r in downstream_match.group(1).split(",")]
+        
+        downstream_match = re.search(r"apps_[a-z_]+", msg)
+        if downstream_match:
+            return [downstream_match.group(0)]
+        
+        return []
+    
+    def _remove_offending_imports(self, lines: List[str], downstream_roots: List[str]) -> Tuple[List[str], List[str]]:
+        """Remove import lines containing downstream roots."""
+        new_lines = []
+        removed_modules = []
+        
+        for line in lines:
+            if any(root in line for root in downstream_roots) and line.strip().startswith(("import ", "from ")):
+                match = re.match(r"^(import|from)\s+([a-zA-Z0-9_.]+)", line.strip())
+                if match:
+                    removed_modules.append(match.group(2))
+                continue
+            new_lines.append(line)
+        
+        return new_lines, removed_modules
+    
+    def _insert_gravity_heal_todo(self, lines: List[str], msg: str, removed_modules: List[str]) -> str:
+        """Insert TODO block after shebang/docstring."""
+        todo_block = [
+            "",
+            "# TODO: GRAVITY VIOLATION AUTO-HEALED",
+            "# Downstream imports removed — move shared logic to apps_shared or sovereign utils",
+            "# Original violation: " + msg[:200],
+            "# Removed: " + ", ".join(removed_modules),
+            "",
+        ]
+        
+        insert_idx = self._find_todo_insert_position(lines)
+        new_lines = lines[:insert_idx] + todo_block + lines[insert_idx:]
+        return "\n".join(new_lines)
+    
+    def _find_todo_insert_position(self, lines: List[str]) -> int:
+        """Find position to insert TODO block after shebang/docstring."""
+        insert_idx = 0
+        
+        if lines and lines[0].startswith("#!"):
+            insert_idx = 1
+        
+        if len(lines) > insert_idx and lines[insert_idx].strip().startswith('"""'):
+            for i, l in enumerate(lines[insert_idx:], insert_idx):
+                if i > insert_idx and '"""' in l:
+                    insert_idx = i + 1
+                    break
+        
+        return insert_idx
+    
+    def _backup_and_write_file(self, path: Path, content: str) -> None:
+        """Backup file and write new content."""
+        backup_dir = self._init_backup_dir() / "gravity_auto_heal"
+        backup_dir.mkdir(parents=True, exist_ok=True)
+        backup_path = backup_dir / path.relative_to(self.project_root)
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, backup_path)
+        path.write_text(content, encoding="utf-8")
 
     def post_naming_conventions_validation_and_heal(self, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
         """
@@ -1753,6 +1964,11 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 file_path = getattr(violation, 'file_path', None) or violation[0]
                 msg = getattr(violation, 'message', None) or violation[1]
             
+            # Skip protected root files
+            if file_path.name in ROOT_PROTECTED_FILES:
+                Logger.info(f"[LocationAgent] Skipping protected root file: {file_path.name}")
+                continue
+            
             # Skip already-archived files
             archive_markers = ('.archived', '.backup', '.old', '.copy')
             if any(file_path.name.lower().endswith(marker) for marker in archive_markers):
@@ -1887,7 +2103,8 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                         continue
 
                     # Sort to prioritize keeping the "primary" (no suffix or lowest number)
-                    def sort_key(p_str: str):
+                    def sort_key(p_str: str) -> Any:
+                        """Execute sort_key operation."""
                         match = re.search(r'_(\d+)(?=\.py$)', str(p_str))
                         return int(match.group(1)) if match else 0
 
@@ -1966,6 +2183,7 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         Full location compliance scan with automatic cleanup, post-heal validation,
         import fixing, and batch verification.
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
         
         Args:
             files: Optional list of files to scan (defaults to all .py files)
@@ -2081,3 +2299,13 @@ class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
 
 # PascalCase is now the canonical name
+
+# Singleton getter for canon_validator compatibility
+_location_agent_instance = None
+
+def get_location_agent(project_root):
+    """Get or create LocationAgent singleton."""
+    global _location_agent_instance
+    if _location_agent_instance is None:
+        _location_agent_instance = LocationAgent(project_root)
+    return _location_agent_instance

@@ -6,6 +6,7 @@ Updates all references to moved files throughout the codebase.
 import re
 from pathlib import Path
 from typing import Any
+from archives.location_violations.sovereign_index import SovereignIndex
 root: Any = Path('C:/Git/Agentic-Workflow')
 import_rewrites: Any = {'from \\.fission_executor import': 'from .P1_core.fission_executor import'}
 

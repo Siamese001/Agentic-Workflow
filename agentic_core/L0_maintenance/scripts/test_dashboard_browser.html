@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Test Loader</title>
+</head>
+<body>
+    <h1>Dashboard Loading Test</h1>
+    <p>Opening dashboard in new window...</p>
+    <script>
+        // Open the dashboard in a new window
+        window.open('../reports/autonomy_dashboard.html', '_blank');
+        
+        // Also create an iframe for testing
+        const iframe = document.createElement('iframe');
+        iframe.src = '../reports/autonomy_dashboard.html';
+        iframe.style.width = '100%';
+        iframe.style.height = '800px';
+        iframe.style.border = '1px solid #ccc';
+        iframe.style.marginTop = '20px';
+        
+        iframe.onload = function() {
+            console.log('Dashboard loaded in iframe');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            console.log('Dashboard title:', iframeDoc.title);
+            console.log('Dashboard body exists:', !!iframeDoc.body);
+            
+            // Check for errors
+            const errors = [];
+            iframe.contentWindow.addEventListener('error', function(e) {
+                errors.push(e.message);
+                console.error('Dashboard error:', e.message);
+            });
+            
+            setTimeout(() => {
+                if (errors.length > 0) {
+                    document.body.innerHTML += '<h2 style="color:red;">Errors detected:</h2><ul>' + 
+                        errors.map(e => '<li>' + e + '</li>').join('') + '</ul>';
+                } else {
+                    document.body.innerHTML += '<h2 style="color:green;">Dashboard loaded successfully!</h2>';
+                }
+            }, 3000);
+        };
+        
+        iframe.onerror = function(e) {
+            console.error('Failed to load dashboard:', e);
+            document.body.innerHTML += '<h2 style="color:red;">Failed to load dashboard</h2>';
+        };
+        
+        document.body.appendChild(iframe);
+    </script>
+</body>
+</html>

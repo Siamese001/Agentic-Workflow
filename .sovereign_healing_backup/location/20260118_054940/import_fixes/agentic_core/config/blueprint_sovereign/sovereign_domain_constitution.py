@@ -1,0 +1,94 @@
+from __future__ import annotations
+"""
+Sovereign Domain Constitution – DDD Alignment (Dec 26, 2025)
+Defines Bounded Contexts, Aggregates, and Ubiquitous Language.
+L0-L6 Sovereign Stack Hierarchy established.
+"""
+from typing import Any, Dict, List
+
+from agentic_core.L5_safety.validators.structure_blueprint_2 import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
+# 1. Bounded Contexts (Strict Boundaries)
+# Sovereign Layer Hierarchy (L0=Governance, L6=Observability)
+# Higher ranks (smaller numbers) define Policy and Intent.
+# Lower ranks (larger numbers) provide Data and Infrastructure.
+BOUNDED_CONTEXTS: Dict[str, Dict[str, Any]] = {
+    "L0_Governance": {
+        "path": L0_MAINTENANCE_DIR,
+        "rank": 0,
+        "role": "Metacognition: The Law, Auditors, and Healers"
+    },
+    "L1_Cognition": {
+        "path": L1_COGNITION_DIR,
+        "rank": 1,
+        "role": "Strategic Reasoning: Planning and Consensus"
+    },
+    "L2_Execution": {
+        "path": L2_EXECUTION_DIR,
+        "rank": 2,
+        "role": "Action: Tool Implementation and Agent Realization"
+    },
+    "L3_Orchestration": {
+        "path": L3_ORCHESTRATION_DIR,
+        "rank": 3,
+        "role": "Workflow: Task Fission and Fusion"
+    },
+    "L4_State": {
+        "path": L4_STATE_DIR,
+        "rank": 4,
+        "role": "Memory: Persistence and Semantic Caching"
+    },
+    "L5_Safety": {
+        "path": L5_SAFETY_DIR,
+        "rank": 5,
+        "role": "Membrane: Input/Output Sanitization"
+    },
+    "L6_Observability": {
+        "path": L6_OBSERVABILITY_DIR,
+        "rank": 6,
+        "role": "Truth: Telemetry, Logging, and Audit Trails"
+    },
+    "SharedContracts": {
+        "path": "apps_shared/base_agents",
+        "rank": -1,  # Neutral layer, no rank in hierarchy
+        "role": "Neutral Interfaces: Cross-context contracts"
+    }
+}
+
+# 2. Domain Aggregates (Root Entity Protection)
+DOMAIN_AGGREGATES: Dict[str, Dict] = {
+    "Mission": {
+        "root": "MissionPlan",
+        "entities": ["MissionPhase", "ThoughtChain"],
+        "invariants": ["Phases must be unique", "No cycles in dependency graph"]
+    },
+    "Thought": {
+        "root": "ThoughtChain",
+        "entities": ["ThinkingStep", "Hypothesis", "Revision"],
+        "invariants": ["Steps must be sequential", "Conclusion is mandatory"]
+    }
+}
+
+# 3. Ubiquitous Language (Required Terminology)
+UBIQUITOUS_LANGUAGE: Dict[str, str] = {
+    "Territory": "Canonical folder with defined depth and canon key",
+    "Sovereignty": "State of zero-drift SSOT compliance",
+    "Fission": "Atomic decomposition of large logic files",
+    "Membrane": "Zero-trust input sanitization layer",
+    "Hop": "Atomic unit of agentic execution",
+}

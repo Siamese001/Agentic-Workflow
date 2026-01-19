@@ -4,7 +4,8 @@ import logging
 
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.decorators import standard_heal
 Logger: Any = logging.getLogger(__name__)
 
 class DummyRag(HealerMixin):
@@ -20,6 +21,11 @@ class DummyAgentCard(HealerMixin):
     def __init__(self: Any, agent_id: str) -> None:
         self.agent_id = agent_id
     'TODO: Add docstring.'
+
+    @standard_heal
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 def test_generate_initial_hypotheses_with_evidence(self: Any) -> None:
     """TODO: Add docstring."""

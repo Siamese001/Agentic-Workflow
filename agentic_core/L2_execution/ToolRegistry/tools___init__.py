@@ -1,7 +1,7 @@
 from __future__ import annotations
 """Airlock: tools — Code Transformation and Analysis Tools."""
 
-from agentic_core.L2_execution.ToolRegistry.tools.code_transform import (
+from archives.location_violations.code_transform import (
     CodeTransformArgs,
     TransformOperation,
     TransformResult,

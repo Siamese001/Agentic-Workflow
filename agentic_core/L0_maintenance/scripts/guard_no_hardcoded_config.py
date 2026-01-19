@@ -9,10 +9,11 @@ from pathlib import Path
 from typing import Any, List, Tuple
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from archives.location_violations.sovereign_index import SovereignIndex
 
 exempt: Any = ['__init__.py', '__pycache__']
 allowed_patterns: Any = ['sovereign_config.py', 'tests/', 'test_']
@@ -48,7 +49,7 @@ def check_file(filepath: Path) -> bool:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
             violations.append((line_no, desc, 'Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client'))
-    llm_sdk_patterns: Any = [('\\bimport\\s+openai\\b', 'Direct openai import'), ('\\bfrom\\s+openai\\s+import\\b', 'Direct openai import'), ('\\bimport\\s+anthropic\\b', 'Direct anthropic import'), ('\\bfrom\\s+anthropic\\s+import\\b', 'Direct anthropic import'), ('\\bimport\\s+google\\.generativeai\\b', 'Direct google.generativeai import'), ('\\bgenai\\.GenerativeModel\\b', 'Direct genai.GenerativeModel usage')]
+    llm_sdk_patterns: Any = [('\\bimport\\s+openai\\b', 'Direct openai import'), ('\\bfrom\\s+openai\\s+import\\b', 'Direct openai import'), ('\\bimport\\s+anthropic\\b', 'Direct anthropic import'), ('\\bfrom\\s+anthropic\\s+import\\b', 'Direct anthropic import'), ('\\bimport\\s+google\\.generativeai\\b', 'Deprecated google.generativeai import - use google.genai'), ('\\bgenai\\.GenerativeModel\\b', 'Deprecated genai.GenerativeModel - use genai.Client')]
     for pattern, desc in llm_sdk_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
@@ -114,7 +115,7 @@ def main() -> Any:
         sys.exit(0)
     else:
         print(f'❌ VIOLATIONS: {violations}/{total} files have hardcoded config')
-        print('\nFix by importing: from agentic_core.config.blueprint_sovereign.sovereign_config import config')
+        print('\nFix by importing: from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config')
         sys.exit(1)
 if __name__ == '__main__':
     main()

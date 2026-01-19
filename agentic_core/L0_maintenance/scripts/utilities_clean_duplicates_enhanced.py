@@ -185,6 +185,23 @@ import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Set, Tuple
 
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 Logger = logging.getLogger(__name__)
 
 # Configure logging
@@ -206,7 +223,7 @@ if sys.platform == "win32":
 excluded_dirs = {
     '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
     'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs',
-    'archives', 'data',
+    ARCHIVES_DIR, 'data',
 }
 
 # NAMING FIXED: EXCLUDED_FILES → excluded_files

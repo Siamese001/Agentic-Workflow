@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Autonomy Compliance Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js" 
+            onerror="handlePlotlyLoadError()"></script>
+    <script>
+        // Fallback for offline use - detect if Plotly failed to load
+        function handlePlotlyLoadError() {
+            console.warn('Plotly.js failed to load from CDN. Dashboard will work in limited mode.');
+            window.PLOTLY_OFFLINE = true;
+        }
+        
+        // Check if Plotly loaded after page load
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof Plotly === 'undefined') {
+                window.PLOTLY_OFFLINE = true;
+                console.warn('Dashboard running in offline mode - charts disabled');
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/meta-learning.css">
+    <style>
+
+        /* Remaining inline styles - minimal overrides */
+        /* Most styles moved to css/layout.css and css/components.css */
+    </style>
+</head>
+<body>
+    <!-- Refresh Controls -->
+    <div class="refresh-controls">
+        <button class="refresh-button" onclick="manualRefresh()">🔄 Refresh Now</button>
+        <div class="refresh-status">
+            <div class="refresh-indicator"></div>
+            <span id="refreshStatus">Auto-refresh: 30s</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🎯 Autonomy Compliance Dashboard</h1>
+            <p class="subtitle">Portfolio-wide health, healing capabilities, test coverage, and complexity metrics</p>
+            <div class="timestamp" id="lastUpdated"></div>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="nav-tabs">
+                <a href="#" class="nav-tab" data-target="executive" onclick="openTab(event, 'executive')">📊 Strategic Health</a>
+                <a href="#" class="nav-tab active" data-target="runtime" onclick="openTab(event, 'runtime')">⚡ Live Runtime</a>
+                <a href="#" class="nav-tab" data-target="recommendations" onclick="openTab(event, 'recommendations')">Prioritized Recommendations</a>
+                <a href="#" class="nav-tab" data-target="interview" onclick="openTab(event, 'interview')">Interview Prep</a>
+            </div>
+
+            <!-- Executive Dashboard Tab -->
+            <div id="executive-content" class="tab-content" style="display:none;">
+                
+                <!-- Semantic Retrieval Metrics -->
+                <div class="kpi-grid" id="cognitiveGrid" style="margin-bottom: 25px;">
+                    <div class="kpi-box success">
+                        <div class="kpi-label">🧠 Semantic Reuse Rate</div>
+                        <div class="kpi-value" id="reuseRate">--%</div>
+                        <div class="kpi-subtext">Efficiency of Memory Retrieval vs Generative Synthesis</div>
+                    </div>
+                    <div class="kpi-box primary">
+                        <div class="kpi-label">🎯 Retrieval Confidence</div>
+                        <div class="kpi-value" id="retrievalConfidence">0.00</div>
+                        <div class="kpi-subtext">Avg Cosine Similarity Score (Pinecone)</div>
+                    </div>
+                </div>
+                
+                <!-- Global Alert Banner for Critical Outliers -->
+                <div id="outlierAlertBanner" style="display:none; margin-bottom:25px;">
+                    <div class="chart-card" style="border: 2px solid var(--danger); background: #fef2f2;">
+                        <div class="chart-header" style="background: var(--danger); color: white; padding: 10px 20px;">
+                            <div class="chart-title" style="color: white; display: flex; align-items: center; gap: 10px;">
+                                <span>⚠️ CRITICAL ARCHITECTURAL GAPS</span>
+                                <span id="outlierCountBadge" style="background: white; color: var(--danger); padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 800;">0</span>
+                            </div>
+                        </div>
+                        <div class="chart-body" style="padding: 15px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div id="healthAlerts" style="border-right: 1px solid #fee2e2; padding-right: 20px;">
+                                    <h4 style="color: var(--danger); margin-bottom: 10px; font-size: 0.9em; text-transform: uppercase;">Health & Autonomy Gaps (@0%)</h4>
+                                    <ul id="healthAlertList" style="font-size: 0.85em; color: #991b1b; padding-left: 20px;"></ul>
+                                </div>
+                                <div id="qualityAlerts">
+                                    <h4 style="color: var(--danger); margin-bottom: 10px; font-size: 0.9em; text-transform: uppercase;">Quality & Schema Gaps (@0%)</h4>
+                                    <ul id="qualityAlertList" style="font-size: 0.85em; color: #991b1b; padding-left: 20px;"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategic Observations Section -->
+                <div class="charts-grid full-width" style="margin-bottom:20px;">
+                    <div class="chart-card" style="border-left: 4px solid var(--primary);">
+                        <div class="chart-header">
+                            <div class="chart-title" style="font-size:1.6em;">📋 Strategic Observations & Prioritized Actions</div>
+                            <div class="chart-subtitle">Macro-level architectural recommendations + metric-focused improvements</div>
+                        </div>
+                        <div class="chart-body">
+                            <div style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr;">
+                                <!-- Macro Observations -->
+                                <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 20px; border-radius: 12px; border: 1px solid #bae6fd;">
+                                    <h3 style="color: #0369a1; margin-bottom: 15px; font-size: 1.2em;">🏗️ Macro Observations</h3>
+                                    <div id="macroObservations" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                                </div>
+                                <!-- Metric-Focused Observations -->
+                                <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 20px; border-radius: 12px; border: 1px solid #bbf7d0;">
+                                    <h3 style="color: #15803d; margin-bottom: 15px; font-size: 1.2em;">📊 Metric-Focused Observations</h3>
+                                    <div id="metricObservations" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-grid" id="kpiGrid"></div>
+                
+                <!-- Code Quality Table -->
+                <div class="kpi-grid" id="codeQualityGrid"></div>
+            </div>
+
+            <!-- Prioritized Recommendations Tab -->
+            <div id="recommendations-content" class="tab-content" style="display:none;">
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Top 10 Prioritized Windsurf Recommendations</div>
+                            <div class="chart-subtitle">Ranked by multi-dimensional urgency • Click file links to open directly in VS Code for windsurf diffs</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="recommendationsList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));"></div>
+                            <p style="margin-top: 30px; font-style: italic; color: var(--light-text);">
+                                These recommendations teach autonomy interdependencies: missing super().heal_repository() calls create invocation gaps; 
+                                insufficient tests block safe hardening; high complexity raises risk. Apply diffs → re-run report → watch health rise.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Runtime Tab -->
+            <div id="runtime-content" class="tab-content">
+                <div style="background:#eff6ff; padding:16px; border-radius:8px; margin-bottom:20px; border-left:4px solid #2563eb;">
+                    <p style="margin:0; font-size:0.95em; color:#1e40af; line-height:1.6;">
+                        <strong>Live Runtime Dashboard:</strong> Real-time observability into the agentic system during execution. Monitor agent progress, track meta-learning improvements, analyze cache performance, and debug issues as they happen. All data updates automatically every 2 seconds from the runtime API.
+                    </p>
+                </div>
+                <!-- Live Execution Status Section -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">🔴 Live Execution Status</div>
+                            <div class="chart-subtitle">Real-time heal mode progress from runtime_state.json</div>
+                            <div style="font-size:0.85em; color:#6b7280; margin-top:4px; font-style:italic;">
+                                Purpose: Shows which agent is currently executing and overall progress. Critical for monitoring long-running heal operations and identifying stuck agents.
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <p><strong>Status:</strong> <span id="liveStatus" style="font-weight:600;">Idle</span></p>
+                            <p><strong>Current Agent:</strong> <span id="liveAgent">--</span> (<span id="liveLayer">--</span>)</p>
+                            <p><strong>Progress:</strong></p>
+                            <div style="margin-top:8px; background:#e5e7eb; border-radius:4px; overflow:hidden; width:100%;">
+                                <div id="progressBar" style="height:24px; background:#2563eb; width:0%; text-align:center; color:white; font-weight:600; line-height:24px; transition: width 0.3s ease;">0%</div>
+                            </div>
+                            <p style="margin-top:12px;"><strong>Meta-Learning:</strong> <span id="liveMeta">Inactive</span></p>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">📋 Execution Sequence</div>
+                            <div class="chart-subtitle">Agent execution order with status indicators</div>
+                            <div style="font-size:0.85em; color:#6b7280; margin-top:4px; font-style:italic;">
+                                Purpose: Displays the planned execution order and completion status. Essential for understanding workflow dependencies and tracking which agents have completed successfully.
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <div style="max-height:250px; overflow-y:auto;">
+                                <table style="width:100%; border-collapse:collapse;">
+                                    <thead>
+                                        <tr style="background:#f1f5f9; position:sticky; top:0;">
+                                            <th style="text-align:left; padding:8px;">#</th>
+                                            <th style="text-align:left; padding:8px;">Agent → Target</th>
+                                            <th style="text-align:center; padding:8px;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orderTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-Time Event Log -->
+                <div class="charts-grid full-width" style="margin-top:20px;">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">📜 Real-Time Event Log</div>
+                            <div class="chart-subtitle">Reverse chronological • Color-coded by event type</div>
+                            <div style="font-size:0.85em; color:#6b7280; margin-top:4px; font-style:italic;">
+                                Purpose: Captures all system events in chronological order. Use this for debugging issues, understanding execution flow, and seeing the complete timeline of what happened.
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="eventLog" style="height:400px; overflow-y:scroll; background:#1f2937; color:#f3f4f6; padding:16px; border-radius:8px; font-family:monospace; font-size:0.9em; scrollbar-width:thin; scrollbar-color:#4b5563 #1f2937;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Original KPI Grid -->
+                <div class="kpi-grid" style="margin-top:20px;">
+                    <div class="kpi-box warning">
+                        <div class="kpi-label">⏱️ API Latency (Gemini)</div>
+                        <div class="kpi-value" id="geminiLatency">--ms</div>
+                    </div>
+                    <div class="kpi-box warning">
+                        <div class="kpi-label">⏱️ API Latency (Pinecone)</div>
+                        <div class="kpi-value" id="pineconeLatency">--ms</div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">🧠 Meta-Learning Experiences</div>
+                        <div class="kpi-value" id="exp-count">--</div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">🔎 Patterns Extracted</div>
+                        <div class="kpi-value" id="pattern-count">--</div>
+                    </div>
+                </div>
+                <div class="chart-card" style="margin-top: 20px;">
+                    <div class="chart-header">
+                        <div class="chart-title">📟 Live Sovereign Log</div>
+                        <div class="chart-subtitle">Real-time telemetry stream from Redis</div>
+                        <div style="font-size:0.85em; color:#6b7280; margin-top:4px; font-style:italic;">
+                            Purpose: Terminal-style log showing all system events as they stream in. Provides raw, unfiltered visibility into system behavior for deep debugging and monitoring.
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <pre id="liveLog" style="height: 400px; background: #000; color: #0f0; padding: 15px; overflow-y: scroll; font-family: monospace; scrollbar-width: thin; scrollbar-color: #0f0 #000;"></pre>
+                    </div>
+                </div>
+
+                <!-- Phase 5: Meta-Learning Activity Section -->
+                <div class="meta-learning-section" style="margin-top: 30px;">
+                    <h2 style="font-size: 1.4em; margin-bottom: 8px;">🧠 Meta-Learning Activity</h2>
+                    <p style="font-size:0.9em; color:#6b7280; margin-bottom:16px; font-style:italic;">
+                        Purpose: Tracks how the system learns from experience and adapts its reasoning strategies. Monitor experience accumulation, pattern extraction, and strategy weight evolution to ensure continuous improvement.
+                    </p>
+                    
+                    <div class="charts-grid">
+                        <!-- Meta-Learning Stats -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📊 Meta-Learning Statistics</div>
+                                <div class="chart-subtitle">Experience buffer and pattern extraction metrics</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="meta-stats"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Strategy Weights -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">⚖️ Strategy Weights</div>
+                                <div class="chart-subtitle">CoT, ToT, ReAct, Reflection weights</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="strategy-weights"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-grid" style="margin-top: 16px;">
+                        <!-- Experience Stream -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📜 Experience Stream</div>
+                                <div class="chart-subtitle">Recent experiences with reward signals</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="experience-stream" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pattern Timeline -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">🔍 Pattern Extraction Timeline</div>
+                                <div class="chart-subtitle">Extracted patterns from experience replay</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="pattern-timeline" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 5: Redis Cache Activity Section -->
+                <div class="redis-section" style="margin-top: 30px;">
+                    <h2 style="font-size: 1.4em; margin-bottom: 8px;">💾 Redis Cache Activity</h2>
+                    <p style="font-size:0.9em; color:#6b7280; margin-bottom:16px; font-style:italic;">
+                        Purpose: Monitors Redis cache performance and operation patterns. High hit rates indicate efficient caching; frequent misses suggest opportunities for optimization or cache warming.
+                    </p>
+                    
+                    <div class="charts-grid">
+                        <!-- Redis Stats -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📈 Operation Statistics</div>
+                                <div class="chart-subtitle">GET/SET/DELETE counts and hit rate</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="redis-stats"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Redis Operation Log -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📋 Recent Operations</div>
+                                <div class="chart-subtitle">Last 20 cache operations</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="redis-log" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 5: Pinecone Vector Operations Section -->
+                <div class="pinecone-section" style="margin-top: 30px;">
+                    <h2 style="font-size: 1.4em; margin-bottom: 8px;">🔍 Pinecone Vector Operations</h2>
+                    <p style="font-size:0.9em; color:#6b7280; margin-bottom:16px; font-style:italic;">
+                        Purpose: Tracks vector storage and similarity search operations. Monitor query performance and similarity scores to ensure effective semantic search and knowledge retrieval.
+                    </p>
+                    
+                    <div class="charts-grid">
+                        <!-- Pinecone Stats -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📊 Vector Storage Statistics</div>
+                                <div class="chart-subtitle">Upsert/Query counts and similarity scores</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="pinecone-stats"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pinecone Query Results -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">🔎 Recent Queries</div>
+                                <div class="chart-subtitle">Last 10 similarity searches</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="pinecone-queries" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 5: Agent Execution Flow Section -->
+                <div class="execution-section" style="margin-top: 30px;">
+                    <h2 style="font-size: 1.4em; margin-bottom: 8px;">⚡ Agent Execution Flow</h2>
+                    <p style="font-size:0.9em; color:#6b7280; margin-bottom:16px; font-style:italic;">
+                        Purpose: Visualizes agent execution across architectural layers (L6→L0). Analyze execution timing, success rates, and layer progression to identify bottlenecks and optimize workflow efficiency.
+                    </p>
+                    
+                    <!-- Layer Flow Diagram -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">🔄 Layer Progression</div>
+                            <div class="chart-subtitle">L6 → L0 execution flow</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="layer-flow"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-grid" style="margin-top: 16px;">
+                        <!-- Execution Summary -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📊 Execution Summary</div>
+                                <div class="chart-subtitle">Success/failure rates and timing</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="execution-summary"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Execution Timeline -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">📈 Execution Timeline</div>
+                                <div class="chart-subtitle">Agent execution durations</div>
+                            </div>
+                            <div class="chart-body">
+                                <div id="execution-timeline" class="scrollable-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interview Prep Tab -->
+            <div id="interview-content" class="tab-content" style="display:none;">
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title" style="font-size:1.6em;">Autonomy Interview Question Prompts</div>
+                            <div class="chart-subtitle">15 common questions tied to dashboard metrics • Top 5 prioritized by current weak signals • Practice articulating concepts</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="interviewQuestions" style="display: grid; gap: 20px;"></div>
+                            <p style="margin-top: 30px; font-style: italic; color: var(--text-light);">
+                                Use these to prepare: Explain metrics with analogies (e.g., healing as immune system). Hover cards for full sample answers.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drill-Down Modal -->
+    <div id="drillModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:var(--card-bg); border-radius:12px; max-width:90%; max-height:90%; width:800px; overflow:hidden; box-shadow:var(--shadow);">
+            <div class="chart-header" style="padding:20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
+                <div>
+                    <div class="chart-title" id="modalTitle" style="font-size:1.6em;"></div>
+                    <div class="chart-subtitle" id="modalSubtitle"></div>
+                </div>
+                <button onclick="document.getElementById('drillModal').style.display='none'" style="background:none; border:none; font-size:1.8em; cursor:pointer; color:var(--text-light);">&times;</button>
+            </div>
+            <div class="chart-body" style="padding:20px; max-height:70vh; overflow-y:auto;">
+                <div id="modalContent"></div>
+                <p style="margin-top:20px; font-style:italic; color:var(--text-light);">
+                    Click links → open in VS Code → add HealerMixin or super().heal_repository() calls<br>
+                    Re-run report to validate invocation jump
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load SSOT Constants FIRST -->
+    <script src="js/constants/dashboard-constants.js?v=20260116151200"></script>
+
+    <!-- Load Data Files (file:// protocol compatible) -->
+    <script src="data/dashboard_data.js?v=20260116095800"></script>
+    <script src="data/agent_data.js?v=20260116095800"></script>
+    <script src="data/recommendations.js?v=20260116095800"></script>
+    <script src="data/observations.js?v=20260116095800"></script>
+
+    <!-- Load Utility Modules -->
+    <script src="js/utils/random-utils.js"></script>
+    <script src="js/utils/color-utils.js"></script>
+    <script src="js/utils/math-utils.js"></script>
+    <script src="js/utils/format-utils.js"></script>
+
+    <!-- Load Renderer Modules -->
+    <script src="js/renderers/modal-renderer.js"></script>
+    <script src="js/renderers/table-renderer.js"></script>
+    <script src="js/renderers/kpi-renderer.js"></script>
+    <script src="js/renderers/content-renderer.js"></script>
+
+    <!-- Load Controller Modules -->
+    <script src="js/controllers/tab-controller.js"></script>
+    <script src="js/controllers/filter-controller.js"></script>
+    <script src="js/controllers/refresh-controller.js"></script>
+    <script src="js/controllers/runtime-controller.js"></script>
+
+    <!-- Phase 5: Meta-Learning Components -->
+    <script src="js/components/meta-learning-panel.js"></script>
+    <script src="js/components/redis-monitor.js"></script>
+    <script src="js/components/pinecone-monitor.js"></script>
+    <script src="js/components/execution-flow.js"></script>
+    <script src="js/controllers/meta-learning-controller.js"></script>
+
+    <!-- Load Main Orchestrator -->
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

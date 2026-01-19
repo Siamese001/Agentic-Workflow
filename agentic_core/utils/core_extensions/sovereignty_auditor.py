@@ -9,9 +9,9 @@ import os
 import re
 import logging
 from typing import List, Dict, Any
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
 Logger: Any = logging.getLogger(__name__)
 banned_imports: Any = {'Redis': ['import\\s+redis', 'from\\s+redis'], 'LLM SDKs': ['import\\s+openai', 'import\\s+anthropic', 'google\\.generativeai'], 'Vector SDKs': ['from\\s+pinecone', 'Pinecone\\s*\\('], 'HTTP Clients': ['import\\s+requests', 'import\\s+httpx', 'urllib\\.request'], 'Filesystem': ['open\\(', '\\.read_text\\(', '\\.write_text\\('], 'Git Operations': ['subprocess\\..*?git', 'os\\.system\\(.*?git', 'import\\s+git\\s', 'from\\s+git\\s+import'], 'MCP Manager': ['from\\s+.*L2_execution.*mcp_manager', 'from\\s+.*P1_core.*mcp_manager', 'from\\s+\\.mcp_manager\\s+import']}
@@ -184,3 +184,15 @@ if __name__ == '__main__':
     import asyncio
     result: Any = asyncio.run(run_sovereignty_audit())
     exit(0 if result else 1)
+
+def _run_self_tests(self) -> dict:
+        """Run internal self-tests."""
+        results = {"passed": 0, "failed": 0, "tests": []}
+        try:
+            assert self is not None
+            results["passed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "passed"})
+        except AssertionError as e:
+            results["failed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+        return results

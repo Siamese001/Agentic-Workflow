@@ -8,11 +8,11 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealerAgent
+from agentic_core.L5_safety.validators.HierarchyHealerAgent import HierarchyHealerAgent
 
 
 class MissionPreflight:

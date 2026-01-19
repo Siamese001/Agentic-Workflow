@@ -6,10 +6,8 @@ GEMINI-ONLY policy — forbidden providers auto-blocked.
 import logging
 from typing import Dict, List
 
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

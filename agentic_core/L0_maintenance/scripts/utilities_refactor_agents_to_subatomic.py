@@ -8,6 +8,7 @@ This script systematically updates all agent files in agentic_core/agents/.
 import logging
 import re
 from pathlib import Path
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 # NAMING FIXED: AGENT_FILES → agent_files
 agent_files = [
@@ -24,7 +25,7 @@ agents_dir = Path("c:/Git/Agentic-Workflow/agentic_core/agents")
 
 def add_subatomic_imports(content: str) -> str:
     """Add Sub-Atomic Engine imports if not present."""
-    import_line = "from apps_shared.canon_validator_agentic_v2 import get_subatomic_engine, get_safety_guardrail, get_fission_manager"
+    import_line = "from apps_shared.canon_validator_agentic_v2_1 import get_subatomic_engine, get_safety_guardrail, get_fission_manager"
     
     if import_line in content:
         return content
