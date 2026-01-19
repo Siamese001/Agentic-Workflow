@@ -1,6 +1,6 @@
 {
   "status": "idle",
-  "start_time": "2026-01-19T05:56:22.079891",
+  "start_time": "2026-01-19T06:39:47.567193",
   "end_time": null,
   "current_agent": null,
   "current_layer": null,
@@ -19,17 +19,17 @@
   "completed_agents": [],
   "events": [
     {
-      "time": "2026-01-19T05:56:22.079891",
+      "time": "2026-01-19T06:39:47.567193",
       "type": "info",
       "message": "Heal mode started (DRY-RUN) - Unified Engine"
     },
     {
-      "time": "2026-01-19T05:56:22.079891",
+      "time": "2026-01-19T06:39:47.567193",
       "type": "meta",
       "message": "Meta-learning ACTIVE"
     },
     {
-      "time": "2026-01-19T05:56:24.900926",
+      "time": "2026-01-19T06:39:49.867020",
       "type": "info",
       "message": "Heal mode completed \u2014 Unified Engine (PARTIAL)"
     }
@@ -78,7 +78,7 @@
       "status": "PASS",
       "fixes": 0,
       "violations": 0,
-      "duration_ms": 2026.8619060516357
+      "duration_ms": 1664.6833419799805
     },
     {
       "agent": "TwoPhaseDeduplicationAgent_PhaseA",
@@ -91,15 +91,15 @@
       "agent": "HygieneGuardianAgent",
       "status": "FAIL",
       "fixes": 0,
-      "violations": 64,
-      "duration_ms": 625.1647472381592
+      "violations": 61,
+      "duration_ms": 507.4598789215088
     },
     {
       "agent": "NamingAgent",
       "status": "ERROR",
       "fixes": 0,
       "violations": 0,
-      "duration_ms": 25.1007080078125
+      "duration_ms": 7.279634475708008
     },
     {
       "agent": "LocationAgent",
