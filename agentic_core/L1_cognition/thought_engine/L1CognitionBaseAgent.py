@@ -56,12 +56,26 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         if cls._registry_built:
             return
         from agentic_core.canon_agents_core import SystemArchitect
-        from archives.void_violations.PatternEnforcerAgent import PatternEnforcerAgent
-        from archives.void_violations.DocumentationAgent import DocumentationAgent
         from agentic_core.canon_agents_quality_1 import NamingAgent, SafetyInspectorAgent
-        from archives.void_violations.BudgetAgent import BudgetAgent
-        from archives.void_violations.TypeMechanicAgent import TypeMechanicAgent
         from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
+        
+        # Archived agents - use stubs for backward compatibility
+        try:
+            from agentic_core.L5_safety.validators.PatternEnforcerAgent import PatternEnforcerAgent
+        except ImportError:
+            PatternEnforcerAgent = None
+        try:
+            from agentic_core.L5_safety.validators.DocumentationAgent import DocumentationAgent
+        except ImportError:
+            DocumentationAgent = None
+        try:
+            from agentic_core.L5_safety.validators.BudgetAgent import BudgetAgent
+        except ImportError:
+            BudgetAgent = None
+        try:
+            from agentic_core.L5_safety.validators.TypeMechanicAgent import TypeMechanicAgent
+        except ImportError:
+            TypeMechanicAgent = None
         
         # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
         import importlib

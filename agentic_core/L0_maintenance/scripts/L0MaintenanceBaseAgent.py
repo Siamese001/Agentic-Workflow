@@ -25,7 +25,14 @@ from typing import Any, Dict
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
-from archives.naming_violations.l0_delegation_testing_mixin import L0DelegationTestingMixin
+
+# L0DelegationTestingMixin - archived, use stub for backward compatibility
+try:
+    from agentic_core.utils.core_extensions.l0_delegation_testing_mixin import L0DelegationTestingMixin
+except ImportError:
+    class L0DelegationTestingMixin:
+        """Stub mixin for L0 delegation testing - original archived."""
+        pass
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,

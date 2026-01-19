@@ -695,6 +695,65 @@ def validate_no_duplicate_prefix(filename: str) -> tuple[bool, str]:
 DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset({'runtime_shared', 'legacy_code', 'legacy_engines', 'archives', 'stubs', 'examples'})
 PYTHON_STDLIB_MODULES: frozenset[str] = frozenset({'os', 'sys', 'pathlib', 'logging', 'asyncio', 'typing', 'dataclasses', 'collections', 'json', 're', 'datetime', 'functools', 'itertools', 'abc', 'enum', 'contextlib', 'threading', 'time', 'random', 'math', 'urllib', 'http', 'socket', 'subprocess', 'shutil', 'hashlib', 'uuid', 'copy', 'io', 'traceback', 'inspect', 'importlib', 'warnings', 'pickle'})
 ROOT_WHITELIST: set[str] = set(SOVEREIGN_REGISTRY.keys())
+
+# ============================================================================
+# GLOBAL EXCLUDED DIRECTORIES - Production Lens SSOT
+# ============================================================================
+GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset({
+    # Build/cache directories
+    '__pycache__', '.pytest_cache', '.mypy_cache', 'build', 'dist', '.eggs',
+    # Version control
+    '.git', '.svn', '.hg',
+    # Virtual environments
+    '.venv', 'venv', 'env', '.env', 'node_modules',
+    # Coverage/reports
+    'coverage_html', 'htmlcov', '.coverage', 'reports',
+    # Archives and backups
+    'archives', '.sovereign_healing_backup',
+    # Test directories (Production Lens)
+    'tests',
+})
+
+
+def is_path_allowed(path_str: str) -> bool:
+    """
+    Check if a path is within an allowed sovereign territory.
+    
+    This function validates that a path starts with one of the registered
+    sovereign roots (from SOVEREIGN_REGISTRY), ensuring nested paths like
+    'agentic_core/utils' are correctly recognized as valid.
+    
+    Args:
+        path_str: Path string relative to project root (e.g., 'agentic_core/utils')
+        
+    Returns:
+        True if path is within a sovereign territory, False otherwise
+    """
+    from pathlib import Path
+    path = Path(path_str)
+    parts = path.parts
+    
+    if not parts:
+        return False
+    
+    # Check if root folder is in sovereign registry
+    root_folder = parts[0]
+    if root_folder not in SOVEREIGN_REGISTRY:
+        return False
+    
+    # Validate nested path is within allowed subfolders
+    registry_entry = SOVEREIGN_REGISTRY[root_folder]
+    if len(parts) > 1:
+        subfolder = parts[1]
+        allowed_subfolders = registry_entry.get('subfolders', [])
+        if allowed_subfolders and subfolder not in allowed_subfolders:
+            # Check if it's a special case (e.g., __init__.py at root)
+            if not subfolder.endswith('.py'):
+                return False
+    
+    return True
+
+
 GRAVITY_CONFIG: Any = {'enabled': True, 'UPSTREAM_SOVEREIGN_ROOTS': ['agentic_core'], 'downstream_domains': ['apps_rg', 'apps_lic', 'apps_shared', 'tests'], 'exemptions': []}
 GRAVITY_SURGERY_ENABLED: Any = GRAVITY_CONFIG['enabled']
 UPSTREAM_SOVEREIGN_ROOTS: Any = frozenset(GRAVITY_CONFIG['UPSTREAM_SOVEREIGN_ROOTS'])

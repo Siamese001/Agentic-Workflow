@@ -7,7 +7,7 @@ while delegating the specific "what to run" logic to injected strategies.
 
 USAGE:
     from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
-    from archives.void_violations.healing_strategy import HealingStrategy
+    from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
     
     strategy = HealingStrategy(project_root=Path.cwd())
     orchestrator = UnifiedOrchestratorAgent(strategy=strategy)
