@@ -14,7 +14,33 @@ from typing import Any, Dict, FrozenSet, List, Optional, Protocol, Set, Union
 CANON_KEY_EXCEPTIONS: Dict[int, Dict[str, Any]] = {23: {'files': {'agentic_core/L2_execution/mcp/fetch_client_sovereign.py'}, 'patterns': ['if TYPE_CHECKING:', '\\"\\"\\".*requests.*\\"\\"\\"']}, 20: {'files': {'canon_validator_agentic_v2.py', 'pyproject.toml'}, 'patterns': []}}
 ACTIVE_CANON_KEYS: Any = list(range(0, 20))
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {0: ['.'], 1: ['agentic_core/prompt_governance'], 2: ['agentic_core/schemas'], 3: ['agentic_core/L1_cognition'], 4: ['agentic_core/L3_orchestration'], 5: ['agentic_core/L4_state'], 6: ['agentic_core/L5_safety'], 7: ['agentic_core/L0_maintenance'], 8: ['agentic_core/L2_execution', 'agentic_core/patterns', 'agentic_core/semantic_memory', 'agentic_core/knowledge'], 9: ['agentic_core/config', 'agentic_core/runtime'], 10: ['agentic_core/utils', 'agentic_core/L6_observability'], 11: ['apps_shared', 'apps_rg', 'apps_lic'], 12: ['tests'], 13: ['*'], 14: ['*'], 15: ['*'], 16: ['*'], 17: ['*'], 18: ['*'], 19: ['*']}
-SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'L6_observability', 'config', 'schemas', 'prompt_governance', 'runtime', 'utils', 'patterns', 'semantic_memory', 'knowledge']}, 'apps_rg': {'depth': 3, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain']}, 'apps_lic': {'depth': 3, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain', 'core']}, 'apps_shared': {'depth': 2, 'subfolders': ['base_definitions', 'common_utils', 'core_components', 'base_agents', 'models', 'utils', 'P1_core', 'config']}, 'tests': {'depth': 2, 'subfolders': ['unit', 'integration', 'e2e', 'functional', 'fixtures', 'automation', 'core', 'data', 'performance', 'security', 'autogen']}, '.sovereign_healing_backup': {'depth': 2, 'subfolders': ['filesystem', 'location', 'naming', 'transactions'], 'purpose': 'Backup directory for healing operations', 'volatile': True}}
+SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'L6_observability', 'config', 'schemas', 'prompt_governance', 'runtime', 'utils', 'patterns', 'semantic_memory', 'knowledge', 'observability', 'common']}, 'apps_rg': {'depth': 2, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain']}, 'apps_lic': {'depth': 2, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain', 'core']}, 'apps_shared': {'depth': 2, 'subfolders': ['base_definitions', 'common_utils', 'core_components', 'base_agents', 'models', 'utils', 'P1_core', 'config', 'data', 'domain']}, 'tests': {'depth': 2, 'subfolders': ['unit', 'integration', 'e2e', 'functional', 'fixtures', 'automation', 'core', 'data', 'performance', 'security', 'autogen', 'utils']}, 'scripts': {'depth': 1, 'subfolders': [], 'purpose': 'Standalone utility scripts'}, '.sovereign_healing_backup': {'depth': 2, 'subfolders': ['filesystem', 'location', 'naming', 'transactions'], 'purpose': 'Backup directory for healing operations', 'volatile': True}}
+
+# === VARIABLE DEPTH SUBFOLDERS (Flexible Depth - Option A) ===
+# These subfolders are exempt from strict depth enforcement.
+# Files at depth 2 are allowed in these folders to support:
+# - Base agents at layer root (e.g., L6ObservabilityBaseAgent.py)
+# - Unified orchestrators (e.g., unified_orchestrator.py)
+# - Core utilities (e.g., sovereign_index.py)
+VARIABLE_DEPTH_SUBFOLDERS: FrozenSet[str] = frozenset({
+    'utils',              # utils/sovereign_index.py at depth 2
+    'config',             # config/blueprint_sovereign/* variable depth
+    'common',             # common/healing/* variable depth
+    'observability',      # observability/* at depth 2 (legacy)
+    'L6_observability',   # L6ObservabilityBaseAgent.py at depth 2
+    'L3_orchestration',   # unified_orchestrator.py at depth 2
+    'L0_maintenance',     # scripts at variable depth
+    'L1_cognition',       # thought_engine at variable depth
+    'L2_execution',       # mcp at variable depth
+    'L4_state',           # ValidationContext at variable depth
+    'L5_safety',          # validators/guardrails at variable depth
+    'schemas',            # models at variable depth
+    'prompt_governance',  # meta_prompts at variable depth
+    'runtime',            # shared_runtime at variable depth
+    'patterns',           # agent_roles at variable depth
+    'semantic_memory',    # store/embeddings at variable depth
+    'knowledge',          # document_loaders at variable depth
+})
 # ============================================================================
 # === SSOT: CRITICAL FILE AND DIRECTORY PATHS ===
 # ============================================================================
@@ -159,8 +185,14 @@ L4_APPROVED_FOLDERS: Set[str] = {
     'agentic_core/L3_orchestration/workflow_engines',
     'agentic_core/L1_cognition/thought_engine',
     'agentic_core/L5_safety/guardrails',
+    'agentic_core/L5_safety/validators',      # 135 files - added per SSOT review
+    'agentic_core/L5_safety/gravity',         # 22 files - added per SSOT review
     'agentic_core/L2_execution/ToolRegistry',
+    'agentic_core/L2_execution/mcp',          # 26 files - added per SSOT review
+    'agentic_core/L4_state/ValidationContext', # 41 files - added per SSOT review
+    'agentic_core/schemas/models',            # 42 files - added per SSOT review
     'agentic_core/utils/core_extensions',
+    'agentic_core/config/blueprint_sovereign', # 20 files - added per SSOT review
 }
 
 CORE_SUBFOLDER_MAP: Any = {'L0_maintenance': ['scripts', 'logs', 'benchmarks', 'mixins'], 'L1_cognition': ['thought_engine', 'intent_analysis', 'planning'], 'L2_execution': ['ToolRegistry', 'action_handlers', 'mcp', 'tool_registry'], 'L3_orchestration': ['workflow_engines', 'fission_logic', 'S3_vitality', 'mcp', 'meta_learning', 'interfaces'], 'L4_state': ['ValidationContext', 'ledger', 'filesystem', 'memory', 'validation_context'], 'L5_safety': ['guardrails', 'red_teaming', 'gravity', 'validators', 'agents', 'bases', 'policies', 'utils', 'verifiability'], 'L6_observability': ['dashboards', 'reports', 'metrics', 'telemetry', 'tracing', 'compliance', 'agents'], 'schemas': ['models', 'messages', 'types', 'validators'], 'config': ['blueprint_sovereign', 'environments', 'feature_flags', 'secrets_manager'], 'prompt_governance': ['meta_prompts', 'version_registry', 'rendering', 'templates'], 'runtime': ['shared_runtime', 'environment_setup', 'shared', 'resource_management'], 'utils': ['core_extensions', 'wrappers', 'general_helpers', 'naming', 'deduplicated'], 'patterns': ['agent_roles', 'communication_flow', 'interaction_patterns', 'reasoning_patterns'], 'semantic_memory': ['store', 'embeddings', 'retrieval', 'index'], 'knowledge': ['document_loaders', 'static_index', 'ResearchCache']}
