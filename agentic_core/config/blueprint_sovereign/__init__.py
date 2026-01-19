@@ -23,33 +23,21 @@ Future Curation Roadmap:
     - Register with relevant L4/L5 systems
 """
 
-# Exports from structure_blueprint
-from .structure_blueprint import (
+# Exports from structure_blueprint (canonical location: L5_safety/validators/)
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-    APPS_RG_SUBFOLDER_MAP,
-    APPS_LIC_SUBFOLDER_MAP,
-    APPS_SHARED_SUBFOLDER_MAP,
-    TESTS_L2_SUBFOLDER_MAP,
     FORBIDDEN_ROOT_FOLDERS,
     FORBIDDEN_FOLDER_PATTERN,
     ACTIVE_CANON_KEYS,
     ROOT_PROTECTED_FILES,
     CANON_KEY_TO_FOLDER_MAP,
-    CANON_SIGNALS,
 )
 
 __all__ = [
     "SOVEREIGN_REGISTRY",
-    "CORE_SUBFOLDER_MAP", 
-    "APPS_RG_SUBFOLDER_MAP",
-    "APPS_LIC_SUBFOLDER_MAP",
-    "APPS_SHARED_SUBFOLDER_MAP",
-    "TESTS_L2_SUBFOLDER_MAP",
     "FORBIDDEN_ROOT_FOLDERS",
     "FORBIDDEN_FOLDER_PATTERN",
     "ACTIVE_CANON_KEYS",
     "ROOT_PROTECTED_FILES",
     "CANON_KEY_TO_FOLDER_MAP",
-    "CANON_SIGNALS",
 ]

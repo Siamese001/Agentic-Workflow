@@ -50,7 +50,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class FilesystemAgent(HealerMixin):
     """
     Autonomous agent for physical filesystem purity.
     Targets technical debt markers in non-Python files with auto-remediation.
@@ -112,16 +112,33 @@ class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
         return violations
 
-    def _determine_archive_subpath(self, file_path: Path) -> Path:
+    def _determine_archive_subpath(self, file_path: Path) -> Optional[Path]:
         """
         AST-based categorization of non-Python files.
         Analyzes all .py files in directory:
+        - Priority 0: Check if file is in valid sovereign territory (DO NOT ARCHIVE)
         - Priority 1: Class/function names (strong signal)
         - Priority 2: Import paths
         - Priority 3: Keyword density (via NamingAgent)
         - Maps to CANON_KEY_TO_FOLDER_MAP paths
         - Fallback: archives/uncategorized/
+        
+        Returns:
+            Path to archive subpath, or None if file should NOT be archived.
         """
+        # [FIX] Priority 0: Check sovereign territory before archiving
+        from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
+        
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            # Check if file is in a valid sovereign territory
+            if is_path_allowed(str(rel_path)):
+                # The file is validly placed according to blueprint, do not archive.
+                Logger.debug(f"[FilesystemAgent] Skipping archive for valid path: {rel_path}")
+                return None
+        except ValueError:
+            pass  # File outside project root, continue with archiving logic
+        
         dir_path = file_path.parent
         py_files = list(dir_path.glob("*.py"))
 
@@ -263,6 +280,15 @@ class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
             # 2. Determine Relocation Path
             archive_subpath = self._determine_archive_subpath(file_path)
+            
+            # [FIX] If archive_subpath is None, file is in valid sovereign territory - skip
+            if archive_subpath is None:
+                action["applied"] = False
+                action["action_taken"] = "SKIPPED: File is in valid sovereign territory"
+                action["reason"] = "is_path_allowed() returned True"
+                actions.append(action)
+                continue
+            
             target_path = archive_subpath / cleaned_name
 
             if target_path.exists():

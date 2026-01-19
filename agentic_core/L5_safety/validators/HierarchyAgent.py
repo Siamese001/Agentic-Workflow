@@ -33,6 +33,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     ROOT_PROTECTED_FILES,
     ALLOWED_DUPLICATE_FILENAMES,
+    VARIABLE_DEPTH_SUBFOLDERS,
 )
 from agentic_core.utils.general_helpers.mission_utils import (
     get_best_target_l1,
@@ -40,7 +41,7 @@ from agentic_core.utils.general_helpers.mission_utils import (
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [MISSION AUDIT] Standardized logging for L4 Ledger consumption
@@ -355,15 +356,66 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             # [FIX] Depth = folder level where file resides, not path length
             # agentic_core/L0_maintenance/scripts/file.md → depth 3 (scripts is level 3)
             depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
+            
+            # [SSOT FIX] Check if this is a variable-depth subfolder (exempt from strict depth check)
+            if root_key == "agentic_core" and len(rel.parts) > 1:
+                subfolder = rel.parts[1]
+                if subfolder in VARIABLE_DEPTH_SUBFOLDERS:
+                    # Allow any depth >= 2 for variable-depth subfolders
+                    if depth >= 2:
+                        continue  # Skip this file - it's in a variable-depth subfolder
+            
             if depth != expected_depth:
                 violations += 1
                 Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {expected_depth}")
                 if self.healing_enabled:
-                    archived += self._archive_depth_violation(file_path, rel, depth, expected_depth, archive_subdir, label)
+                    archived += self._heal_depth_violation(file_path, rel, depth, expected_depth)
         return violations if not self.healing_enabled else archived
 
-    def _archive_depth_violation(self, file_path: Path, rel: Path, depth: int, expected: int, subdir: str, label: str) -> int:
-        """Archive a file for depth violation."""
+    def _heal_depth_violation(self, file_path: Path, rel: Path, depth: int, expected: int) -> int:
+        """
+        Smart depth re-alignment instead of archiving.
+        
+        Strategy:
+        - DEEP Violation (> expected): Flatten by moving up.
+        - SHALLOW Violation (< expected): Nest by adding 'depth_aligned' spacers.
+        """
+        try:
+            if depth > expected:
+                # DEEP: Flatten (move up) - Keep the filename, remove intermediate folders
+                # Logic: Take first 'expected' parts + filename
+                new_parts = rel.parts[:expected] + (rel.parts[-1],)
+                target_path = self.project_root.joinpath(*new_parts)
+                action = "FLATTENED"
+            else:
+                # SHALLOW: Nest (add depth_aligned spacers)
+                deficit = expected - depth
+                spacers = tuple(["depth_aligned"] * deficit)
+                # Logic: Insert spacers before the filename
+                new_parts = rel.parts[:-1] + spacers + (rel.parts[-1],)
+                target_path = self.project_root.joinpath(*new_parts)
+                action = "NESTED"
+            
+            # Safety Check: Don't overwrite existing files without verification
+            if target_path.exists():
+                # Fallback to legacy archive if target exists to prevent data loss
+                return self._legacy_archive_depth_violation(file_path, rel, depth, expected, "collision", "COLLISION")
+
+            # Execute Move
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            file_path.rename(target_path)
+            
+            # Log the healing action
+            Logger.info(f"  [HEALED] {action}: {rel} -> {target_path.relative_to(self.project_root)}")
+            return 1
+            
+        except Exception as e:
+            # Failsafe: If healing fails, log error
+            Logger.error(f"  [ERROR] Healing failed for {rel}: {e}")
+            return 0
+
+    def _legacy_archive_depth_violation(self, file_path: Path, rel: Path, depth: int, expected: int, subdir: str, label: str) -> int:
+        """Legacy archive method - only used as fallback when smart healing has collision."""
         try:
             archive_path = self.archive_root / subdir / rel
             archive_path.parent.mkdir(parents=True, exist_ok=True)
@@ -402,24 +454,22 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 # [FIX] Depth = folder level where file resides, not path length
                 # agentic_core/L0_maintenance/scripts/file.md → depth 3 (scripts is level 3)
                 depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
+                
+                # [SSOT FIX] Check if this is a variable-depth subfolder (exempt from strict depth check)
+                if len(rel.parts) > 1:
+                    subfolder = rel.parts[1]
+                    if subfolder in VARIABLE_DEPTH_SUBFOLDERS:
+                        # Allow any depth >= 2 for variable-depth subfolders
+                        if depth >= 2:
+                            continue  # Skip this file - it's in a variable-depth subfolder
+                
                 if depth != agentic_core_exact_depth:
                     violations += 1
                     Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {agentic_core_exact_depth}")
                     
                     if self.healing_enabled:
-                        try:
-                            archive_path = self.archive_root / "universal_depth" / rel
-                            archive_path.parent.mkdir(parents=True, exist_ok=True)
-                            
-                            header = f"# UNIVERSAL DEPTH VIOLATION — {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-                            header += f"# {rel} was depth {depth}, but MUST be {agentic_core_exact_depth}.\n\n"
-                            
-                            content = file_path.read_text(encoding="utf-8", errors="ignore")
-                            archive_path.write_text(header + content, encoding="utf-8")
-                            file_path.unlink()
-                            archived += 1
-                        except Exception:
-                            pass
+                        # Use smart depth re-alignment instead of archiving
+                        archived += self._heal_depth_violation(file_path, rel, depth, agentic_core_exact_depth)
         
         return violations if not self.healing_enabled else archived
 

@@ -36,6 +36,14 @@ import time
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
+# [SSOT] Import exclusion patterns from the single source of truth
+try:
+    from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
+    _SSOT_EXCLUSIONS_AVAILABLE = True
+except ImportError:
+    _SSOT_EXCLUSIONS_AVAILABLE = False
+    GLOBAL_EXCLUDED_DIRS = None
+
 Logger = logging.getLogger(__name__)
 
 
@@ -58,16 +66,18 @@ class SovereignIndex:
     _instance: Optional[SovereignIndex] = None
     _lock: threading.Lock = threading.Lock()
     
-    # Default exclusion patterns - Production Lens SSOT
+    # Default exclusion patterns - Use SSOT from structure_blueprint if available
     # PRODUCTION LENS: Excludes test directories to focus on production code
-    DEFAULT_EXCLUDED_DIRS: Set[str] = {
-        '__pycache__', '.pytest_cache', '.mypy_cache', 'build', 'dist', '.eggs',
-        '.git', '.svn', '.hg',
-        '.venv', 'venv', 'env', '.env', 'node_modules',
-        'coverage_html', 'htmlcov', '.coverage', 'reports',
-        'archives', '.sovereign_healing_backup',
-        'tests',  # Production Lens - exclude test files from healing scans
-    }
+    DEFAULT_EXCLUDED_DIRS: Set[str] = (
+        set(GLOBAL_EXCLUDED_DIRS) if _SSOT_EXCLUSIONS_AVAILABLE and GLOBAL_EXCLUDED_DIRS else {
+            '__pycache__', '.pytest_cache', '.mypy_cache', 'build', 'dist', '.eggs',
+            '.git', '.svn', '.hg',
+            '.venv', 'venv', 'env', '.env', 'node_modules',
+            'coverage_html', 'htmlcov', '.coverage', 'reports',
+            'archives', '.sovereign_healing_backup',
+            'tests',  # Production Lens - exclude test files from healing scans
+        }
+    )
     
     def __init__(self, project_root: Path) -> None:
         """
@@ -149,7 +159,11 @@ class SovereignIndex:
         
         # Check cache first
         if pattern in self._cache:
+            Logger.info(f"[INDEX] Cache Hit: Pattern '{pattern}' -> {len(self._cache[pattern])} files (from cache)")
             return self._cache[pattern].copy()
+        
+        # Cache miss - need to scan
+        Logger.info(f"[INDEX] Cache Miss: Pattern '{pattern}' -> scanning {len(self._all_files)} indexed files")
         
         # Filter files by pattern
         matched = []
@@ -160,7 +174,7 @@ class SovereignIndex:
         # Cache the result
         self._cache[pattern] = matched
         
-        Logger.debug(f"[INDEX] Pattern '{pattern}' matched {len(matched)} files")
+        Logger.info(f"[INDEX] Disk Scan: Pattern '{pattern}' matched {len(matched)} files (now cached)")
         return matched.copy()
     
     def get_python_files(self) -> List[Path]:
@@ -216,6 +230,22 @@ class SovereignIndex:
         self._cache.clear()
         self._initialized = False
         Logger.debug("[INDEX] Cache invalidated")
+    
+    def force_refresh(self) -> int:
+        """
+        Invalidates the cache and rescans the sovereign territory.
+        
+        Use this after structural changes like archive purges.
+        
+        Returns:
+            Number of files indexed
+        """
+        self._cache.clear()
+        self._all_files.clear()
+        self._initialized = False
+        count = self._scan_filesystem()
+        Logger.info("[INDEX] Structural Purge Detected: Cache invalidated and rebuilt.")
+        return count
     
     def add_exclusion(self, dir_name: str) -> None:
         """
