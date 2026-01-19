@@ -149,69 +149,67 @@ class AnthropicClientWrapper:
 
 # NAMING FIXED: GoogleClientWrapper → GoogleClientWrapper
 class GoogleClientWrapper:
-    """Wrapper for Google client to conform to OpenAI chat.completions.create interface."""
+    """Wrapper for Google client to conform to OpenAI chat.completions.create interface.
+    Updated to use google.genai package (replaces deprecated google-generativeai).
+    """
     def __init__(self):
-        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            raise ValueError("GOOGLE_API_KEY not set")
+        self._client = genai.Client(api_key=api_key)
 
     @property
     def chat(self):
-                    
         return self
 
     @property
     def completions(self):
-                    
         return self
 
     async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
-                    
-        _model = genai.GenerativeModel(model)
-
-        google_messages = []
+        # Build contents for new API
+        contents = []
         for msg in messages:
-            if msg["role"] == "user":
-                google_messages.append({"role": "user", "parts": [msg["content"]]})
-            elif msg["role"] == "assistant":
-                google_messages.append({"role": "model", "parts": [msg["content"]]})
+            role = "user" if msg["role"] == "user" else "model"
+            contents.append({
+                "role": role,
+                "parts": [{"text": msg["content"]}]
+            })
         
-        generation_config = {
-            "temperature": temperature,
-            "top_p": top_p,
-            "max_output_tokens": max_tokens,
-        }
+        # Use new google.genai API
+        from google.genai import types
+        config = types.GenerateContentConfig(
+            temperature=temperature,
+            top_p=top_p,
+            max_output_tokens=max_tokens,
+        )
         
-        response = await _model.generate_content_async(
-            google_messages,
-            generation_config=generation_config,
-            # Google's client doesn't have direct frequency/presence penalty.
-            # Streaming is not handled here as InferenceEngine.infer expects a direct response object.
-            **kwargs
+        response = self._client.models.generate_content(
+            model=model,
+            contents=contents,
+            config=config,
         )
 
         # Convert Google response to an OpenAI-like structure
         class MockChoice:
-                                    
             def __init__(self, content):
                 self.message = type('obj', (object,), {'content': content})()
 
         class MockUsage:
-                                    
             def __init__(self, prompt_tokens, completion_tokens):
                 self.prompt_tokens = prompt_tokens
                 self.completion_tokens = completion_tokens
             def model_dump(self):
-                                                    
                 return {"prompt_tokens": self.prompt_tokens, "completion_tokens": self.completion_tokens, "total_tokens": self.prompt_tokens + self.completion_tokens}
 
-        content = response.text
+        content = response.text if hasattr(response, 'text') else ""
         prompt_tokens = 0
         completion_tokens = 0
         if hasattr(response, 'usage_metadata'):
-            prompt_tokens = response.usage_metadata.prompt_token_count
-            completion_tokens = response.usage_metadata.candidates_token_count
+            prompt_tokens = getattr(response.usage_metadata, 'prompt_token_count', 0)
+            completion_tokens = getattr(response.usage_metadata, 'candidates_token_count', 0)
 
         class MockResponse:
-                                    
             def __init__(self, response_content, usage_input, usage_output):
                 self.choices = [MockChoice(response_content)]
                 self.usage = MockUsage(usage_input, usage_output)
