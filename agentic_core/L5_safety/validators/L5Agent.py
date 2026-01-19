@@ -24,7 +24,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin, HealResult
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
@@ -64,10 +64,10 @@ class L5Agent(HealerMixin, MCPHardenedMixin):
     layer: str = "L5"
     
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs) -> HealResult:
         """Override in subclass to implement healing logic."""
-        super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
-        return {"status": "not_implemented", "agent": self.name, "violations": 0, "fixed": 0}
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, **kwargs)
+        return self._normalize_result({"status": "SKIPPED", "agent": self.name, "violations_found": 0, "violations_fixed": 0})
     
     def _run_self_tests(self) -> Dict[str, Any]:
         """Override in subclass to implement self-tests."""

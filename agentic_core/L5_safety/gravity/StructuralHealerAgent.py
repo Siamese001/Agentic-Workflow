@@ -843,15 +843,16 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         """
         consumers = []
         
-        # [HARDENING] If scope provided, limit search to those directories only
+        # [HARDENING] Phase 4.1: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
         if scope_dirs:
             py_files = []
             for scope_dir in scope_dirs:
                 if scope_dir.exists():
-                    py_files.extend(scope_dir.rglob("*.py"))
+                    py_files.extend(get_python_files(scope_dir))
         else:
-            # Fallback: scan entire project (legacy behavior)
-            py_files = list(self.project_root.rglob("*.py"))
+            # Use ssot_discovery for full project scan
+            py_files = get_python_files(self.project_root)
 
         for file_path in py_files:
             # Performance & Safety: Skip excluded territories (venv, git, etc)
@@ -934,7 +935,9 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         else:
             scan_dir = affected_dir
 
-        for consumer_path in scan_dir.rglob("*.py"):
+        # Phase 4.1: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for consumer_path in get_python_files(scan_dir):
             if consumer_path in old_files or consumer_path == new_file:
                 continue 
 
@@ -1215,10 +1218,10 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             "healing_available": True
         }
         
-        for py_file in self.project_root.rglob("*.py"):
+        # Phase 4.1: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.project_root):
             if any(ex in py_file.parts for ex in SOVEREIGN_EXCLUDED_FOLDERS):
-                continue
-            if "__pycache__" in str(py_file):
                 continue
             
             results["scanned"] += 1

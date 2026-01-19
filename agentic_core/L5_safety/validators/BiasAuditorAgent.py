@@ -54,7 +54,7 @@ class BiasResult:
         """Get high-Severity bias matches."""
         return [m for m in self.matches if m.Severity > 0.7]
 
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin, HealResult
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -241,9 +241,9 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         return recommendations
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs) -> HealResult:
+        """Invoke healing chain via super(). Phase 5: Standardized signature."""
+        return super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, **kwargs)
 
 
 def audit_bias(content: str) -> BiasResult:

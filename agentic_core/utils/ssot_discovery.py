@@ -178,6 +178,38 @@ class FileCache:
             "cache_path": str(self.cache_path),
             "expiry_seconds": self.expiry_seconds
         }
+    
+    def get_timestamp(self) -> float:
+        """
+        Get the cache timestamp.
+        
+        Returns:
+            Unix timestamp of when cache was last updated
+        """
+        return self._data.get("timestamp", 0)
+    
+    def is_stale_for_directory(self, directory: Path) -> bool:
+        """
+        Check if cache is stale compared to directory modification time.
+        
+        Phase 4.1: Auto-invalidation based on directory mtime.
+        
+        Args:
+            directory: Directory to check modification time against
+            
+        Returns:
+            True if directory was modified after cache was created
+        """
+        try:
+            dir_mtime = directory.stat().st_mtime
+            cache_time = self.get_timestamp()
+            
+            if cache_time == 0:
+                return True  # No cache yet
+            
+            return dir_mtime > cache_time
+        except (OSError, IOError):
+            return True  # If we can't stat, assume stale
 
 
 # =============================================================================
@@ -213,10 +245,14 @@ def get_python_files_cached(
     force_refresh: bool = False
 ) -> List[Path]:
     """
-    Get Python files with automatic caching.
+    Get Python files with automatic caching and auto-invalidation.
     
     This is the recommended function for most use cases.
     Uses FileCache for persistent caching across sessions.
+    
+    Phase 4.1: Auto-invalidation based on directory mtime.
+    If the agentic_core directory has been modified since the cache
+    was created, the cache is automatically invalidated.
     
     Args:
         project_root: Root directory to scan
@@ -227,6 +263,12 @@ def get_python_files_cached(
         List of Path objects for all matching Python files
     """
     cache = get_global_cache(project_root)
+    
+    # Phase 4.1: Auto-invalidation based on directory mtime
+    agentic_core_dir = project_root / "agentic_core"
+    if agentic_core_dir.exists() and cache.is_stale_for_directory(agentic_core_dir):
+        Logger.debug("[SSOT_DISCOVERY] Auto-invalidating cache due to directory change")
+        cache.invalidate()
     
     if not force_refresh and cache.is_valid():
         files = cache.get_files()
@@ -512,6 +554,160 @@ def compare_with_rglob(project_root: Path) -> Dict[str, int]:
     }
 
 
+# =============================================================================
+# Phase 6: Extended Data File Discovery
+# =============================================================================
+
+def get_data_files(
+    project_root: Path,
+    extensions: Optional[List[str]] = None,
+    include_tests: bool = False,
+    exclude_dirs: Optional[Set[str]] = None
+) -> List[Path]:
+    """
+    Phase 6: Extended SSOT discovery for non-Python data files.
+    
+    Uses the same FileCache mechanism and backup exclusion logic as get_python_files()
+    to provide consistent, high-performance discovery for JSON, MD, YAML files.
+    
+    Args:
+        project_root: Root directory to scan
+        extensions: List of file extensions to include (default: [".json", ".md", ".yaml", ".yml"])
+        include_tests: If True, include test directories
+        exclude_dirs: Additional directories to exclude (merged with defaults)
+        
+    Returns:
+        List of Path objects for all matching data files
+        
+    Example:
+        >>> json_files = get_data_files(Path("c:/Git/Agentic-Workflow"), extensions=[".json"])
+        >>> len(json_files)  # JSON files excluding backups
+        150
+    """
+    if extensions is None:
+        extensions = [".json", ".md", ".yaml", ".yml"]
+    
+    # Normalize extensions to include leading dot
+    extensions = [ext if ext.startswith('.') else f'.{ext}' for ext in extensions]
+    
+    # Merge default excludes with any additional excludes
+    all_excludes = DEFAULT_EXCLUDE_DIRS.copy()
+    if exclude_dirs:
+        all_excludes.update(exclude_dirs)
+    
+    data_files: List[Path] = []
+    
+    # Ensure project_root is a Path
+    project_root = Path(project_root)
+    
+    for root, dirs, files in os.walk(project_root):
+        root_path = Path(root)
+        
+        # Filter out excluded directories (modifies dirs in-place to prevent traversal)
+        dirs[:] = [d for d in dirs if d not in all_excludes and not d.startswith('.')]
+        
+        for file in files:
+            file_path = root_path / file
+            
+            # Check extension
+            if file_path.suffix.lower() not in extensions:
+                continue
+            
+            # Skip test files if not included
+            if not include_tests:
+                if file.startswith("test_") or file.endswith("_test.json"):
+                    continue
+            
+            data_files.append(file_path)
+    
+    Logger.debug(f"[SSOT_DISCOVERY] Found {len(data_files)} data files with extensions {extensions}")
+    return data_files
+
+
+def get_json_files(
+    project_root: Path,
+    include_tests: bool = False
+) -> List[Path]:
+    """
+    Convenience function to get all JSON files.
+    
+    Args:
+        project_root: Root directory to scan
+        include_tests: If True, include test directories
+        
+    Returns:
+        List of Path objects for JSON files
+    """
+    return get_data_files(project_root, extensions=[".json"], include_tests=include_tests)
+
+
+def get_markdown_files(
+    project_root: Path,
+    include_tests: bool = False
+) -> List[Path]:
+    """
+    Convenience function to get all Markdown files.
+    
+    Args:
+        project_root: Root directory to scan
+        include_tests: If True, include test directories
+        
+    Returns:
+        List of Path objects for Markdown files
+    """
+    return get_data_files(project_root, extensions=[".md"], include_tests=include_tests)
+
+
+def compare_data_files_with_rglob(
+    project_root: Path,
+    extension: str = ".json"
+) -> Dict[str, Any]:
+    """
+    Compare get_data_files() with raw rglob for verification.
+    
+    Phase 6: Zero-loss verification for data file discovery.
+    
+    Args:
+        project_root: Root directory of the project
+        extension: File extension to compare
+        
+    Returns:
+        Dict with 'ssot_count', 'rglob_count', 'delta'
+    """
+    # SSOT discovery (excludes backups)
+    ssot_files = get_data_files(project_root, extensions=[extension])
+    ssot_count = len(ssot_files)
+    ssot_set = set(str(f) for f in ssot_files)
+    
+    # Raw rglob with identical exclusion logic
+    rglob_files = []
+    pattern = f"*{extension}"
+    for data_file in project_root.rglob(pattern):
+        path_parts = data_file.parts
+        skip = False
+        for part in path_parts:
+            if part in DEFAULT_EXCLUDE_DIRS or part.startswith('.'):
+                skip = True
+                break
+        if skip:
+            continue
+        rglob_files.append(data_file)
+    
+    rglob_count = len(rglob_files)
+    rglob_set = set(str(f) for f in rglob_files)
+    
+    only_in_ssot = ssot_set - rglob_set
+    only_in_rglob = rglob_set - ssot_set
+    
+    return {
+        "ssot_count": ssot_count,
+        "rglob_count": rglob_count,
+        "delta": abs(ssot_count - rglob_count),
+        "only_in_ssot": list(only_in_ssot)[:5],
+        "only_in_rglob": list(only_in_rglob)[:5]
+    }
+
+
 __all__ = [
     "get_python_files",
     "get_python_files_cached",
@@ -526,4 +722,9 @@ __all__ = [
     "FileCache",
     "DEFAULT_EXCLUDE_DIRS",
     "LAYER_DIRS",
+    # Phase 6 additions
+    "get_data_files",
+    "get_json_files",
+    "get_markdown_files",
+    "compare_data_files_with_rglob",
 ]

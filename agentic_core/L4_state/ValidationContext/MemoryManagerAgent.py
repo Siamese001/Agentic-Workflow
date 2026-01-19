@@ -270,7 +270,8 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """
         stats: Any = {'base_dir': str(self.base_dir), 'conversations': len(list(self.conversations_dir.glob('*.json'))), 'results': len(list(self.results_dir.glob('*.json'))), 'agent_states': len(list(self.state_dir.glob('*.json'))), 'total_size_mb': 0}
         total_size: Any = 0
-        for file in self.base_dir.rglob('*.json'):
+        from agentic_core.utils.ssot_discovery import get_json_files
+        for file in get_json_files(self.base_dir):
             try:
                 total_size += file.stat().st_size
             except:
