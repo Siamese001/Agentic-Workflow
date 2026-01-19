@@ -1,6 +1,6 @@
 {
   "status": "idle",
-  "start_time": "2026-01-18T18:33:19.181773",
+  "start_time": "2026-01-19T05:56:22.079891",
   "end_time": null,
   "current_agent": null,
   "current_layer": null,
@@ -19,24 +19,19 @@
   "completed_agents": [],
   "events": [
     {
-      "time": "2026-01-18T18:33:19.181773",
+      "time": "2026-01-19T05:56:22.079891",
       "type": "info",
-      "message": "Heal mode started (EXECUTE) - Unified Engine"
+      "message": "Heal mode started (DRY-RUN) - Unified Engine"
     },
     {
-      "time": "2026-01-18T18:33:19.181773",
+      "time": "2026-01-19T05:56:22.079891",
       "type": "meta",
       "message": "Meta-learning ACTIVE"
     },
     {
-      "time": "2026-01-18T18:42:07.752985",
-      "type": "warning",
-      "message": "Mission aborted: Abort triggered after tier: Tier 1: Structural"
-    },
-    {
-      "time": "2026-01-18T18:42:07.752985",
+      "time": "2026-01-19T05:56:24.900926",
       "type": "info",
-      "message": "Heal mode completed \u2014 Unified Engine (FAILED)"
+      "message": "Heal mode completed \u2014 Unified Engine (PARTIAL)"
     }
   ],
   "meta_learning": {
@@ -79,6 +74,13 @@
   },
   "execution_timeline": [
     {
+      "agent": "SyntaxValidatorAgent",
+      "status": "PASS",
+      "fixes": 0,
+      "violations": 0,
+      "duration_ms": 2026.8619060516357
+    },
+    {
       "agent": "TwoPhaseDeduplicationAgent_PhaseA",
       "status": "ERROR",
       "fixes": 0,
@@ -88,23 +90,51 @@
     {
       "agent": "HygieneGuardianAgent",
       "status": "FAIL",
-      "fixes": 7,
-      "violations": 66,
-      "duration_ms": 822.8368759155273
+      "fixes": 0,
+      "violations": 64,
+      "duration_ms": 625.1647472381592
     },
     {
       "agent": "NamingAgent",
-      "status": "PASS",
+      "status": "ERROR",
       "fixes": 0,
       "violations": 0,
-      "duration_ms": 227716.7444229126
+      "duration_ms": 25.1007080078125
     },
     {
       "agent": "LocationAgent",
       "status": "ERROR",
       "fixes": 0,
       "violations": 0,
-      "duration_ms": 300027.8971195221
+      "duration_ms": 0.0
+    },
+    {
+      "agent": "StructuralHealerAgent",
+      "status": "ERROR",
+      "fixes": 0,
+      "violations": 0,
+      "duration_ms": 0.0
+    },
+    {
+      "agent": "GravityEnforcerAgent",
+      "status": "ERROR",
+      "fixes": 0,
+      "violations": 0,
+      "duration_ms": 0.0
+    },
+    {
+      "agent": "TwoPhaseDeduplicationAgent_PhaseB",
+      "status": "ERROR",
+      "fixes": 0,
+      "violations": 0,
+      "duration_ms": 0.0
+    },
+    {
+      "agent": "CodeSSOTEnforcerAgent",
+      "status": "ERROR",
+      "fixes": 0,
+      "violations": 0,
+      "duration_ms": 0.0
     }
   ]
 }
