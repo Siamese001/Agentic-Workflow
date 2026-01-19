@@ -30,6 +30,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 from agentic_core.L5_safety.validators.structure_blueprint import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.ssot_discovery import get_python_files
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -156,13 +157,11 @@ class FileCleanupAgent(SubatomicTestingMixin, HealerMixin):
             if not dir_path.exists():
                 continue
             
-            # Recursively find all files
-            for file_path in dir_path.rglob('*'):
+            # Phase 4: Use ssot_discovery instead of rglob for performance
+            all_files = get_python_files(dir_path, include_tests=True)
+            
+            for file_path in all_files:
                 if not file_path.is_file():
-                    continue
-                
-                # Skip __pycache__ and other system files
-                if '__pycache__' in str(file_path) or file_path.name.startswith('.'):
                     continue
                 
                 filename = file_path.stem  # Without extension

@@ -1,5 +1,5 @@
 """
-SSOT Discovery Module - Phase 1 Foundation
+SSOT Discovery Module - Phase 1 Foundation + Phase 4 Performance Hardening
 
 High-performance, centralized file discovery utility that excludes backup bloat
 and focuses on active code. This replaces scattered rglob/glob usage across the codebase.
@@ -9,29 +9,238 @@ Key Features:
 - Excludes __pycache__, .git, and other non-essential directories
 - Optional test file inclusion
 - Layer-specific file discovery
-- Cached results for repeated queries
+- FileCache for persistent caching (Phase 4)
+- LRU cache for in-memory caching
 
 Usage:
-    from agentic_core.utils.ssot_discovery import get_python_files, get_files_by_layer
+    from agentic_core.utils.ssot_discovery import get_python_files, get_files_by_layer, FileCache
     
     # Get all active Python files
     files = get_python_files(project_root)
     
     # Get files for a specific layer
     l3_files = get_files_by_layer(project_root, "L3")
+    
+    # Use persistent file cache
+    cache = FileCache(project_root / ".file_cache.json")
+    files = cache.get_files() if cache.is_valid() else get_python_files(project_root)
 
 Author: Cascade
 Date: January 19, 2026
 Phase: 1 - Foundation & Zero-Loss Protocols
+Phase 4 Enhancement: FileCache for persistent caching
 """
 from __future__ import annotations
+import json
 import os
+import time
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Any
 from functools import lru_cache
 import logging
 
 Logger = logging.getLogger(__name__)
+
+
+# =============================================================================
+# Phase 4: FileCache - Persistent File Discovery Cache
+# =============================================================================
+
+class FileCache:
+    """
+    Performance Hardening: Caches the repository file map to prevent 
+    repeated scanning of 10k+ backup files.
+    
+    Saves a JSON manifest of Python files to avoid repeated disk I/O.
+    The cache auto-expires after a configurable time period.
+    
+    Usage:
+        cache = FileCache(project_root / ".file_cache.json")
+        
+        if cache.is_valid():
+            files = cache.get_files()
+        else:
+            files = get_python_files(project_root)
+            cache.update([str(f) for f in files])
+    """
+    
+    DEFAULT_EXPIRY_SECONDS = 300  # 5 minutes
+    
+    def __init__(self, cache_path: Path, expiry_seconds: int = DEFAULT_EXPIRY_SECONDS):
+        """
+        Initialize the file cache.
+        
+        Args:
+            cache_path: Path to the JSON cache file
+            expiry_seconds: Cache expiry time in seconds (default: 300)
+        """
+        self.cache_path = Path(cache_path)
+        self.expiry_seconds = expiry_seconds
+        self._data: Dict[str, Any] = self._load()
+    
+    def _load(self) -> Dict[str, Any]:
+        """Load cache from disk if it exists."""
+        if self.cache_path.exists():
+            try:
+                with open(self.cache_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    Logger.debug(f"[FILE_CACHE] Loaded {len(data.get('files', []))} files from cache")
+                    return data
+            except (json.JSONDecodeError, IOError) as e:
+                Logger.warning(f"[FILE_CACHE] Failed to load cache: {e}")
+                return {"timestamp": 0, "files": []}
+        return {"timestamp": 0, "files": []}
+    
+    def is_valid(self, expiry_seconds: Optional[int] = None) -> bool:
+        """
+        Check if the cache is still valid (not expired).
+        
+        Args:
+            expiry_seconds: Override default expiry time
+            
+        Returns:
+            True if cache is valid and not expired
+        """
+        expiry = expiry_seconds or self.expiry_seconds
+        cache_time = self._data.get("timestamp", 0)
+        is_valid = (time.time() - cache_time) < expiry
+        
+        if not is_valid:
+            Logger.debug(f"[FILE_CACHE] Cache expired (age: {time.time() - cache_time:.0f}s)")
+        
+        return is_valid
+    
+    def update(self, files: List[str]) -> None:
+        """
+        Update the cache with a new file list.
+        
+        Args:
+            files: List of file paths as strings
+        """
+        self._data = {
+            "timestamp": time.time(),
+            "files": files,
+            "count": len(files)
+        }
+        
+        try:
+            # Ensure parent directory exists
+            self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(self.cache_path, 'w', encoding='utf-8') as f:
+                json.dump(self._data, f, indent=2)
+            
+            Logger.debug(f"[FILE_CACHE] Updated cache with {len(files)} files")
+        except IOError as e:
+            Logger.warning(f"[FILE_CACHE] Failed to write cache: {e}")
+    
+    def get_files(self) -> List[Path]:
+        """
+        Get the cached file list as Path objects.
+        
+        Returns:
+            List of Path objects from the cache
+        """
+        return [Path(f) for f in self._data.get("files", [])]
+    
+    def invalidate(self) -> None:
+        """
+        Invalidate the cache by setting timestamp to 0.
+        
+        Call this when the repository structure changes.
+        """
+        self._data["timestamp"] = 0
+        
+        # Also delete the cache file
+        if self.cache_path.exists():
+            try:
+                self.cache_path.unlink()
+                Logger.debug("[FILE_CACHE] Cache file deleted")
+            except IOError as e:
+                Logger.warning(f"[FILE_CACHE] Failed to delete cache file: {e}")
+        
+        Logger.debug("[FILE_CACHE] Cache invalidated")
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """
+        Get cache statistics.
+        
+        Returns:
+            Dict with cache stats (age, count, valid)
+        """
+        cache_time = self._data.get("timestamp", 0)
+        age = time.time() - cache_time if cache_time > 0 else -1
+        
+        return {
+            "valid": self.is_valid(),
+            "age_seconds": age,
+            "file_count": len(self._data.get("files", [])),
+            "cache_path": str(self.cache_path),
+            "expiry_seconds": self.expiry_seconds
+        }
+
+
+# =============================================================================
+# Global File Cache Instance
+# =============================================================================
+
+_global_cache: Optional[FileCache] = None
+
+
+def get_global_cache(project_root: Optional[Path] = None) -> FileCache:
+    """
+    Get or create the global file cache instance.
+    
+    Args:
+        project_root: Project root directory (required on first call)
+        
+    Returns:
+        FileCache instance
+    """
+    global _global_cache
+    
+    if _global_cache is None:
+        if project_root is None:
+            raise ValueError("project_root required on first call to get_global_cache()")
+        _global_cache = FileCache(project_root / ".file_cache.json")
+    
+    return _global_cache
+
+
+def get_python_files_cached(
+    project_root: Path,
+    include_tests: bool = False,
+    force_refresh: bool = False
+) -> List[Path]:
+    """
+    Get Python files with automatic caching.
+    
+    This is the recommended function for most use cases.
+    Uses FileCache for persistent caching across sessions.
+    
+    Args:
+        project_root: Root directory to scan
+        include_tests: If True, include test files
+        force_refresh: If True, bypass cache and rescan
+        
+    Returns:
+        List of Path objects for all matching Python files
+    """
+    cache = get_global_cache(project_root)
+    
+    if not force_refresh and cache.is_valid():
+        files = cache.get_files()
+        Logger.debug(f"[SSOT_DISCOVERY] Returning {len(files)} files from cache")
+        return files
+    
+    # Cache miss or forced refresh - do full scan
+    files = get_python_files(project_root, include_tests=include_tests)
+    
+    # Update cache
+    cache.update([str(f) for f in files])
+    
+    return files
+
 
 # Default directories to exclude from all scans
 # These directories contain backup bloat or non-essential files
@@ -305,13 +514,16 @@ def compare_with_rglob(project_root: Path) -> Dict[str, int]:
 
 __all__ = [
     "get_python_files",
+    "get_python_files_cached",
     "get_files_by_layer",
     "get_agent_files",
     "get_mixin_files",
     "get_file_count_by_layer",
     "get_cached_python_files",
+    "get_global_cache",
     "invalidate_cache",
     "compare_with_rglob",
+    "FileCache",
     "DEFAULT_EXCLUDE_DIRS",
     "LAYER_DIRS",
 ]

@@ -144,7 +144,11 @@ class ASTEnforcementMixin:
         total_aliases = 0
         total_pascal = 0
 
-        for path in repo_root.rglob("*.py"):
+        # Phase 4: Use ssot_discovery instead of rglob for performance
+        from agentic_core.utils.ssot_discovery import get_python_files
+        all_files = get_python_files(repo_root)
+        
+        for path in all_files:
             # Filter by target prefixes
             if not any(prefix in str(path) for prefix in target_prefixes):
                 continue
