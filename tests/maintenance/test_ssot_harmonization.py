@@ -177,7 +177,7 @@ def test_duplicate_detector_ssot():
     print("Test 5: DuplicateCodeDetectorAgent SSOT Usage")
     print("=" * 60)
     
-    agent_path = PROJECT_ROOT / "apps_lic/engines/DuplicateCodeDetectorAgent.py"
+    agent_path = PROJECT_ROOT / "apps_shared/utils/DuplicateCodeDetectorAgent.py"
     if not agent_path.exists():
         test_fail("FILE", "DuplicateCodeDetectorAgent.py not found")
         return

@@ -50,7 +50,7 @@ def test_agent_purpose():
     print("RCA Test 1: Agent Purpose and Scope")
     print("=" * 60)
     
-    agent_path = PROJECT_ROOT / "apps_lic/engines/DuplicateCodeDetectorAgent.py"
+    agent_path = PROJECT_ROOT / "apps_shared/utils/DuplicateCodeDetectorAgent.py"
     
     if not agent_path.exists():
         test_fail("FILE_EXISTS", "DuplicateCodeDetectorAgent.py not found in apps_lic")
@@ -100,7 +100,7 @@ def test_dependencies():
     print("RCA Test 2: Dependency Analysis")
     print("=" * 60)
     
-    agent_path = PROJECT_ROOT / "apps_lic/engines/DuplicateCodeDetectorAgent.py"
+    agent_path = PROJECT_ROOT / "apps_shared/utils/DuplicateCodeDetectorAgent.py"
     
     if not agent_path.exists():
         test_fail("FILE_EXISTS", "Agent file not found")
@@ -219,7 +219,7 @@ def test_functional_analysis():
     print("RCA Test 5: Functional Analysis")
     print("=" * 60)
     
-    agent_path = PROJECT_ROOT / "apps_lic/engines/DuplicateCodeDetectorAgent.py"
+    agent_path = PROJECT_ROOT / "apps_shared/utils/DuplicateCodeDetectorAgent.py"
     
     if not agent_path.exists():
         test_fail("FILE_EXISTS", "Agent file not found")
