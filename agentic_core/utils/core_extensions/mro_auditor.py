@@ -36,8 +36,8 @@ class MROAuditor:
         Returns:
             List of error messages (empty if no errors)
         """
-        from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
         
         mro = inspect.getmro(agent_cls)
         errors = []

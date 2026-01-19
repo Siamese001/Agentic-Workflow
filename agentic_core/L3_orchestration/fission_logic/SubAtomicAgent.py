@@ -11,7 +11,7 @@ import ast
 import os
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # NAMING FIXED: SubAtomicAgent → SubAtomicAgent
 class SubAtomicAgent:

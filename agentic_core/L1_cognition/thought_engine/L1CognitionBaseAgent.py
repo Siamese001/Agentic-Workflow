@@ -14,11 +14,11 @@ from dataclasses import dataclass
 from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent  # NEW: Root inheritance
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent  # NEW: Root inheritance
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
@@ -58,7 +58,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         from agentic_core.canon_agents_core import SystemArchitect
         from archives.void_violations.PatternEnforcerAgent import PatternEnforcerAgent
         from archives.void_violations.DocumentationAgent import DocumentationAgent
-        from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
+        from agentic_core.canon_agents_quality_1 import NamingAgent, SafetyInspectorAgent
         from archives.void_violations.BudgetAgent import BudgetAgent
         from archives.void_violations.TypeMechanicAgent import TypeMechanicAgent
         from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent

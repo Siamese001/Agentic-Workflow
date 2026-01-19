@@ -143,7 +143,7 @@ def test_3_roster_deduplication():
     print("=" * 60)
     
     try:
-        from agentic_core.L3_orchestration.discovery_roster_builder import (
+        from archives.location_violations.discovery_roster_builder import (
             build_healing_roster,
             SKIP_AGENTS
         )
@@ -202,7 +202,7 @@ def test_4_fixture_exclusion():
     print("=" * 60)
     
     try:
-        from agentic_core.L0_maintenance.scripts.full_agent_discovery import should_exclude_file
+        from apps_rg.engines.full_agent_discovery import should_exclude_file
         
         # Test paths that should be excluded
         excluded_paths = [
@@ -274,7 +274,7 @@ def test_5_stability_gate_status():
                 print(f"  Confirmed: Temp file has syntax error (as expected)")
             
             # Test that our AST utils handle this gracefully
-            from agentic_core.utils.ast_utils import safe_parse_file
+            from archives.location_violations.ast_utils import safe_parse_file
             
             result = safe_parse_file(temp_path)
             if result is not None:

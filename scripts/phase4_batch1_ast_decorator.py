@@ -42,7 +42,7 @@ EXCLUDED_DIRS = {
     "venv",
 }
 
-STANDARD_HEAL_IMPORT = "from agentic_core.utils.core_extensions.decorators import standard_heal"
+STANDARD_HEAL_IMPORT = "from agentic_core.L5_safety.validators.decorators import standard_heal"
 
 
 def find_python_files(root: Path) -> List[Path]:

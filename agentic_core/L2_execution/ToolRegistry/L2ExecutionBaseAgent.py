@@ -42,7 +42,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from dotenv import load_dotenv
 
 # Core imports
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -51,7 +51,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 # MCPHardenedMixin is now in SovereignBaseAgent - DO NOT import here
 
 # Root inheritance (includes MCPHardenedMixin)
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 

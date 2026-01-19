@@ -67,7 +67,7 @@ class RescueReviewer:
             print('[OK] Archive is empty. Sovereignty is pure.')
             return
         print(f'\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---')
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS, CANON_KEY_TO_FOLDER_MAP
+        from agentic_core.L5_safety.validators.structure_blueprint import CANON_SIGNALS, CANON_KEY_TO_FOLDER_MAP
         for arch_file in self.archive_path.rglob('*.py'):
             rel: Any = arch_file.relative_to(self.archive_path)
             content: Any = arch_file.read_text(encoding='utf-8', errors='ignore')

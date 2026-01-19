@@ -7,7 +7,7 @@ import ast
 import logging
 import subprocess
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 Logger: Any = logging.getLogger(__name__)
 
 def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:

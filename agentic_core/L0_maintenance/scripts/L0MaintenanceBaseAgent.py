@@ -23,11 +23,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 from archives.naming_violations.l0_delegation_testing_mixin import L0DelegationTestingMixin
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -43,7 +43,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 @dataclass

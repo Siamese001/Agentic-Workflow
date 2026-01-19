@@ -29,7 +29,7 @@ Last Updated: 2026-01-16
 import yaml
 from pathlib import Path
 from datetime import datetime
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent

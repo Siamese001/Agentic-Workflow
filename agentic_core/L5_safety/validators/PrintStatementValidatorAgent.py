@@ -14,10 +14,10 @@ import ast
 from pathlib import Path
 from typing import List, Dict, Any
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 @dataclass
 class PrintStatementValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):

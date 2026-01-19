@@ -185,7 +185,7 @@ import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Set, Tuple
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,

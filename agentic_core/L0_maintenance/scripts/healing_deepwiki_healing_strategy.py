@@ -7,15 +7,15 @@ L6 observability self-healing using official DeepWiki MCP.
 import logging
 from typing import List, Dict, Any
 from pathlib import Path
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
+from archives.location_violations.sovereign_index import SovereignIndex
 
 Logger: Any = logging.getLogger(__name__)
 

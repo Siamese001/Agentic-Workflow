@@ -38,7 +38,7 @@ def test_isolation():
     print("Test 1: Isolation Test")
     print("=" * 70)
     
-    from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+    from archives.void_violations.healing_strategy import HealingStrategy
     
     # Create strategy with target_tier=1
     strategy = HealingStrategy(project_root=PROJECT_ROOT, target_tier=1)
@@ -62,7 +62,7 @@ def test_default_behavior():
     print("Test 2: Default Behavior")
     print("=" * 70)
     
-    from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+    from archives.void_violations.healing_strategy import HealingStrategy
     
     # Create strategy without target_tier (None = run all)
     strategy = HealingStrategy(project_root=PROJECT_ROOT, target_tier=None)
@@ -111,7 +111,7 @@ def test_burn_verification():
     print("Test 4: Burn Verification")
     print("=" * 70)
     
-    from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+    from archives.void_violations.healing_strategy import HealingStrategy
     
     # Create strategy with target_tier=1 (Structural)
     strategy = HealingStrategy(project_root=PROJECT_ROOT, target_tier=1)
@@ -138,8 +138,8 @@ def test_state_integrity():
     print("Test 5: State Integrity")
     print("=" * 70)
     
-    from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
-    from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+    from archives.void_violations.healing_strategy import HealingStrategy
+    from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
     
     # Create strategy with target_tier=0 (Pre-Flight only)
     strategy = HealingStrategy(project_root=PROJECT_ROOT, target_tier=0)

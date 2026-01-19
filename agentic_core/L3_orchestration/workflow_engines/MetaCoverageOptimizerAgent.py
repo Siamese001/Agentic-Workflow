@@ -6,18 +6,18 @@
 
 from __future__ import annotations
 
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from collections import deque
 from typing import Deque, Dict, Optional
 import time
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
 from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.L6_observability.metrics.shared_counters import counters
 from agentic_core.runtime.shared_runtime import log_event, publish_event
 from dataclasses import dataclass
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 @dataclass

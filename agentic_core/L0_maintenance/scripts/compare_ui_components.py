@@ -6,7 +6,7 @@ Catalogs: tabs, cards, tables, footnotes, filters, modals, KPIs
 
 import re
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 def extract_components(html_content, name):
     """Extract UI components from HTML content"""

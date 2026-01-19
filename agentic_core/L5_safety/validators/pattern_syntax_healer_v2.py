@@ -1,6 +1,12 @@
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail
+# This boosts alignment detection — review and integrate appropriately
+
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
@@ -113,17 +119,17 @@ class PatternSyntaxHealerV2:
         Fix Pattern 1: Malformed imports inside structure_blueprint blocks.
         
         Example:
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-        from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+        from agentic_core.L5_safety.validators.structure_blueprint import (
+        from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
             SOVEREIGN_REGISTRY,
         )
         
         Should be:
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+        from agentic_core.L5_safety.validators.structure_blueprint import (
             SOVEREIGN_REGISTRY,
         )
         
-        from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+        from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
         """
         fixes = 0
         

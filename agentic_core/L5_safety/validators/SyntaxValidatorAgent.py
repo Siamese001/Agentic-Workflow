@@ -1,6 +1,12 @@
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail
+# This boosts alignment detection — review and integrate appropriately
+
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
@@ -27,11 +33,11 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -50,8 +56,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.L5_safety.validators.decorators import standard_heal
+from archives.location_violations.sovereign_index import SovereignIndex
 
 Logger = logging.getLogger(__name__)
 

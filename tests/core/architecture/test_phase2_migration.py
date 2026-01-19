@@ -31,7 +31,7 @@ class TestCaseA_TheBigSwitch:
     
     def test_sovereign_base_agent_has_infra_mixin(self):
         """Verify SovereignBaseAgent inherits from InfrastructureMixin."""
-        from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
         
         # Check inheritance
@@ -40,7 +40,7 @@ class TestCaseA_TheBigSwitch:
     
     def test_sovereign_base_agent_infra_initialized(self):
         """Verify _infra_initialized is True after instantiation."""
-        from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
         
         # Create instance
         agent = SovereignBaseAgent(name="TestAgent")
@@ -53,7 +53,7 @@ class TestCaseA_TheBigSwitch:
     
     def test_sovereign_base_agent_has_healer_metrics(self):
         """Verify HealerMixin was properly initialized via InfrastructureMixin."""
-        from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
         
         agent = SovereignBaseAgent(name="TestAgent")
         
@@ -63,7 +63,7 @@ class TestCaseA_TheBigSwitch:
     
     def test_sovereign_base_agent_verify_state_passes(self):
         """Verify verify_state() passes for properly initialized agent."""
-        from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
         
         agent = SovereignBaseAgent(name="TestAgent")
         
@@ -73,7 +73,7 @@ class TestCaseA_TheBigSwitch:
     
     def test_sovereign_base_agent_mro_order(self):
         """Verify MRO includes InfrastructureMixin before object."""
-        from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
         
         mro = SovereignBaseAgent.__mro__
@@ -100,7 +100,7 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_accepts_strategy(self):
         """Verify UnifiedOrchestratorAgent accepts a strategy in __init__."""
-        from agentic_core.L3_orchestration.unified_orchestrator import (
+        from archives.location_violations.unified_orchestrator import (
             UnifiedOrchestratorAgent,
             MissionStrategy,
         )
@@ -117,7 +117,7 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_calls_strategy_get_tiers(self):
         """Verify run_mission calls strategy.get_tiers()."""
-        from agentic_core.L3_orchestration.unified_orchestrator import (
+        from archives.location_violations.unified_orchestrator import (
             UnifiedOrchestratorAgent,
             MissionStrategy,
         )
@@ -137,7 +137,7 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_calls_strategy_get_agent(self):
         """Verify run_mission calls strategy.get_agent() for each agent."""
-        from agentic_core.L3_orchestration.unified_orchestrator import (
+        from archives.location_violations.unified_orchestrator import (
             UnifiedOrchestratorAgent,
             MissionStrategy,
         )
@@ -159,7 +159,7 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_calls_strategy_execute_agent(self):
         """Verify run_mission calls strategy.execute_agent() for available agents."""
-        from agentic_core.L3_orchestration.unified_orchestrator import (
+        from archives.location_violations.unified_orchestrator import (
             UnifiedOrchestratorAgent,
             MissionStrategy,
         )
@@ -192,8 +192,8 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_implements_iorchestrator(self):
         """Verify UnifiedOrchestratorAgent implements IOrchestrator protocol."""
-        from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
-        from agentic_core.L3_orchestration.interfaces.orchestrator import IOrchestrator
+        from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
+        from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
         
         # Create mock strategy
         mock_strategy = MagicMock()
@@ -217,7 +217,7 @@ class TestCaseC_DecoratorSanitization:
     
     def test_standard_heal_normalizes_renamed_key(self):
         """Verify 'renamed' key is normalized to 'violations_fixed'."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -234,7 +234,7 @@ class TestCaseC_DecoratorSanitization:
     
     def test_standard_heal_normalizes_violations_key(self):
         """Verify 'violations' key is normalized to 'violations_found'."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -249,7 +249,7 @@ class TestCaseC_DecoratorSanitization:
     
     def test_standard_heal_normalizes_fixed_key(self):
         """Verify 'fixed' key is normalized to 'violations_fixed'."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -264,7 +264,7 @@ class TestCaseC_DecoratorSanitization:
     
     def test_standard_heal_adds_status(self):
         """Verify status is added if not present."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -279,7 +279,7 @@ class TestCaseC_DecoratorSanitization:
     
     def test_standard_heal_status_fail_when_unfixed(self):
         """Verify status is FAIL when violations > fixed."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -293,7 +293,7 @@ class TestCaseC_DecoratorSanitization:
     
     def test_standard_heal_adds_execution_time(self):
         """Verify execution_time_ms is added."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -308,7 +308,7 @@ class TestCaseC_DecoratorSanitization:
     
     def test_standard_heal_preserves_canonical_keys(self):
         """Verify canonical keys are preserved as-is."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -328,7 +328,7 @@ class TestCaseC_DecoratorSanitization:
     
     def test_standard_heal_normalizes_boolean_result(self):
         """Verify boolean result is normalized."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -342,7 +342,7 @@ class TestCaseC_DecoratorSanitization:
     
     def test_standard_heal_normalizes_integer_result(self):
         """Verify integer result is normalized as violation count."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -366,7 +366,7 @@ class TestCaseD_CrashContainment:
     
     def test_standard_heal_catches_value_error(self):
         """Verify ValueError is caught and returns ERROR status."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -382,7 +382,7 @@ class TestCaseD_CrashContainment:
     
     def test_standard_heal_catches_runtime_error(self):
         """Verify RuntimeError is caught and returns ERROR status."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -397,7 +397,7 @@ class TestCaseD_CrashContainment:
     
     def test_standard_heal_catches_type_error(self):
         """Verify TypeError is caught and returns ERROR status."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -412,7 +412,7 @@ class TestCaseD_CrashContainment:
     
     def test_standard_heal_error_has_errors_count(self):
         """Verify error result has errors count set to 1."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -426,7 +426,7 @@ class TestCaseD_CrashContainment:
     
     def test_standard_heal_error_has_execution_time(self):
         """Verify error result still has execution_time_ms."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         class TestAgent:
             @standard_heal
@@ -441,7 +441,7 @@ class TestCaseD_CrashContainment:
     
     def test_standard_heal_input_normalization_dry_run_default(self):
         """Verify dry_run defaults to True (safe)."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         received_dry_run = None
         
@@ -459,7 +459,7 @@ class TestCaseD_CrashContainment:
     
     def test_standard_heal_input_normalization_execute_default(self):
         """Verify execute defaults to False (safe)."""
-        from agentic_core.utils.core_extensions.decorators import standard_heal
+        from agentic_core.L5_safety.validators.decorators import standard_heal
         
         received_execute = None
         
@@ -483,7 +483,7 @@ class TestHealingStrategy:
     
     def test_healing_strategy_has_name(self):
         """Verify HealingStrategy has a name property."""
-        from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+        from archives.void_violations.healing_strategy import HealingStrategy
         
         strategy = HealingStrategy()
         
@@ -491,7 +491,7 @@ class TestHealingStrategy:
     
     def test_healing_strategy_has_five_tiers(self):
         """Verify HealingStrategy defines 5 tiers."""
-        from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+        from archives.void_violations.healing_strategy import HealingStrategy
         
         strategy = HealingStrategy()
         tiers = strategy.get_tiers()
@@ -501,7 +501,7 @@ class TestHealingStrategy:
     
     def test_healing_strategy_tier0_has_syntax_validator(self):
         """Verify Tier 0 includes SyntaxValidatorAgent."""
-        from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+        from archives.void_violations.healing_strategy import HealingStrategy
         
         strategy = HealingStrategy()
         tiers = strategy.get_tiers()
@@ -518,7 +518,7 @@ class TestHealingStrategy:
     
     def test_healing_strategy_abort_on_syntax_failure(self):
         """Verify should_abort_tier returns True for Tier 0 failure."""
-        from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
+        from archives.void_violations.healing_strategy import HealingStrategy
         
         strategy = HealingStrategy()
         
@@ -540,7 +540,7 @@ class TestMissionReport:
     
     def test_mission_report_success_rate(self):
         """Verify success_rate calculation."""
-        from agentic_core.L3_orchestration.unified_orchestrator import MissionReport
+        from archives.location_violations.unified_orchestrator import MissionReport
         
         report = MissionReport(
             timestamp="2024-01-01T00:00:00",
@@ -558,7 +558,7 @@ class TestMissionReport:
     
     def test_mission_report_is_stable(self):
         """Verify is_stable property."""
-        from agentic_core.L3_orchestration.unified_orchestrator import MissionReport
+        from archives.location_violations.unified_orchestrator import MissionReport
         
         # Stable report
         stable_report = MissionReport(

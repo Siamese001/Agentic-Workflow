@@ -35,7 +35,7 @@ def test_two_phase_dedup_import():
     print("=" * 70)
     
     try:
-        from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+        from apps_lic.engines.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
         test_pass("GIANT-01", "TwoPhaseDeduplicationAgent imports successfully")
     except ImportError as e:
         test_fail("GIANT-01", f"ImportError: {e}")
@@ -52,7 +52,7 @@ def test_scripts_planning_validation():
     print("=" * 70)
     
     try:
-        from agentic_core.L1_cognition.thought_engine.ScriptsPlanningOrchestratorAgent import ScriptsPlanningOrchestratorAgent
+        from archives.void_violations.ScriptsPlanningOrchestratorAgent import ScriptsPlanningOrchestratorAgent
         
         agent = ScriptsPlanningOrchestratorAgent()
         
@@ -138,7 +138,7 @@ def test_dag_mutator():
     print("=" * 70)
     
     try:
-        from agentic_core.L3_orchestration.workflow_engines.DAGMutatorAgent import DAGMutatorAgent, DAGConfig
+        from archives.void_violations.DAGMutatorAgent import DAGMutatorAgent, DAGConfig
         
         config = DAGConfig()
         agent = DAGMutatorAgent(config=config)
@@ -170,7 +170,7 @@ def test_import_healer():
     print("=" * 70)
     
     try:
-        from agentic_core.L2_execution.ToolRegistry.ImportHealerAgent import ImportHealerAgent
+        from archives.void_violations.ImportHealerAgent import ImportHealerAgent
         
         agent = ImportHealerAgent(project_root=PROJECT_ROOT)
         

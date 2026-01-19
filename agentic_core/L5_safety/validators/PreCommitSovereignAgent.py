@@ -19,6 +19,12 @@ Logic:
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail
+# This boosts alignment detection — review and integrate appropriately
+
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
@@ -32,7 +38,7 @@ from dataclasses import dataclass
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTValidator
+from agentic_core.L5_safety.gravity.unified_validator import UnifiedSSOTValidator
 
 
 @dataclass
@@ -293,7 +299,7 @@ from pathlib import Path
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root))
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 if __name__ == "__main__":

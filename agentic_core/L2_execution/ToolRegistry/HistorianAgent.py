@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 import asyncio
 '''Brief description of functionality and purpose.'''
 
@@ -19,11 +19,11 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 # NAMING FIXED: EXCLUDED_DIRS → excluded_dirs
 excluded_dirs = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}
@@ -71,7 +71,7 @@ class HistorianAgent(SovereignBaseAgent):
     def record_event(self, agent: str, status: str, details: str) -> Any:
         """Execute record_event operation."""
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-        entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
+        entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.validators.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
 
         # Atomic append - Note: Consider migrating to async file I/O for high-scale environments
         try:
@@ -88,7 +88,7 @@ class HistorianAgent(SovereignBaseAgent):
 
 
 # Legacy class removed 2026-01-06 - use standalone GitAgent.py
-# from agentic_core.L2_execution.ToolRegistry.GitAgent import GitAgent
+# from agentic_core.L5_safety.validators.GitAgent import GitAgent
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30

@@ -4,7 +4,7 @@ Test script for sub-atomic capability enforcement.
 Validates that HierarchyAgent correctly detects capability violations.
 """
 from pathlib import Path
-from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
+from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
 
 def main():

@@ -3,7 +3,7 @@ Prompt Registry - Re-export from PromptRegistryAgent.
 
 Provides backwards compatibility for snake_case imports.
 """
-from agentic_core.prompt_governance.version_registry.PromptRegistryAgent import (
+from agentic_core.prompt_governance.PromptRegistryAgent import (
     PromptRegistryAgent,
     registers_prompt,
     get_prompt_registry,

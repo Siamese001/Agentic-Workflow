@@ -10,7 +10,7 @@ from pathlib import Path
 import logging
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -448,7 +448,7 @@ class DirectLlmHealing(HealingStrategy):
                     "file": issue["file"],
                     "sdk": sdk_name,
                     "new_client": "get_llm_router_client()",
-                    "import_path": "from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client",
+                    "import_path": "from agentic_core.L2_execution.mcp.llm_router_mcp_client import get_llm_router_client",
                     "reason": "Direct LLM SDK call — bypasses L5 shield",
                     "priority": self.priority,
                     "strategy": self.name
@@ -499,7 +499,7 @@ class FilesystemBypassHealing(HealingStrategy):
                     "file": issue["file"],
                     "operation": desc,
                     "new_client": "get_filesystem_client()",
-                    "import_path": "from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client",
+                    "import_path": "from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client",
                     "reason": "Direct file I/O — bypasses L5 validation",
                     "priority": self.priority,
                     "strategy": self.name

@@ -17,11 +17,11 @@ def _get_pinecone_client():
     return module
 
 # from _mcp_client import get_pinecone_mcp_client  # Commented out - appears to be incomplete/broken import
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

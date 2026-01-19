@@ -19,8 +19,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
-from agentic_core.utils.core_extensions.redis import SovereignRedisClient
-from agentic_core.L4_state.pinecone_telemetry import PineconeTelemetryWrapper
+from agentic_core.L2_execution.mcp.redis import SovereignRedisClient
+from archives.location_violations.pinecone_telemetry import PineconeTelemetryWrapper
 
 app = FastAPI(title="Agentic AI Runtime API", version="2.0.0")
 

@@ -7,14 +7,14 @@ but don't already import from SSOT.
 """
 import re
 from pathlib import Path
-from agentic_core.utils.sovereign_index import SovereignIndex
+from archives.location_violations.sovereign_index import SovereignIndex
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
 
 # The SSOT import block to add
 SSOT_IMPORT = '''# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

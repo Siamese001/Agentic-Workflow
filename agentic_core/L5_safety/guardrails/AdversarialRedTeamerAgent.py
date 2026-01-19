@@ -1,6 +1,12 @@
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail
+# This boosts alignment detection — review and integrate appropriately
+
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
@@ -30,12 +36,12 @@ from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 

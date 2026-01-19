@@ -19,7 +19,7 @@ from typing import Dict, List
 
 # [SSOT] IMPORT PHYSICAL LAW FROM BLUEPRINT
 try:
-    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    from agentic_core.L5_safety.validators.structure_blueprint import (
         ACTIVE_CANON_KEYS,
         CANON_KEY_TO_FOLDER_MAP,
     )

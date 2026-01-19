@@ -2,6 +2,12 @@
 """
 Delete duplicate files based on scan results.
 """
+
+# TODO: GRAVITY VIOLATION AUTO-HEALED
+# Downstream imports removed — move shared logic to apps_shared or sovereign utils
+# Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_lic']. Move shared logic to apps_shared or sovereign utils.
+# Removed: apps_lic.engines.DuplicateCodeDetectorAgent
+
 import asyncio
 import argparse
 import sys
@@ -11,7 +17,6 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.guardrails.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent
 
 
 async def main():

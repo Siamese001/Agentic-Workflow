@@ -37,14 +37,14 @@ warnings.warn(
     stacklevel=2
 )
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.L5_safety.validators.decorators import standard_heal
+from archives.location_violations.sovereign_index import SovereignIndex
 
 
 @dataclass
@@ -115,7 +115,7 @@ Current date: December 24, 2025
             return await self._execute_per_file(file_path)
         
         # Batch mode (legacy)
-        print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] NamingLawHealerAgent: Scanning for naming violations...")
+        print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] NamingLawHealerAgent: Scanning for naming violations...")
         self.healed_count = 0
         self.healed_files = []
         

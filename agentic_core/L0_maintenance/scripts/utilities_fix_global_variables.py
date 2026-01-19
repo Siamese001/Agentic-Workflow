@@ -5,7 +5,7 @@ Fix global variable violations by replacing with manager pattern
 import os
 import re
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 def fix_global_variables(file_path: str) -> Any:
     """Fix global variables in a Python file"""

@@ -10,7 +10,7 @@ from typing import List, Any
 import uuid
 import time
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
 from dataclasses import dataclass

@@ -27,7 +27,7 @@ class TestIOrchestrator:
     
     def test_protocol_adherence_complete(self):
         """Test Case C: Complete implementation passes isinstance check."""
-        from agentic_core.L3_orchestration.interfaces.orchestrator import IOrchestrator
+        from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
         
         class CompleteOrchestrator:
             def run_mission(self, context: Dict[str, Any]) -> Dict[str, Any]:
@@ -41,7 +41,7 @@ class TestIOrchestrator:
     
     def test_protocol_adherence_missing_validate_stability(self):
         """Test Case C: Missing validate_stability fails isinstance check."""
-        from agentic_core.L3_orchestration.interfaces.orchestrator import IOrchestrator
+        from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
         
         class IncompleteOrchestrator:
             def run_mission(self, context: Dict[str, Any]) -> Dict[str, Any]:
@@ -53,7 +53,7 @@ class TestIOrchestrator:
     
     def test_protocol_adherence_missing_run_mission(self):
         """Missing run_mission fails isinstance check."""
-        from agentic_core.L3_orchestration.interfaces.orchestrator import IOrchestrator
+        from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
         
         class IncompleteOrchestrator:
             # Missing run_mission!
@@ -65,7 +65,7 @@ class TestIOrchestrator:
     
     def test_ihealable_protocol_complete(self):
         """IHealable protocol with complete implementation."""
-        from agentic_core.L3_orchestration.interfaces.orchestrator import IHealable
+        from agentic_core.L5_safety.validators.orchestrator import IHealable
         
         class CompleteHealer:
             def heal_repository(
@@ -81,7 +81,7 @@ class TestIOrchestrator:
     
     def test_ihealable_protocol_missing(self):
         """IHealable protocol with missing method."""
-        from agentic_core.L3_orchestration.interfaces.orchestrator import IHealable
+        from agentic_core.L5_safety.validators.orchestrator import IHealable
         
         class IncompleteHealer:
             pass  # Missing heal_repository
@@ -162,17 +162,17 @@ class TestSovereignIndex:
     
     def setup_method(self):
         """Reset singleton before each test."""
-        from agentic_core.utils.sovereign_index import SovereignIndex
+        from archives.location_violations.sovereign_index import SovereignIndex
         SovereignIndex.reset_instance()
     
     def teardown_method(self):
         """Reset singleton after each test."""
-        from agentic_core.utils.sovereign_index import SovereignIndex
+        from archives.location_violations.sovereign_index import SovereignIndex
         SovereignIndex.reset_instance()
     
     def test_singleton_pattern(self):
         """get_instance returns the same instance."""
-        from agentic_core.utils.sovereign_index import SovereignIndex
+        from archives.location_violations.sovereign_index import SovereignIndex
         
         index1 = SovereignIndex.get_instance(PROJECT_ROOT)
         index2 = SovereignIndex.get_instance()
@@ -181,7 +181,7 @@ class TestSovereignIndex:
     
     def test_get_files_basic(self):
         """get_files returns files matching pattern."""
-        from agentic_core.utils.sovereign_index import SovereignIndex
+        from archives.location_violations.sovereign_index import SovereignIndex
         
         index = SovereignIndex.get_instance(PROJECT_ROOT)
         
@@ -192,7 +192,7 @@ class TestSovereignIndex:
     
     def test_get_agent_files(self):
         """get_agent_files returns agent files."""
-        from agentic_core.utils.sovereign_index import SovereignIndex
+        from archives.location_violations.sovereign_index import SovereignIndex
         import fnmatch
         
         index = SovereignIndex.get_instance(PROJECT_ROOT)
@@ -206,7 +206,7 @@ class TestSovereignIndex:
     
     def test_phantom_file_cache_invalidation(self, tmp_path):
         """Test Case B: Phantom file detection via cache invalidation."""
-        from agentic_core.utils.sovereign_index import SovereignIndex
+        from archives.location_violations.sovereign_index import SovereignIndex
         
         # Create a temporary directory structure
         test_dir = tmp_path / "test_project"
@@ -247,7 +247,7 @@ class TestSovereignIndex:
     
     def test_exclusion_patterns(self, tmp_path):
         """Excluded directories are not scanned."""
-        from agentic_core.utils.sovereign_index import SovereignIndex
+        from archives.location_violations.sovereign_index import SovereignIndex
         
         # Create temp structure with excluded dir
         test_dir = tmp_path / "test_project"
@@ -273,7 +273,7 @@ class TestSovereignIndex:
     
     def test_get_stats(self):
         """get_stats returns index statistics."""
-        from agentic_core.utils.sovereign_index import SovereignIndex
+        from archives.location_violations.sovereign_index import SovereignIndex
         
         index = SovereignIndex.get_instance(PROJECT_ROOT)
         index.refresh()
@@ -287,7 +287,7 @@ class TestSovereignIndex:
     
     def test_add_remove_exclusion(self, tmp_path):
         """add_exclusion and remove_exclusion work correctly."""
-        from agentic_core.utils.sovereign_index import SovereignIndex
+        from archives.location_violations.sovereign_index import SovereignIndex
         
         test_dir = tmp_path / "test_project"
         test_dir.mkdir()

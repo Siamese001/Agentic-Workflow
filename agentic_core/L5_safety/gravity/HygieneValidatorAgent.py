@@ -8,6 +8,12 @@ Identifies code quality issues:
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail
+# This boosts alignment detection — review and integrate appropriately
+
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
@@ -21,8 +27,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
 
 from agentic_core.bases import L0MaintenanceBaseAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,

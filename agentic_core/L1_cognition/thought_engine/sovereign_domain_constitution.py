@@ -7,7 +7,7 @@ L0-L5 + Observability Sovereign Stack Hierarchy established.
 from typing import List, Dict, Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

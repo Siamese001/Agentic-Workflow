@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import numpy as np
 import time
@@ -176,7 +176,7 @@ class CoverageAgent(SovereignBaseAgent):
 
     def _inject_synthetic_exercises(self, layer: str) -> None:
         """Enqueue safe no-op tasks targeting layer — direct metric increment."""
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import EXERCISER_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint import EXERCISER_REGISTRY
         exerciser_class_name = EXERCISER_REGISTRY.get(layer, "GeneralExerciserAgent")
         for i in range(self.synthetic_tasks_per_trigger):
             task_payload = {

@@ -16,11 +16,11 @@ from pathlib import Path
 from typing import List, Tuple
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
+from archives.location_violations.sovereign_index import SovereignIndex
 
 
 def check_dark_reasoning(filepath: Path) -> List[str]:

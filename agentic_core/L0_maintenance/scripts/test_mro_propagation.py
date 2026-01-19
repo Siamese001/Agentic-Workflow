@@ -36,7 +36,7 @@ def main():
     
     # L5SafetyBaseAgent
     try:
-        from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
+        from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
         test_cases.append(("L5SafetyBaseAgent", L5SafetyBaseAgent, False))
     except Exception as e:
         print(f"Could not import L5SafetyBaseAgent: {e}")

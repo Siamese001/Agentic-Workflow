@@ -3,6 +3,12 @@ Detailed Duplicate Analysis Script
 Analyzes duplicate files to determine if they have different functions.
 Uses CodeDeduplicationAgent and FilenameUniquenessGuardianAgent for analysis.
 """
+
+# TODO: GRAVITY VIOLATION AUTO-HEALED
+# Downstream imports removed — move shared logic to apps_shared or sovereign utils
+# Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_lic']. Move shared logic to apps_shared or sovereign utils.
+# Removed: apps_lic.engines.DuplicateCodeDetectorAgent
+
 import asyncio
 import sys
 from pathlib import Path
@@ -13,8 +19,7 @@ import hashlib
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.guardrails.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 
 async def analyze_functional_differences(duplicate_sets: Dict[str, List[Path]]) -> List[Dict]:

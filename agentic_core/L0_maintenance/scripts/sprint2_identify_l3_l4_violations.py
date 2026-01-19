@@ -11,7 +11,7 @@ import sys
 REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
 
-from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTValidator
+from agentic_core.L5_safety.gravity.unified_validator import UnifiedSSOTValidator
 
 def main():
     """Identify all L0 → L3 and L0 → L4 violations."""

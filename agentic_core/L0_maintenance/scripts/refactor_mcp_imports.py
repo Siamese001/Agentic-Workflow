@@ -27,16 +27,16 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
+from archives.location_violations.sovereign_index import SovereignIndex
 
 # Project root
 REPO = Path(__file__).parent.parent
 
 # Old import pattern (L5 - violates hierarchy)
-OLD_IMPORT = "from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin"
+OLD_IMPORT = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin"
 
 # New import pattern (utils - foundational layer)
-NEW_IMPORT = "from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin"
+NEW_IMPORT = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin"
 
 def refactor_file(file_path: Path) -> bool:
     """

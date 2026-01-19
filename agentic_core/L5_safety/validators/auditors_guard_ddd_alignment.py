@@ -17,11 +17,11 @@ def _get_sovereign_domain():
 # from _domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE  # Commented out - appears to be incomplete/broken import
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
+from archives.location_violations.sovereign_index import SovereignIndex
 
 
 def check_bounded_contexts(filepath: Path) -> List[str]:

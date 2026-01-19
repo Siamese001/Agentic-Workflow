@@ -51,7 +51,7 @@ def test_2_ssot_utility_works():
     print("="*60)
     
     try:
-        from agentic_core.utils.ssot_discovery import (
+        from archives.location_violations.ssot_discovery import (
             load_agent_discovery,
             get_agent_paths,
             get_agent_names,

@@ -11,7 +11,7 @@ import json
 import re
 from pathlib import Path
 from typing import List, Dict
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
 data = json.load(open('agent_discovery_full.json'))
@@ -72,7 +72,7 @@ for agent in needs_hardening:
         content = content.replace(old_class_def, new_class_def)
         
         # Add import if needed
-        if 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin' not in content:
+        if 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin' not in content:
             # Find where to insert import
             import_section_end = 0
             lines = content.split('\n')
@@ -83,7 +83,7 @@ for agent in needs_hardening:
             
             # Insert import after last import
             if import_section_end > 0:
-                lines.insert(import_section_end, 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin')
+                lines.insert(import_section_end, 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin')
             else:
                 # No imports found, add at top after docstring
                 insert_idx = 0
@@ -94,7 +94,7 @@ for agent in needs_hardening:
                         if not in_docstring:
                             insert_idx = i + 1
                             break
-                lines.insert(insert_idx, 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin')
+                lines.insert(insert_idx, 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin')
             
             content = '\n'.join(lines)
         

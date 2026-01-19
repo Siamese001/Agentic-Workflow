@@ -140,12 +140,12 @@ def generate_layer_tests():
     
     # L5SafetyBaseAgent
     try:
-        from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
+        from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
         tests = generator.generate_agent_tests(L5SafetyBaseAgent, "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent")
         generator.write_test_file(
             "safety_base_agent",
             tests,
-            ["from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent"]
+            ["from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent"]
         )
     except Exception as e:
         print(f"⚠️  Could not generate L5SafetyBaseAgent tests: {e}")

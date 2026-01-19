@@ -15,12 +15,12 @@ from pathlib import Path
 from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.sovereign_index import SovereignIndex
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 
 def fix_file_imports(file_path: Path) -> bool:

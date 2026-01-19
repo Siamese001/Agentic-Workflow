@@ -1,6 +1,12 @@
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail
+# This boosts alignment detection — review and integrate appropriately
+
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator
 # This boosts alignment detection — review and integrate appropriately
 
@@ -45,7 +51,7 @@ from collections import defaultdict
 
 Logger = logging.getLogger(__name__)
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     PYTHON_STDLIB_MODULES,
     UPSTREAM_SOVEREIGN_ROOTS,
     DOWNSTREAM_ROOTS,
@@ -53,8 +59,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
@@ -114,7 +120,7 @@ class ImportValidationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 @registers_prompt(
@@ -196,7 +202,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         """Lazy NamingAgent - created on first access to avoid circular init."""
         if self._naming_agent is None:
             try:
-                from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
+                from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent
                 self._naming_agent = get_naming_agent(self.project_root)
             except (ImportError, RecursionError):
                 pass

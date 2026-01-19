@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -24,8 +24,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.sovereign_index import SovereignIndex
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 def fix_split_strings_in_file(filepath: Any) -> Any:
     """Fix split string literals in a single file."""

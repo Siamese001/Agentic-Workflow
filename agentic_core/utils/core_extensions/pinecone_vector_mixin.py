@@ -16,7 +16,7 @@ import time
 from typing import Any, Dict, List, Optional
 
 from archives.location_violations.flags import USE_PINECONE, CACHE_METRICS_ENABLED, GRACEFUL_DEGRADATION
-from agentic_core.L6_observability.metrics.cache_metrics import get_cache_metrics
+from agentic_core.observability.cache_metrics import get_cache_metrics
 
 log = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ class PineconeVectorMixin:
             return None
         if self._pinecone_client is None:
             try:
-                from agentic_core.L4_state.ValidationContext.pinecone_mcp_client import get_pinecone_mcp_client
+                from agentic_core.L2_execution.mcp.pinecone_mcp_client import get_pinecone_mcp_client
                 self._pinecone_client = get_pinecone_mcp_client()
             except Exception as e:
                 if not GRACEFUL_DEGRADATION:

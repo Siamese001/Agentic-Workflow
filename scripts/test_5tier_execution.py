@@ -36,7 +36,7 @@ def test_1_syntax_gate():
     print("="*60)
     
     # Create a mock SyntaxValidatorAgent that returns violations
-    from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import ConsolidatedOrchestratorAgent
+    from archives.location_violations.ConsolidatedOrchestratorAgent import ConsolidatedOrchestratorAgent
     
     orchestrator = ConsolidatedOrchestratorAgent(PROJECT_ROOT)
     
@@ -101,7 +101,7 @@ def test_2_deduplication_detection():
     
     # Check that TwoPhaseDeduplicationAgent exists and can be imported
     try:
-        from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        from apps_lic.engines.TwoPhaseDeduplicationAgent import (
             get_two_phase_deduplication_agent,
             TwoPhaseDeduplicationAgent
         )
@@ -154,7 +154,7 @@ def test_3_roster_cleanliness():
     print("TEST 3: Roster Cleanliness")
     print("="*60)
     
-    from agentic_core.L3_orchestration.discovery_roster_builder import SKIP_AGENTS
+    from archives.location_violations.discovery_roster_builder import SKIP_AGENTS
     
     # Core agents that should be skipped
     tier0_agents = ['SyntaxValidatorAgent', 'HygieneGuardianAgent']

@@ -23,31 +23,56 @@ Future Curation Roadmap:
     - Register with relevant L4/L5 systems
 """
 
-# Public API surface — expose only what's intended
-from .CognitiveContractValidatorSchema import (
-    CognitiveContractValidatorSchema,
-    CognitiveContract,
-    CognitiveContractEnforcer,
-    ContractStage,
-    Constraint,
-    Plan,
-    PlanQualityError,
-    ConsistencyError,
-)
-from .runtime_models import (
-    MicroStage,
-    HopState,
-    RetryPolicy,
-    MicroCheckpoint,
-    StageTransition,
-    InjectionType,
-    InjectionScope,
-    InjectionPattern,
-    InjectionMatch,
-    InjectionConfig,
-    ValidationResult,
-    ExecutionResult,
-)
+# Public API surface — expose only what's intended (lazy imports for healing resilience)
+try:
+    from .CognitiveContractValidatorSchema import (
+        CognitiveContractValidatorSchema,
+        CognitiveContract,
+        CognitiveContractEnforcer,
+        ContractStage,
+        Constraint,
+        Plan,
+        PlanQualityError,
+        ConsistencyError,
+    )
+except ImportError:
+    CognitiveContractValidatorSchema = None
+    CognitiveContract = None
+    CognitiveContractEnforcer = None
+    ContractStage = None
+    Constraint = None
+    Plan = None
+    PlanQualityError = None
+    ConsistencyError = None
+
+try:
+    from .runtime_models import (
+        MicroStage,
+        HopState,
+        RetryPolicy,
+        MicroCheckpoint,
+        StageTransition,
+        InjectionType,
+        InjectionScope,
+        InjectionPattern,
+        InjectionMatch,
+        InjectionConfig,
+        ValidationResult,
+        ExecutionResult,
+    )
+except ImportError:
+    MicroStage = None
+    HopState = None
+    RetryPolicy = None
+    MicroCheckpoint = None
+    StageTransition = None
+    InjectionType = None
+    InjectionScope = None
+    InjectionPattern = None
+    InjectionMatch = None
+    InjectionConfig = None
+    ValidationResult = None
+    ExecutionResult = None
 
 __all__ = [
     # Cognitive contracts

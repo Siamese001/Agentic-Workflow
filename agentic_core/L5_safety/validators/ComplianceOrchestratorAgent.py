@@ -45,14 +45,14 @@ from dataclasses import dataclass
 Logger = logging.getLogger(__name__)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth for folder structure
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 @dataclass
 class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
@@ -154,7 +154,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
         
         # [SSOT] Use centralized discovery utility instead of rglob scans
         try:
-            from agentic_core.utils.ssot_discovery import get_agent_paths, load_agent_discovery
+            from archives.location_violations.ssot_discovery import get_agent_paths, load_agent_discovery
             agent_paths = get_agent_paths(self.project_root, exclude_patterns=['test_', 'mock_', 'stub_'])
             agent_files = agent_paths
             ast_agent_count = len(agent_paths)
@@ -780,7 +780,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
             if root_folder == 'agentic_core':
                 # [SSOT] Use discovery JSON instead of rglob
                 try:
-                    from agentic_core.utils.ssot_discovery import load_agent_discovery
+                    from archives.location_violations.ssot_discovery import load_agent_discovery
                     agents = load_agent_discovery(self.project_root)
                     for agent in agents:
                         path_str = agent.get("path", "")

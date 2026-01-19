@@ -17,7 +17,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import pytest
-from agentic_core.utils.import_utils import (
+from archives.location_violations.import_utils import (
     path_to_module,
     module_to_path,
     safe_import_module,
@@ -26,7 +26,7 @@ from agentic_core.utils.import_utils import (
     get_module_from_file,
     get_class_from_file,
 )
-from agentic_core.utils.ast_utils import (
+from archives.location_violations.ast_utils import (
     safe_parse_file,
     safe_parse_source,
     extract_classes,

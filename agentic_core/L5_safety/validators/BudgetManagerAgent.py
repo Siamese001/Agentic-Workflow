@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional, Protocol, Set
 
 from dotenv import load_dotenv
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
+from agentic_core.L5_safety.validators.structure_blueprint import ROOT_PROTECTED_FILES
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 load_dotenv(Path(__file__).parent.parent.parent / '.env')

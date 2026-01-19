@@ -41,7 +41,7 @@ EXCLUDED_DIRS = {
     "venv",
 }
 
-SOVEREIGN_INDEX_IMPORT = "from agentic_core.utils.sovereign_index import SovereignIndex"
+SOVEREIGN_INDEX_IMPORT = "from archives.location_violations.sovereign_index import SovereignIndex"
 
 # Patterns to detect file discovery
 RGLOB_PATTERN = re.compile(r'\.rglob\s*\(\s*["\'](\*\.py|.*\.py)["\']')

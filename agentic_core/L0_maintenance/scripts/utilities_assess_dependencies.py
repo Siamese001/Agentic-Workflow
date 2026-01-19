@@ -8,7 +8,7 @@ import os
 import sys
 from modulefinder import ModuleFinder
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 def get_active_files(entry_points: Any, root_dir: Any) -> Any:
     """
