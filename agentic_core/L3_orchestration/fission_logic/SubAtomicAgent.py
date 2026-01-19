@@ -16,7 +16,24 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 # NAMING FIXED: SubAtomicAgent → SubAtomicAgent
 class SubAtomicAgent:
     """Base class stub for structural agents."""
-    pass
+    
+    @timeout(300)
+    @standard_heal
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L1 cognition - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = "SubAtomicAgent"
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L1 cognition - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 # Alias for backward compatibility
 
@@ -120,21 +137,3 @@ class nesting_depth_visitor(ast.NodeVisitor):
 def get_sub_atomic_agent() -> Any:
     '''Brief description of functionality and purpose.'''
     return sub_atomic_agent_impl
-
-@timeout(300)
-@standard_heal
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """L1 cognition - operational only."""
-    if _call_path is None:
-        _call_path = set()
-    agent_name = "CanonSubAtomic"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] L1 cognition - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)
