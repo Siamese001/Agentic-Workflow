@@ -57,32 +57,38 @@ except ImportError:
         is not available. Used for testing and development environments.
         """
 
-        def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
+        def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any) -> Dict[str, Any]:
             """
             Autonomous healing method (Canon Key 51 compliance).
             
             Args:
                 dry_run: If True, only report violations without fixing
                 execute: If True, apply fixes
+                depth: Recursion depth for cycle detection
                 **kwargs: Additional healing parameters
             
             Returns:
-                Dict with healing summary (violations, fixed, errors)
+                Dict with healing summary (violations_found, violations_fixed, errors)
             """
-            super().heal_repository(dry_run, execute)
+            super().heal_repository(dry_run, execute, depth=depth)
+            
+            # Phase 6.2: Use standardized HealResult keys
+            metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0}
             
             # === ZOMBIE VACCINATION: Wired orphaned methods ===
             if hasattr(self, 'validate_name'):
                 try:
                     validation_result = self.validate_name()
                     if validation_result:
-                        metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+                        metrics['violations_found'] += len(validation_result) if isinstance(validation_result, list) else 1
                 except Exception as e:
+                    import logging
+                    Logger = logging.getLogger(__name__)
                     Logger.error(f'Error in validate_name: {e}')
                     metrics['errors'] += 1
             # === END VACCINATION ===
             
-            return {"violations": 0, "fixed": 0, "errors": 0}
+            return metrics
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             """

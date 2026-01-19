@@ -1386,8 +1386,9 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         
-        violations = 0
-        fixed = 0
+        # Phase 6.3: Use standardized HealResult keys
+        violations_found = 0
+        violations_fixed = 0
         errors = 0
         
         try:
@@ -1399,15 +1400,15 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             # 1. Detect and heal file location violations
             if hasattr(self, 'heal_file_moves'):
                 location_result = self.heal_file_moves(dry_run=dry_run)
-                violations += location_result.get('violations', 0)
-                fixed += location_result.get('fixed', 0)
+                violations_found += location_result.get('violations_found', location_result.get('violations', 0))
+                violations_fixed += location_result.get('violations_fixed', location_result.get('fixed', 0))
             
             # 2. Detect and heal oversized files (fission)
             # Defensive check: ensure method exists before call
             if hasattr(self, '_heal_oversized_files'):
                 fission_result = self._heal_oversized_files(dry_run=dry_run)
-                violations += fission_result.get('violations', 0)
-                fixed += fission_result.get('fixed', 0)
+                violations_found += fission_result.get('violations_found', fission_result.get('violations', 0))
+                violations_fixed += fission_result.get('violations_fixed', fission_result.get('fixed', 0))
             
             # 3. Commit staged changes if executing
             if execute and not dry_run and getattr(self, 'staging_active', False):
@@ -1428,8 +1429,8 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                 self._cleanup_staging()
         
         return {
-            "violations": violations,
-            "fixed": fixed,
+            "violations_found": violations_found,
+            "violations_fixed": violations_fixed,
             "errors": errors,
             "skipped": 0,
         }
