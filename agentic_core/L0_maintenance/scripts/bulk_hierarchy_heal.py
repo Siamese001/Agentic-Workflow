@@ -80,7 +80,7 @@ def main() -> Any:
         print(f'Set DRY_RUN = False in the script to execute moves')
     else:
         print(f'\n[EXECUTION COMPLETE] All moves executed. Output saved to: {output_file}')
-    if not DRY_RUN:
+    if not dry_run:
         print('\n--- INITIATING AUTO-CLEANUP ---')
         legacy_partitions: Any = ['P1_core', 'P1_domain', 'P1_interfaces', 'P2_domain', 'P3_aggregation', 'P5_meta', 'boundaries', 'discovery', 'identity', 'inference', 'planning', 'planning_logic', 'mcp', 'sandbox', 'tools', 'P2_tools', 'P3_engines', 'P4_agents', 'P5_healing', 'event_bus', 'framework', 'handoff_logic', 'health', 'P5_workflow', 'protocol', 'security', 'training', 'automation', 'migrations', 'cache', 'checkpoints', 'filesystem', 'memory', 'persistence_layer', 'S1_store', 'semantic', 'session_manager', 'vector', 'P1_red_team', 'P4_security', 'audit_logs', 'gravity', 'policy', 'validators']
         for layer_folder in target_dir.iterdir():

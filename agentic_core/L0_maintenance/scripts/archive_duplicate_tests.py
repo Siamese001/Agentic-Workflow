@@ -29,10 +29,13 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 def main():
     test_dir = Path(__file__).parent.parent / TESTS_DIR
     
-    # Find all test files and group by name
+    """Find all test files in directory."""
     seen = {}
-    for test_file in test_dir.rglob("test_*.py"):
-        seen.setdefault(test_file.name, []).append(test_file)
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(test_dir):
+        if py_file.name.startswith('test_'):
+            seen.setdefault(py_file.name, []).append(py_file)
     
     # Identify duplicates (files with same name in different locations)
     duplicates = [files[1:] for files in seen.values() if len(files) > 1]

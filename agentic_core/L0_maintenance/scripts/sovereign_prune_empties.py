@@ -41,7 +41,9 @@ def main() -> Any:
         for legacy in LEGACY_FOLDERS:
             legacy_path: Any = layer / legacy
             if legacy_path.exists():
-                files: Any = [f for f in legacy_path.rglob('*') if f.is_file()]
+                # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+        files: Any = list(get_python_files(legacy_path)) + list(get_data_files(legacy_path))
                 if len(files) <= 1:
                     if not files or files[0].name == '__init__.py':
                         try:

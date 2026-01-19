@@ -80,7 +80,9 @@ def main():
     files_scanned = 0
     
     # Recursively find all .py files
-    for py_file in l4_dir.rglob("*.py"):
+    # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(l4_dir):
         if py_file.name.startswith("_") or ".backup" in py_file.name:
             continue
         

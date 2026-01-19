@@ -140,7 +140,8 @@ class FilesystemAgent(HealerMixin):
             pass  # File outside project root, continue with archiving logic
         
         dir_path = file_path.parent
-        py_files = list(dir_path.glob("*.py"))
+        from agentic_core.utils.ssot_discovery import get_python_files
+        py_files = list(get_python_files(dir_path))
 
         if not py_files:
             uncat = self.archives_root / "uncategorized"

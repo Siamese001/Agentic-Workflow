@@ -32,8 +32,13 @@ def find_all_agent_classes(root_dir: Path) -> List[Tuple[str, Type]]:
     """
     agent_classes = []
     
-    # Find all Python files
-    for py_file in root_dir.rglob("*.py"):
+    """Scan for all agent files."""
+    agents = []
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_agent_files
+    agents = list(get_agent_files(root_dir))
+    
+    for py_file in agents:
         if py_file.name.startswith("__") or py_file.name.startswith("test_"):
             continue
         

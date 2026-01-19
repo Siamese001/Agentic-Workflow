@@ -44,7 +44,9 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
     if not root.exists():
         return violations
 
-    python_files = list(root.rglob("*.py"))
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    python_files = list(get_python_files(root))
     
     if not python_files:
         return violations

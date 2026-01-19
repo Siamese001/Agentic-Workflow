@@ -41,7 +41,9 @@ def main():
         if not dir_path.exists():
             continue
             
-        for py_file in dir_path.rglob('*.py'):
+        # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(dir_path):
             if '__pycache__' in str(py_file) or '__init__.py' == py_file.name:
                 continue
             

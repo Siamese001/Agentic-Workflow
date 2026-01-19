@@ -43,7 +43,9 @@ def main() -> Any:
         return
     fixed_count: Any = 0
     total_files: Any = 0
-    for py_file in ToolRegistry.glob('*.py'):
+    # Phase 6.9: Use ssot_discovery instead of glob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(ToolRegistry):
         if py_file.name in ['__init__.py', 'fix_imports.py']:
             continue
         total_files += 1

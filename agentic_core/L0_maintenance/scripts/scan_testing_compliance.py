@@ -173,7 +173,9 @@ def main():
     errors = []
     
     # Scan all Python files in agentic_core
-    for py_file in AGENTIC_CORE.rglob('*.py'):
+    # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(AGENTIC_CORE):
         if '__pycache__' in str(py_file) or '.sovereign_healing_backup' in str(py_file):
             continue
         

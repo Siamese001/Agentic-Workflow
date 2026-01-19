@@ -180,7 +180,9 @@ class FileManagerAgent(SovereignBaseAgent):
 
         cleaned = 0
         try:
-            for backup_file in self.backup_dir.glob('*.bak'):
+            # Phase 6.9: Use ssot_discovery instead of glob
+            from agentic_core.utils.ssot_discovery import get_data_files
+            for backup_file in get_data_files(self.backup_dir, extensions=['.bak']):
                 # Check if backup is orphaned (original file missing)
                 original = Path(str(backup_file).replace('.bak', ''))
                 if not original.exists():
@@ -209,7 +211,10 @@ class FileManagerAgent(SovereignBaseAgent):
         """
         fixed = 0
         try:
-            for item in self.project_root.rglob('*'):
+            # Phase 6.9: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+            all_items = list(get_python_files(self.project_root)) + list(get_data_files(self.project_root))
+            for item in all_items:
                 if item.is_symlink() and not item.resolve().exists():
                     if execute:
                         item.unlink()

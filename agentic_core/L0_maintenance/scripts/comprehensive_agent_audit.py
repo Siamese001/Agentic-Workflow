@@ -46,8 +46,13 @@ DETECTION_KEYWORDS = {
 def analyze_agents():
     agents_analysis = []
     
-    # Scan all agent files in agentic_core
-    for py_file in Path(AGENTIC_CORE_DIR).rglob('*.py'):
+    """Find all agent files."""
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_agent_files
+    root_dir = get_validated_project_root()
+    agent_files = list(get_agent_files(root_dir))
+    
+    for py_file in agent_files:
         path_str = str(py_file)
         if '__pycache__' in path_str:
             continue

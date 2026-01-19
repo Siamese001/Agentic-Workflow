@@ -101,7 +101,9 @@ def main() -> Any:
     if not target.exists():
         print(f'Error: {target} does not exist')
         sys.exit(1)
-    files: Any = [f for f in target.rglob('*.py') if f.is_file()]
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    files: Any = list(get_python_files(target))
     total: Any = len(files)
     violations: Any = 0
     print(f'\n🔍 Scanning {total} Python files in {target}...')

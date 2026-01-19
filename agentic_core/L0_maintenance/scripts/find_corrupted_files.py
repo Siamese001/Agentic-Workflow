@@ -59,7 +59,9 @@ def main():
         if not root_path.exists():
             continue
             
-        py_files = list(root_path.rglob('*.py'))
+        # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    py_files = list(get_python_files(root_path))
         
         for py_file in py_files:
             if '__pycache__' in str(py_file) or ARCHIVES_DIR in str(py_file):

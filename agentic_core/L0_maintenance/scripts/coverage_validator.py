@@ -48,7 +48,9 @@ class CoverageValidator:
         violations = []
         
         # Simulate coverage check for L0 utilities
-        l0_modules = list(Path(L0_MAINTENANCE_DIR).rglob('*.py'))
+        # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    l0_modules = list(get_python_files(Path(L0_MAINTENANCE_DIR)))
         
         for module in l0_modules[:20]:  # Sample first 20 for demo
             if '__pycache__' in str(module):

@@ -207,7 +207,9 @@ async def scan_directory(directory: Path, embedder: Any, vector_store: Any) -> D
     """Scan directory and process all supported files"""
     stats: Any = {'files_processed': 0, 'chunks_indexed': 0}
     extensions: Any = {'.py', '.md', '.txt', '.json', '.yaml', '.yml'}
-    for file_path in directory.rglob('*'):
+    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    all_files = list(get_python_files(directory)) + list(get_data_files(directory))
+    for file_path in all_files:
         if file_path.is_file() and file_path.suffix in extensions:
             if file_path.name.startswith('.') or '__pycache__' in str(file_path):
                 continue
