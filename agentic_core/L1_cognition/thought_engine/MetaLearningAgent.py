@@ -30,7 +30,7 @@ class Experience:
     reward: float
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
-class MetaLearningAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
     """
     Learns success/failure patterns across execution cycles to optimize 
     thinking strategy selection.

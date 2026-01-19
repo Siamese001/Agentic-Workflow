@@ -17,7 +17,6 @@ import re
 from dataclasses import dataclass
 from typing import Any, Callable, List, Optional, Protocol, Tuple
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -32,7 +31,7 @@ class CanonBaseAgentInterface(Protocol):
 
 
 @dataclass
-class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class PatternEnforcerAgent(SubatomicTestingMixin, HealerMixin):
     """
     Pattern enforcement agent for coding best practices.
 

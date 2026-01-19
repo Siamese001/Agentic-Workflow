@@ -1,4 +1,15 @@
 from __future__ import annotations
+import warnings
+
+# Hardening Action: Deprecation warning for fragmented mixin locations
+warnings.warn(
+    "Direct import of MCPHardenedMixin is deprecated. "
+    "MCPHardenedMixin is now inherited via SovereignBaseAgent (Root Injection Pattern). "
+    "Do not add MCPHardenedMixin to agent inheritance lists directly.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
 """
 MCPHardenedMixin - Eternal Hardening for All MCP Integrations
 

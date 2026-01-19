@@ -27,10 +27,10 @@ Phase 11: Configurable Implementation Factory
 """
 from typing import Optional, Any
 try:
-    from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+    from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
 except ImportError:
-    CanonBaseAgent = None
-MockCanonBaseAgent = None  # Stub
+    L2ExecutionBaseAgent = None
+MockL2ExecutionBaseAgent = None  # Stub
 try:
     from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 except ImportError:
@@ -98,18 +98,18 @@ class AgentFactory(HealerMixin):
         
         if mode == "mock":
             # Zero-cost mock for unit testing without LLM calls
-            return MockCanonBaseAgent(ctx=ctx)
+            return MockL2ExecutionBaseAgent(ctx=ctx) if MockL2ExecutionBaseAgent else None
         
         elif mode == "aggressive":
             # Real implementation with aggressive healing enabled
-            impl = CanonBaseAgent(ctx=ctx)
+            impl = L2ExecutionBaseAgent(ctx=ctx) if L2ExecutionBaseAgent else None
             # Custom L2 capability for fast recovery
-            if hasattr(impl, "enable_aggressive_mode"):
+            if impl and hasattr(impl, "enable_aggressive_mode"):
                 impl.enable_aggressive_mode()
             return impl
         
         # Default "real" mode - standard production implementation
-        return CanonBaseAgent(ctx=ctx)
+        return L2ExecutionBaseAgent(ctx=ctx) if L2ExecutionBaseAgent else None
     
     @staticmethod
     def create_system_architect(ctx: Optional[Any] = None) -> SystemArchitect:

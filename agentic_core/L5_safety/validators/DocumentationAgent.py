@@ -16,11 +16,10 @@ from dataclasses import dataclass
 from typing import List, Tuple
 
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 @dataclass
-class DocumentationAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
+class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
     """
     Documentation enforcement agent for docstring validation.
     
