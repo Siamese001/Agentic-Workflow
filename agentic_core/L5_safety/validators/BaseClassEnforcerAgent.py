@@ -1,4 +1,25 @@
 #!/usr/bin/env python3
+"""@deprecated
+DEPRECATED: Use CodeStandardsEnforcerAgent instead.
+
+This agent has been consolidated into CodeStandardsEnforcerAgent as part of
+Phase 4 consolidation (2026-01-19). This file is retained for backward
+compatibility during the transition period.
+
+Migration:
+    from agentic_core.L5_safety.validators.CodeStandardsEnforcerAgent import (
+        CodeStandardsEnforcerAgent,
+        get_code_standards_enforcer,
+        check_inheritance,
+    )
+"""
+import warnings
+warnings.warn(
+    "BaseClassEnforcerAgent is deprecated. Use CodeStandardsEnforcerAgent instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
 """
 BaseClassEnforcerAgent - Enforces one-base-class-per-layer best practice.
 

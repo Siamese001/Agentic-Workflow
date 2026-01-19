@@ -1,8 +1,28 @@
-"""PatternEnforcerAgent - Coding pattern enforcement.
+"""@deprecated
+DEPRECATED: Use CodeStandardsEnforcerAgent instead.
+
+This agent has been consolidated into CodeStandardsEnforcerAgent as part of
+Phase 4 consolidation (2026-01-19). This file is retained for backward
+compatibility during the transition period.
+
+Migration:
+    from agentic_core.L5_safety.validators.CodeStandardsEnforcerAgent import (
+        CodeStandardsEnforcerAgent,
+        get_code_standards_enforcer,
+        check_patterns,
+    )
+
+PatternEnforcerAgent - Coding pattern enforcement.
 
 Extracted from canon_agents_pattern.py.
 Enforces coding patterns and best practices across Python files.
 """
+import warnings
+warnings.warn(
+    "PatternEnforcerAgent is deprecated. Use CodeStandardsEnforcerAgent instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
