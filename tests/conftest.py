@@ -12,6 +12,43 @@ from unittest.mock import mock_open
 project_root = Path(__file__).parent.parent
 stubs_path = project_root / "stubs"
 
+# ============================================================================
+# GLOBAL ARCHIVES QUARANTINE - System-wide exclusion of archives/ directory
+# ============================================================================
+QUARANTINED_DIRS = frozenset({
+    'archives',
+    '.sovereign_healing_backup',
+    '__pycache__',
+    '.git',
+    '.venv',
+    'venv',
+    'node_modules',
+    'dist',
+    'build',
+})
+
+
+def is_quarantined_path(path: Path) -> bool:
+    """Check if a path is in a quarantined directory (archives, backups, etc.)."""
+    path_parts = set(path.parts)
+    return bool(path_parts & QUARANTINED_DIRS)
+
+
+def filter_quarantined_paths(paths):
+    """Filter out paths that are in quarantined directories."""
+    return [p for p in paths if not is_quarantined_path(Path(p) if isinstance(p, str) else p)]
+
+
+@pytest.fixture
+def quarantine_filter():
+    """Provides quarantine filter functions for tests that scan files."""
+    return {
+        'is_quarantined': is_quarantined_path,
+        'filter_paths': filter_quarantined_paths,
+        'quarantined_dirs': QUARANTINED_DIRS,
+    }
+
+
 # Insert project root first (for agentic_core imports), then stubs as a fallback
 sys.path.insert(0, str(project_root))
 sys.path.insert(1, str(stubs_path))

@@ -44,6 +44,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
+    GLOBAL_EXCLUDED_DIRS,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     ARCHIVES_DIR,
@@ -89,8 +90,8 @@ class HygieneGuardianAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
     # Approved folders for validation
     SOVEREIGN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR, TESTS_DIR]
     
-    # Directories to skip
-    SKIP_DIRS = {'__pycache__', '.git', 'node_modules', '.venv', 'venv', ARCHIVES_DIR}
+    # Directories to skip - Use SSOT from structure_blueprint
+    SKIP_DIRS = set(GLOBAL_EXCLUDED_DIRS)
     
     # Files that are allowed to be empty
     ALLOWED_EMPTY = {'__init__.py'}

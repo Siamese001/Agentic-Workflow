@@ -747,42 +747,43 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset({
 })
 
 
-def is_path_allowed(path_str: str) -> bool:
+def is_path_allowed(rel_path: Union[str, Path]) -> bool:
     """
-    Check if a path is within an allowed sovereign territory.
-    
-    This function validates that a path starts with one of the registered
-    sovereign roots (from SOVEREIGN_REGISTRY), ensuring nested paths like
-    'agentic_core/utils' are correctly recognized as valid.
+    [SSOT] Determines if a path conforms to the SOVEREIGN_REGISTRY structure.
+    Used by agents (Filesystem/Hierarchy) as a safety brake to prevent 
+    'friendly fire' archiving of validly placed files.
     
     Args:
-        path_str: Path string relative to project root (e.g., 'agentic_core/utils')
+        rel_path: Path relative to project root (e.g., 'agentic_core/L2_execution/file.py')
         
     Returns:
-        True if path is within a sovereign territory, False otherwise
+        True if path is within a valid sovereign territory, False otherwise
     """
-    from pathlib import Path
-    path = Path(path_str)
-    parts = path.parts
+    path_str = str(rel_path).replace("\\", "/")
+    parts = path_str.split("/")
     
-    if not parts:
+    # 1. Check Root Whitelist (Files allowed at strict root)
+    if len(parts) == 1:
+        return parts[0] in ROOT_PROTECTED_FILES or parts[0] in ALLOWED_DUPLICATE_FILENAMES
+
+    root = parts[0]
+    
+    # 2. Check Sovereign Roots
+    if root not in SOVEREIGN_REGISTRY:
+        # If the root folder isn't known (e.g. "random_folder/"), it's invalid
         return False
-    
-    # Check if root folder is in sovereign registry
-    root_folder = parts[0]
-    if root_folder not in SOVEREIGN_REGISTRY:
-        return False
-    
-    # Validate nested path is within allowed subfolders
-    registry_entry = SOVEREIGN_REGISTRY[root_folder]
+        
+    # 3. Check First-Level Subfolders (The Sovereign Domain Check)
+    # Ensures file is in e.g., 'agentic_core/L2_execution', not 'agentic_core/junk'
     if len(parts) > 1:
-        subfolder = parts[1]
-        allowed_subfolders = registry_entry.get('subfolders', [])
-        if allowed_subfolders and subfolder not in allowed_subfolders:
-            # Check if it's a special case (e.g., __init__.py at root)
-            if not subfolder.endswith('.py'):
+        expected_subfolders = SOVEREIGN_REGISTRY[root].get('subfolders', [])
+        # Allow if no subfolders defined OR subfolder is in allowed list
+        if expected_subfolders and parts[1] not in expected_subfolders:
+            # Check if it's a .py file at root level (e.g., agentic_core/__init__.py)
+            if not parts[1].endswith('.py'):
                 return False
-    
+            
+    # If it passed these gates, it is structurally aligned with the blueprint
     return True
 
 

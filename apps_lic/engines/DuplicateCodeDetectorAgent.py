@@ -31,6 +31,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
     L5_SAFETY_DIR,
+    GLOBAL_EXCLUDED_DIRS,
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
@@ -104,8 +105,8 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         UTILS_DIR,
     ]
     
-    # Directories to exclude from scanning
-    EXCLUDE_DIRS = {ARCHIVES_DIR, '__pycache__', '.git', 'node_modules', 'venv', '.venv', 'dist', 'build'}
+    # Directories to exclude from scanning - Use SSOT from structure_blueprint
+    EXCLUDE_DIRS = set(GLOBAL_EXCLUDED_DIRS)
 
     def __init__(self, project_root: Optional[Path] = None, ctx: Optional[Any] = None) -> None:
         """
