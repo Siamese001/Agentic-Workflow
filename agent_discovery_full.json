@@ -6663,9 +6663,9 @@
   },
   {
     "class_name": "DuplicateCodeDetectorAgent",
-    "path": "agentic_core\\L5_safety\\guardrails\\DuplicateCodeDetectorAgent.py",
-    "layer": "L5",
-    "territory": "L5 Safety/Guardrails/Hygiene",
+    "path": "apps_shared\\utils\\DuplicateCodeDetectorAgent.py",
+    "layer": "Apps",
+    "territory": "Apps Shared/Utils",
     "category": "Healer",
     "inheritance": [
       "MCPHardenedMixin",

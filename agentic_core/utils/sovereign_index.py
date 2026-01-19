@@ -231,6 +231,22 @@ class SovereignIndex:
         self._initialized = False
         Logger.debug("[INDEX] Cache invalidated")
     
+    def force_refresh(self) -> int:
+        """
+        Invalidates the cache and rescans the sovereign territory.
+        
+        Use this after structural changes like archive purges.
+        
+        Returns:
+            Number of files indexed
+        """
+        self._cache.clear()
+        self._all_files.clear()
+        self._initialized = False
+        count = self._scan_filesystem()
+        Logger.info("[INDEX] Structural Purge Detected: Cache invalidated and rebuilt.")
+        return count
+    
     def add_exclusion(self, dir_name: str) -> None:
         """
         Add a directory to the exclusion list.
