@@ -14,7 +14,8 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal, timeout
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.sovereign_index import SovereignIndex
 
 

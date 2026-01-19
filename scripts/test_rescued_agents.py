@@ -309,6 +309,92 @@ def test_scripts_planning_orchestrator():
         test_fail("PLAN-04", "heal_repository missing proper signature")
 
 # =============================================================================
+# DAGMutatorAgent Tests
+# =============================================================================
+def test_dag_mutator():
+    print("\n" + "=" * 70)
+    print("DAGMutatorAgent Tests")
+    print("=" * 70)
+    
+    dag_file = PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "workflow_engines" / "DAGMutatorAgent.py"
+    source = dag_file.read_text(encoding='utf-8')
+    
+    # DAG-01: Diagnostic Wiring - verify _validate_mutation is wired
+    heal_match = re.search(r'def heal_repository\(.*?\n(.*?)(?=\ndef |\nclass |\nfrom |\Z)', source, re.DOTALL)
+    if heal_match:
+        heal_body = heal_match.group(1)
+        if '_validate_mutation' in heal_body and 'test_graph' in heal_body:
+            test_pass("DAG-01", "Diagnostic wiring - _validate_mutation is wired in heal_repository")
+        else:
+            test_fail("DAG-01", "_validate_mutation not wired in heal_repository")
+    else:
+        test_fail("DAG-01", "Could not parse heal_repository method")
+    
+    # DAG-02: Validation Logic - verify error handling exists
+    if heal_match:
+        heal_body = heal_match.group(1)
+        if 'except Exception' in heal_body and 'errors' in heal_body:
+            test_pass("DAG-02", "Validation logic - error handling exists in heal_repository")
+        else:
+            test_fail("DAG-02", "Error handling not found in heal_repository")
+    
+    # DAG-03: Syntax Integrity
+    try:
+        ast.parse(source)
+        test_pass("DAG-03", "Syntax integrity - no syntax errors")
+    except SyntaxError as e:
+        test_fail("DAG-03", f"Syntax error: {e}")
+    
+    # DAG-04: Discovery - verify proper signature with dry_run/execute
+    if 'def heal_repository(' in source and 'dry_run: bool' in source and 'execute: bool' in source:
+        test_pass("DAG-04", "Discovery - heal_repository has proper signature with dry_run/execute")
+    else:
+        test_fail("DAG-04", "heal_repository missing proper signature")
+
+# =============================================================================
+# PeerIntelligenceAuditorAgent Tests
+# =============================================================================
+def test_peer_intelligence_auditor():
+    print("\n" + "=" * 70)
+    print("PeerIntelligenceAuditorAgent Tests")
+    print("=" * 70)
+    
+    peer_file = PROJECT_ROOT / "agentic_core" / "L2_execution" / "ToolRegistry" / "PeerIntelligenceAuditorAgent.py"
+    source = peer_file.read_text(encoding='utf-8')
+    
+    # PEER-01: Diagnostic Wiring - verify _validate_search_count is wired
+    heal_match = re.search(r'def heal_repository\(.*?\n(.*?)(?=\ndef |\nclass |\Z)', source, re.DOTALL)
+    if heal_match:
+        heal_body = heal_match.group(1)
+        if '_validate_search_count' in heal_body and 'dummy_hops' in heal_body:
+            test_pass("PEER-01", "Diagnostic wiring - _validate_search_count is wired in heal_repository")
+        else:
+            test_fail("PEER-01", "_validate_search_count not wired in heal_repository")
+    else:
+        test_fail("PEER-01", "Could not parse heal_repository method")
+    
+    # PEER-02: Validation Logic - verify error handling exists
+    if heal_match:
+        heal_body = heal_match.group(1)
+        if 'except Exception' in heal_body and 'errors' in heal_body:
+            test_pass("PEER-02", "Validation logic - error handling exists in heal_repository")
+        else:
+            test_fail("PEER-02", "Error handling not found in heal_repository")
+    
+    # PEER-03: Syntax Integrity
+    try:
+        ast.parse(source)
+        test_pass("PEER-03", "Syntax integrity - no syntax errors")
+    except SyntaxError as e:
+        test_fail("PEER-03", f"Syntax error: {e}")
+    
+    # PEER-04: Discovery - verify proper signature with dry_run/execute
+    if 'def heal_repository(' in source and 'dry_run: bool' in source and 'execute: bool' in source:
+        test_pass("PEER-04", "Discovery - heal_repository has proper signature with dry_run/execute")
+    else:
+        test_fail("PEER-04", "heal_repository missing proper signature")
+
+# =============================================================================
 # MemoryLeakDetectorAgent Tests
 # =============================================================================
 def test_memory_leak_detector():
@@ -410,6 +496,8 @@ def main():
     test_hierarchy_agent()
     test_secure_checkpoint_manager()
     test_scripts_planning_orchestrator()
+    test_dag_mutator()
+    test_peer_intelligence_auditor()
     test_memory_leak_detector()
     test_import_healer()
     
