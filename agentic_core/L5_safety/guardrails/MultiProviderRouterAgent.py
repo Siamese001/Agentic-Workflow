@@ -554,11 +554,26 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             }
         }
 
+    @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
-        """Autonomous healing implementation as per Canon Key 51."""
-        super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
-        return {"violations": 0, "fixed": 0, "errors": 0}
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L5 safety/guardrails - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+
+        agent_name = "MultiProviderRouterAgent"
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L5 safety/guardrails - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 # builder function for easy instantiation
 def create_multi_provider_router(
@@ -665,38 +680,3 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     get_validated_project_root,
 )
 from agentic_core.utils.core_extensions.decorators import standard_heal
-
-@timeout(300)
-@standard_heal
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """L5 safety/guardrails - operational only."""
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-    # Note: Module-level function, cannot call super()
-    
-    if _call_path is None:
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
-    agent_name = "MultiProviderRouterAgent"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] L5 safety/guardrails - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)
-
-def _run_self_tests(self) -> dict:
-        """Run internal self-tests."""
-        results = {"passed": 0, "failed": 0, TESTS_DIR: []}
-        try:
-            assert self is not None
-            results["passed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:
-            results["failed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-        return results
