@@ -14,9 +14,10 @@ from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.sovereign_index import SovereignIndex
+from pathlib import Path
 
 # Type alias for telemetry callback
 TelemetryCallback = Callable[[str, Dict[str, Any]], None]
@@ -166,6 +167,24 @@ class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
     def get_statistics(self) -> Dict[str, Any]:
         """Legacy method for backward compatibility."""
         return self.get_live_statistics()
+
+    def _discover_patterns(self, pattern_str: str = "*.py", project_root: Optional[Path] = None) -> List[Path]:
+        """
+        Discover files matching a pattern using SovereignIndex for high-performance cached lookup.
+        
+        Args:
+            pattern_str: Glob pattern to match (e.g., "*.py", "*Agent.py")
+            project_root: Optional project root path (defaults to cwd)
+            
+        Returns:
+            List of Path objects matching the pattern
+        """
+        if project_root is None:
+            project_root = Path.cwd()
+        
+        # Use SovereignIndex for cached file discovery instead of expensive rglob
+        idx = SovereignIndex.get_instance(project_root)
+        return idx.get_files(pattern_str)
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
