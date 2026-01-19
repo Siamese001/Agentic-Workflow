@@ -47,7 +47,9 @@ def test_tc17_scaled_discovery():
     
     # Get files via rglob with same exclusions
     rglob_files = []
-    for py_file in agentic_core.rglob("*.py"):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(agentic_core):
         path_parts = py_file.parts
         skip = False
         for part in path_parts:

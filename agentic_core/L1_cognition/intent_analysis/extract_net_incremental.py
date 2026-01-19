@@ -16,9 +16,9 @@ def extract_net_incremental() -> None:
     staging_dir.mkdir()
     existing_files: Any = get_existing_files()
     extracted_files: Any = []
-    for py_file in source_dir.rglob('*.py'):
-        if '__pycache__' in py_file.parts or '.git' in py_file.parts:
-            continue
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(source_dir):
         FILENAME: Any = py_file.name
         name_exists: Any = any((FILENAME in existing for existing in existing_files))
         if not name_exists:

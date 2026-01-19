@@ -43,7 +43,9 @@ def flush_and_align() -> Any:
             print(f'  [-] Skipped: {source} (not found)')
     print('\n[*] FLUSHING __init__.py FILES...')
     flush_count: Any = 0
-    for init_file in CORE.rglob('__init__.py'):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for init_file in [f for f in get_python_files(CORE) if f.name == '__init__.py']:
         print(f'  [!] Flushing: {init_file.relative_to(ROOT)}')
         with open(init_file, 'w', encoding='utf-8') as f:
             f.write(f'"""Sovereign Layer: {init_file.parent.name}"""\n')
@@ -52,8 +54,10 @@ def flush_and_align() -> Any:
     print('\n[*] REWIRING IMPORTS...')
     rewire: Any = [('agentic_core\\.L5_safety\\.P1_red_team\\.analysis', 'agentic_core.L2_execution.tool_registry.analysis')]
     count: Any = 0
-    for py_file in ROOT.rglob('*.py'):
-        if any((p in str(py_file) for p in ['legacy_code', '.venv', 'data'])):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(ROOT):
+        if 'legacy_code' in str(py_file) or 'data' in str(py_file):
             continue
         try:
             with open(py_file, 'r', encoding='utf-8') as f:

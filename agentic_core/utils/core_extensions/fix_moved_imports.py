@@ -14,9 +14,9 @@ def fix_imports() -> Any:
     """Fix all imports referencing moved files."""
     print('[*] FIXING IMPORTS AFTER FILE MOVES...')
     fixed: Any = 0
-    for py_file in ROOT.rglob('*.py'):
-        if 'venv' in str(py_file) or '.git' in str(py_file):
-            continue
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(ROOT):
         try:
             content: Any = py_file.read_text(encoding='utf-8')
             original: Any = content

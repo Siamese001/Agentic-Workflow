@@ -24,7 +24,9 @@ def fix_structural_violations() -> Any:
     print('[*] STARTING STRUCTURAL FIX...')
     print('\n[PHASE 1] Fixing agentic_core -> schemas dependency...')
     schemas_path: Any = ROOT / 'schemas'
-    canon_entry_files: Any = list(schemas_path.rglob('*canon*.py'))
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    canon_entry_files: Any = [f for f in get_python_files(schemas_path) if 'canon' in f.name]
     if canon_entry_files:
         print(f'  Found {len(canon_entry_files)} canon-related schema files')
         for f in canon_entry_files[:5]:

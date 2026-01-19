@@ -35,7 +35,9 @@ def move_runtime_files_up() -> Any:
     if not OBS_RUNTIME.exists():
         print('[!] Runtime directory not found')
         return
-    for py_file in OBS_RUNTIME.glob('*.py'):
+    # Phase 6.8: Use ssot_discovery instead of glob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(OBS_RUNTIME):
         if py_file.name == '__init__.py':
             continue
         target: Any = OBS_P1 / f'runtime_{py_file.name}'

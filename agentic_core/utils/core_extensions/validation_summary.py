@@ -20,7 +20,9 @@ core: Any = ROOT / 'agentic_core'
 
 def count_python_files(directory: Any) -> Any:
     """Count Python files in a directory."""
-    return len(list(directory.rglob('*.py')))
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    return len(list(get_python_files(directory)))
 
 def check_structure() -> Any:
     """Check the sovereign structure."""
@@ -60,7 +62,9 @@ def check_structure() -> Any:
     print('\n[PHASE 3] GRAVITY CHECK')
     print('-' * 80)
     violations: Any = []
-    for py_file in CORE.rglob('*.py'):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(CORE):
         try:
             with open(py_file, 'r', encoding='utf-8') as f:
                 content: Any = f.read()

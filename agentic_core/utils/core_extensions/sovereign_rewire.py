@@ -32,7 +32,9 @@ def rewire_synapses() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] STARTING GLOBAL SYNAPTIC REWIRE...')
     fixed_count: Any = 0
-    for py_file in ROOT.rglob('*.py'):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(ROOT):
         if 'sovereign_rewire' in py_file.name:
             continue
         try:

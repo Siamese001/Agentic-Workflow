@@ -28,7 +28,9 @@ from archives.location_violations.sovereign_index import SovereignIndex
 def repair_test_syntax(test_dir: Any=TESTS_DIR) -> Any:
     """Brief description of functionality and purpose."""
     files_fixed: Any = 0
-    for path in pathlib.Path(test_dir).rglob('*.py'):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for path in get_python_files(pathlib.Path(test_dir)):
         try:
             lines: Any = path.read_text(encoding='utf-8').splitlines()
             new_lines: Any = []

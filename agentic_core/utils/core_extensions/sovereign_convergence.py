@@ -54,8 +54,10 @@ def align_territory() -> Any:
     print('\n[*] REWIRING IMPORTS...')
     replacements: Any = []
     count: Any = 0
-    for py_file in ROOT.rglob('*.py'):
-        if 'legacy_code' in str(py_file) or 'env' in str(py_file):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(ROOT):
+        if 'legacy_code' in str(py_file):
             continue
         try:
             with open(py_file, 'r', encoding='utf-8') as f:

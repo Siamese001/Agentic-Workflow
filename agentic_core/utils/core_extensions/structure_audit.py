@@ -83,7 +83,9 @@ def audit_structure() -> Any:
         for folder in level_info['folders']:
             folder_path: Any = ROOT / folder
             if folder_path.exists():
-                py_count: Any = len(list(folder_path.rglob('*.py')))
+                # Phase 6.8: Use ssot_discovery instead of rglob
+                from agentic_core.utils.ssot_discovery import get_python_files
+                py_count: Any = len(list(get_python_files(folder_path)))
                 print(f'  ✓ {folder:25} ({py_count} Python files)')
             else:
                 print(f'  ✗ {folder:25} MISSING')
@@ -110,7 +112,9 @@ def audit_structure() -> Any:
     print('PHASE 3: IMPORT GRAVITY VIOLATIONS')
     print('=' * 80)
     all_violations: Any = []
-    for py_file in ROOT.rglob('*.py'):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(ROOT):
         violations: Any = check_import_violations(py_file)
         all_violations.extend(violations)
     if all_violations:

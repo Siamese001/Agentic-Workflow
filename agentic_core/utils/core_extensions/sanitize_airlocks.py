@@ -56,7 +56,9 @@ def run_sanitizer() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] SOVEREIGN SANITIZER: Flushing the Synaptic Loops...')
     count: Any = 0
-    targets: Any = list(CORE.rglob('__init__.py')) + list(CORE.rglob('*_impl.py'))
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    targets: Any = [f for f in get_python_files(CORE) if f.name == '__init__.py' or '_impl' in f.name]
     for target in targets:
         try:
             if sanitize_file(target):

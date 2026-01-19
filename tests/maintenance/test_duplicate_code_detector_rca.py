@@ -142,10 +142,12 @@ def test_usage_patterns():
     # Search for imports of DuplicateCodeDetectorAgent
     usage_files = []
     
-    for py_file in PROJECT_ROOT.rglob("*.py"):
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(PROJECT_ROOT):
         if 'DuplicateCodeDetectorAgent.py' in str(py_file):
             continue
-        if any(excluded in str(py_file) for excluded in ['__pycache__', '.venv', 'venv', 'archives']):
+        if 'archives' in str(py_file):
             continue
         
         try:

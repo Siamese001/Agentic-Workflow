@@ -88,9 +88,9 @@ def validate_observability_footprint(target_dir: str) -> Tuple[float, List[str]]
     issues = []
     total_files = 0
     
-    for path in Path(target_dir).rglob("*.py"):
-        if "tests" in str(path) or "__pycache__" in str(path):
-            continue
+    # Phase 6.8: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for path in get_python_files(Path(target_dir)):
         
         total_files += 1
         file_issues = check_dark_reasoning(path)

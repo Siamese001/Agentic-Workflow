@@ -24,7 +24,10 @@ def repository_list_files(directory: Any='.') -> Any:
     try:
         if '..' in directory:
             return 'Error: Cannot navigate up the directory tree.'
-        return glob.glob(os.path.join(directory, '**/*.py'), recursive=True)
+        # Phase 6.8: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        from pathlib import Path
+        return [str(f) for f in get_python_files(Path(directory))]
     except Exception as e:
         return f'Error listing files: {e}'
 
