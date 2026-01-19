@@ -82,7 +82,9 @@ class FilesystemAgent(HealerMixin):
         """
         violations: List[Tuple[Path, str]] = []
         
-        for file_path in self.project_root.rglob("*"):
+        from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+        all_files = list(get_python_files(self.project_root)) + list(get_data_files(self.project_root))
+        for file_path in all_files:
             if not file_path.is_file():
                 continue
                 

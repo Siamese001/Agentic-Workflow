@@ -353,7 +353,16 @@ class ArchitectureGovernor:
         """
         all_files = []
         for pattern in file_patterns:
-            all_files.extend(glob.glob(pattern, recursive=True))
+            # Sub-20: Use ssot_discovery instead of glob
+            from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+            from pathlib import Path
+            pattern_path = Path(pattern.replace('**/', '').replace('*.py', '').replace('*.json', ''))
+            if '*.py' in pattern:
+                all_files.extend([str(f) for f in get_python_files(pattern_path)])
+            elif '*.json' in pattern:
+                all_files.extend([str(f) for f in get_data_files(pattern_path, extensions=['.json'])])
+            else:
+                all_files.extend([str(f) for f in get_python_files(pattern_path)] + [str(f) for f in get_data_files(pattern_path)])
 
         # Filter to unique files
         all_files = list(set(all_files))

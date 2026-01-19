@@ -76,7 +76,10 @@ class SovereignPromptRenderer:
     def list_available_templates() -> list[str]:
         """Utility for introspection and MCP routing."""
         root: Any = SovereignPromptRenderer.TEMPLATE_ROOT
-        return [p.relative_to(root).as_posix() for p in root.rglob('*.jinja') if p.is_file()]
+        # Final True 20: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_data_files
+    jinja_files = get_data_files(root, extensions=['.jinja'])
+    return [p.relative_to(root).as_posix() for p in jinja_files if p.is_file()]
 
 def get_sovereign_prompt_renderer() -> SovereignPromptRenderer:
     """Brief description of functionality and purpose."""

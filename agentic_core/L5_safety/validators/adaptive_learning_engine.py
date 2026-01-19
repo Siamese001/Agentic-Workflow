@@ -129,7 +129,10 @@ class AdaptiveLearningEngine:
                 backup = self.backup_dir / f"healing_patterns.{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
                 import shutil
                 shutil.copy2(self.storage_path, backup)
-                backups = sorted(self.backup_dir.glob('healing_patterns.*.json'), key=os.path.getmtime)
+                # Sub-20: Use ssot_discovery instead of glob
+                from agentic_core.utils.ssot_discovery import get_data_files
+                all_files = get_data_files(self.backup_dir, extensions=['.json'])
+                backups = sorted([f for f in all_files if 'healing_patterns.' in f.name], key=os.path.getmtime, reverse=True)
                 while len(backups) > 10:
                     backups[0].unlink()
                     backups.pop(0)

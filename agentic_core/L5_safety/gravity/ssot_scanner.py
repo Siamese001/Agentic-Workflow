@@ -104,7 +104,9 @@ class SSOTScanner:
         agents = []
         
         # Find all *Agent.py files
-        agent_files = list(self.project_root.glob('**/*Agent.py'))
+        # Operation Zero: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_agent_files
+        agent_files = list(get_agent_files(self.project_root))
         
         for agent_file in agent_files:
             # Skip vendor/cache directories

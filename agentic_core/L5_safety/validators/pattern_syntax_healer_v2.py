@@ -64,7 +64,7 @@ class PatternSyntaxHealerV2:
         }
         
         # Scan all Python files
-        for py_file in self.root_dir.rglob('*.py'):
+        for py_file in get_python_files(self.root_dir):
             if self._should_skip_file(py_file):
                 continue
                 

@@ -431,7 +431,10 @@ class SSOTRelocator:
                 target.mkdir(parents=True, exist_ok=True)
                 
                 # Move all files from source to target
-                for item in source.rglob('*'):
+                # Final True 20: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+            all_items = list(get_python_files(source)) + list(get_data_files(source))
+            for item in all_items:
                     if item.is_file():
                         rel_path = item.relative_to(source)
                         target_file = target / rel_path.name  # Flatten structure

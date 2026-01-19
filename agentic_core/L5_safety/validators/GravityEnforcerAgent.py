@@ -211,7 +211,8 @@ class GravityEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         """
         violations = []
         
-        for py_file in directory.rglob('*.py'):
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(directory):
             # Skip excluded directories
             if any(skip_dir in py_file.parts for skip_dir in self.SKIP_DIRS):
                 continue
