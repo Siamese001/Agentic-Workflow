@@ -1,0 +1,11 @@
+{
+  "timestamp": "20260119_173152",
+  "tests": {
+    "self_tests": {
+      "error": "No module named 'agentic_core.runtime.shared_runtime.reflection_engine'"
+    },
+    "chaos_test": {
+      "error": "No module named 'agentic_core.runtime.shared_runtime.reflection_engine'"
+    }
+  }
+}

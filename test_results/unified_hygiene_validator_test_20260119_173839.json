@@ -1,0 +1,45 @@
+{
+  "timestamp": "20260119_173839",
+  "tests": {
+    "self_tests": {
+      "error": "'\\\\a\\\\file1.py' is not in the subpath of 'C:\\\\Git\\\\Agentic-Workflow' OR one path is relative and the other is absolute."
+    },
+    "gap4_duplicates": {
+      "status": "FAIL",
+      "duplicates_found": 0,
+      "test_duplicate_detected": false,
+      "details": []
+    },
+    "orphan_detection": {
+      "status": "FAIL",
+      "orphans_found": 0,
+      "test_orphan_detected": false,
+      "details": []
+    },
+    "marker_scanning": {
+      "status": "FAIL",
+      "total_markers_found": 0,
+      "test_file_markers": 0,
+      "marker_types_found": [],
+      "expected_markers": [
+        "XXX",
+        "TODO",
+        "BUG",
+        "HACK",
+        "FIXME"
+      ],
+      "all_expected_found": false,
+      "details": []
+    },
+    "full_validation": {
+      "status": "PASS",
+      "total_violations": 0,
+      "summary": {
+        "duplicate_count": 0,
+        "empty_file_count": 0,
+        "tech_debt_count": 0,
+        "orphan_count": 0
+      }
+    }
+  }
+}
