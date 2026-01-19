@@ -16,6 +16,7 @@ from typing import Any, Dict, Optional, Set
 from dataclasses import dataclass
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 import logging
@@ -23,7 +24,7 @@ import logging
 Logger = logging.getLogger(__name__)
 
 @dataclass
-class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Detects potential deadlocks in asyncio tasks.
 
