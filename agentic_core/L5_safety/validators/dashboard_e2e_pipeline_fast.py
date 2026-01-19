@@ -168,13 +168,13 @@ class FastDashboardE2EPipeline:
                 content = content.replace(old_class_def, new_class_def)
                 
                 # Add import if needed
-                if 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin' not in content:
+                if 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin' not in content:
                     lines = content.split('\n')
                     insert_idx = 0
                     for i, line in enumerate(lines):
                         if line.strip().startswith('import ') or line.strip().startswith('from '):
                             insert_idx = i + 1
-                    lines.insert(insert_idx, 'from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin')
+                    lines.insert(insert_idx, 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin')
                     content = '\n'.join(lines)
                 
                 path.write_text(content, encoding='utf-8')
