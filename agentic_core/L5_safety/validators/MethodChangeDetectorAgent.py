@@ -95,7 +95,7 @@ class GeneratedTest:
     passed: bool
     error_message: Optional[str]
 
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin, HealResult
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
@@ -153,9 +153,9 @@ class MethodChangeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         return methods
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs) -> HealResult:
+        """Invoke healing chain via super(). Phase 5: Standardized signature."""
+        return super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, **kwargs)
 
 class RegressionTestGenerator:
     """Generates pytest code and creates test files."""

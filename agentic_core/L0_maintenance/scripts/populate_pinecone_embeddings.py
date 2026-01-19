@@ -220,16 +220,12 @@ class PineconePopulator:
         
         records = []
         
-        # Find md files in root and docs/, excluding archives/venv
-        all_files = list(PROJECT_ROOT.glob("*.md"))
-        if DOCS_DIR.exists():
-            all_files.extend(DOCS_DIR.rglob("*.md"))
+        # Phase 6: Use ssot_discovery instead of rglob for MD files
+        from agentic_core.utils.ssot_discovery import get_markdown_files
+        all_files = get_markdown_files(PROJECT_ROOT)
             
         for file_path in all_files:
             path_str = str(file_path)
-            # Skip archives, venv, node_modules
-            if any(skip in path_str.lower() for skip in ["archive", "venv", "node_modules", ".venv"]):
-                continue
                 
             try:
                 with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
@@ -343,11 +339,10 @@ class PineconePopulator:
             print(f"  ⚠️  {AGENTIC_CORE_DIR} not found. Skipping.")
             return
         
-        for file_path in AGENTIC_CORE_DIR.rglob("*.py"):
+        # Phase 4.1: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for file_path in get_python_files(AGENTIC_CORE_DIR):
             path_str = str(file_path)
-            # Skip pycache, archives
-            if "__pycache__" in path_str or "archive" in path_str.lower():
-                continue
                 
             try:
                 with open(file_path, "r", encoding='utf-8') as f:

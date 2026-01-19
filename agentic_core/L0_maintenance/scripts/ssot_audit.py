@@ -41,12 +41,14 @@ ROOT = Path('.')
 
 def find_duplicates():
     """Find duplicate filenames across approved folders."""
+    # Phase 4.1: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
     files_by_name = defaultdict(list)
     for folder in APPROVED_FOLDERS:
         folder_path = ROOT / folder
         if folder_path.exists():
-            for py_file in folder_path.rglob('*.py'):
-                if '__pycache__' not in str(py_file) and '.git' not in str(py_file) and py_file.name != '__init__.py':
+            for py_file in get_python_files(folder_path):
+                if py_file.name != '__init__.py':
                     files_by_name[py_file.name].append(str(py_file))
     
     return {name: paths for name, paths in files_by_name.items() if len(paths) > 1}
@@ -55,9 +57,9 @@ def find_gravity_violations():
     """Find upward import violations (higher layer importing from lower layer)."""
     violations = []
     
-    for py_file in (ROOT / AGENTIC_CORE_DIR).rglob('*.py'):
-        if '__pycache__' in str(py_file):
-            continue
+    # Phase 4.1: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(ROOT / AGENTIC_CORE_DIR):
         file_layer = get_canonical_layer(py_file)
         if not file_layer or file_layer == 'Unknown':
             continue
@@ -84,13 +86,13 @@ def find_gravity_violations():
 
 def find_syntax_errors():
     """Find files with syntax errors."""
+    # Phase 4.1: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
     errors = []
     for folder in APPROVED_FOLDERS:
         folder_path = ROOT / folder
         if folder_path.exists():
-            for py_file in folder_path.rglob('*.py'):
-                if '__pycache__' in str(py_file):
-                    continue
+            for py_file in get_python_files(folder_path):
                 try:
                     content = py_file.read_text(encoding='utf-8')
                     ast.parse(content)
@@ -106,13 +108,13 @@ def find_syntax_errors():
 
 def find_naming_violations():
     """Find files with naming convention violations."""
+    # Phase 4.1: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
     violations = []
     for folder in APPROVED_FOLDERS:
         folder_path = ROOT / folder
         if folder_path.exists():
-            for py_file in folder_path.rglob('*.py'):
-                if '__pycache__' in str(py_file):
-                    continue
+            for py_file in get_python_files(folder_path):
                 name = py_file.stem
                 # Check for CamelCase in non-Agent files
                 if any(c.isupper() for c in name) and 'Agent' not in name and 'Mixin' not in name:

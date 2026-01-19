@@ -205,7 +205,9 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """Relocate files from non-approved L2 layer."""
         bad_path = agentic_core_path / bad_layer_l2
         
-        for py_file in bad_path.rglob("*.py"):
+        # Phase 4.1: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(bad_path):
             if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                 continue
             results["violations_found"] += 1
@@ -255,7 +257,9 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         for bad_territory_l3 in non_approved_l3:
             bad_path = layer_l2_path / bad_territory_l3
             
-            for py_file in bad_path.rglob("*.py"):
+            # Phase 4.1: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files
+            for py_file in get_python_files(bad_path):
                 if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                     continue
                 results["violations_found"] += 1

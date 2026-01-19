@@ -28,22 +28,24 @@ for t in sorted(territories, key=lambda x: x.get('Heal Cap %', 100)):
         print(f"  {t['Territory']}: {heal_cap}% ({total} agents)")
 
 # Now let's find agents in the repository that might match these territories
+# Phase 4.1: Use ssot_discovery instead of rglob
+from agentic_core.utils.ssot_discovery import get_agent_files
 print("\n=== Searching for agents in L1 Cognition ===")
-l1_agents = list(Path('C:/Git/Agentic-Workflow/agentic_core/L1_cognition').rglob('*Agent.py'))
+l1_agents = [f for f in get_agent_files(Path('C:/Git/Agentic-Workflow/agentic_core/L1_cognition'))]
 for agent in l1_agents:
     content = agent.read_text(encoding='utf-8', errors='ignore')
     has_heal = 'def heal_repository' in content
     print(f"  {'✅' if has_heal else '❌'} {agent.name}")
 
 print("\n=== Searching for agents in L3 Orchestration ===")
-l3_agents = list(Path('C:/Git/Agentic-Workflow/agentic_core/L3_orchestration').rglob('*Agent.py'))
+l3_agents = [f for f in get_agent_files(Path('C:/Git/Agentic-Workflow/agentic_core/L3_orchestration'))]
 for agent in l3_agents:
     content = agent.read_text(encoding='utf-8', errors='ignore')
     has_heal = 'def heal_repository' in content
     print(f"  {'✅' if has_heal else '❌'} {agent.name}")
 
 print("\n=== Agents MISSING heal_repository (need to fix) ===")
-all_agents = list(Path('C:/Git/Agentic-Workflow/agentic_core').rglob('*Agent.py'))
+all_agents = get_agent_files(Path('C:/Git/Agentic-Workflow/agentic_core'))
 missing = []
 for agent in all_agents:
     content = agent.read_text(encoding='utf-8', errors='ignore')
