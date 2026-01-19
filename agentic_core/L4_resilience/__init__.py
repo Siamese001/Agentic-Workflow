@@ -10,6 +10,29 @@ import functools
 logger = logging.getLogger(__name__)
 
 
+from enum import Enum
+
+class CircuitBreakerState(Enum):
+    """Circuit breaker states."""
+    CLOSED = "closed"
+    OPEN = "open"
+    HALF_OPEN = "half_open"
+
+
+class CircuitBreakerOpenError(Exception):
+    """Raised when circuit breaker is open."""
+    pass
+
+
+def get_breaker(name: str = "default") -> "CircuitBreaker":
+    """Get or create a named circuit breaker."""
+    if not hasattr(get_breaker, "_breakers"):
+        get_breaker._breakers = {}
+    if name not in get_breaker._breakers:
+        get_breaker._breakers[name] = CircuitBreaker()
+    return get_breaker._breakers[name]
+
+
 class CircuitBreaker:
     """Circuit breaker pattern implementation."""
     
@@ -17,7 +40,7 @@ class CircuitBreaker:
         self.failure_threshold = failure_threshold
         self.reset_timeout = reset_timeout
         self._failure_count = 0
-        self._state = "closed"
+        self._state = CircuitBreakerState.CLOSED
     
     def call(self, func: Callable, *args, **kwargs) -> Any:
         """Execute function with circuit breaker protection."""
@@ -66,4 +89,4 @@ def resilient(max_retries: int = 3, circuit_breaker: bool = False):
     return decorator
 
 
-__all__ = ['CircuitBreaker', 'RetryPolicy', 'resilient']
+__all__ = ['CircuitBreaker', 'CircuitBreakerState', 'CircuitBreakerOpenError', 'get_breaker', 'RetryPolicy', 'resilient']

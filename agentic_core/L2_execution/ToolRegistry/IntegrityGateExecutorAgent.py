@@ -7,7 +7,7 @@ import re
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Tuple
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeoutProtocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NAMING FIXED: ValidationRejectionReason → ValidationRejectionReason
@@ -463,7 +463,7 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
         number_pattern = r'\d+\.?\d*[KMBT%]?'
         return bool(re.search(number_pattern, value))
 
-    @timeoutProtocol(300)
+    @timeout(300)
     @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L2 execution agent - operational only."""
