@@ -58,21 +58,16 @@ class SovereignIndex:
     _instance: Optional[SovereignIndex] = None
     _lock: threading.Lock = threading.Lock()
     
-    # Default exclusion patterns - imported from SSOT blueprint
+    # Default exclusion patterns - Production Lens SSOT
     # PRODUCTION LENS: Excludes test directories to focus on production code
-    try:
-        from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
-        DEFAULT_EXCLUDED_DIRS: Set[str] = set(GLOBAL_EXCLUDED_DIRS)
-    except ImportError:
-        # Fallback if blueprint not available during initialization
-        DEFAULT_EXCLUDED_DIRS: Set[str] = {
-            '__pycache__', '.pytest_cache', 'build', 'dist', '.eggs',
-            '.git', '.svn', '.hg',
-            '.venv', 'venv', 'env', '.env', 'node_modules',
-            'coverage_html', 'htmlcov', '.coverage',
-            'archives', '.sovereign_healing_backup', 'reports',
-            'tests',  # Production Lens - exclude test files from healing scans
-        }
+    DEFAULT_EXCLUDED_DIRS: Set[str] = {
+        '__pycache__', '.pytest_cache', '.mypy_cache', 'build', 'dist', '.eggs',
+        '.git', '.svn', '.hg',
+        '.venv', 'venv', 'env', '.env', 'node_modules',
+        'coverage_html', 'htmlcov', '.coverage', 'reports',
+        'archives', '.sovereign_healing_backup',
+        'tests',  # Production Lens - exclude test files from healing scans
+    }
     
     def __init__(self, project_root: Path) -> None:
         """
