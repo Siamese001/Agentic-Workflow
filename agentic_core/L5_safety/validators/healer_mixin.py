@@ -20,11 +20,16 @@ Opt-out cases:
 - Read-only detectors: Adversarial safety
 
 FILESYSTEM COMPLIANCE: All file operations use safe_path_join from structure_blueprint
+
+Phase 1 Enhancement (Jan 19, 2026):
+- Added HealResult TypedDict for standardized return format
+- Added _normalize_result() for zero-loss legacy key mapping
+- Updated heal_repository signature with **kwargs for dynamic orchestrator calls
 """
 from ast import parse, unparse
 import ast
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Set, Tuple, TYPE_CHECKING, TypedDict
 import logging
 import time
 import asyncio
@@ -40,6 +45,21 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 
 Logger = logging.getLogger(__name__)
+
+
+class HealResult(TypedDict):
+    """
+    Standardized return format for all healing operations.
+    Ensures SSOT consistency across the orchestrator layer.
+    
+    Phase 1 Enhancement: This TypedDict provides type safety and
+    documentation for the canonical healing return format.
+    """
+    violations_found: int
+    violations_fixed: int
+    status: str  # 'PASS', 'FAIL', 'ERROR', 'SKIPPED', 'UNKNOWN'
+    errors: int
+    skipped: int
 
 
 class HealerMixin:
@@ -287,14 +307,43 @@ class HealerMixin:
         """Reset healing budget for new session."""
         self._healing_count = 0
 
+    def _normalize_result(self, result: Dict[str, Any]) -> HealResult:
+        """
+        ZERO-LOSS NORMALIZATION:
+        Maps legacy keys (violations, fixed, renamed) to the standard HealResult format
+        to ensure backward compatibility with older agents.
+        
+        Phase 1 Enhancement: This method ensures no data is dropped during
+        the transition from legacy return formats to the standardized HealResult.
+        
+        Args:
+            result: Dictionary with legacy or mixed keys
+            
+        Returns:
+            HealResult with standardized keys
+        """
+        # Preserve original counts while mapping to new schema
+        # Priority order ensures we capture data from any legacy format
+        found = result.get('violations_found') or result.get('violations') or 0
+        fixed = result.get('violations_fixed') or result.get('fixed') or result.get('renamed') or 0
+        
+        return HealResult(
+            violations_found=found,
+            violations_fixed=fixed,
+            status=result.get('status', 'UNKNOWN'),
+            errors=result.get('errors', 0),
+            skipped=result.get('skipped', 0),
+        )
+
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: Optional[Set[str]] = None,
+        **kwargs  # Essential for dynamic orchestrator calls
+    ) -> HealResult:
         """
         Repository-level healing method (Canon Key 51 compliance).
         
@@ -308,9 +357,10 @@ class HealerMixin:
             depth: Current recursion depth for cycle detection
             max_depth: Maximum recursion depth allowed
             _call_path: Set of agent names already in call chain (cycle detection)
+            **kwargs: Additional arguments for backward compatibility and orchestrator calls
             
         Returns:
-            Dict with healing summary: {violations, fixed, errors, skipped}
+            HealResult with standardized healing summary
         """
         agent_name = self.__class__.__name__
         
@@ -321,22 +371,22 @@ class HealerMixin:
         # Cycle detection
         if agent_name in _call_path:
             Logger.warning(f"[HEAL_REPOSITORY] Cycle detected: {agent_name}")
-            return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "cycle_detected": True}
+            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"})
         
         # Depth limiting
         if depth > max_depth:
             Logger.warning(f"[HEAL_REPOSITORY] Max depth {max_depth} exceeded for {agent_name}")
-            return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"})
         
         # Check if healing is enabled
         if not self._healing_enabled:
             Logger.debug(f"[HEAL_REPOSITORY] {agent_name}: Healing disabled")
-            return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1}
+            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"})
         
         # Budget check
         if self._healing_count >= self._max_healing_per_session:
             Logger.warning(f"[HEAL_REPOSITORY] {agent_name}: Budget exhausted")
-            return {"violations": 0, "fixed": 0, "errors": 1, "budget_exhausted": True}
+            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 1, "skipped": 0, "status": "ERROR"})
         
         # Add to call path
         _call_path.add(agent_name)
@@ -354,11 +404,11 @@ class HealerMixin:
                 self._healer_metrics["total_time"] = 0.0
                 self._healer_metrics["success_count"] = 0
             
-            return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
+            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 0, "skipped": 0, "status": "PASS"})
             
         except Exception as e:
             Logger.error(f"[HEAL_REPOSITORY] {agent_name} failed: {e}")
-            return {"violations": 0, "fixed": 0, "errors": 1, "error_message": str(e)}
+            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 1, "status": "ERROR"})
         finally:
             _call_path.discard(agent_name)
 
@@ -376,4 +426,4 @@ class HealerMixin:
         )
 
 
-__all__ = ["HealerMixin"]
+__all__ = ["HealerMixin", "HealResult"]

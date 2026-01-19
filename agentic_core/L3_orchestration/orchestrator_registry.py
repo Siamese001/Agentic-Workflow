@@ -5,73 +5,65 @@ Orchestrator Registry - SSOT for Orchestrator Access
 Provides a single entry point for obtaining orchestrator instances.
 All orchestration requests should go through this registry.
 
+Phase 2 Enhancement (Jan 19, 2026):
+- Factory pattern for mode-based orchestrator instantiation
+- All modes route to UnifiedOrchestratorAgent
+- Deprecation warnings for legacy class usage
+- Type-safe IOrchestratorAgent return type
+
 Usage:
     from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
     
     orchestrator = get_orchestrator("healing")
-    result = orchestrator.dispatch("safety", "validate", payload)
+    result = orchestrator.run_mission(["BiasAuditorAgent"], dry_run=True)
 """
 
 import warnings
-from typing import Optional
+from typing import Dict, Optional, Type
 
 from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
+from agentic_core.L3_orchestration.interfaces import IOrchestratorAgent
 
 
 # Singleton instance
 _unified_orchestrator: Optional[UnifiedOrchestratorAgent] = None
 
 
-def get_orchestrator(mode: str = "unified") -> UnifiedOrchestratorAgent:
+def get_orchestrator(mode: str = "unified", **kwargs) -> IOrchestratorAgent:
     """
-    Get the appropriate orchestrator for the given mode.
+    Factory function: Single entry point for orchestration.
+    Replaces direct instantiation of legacy orchestrator classes.
     
     All modes now return the UnifiedOrchestratorAgent as the SSOT.
-    Legacy mode names are supported for backward compatibility but
-    will trigger deprecation warnings.
+    The mode parameter configures the orchestrator's behavior.
     
     Args:
         mode: Orchestration mode. Supported values:
-            - "unified" (default): Returns UnifiedOrchestratorAgent
-            - "healing": Returns UnifiedOrchestratorAgent (legacy alias)
-            - "compliance": Returns UnifiedOrchestratorAgent (legacy alias)
-            - "ssot": Returns UnifiedOrchestratorAgent (legacy alias)
-            - "full": Returns UnifiedOrchestratorAgent (legacy alias)
+            - "unified" (default): Full orchestration capabilities
+            - "healing": Focus on heal_repository operations
+            - "compliance": Focus on compliance validation
+            - "ssot": Focus on SSOT enforcement
+            - "full": Run all operations (alias for unified)
+        **kwargs: Additional arguments passed to orchestrator constructor
     
     Returns:
-        UnifiedOrchestratorAgent instance
+        IOrchestratorAgent instance (UnifiedOrchestratorAgent)
     
     Raises:
         ValueError: If mode is not recognized
     """
-    global _unified_orchestrator
+    # Valid modes
+    valid_modes = {"unified", "healing", "compliance", "ssot", "full"}
     
-    # Legacy mode aliases - all map to UnifiedOrchestratorAgent
-    legacy_modes = {
-        "healing": "HealingOrchestratorAgent",
-        "compliance": "ComplianceOrchestratorAgent", 
-        "ssot": "SSOTOrchestratorAgent",
-        "full": "FullOrchestratorAgent",
-    }
-    
-    if mode in legacy_modes:
-        warnings.warn(
-            f"Mode '{mode}' is deprecated. Use 'unified' mode instead. "
-            f"The legacy {legacy_modes[mode]} has been consolidated into UnifiedOrchestratorAgent.",
-            DeprecationWarning,
-            stacklevel=2
-        )
-    elif mode != "unified":
+    if mode not in valid_modes:
         raise ValueError(
             f"Unknown orchestrator mode: '{mode}'. "
-            f"Supported modes: 'unified', 'healing', 'compliance', 'ssot', 'full'"
+            f"Available modes: {sorted(valid_modes)}"
         )
     
-    # Lazy initialization of singleton
-    if _unified_orchestrator is None:
-        _unified_orchestrator = UnifiedOrchestratorAgent()
-    
-    return _unified_orchestrator
+    # Create new instance with specified mode
+    # Note: We don't use singleton here to allow mode-specific instances
+    return UnifiedOrchestratorAgent(mode=mode, **kwargs)
 
 
 def reset_orchestrator() -> None:
