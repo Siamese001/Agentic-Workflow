@@ -1,3 +1,26 @@
+"""@deprecated
+DEPRECATED: Use UnifiedCheckpointManagerAgent instead.
+
+This agent has been consolidated into UnifiedCheckpointManagerAgent as part of
+Priority 2 consolidation (2026-01-19). This file is retained for backward
+compatibility during the transition period.
+
+Migration:
+    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
+        UnifiedCheckpointManagerAgent,
+        get_checkpoint_manager,
+        get_autonomous_checkpoint_manager,
+    )
+    
+    # For autonomous checkpoints with mirroring:
+    manager = get_autonomous_checkpoint_manager()
+"""
+import warnings
+warnings.warn(
+    "AutonomousCheckpointManagerAgent is deprecated. Use UnifiedCheckpointManagerAgent instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
