@@ -670,8 +670,9 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         if not directory.exists():
             return {'error': f'Directory {directory} does not exist'}
             
-        py_files = list(directory.rglob('*.py') if recursive else directory.glob('*.py'))
-        py_files = [f for f in py_files if '__pycache__' not in str(f)]
+        # Phase 6.7: Use ssot_discovery instead of rglob/glob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        py_files = list(get_python_files(directory))
         
         results = {
             'scanned_files': len(py_files),

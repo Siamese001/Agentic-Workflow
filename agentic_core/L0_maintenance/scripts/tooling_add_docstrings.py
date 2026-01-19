@@ -66,9 +66,11 @@ def process_file(pyfile: Path) -> bool:
         return True
     except (ValueError, TypeError, RuntimeError, OSError):
         return False
+# Phase 6.7: Use ssot_discovery instead of rglob
+from agentic_core.utils.ssot_discovery import get_python_files
 for sdir in sovereign_dirs:
     if not os.path.exists(sdir):
         continue
-    for pyfile in Path(sdir).rglob('*.py'):
+    for pyfile in get_python_files(Path(sdir)):
         if process_file(pyfile):
             fixed_count += 1

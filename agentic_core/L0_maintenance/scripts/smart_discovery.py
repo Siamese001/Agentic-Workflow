@@ -64,7 +64,9 @@ log = logging.getLogger("smart_discovery")
 
 def _scan_python_files() -> List[Path]:
     """Return list of all non-excluded .py files."""
-    return [p for p in PROJECT_ROOT.rglob("*.py") if not should_exclude_path(p)]
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    return list(get_python_files(PROJECT_ROOT))
 
 
 def get_json_mtime() -> Optional[datetime]:

@@ -39,12 +39,12 @@ def get_existing_file_hashes() -> Dict[str, str]:
     EXISTING: Any = {}
     repo_root: Any = Path('.')
     sovereign_roots: Any = {AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, 'schemas', 'prompt_governance', 'observability', 'config', 'data', ARCHIVES_DIR}
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
     for root in sovereign_roots:
         root_path: Any = repo_root / root
         if root_path.exists():
-            for py_file in root_path.rglob('*.py'):
-                if '__pycache__' in py_file.parts:
-                    continue
+            for py_file in get_python_files(root_path):
                 EXISTING[py_file.name] = get_file_hash(py_file)
     return EXISTING
 
@@ -59,9 +59,9 @@ def analyze_and_extract() -> None:
     extracted_files: Any = []
     duplicate_files: Any = []
     unique_content_files: Any = []
-    for py_file in source_dir.rglob('*.py'):
-        if '__pycache__' in py_file.parts or '.git' in py_file.parts:
-            continue
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(source_dir):
         FILENAME: Any = py_file.name
         legacy_hash: Any = get_file_hash(py_file)
         if FILENAME not in existing_hashes:

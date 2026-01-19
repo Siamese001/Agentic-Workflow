@@ -14,8 +14,9 @@ def check_key_49_depth() -> Any:
     violations: Any = []
     warnings: Any = []
     DEPTH_MAP: Any = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
-    excludes: Any = {'.git', '__pycache__', 'data', 'archives', '.venv'}
-    for py_file in project_root.rglob('*.py'):
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(project_root):
         relative_path: Any = py_file.relative_to(project_root)
         # [FIX] Depth = folder level where file resides, not path length
         depth: Any = len(relative_path.parts) - 1  # Subtract 1 because file itself is not a level
@@ -46,9 +47,9 @@ def check_key_49_depth() -> Any:
             print(f'  ... and {len(warnings) - 10} more')
     print(f'\n[DEEPEST FILES] Current maximum depth in repository:')
     all_depths: Any = []
-    for py_file in project_root.rglob('*.py'):
-        if any((exclude in str(py_file) for exclude in excludes)):
-            continue
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(project_root):
         relative_path: Any = py_file.relative_to(project_root)
         # [FIX] Depth = folder level where file resides, not path length
         depth: Any = len(relative_path.parts) - 1  # Subtract 1 because file itself is not a level

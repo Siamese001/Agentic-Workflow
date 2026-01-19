@@ -674,7 +674,9 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         GOLD STANDARD WORKFLOW — Full import compliance with autonomous cleanup.
         """
         if files is None:
-            files = list(self.project_root.rglob("*.py"))
+            # Phase 6.7: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files
+            files = list(get_python_files(self.project_root))
 
         violations = self.run(files)
         cleanup_results = self.cleanup_violations(violations, dry_run=dry_run) if violations else []
@@ -710,10 +712,12 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         _call_path.add(agent_name)
         try:
             # Collect all Python files in the project
-            valid_files = list(self.project_root.rglob("*.py"))
-            # Filter out excluded folders
+            # Phase 6.7: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files
+            valid_files = list(get_python_files(self.project_root))
+            # Filter already handled by ssot_discovery
             valid_files = [f for f in valid_files if not any(
-                excl in str(f) for excl in ["__pycache__", ".git", "archives", "node_modules", ".venv"]
+                excl in str(f) for excl in ["archives"]
             )]
             
             violations = self.run(valid_files)

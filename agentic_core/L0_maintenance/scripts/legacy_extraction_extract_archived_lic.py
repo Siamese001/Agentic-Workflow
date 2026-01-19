@@ -28,10 +28,12 @@ def get_existing_files() -> Set[str]:
     """Get set of all Python files in sovereign codebase."""
     existing: Any = set()
     repo_root: Any = Path('.')
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
     for root in SOVEREIGN_ROOTS:
         root_path: Any = repo_root / root
         if root_path.exists():
-            for py_file in root_path.rglob('*.py'):
+            for py_file in get_python_files(root_path):
                 rel_path: Any = py_file.relative_to(repo_root)
                 existing.add(str(rel_path))
     return existing
@@ -46,9 +48,9 @@ def extract_net_incremental() -> None:
     staging_dir.mkdir()
     existing_files: Any = get_existing_files()
     extracted_files: Any = []
-    for py_file in source_dir.rglob('*.py'):
-        if '__pycache__' in py_file.parts or '.git' in py_file.parts:
-            continue
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(source_dir):
         FILENAME: Any = py_file.name
         name_exists: Any = any((FILENAME in existing for existing in existing_files))
         if not name_exists:

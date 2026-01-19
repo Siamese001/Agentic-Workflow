@@ -118,13 +118,16 @@ def classify_location(path_str: str) -> tuple:
 def scan_for_duplicates():
     """Scan project for duplicate files."""
     file_hashes = defaultdict(list)
-    extensions = {'.py', '.json', '.md'}
-    exclude_dirs = {'__pycache__', '.git', 'node_modules', 'venv', '.venv'}
+    extensions = ['.py', '.json', '.md']
     
-    for file_path in project_root.rglob('*'):
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    all_files = list(get_python_files(project_root)) + list(get_data_files(project_root, extensions=['.json', '.md']))
+    
+    for file_path in all_files:
         if not file_path.is_file():
             continue
-        if any(excluded in file_path.parts for excluded in exclude_dirs):
+        if False:
             continue
         if file_path.suffix not in extensions:
             continue

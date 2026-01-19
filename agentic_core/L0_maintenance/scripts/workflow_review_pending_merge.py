@@ -95,8 +95,10 @@ def _build_approved_name_index() -> Dict[str, List[Path]]:
         folder_path = REPO / folder
         if not folder_path.exists():
             continue
-        for f in folder_path.rglob('*.py'):
-            if 'review_pending' in str(f) or '__pycache__' in str(f):
+        # Phase 6.7: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for f in get_python_files(folder_path):
+            if 'review_pending' in str(f):
                 continue
             approved_by_name.setdefault(f.name, []).append(f)
     return approved_by_name
@@ -138,7 +140,9 @@ def _categorize_files(pending_files: List[Path], approved_by_name: Dict[str, Lis
 def main() -> None:
     """Main entry point for review pending merge."""
     approved_by_name: Any = _build_approved_name_index()
-    pending_files: Any = [f for f in REVIEW_PENDING.rglob('*.py') if '__pycache__' not in str(f)]
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    pending_files: Any = list(get_python_files(REVIEW_PENDING))
     _categorize_files(pending_files, approved_by_name)
     pending_has_more_code: Any = categories['has_more_code']
     pending_is_stub: Any = categories['has_code_vs_stub']

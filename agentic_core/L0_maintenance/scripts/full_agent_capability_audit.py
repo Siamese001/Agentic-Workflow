@@ -33,10 +33,9 @@ def analyze_all_agents():
     
     agents_with_methods = []
     
-    for py_file in Path(AGENTIC_CORE_DIR).rglob('*.py'):
-        path_str = str(py_file)
-        if '__pycache__' in path_str:
-            continue
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(Path(AGENTIC_CORE_DIR)):
         
         try:
             content = py_file.read_text(encoding='utf-8', errors='ignore')
@@ -122,10 +121,9 @@ def find_violation_specific_agents():
         }
     }
     
-    for py_file in Path(AGENTIC_CORE_DIR).rglob('*.py'):
-        path_str = str(py_file)
-        if '__pycache__' in path_str:
-            continue
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(Path(AGENTIC_CORE_DIR)):
         
         try:
             content = py_file.read_text(encoding='utf-8', errors='ignore').lower()

@@ -70,9 +70,9 @@ class DeepWikiHealingStrategy:
             undocumented = []
             agentic_core_path = Path('agentic_core')
             if agentic_core_path.exists():
-                for py_file in agentic_core_path.rglob('*.py'):
-                    if '__pycache__' in str(py_file):
-                        continue
+                # Phase 6.7: Use ssot_discovery instead of rglob
+                from agentic_core.utils.ssot_discovery import get_python_files
+                for py_file in get_python_files(agentic_core_path):
                     rel_path = str(py_file.relative_to(Path.cwd()))
                     if rel_path not in documented_paths:
                         undocumented.append(py_file)

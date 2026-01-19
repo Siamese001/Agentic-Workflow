@@ -146,9 +146,9 @@ def scan_repository() -> Dict[str, Dict[str, List]]:
     files_scanned = 0
     
     # Scan all Python files
-    for py_file in PROJECT_ROOT.rglob('*.py'):
-        if should_exclude_path(py_file):
-            continue
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(PROJECT_ROOT):
         
         files_scanned += 1
         findings = scan_file(py_file)

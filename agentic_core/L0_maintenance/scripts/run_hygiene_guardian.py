@@ -23,11 +23,11 @@ IGNORE_FILES = {".gitkeep", ".git"}
 def scan_temp_artifacts(root: Path) -> List[Path]:
     """Scan for temporary artifacts without removing them."""
     artifacts = []
-    for pattern in ARTIFACT_PATTERNS:
-        for path in root.rglob(pattern):
-            # Skip .git directory
-            if ".git" in path.parts:
-                continue
+    # Phase 6.7: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_data_files
+    # Get all files with common artifact extensions
+    for path in get_data_files(root, extensions=['.pyc', '.pyo', '.tmp', '.bak', '.swp']):
+        if ".git" not in path.parts:
             artifacts.append(path)
     return artifacts
 
