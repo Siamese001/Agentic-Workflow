@@ -180,6 +180,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     DEFAULT_CORE_HEALING_TERRITORY,
     GLOBAL_EXCLUDED_DIRS,              # Production Lens SSOT
     is_path_allowed,                   # SSOT path validation helper
+    VARIABLE_DEPTH_SUBFOLDERS,         # Flexible depth exemptions (Option A)
 )
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
@@ -589,6 +590,8 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         "TERRITORY MISMATCH VIOLATION": "_heal_territory_mismatch",
         "TERRITORY ALIGNMENT WEAK": "_heal_territory_mismatch",
         "BROKEN BACKUP FILE": "_heal_broken_backup",
+        "SHALLOW VIOLATION": "_heal_depth_violation",
+        "DEEP VIOLATION": "_heal_depth_violation",
     }
 
     def _apply_healing_strategy(
@@ -653,11 +656,62 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         else:
             return {"action_taken": "SKIPPED: Could not parse target territory"}
 
+    def _heal_depth_violation(
+        self, file_path: Path, msg: str, dry_run: bool,
+        affected_paths: List[Path], import_touched_paths: List[Path]
+    ) -> Dict[str, Any]:
+        """
+        Heal depth violations by realigning file within its Sovereign Territory.
+        - DEEP: Flattens path (moves up).
+        - SHALLOW: Nests path (injects 'depth_aligned' spacer).
+        Replaces aggressive archiving.
+        """
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            parts = rel_path.parts
+            root_folder = parts[0]
+            
+            expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth", 3)
+            current_depth = len(parts) - 1  # 0-indexed parts
+            
+            if current_depth == expected_depth:
+                return {"action_taken": "SKIPPED: Depth already correct (race condition?)"}
+
+            target_path = None
+            
+            if current_depth > expected_depth:
+                # Too Deep: Flatten up to parent
+                # e.g. root/a/b/c/file.py (Depth 4) -> root/a/b/file.py (Depth 3)
+                new_parts = parts[:expected_depth] + (parts[-1],)
+                target_path = self.project_root.joinpath(*new_parts)
+                action_type = "FLATTENED"
+                
+            else:
+                # Too Shallow: Nest deeper
+                # e.g. root/file.py (Depth 1) -> root/depth_aligned/file.py (Depth 2/3?)
+                deficit = expected_depth - current_depth
+                # Inject 'depth_aligned' folders
+                spacers = tuple(["depth_aligned"] * deficit)
+                # Insert spacers before filename
+                new_parts = parts[:-1] + spacers + (parts[-1],)
+                target_path = self.project_root.joinpath(*new_parts)
+                action_type = "NESTED"
+
+            move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
+            if move_result.get("applied"):
+                move_result["action_taken"] = f"{action_type} to align depth: {target_path.relative_to(self.project_root)}"
+                if not dry_run:
+                    affected_paths.extend([file_path, target_path])
+            return move_result
+
+        except Exception as e:
+            Logger.error(f"[LocationAgent] Depth heal failed: {e}")
+            return {"error": str(e)}
+
     # Archive subfolder mapping (reduces CC)
     ARCHIVE_SUBFOLDERS = {
         "VOID VIOLATION": "void_violations",
         "GRAVITY": "void_violations",
-        "DEPTH VIOLATION": "depth_violations",
         "LAYER PREFIX VIOLATION": "naming_violations",
     }
 
@@ -709,17 +763,31 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
             return False, f"VOID VIOLATION: Unapproved root folder '{root_folder}'"
         return True, "OK"
 
+    # Subfolders that legitimately have variable depth (not fixed at depth 3)
+    # [SSOT] VARIABLE_DEPTH_SUBFOLDERS imported at module level from structure_blueprint.py
+    
     def _validate_depth_requirements(self, parts: tuple, root_folder: str, rel_path: Path) -> Tuple[bool, str]:
-        """Validate depth requirements from sovereign registry."""
+        """Validate depth requirements from sovereign registry.
+        
+        SSOT FIX: Allow variable depth for certain subfolders that legitimately
+        have deeper structures (e.g., utils/core_extensions/, config/blueprint_sovereign/).
+        """
         expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth")
         actual_depth = len(parts) - 1
+        
+        # Check if this is a variable-depth subfolder (exempt from strict depth check)
+        if root_folder == "agentic_core" and len(parts) > 1:
+            subfolder = parts[1]
+            if subfolder in VARIABLE_DEPTH_SUBFOLDERS:
+                # Allow any depth >= 2 for variable-depth subfolders
+                if actual_depth >= 2:
+                    return True, "OK"
+        
+        # Standard depth validation (non-variable subfolders)
         if expected_depth is not None and actual_depth != expected_depth:
             reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
             return False, f"{reason} VIOLATION ({root_folder}): depth {actual_depth} != {expected_depth}"
-        # [FIX] Check depth (folder level), not parts count
-        # agentic_core depth 3 means: agentic_core/L0_maintenance/scripts/file.py -> depth 3
-        if root_folder == "agentic_core" and actual_depth != 3:
-            return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} is depth {actual_depth} (expected exactly 3)"
+        
         return True, "OK"
 
     def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> Tuple[bool, str]:

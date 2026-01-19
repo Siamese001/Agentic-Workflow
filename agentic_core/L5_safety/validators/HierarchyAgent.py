@@ -33,6 +33,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     ROOT_PROTECTED_FILES,
     ALLOWED_DUPLICATE_FILENAMES,
+    VARIABLE_DEPTH_SUBFOLDERS,
 )
 from agentic_core.utils.general_helpers.mission_utils import (
     get_best_target_l1,
@@ -355,6 +356,15 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             # [FIX] Depth = folder level where file resides, not path length
             # agentic_core/L0_maintenance/scripts/file.md → depth 3 (scripts is level 3)
             depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
+            
+            # [SSOT FIX] Check if this is a variable-depth subfolder (exempt from strict depth check)
+            if root_key == "agentic_core" and len(rel.parts) > 1:
+                subfolder = rel.parts[1]
+                if subfolder in VARIABLE_DEPTH_SUBFOLDERS:
+                    # Allow any depth >= 2 for variable-depth subfolders
+                    if depth >= 2:
+                        continue  # Skip this file - it's in a variable-depth subfolder
+            
             if depth != expected_depth:
                 violations += 1
                 Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {expected_depth}")
@@ -402,6 +412,15 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 # [FIX] Depth = folder level where file resides, not path length
                 # agentic_core/L0_maintenance/scripts/file.md → depth 3 (scripts is level 3)
                 depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
+                
+                # [SSOT FIX] Check if this is a variable-depth subfolder (exempt from strict depth check)
+                if len(rel.parts) > 1:
+                    subfolder = rel.parts[1]
+                    if subfolder in VARIABLE_DEPTH_SUBFOLDERS:
+                        # Allow any depth >= 2 for variable-depth subfolders
+                        if depth >= 2:
+                            continue  # Skip this file - it's in a variable-depth subfolder
+                
                 if depth != agentic_core_exact_depth:
                     violations += 1
                     Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {agentic_core_exact_depth}")
