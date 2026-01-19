@@ -40,20 +40,14 @@ except ImportError:
 
 def _get_python_files(project_root: Path) -> List[Path]:
     """
-    Get all Python files using SovereignIndex (cached) or fallback to rglob.
+    Get all Python files using ssot_discovery (Phase 6.1 standardization).
     
     This is a performance optimization to prevent timeouts during healing.
-    SovereignIndex caches the file list, making subsequent calls O(1).
+    Uses the cached FileCache mechanism for O(1) subsequent calls.
     """
-    if SOVEREIGN_INDEX_AVAILABLE:
-        try:
-            index = SovereignIndex.get_instance(project_root)
-            return index.get_files("*.py")
-        except Exception as e:
-            Logger.warning(f"[LocationAgent] SovereignIndex failed, falling back to rglob: {e}")
-    
-    # Fallback to rglob (slower but always works)
-    return list(project_root.rglob("*.py"))
+    # Phase 6.1: Use ssot_discovery for standardized, cached file discovery
+    from agentic_core.utils.ssot_discovery import get_python_files
+    return get_python_files(project_root)
 
 # ============================================================================
 # L5 SOVEREIGN STRUCTURAL SSOT (Violation 5 Resolution)
