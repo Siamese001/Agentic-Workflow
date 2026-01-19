@@ -6,6 +6,8 @@ Removes ```python and ``` from files that have them.
 import re
 from pathlib import Path
 from typing import Any
+from archives.location_violations.sovereign_index import SovereignIndex
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 def fix_markdown_fences(file_path: str) -> bool:
     """Remove markdown code fences from a Python file."""

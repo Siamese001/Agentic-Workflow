@@ -89,14 +89,16 @@ class HardeningMixin:
             CircuitBreakerOpenError: If circuit breaker is open
             Exception: If all retries exhausted
         """
-        # Pre-flight validation
-        if validate_token_budget:
-            validate_token_budget()
-        
         # Record start time
         start_time = time.time()
-        
+
         try:
+            # Pre-flight validation
+            if validate_token_budget:
+                await asyncio.wait_for(
+                    asyncio.to_thread(validate_token_budget),
+                    timeout=2.5,
+                )
             # Execute with retry and circuit breaking
             result = await self.error_recovery.invoke_with_retry(
                 fn=fn,
@@ -116,6 +118,20 @@ class HardeningMixin:
             )
             
             return result
+
+        except asyncio.TimeoutError as e:
+            latency_ms = (time.time() - start_time) * 1000
+
+            self.telemetry.log_failure(
+                component=self.component_name,
+                operation=operation,
+                latency_ms=latency_ms,
+                error_type="ValidationTimeout",
+                error_message="Token budget validation timed out",
+                metadata=metadata,
+            )
+
+            raise TokenLimitError("Token budget validation timed out") from e
             
         except CircuitBreakerOpenError as e:
             # Circuit breaker is open

@@ -4,8 +4,9 @@ Standalone Key 49 Depth Violation Checker
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 from pathlib import Path
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
+from archives.location_violations.sovereign_index import SovereignIndex
 
 def check_key_49_depth() -> Any:
     """Check directory depth violations per Key 49 using SSOT"""
@@ -16,7 +17,8 @@ def check_key_49_depth() -> Any:
     excludes: Any = {'.git', '__pycache__', 'data', 'archives', '.venv'}
     for py_file in project_root.rglob('*.py'):
         relative_path: Any = py_file.relative_to(project_root)
-        depth: Any = len(relative_path.parts)
+        # [FIX] Depth = folder level where file resides, not path length
+        depth: Any = len(relative_path.parts) - 1  # Subtract 1 because file itself is not a level
         if any((exclude in str(py_file) for exclude in excludes)):
             continue
         if relative_path.parts and relative_path.parts[0] in DEPTH_MAP:
@@ -48,7 +50,8 @@ def check_key_49_depth() -> Any:
         if any((exclude in str(py_file) for exclude in excludes)):
             continue
         relative_path: Any = py_file.relative_to(project_root)
-        depth: Any = len(relative_path.parts)
+        # [FIX] Depth = folder level where file resides, not path length
+        depth: Any = len(relative_path.parts) - 1  # Subtract 1 because file itself is not a level
         all_depths.append((depth, relative_path))
     all_depths.sort(reverse=True)
     max_depth: Any = all_depths[0][0] if all_depths else 0

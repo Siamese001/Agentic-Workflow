@@ -5,7 +5,7 @@ ExperienceBuffer – Sovereign Agent Role Component (Phase 30 – Dec 30, 2025)
 Purpose:
   Persistent, file-backed learning from execution outcomes.
   Enables agents to predict success probability of actions based on historical data.
-  Critical for HealingOrchestratorAgent and all validators to avoid repeating failed strategies.
+  Critical for RgHealingOrchestratorAgent and all validators to avoid repeating failed strategies.
 
 Constitutional Alignment:
   - Turns reactive healing into predictive intelligence

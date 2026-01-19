@@ -13,16 +13,19 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7
@@ -103,3 +106,7 @@ class SovereignSemanticCache(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMi
             Logger.info(f'[L4 PURGE] Purged semantic trail for {Path(file_path).name}')
         except Exception:
             pass
+    @standard_heal
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()

@@ -5,6 +5,7 @@ import os
 'Brief description of functionality and purpose.'
 import sys
 from typing import Any, List, Dict, Optional
+from archives.location_violations.sovereign_index import SovereignIndex
 
 def analyze_and_extract() -> None:
     """Analyze legacy files and extract unique content (Python, JSON, and Markdown)."""

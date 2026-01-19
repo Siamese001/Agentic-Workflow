@@ -1,4 +1,3 @@
-from __future__ import annotations
 """MCP-specific exceptions.
 
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
@@ -13,10 +12,10 @@ class MCPError(Exception):
 class MCPClientInitializationError(MCPError):
     """Raised when an MCP client fails to initialize."""
     
-    def __init__(self, message: str, client_name: str = "", Provider: str = ""):
+    def __init__(self, message: str, client_name: str = "", provider: str = ""):
         super().__init__(message)
         self.client_name = client_name
-        self.Provider = Provider
+        self.provider = provider
 
 
 class MCPClientNotFoundError(MCPError):
@@ -28,8 +27,8 @@ class MCPClientNotFoundError(MCPError):
 
 
 class MCPProviderError(MCPError):
-    """Raised when an MCP Provider encounters an error."""
+    """Raised when an MCP provider encounters an error."""
     
-    def __init__(self, message: str, Provider: str = ""):
+    def __init__(self, message: str, provider: str = ""):
         super().__init__(message)
-        self.Provider = Provider
+        self.provider = provider

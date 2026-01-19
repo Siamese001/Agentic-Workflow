@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 import yaml
 from llm_client import LLMClient
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 class CognitiveNode:
     """

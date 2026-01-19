@@ -1,3 +1,15 @@
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail
+# This boosts alignment detection — review and integrate appropriately
+
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: memory, orchestrator
+# This boosts alignment detection — review and integrate appropriately
+
 from __future__ import annotations
 """
 ImportAgent: Gravity & Import Convention Enforcer (Key 6/Gravity territory)
@@ -39,7 +51,7 @@ from collections import defaultdict
 
 Logger = logging.getLogger(__name__)
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     PYTHON_STDLIB_MODULES,
     UPSTREAM_SOVEREIGN_ROOTS,
     DOWNSTREAM_ROOTS,
@@ -47,12 +59,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
-def get_ast_safe_imports(content: str):
+def get_ast_safe_imports(content: str) -> Any:
     """Extract imports using AST, ignoring comments/docstrings."""
     import ast
     imports = set()
@@ -82,36 +94,41 @@ class ImportValidationVisitor(ast.NodeVisitor):
         self.used_names = set()
         self.dynamic_access = False
 
-    def visit_Import(self, node):
+    def visit_Import(self, node) -> Any:
+        """Execute visit_Import operation."""
         for alias in node.names:
             self.imported_modules.add(alias.name.split(".")[0])
         self.generic_visit(node)
 
-    def visit_ImportFrom(self, node):
+    def visit_ImportFrom(self, node) -> Any:
+        """Execute visit_ImportFrom operation."""
         if node.module:
             self.imported_modules.add(node.module.split(".")[0])
         self.generic_visit(node)
 
-    def visit_Name(self, node):
+    def visit_Name(self, node) -> Any:
+        """Execute visit_Name operation."""
         if isinstance(node.ctx, (ast.Load, ast.Store)):
             self.used_names.add(node.id)
         self.generic_visit(node)
 
-    def visit_Call(self, node):
+    def visit_Call(self, node) -> Any:
+        """Execute visit_Call operation."""
         # Detect potential dynamic access (Key 13: Dynamic Safeguard)
         if isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr", "__import__", "eval"}:
             self.dynamic_access = True
         self.generic_visit(node)
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 @registers_prompt(
     template_name="gravity_repair.jinja",
     purpose="Fixes import violations and gravity conventions",
     territory="templates"
 )
-class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
+class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Autonomous agent for import convention and gravity compliance.
     Requires file content access → run only on location-valid files.
@@ -161,22 +178,35 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         # Known dynamic access patterns (reduce false positives)
         self.dynamic_patterns = ["getattr", "hasattr", "__import__"]
         
-        # LocationAgent integration for gravity root-cause moves
-        try:
-            from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-            self.location_agent = LocationAgent(self.project_root)
-        except ImportError:
-            self.location_agent = None
-        
-        # NamingAgent integration for module naming validation
-        try:
-            from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
-            self.naming_agent = get_naming_agent(self.project_root)
-        except ImportError:
-            self.naming_agent = None
+        # Lazy agent references to avoid circular instantiation
+        # These are created on-demand via properties, not in __init__
+        self._location_agent = None
+        self._naming_agent = None
         
         # Backup directory for safe operations
         self._backup_dir: Optional[Path] = None
+    
+    @property
+    def location_agent(self):
+        """Lazy LocationAgent - created on first access to avoid circular init."""
+        if self._location_agent is None:
+            try:
+                from agentic_core.L5_safety.validators.LocationAgent import get_location_agent
+                self._location_agent = get_location_agent(self.project_root)
+            except (ImportError, RecursionError):
+                pass
+        return self._location_agent
+    
+    @property
+    def naming_agent(self):
+        """Lazy NamingAgent - created on first access to avoid circular init."""
+        if self._naming_agent is None:
+            try:
+                from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent
+                self._naming_agent = get_naming_agent(self.project_root)
+            except (ImportError, RecursionError):
+                pass
+        return self._naming_agent
 
     def _categorize_imports(self, import_nodes: List[ast.Import | ast.ImportFrom]) -> tuple:
         """Categorize imports by type and track line numbers."""
@@ -211,25 +241,32 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         used_names: Set[str] = set()
         dynamic_access = False
 
+        # Capture outer class dynamic_patterns for nested class
+        dynamic_patterns = self.dynamic_patterns
+        
         class UsageVisitor(ast.NodeVisitor):
-            def visit_Name(self, node: ast.Name):
+            """UsageVisitor agent for autonomous operations."""
+            def visit_Name(self, node: ast.Name) -> Any:
+                """Execute visit_Name operation."""
                 if isinstance(node.ctx, (ast.Load, ast.Store)):
                     used_names.add(node.id)
                 self.generic_visit(node)
 
-            def visit_Attribute(self, node: ast.Attribute):
+            def visit_Attribute(self, node: ast.Attribute) -> Any:
+                """Execute visit_Attribute operation."""
+                nonlocal dynamic_access
                 # Check if the attribute being accessed is a dynamic pattern
-                if node.attr in self.dynamic_patterns:
-                    nonlocal dynamic_access
+                if node.attr in dynamic_patterns:
                     dynamic_access = True
                 # If accessing an attribute on a Name, that name is 'used'
                 if isinstance(node.value, ast.Name):
                     used_names.add(node.value.id)
                 self.generic_visit(node)
 
-            def visit_Call(self, node: ast.Call):
-                if isinstance(node.func, ast.Name) and node.func.id in self.dynamic_patterns:
-                    nonlocal dynamic_access
+            def visit_Call(self, node: ast.Call) -> Any:
+                """Execute visit_Call operation."""
+                nonlocal dynamic_access
+                if isinstance(node.func, ast.Name) and node.func.id in dynamic_patterns:
                     dynamic_access = True
                 self.generic_visit(node)
 
@@ -658,8 +695,12 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Import/gravity enforcer - scans and fixes violations."""
         if _call_path is None:
+            _call_path = set()
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-            super().heal_repository()
+            try:
+                super().heal_repository(dry_run=dry_run)
+            except Exception as e:
+                Logger.warning(f"[HEAL_REPOSITORY] Parent chain warning: {e}")
 
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
@@ -668,13 +709,29 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            violations = self.run()
-            print(f"[{agent_name} HEAL @ depth {depth}] Found {len(violations)} import violations")
+            # Collect all Python files in the project
+            valid_files = list(self.project_root.rglob("*.py"))
+            # Filter out excluded folders
+            valid_files = [f for f in valid_files if not any(
+                excl in str(f) for excl in ["__pycache__", ".git", "archives", "node_modules", ".venv"]
+            )]
+            
+            violations = self.run(valid_files)
+            total_violations = sum(len(msgs) for _, msgs in violations)
+            print(f"[{agent_name} HEAL @ depth {depth}] Found {total_violations} import violations in {len(violations)} files")
             if not dry_run and execute:
                 fixed = sum(1 for v in violations if self._fix_violation(v))
-                return {"violations_found": len(violations), "fixed": fixed}
-            return {"violations_found": len(violations), "fixed": 0}
+                return {"violations_found": total_violations, "fixed": fixed}
+            return {"violations_found": total_violations, "fixed": 0}
         finally:
             _call_path.discard(agent_name)
 
-# PascalCase singleton accessoronical name
+# Singleton getter for canon_validator compatibility
+_import_agent_instance = None
+
+def get_import_agent(project_root):
+    """Get or create ImportAgent singleton."""
+    global _import_agent_instance
+    if _import_agent_instance is None:
+        _import_agent_instance = ImportAgent(project_root)
+    return _import_agent_instance

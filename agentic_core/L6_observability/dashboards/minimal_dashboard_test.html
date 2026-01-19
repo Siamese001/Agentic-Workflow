@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Dashboard Test</title>
+    <script>
+        (function () {
+            function loadScript(src) {
+                return new Promise(function (resolve, reject) {
+                    var s = document.createElement('script');
+                    s.src = src;
+                    s.async = true;
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.head.appendChild(s);
+                });
+            }
+
+            loadScript('plotly.min.js')
+                .catch(function () {
+                    return loadScript('https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js');
+                })
+                .catch(function () {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var msg = document.createElement('div');
+                        msg.style.cssText = 'margin:16px;padding:16px;border:2px solid #dc2626;background:#fff1f2;border-radius:8px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;';
+                        msg.innerHTML = '<strong>Plotly failed to load.</strong><br>Copy <code>plotly.min.js</code> next to this HTML file or allow CDN access.';
+                        document.body.insertBefore(msg, document.body.firstChild);
+                    });
+                });
+        })();
+    </script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f9fafb;
+        }
+        .kpi-box {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 200px;
+        }
+        .kpi-box.success {
+            background: #f0fdf4;
+            border-left: 6px solid var(--success);
+        }
+        .kpi-box.danger {
+            background: #fef2f2;
+            border-left: 6px solid var(--danger);
+        }
+        .kpi-label {
+            color: #6b7280;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .kpi-value {
+            font-size: 3em;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .chart-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Minimal Dashboard Test</h1>
+    
+    <div id="status" style="padding: 20px; background: #fffbeb; border-left: 4px solid #ea580c; margin-bottom: 20px;">
+        <strong>Loading...</strong>
+    </div>
+    
+    <h2>KPI Boxes</h2>
+    <div id="kpiGrid"></div>
+    
+    <h2>Sample Chart</h2>
+    <div class="chart-container">
+        <div id="testChart" style="height: 400px;"></div>
+    </div>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        const errors = [];
+        
+        // Test data
+        const testData = {
+            Territory: 'TOTAL',
+            Total: 416,
+            Health: 33.3,
+            'Invocation %': 12.3,
+            'Test %': 41.8,
+            'Observable %': 45.7,
+            'Avg CC': 51.5,
+            Risk: 'HIGH'
+        };
+        
+        // Test 1: Render KPI boxes
+        try {
+            const container = document.getElementById('kpiGrid');
+            
+            const coverageScore = (
+                (parseFloat(testData['Invocation %']) || 0) +
+                (parseFloat(testData['Test %']) || 0) +
+                (parseFloat(testData['Observable %']) || 0)
+            ) / 3;
+            
+            function getStatus(value, threshold) {
+                const v = parseFloat(value);
+                return v >= threshold ? 'success' : 'danger';
+            }
+            
+            const kpis = [
+                { label: 'Total Agents', value: testData.Total, status: 'primary' },
+                { label: 'Coverage Score', value: coverageScore.toFixed(1), status: getStatus(coverageScore, 80) },
+                { label: 'Health Score', value: testData.Health.toFixed(1), status: getStatus(testData.Health, 80) },
+                { label: 'Risk Level', value: testData.Risk, status: testData.Risk === 'HIGH' ? 'danger' : 'success' }
+            ];
+            
+            let html = '';
+            kpis.forEach(kpi => {
+                html += `
+                <div class="kpi-box ${kpi.status}">
+                    <div class="kpi-label">${kpi.label}</div>
+                    <div class="kpi-value">${kpi.value}${kpi.label.includes('%') || kpi.label.includes('Score') ? '%' : ''}</div>
+                </div>`;
+            });
+            
+            container.innerHTML = html;
+            statusDiv.innerHTML = '<strong style="color: green;">✓ KPI boxes rendered successfully</strong>';
+        } catch (e) {
+            errors.push('KPI rendering: ' + e.message);
+            statusDiv.innerHTML = '<strong style="color: red;">✗ KPI rendering failed: ' + e.message + '</strong>';
+        }
+        
+        // Test 2: Render Plotly chart
+        try {
+            if (typeof Plotly === 'undefined') {
+                throw new Error('Plotly library not loaded');
+            }
+            
+            const territories = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5'];
+            const health = [37.5, 25.3, 29.3, 44.6, 46.0, 52.6];
+            
+            const trace = {
+                x: territories,
+                y: health,
+                type: 'bar',
+                marker: {
+                    color: health.map(h => h >= 80 ? '#16a34a' : h >= 60 ? '#ea580c' : '#dc2626')
+                }
+            };
+            
+            const layout = {
+                title: 'Territory Health Test',
+                margin: { l: 80, r: 20, t: 60, b: 80 },
+                yaxis: { range: [0, 100] }
+            };
+            
+            Plotly.newPlot('testChart', [trace], layout, { responsive: true, displayModeBar: false });
+            
+            if (errors.length === 0) {
+                statusDiv.innerHTML = '<strong style="color: green;">✓ All tests passed! Dashboard rendering correctly.</strong>';
+            }
+        } catch (e) {
+            errors.push('Chart rendering: ' + e.message);
+            statusDiv.innerHTML = '<strong style="color: red;">✗ Chart rendering failed: ' + e.message + '</strong>';
+        }
+        
+        // Log results
+        console.log('Dashboard Test Results:', errors.length === 0 ? 'ALL PASSED' : 'FAILURES: ' + errors.join(', '));
+    </script>
+</body>
+</html>

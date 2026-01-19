@@ -6,8 +6,9 @@ Fix tunnel violations by flattening to SSOT-compliant depth.
 import os
 import shutil
 from pathlib import Path
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
+from archives.location_violations.sovereign_index import SovereignIndex
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']

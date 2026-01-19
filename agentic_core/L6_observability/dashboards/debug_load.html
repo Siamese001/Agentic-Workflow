@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Load Debug</title>
+</head>
+<body>
+    <h1>Dashboard Load Debug</h1>
+    <div id="status"></div>
+    <pre id="log"></pre>
+
+    <!-- Load Data Files -->
+    <script src="data/dashboard_data.js"></script>
+    <script src="data/agent_data.js"></script>
+    <script src="data/recommendations.js"></script>
+    <script src="data/observations.js"></script>
+
+    <!-- Load Utility Modules -->
+    <script src="js/utils/random-utils.js"></script>
+    <script src="js/utils/color-utils.js"></script>
+    <script src="js/utils/math-utils.js"></script>
+    <script src="js/utils/format-utils.js"></script>
+
+    <!-- Load Renderer Modules -->
+    <script src="js/renderers/modal-renderer.js"></script>
+    <script src="js/renderers/table-renderer.js"></script>
+    <script src="js/renderers/kpi-renderer.js"></script>
+
+    <script>
+        const log = document.getElementById('log');
+        const status = document.getElementById('status');
+        
+        function logMsg(msg) {
+            log.textContent += msg + '\n';
+            console.log(msg);
+        }
+        
+        logMsg('=== LOAD SEQUENCE DEBUG ===');
+        logMsg('');
+        
+        // Check data loaded
+        logMsg('1. Data Files:');
+        logMsg('   window.dashboardData: ' + (typeof window.dashboardData !== 'undefined' ? 'LOADED (' + window.dashboardData.length + ' items)' : 'MISSING'));
+        logMsg('   window.realAgentData: ' + (typeof window.realAgentData !== 'undefined' ? 'LOADED (' + Object.keys(window.realAgentData).length + ' territories)' : 'MISSING'));
+        logMsg('   window.recommendationsData: ' + (typeof window.recommendationsData !== 'undefined' ? 'LOADED' : 'MISSING'));
+        logMsg('   window.strategicObservationsData: ' + (typeof window.strategicObservationsData !== 'undefined' ? 'LOADED' : 'MISSING'));
+        logMsg('');
+        
+        // Check utilities loaded
+        logMsg('2. Utility Functions:');
+        logMsg('   hashString: ' + (typeof hashString === 'function' ? 'OK' : 'MISSING'));
+        logMsg('   getColor: ' + (typeof getColor === 'function' ? 'OK' : 'MISSING'));
+        logMsg('   computeDistributionStats: ' + (typeof computeDistributionStats === 'function' ? 'OK' : 'MISSING'));
+        logMsg('   formatOutlierBadge: ' + (typeof formatOutlierBadge === 'function' ? 'OK' : 'MISSING'));
+        logMsg('');
+        
+        // Check renderers loaded
+        logMsg('3. Renderer Functions:');
+        logMsg('   openDrillModal: ' + (typeof openDrillModal === 'function' ? 'OK' : 'MISSING'));
+        logMsg('   renderTerritorySummaryTable: ' + (typeof renderTerritorySummaryTable === 'function' ? 'OK' : 'MISSING'));
+        logMsg('   initializeSemanticMetrics: ' + (typeof initializeSemanticMetrics === 'function' ? 'OK' : 'MISSING'));
+        logMsg('');
+        
+        // Summary
+        const allGood = 
+            typeof window.dashboardData !== 'undefined' &&
+            typeof window.realAgentData !== 'undefined' &&
+            typeof hashString === 'function' &&
+            typeof getColor === 'function' &&
+            typeof computeDistributionStats === 'function' &&
+            typeof renderTerritorySummaryTable === 'function';
+            
+        if (allGood) {
+            status.innerHTML = '<h2 style="color:green">✅ ALL MODULES LOADED SUCCESSFULLY</h2>';
+            logMsg('✅ All modules loaded successfully!');
+        } else {
+            status.innerHTML = '<h2 style="color:red">❌ SOME MODULES FAILED TO LOAD</h2>';
+            logMsg('❌ Some modules failed to load. Check errors above.');
+        }
+    </script>
+</body>
+</html>

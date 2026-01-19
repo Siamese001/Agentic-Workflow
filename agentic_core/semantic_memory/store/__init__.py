@@ -4,6 +4,28 @@ Vector Stores Module - Sovereign Primary
 Provides vector database implementations for semantic memory operations.
 """
 
-from .pinecone.pinecone_store import SovereignPineconeStoreAgent
+# This package must remain safe to import even when optional providers
+# (Pinecone SDK, credentials, etc.) are not available.
 
-__all__ = ["SovereignPineconeStoreAgent"]
+try:
+    from .pinecone_sync import SovereignPineconeStoreAgent
+except Exception:
+    SovereignPineconeStoreAgent = None
+
+try:
+    from .pinecone_store import PineconeVectorStore
+except Exception:
+    PineconeVectorStore = None
+
+try:
+    from .bm25_store import Bm25Store, get_bm25_store
+except Exception:
+    Bm25Store = None
+    get_bm25_store = None
+
+__all__ = [
+    "SovereignPineconeStoreAgent",
+    "PineconeVectorStore",
+    "Bm25Store",
+    "get_bm25_store",
+]

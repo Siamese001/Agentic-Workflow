@@ -9,6 +9,7 @@ Logger = logging.getLogger(__name__)
 """
 from pathlib import Path
 from typing import Any
+from archives.location_violations.sovereign_index import SovereignIndex
 
 def clean_prompt_governance() -> Any:
     """Clean up shim chains in prompt_governance."""

@@ -7,6 +7,26 @@ import os
 from dataclasses import dataclass
 from typing import Any, Optional, Dict, List
 
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    APPS_RG_DIR,
+    APPS_LIC_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
+    DASHBOARD_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    get_validated_project_root,
+)
+
 # NOT_AN_AGENT — config dataclass, not a true agent — excluded from agent discovery
 @dataclass(frozen=True)
 class SovereignConfig:
@@ -25,7 +45,7 @@ class SovereignConfig:
     BASE_GIT_PATH: str = 'c:/Git/Agentic-Workflow/'
     CORE_CONTRACTS_PATH: str = f'{BASE_GIT_PATH}agentic_core/schemas/models/core_contracts.py'
     PROMPT_CONSTITUTION_PATH: str = f'{BASE_GIT_PATH}agentic_core/prompt_governance/meta_prompts/sovereign_prompt_constitution.py'
-    ROOT_DIR: str = os.path.dirname(os.path.abspath(__file__)).split('agentic_core')[0]
+    ROOT_DIR: str = os.path.dirname(os.path.abspath(__file__)).split(AGENTIC_CORE_DIR)[0]
     RG_MIN_WORDS: int = 300
     RG_MAX_WORDS: int = 800
     RG_REASONING_TEMPERATURE: float = 0.7
@@ -115,7 +135,7 @@ class SovereignConfig:
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         object.__setattr__(self, 'MODEL_PRICING', {'gemini-2.5-flash': {'input': 0.075, 'output': 0.3}, 'gpt-5.1': {'input': 0.003, 'output': 0.012}, 'claude-sonnet-4.5': {'input': 0.0035, 'output': 0.018}})
-        object.__setattr__(self, 'FILESYSTEM_ALLOWED_ROOTS', ['agentic_core', 'apps_shared', 'apps_rg', 'apps_lic', 'config'])
+        object.__setattr__(self, 'FILESYSTEM_ALLOWED_ROOTS', [AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_RG_DIR, APPS_LIC_DIR, 'config'])
         object.__setattr__(self, 'FILESYSTEM_FORBIDDEN_PATTERNS', ['\\.\\./', '/etc/', '/proc/', '\\.env'])
 
     def validate(self) -> Any:

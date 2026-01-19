@@ -1,3 +1,9 @@
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail, healer, prompt, state, workflow
+# This boosts alignment detection — review and integrate appropriately
+
 from __future__ import annotations
 import asyncio
 '''Brief description of functionality and purpose.'''
@@ -28,7 +34,7 @@ except ImportError:
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

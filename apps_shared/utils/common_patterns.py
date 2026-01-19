@@ -13,9 +13,9 @@ Import from here instead of duplicating code.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 from datetime import datetime
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -137,6 +137,10 @@ class BaseTaskExecutor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     def _do_execute(self, task: Dict[str, Any]) -> Any:
         """Override in subclass to implement actual execution."""
         raise NotImplementedError("Subclass must implement _do_execute")
+
+    def heal_repository(self) -> dict:
+            """Invoke healing chain via super()."""
+            return super().heal_repository()
 
 
 class BaseDiagnoser:

@@ -5,6 +5,7 @@ import os
 'Brief description of functionality and purpose.'
 import sys
 from typing import Any, List, Dict, Optional
+from archives.location_violations.sovereign_index import SovereignIndex
 
 def get_existing_filenames() -> Set[str]:
     """Get set of all Python filenames in sovereign codebase."""

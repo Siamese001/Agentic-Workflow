@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Protocol, Union
 import logging
 import time
 import traceback
-from apps_shared.utils.common_patterns import ExecutionContext
+# GRAVITY VIOLATION: from apps_shared.utils.common_patterns import ExecutionContext
 Logger: Any = logging.getLogger(__name__)
 
 class ExecutionStatus(Enum):

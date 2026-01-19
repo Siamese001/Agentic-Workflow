@@ -1,0 +1,596 @@
+/**
+ * Meta-Learning Dashboard Styles
+ * Phase 3 & 4: Styling for meta-learning, Redis, Pinecone, and execution panels
+ */
+
+/* ============================================================================
+   Common Styles
+   ============================================================================ */
+
+.empty-state {
+    color: #9ca3af;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}
+
+.stat-box {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+}
+
+.stat-box.wide {
+    grid-column: span 2;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.stat-value.connected {
+    color: #10b981;
+}
+
+.stat-value.disconnected {
+    color: #ef4444;
+}
+
+.stat-value.status-active {
+    color: #10b981;
+}
+
+/* ============================================================================
+   Meta-Learning Panel Styles
+   ============================================================================ */
+
+.meta-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+/* Experience Stream */
+.experience-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    font-size: 0.875rem;
+}
+
+.experience-item.reward-high {
+    background: linear-gradient(90deg, #d1fae5 0%, #f0fdf4 100%);
+    border-left: 3px solid #10b981;
+}
+
+.experience-item.reward-medium {
+    background: linear-gradient(90deg, #fef3c7 0%, #fffbeb 100%);
+    border-left: 3px solid #f59e0b;
+}
+
+.experience-item.reward-low {
+    background: linear-gradient(90deg, #fee2e2 0%, #fef2f2 100%);
+    border-left: 3px solid #ef4444;
+}
+
+.exp-type {
+    font-weight: 500;
+}
+
+.exp-reward {
+    color: #6b7280;
+}
+
+.exp-time {
+    color: #9ca3af;
+    font-size: 0.75rem;
+}
+
+/* Strategy Weights Chart */
+.strategy-weights-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.strategy-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.strategy-label {
+    width: 140px;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.strategy-bar-container {
+    flex: 1;
+    background: #e5e7eb;
+    border-radius: 4px;
+    height: 24px;
+    overflow: hidden;
+}
+
+.strategy-bar {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    transition: width 0.3s ease;
+}
+
+.strategy-value {
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Pattern Timeline */
+.pattern-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.timeline-marker {
+    width: 28px;
+    height: 28px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.timeline-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f3f4f6;
+    border-radius: 6px;
+}
+
+.pattern-threshold {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.pattern-time {
+    color: #9ca3af;
+    font-size: 0.75rem;
+}
+
+/* ============================================================================
+   Redis Monitor Styles
+   ============================================================================ */
+
+.redis-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.hit-rate-bar,
+.similarity-bar {
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.hit-rate-fill,
+.similarity-fill {
+    height: 100%;
+    background: #10b981;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.hit-rate-excellent,
+.similarity-excellent {
+    color: #10b981;
+}
+
+.hit-rate-good,
+.similarity-good {
+    color: #3b82f6;
+}
+
+.hit-rate-fair,
+.similarity-fair {
+    color: #f59e0b;
+}
+
+.hit-rate-poor,
+.similarity-poor {
+    color: #ef4444;
+}
+
+.hit-count {
+    color: #10b981;
+}
+
+.miss-count {
+    color: #ef4444;
+}
+
+/* Operation Log */
+.operation-log {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    font-size: 0.8rem;
+    font-family: monospace;
+}
+
+.log-entry.cache-hit {
+    background: #f0fdf4;
+}
+
+.log-entry.cache-miss {
+    background: #fef2f2;
+}
+
+.op-type {
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+}
+
+.op-type.op-get {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.op-type.op-set {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.op-type.op-delete {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.op-key {
+    flex: 1;
+    margin: 0 8px;
+    color: #4b5563;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.op-result {
+    font-weight: 500;
+}
+
+.op-time {
+    color: #9ca3af;
+    font-size: 0.7rem;
+}
+
+/* ============================================================================
+   Pinecone Monitor Styles
+   ============================================================================ */
+
+.pinecone-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.query-results {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.query-item {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+.query-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+}
+
+.query-topk {
+    background: #3b82f6;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.query-results-count {
+    color: #6b7280;
+}
+
+.query-score {
+    color: #10b981;
+    font-weight: 500;
+}
+
+.query-time {
+    color: #9ca3af;
+    font-size: 0.75rem;
+}
+
+.query-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.result-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: white;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.result-rank {
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.result-id {
+    flex: 1;
+    color: #4b5563;
+    font-family: monospace;
+}
+
+.result-score {
+    color: #10b981;
+    font-weight: 500;
+}
+
+.no-results {
+    color: #9ca3af;
+    font-style: italic;
+    font-size: 0.875rem;
+}
+
+/* ============================================================================
+   Execution Flow Styles
+   ============================================================================ */
+
+.execution-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+}
+
+.success-count {
+    color: #10b981;
+}
+
+.failure-count {
+    color: #ef4444;
+}
+
+/* Execution Timeline */
+.execution-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.timeline-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.timeline-label {
+    width: 180px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.agent-name {
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.layer-badge {
+    background: #e5e7eb;
+    color: #4b5563;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.timeline-bar-container {
+    flex: 1;
+    background: #e5e7eb;
+    border-radius: 4px;
+    height: 24px;
+    overflow: hidden;
+}
+
+.timeline-bar {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    transition: width 0.3s ease;
+}
+
+.timeline-bar.exec-success {
+    background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
+
+.timeline-bar.exec-failure {
+    background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+}
+
+.duration-label {
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.timeline-status {
+    width: 24px;
+    text-align: center;
+}
+
+/* Layer Flow Diagram */
+.layer-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+}
+
+.layer-node {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.layer-node.layer-pending {
+    background: #f3f4f6;
+    border: 2px solid #d1d5db;
+}
+
+.layer-node.layer-active {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    animation: pulse 1.5s infinite;
+}
+
+.layer-node.layer-completed {
+    background: #d1fae5;
+    border: 2px solid #10b981;
+}
+
+.layer-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.layer-status {
+    font-size: 0.75rem;
+}
+
+.layer-arrow {
+    color: #9ca3af;
+    font-size: 1.25rem;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+    }
+}
+
+/* ============================================================================
+   Scrollable Lists
+   ============================================================================ */
+
+.scrollable-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.scrollable-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* ============================================================================
+   Status Indicators
+   ============================================================================ */
+
+.status-idle {
+    color: #6b7280;
+}
+
+.status-running {
+    color: #f59e0b;
+}
+
+.status-completed {
+    color: #10b981;
+}
+
+.status-error {
+    color: #ef4444;
+}

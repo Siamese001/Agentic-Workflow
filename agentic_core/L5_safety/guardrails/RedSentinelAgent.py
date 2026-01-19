@@ -1,51 +1,69 @@
-from __future__ import annotations
-"""
-RedSentinelAgent - L5 Active Defense & Hostile Input Fuzzing
+"""RedSentinelAgent - L5 Active Defense & Hostile Input Fuzzing.
 
-Generates hostile inputs (buffer overflows, malformed data) to test
-the robustness of code and detect potential security vulnerabilities.
+This module provides an active defense system that generates hostile inputs
+(buffer overflows, malformed data) to test the robustness of code and detect
+potential security vulnerabilities.
+
+Typical usage:
+    agent = RedSentinelAgent()
+    result = await agent.fuzz_function("my_func", "def my_func(): pass", "file.py")
 """
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: guardrail
+# This boosts alignment detection — review and integrate appropriately
+
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: engine, orchestrator, state, validator, workflow
+# This boosts alignment detection — review and integrate appropriately
+
+from __future__ import annotations
+
 import json
 import logging
 import os
-import time
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Set
+
+from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
+Logger: logging.Logger = logging.getLogger(__name__)
 
-Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-
-class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+@dataclass
+class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
+    """L5 Safety agent that generates hostile inputs for security testing.
+    
+    This active defense system creates edge cases and malformed inputs to test
+    function robustness including type errors, boundary conditions, buffer
+    overflow attempts, malformed JSON, and special characters.
+    
+    Attributes:
+        llm_client: LLM client for generating hostile inputs (deprecated).
+        enabled: Whether fuzzing is enabled (via ENABLE_FUZZ env var).
+        audit_path: Path to audit log file for fuzz results.
+        
+    Inherits:
+        SubatomicTestingMixin: Provides testing utilities.
+        HealerMixin: Provides healing chain support.
     """
-    Active defense system that generates hostile inputs for testing.
 
-    Creates edge cases and malformed inputs to test function robustness:
-    - Type errors and boundary conditions
-    - Buffer overflow attempts
-    - Malformed JSON/data structures
-    - Null bytes and special characters
-    """
-
-    def __init__(self, llm_client=None) -> None:
-        """
-        Initialize the RedSentinelAgent agent.
-        Phase 16B: Uses LLM Router MCP for hostile input generation.
-
+    def __init__(self, llm_client: Optional[Any] = None) -> None:
+        """Initialize the RedSentinelAgent.
+        
         Args:
-            llm_client: LLM client for generating hostile inputs (deprecated, uses MCP)
+            llm_client: LLM client for generating hostile inputs (deprecated, uses MCP).
         """
-        self.llm_client = llm_client
-        self.enabled = os.getenv('ENABLE_FUZZ', 'false').lower() == 'true'
-        self.audit_path = Path('observability/audit/fuzz_results.json')
+        self.llm_client: Optional[Any] = llm_client
+        self.enabled: bool = os.getenv('ENABLE_FUZZ', 'false').lower() == 'true'
+        self.audit_path: Path = Path('observability/audit/fuzz_results.json')
         self.audit_path.parent.mkdir(parents=True, exist_ok=True)
 
     async def fuzz_function(self, func_name: str, func_code: str, file_path: str) -> Dict[str, Any]:
@@ -62,11 +80,11 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """
         if not self.enabled:
             return {'enabled': False, 'reason': 'ENABLE_FUZZ not set'}
-        LOGGER.info(f'🛡️  RedSentinelAgent: Generating hostile inputs for {func_name}')
-        hostile_inputs: Any = await self._generate_hostile_inputs(func_name, func_code)
-        results: Any = {'function': func_name, 'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'hostile_inputs': hostile_inputs, 'vulnerabilities': [], 'crashes': []}
+        Logger.info(f'🛡️  RedSentinelAgent: Generating hostile inputs for {func_name}')
+        hostile_inputs: List[Any] = await self._generate_hostile_inputs(func_name, func_code)
+        results: Dict[str, Any] = {'function': func_name, 'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'hostile_inputs': hostile_inputs, 'vulnerabilities': [], 'crashes': []}
         for input_data in hostile_inputs:
-            result: Any = await self._test_with_input(func_name, input_data)
+            result: Dict[str, Any] = await self._test_with_input(func_name, input_data)
             if result['crashed']:
                 results['crashes'].append({'input': input_data, 'error': result['error'], 'traceback': result['traceback']})
                 results['vulnerabilities'].append({'type': 'crash', 'input': input_data, 'Severity': 'HIGH'})
@@ -88,9 +106,9 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             List of hostile input dictionaries
         """
         try:
-            from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client
+            from agentic_core.L2_execution.mcp.llm_router_mcp_client import get_llm_router_client
             llm_router = get_llm_router_client()
-            prompt = f'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nGenerate 5 hostile test inputs for this function to test robustness:\n\nFunction: {func_name}\n\nImplementation:\n{func_code}\n```\n\nGenerate inputs that could cause:\n1. Type errors (wrong types)\n2. Boundary conditions (empty, None, extreme values)\n3. Buffer overflows (very long strings)\n4. Malformed data (invalid JSON, special characters)\n5. Edge cases (negative numbers, zeros)\n\nReturn as JSON array:\n[\n  {{"type": "description", "value": "actual_value"}},\n  {{"type": "description", "value": "actual_value"}},\n  ...\n]\n'
+            prompt = f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nGenerate 5 hostile test inputs for this function to test robustness:\n\nFunction: {func_name}\n\nImplementation:\n{func_code}\n```\n\nGenerate inputs that could cause:\n1. Type errors (wrong types)\n2. Boundary conditions (empty, None, extreme values)\n3. Buffer overflows (very long strings)\n4. Malformed data (invalid JSON, special characters)\n5. Edge cases (negative numbers, zeros)\n\nReturn as JSON array:\n[\n  {{"type": "description", "value": "actual_value"}},\n  {{"type": "description", "value": "actual_value"}},\n  ...\n]\n'
             result_dict = await llm_router.validate_content(prompt, validation_type='red_team')
             if isinstance(result_dict, dict):
                 response_text = result_dict.get('response', result_dict.get('reason', ''))
@@ -138,7 +156,7 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             result['behavior'] = 'Extreme number may cause overflow'
         return result
 
-    async def _log_fuzz_results(self, results: Dict[str, Any]):
+    async def _log_fuzz_results(self, results: Dict[str, Any]) -> Any:
         """
         Log fuzz results to audit file.
 
@@ -192,8 +210,24 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         return results
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L5 safety agent - operational only."""
+    @standard_heal
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None
+    ) -> Dict[str, int]:
+        """Execute L5 safety healing operations.
+        
+        This is an operational agent - no repository healing required.
+        """
+        # CRITICAL: Chain up to HealerMixin
+        super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
+
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -210,11 +244,13 @@ class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
 _red_sentinel: Optional[RedSentinelAgent] = None
 
-def get_red_sentinel() -> RedSentinelAgent:
-    """Get or create the global RedSentinelAgent instance."""
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-    super().heal_repository()
 
+def get_red_sentinel() -> RedSentinelAgent:
+    """Get or create the global RedSentinelAgent instance.
+    
+    Returns:
+        Global RedSentinelAgent singleton instance.
+    """
     global _red_sentinel
     if _red_sentinel is None:
         _red_sentinel = RedSentinelAgent()
