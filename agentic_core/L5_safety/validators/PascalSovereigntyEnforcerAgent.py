@@ -214,15 +214,15 @@ class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, HealerMixin, ASTEnfo
 
     def _ast_audit(self) -> Dict:
         """Ultra-precise AST audit for snake_case + aliases."""
-        files_with_snake = []
-        total_snake = 0
-        total_aliases = 0
-
-        for path in self.repo_root.rglob("*.py"):
-            if not any(prefix in str(path) for prefix in self.target_prefixes):
+        def scan_for_violations(self) -> List[Path]:
+        """Scan for PascalCase violations."""
+        violations = []
+        # Phase 6.9: Use ssot_discovery instead of rglob
+        for py_file in get_python_files(self.repo_root):
+            if not any(prefix in str(py_file) for prefix in self.target_prefixes):
                 continue
             try:
-                content = path.read_text(encoding='utf-8')
+                content = py_file.read_text(encoding='utf-8')
                 tree = ast.parse(content)
             except (SyntaxError, UnicodeDecodeError):
                 continue

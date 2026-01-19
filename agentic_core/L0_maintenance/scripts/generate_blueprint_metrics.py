@@ -76,7 +76,9 @@ def main():
     diff_dir.mkdir(parents=True, exist_ok=True)
     
     # Find blueprint agent files
-    blueprint_agents = list(blueprint_dir.glob("*Agent.py"))
+    # Phase 6.9: Use ssot_discovery instead of glob
+    from agentic_core.utils.ssot_discovery import get_agent_files
+    blueprint_agents = list(get_agent_files(blueprint_dir))
     
     print("=" * 80)
     print("PHASE 1: BLUEPRINT DUPLICATE METRICS")

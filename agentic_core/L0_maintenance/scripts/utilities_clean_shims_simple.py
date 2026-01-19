@@ -39,7 +39,9 @@ def clean_other_directories() -> Any:
     BASE: Any = Path('c:/Git/Agentic-Workflow')
     for item in BASE.iterdir():
         if item.is_dir() and item.name not in ['.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', '.vscode']:
-            impl_files: Any = list(item.rglob('*_impl*.py'))
+            # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
+            from agentic_core.utils.ssot_discovery import get_python_files
+            impl_files: Any = [f for f in get_python_files(item) if '_impl' in f.name]
             if impl_files:
                 LOGGER.info(f'\nFound {len(impl_files)} _impl files in {item.name}:')
                 for f in impl_files[:10]:

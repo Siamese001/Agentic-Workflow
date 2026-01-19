@@ -79,7 +79,9 @@ def fix_all_python_files(root_dir: Any) -> Any:
     for target_dir in target_dirs:
         dir_path: Any = root_path / target_dir
         if dir_path.exists():
-            for py_file in dir_path.rglob('*.py'):
+            # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(dir_path):
                 if fix_split_strings_in_file(py_file):
                     fixed_count += 1
 if __name__ == '__main__':

@@ -70,7 +70,7 @@ for d in scan_dirs:
     dir_path = PROJECT_ROOT / d
     if not dir_path.exists():
         continue
-    for py_file in dir_path.rglob('*.py'):
+    for py_file in get_python_files(dir_path):
         if '__pycache__' in str(py_file):
             continue
         

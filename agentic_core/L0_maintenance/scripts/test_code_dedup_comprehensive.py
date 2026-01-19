@@ -102,7 +102,9 @@ def run_all_tests():
     tests_total += 1
     try:
         sample_dir = project_root / AGENTIC_CORE_DIR / "L2_execution"
-        python_files = [str(f) for f in sample_dir.rglob("*.py") if f.is_file()][:15]
+        # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    python_files = [str(f) for f in get_python_files(sample_dir)][:15]
         
         start_time = time.time()
         agent.scan_for_duplicates(python_files)

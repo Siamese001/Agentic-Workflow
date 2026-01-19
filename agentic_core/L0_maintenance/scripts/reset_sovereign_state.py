@@ -20,7 +20,9 @@ def purge_volatile_state() -> Any:
     print(f'   [ROOT] Project root: {root}')
     purged_count: Any = 0
     for pattern in TARGETS:
-        for path in root.glob(pattern):
+        # Phase 6.9 Sub-50: Use ssot_discovery instead of glob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for path in get_python_files(root):
             try:
                 if path.is_dir():
                     shutil.rmtree(path)

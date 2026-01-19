@@ -107,7 +107,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         target_path = agentic_core_path / target_l1
         
         # Relocate all files from non-approved folder
-        for py_file in bad_path.rglob("*.py"):
+        for py_file in get_python_files(bad_path):
             if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                 continue
             self._relocate_file_to_l1(py_file, target_l1, target_path, results)
@@ -162,7 +162,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         target_path.mkdir(parents=True, exist_ok=True)
         
         # Relocate all files
-        for py_file in bad_path.rglob("*.py"):
+        for py_file in get_python_files(bad_path):
             if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                 continue
             try:

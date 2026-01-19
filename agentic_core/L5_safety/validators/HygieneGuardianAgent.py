@@ -117,7 +117,8 @@ class HygieneGuardianAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         """
         violations = []
         
-        for py_file in directory.rglob('*.py'):
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.project_root):
             # Skip excluded directories
             if any(skip_dir in py_file.parts for skip_dir in self.SKIP_DIRS):
                 continue
@@ -152,7 +153,8 @@ class HygieneGuardianAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         violations = []
         markers = ['TODO', 'FIXME', 'HACK', 'XXX', 'BUG']
         
-        for py_file in directory.rglob('*.py'):
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.project_root):
             if any(skip_dir in py_file.parts for skip_dir in self.SKIP_DIRS):
                 continue
             

@@ -65,7 +65,8 @@ def validate_prompt_ssot(target_path: str) -> tuple[float, list[str]]:
     prompt_dir = Path(target_path) / "prompt_governance"
     if not prompt_dir.exists(): return 0.0, ["Directory Missing"]
     issues = []
-    prompt_files = list(prompt_dir.rglob("*.md"))
+    from agentic_core.utils.ssot_discovery import get_markdown_files
+    prompt_files = list(get_markdown_files(prompt_dir))
     failures = 0
     for pf in prompt_files:
         content = pf.read_text(encoding='utf-8')

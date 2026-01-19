@@ -85,7 +85,9 @@ def main():
     files_modified = 0
     files_scanned = 0
     
-    for py_file in l0_scripts.glob("*.py"):
+    # Phase 6.9 Sub-50: Use ssot_discovery instead of glob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(l0_scripts):
         if py_file.name.startswith("_"):
             continue
         

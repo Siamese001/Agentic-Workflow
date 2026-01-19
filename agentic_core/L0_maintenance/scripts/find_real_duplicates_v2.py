@@ -79,7 +79,9 @@ def main():
     print(f"[SCAN] Searching for agent files in {project_root}...")
     
     # Find all agent files
-    agent_files = [f for f in project_root.rglob("*Agent.py") if is_agent_file(f)]
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_agent_files
+    agent_files = [f for f in get_agent_files(project_root) if is_agent_file(f)]
     
     print(f"[SCAN] Found {len(agent_files)} agent files")
     

@@ -39,15 +39,12 @@ def compute_file_hash(file_path: Path) -> str:
         return "ERROR"
 
 
-def scan_for_duplicates():
-    """Scan project for duplicate files."""
-    file_hashes = defaultdict(list)  # hash -> [paths]
-    
-    # Extensions to scan
-    extensions = {'.py', '.html', '.json', '.yaml', '.md', '.txt'}
-    
-    # Directories to exclude
-    exclude_dirs = {'__pycache__', '.git', 'node_modules', 'venv', '.venv', 'archive'}
+def scan_for_duplicates(root_dir: Path) -> Dict[str, List[Path]]:
+    """Scan for duplicate Python files."""
+    duplicates = {}
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(root_dir):  
     
     print("Scanning for duplicate files...")
     

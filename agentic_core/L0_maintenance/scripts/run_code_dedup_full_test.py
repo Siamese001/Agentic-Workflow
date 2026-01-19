@@ -57,7 +57,9 @@ def run_comprehensive_tests():
     
     # Phase 2: Scan for code block duplicates
     print("\n[3/5] Scanning for code block duplicates...")
-    python_files = [str(f) for f in project_root.rglob("*.py") 
+    # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    python_files = [str(f) for f in get_python_files(project_root) 
                    if f.is_file() 
                    and ARCHIVES_DIR not in str(f)
                    and ".venv" not in str(f)

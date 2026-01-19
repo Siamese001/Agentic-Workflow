@@ -25,7 +25,9 @@ def flatten_scripts() -> Any:
     if not SCRIPTS_DIR.exists():
         print('[!] Scripts directory not found')
         return
-    for py_file in SCRIPTS_DIR.rglob('*.py'):
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(SCRIPTS_DIR):
         rel_path: Any = py_file.relative_to(CORE)
         parts: Any = rel_path.parts
         if len(parts) > REQUIRED_DEPTH - 1:

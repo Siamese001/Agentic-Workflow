@@ -225,15 +225,17 @@ def main():
     
     root = Path("C:/Git/Agentic-Workflow")
     
-    # Find all Python files
-    py_files = list(root.rglob("*.py"))
-    py_files = [f for f in py_files if should_process_file(f)]
+    """Find all agent files to rename."""
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_agent_files
+    agent_files = list(get_agent_files(root_dir=root))
+    agent_files = [f for f in agent_files if should_process_file(f)]
     
     total_changes = 0
     files_changed = 0
     all_changes = {}
     
-    for py_file in py_files:
+    for py_file in agent_files:
         changes = rename_in_file(py_file, RENAMES, dry_run)
         if changes:
             files_changed += 1

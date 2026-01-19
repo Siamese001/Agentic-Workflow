@@ -51,7 +51,9 @@ def find_real_duplicates(project_root: Path):
     print(f"[SCAN] Searching for agent files in {project_root}...")
     
     # Find all agent files
-    agent_files = [f for f in project_root.rglob("*Agent.py") if is_agent_file(f)]
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_agent_files
+    agent_files = [f for f in get_agent_files(project_root) if is_agent_file(f)]
     
     # Exclude certain directories
     excluded_dirs = {".venv", "venv", "__pycache__", ".git", "node_modules", "coverage_html"}

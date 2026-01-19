@@ -30,7 +30,9 @@ def main() -> Any:
     """Find and fix all Python files with markdown fences."""
     root: Any = Path('c:/Git/Agentic-Workflow/agentic_core')
     fixed_count: Any = 0
-    for py_file in root.rglob('*.py'):
+    # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(root):
         if fix_markdown_fences(str(py_file)):
             fixed_count += 1
     print(f'\n🎯 Fixed {fixed_count} files')

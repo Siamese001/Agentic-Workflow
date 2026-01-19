@@ -47,7 +47,9 @@ def main() -> Any:
     """Fix all imports in agentic_core."""
     fixed: Any = 0
     total: Any = 0
-    for py_file in Path('agentic_core').rglob('*.py'):
+    # Phase 6.9: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    for py_file in get_python_files(Path('agentic_core')):
         total += 1
         if fix_file_imports(py_file):
             fixed += 1

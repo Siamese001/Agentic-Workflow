@@ -208,7 +208,9 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         violations = []
         files_scanned = 0
 
-        for py_file in self.project_root.rglob("*.py"):
+        # Phase 6.9: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.project_root):
             if self._should_skip_file(py_file):
                 continue
             

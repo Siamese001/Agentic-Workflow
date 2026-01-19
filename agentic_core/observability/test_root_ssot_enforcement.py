@@ -157,8 +157,10 @@ def test_4_scripts_folder_ssot_location() -> Tuple[bool, str]:
         return False, "scripts/ at root but SSOT location doesn't exist"
     
     # Both exist - this is a violation
-    root_count = len(list(root_scripts.glob("*.py")))
-    ssot_count = len(list(ssot_scripts.glob("*.py")))
+    # Phase 6.9: Use ssot_discovery instead of glob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    root_count = len(list(get_python_files(root_scripts)))
+    ssot_count = len(list(get_python_files(ssot_scripts)))
     
     return False, f"DUPLICATE: scripts/ at root ({root_count} files) AND L0_maintenance/scripts/ ({ssot_count} files)"
 
