@@ -348,26 +348,27 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             return {"errors": 1, "skipped": 1}
         _call_path.add(agent_name)
         
-        metrics = {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
+        # Phase 6.1: Use standardized HealResult keys
+        metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
         
         try:
             # 1. Integrity Validation (Corruption Check)
             if hasattr(self, '_validate_memory_integrity'):
                 integrity_results = self._validate_memory_integrity(dry_run=dry_run)
-                metrics["violations"] += integrity_results.get("violations", 0)
-                metrics["fixed"] += integrity_results.get("fixed", 0)
+                metrics["violations_found"] += integrity_results.get("violations_found", integrity_results.get("violations", 0))
+                metrics["violations_fixed"] += integrity_results.get("violations_fixed", integrity_results.get("fixed", 0))
                 
             # 2. Staleness Cleanup
             if hasattr(self, '_cleanup_stale_memories'):
                 cleanup_results = self._cleanup_stale_memories(dry_run=dry_run)
-                metrics["violations"] += cleanup_results.get("violations", 0)
-                metrics["fixed"] += cleanup_results.get("fixed", 0)
+                metrics["violations_found"] += cleanup_results.get("violations_found", cleanup_results.get("violations", 0))
+                metrics["violations_fixed"] += cleanup_results.get("violations_fixed", cleanup_results.get("fixed", 0))
 
             # 3. Handle State Persistence
             if execute and not dry_run and getattr(self, 'dirty_memory', False):
                 if hasattr(self, 'save_state'):
                     self.save_state()
-                    metrics["fixed"] += 1
+                    metrics["violations_fixed"] += 1
 
         except Exception as e:
             Logger.error(f"[{agent_name}] Memory Healing Failed: {str(e)}")
