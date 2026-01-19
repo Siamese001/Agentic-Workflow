@@ -31,7 +31,7 @@ Logger = logging.getLogger(__name__)
 
 # Performance optimization: Use SovereignIndex instead of rglob
 try:
-    from archives.location_violations.sovereign_index import SovereignIndex
+    from agentic_core.utils.sovereign_index import SovereignIndex
     SOVEREIGN_INDEX_AVAILABLE = True
 except ImportError:
     SOVEREIGN_INDEX_AVAILABLE = False
@@ -178,6 +178,8 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     MIN_ALIGNMENT_SCORE,
     DEFAULT_APP_HEALING_TARGET,
     DEFAULT_CORE_HEALING_TERRITORY,
+    GLOBAL_EXCLUDED_DIRS,              # Production Lens SSOT
+    is_path_allowed,                   # SSOT path validation helper
 )
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
@@ -374,7 +376,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         if not result[0]:
             return result
             
-        result = self._validate_root_whitelist(root_folder)
+        result = self._validate_root_whitelist(root_folder, rel_path)
         if not result[0]:
             return result
             
@@ -694,8 +696,15 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
             
         return True, "OK"
 
-    def _validate_root_whitelist(self, root_folder: str) -> Tuple[bool, str]:
-        """Validate root folder is in whitelist."""
+    def _validate_root_whitelist(self, root_folder: str, rel_path: Path = None) -> Tuple[bool, str]:
+        """Validate path is within an allowed sovereign territory using SSOT helper."""
+        # Use is_path_allowed for nested path validation (SSOT fix)
+        if rel_path is not None:
+            if not is_path_allowed(str(rel_path)):
+                return False, f"VOID VIOLATION: Path '{rel_path}' not in sovereign territory"
+            return True, "OK"
+        
+        # Fallback to root-only check
         if root_folder not in ROOT_WHITELIST:
             return False, f"VOID VIOLATION: Unapproved root folder '{root_folder}'"
         return True, "OK"
