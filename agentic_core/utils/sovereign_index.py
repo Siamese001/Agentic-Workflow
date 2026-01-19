@@ -159,7 +159,11 @@ class SovereignIndex:
         
         # Check cache first
         if pattern in self._cache:
+            Logger.info(f"[INDEX] Cache Hit: Pattern '{pattern}' -> {len(self._cache[pattern])} files (from cache)")
             return self._cache[pattern].copy()
+        
+        # Cache miss - need to scan
+        Logger.info(f"[INDEX] Cache Miss: Pattern '{pattern}' -> scanning {len(self._all_files)} indexed files")
         
         # Filter files by pattern
         matched = []
@@ -170,7 +174,7 @@ class SovereignIndex:
         # Cache the result
         self._cache[pattern] = matched
         
-        Logger.debug(f"[INDEX] Pattern '{pattern}' matched {len(matched)} files")
+        Logger.info(f"[INDEX] Disk Scan: Pattern '{pattern}' matched {len(matched)} files (now cached)")
         return matched.copy()
     
     def get_python_files(self) -> List[Path]:

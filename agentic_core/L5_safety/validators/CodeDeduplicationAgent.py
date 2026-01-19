@@ -77,8 +77,6 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.cache_decorator import cached
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
@@ -96,7 +94,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
 )
 
-class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin, RedisCacheMixin, PineconeVectorMixin):
+class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
     

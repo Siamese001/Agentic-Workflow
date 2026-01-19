@@ -19,12 +19,11 @@ from typing import Any, Dict, List, Tuple
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Sovereign Agent for token budget tracking and complexity management
 @dataclass
-class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
+class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
     """
     Budget enforcement agent for code complexity management.
     

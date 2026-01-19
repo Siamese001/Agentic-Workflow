@@ -13,12 +13,11 @@ from typing import Any, Dict, List, Set, Tuple
 import ast
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Sovereign Agent for type enforcement and precision engineering
 @dataclass
-class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
+class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
     """
     KEYS: 22 (Missing Types), 23 (Unreachable Code), 24 (Unused Vars)
     ROLE: Precision Engineering. Requires AST_VALID signal.

@@ -28,7 +28,6 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
@@ -37,7 +36,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class StrategicRecommendationAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class StrategicRecommendationAgent(SubatomicTestingMixin, HealerMixin):
     """
     L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
     

@@ -29,6 +29,10 @@ from typing import Optional
 from datetime import datetime
 
 
+# Alias for backward compatibility
+PrintColors = None  # Will be set after Colors class definition
+
+
 class Colors:
     """ANSI color codes for terminal output."""
     # Reset
@@ -368,3 +372,7 @@ def log_status(level: str, message: str, **kwargs):
         context = f" {Colors.DIM}({', '.join(f'{k}={v}' for k, v in kwargs.items())}){Colors.RESET}"
     
     print(f"{Colors.DIM}{timestamp}{Colors.RESET} {color}[{label}]{Colors.RESET} {message}{context}")
+
+
+# Backward compatibility alias - PrintColors is an alias for Colors
+PrintColors = Colors

@@ -50,7 +50,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class FilesystemAgent(HealerMixin):
     """
     Autonomous agent for physical filesystem purity.
     Targets technical debt markers in non-Python files with auto-remediation.

@@ -33,11 +33,10 @@ from typing import Dict, List, Optional, Any
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from enum import Enum
 
-from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.config.blueprint_sovereign.TestSovereigntyAgent import TestSovereigntyAgent
 from agentic_core.L5_safety.utils.ASTEnforcementMixin import ASTEnforcementMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -65,7 +64,7 @@ class SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTEnforcementMixin, MCPHardenedMixin):
+class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, HealerMixin, ASTEnforcementMixin):
     """L5 Safety agent — enforces PascalCase as eternal sole SSOT.
     
     Uses ASTEnforcementMixin for ultra-precise AST analysis.

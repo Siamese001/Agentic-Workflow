@@ -271,12 +271,11 @@ class DeepResearchOutput:
 
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
-class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
+class IntegrityGateExecutorAgent(HealerMixin):
     """Executor for integrity gate validation.
 
     Validates research outputs against quality criteria including
