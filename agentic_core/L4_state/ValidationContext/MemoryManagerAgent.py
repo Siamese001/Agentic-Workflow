@@ -118,7 +118,9 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             Dictionary of validation results
         """
         if session_id is None:
-            results_files: Any = sorted(self.results_dir.glob('results_*.json'))
+            # Phase 6.4: Use ssot_discovery instead of glob
+            from agentic_core.utils.ssot_discovery import get_json_files
+            results_files: Any = sorted([f for f in get_json_files(self.results_dir) if f.name.startswith('results_')])
             if not results_files:
                 return {}
             results_file: Any = results_files[-1]
@@ -252,8 +254,10 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             days: Number of days to keep
         """
         cutoff_time: Any = datetime.now().timestamp() - days * 86400
+        # Phase 6.4: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_json_files
         for category_dir in [self.conversations_dir, self.results_dir, self.state_dir]:
-            for memory_file in category_dir.glob('*.json'):
+            for memory_file in get_json_files(category_dir):
                 try:
                     if memory_file.stat().st_mtime < cutoff_time:
                         memory_file.unlink()
@@ -268,7 +272,15 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         Returns:
             Dictionary of memory statistics
         """
-        stats: Any = {'base_dir': str(self.base_dir), 'conversations': len(list(self.conversations_dir.glob('*.json'))), 'results': len(list(self.results_dir.glob('*.json'))), 'agent_states': len(list(self.state_dir.glob('*.json'))), 'total_size_mb': 0}
+        # Phase 6.4: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_json_files
+        stats: Any = {
+            'base_dir': str(self.base_dir), 
+            'conversations': len(list(get_json_files(self.conversations_dir))), 
+            'results': len(list(get_json_files(self.results_dir))), 
+            'agent_states': len(list(get_json_files(self.state_dir))), 
+            'total_size_mb': 0
+        }
         total_size: Any = 0
         from agentic_core.utils.ssot_discovery import get_json_files
         for file in get_json_files(self.base_dir):

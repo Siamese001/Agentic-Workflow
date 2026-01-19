@@ -23,6 +23,8 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
 )
 from archives.location_violations.sovereign_index import SovereignIndex
+from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
 
 def get_existing_file_hashes() -> Dict[str, str]:
     """Get dict of filename -> content hash for existing sovereign files."""
@@ -32,16 +34,11 @@ def get_existing_file_hashes() -> Dict[str, str]:
     for root in sovereign_roots:
         root_path: Any = repo_root / root
         if root_path.exists():
-            for file_path in root_path.rglob('*.py'):
-                if '__pycache__' in file_path.parts:
-                    continue
+            # Phase 6.4: Use ssot_discovery instead of rglob
+            for file_path in get_python_files(root_path):
                 existing[file_path.name] = get_file_hash(file_path)
-            for file_path in root_path.rglob('*.json'):
-                if '__pycache__' in file_path.parts:
-                    continue
+            for file_path in get_data_files(root_path, extensions=['.json']):
                 existing[file_path.name] = get_file_hash(file_path)
-            for file_path in root_path.rglob('*.md'):
-                if '__pycache__' in file_path.parts:
-                    continue
+            for file_path in get_data_files(root_path, extensions=['.md']):
                 existing[file_path.name] = get_file_hash(file_path)
     return existing

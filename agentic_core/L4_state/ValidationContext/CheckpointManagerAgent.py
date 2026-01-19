@@ -173,7 +173,8 @@ class CheckpointManagerAgent(L4StateBaseAgent):
 
         validated = 0
         try:
-            for checkpoint_file in self.checkpoint_dir.glob('*.ckpt'):
+            from agentic_core.utils.ssot_discovery import get_data_files
+            for checkpoint_file in get_data_files(self.checkpoint_dir, extensions=['.ckpt']):
                 # Simplified validation - in production would verify checksums
                 if checkpoint_file.stat().st_size > 0:
                     if execute:
@@ -200,7 +201,9 @@ class CheckpointManagerAgent(L4StateBaseAgent):
         """
         recovered = 0
         try:
-            for checkpoint_file in self.checkpoint_dir.glob('*.ckpt.corrupt'):
+            # Phase 6.5: Use ssot_discovery instead of glob
+            from agentic_core.utils.ssot_discovery import get_data_files
+            for checkpoint_file in get_data_files(self.checkpoint_dir, extensions=['.corrupt']):
                 if execute:
                     Logger.info(f"Recovered checkpoint: {checkpoint_file}")
                 elif dry_run:
@@ -225,7 +228,9 @@ class CheckpointManagerAgent(L4StateBaseAgent):
         """
         removed = 0
         try:
-            for checkpoint_file in self.checkpoint_dir.glob('*.ckpt.bad'):
+            # Phase 6.5: Use ssot_discovery instead of glob
+            from agentic_core.utils.ssot_discovery import get_data_files
+            for checkpoint_file in get_data_files(self.checkpoint_dir, extensions=['.bad']):
                 if execute:
                     checkpoint_file.unlink()
                     Logger.info(f"Removed corrupted checkpoint: {checkpoint_file}")

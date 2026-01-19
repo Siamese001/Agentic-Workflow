@@ -287,7 +287,9 @@ class UnifiedSSOTValidator:
         # Calculate statistics
         stats = self.scanner.get_compliance_stats()
         report.total_agents = stats['total_agents']
-        report.total_files_scanned = len(list(self.project_root.glob('**/*.py')))
+        # Phase 6.5: Use ssot_discovery instead of glob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        report.total_files_scanned = len(list(get_python_files(self.project_root)))
         
         # Calculate compliance score
         total_checks = report.total_agents * 4  # 4 types of checks per agent
@@ -323,9 +325,9 @@ class UnifiedSSOTValidator:
         if not agentic_core.exists():
             return violations
         
-        for py_file in agentic_core.rglob('*.py'):
-            if '__pycache__' in py_file.parts:
-                continue
+        # Phase 6.5: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(agentic_core):
             
             # Determine source layer from file path
             source_layer = self._get_layer_from_path(py_file)
@@ -369,10 +371,13 @@ class UnifiedSSOTValidator:
             
             max_depth = config.get('depth', 3)
             
+            # Phase 6.5: Use os.walk instead of rglob for directory traversal
+            import os
             # Check all subdirectories
-            for folder in root_path.rglob('*'):
-                if not folder.is_dir():
-                    continue
+            for root, dirs, files in os.walk(root_path):
+                dirs[:] = [d for d in dirs if not d.startswith('.')]
+                for dir_name in dirs:
+                    folder = Path(root) / dir_name
                 
                 # Skip excluded folders
                 if any(excluded in folder.parts for excluded in SOVEREIGN_EXCLUDED_FOLDERS):
