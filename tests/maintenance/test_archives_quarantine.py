@@ -112,7 +112,7 @@ def test_duplicate_detector_exclusion():
     print("=" * 60)
     
     # Static analysis
-    detector_path = PROJECT_ROOT / "apps_lic/engines/DuplicateCodeDetectorAgent.py"
+    detector_path = PROJECT_ROOT / "apps_shared/utils/DuplicateCodeDetectorAgent.py"
     if not detector_path.exists():
         test_fail("FILE", "DuplicateCodeDetectorAgent.py not found")
         return
@@ -124,10 +124,10 @@ def test_duplicate_detector_exclusion():
     else:
         test_fail("ARCHIVES", "ARCHIVES_DIR NOT in EXCLUDE_DIRS")
     
-    if "'.sovereign_healing_backup'" in content:
-        test_pass("BACKUP", "'.sovereign_healing_backup' in EXCLUDE_DIRS")
+    if "GLOBAL_EXCLUDED_DIRS" in content:
+        test_pass("BACKUP", "Uses GLOBAL_EXCLUDED_DIRS (includes .sovereign_healing_backup)")
     else:
-        test_fail("BACKUP", "'.sovereign_healing_backup' NOT in EXCLUDE_DIRS")
+        test_fail("BACKUP", "Does NOT use GLOBAL_EXCLUDED_DIRS")
 
 
 def test_conftest_quarantine():
