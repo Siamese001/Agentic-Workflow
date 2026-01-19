@@ -38,7 +38,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 # Color-coded terminal output for progress visibility
 try:
-    from archives.location_violations.terminal_colors import (
+    from agentic_core.utils.terminal_colors import (
         phase_header, tier_summary, mission_header, mission_summary,
         agent_status, progress_bar, log_status, Colors, heartbeat
     )

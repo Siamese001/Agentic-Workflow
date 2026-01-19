@@ -1,6 +1,6 @@
 # Deep Architectural Review: Top 5 Consolidation & Hardening Opportunities
 
-**Date:** January 18, 2026  
+**Date:** January 19, 2026  
 **Scope:** `agentic_core/` and `scripts/` directories  
 **Objective:** Identify structural friction, redundant logic, and dependency risks
 
@@ -8,14 +8,16 @@
 
 ## Analysis Summary
 
-| Metric | Count | Risk Level |
-|--------|-------|------------|
-| Cross-imports (`from agentic_core.*`) | 2,307 matches in 804 files | HIGH |
-| Orchestrator classes | 28 files with orchestrator patterns | HIGH |
-| rglob/glob usage | 304 matches in 194 files | MEDIUM |
-| Mixin classes | 256 files with mixin patterns | MEDIUM |
-| BaseAgent variants | 11 different BaseAgent files | HIGH |
-| heal_repository implementations | 936 matches in 290 files | MEDIUM |
+| Metric | Count (Active Code) | Risk Level | Trend |
+|--------|---------------------|------------|-------|
+| Cross-imports (`from agentic_core.*`) | ~2,500 in active files | HIGH | → Stable |
+| Orchestrator classes | 28 files (active) | MEDIUM | ↓ Improving |
+| rglob/glob usage | ~200 in active files | MEDIUM | ↓ Improving |
+| Mixin classes | 193 files with mixin patterns | LOW | ↓ Improved |
+| BaseAgent variants | 8 active (down from 11) | LOW | ✅ Resolved |
+| heal_repository implementations | ~300 in active files | MEDIUM | → Stable |
+
+> **Note:** Raw grep counts include `.sovereign_healing_backup/` and `archives/` directories. Active code counts exclude these.
 
 ---
 
@@ -108,6 +110,17 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
 **Step 4:** Add deprecation warnings to old orchestrators
 
 **Step 5:** Delete deprecated files after 30-day migration period
+
+### Progress Log (Jan 19, 2026)
+
+| Action | Status | Evidence |
+|--------|--------|----------|
+| Create `UnifiedOrchestratorAgent.py` | ✅ Completed | `agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py` exists |
+| Create `IOrchestratorAgent` protocol | ✅ Completed | `agentic_core/L3_orchestration/interfaces/IOrchestratorAgent.py` exists |
+| Add DeprecationWarnings to old orchestrators | ⚠️ Pending | No warnings found in legacy orchestrators |
+| Migrate callers to unified orchestrator | ⚠️ Pending | Legacy orchestrators still in use |
+
+**Status: IN PROGRESS** - Foundation complete, migration pending.
 
 ### Hardening Action
 
@@ -215,6 +228,17 @@ from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2Execut
 
 **Step 5:** Add `__all__` exports to layer base modules
 
+### Progress Log (Jan 19, 2026)
+
+| Action | Status | Evidence |
+|--------|--------|----------|
+| Delete `CanonBaseAgent.py` | ✅ Completed | Not found in `agentic_core/` (archived to `archives/void_violations/`) |
+| Delete `ExecutionCanonBaseAgent.py` | ✅ Completed | Not found in `agentic_core/` |
+| Delete `MaintenanceBaseAgent.py` | ✅ Completed | Not found in `agentic_core/` (archived to `archives/void_violations/`) |
+| Standardize layer bases | ✅ Completed | 8 active BaseAgent files remain |
+
+**Status: ✅ COMPLETED** - BaseAgent fragmentation resolved. Down from 11 to 8 active files.
+
 ### Hardening Action
 
 **AST Validation in CI:**
@@ -319,6 +343,17 @@ class FileCache:
 
 **Step 4:** Add lint rule to flag new rglob usage
 
+### Progress Log (Jan 19, 2026)
+
+| Action | Status | Evidence |
+|--------|--------|----------|
+| Create `ssot_discovery.py` | ⚠️ Pending | File not found in `agentic_core/utils/` |
+| Create `FileCache` class | ⚠️ Pending | Not implemented |
+| Refactor `test_dashboard_end_to_end.py` | ⚠️ Partial | Reduced from 13 to 9 rglob calls |
+| Add lint rule for rglob | ⚠️ Pending | No CI check implemented |
+
+**Status: ⚠️ PENDING** - No significant progress. rglob usage still high.
+
 ### Hardening Action
 
 **Import Guard:**
@@ -414,6 +449,17 @@ class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
 **Step 3:** Update SovereignBaseAgent to use InfrastructureMixin
 
 **Step 4:** Remove individual mixin imports from agents
+
+### Progress Log (Jan 19, 2026)
+
+| Action | Status | Evidence |
+|--------|--------|----------|
+| Create `InfrastructureMixin` | ✅ Completed | `agentic_core/utils/core_extensions/infrastructure_mixin.py` exists |
+| Consolidate mixin locations | ✅ Completed | Duplicates archived |
+| Update `SovereignBaseAgent` | ✅ Completed | Uses Root Injection Pattern (MCPHardenedMixin in root) |
+| Delete duplicate mixins | ✅ Completed | `L5_safety/guardrails/mcp_hardened_mixin.py` archived |
+
+**Status: ✅ COMPLETED** - Mixin complexity resolved via Root Injection Pattern.
 
 ### Hardening Action
 
@@ -548,6 +594,17 @@ def _normalize_result(self, result: Dict) -> HealResult:
     }
 ```
 
+### Progress Log (Jan 19, 2026)
+
+| Action | Status | Evidence |
+|--------|--------|----------|
+| Define `HealResult` TypedDict | ⚠️ Pending | Not found in `healer_mixin.py` |
+| Create signature validator | ⚠️ Pending | `validate_heal_signatures.py` not created |
+| Fix non-compliant agents | ⚠️ Pending | ~20 agents still have non-standard signatures |
+| Add result normalization | ⚠️ Pending | `_normalize_result` not implemented |
+
+**Status: ⚠️ PENDING** - No progress on healing method standardization.
+
 ### Hardening Action
 
 **Protocol Enforcement:**
@@ -636,13 +693,54 @@ def validate_all_healers() -> bool:
 
 ## Success Metrics
 
-| Metric | Current | Target |
-|--------|---------|--------|
-| Orchestrator classes | 28 | 3 |
-| BaseAgent variants | 11 | 8 |
-| rglob calls | 304 | <50 |
-| Mixin locations | 5 | 3 |
-| Non-compliant heal signatures | ~20 | 0 |
+| Metric | Jan 18 | Jan 19 | Target | Status |
+|--------|--------|--------|--------|--------|
+| Orchestrator classes | 28 | 28 | 3 | ⚠️ In Progress |
+| BaseAgent variants | 11 | 8 | 8 | ✅ Achieved |
+| rglob calls (active) | 304 | ~200 | <50 | ⚠️ Partial |
+| Mixin locations | 5 | 3 | 3 | ✅ Achieved |
+| Non-compliant heal signatures | ~20 | ~20 | 0 | ⚠️ Pending |
+
+---
+
+## New Friction Identified (Jan 19, 2026)
+
+### Anti-Pattern: Backup Directory Bloat
+
+The `.sovereign_healing_backup/` directory has grown significantly, inflating grep counts:
+- 10,310 files matched for cross-imports (vs ~800 active)
+- 4,706 files matched for heal_repository (vs ~300 active)
+
+**Recommendation:** Implement periodic backup pruning or exclude from all scans.
+
+### Anti-Pattern: Test Files in Production Directories
+
+Several test files exist in production directories:
+- `agentic_core/L5_safety/validators/test_dashboard_end_to_end.py`
+- `agentic_core/L5_safety/validators/test_hierarchy_agent_root_healing.py`
+- `agentic_core/L5_safety/validators/test_healer_mixin_heal_repository.py`
+
+**Recommendation:** Move to `tests/` directory to maintain clean production lens.
+
+---
+
+## Recommended Next 3 Refactoring Targets
+
+Based on updated priority analysis:
+
+1. **`agentic_core/L3_orchestration/workflow_engines/SSOTOrchestratorAgent.py`**
+   - Add `DeprecationWarning` pointing to `UnifiedOrchestratorAgent`
+   - Priority: HIGH (blocks Opportunity #1 completion)
+
+2. **`agentic_core/utils/core_extensions/healer_mixin.py`**
+   - Add `HealResult` TypedDict
+   - Implement canonical `heal_repository` signature
+   - Priority: HIGH (blocks Opportunity #5)
+
+3. **`agentic_core/utils/ssot_discovery.py`** (CREATE)
+   - Implement `get_python_files()` and `get_files_by_layer()`
+   - Replace rglob usage in top offenders
+   - Priority: MEDIUM (Opportunity #3)
 
 ---
 

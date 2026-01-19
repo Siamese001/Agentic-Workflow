@@ -11,7 +11,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from apps_lic.engines.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent
+from apps_shared.utils.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent
 
 
 async def main():
