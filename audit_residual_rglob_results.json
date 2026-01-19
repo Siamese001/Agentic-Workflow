@@ -1,95 +1,7 @@
 {
-  "total_calls": 16,
+  "total_calls": 5,
   "files_scanned": 1312,
   "calls": [
-    {
-      "file": "agentic_core\\L0_maintenance\\scripts\\bulk_hierarchy_heal.py",
-      "line": 38,
-      "method": "rglob",
-      "context": "python_files: Any = list(target_dir.rglob('*.py'))",
-      "pattern": "*.py",
-      "directory": "agentic_core\\L0_maintenance\\scripts"
-    },
-    {
-      "file": "agentic_core\\L0_maintenance\\scripts\\populate_pinecone_embeddings.py",
-      "line": 292,
-      "method": "glob",
-      "context": "rca_files.extend(pattern.parent.glob(pattern.name) if \"*\" in str(pattern) else [pattern])",
-      "pattern": "other_pattern",
-      "directory": "agentic_core\\L0_maintenance\\scripts"
-    },
-    {
-      "file": "agentic_core\\L0_maintenance\\scripts\\utilities_clean_duplicates_enhanced.py",
-      "line": 34,
-      "method": "glob",
-      "context": "for file in glob.glob(pattern, recursive=True):",
-      "pattern": "unknown",
-      "directory": "agentic_core\\L0_maintenance\\scripts"
-    },
-    {
-      "file": "agentic_core\\L0_maintenance\\scripts\\utilities_subatomic_governance_audit.py",
-      "line": 54,
-      "method": "rglob",
-      "context": "for py_file in folder_path.rglob('*.py'):",
-      "pattern": "*.py",
-      "directory": "agentic_core\\L0_maintenance\\scripts"
-    },
-    {
-      "file": "agentic_core\\L0_maintenance\\scripts\\verify_intentional_variants.py",
-      "line": 150,
-      "method": "rglob",
-      "context": "for file_path in project_root.rglob('*'):",
-      "pattern": "other_pattern",
-      "directory": "agentic_core\\L0_maintenance\\scripts"
-    },
-    {
-      "file": "agentic_core\\L5_safety\\guardrails\\trim_airlocks.py",
-      "line": 63,
-      "method": "rglob",
-      "context": "for init_file in CORE.rglob('__init__.py'):",
-      "pattern": "unknown",
-      "directory": "agentic_core\\L5_safety\\guardrails"
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\PythonFileSovereigntyEnforcerAgent.py",
-      "line": 71,
-      "method": "rglob",
-      "context": "for py_file in self.project_root.rglob(\"*.py\"):",
-      "pattern": "*.py",
-      "directory": "agentic_core\\L5_safety\\validators"
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\sovereign_auditor_v3.py",
-      "line": 50,
-      "method": "rglob",
-      "context": "json_files = list(schema_dir.rglob(\"*.json\"))",
-      "pattern": "*.json",
-      "directory": "agentic_core\\L5_safety\\validators"
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\SyntaxValidatorAgent.py",
-      "line": 152,
-      "method": "rglob",
-      "context": "for py_file in directory.rglob('*.py'):",
-      "pattern": "*.py",
-      "directory": "agentic_core\\L5_safety\\validators"
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\test_l4_structure_validation.py",
-      "line": 269,
-      "method": "rglob",
-      "context": "py_files = list(full_path.rglob(\"*.py\"))",
-      "pattern": "*.py",
-      "directory": "agentic_core\\L5_safety\\validators"
-    },
-    {
-      "file": "agentic_core\\schemas\\models\\SchemaEvolverAgent.py",
-      "line": 139,
-      "method": "rglob",
-      "context": "for py_file in schema_path.rglob('*.py'):",
-      "pattern": "*.py",
-      "directory": "agentic_core\\schemas\\models"
-    },
     {
       "file": "agentic_core\\utils\\core_extensions\\airlock_flush.py",
       "line": 15,
@@ -132,102 +44,6 @@
     }
   ],
   "by_directory": {
-    "agentic_core\\L0_maintenance\\scripts": [
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\bulk_hierarchy_heal.py",
-        "line": 38,
-        "method": "rglob",
-        "context": "python_files: Any = list(target_dir.rglob('*.py'))",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      },
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\populate_pinecone_embeddings.py",
-        "line": 292,
-        "method": "glob",
-        "context": "rca_files.extend(pattern.parent.glob(pattern.name) if \"*\" in str(pattern) else [pattern])",
-        "pattern": "other_pattern",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      },
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\utilities_clean_duplicates_enhanced.py",
-        "line": 34,
-        "method": "glob",
-        "context": "for file in glob.glob(pattern, recursive=True):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      },
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\utilities_subatomic_governance_audit.py",
-        "line": 54,
-        "method": "rglob",
-        "context": "for py_file in folder_path.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      },
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\verify_intentional_variants.py",
-        "line": 150,
-        "method": "rglob",
-        "context": "for file_path in project_root.rglob('*'):",
-        "pattern": "other_pattern",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      }
-    ],
-    "agentic_core\\L5_safety\\guardrails": [
-      {
-        "file": "agentic_core\\L5_safety\\guardrails\\trim_airlocks.py",
-        "line": 63,
-        "method": "rglob",
-        "context": "for init_file in CORE.rglob('__init__.py'):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\L5_safety\\guardrails"
-      }
-    ],
-    "agentic_core\\L5_safety\\validators": [
-      {
-        "file": "agentic_core\\L5_safety\\validators\\PythonFileSovereigntyEnforcerAgent.py",
-        "line": 71,
-        "method": "rglob",
-        "context": "for py_file in self.project_root.rglob(\"*.py\"):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L5_safety\\validators"
-      },
-      {
-        "file": "agentic_core\\L5_safety\\validators\\sovereign_auditor_v3.py",
-        "line": 50,
-        "method": "rglob",
-        "context": "json_files = list(schema_dir.rglob(\"*.json\"))",
-        "pattern": "*.json",
-        "directory": "agentic_core\\L5_safety\\validators"
-      },
-      {
-        "file": "agentic_core\\L5_safety\\validators\\SyntaxValidatorAgent.py",
-        "line": 152,
-        "method": "rglob",
-        "context": "for py_file in directory.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L5_safety\\validators"
-      },
-      {
-        "file": "agentic_core\\L5_safety\\validators\\test_l4_structure_validation.py",
-        "line": 269,
-        "method": "rglob",
-        "context": "py_files = list(full_path.rglob(\"*.py\"))",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L5_safety\\validators"
-      }
-    ],
-    "agentic_core\\schemas\\models": [
-      {
-        "file": "agentic_core\\schemas\\models\\SchemaEvolverAgent.py",
-        "line": 139,
-        "method": "rglob",
-        "context": "for py_file in schema_path.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\schemas\\models"
-      }
-    ],
     "agentic_core\\utils\\core_extensions": [
       {
         "file": "agentic_core\\utils\\core_extensions\\airlock_flush.py",
@@ -272,55 +88,25 @@
     ]
   },
   "by_pattern": {
+    "unknown": [
+      {
+        "file": "agentic_core\\utils\\core_extensions\\airlock_flush.py",
+        "line": 15,
+        "method": "rglob",
+        "context": "for init_file in CORE.rglob('__init__.py'):",
+        "pattern": "unknown",
+        "directory": "agentic_core\\utils\\core_extensions"
+      },
+      {
+        "file": "agentic_core\\utils\\core_extensions\\fix_all_type_imports.py",
+        "line": 26,
+        "method": "rglob",
+        "context": "for py_file in CORE.rglob(impl_file):",
+        "pattern": "unknown",
+        "directory": "agentic_core\\utils\\core_extensions"
+      }
+    ],
     "*.py": [
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\bulk_hierarchy_heal.py",
-        "line": 38,
-        "method": "rglob",
-        "context": "python_files: Any = list(target_dir.rglob('*.py'))",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      },
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\utilities_subatomic_governance_audit.py",
-        "line": 54,
-        "method": "rglob",
-        "context": "for py_file in folder_path.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      },
-      {
-        "file": "agentic_core\\L5_safety\\validators\\PythonFileSovereigntyEnforcerAgent.py",
-        "line": 71,
-        "method": "rglob",
-        "context": "for py_file in self.project_root.rglob(\"*.py\"):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L5_safety\\validators"
-      },
-      {
-        "file": "agentic_core\\L5_safety\\validators\\SyntaxValidatorAgent.py",
-        "line": 152,
-        "method": "rglob",
-        "context": "for py_file in directory.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L5_safety\\validators"
-      },
-      {
-        "file": "agentic_core\\L5_safety\\validators\\test_l4_structure_validation.py",
-        "line": 269,
-        "method": "rglob",
-        "context": "py_files = list(full_path.rglob(\"*.py\"))",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L5_safety\\validators"
-      },
-      {
-        "file": "agentic_core\\schemas\\models\\SchemaEvolverAgent.py",
-        "line": 139,
-        "method": "rglob",
-        "context": "for py_file in schema_path.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\schemas\\models"
-      },
       {
         "file": "agentic_core\\utils\\core_extensions\\bridge_builder.py",
         "line": 38,
@@ -345,181 +131,9 @@
         "pattern": "*.py",
         "directory": "agentic_core\\utils\\core_extensions"
       }
-    ],
-    "other_pattern": [
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\populate_pinecone_embeddings.py",
-        "line": 292,
-        "method": "glob",
-        "context": "rca_files.extend(pattern.parent.glob(pattern.name) if \"*\" in str(pattern) else [pattern])",
-        "pattern": "other_pattern",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      },
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\verify_intentional_variants.py",
-        "line": 150,
-        "method": "rglob",
-        "context": "for file_path in project_root.rglob('*'):",
-        "pattern": "other_pattern",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      }
-    ],
-    "unknown": [
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\utilities_clean_duplicates_enhanced.py",
-        "line": 34,
-        "method": "glob",
-        "context": "for file in glob.glob(pattern, recursive=True):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      },
-      {
-        "file": "agentic_core\\L5_safety\\guardrails\\trim_airlocks.py",
-        "line": 63,
-        "method": "rglob",
-        "context": "for init_file in CORE.rglob('__init__.py'):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\L5_safety\\guardrails"
-      },
-      {
-        "file": "agentic_core\\utils\\core_extensions\\airlock_flush.py",
-        "line": 15,
-        "method": "rglob",
-        "context": "for init_file in CORE.rglob('__init__.py'):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\utils\\core_extensions"
-      },
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_all_type_imports.py",
-        "line": 26,
-        "method": "rglob",
-        "context": "for py_file in CORE.rglob(impl_file):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\utils\\core_extensions"
-      }
-    ],
-    "*.json": [
-      {
-        "file": "agentic_core\\L5_safety\\validators\\sovereign_auditor_v3.py",
-        "line": 50,
-        "method": "rglob",
-        "context": "json_files = list(schema_dir.rglob(\"*.json\"))",
-        "pattern": "*.json",
-        "directory": "agentic_core\\L5_safety\\validators"
-      }
     ]
   },
   "by_file": {
-    "agentic_core\\L0_maintenance\\scripts\\bulk_hierarchy_heal.py": [
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\bulk_hierarchy_heal.py",
-        "line": 38,
-        "method": "rglob",
-        "context": "python_files: Any = list(target_dir.rglob('*.py'))",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      }
-    ],
-    "agentic_core\\L0_maintenance\\scripts\\populate_pinecone_embeddings.py": [
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\populate_pinecone_embeddings.py",
-        "line": 292,
-        "method": "glob",
-        "context": "rca_files.extend(pattern.parent.glob(pattern.name) if \"*\" in str(pattern) else [pattern])",
-        "pattern": "other_pattern",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      }
-    ],
-    "agentic_core\\L0_maintenance\\scripts\\utilities_clean_duplicates_enhanced.py": [
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\utilities_clean_duplicates_enhanced.py",
-        "line": 34,
-        "method": "glob",
-        "context": "for file in glob.glob(pattern, recursive=True):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      }
-    ],
-    "agentic_core\\L0_maintenance\\scripts\\utilities_subatomic_governance_audit.py": [
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\utilities_subatomic_governance_audit.py",
-        "line": 54,
-        "method": "rglob",
-        "context": "for py_file in folder_path.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      }
-    ],
-    "agentic_core\\L0_maintenance\\scripts\\verify_intentional_variants.py": [
-      {
-        "file": "agentic_core\\L0_maintenance\\scripts\\verify_intentional_variants.py",
-        "line": 150,
-        "method": "rglob",
-        "context": "for file_path in project_root.rglob('*'):",
-        "pattern": "other_pattern",
-        "directory": "agentic_core\\L0_maintenance\\scripts"
-      }
-    ],
-    "agentic_core\\L5_safety\\guardrails\\trim_airlocks.py": [
-      {
-        "file": "agentic_core\\L5_safety\\guardrails\\trim_airlocks.py",
-        "line": 63,
-        "method": "rglob",
-        "context": "for init_file in CORE.rglob('__init__.py'):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\L5_safety\\guardrails"
-      }
-    ],
-    "agentic_core\\L5_safety\\validators\\PythonFileSovereigntyEnforcerAgent.py": [
-      {
-        "file": "agentic_core\\L5_safety\\validators\\PythonFileSovereigntyEnforcerAgent.py",
-        "line": 71,
-        "method": "rglob",
-        "context": "for py_file in self.project_root.rglob(\"*.py\"):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L5_safety\\validators"
-      }
-    ],
-    "agentic_core\\L5_safety\\validators\\sovereign_auditor_v3.py": [
-      {
-        "file": "agentic_core\\L5_safety\\validators\\sovereign_auditor_v3.py",
-        "line": 50,
-        "method": "rglob",
-        "context": "json_files = list(schema_dir.rglob(\"*.json\"))",
-        "pattern": "*.json",
-        "directory": "agentic_core\\L5_safety\\validators"
-      }
-    ],
-    "agentic_core\\L5_safety\\validators\\SyntaxValidatorAgent.py": [
-      {
-        "file": "agentic_core\\L5_safety\\validators\\SyntaxValidatorAgent.py",
-        "line": 152,
-        "method": "rglob",
-        "context": "for py_file in directory.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L5_safety\\validators"
-      }
-    ],
-    "agentic_core\\L5_safety\\validators\\test_l4_structure_validation.py": [
-      {
-        "file": "agentic_core\\L5_safety\\validators\\test_l4_structure_validation.py",
-        "line": 269,
-        "method": "rglob",
-        "context": "py_files = list(full_path.rglob(\"*.py\"))",
-        "pattern": "*.py",
-        "directory": "agentic_core\\L5_safety\\validators"
-      }
-    ],
-    "agentic_core\\schemas\\models\\SchemaEvolverAgent.py": [
-      {
-        "file": "agentic_core\\schemas\\models\\SchemaEvolverAgent.py",
-        "line": 139,
-        "method": "rglob",
-        "context": "for py_file in schema_path.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\schemas\\models"
-      }
-    ],
     "agentic_core\\utils\\core_extensions\\airlock_flush.py": [
       {
         "file": "agentic_core\\utils\\core_extensions\\airlock_flush.py",

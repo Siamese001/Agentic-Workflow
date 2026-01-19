@@ -147,7 +147,10 @@ def scan_for_duplicates():
     extensions = {'.py', '.html', '.json', '.yaml', '.md', '.txt'}
     exclude_dirs = {'__pycache__', '.git', 'node_modules', 'venv', '.venv', 'archive'}
     
-    for file_path in project_root.rglob('*'):
+    # Absolute Zero: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    all_files = list(get_python_files(project_root)) + list(get_data_files(project_root))
+    for file_path in all_files:
         if not file_path.is_file():
             continue
         if any(excluded in file_path.parts for excluded in exclude_dirs):

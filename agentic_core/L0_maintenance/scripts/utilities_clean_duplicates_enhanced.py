@@ -31,7 +31,11 @@ def aggressive_cleanup():
     temp_patterns = ["*.tmp", "*.temp", "*.bak", "*~", ".DS_Store", "Thumbs.db"]
     for pattern in temp_patterns:
         import glob
-        for file in glob.glob(pattern, recursive=True):
+        # Absolute Zero: Use ssot_discovery instead of glob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    from pathlib import Path
+    search_path = Path(pattern.split('**')[0] if '**' in pattern else '.')
+    for file in [str(f) for f in get_python_files(search_path)]:
             try:
                 os.remove(file)
                 Logger.info(f"🗑️ Purged temp file: {file}")

@@ -266,7 +266,9 @@ def test_14_l4_folders_have_high_file_count() -> Tuple[bool, str]:
             continue
         
         # Count Python files
-        py_files = list(full_path.rglob("*.py"))
+        # Absolute Zero: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    py_files = list(get_python_files(full_path))
         py_count = len([f for f in py_files if '__pycache__' not in str(f)])
         
         if py_count < 10:

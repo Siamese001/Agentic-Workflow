@@ -35,7 +35,9 @@ def log_move(file_name: Any, src: Any, dst: Any) -> Any:
 def main() -> Any:
     """Brief description of functionality and purpose."""
     target_dir: Any = project_root / TARGET_ROOT
-    python_files: Any = list(target_dir.rglob('*.py'))
+    # Absolute Zero: Use ssot_discovery instead of rglob
+    from agentic_core.utils.ssot_discovery import get_python_files
+    python_files: Any = list(get_python_files(target_dir))
     print(f'--- SOVEREIGN HEALING START: {TARGET_ROOT} ---')
     print(f"Mode: {('DRY RUN' if DRY_RUN else 'EXECUTION')}")
     output_file: Any = project_root / 'hierarchy_heal_dry_run.txt'

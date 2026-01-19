@@ -68,7 +68,9 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
         """Scan and perform/return proposed file renames."""
         actions: List[Dict[str, str]] = []
 
-        for py_file in self.project_root.rglob("*.py"):
+        # Absolute Zero: Use ssot_discovery instead of rglob
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(self.project_root):
             rel_path = py_file.relative_to(self.project_root)
             if not any(rel_path.parts[0].startswith(prefix) for prefix in self.target_prefixes):
                 continue
