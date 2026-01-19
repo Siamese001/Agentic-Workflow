@@ -43,31 +43,28 @@ class TrackObservabilityCostAgent(MCPHardenedMixin, SubatomicTestingMixin, Heale
         """Process data."""
         return data
 
+    @timeout(300)
     @standard_heal
-    def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
-
-def execute(data: object, config: Optional[Dict[str, object]]=None, **kwargs: Dict[str, object]) -> OperationResult:
-    """Convenience function."""
-    return TrackObservabilityCost(config).execute(data, **kwargs)
-
-@timeout(300)
-@standard_heal
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """Observability/metrics - operational only."""
-    if _call_path is None:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Observability/metrics - operational only."""
+        if _call_path is None:
+            _call_path = set()
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
 
-    agent_name = "TrackObservabilityCost"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] Observability/metrics - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)
+        agent_name = "TrackObservabilityCostAgent"
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] Observability/metrics - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
+
+def track_observability_cost(data: object, config: Optional[Dict[str, object]]=None, **kwargs: Dict[str, object]) -> OperationResult:
+    """Convenience function."""
+    return TrackObservabilityCostAgent(config).execute(data, **kwargs)
