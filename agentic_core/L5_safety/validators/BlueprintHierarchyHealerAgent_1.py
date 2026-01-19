@@ -14,7 +14,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint_2 import (
 )
 
 from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealerAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 

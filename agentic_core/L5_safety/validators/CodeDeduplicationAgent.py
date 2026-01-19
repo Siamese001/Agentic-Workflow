@@ -16,21 +16,20 @@ from pathlib import Path
 
 # === ENABLE DIRECT EXECUTION: Dynamically add project root to sys.path ===
 # This runs at module load time (before imports) when running the file directly.
-# It searches upward for the directory containing AGENTIC_CORE_DIR (your project root).
+# It searches upward for the directory containing 'agentic_core' (your project root).
 # Harmless when imported as a module (idempotent).
+_AGENTIC_CORE_MARKER = "agentic_core"
+
 def _add_project_root_to_sys_path() -> None:
     current = Path(__file__).resolve()
     while current.parent != current:  # Stop at filesystem root
-        if (current / AGENTIC_CORE_DIR).exists():
+        if (current / _AGENTIC_CORE_MARKER).exists():
             root_str = str(current)
             if root_str not in sys.path:
                 sys.path.insert(0, root_str)
             return
         current = current.parent
-    raise RuntimeError(
-        "Could not locate project root (directory containing AGENTIC_CORE_DIR). "
-        "Adjust the marker condition if your structure differs."
-    )
+    # Silently skip if not found - will fail on import if truly needed
 
 _add_project_root_to_sys_path()
 # === END PATH FIX ===
@@ -78,9 +77,9 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.cache_decorator import cached
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
