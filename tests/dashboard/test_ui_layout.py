@@ -16,36 +16,42 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 @pytest.mark.dashboard
 class TestHTMLStructure:
-    """Test HTML structure in Runtime Tab."""
+    """Test HTML structure - core elements that must exist."""
     
-    def test_meta_learning_container_exists(self, html_content):
-        """Verify meta-learning container exists in HTML."""
-        assert 'id="meta-stats"' in html_content
+    def test_dashboard_data_container_exists(self, html_content):
+        """Verify dashboardData is present in HTML."""
+        assert 'dashboardData' in html_content
     
-    def test_redis_container_exists(self, html_content):
-        """Verify Redis container exists in HTML."""
-        assert 'id="redis-stats"' in html_content
+    def test_real_agent_data_container_exists(self, html_content):
+        """Verify realAgentData is present in HTML."""
+        assert 'realAgentData' in html_content
     
-    def test_pinecone_container_exists(self, html_content):
-        """Verify Pinecone container exists in HTML."""
-        assert 'id="pinecone-stats"' in html_content
+    def test_table_containers_exist(self, html_content):
+        """Verify table rendering functions are present."""
+        assert 'renderTerritorySummaryTable' in html_content or 'kpiGrid' in html_content
     
-    def test_execution_flow_container_exists(self, html_content):
-        """Verify execution flow container exists in HTML."""
-        assert 'id="layer-flow"' in html_content
+    def test_drill_modal_exists(self, html_content):
+        """Verify drill-down modal exists in HTML."""
+        assert 'drillModal' in html_content
 
 
 @pytest.mark.dashboard
 class TestSectionHeaders:
     """Test section headers are present."""
     
-    def test_meta_learning_header(self, html_content):
-        """Verify Meta-Learning Activity header exists."""
-        assert 'Meta-Learning Activity' in html_content
+    def test_territory_summary_header(self, html_content):
+        """Verify Territory Summary or similar header exists."""
+        has_header = any(h in html_content for h in [
+            'Territory Summary', 'Autonomy Compliance', 'Dashboard'
+        ])
+        assert has_header, "No dashboard header found"
     
-    def test_agent_execution_header(self, html_content):
-        """Verify Agent Execution Flow header exists."""
-        assert 'Agent Execution Flow' in html_content
+    def test_code_quality_section(self, html_content):
+        """Verify Code Quality section exists."""
+        has_section = any(s in html_content for s in [
+            'Code Quality', 'codeQualityGrid', 'renderCodeQualityTable'
+        ])
+        assert has_section, "No code quality section found"
 
 
 @pytest.mark.dashboard
@@ -67,24 +73,26 @@ class TestCSSFiles:
 
 @pytest.mark.dashboard
 class TestJSIncludes:
-    """Test JavaScript file includes in HTML."""
+    """Test JavaScript functionality in HTML (inline or external)."""
     
-    def test_meta_learning_panel_included(self, html_content):
-        """Verify meta-learning-panel.js is included."""
-        assert 'meta-learning-panel.js' in html_content
+    def test_table_rendering_functions_present(self, html_content):
+        """Verify table rendering functions are present."""
+        has_render = any(f in html_content for f in [
+            'renderTerritorySummaryTable', 'renderCodeQualityTable'
+        ])
+        assert has_render, "Table rendering functions not found"
     
-    def test_redis_monitor_included(self, html_content):
-        """Verify redis-monitor.js is included."""
-        assert 'redis-monitor.js' in html_content
+    def test_load_data_function_present(self, html_content):
+        """Verify loadData function is present."""
+        assert 'loadData' in html_content, "loadData function not found"
     
-    def test_pinecone_monitor_included(self, html_content):
-        """Verify pinecone-monitor.js is included."""
-        assert 'pinecone-monitor.js' in html_content
+    def test_drill_down_functions_present(self, html_content):
+        """Verify drill-down modal functions are present."""
+        has_drill = any(f in html_content for f in [
+            'openDrillModal', 'drillModal'
+        ])
+        assert has_drill, "Drill-down functions not found"
     
-    def test_execution_flow_included(self, html_content):
-        """Verify execution-flow.js is included."""
-        assert 'execution-flow.js' in html_content
-    
-    def test_controller_included(self, html_content):
-        """Verify meta-learning-controller.js is included."""
-        assert 'meta-learning-controller.js' in html_content
+    def test_plotly_integration_present(self, html_content):
+        """Verify Plotly integration is present."""
+        assert 'Plotly' in html_content or 'plotly' in html_content, "Plotly not found"

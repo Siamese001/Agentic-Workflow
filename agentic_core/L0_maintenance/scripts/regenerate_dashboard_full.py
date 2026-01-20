@@ -16,12 +16,20 @@ This updates:
 
 NO HARDCODING - all values calculated from discovery data.
 Uses dashboard_ssot_definitions.py as SINGLE SOURCE OF TRUTH for all calculations.
+
+GUARDRAILS (RCA 2026-01-20):
+- Corruption detection: Checks for multiple </html> tags
+- Bracket counting: Proper JSON replacement without partial matches
+- Pattern flexibility: Handles window.x || fallback patterns
+- Size validation: Warns if HTML exceeds expected size
+- Duplicate detection: Validates no duplicate JS declarations
 """
 import json
+import re
 import sys
 from pathlib import Path
 from collections import defaultdict
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent  # agentic_core/L0_maintenance/scripts -> project root
 DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
@@ -316,11 +324,18 @@ def generate_strategic_recommendations(dashboard_data: List[Dict]) -> Dict[str, 
         Dict with 'review' and 'recommendations' keys
     """
     try:
-        from agentic_core.L3_orchestration.strategic_recommendation.StrategicRecommendationAgent import StrategicRecommendationAgent
+        # Correct import path: L1_cognition/thought_engine/
+        from agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent import StrategicRecommendationAgent
         
         agent = StrategicRecommendationAgent(project_root=PROJECT_ROOT)
         result = agent.run(dashboard_data)
         return result
+    except ImportError as e:
+        print(f"  ⚠️  StrategicRecommendationAgent import failed: {e}")
+        return {
+            "review": "Strategic analysis unavailable - module not found.",
+            "recommendations": []
+        }
     except Exception as e:
         print(f"  ⚠️  StrategicRecommendationAgent failed: {e}")
         # Return fallback
@@ -362,39 +377,154 @@ def inject_strategic_observations(content: str, recommendations: Dict[str, Any])
         "metric_observations": recommendations.get('metric_observations', [])
     }
     
-    # Find and replace strategicObservationsData
-    obs_marker_start = 'const strategicObservationsData = {'
-    obs_marker_end = '};'
-    obs_start_idx = content.find(obs_marker_start)
+    # Find and replace strategicObservationsData - use brace counting (RCA 2026-01-20)
+    # Handle both patterns: 'const x = {' and 'const x = window.x || {'
+    obs_start_idx = content.find('const strategicObservationsData = window.strategicObservationsData || {')
+    if obs_start_idx == -1:
+        obs_start_idx = content.find('const strategicObservationsData = {')
     
     if obs_start_idx == -1:
-        # Add before recommendationsData
-        recs_idx = content.find('const recommendationsData = [')
+        # Add before recommendationsData (but only if it doesn't exist)
+        recs_idx = content.find('const recommendationsData = ')
         if recs_idx != -1:
             new_obs = f'const strategicObservationsData = {json.dumps(obs_data, indent=2)};\n\n        '
             content = content[:recs_idx] + new_obs + content[recs_idx:]
     else:
-        obs_end_idx = content.find(obs_marker_end, obs_start_idx) + len(obs_marker_end)
+        # Use brace counting to find matching close (RCA fix)
+        brace_count = 0
+        obs_end_idx = obs_start_idx
+        for i, char in enumerate(content[obs_start_idx:], obs_start_idx):
+            if char == '{':
+                brace_count += 1
+            elif char == '}':
+                brace_count -= 1
+                if brace_count == 0:
+                    obs_end_idx = i + 1
+                    break
+        # Skip semicolon if present
+        if obs_end_idx < len(content) and content[obs_end_idx] == ';':
+            obs_end_idx += 1
+        
         new_obs = f'const strategicObservationsData = {json.dumps(obs_data, indent=2)};'
         content = content[:obs_start_idx] + new_obs + content[obs_end_idx:]
     
-    # Find and replace recommendationsData
-    marker_start = 'const recommendationsData = ['
-    marker_end = '];'
-    
+    # Find and replace recommendationsData - handle both patterns
+    # Pattern 1: 'const recommendationsData = ['
+    # Pattern 2: 'const recommendationsData = window.recommendationsData || ['
+    marker_start = 'const recommendationsData = window.recommendationsData || ['
     start_idx = content.find(marker_start)
     if start_idx == -1:
+        marker_start = 'const recommendationsData = ['
+        start_idx = content.find(marker_start)
+    
+    if start_idx == -1:
         # If not found, try to add it before dashboardData
-        dd_idx = content.find('const dashboardData = [')
+        dd_idx = content.find('const dashboardData = ')
         if dd_idx != -1:
             new_recs = f'const recommendationsData = {json.dumps(recs_data, indent=2)};\n\n        '
             content = content[:dd_idx] + new_recs + content[dd_idx:]
     else:
-        end_idx = content.find(marker_end, start_idx) + len(marker_end)
+        # Find matching closing bracket by counting brackets
+        bracket_count = 0
+        end_idx = start_idx
+        for i, char in enumerate(content[start_idx:], start_idx):
+            if char == '[':
+                bracket_count += 1
+            elif char == ']':
+                bracket_count -= 1
+                if bracket_count == 0:
+                    end_idx = i + 1
+                    break
+        # Skip semicolon if present
+        if end_idx < len(content) and content[end_idx] == ';':
+            end_idx += 1
+        
         new_recs = f'const recommendationsData = {json.dumps(recs_data, indent=2)};'
         content = content[:start_idx] + new_recs + content[end_idx:]
     
     return content
+
+
+# =============================================================================
+# GUARDRAILS - Post-regeneration validation (RCA 2026-01-20)
+# =============================================================================
+
+def validate_html_integrity(content: str) -> Tuple[bool, List[str]]:
+    """
+    Validate HTML integrity after regeneration.
+    
+    GUARDRAILS:
+    1. Single </html> tag (no corruption)
+    2. Reasonable file size (< 1MB)
+    3. No duplicate JS declarations
+    4. Valid JSON in data structures
+    
+    Returns:
+        (is_valid, list_of_errors)
+    """
+    errors = []
+    
+    # Guardrail 1: Single </html> tag
+    html_end_count = content.count('</html>')
+    if html_end_count != 1:
+        errors.append(f"CORRUPTION: Found {html_end_count} </html> tags (expected 1)")
+    
+    # Guardrail 2: Reasonable file size (< 1MB)
+    size_kb = len(content) / 1024
+    if size_kb > 1000:
+        errors.append(f"BLOAT: HTML file is {size_kb:.0f}KB (expected < 1000KB)")
+    elif size_kb > 700:
+        errors.append(f"WARNING: HTML file is {size_kb:.0f}KB (approaching limit)")
+    
+    # Guardrail 3: No duplicate JS declarations
+    js_declarations = [
+        ('dashboardData', r'const\s+dashboardData\s*='),
+        ('realAgentData', r'const\s+realAgentData\s*='),
+        ('recommendationsData', r'const\s+recommendationsData\s*='),
+        ('strategicObservationsData', r'const\s+strategicObservationsData\s*='),
+    ]
+    
+    for var_name, pattern in js_declarations:
+        matches = re.findall(pattern, content)
+        if len(matches) > 1:
+            errors.append(f"DUPLICATE: {var_name} declared {len(matches)} times")
+    
+    # Guardrail 4: TOTAL row exists in dashboardData
+    if '"Territory": "TOTAL"' not in content and "'Territory': 'TOTAL'" not in content:
+        errors.append("MISSING: TOTAL row not found in dashboardData")
+    
+    # Guardrail 5: Balanced script tags
+    script_open = content.count('<script')
+    script_close = content.count('</script>')
+    if script_open != script_close:
+        errors.append(f"UNBALANCED: {script_open} <script> vs {script_close} </script>")
+    
+    is_valid = len([e for e in errors if not e.startswith('WARNING')]) == 0
+    return is_valid, errors
+
+
+def validate_pre_regeneration(content: str) -> Tuple[str, List[str]]:
+    """
+    Validate and potentially fix HTML before regeneration.
+    
+    Returns:
+        (cleaned_content, warnings)
+    """
+    warnings = []
+    
+    # Check for corruption and auto-fix
+    html_end_count = content.count('</html>')
+    if html_end_count > 1:
+        warnings.append(f"Auto-fixed: Truncated corrupted HTML ({html_end_count} </html> tags)")
+        first_html_end = content.find('</html>') + len('</html>')
+        content = content[:first_html_end]
+    
+    # Check size
+    size_kb = len(content) / 1024
+    if size_kb > 700:
+        warnings.append(f"Input HTML is large: {size_kb:.0f}KB")
+    
+    return content, warnings
 
 
 def main():
@@ -429,17 +559,69 @@ def main():
     # Load dashboard HTML
     content = DASHBOARD_PATH.read_text(encoding='utf-8')
     
-    # Replace dashboardData
+    # CRITICAL: Verify HTML ends with </html> - detect corruption
+    html_end_count = content.count('</html>')
+    if html_end_count > 1:
+        print(f"  ⚠️  WARNING: HTML file appears corrupted ({html_end_count} </html> tags)")
+        print("  ⚠️  Truncating to first </html> tag...")
+        first_html_end = content.find('</html>') + len('</html>')
+        content = content[:first_html_end]
+    
+    # Replace dashboardData - find the FIRST occurrence only
+    # Handle both patterns: 'const dashboardData = [' and 'const dashboardData = window.dashboardData || ['
     print("\nUpdating dashboardData in HTML...")
-    dd_start = content.find('const dashboardData = [')
-    dd_end = content.find('];', dd_start) + 2
+    dd_start = content.find('const dashboardData = window.dashboardData || [')
+    if dd_start == -1:
+        dd_start = content.find('const dashboardData = [')
+    if dd_start == -1:
+        print("  ❌ ERROR: Could not find dashboardData declaration in HTML")
+        return 1
+    
+    # Find the matching closing bracket by counting brackets
+    bracket_count = 0
+    dd_end = dd_start + len('const dashboardData = [')
+    for i, char in enumerate(content[dd_start:], dd_start):
+        if char == '[':
+            bracket_count += 1
+        elif char == ']':
+            bracket_count -= 1
+            if bracket_count == 0:
+                dd_end = i + 1
+                break
+    
+    # Skip the semicolon if present
+    if dd_end < len(content) and content[dd_end] == ';':
+        dd_end += 1
+    
     new_dashboard_data = 'const dashboardData = ' + json.dumps(dashboard_data, indent=2) + ';'
     content = content[:dd_start] + new_dashboard_data + content[dd_end:]
     
-    # Replace realAgentData
+    # Replace realAgentData - find the FIRST occurrence only
+    # Handle both patterns: 'const realAgentData = {' and 'const realAgentData = window.realAgentData || {'
     print("Updating realAgentData in HTML...")
-    rad_start = content.find('const realAgentData = {')
-    rad_end = content.find('};', rad_start) + 2
+    rad_start = content.find('const realAgentData = window.realAgentData || {')
+    if rad_start == -1:
+        rad_start = content.find('const realAgentData = {')
+    if rad_start == -1:
+        print("  ❌ ERROR: Could not find realAgentData declaration in HTML")
+        return 1
+    
+    # Find the matching closing brace by counting braces
+    brace_count = 0
+    rad_end = rad_start + len('const realAgentData = {')
+    for i, char in enumerate(content[rad_start:], rad_start):
+        if char == '{':
+            brace_count += 1
+        elif char == '}':
+            brace_count -= 1
+            if brace_count == 0:
+                rad_end = i + 1
+                break
+    
+    # Skip the semicolon if present
+    if rad_end < len(content) and content[rad_end] == ';':
+        rad_end += 1
+    
     new_real_agent_data = 'const realAgentData = ' + json.dumps(real_agent_data, indent=2) + ';'
     content = content[:rad_start] + new_real_agent_data + content[rad_end:]
     
@@ -447,8 +629,33 @@ def main():
     print("Injecting strategic recommendations...")
     content = inject_strategic_observations(content, strategic_recs)
     
+    # GUARDRAIL: Post-regeneration validation (RCA 2026-01-20)
+    print("\n" + "=" * 70)
+    print("🛡️  GUARDRAIL VALIDATION")
+    print("=" * 70)
+    
+    is_valid, validation_errors = validate_html_integrity(content)
+    
+    if validation_errors:
+        for err in validation_errors:
+            if err.startswith('WARNING'):
+                print(f"  ⚠️  {err}")
+            else:
+                print(f"  ❌ {err}")
+    
+    if not is_valid:
+        print("\n  ❌ VALIDATION FAILED - HTML not written")
+        print("  Fix the issues above and try again")
+        return 1
+    
+    print("  ✅ All guardrail checks passed")
+    
     # Write updated dashboard
     DASHBOARD_PATH.write_text(content, encoding='utf-8')
+    
+    # Report final file size
+    final_size_kb = len(content) / 1024
+    print(f"\n  📊 Final HTML size: {final_size_kb:.0f}KB")
     
     print("\n" + "=" * 70)
     print("✅ Dashboard fully regenerated from discovery data!")
@@ -461,4 +668,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
