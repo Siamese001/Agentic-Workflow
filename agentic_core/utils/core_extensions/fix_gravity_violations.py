@@ -12,7 +12,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 root: Any = Path('C:/Git/Agentic-Workflow')
 violations: Any = [{'file': 'agentic_core/L1_cognition/agent_logic.py', 'pattern': 'from schemas', 'comment': '# GRAVITY FIX: Level 0 cannot import from Level 1 (schemas)\n# '}, {'file': 'agentic_core/L3_orchestration/mission_runner.py', 'pattern': 'from scripts', 'comment': '# GRAVITY FIX: Level 0 cannot import from Level 1 (scripts)\n# '}, {'file': 'apps_shared/verify_hardening.py', 'pattern': 'from apps_rg', 'comment': '# GRAVITY FIX: Level 3 cannot import from Level 4 (apps_rg)\n# '}]

@@ -50,7 +50,7 @@ except ImportError:
 DependencySentinelAgent = None  # Stub
 
 try:
-    from archives.void_violations.canon_agents_quality_1 import SafetyInspectorAgent as SafetyInspectorAgent
+    # ARCHIVED: canon_agents_quality import removed # SafetyInspectorAgent as SafetyInspectorAgent
 except ImportError:
     SafetyInspectorAgent = None
 

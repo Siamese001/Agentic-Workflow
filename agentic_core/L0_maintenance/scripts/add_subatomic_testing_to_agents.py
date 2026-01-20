@@ -6,7 +6,7 @@ This ensures 100% test coverage by adding the testing mixin to each agent.
 import json
 import re
 from pathlib import Path
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
 with open('agent_discovery_full.json', 'r') as f:

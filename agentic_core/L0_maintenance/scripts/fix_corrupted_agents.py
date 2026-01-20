@@ -10,7 +10,7 @@ Ensures proper Python file structure:
 """
 import re
 from pathlib import Path
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 def fix_file(py_file: Path) -> bool:
     """Fix a single Python file's import order."""

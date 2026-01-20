@@ -101,7 +101,7 @@ from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):

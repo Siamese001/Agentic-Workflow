@@ -2,8 +2,8 @@
 """Find actual agent files that belong to low heal capability territories."""
 import json
 from pathlib import Path
-from archives.location_violations.sovereign_index import SovereignIndex
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Read the dashboard file
 with open('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html', 'r', encoding='utf-8') as f:

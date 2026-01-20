@@ -7,7 +7,7 @@ but don't already import from SSOT.
 """
 import re
 from pathlib import Path
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 AGENTIC_CORE = PROJECT_ROOT / "agentic_core"

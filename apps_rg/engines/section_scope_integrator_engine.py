@@ -53,7 +53,7 @@ class ValidationResult: # Placeholder for ValidationResult
         self.signature = SIGNATURE
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from archives.void_violations.IntegrityGateExecutorAgent import IntegrityGateExecutorAgent
+# IntegrityGateExecutorAgent removed - was archived dependency
 
 # NAMING FIXED: AdaptiveRecoveryLoop → AdaptiveRecoveryLoop
 class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop

@@ -5,8 +5,8 @@ import os
 'Brief description of functionality and purpose.'
 import sys
 from typing import Any, List, Dict, Optional
-from archives.location_violations.sovereign_index import SovereignIndex
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
 
 def analyze_and_extract() -> None:

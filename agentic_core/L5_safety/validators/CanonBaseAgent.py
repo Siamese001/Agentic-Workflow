@@ -69,10 +69,10 @@ class CanonBaseAgent(HealerMixin):
             return
         from agentic_core.canon_agents_core import SystemArchitect
         from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
-        from archives.void_violations.DocumentationAgent import DocumentationAgent
+        # ARCHIVED: DocumentationAgent import removed
         from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
-        from archives.void_violations.BudgetAgent import BudgetAgent
-        from archives.void_violations.TypeMechanicAgent import TypeMechanicAgent
+        # ARCHIVED: BudgetAgent import removed
+        # ARCHIVED: TypeMechanicAgent import removed
         from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
         
         # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency

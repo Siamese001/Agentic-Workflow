@@ -20,7 +20,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.utils.testing.mro_auditor import MROAuditor
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 
 def find_all_agent_classes(root_dir: Path) -> List[Tuple[str, Type]]:

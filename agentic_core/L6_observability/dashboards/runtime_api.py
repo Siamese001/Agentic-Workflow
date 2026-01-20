@@ -20,7 +20,7 @@ from pydantic import BaseModel
 
 from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
 from agentic_core.L2_execution.mcp.redis import SovereignRedisClient
-from archives.location_violations.pinecone_telemetry import PineconeTelemetryWrapper
+# ARCHIVED: pinecone_telemetry import removed # PineconeTelemetryWrapper
 
 app = FastAPI(title="Agentic AI Runtime API", version="2.0.0")
 

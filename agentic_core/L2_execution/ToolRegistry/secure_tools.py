@@ -8,7 +8,7 @@ import logging
 import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 Logger: Any = logging.getLogger('ActionNode.SecureTools')
 
 class SecureToolsImpl:

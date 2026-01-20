@@ -20,7 +20,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 
 try:
-    from archives.void_violations.mcp_router_sovereign import SovereignMCPRouter
+    # ARCHIVED: SovereignMCPRouter import removed
 except ImportError:
     pass
 Logger: Any = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ class SovereignRedisMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingM
         super().__init__()
         if not config.REDIS_MCP_ENABLED:
             raise ValueError('Redis MCP disabled in sovereign config')
-        from archives.void_violations.mcp_router_sovereign import SovereignMCPRouter
+        # ARCHIVED: SovereignMCPRouter import removed
         self.router = SovereignMCPRouter(role=role)
         self._mcp_audit('init')
         Logger.info('[L4 REDIS] Sovereign Redis MCP client initialized')

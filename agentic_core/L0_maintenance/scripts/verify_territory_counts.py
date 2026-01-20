@@ -1,7 +1,7 @@
 """Verify all dashboard territory counts are correct."""
 import json
 from pathlib import Path
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Read file line-by-line to extract dashboardData
 lines = []

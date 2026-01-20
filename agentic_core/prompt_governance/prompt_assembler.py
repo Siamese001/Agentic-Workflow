@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from agentic_core.L5_safety.validators.input_validator import InputValidator as InputValidatorAgent
 from agentic_core.L4_state.ValidationContext.runtime_models import InjectionMatch
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Compatibility aliases
 class InputSanitizer:

@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 import json
 
-from archives.location_violations.L6ObservabilityBaseAgent import (
+# ARCHIVED: L6ObservabilityBaseAgent import removed # (
     L6ObservabilityBaseAgent,
     AgentPerformanceMetrics,
     CritiqueReport

@@ -36,7 +36,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 load_dotenv()
 Logger: Any = logging.getLogger(__name__)

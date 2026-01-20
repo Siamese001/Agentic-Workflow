@@ -19,7 +19,7 @@ from enum import Enum
 from typing import Dict, Any, Optional, List, Union, Callable
 from abc import ABC, abstractmethod
 
-from archives.location_violations.circuit_breaker import (
+# ARCHIVED: circuit_breaker import removed # (
     CircuitBreaker,
     CircuitBreakerState,
     CircuitBreakerOpenError,

@@ -6,7 +6,7 @@ Creates all Missing directories to enforce the 3-level depth law.
 import os
 from agentic_core.L5_safety.validators.structure_blueprint import APPS_LIC_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP, CORE_SUBFOLDER_MAP, TESTS_L2_SUBFOLDER_MAP
 from typing import Any
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 def finalize_structure(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""

@@ -23,7 +23,7 @@ print(f"\nTotal agents claiming has_tests=True: {len(agents_with_tests)}")
 
 # Sample 10 random agents
 import random
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 sample = random.sample(agents_with_tests, min(10, len(agents_with_tests)))
 
 print(f"\nSpot-checking {len(sample)} agents:")

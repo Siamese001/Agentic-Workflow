@@ -30,7 +30,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 # Approved folders only
 APPROVED_FOLDERS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR, TESTS_DIR]

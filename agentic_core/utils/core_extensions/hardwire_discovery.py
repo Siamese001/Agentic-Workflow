@@ -7,7 +7,7 @@ import re
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 root: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
 path_redirects: Any = {}
 

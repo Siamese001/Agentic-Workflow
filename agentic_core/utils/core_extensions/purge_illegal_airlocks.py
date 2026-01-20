@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 root_dir: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
 required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
 

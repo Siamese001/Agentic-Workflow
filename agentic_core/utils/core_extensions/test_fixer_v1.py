@@ -23,7 +23,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 def repair_test_syntax(test_dir: Any=TESTS_DIR) -> Any:
     """Brief description of functionality and purpose."""

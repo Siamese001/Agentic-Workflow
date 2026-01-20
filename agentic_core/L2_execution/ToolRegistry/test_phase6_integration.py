@@ -57,7 +57,7 @@ def test_backend_runtime_state_schema():
     
     try:
         # Import runtime state from canon_validator
-        from archives.void_violations.canon_validator_agentic_v2_thin_1 import _runtime_state
+        # ARCHIVED: canon_validator import removed # _runtime_state
         
         # Check top-level fields
         required_fields = ["status", "start_time", "end_time", "current_agent", 
@@ -98,7 +98,7 @@ def test_backend_telemetry_functions():
     print("\n--- Test 1.2: Telemetry Update Functions ---")
     
     try:
-        from archives.void_violations.canon_validator_agentic_v2_thin_1 import (
+        # ARCHIVED: canon_validator import removed # (
             _update_meta_learning_state,
             _update_redis_state,
             _update_pinecone_state,
@@ -489,7 +489,7 @@ def test_e2e_runtime_state_file():
     print("\n--- Test 3.2: Runtime State File ---")
     
     try:
-        from archives.void_violations.canon_validator_agentic_v2_thin_1 import _save_runtime_state, _runtime_state
+        # ARCHIVED: canon_validator import removed # _save_runtime_state, _runtime_state
         
         # Save runtime state
         _save_runtime_state(project_root)

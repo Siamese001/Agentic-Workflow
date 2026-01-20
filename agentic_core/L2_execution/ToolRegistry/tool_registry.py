@@ -287,7 +287,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
 # =============================================================================
 # CODE TRANSFORMATION ENGINE (CTE) — Phase 1 Tool
 # =============================================================================
-from archives.location_violations.code_transform import (
+# ARCHIVED: code_transform import removed # (
     CodeTransformArgs,
     TransformOperation,
     code_transform,
@@ -382,7 +382,7 @@ predefined_tool_categories['analysis'] = 'Code analysis and dependency tools'
 # =============================================================================
 # DIFF/PATCH GENERATOR (DPG) — Phase 2 Tool
 # =============================================================================
-from archives.location_violations.diff_generator import (
+# ARCHIVED: diff_generator import removed # (
     DiffGeneratorArgs,
     DiffFormat,
     generate_diff,
