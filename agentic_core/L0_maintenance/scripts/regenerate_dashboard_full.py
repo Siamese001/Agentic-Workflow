@@ -23,7 +23,7 @@ from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Any
 
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent  # agentic_core/L0_maintenance/scripts -> project root
 DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
 DASHBOARD_PATH = PROJECT_ROOT / 'agentic_core' / 'L6_observability' / 'dashboards' / 'autonomy_dashboard.html'
 
@@ -31,7 +31,7 @@ DASHBOARD_PATH = PROJECT_ROOT / 'agentic_core' / 'L6_observability' / 'dashboard
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import SSOT definitions
-from scripts.dashboard_ssot_definitions import (
+from agentic_core.L5_safety.validators.dashboard_ssot_definitions import (
     FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS, FIELD_MCP_HARDENED,
     FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS, 
     FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
