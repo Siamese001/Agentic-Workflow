@@ -57,14 +57,14 @@ class CanonSwarmScheduler:
         """Build default phase configuration using agent classes."""
         if not self._agent_classes:
             raise ValueError('No agent classes provided. Call set_phases() or provide agent_classes in constructor.')
-        from agentic_core.L2_execution.ToolRegistry.engineering import PatternEnforcerAgent, StructuralEngineer
+        from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent, StructuralEngineer
         from agentic_core.L2_execution.ToolRegistry.governance import ArchitectureGovernorAgent, DependencySentinelAgent
         from agentic_core.L2_execution.ToolRegistry.infrastructure import BenchmarkingAgent, Historian
         from agentic_core.L2_execution.ToolRegistry.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
         from agentic_core.L2_execution.ToolRegistry.repair import TestPilot, ToolsmithAgent
         from agentic_core.L2_execution.ToolRegistry.security import ConcurrencyGuardianAgent, SafetyInspectorAgent, SecurityEnforcer
         from agentic_core.L2_execution.ToolRegistry.specialized import DocEnforcer, NamingEnforcer, TheCartographer, TheOmniContext, TheStrategist, TypeEnforcer
-        self.phases = {'integrity_seq': [Historian(self.ctx), ArchitectureGovernor(self.ctx), DependencySentinelAgent(self.ctx)], 'curation_seq': [HygieneGuardian(self.ctx), CodeStyleGuardian(self.ctx)], 'test_seq': [TestPilot(self.ctx)], 'memory_parallel': [TheCartographer(self.ctx), TheOmniContext(self.ctx)], 'resilience_parallel': [SafetyInspectorAgent(self.ctx), SecurityEnforcer(self.ctx), PerformanceEnforcer(self.ctx)], 'resource_safety_parallel': [ConcurrencyGuardianAgent(self.ctx)], 'engineering_parallel': [StructuralEngineer(self.ctx), PatternEnforcerAgent(self.ctx), ToolsmithAgent(self.ctx)], 'refinement_parallel': [NamingEnforcer(self.ctx), DocEnforcer(self.ctx), TypeEnforcer(self.ctx)], 'benchmarking_seq': [BenchmarkingAgent(self.ctx)], 'optimization_conditional': [TheStrategist(self.ctx)]}
+        self.phases = {'integrity_seq': [Historian(self.ctx), ArchitectureGovernor(self.ctx), DependencySentinelAgent(self.ctx)], 'curation_seq': [HygieneGuardian(self.ctx), CodeStyleGuardian(self.ctx)], 'test_seq': [TestPilot(self.ctx)], 'memory_parallel': [TheCartographer(self.ctx), TheOmniContext(self.ctx)], 'resilience_parallel': [SafetyInspectorAgent(self.ctx), SecurityEnforcer(self.ctx), PerformanceEnforcer(self.ctx)], 'resource_safety_parallel': [ConcurrencyGuardianAgent(self.ctx)], 'engineering_parallel': [StructuralEngineer(self.ctx), UnifiedCodeEnforcerAgent(self.ctx), ToolsmithAgent(self.ctx)], 'refinement_parallel': [NamingEnforcer(self.ctx), DocEnforcer(self.ctx), TypeEnforcer(self.ctx)], 'benchmarking_seq': [BenchmarkingAgent(self.ctx)], 'optimization_conditional': [TheStrategist(self.ctx)]}
 
     async def run_mission(self, target_scope: str=None) -> Any:
         """

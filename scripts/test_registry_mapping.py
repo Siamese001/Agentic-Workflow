@@ -23,7 +23,7 @@ def test_registry_mapping():
     from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
     from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import UnifiedCheckpointManagerAgent
-    from agentic_core.L5_safety.validators.CodeStandardsEnforcerAgent import CodeStandardsEnforcerAgent
+    from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
     from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import UnifiedStateManagementAgent
     
     # Define the mapping inline (mirrors SubAtomicRegistryAgent)
@@ -42,9 +42,9 @@ def test_registry_mapping():
             "CheckpointManager": UnifiedCheckpointManagerAgent,
             "AutonomousCheckpointManager": UnifiedCheckpointManagerAgent,
             # Phase 4: L5 Code Standards Enforcer Consolidation
-            "BaseClassEnforcer": CodeStandardsEnforcerAgent,
-            "PatternEnforcer": CodeStandardsEnforcerAgent,
-            "TypeHintEnforcement": CodeStandardsEnforcerAgent,
+            "BaseClassEnforcer": UnifiedCodeEnforcerAgent,
+            "PatternEnforcer": UnifiedCodeEnforcerAgent,
+            "TypeHintEnforcement": UnifiedCodeEnforcerAgent,
             # Phase 5: L4 State Management Consolidation
             "ManifestManager": UnifiedStateManagementAgent,
             "MemoryManager": UnifiedStateManagementAgent,

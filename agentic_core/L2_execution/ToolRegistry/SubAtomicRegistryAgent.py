@@ -62,7 +62,7 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
     from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
     from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import UnifiedCheckpointManagerAgent
-    from agentic_core.L5_safety.validators.CodeStandardsEnforcerAgent import CodeStandardsEnforcerAgent
+    from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
     from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import UnifiedStateManagementAgent
     
     return {
@@ -91,12 +91,12 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
         "AutonomousCheckpointManagerAgent": UnifiedCheckpointManagerAgent,
         
         # Phase 4: L5 Code Standards Enforcer Consolidation
-        "BaseClassEnforcer": CodeStandardsEnforcerAgent,
-        "BaseClassEnforcerAgent": CodeStandardsEnforcerAgent,
-        "PatternEnforcer": CodeStandardsEnforcerAgent,
-        "PatternEnforcerAgent": CodeStandardsEnforcerAgent,
-        "TypeHintEnforcement": CodeStandardsEnforcerAgent,
-        "TypeHintEnforcementAgent": CodeStandardsEnforcerAgent,
+        "BaseClassEnforcer": UnifiedCodeEnforcerAgent,
+        "BaseClassEnforcerAgent": UnifiedCodeEnforcerAgent,
+        "PatternEnforcer": UnifiedCodeEnforcerAgent,
+        "PatternEnforcerAgent": UnifiedCodeEnforcerAgent,
+        "TypeHintEnforcement": UnifiedCodeEnforcerAgent,
+        "TypeHintEnforcementAgent": UnifiedCodeEnforcerAgent,
         
         # Phase 5: L4 State Management Consolidation
         "ManifestManager": UnifiedStateManagementAgent,
@@ -105,6 +105,47 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
         "MemoryManagerAgent": UnifiedStateManagementAgent,
         "AutonomousStateGuardian": UnifiedStateManagementAgent,
         "AutonomousStateGuardianAgent": UnifiedStateManagementAgent,
+    }
+
+
+def _get_phase3_manager_enforcer_mapping() -> Dict[str, Type]:
+    """
+    Phase 3 Manager & Enforcer Consolidation: Hard Migration mappings.
+    
+    Returns:
+        Dictionary mapping legacy manager/enforcer names to unified classes.
+    """
+    from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent
+    from agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent import UnifiedSecurityManagerAgent
+    from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
+    
+    return {
+        # Resource Managers -> UnifiedResourceManagerAgent
+        "BudgetManagerAgent": UnifiedResourceManagerAgent,
+        "ProactiveResourceManagerAgent": UnifiedResourceManagerAgent,
+        "FallbackManagerAgent": UnifiedResourceManagerAgent,
+        
+        # Security Managers -> UnifiedSecurityManagerAgent
+        "AgentPermissionManagerAgent": UnifiedSecurityManagerAgent,
+        "SecureCheckpointManagerAgent": UnifiedSecurityManagerAgent,
+        "SecureConfigManagerAgent": UnifiedSecurityManagerAgent,
+        
+        # Code Enforcers -> UnifiedCodeEnforcerAgent
+        "CodeSSOTEnforcerAgent": UnifiedCodeEnforcerAgent,
+        "UnifiedCodeEnforcerAgent": UnifiedCodeEnforcerAgent,
+        "PatternEnforcerAgent": UnifiedCodeEnforcerAgent,
+        "TypeEnforcerAgent": UnifiedCodeEnforcerAgent,
+        "PythonFileSovereigntyEnforcerAgent": UnifiedCodeEnforcerAgent,
+        
+        # Structure Enforcers -> UnifiedStructureEnforcerAgent
+        "GravityEnforcerAgent": UnifiedStructureEnforcerAgent,
+        "HierarchyEnforcerAgent": UnifiedStructureEnforcerAgent,
+        "NamingEnforcerAgent": UnifiedStructureEnforcerAgent,
+        "DocEnforcerAgent": UnifiedStructureEnforcerAgent,
+        "ASCIIEnforcerAgent": UnifiedStructureEnforcerAgent,
+        "StrictDocEnforcerAgent": UnifiedStructureEnforcerAgent,
+        "PascalSovereigntyEnforcerAgent": UnifiedStructureEnforcerAgent,
     }
 
 
@@ -169,6 +210,15 @@ def get_unified_agent_class(agent_id: str) -> Type:
             return validator_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 2 validator mapping not available: {e}")
+    
+    # Check Phase 3 manager/enforcer mapping
+    try:
+        phase3_mapping = _get_phase3_manager_enforcer_mapping()
+        if agent_id in phase3_mapping:
+            Logger.info(f"Registry: Mapping legacy manager/enforcer '{agent_id}' to Unified Class (Phase 3).")
+            return phase3_mapping[agent_id]
+    except ImportError as e:
+        Logger.warning(f"Phase 3 manager/enforcer mapping not available: {e}")
     
     raise ValueError(f"Agent ID '{agent_id}' not found in unified agent registry.")
 

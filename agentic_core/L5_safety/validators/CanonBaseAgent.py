@@ -68,7 +68,7 @@ class CanonBaseAgent(HealerMixin):
         if cls._registry_built:
             return
         from agentic_core.canon_agents_core import SystemArchitect
-        from archives.void_violations.PatternEnforcerAgent import PatternEnforcerAgent
+        from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
         from archives.void_violations.DocumentationAgent import DocumentationAgent
         from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
         from archives.void_violations.BudgetAgent import BudgetAgent
@@ -85,7 +85,7 @@ class CanonBaseAgent(HealerMixin):
         deps = DependencySentinelAgent(ctx)
         docs = DocumentationAgent(ctx)
         naming = NamingAgent(ctx)
-        pattern = PatternEnforcerAgent(ctx)
+        pattern = UnifiedCodeEnforcerAgent(ctx)
         safety = SafetyInspectorAgent(ctx)
         struct = StructuralEngineerAgent(ctx)
         type_mech = TypeMechanicAgent(ctx)
