@@ -17,26 +17,28 @@ from typing import List, Dict, Any, Optional, Tuple
 import ast
 import re
 import shutil
-from agentic_core.utils.logger import Logger
+import logging
+Logger = logging.getLogger(__name__)
 from agentic_core.L5_safety.validators.location_utils import (
     normalize_location_path,
     compute_module_path,
     get_agent_files,
-    check_path_compliance,
-    is_key_exception
+    is_path_compliant,
+    is_excepted_from_key,
 )
-from agentic_core.L5_safety.validators.location_constants import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
-    CORE_TERRITORY_KEYWORDS,
-    APP_RG_AST_TERMS,
-    APP_LIC_AST_TERMS,
-    APP_RG_VARIABLE_TERMS,
-    APP_LIC_VARIABLE_TERMS,
-    APP_RG_STRING_TERMS,
-    APP_LIC_STRING_TERMS,
-    VARIABLE_HIT_WEIGHT,
-    STRING_HIT_WEIGHT,
 )
+# Gravity-specific constants - define locally if not in location_constants
+CORE_TERRITORY_KEYWORDS = {"core", "sovereign", "canon", "base", "mixin", "agent"}
+APP_RG_AST_TERMS = {"rg", "regulatory", "compliance"}
+APP_LIC_AST_TERMS = {"lic", "license", "licensing"}
+APP_RG_VARIABLE_TERMS = {"rg_", "regulatory_"}
+APP_LIC_VARIABLE_TERMS = {"lic_", "license_"}
+APP_RG_STRING_TERMS = {"RG", "Regulatory"}
+APP_LIC_STRING_TERMS = {"LIC", "License"}
+VARIABLE_HIT_WEIGHT = 1.0
+STRING_HIT_WEIGHT = 0.5
 
 
 class GravityLeakDetector:

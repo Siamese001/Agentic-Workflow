@@ -3,21 +3,26 @@ Scan Guard - Audit Utility for rglob/glob Usage
 
 Phase 4 Performance Hardening: This module provides utilities to track and
 discourage expensive rglob/glob calls, guiding developers toward the
-high-performance ssot_discovery module.
+high-performance ssot_discovery or file_cache modules.
 
 Usage:
     from agentic_core.utils.scan_guard import guarded_rglob, guarded_glob
     
     # Instead of: path.rglob("*.py")
-    # Use: guarded_rglob(path, "*.py")  # Logs warning + suggests ssot_discovery
+    # Use: guarded_rglob(path, "*.py")  # Logs warning + suggests FileCache
     
-    # Better yet, use ssot_discovery directly:
-    from agentic_core.utils.ssot_discovery import get_python_files
-    files = get_python_files(project_root)
+    # Better yet, use FileCache directly:
+    from agentic_core.utils.file_cache import FileCache, get_python_files
+    cache = FileCache.get_instance(project_root)
+    files = cache.get_python_files()
 
 Author: Cascade
 Date: January 19, 2026
 Phase: 4 - Performance Hardening (rglob Elimination)
+
+Updated: January 20, 2026
+- Added FileCache reference (os.walk with directory pruning)
+- Added backup directory blocking
 """
 from __future__ import annotations
 
@@ -30,11 +35,21 @@ import functools
 Logger = logging.getLogger(__name__)
 
 
+# Dangerous directories that should never be scanned directly
+DANGEROUS_DIRECTORIES = {
+    '.sovereign_healing_backup',
+    'healing_backups',
+    '.git',
+    '__pycache__',
+    'node_modules',
+}
+
+
 def guarded_rglob(path: Path, pattern: str, caller: Optional[str] = None) -> Iterator[Path]:
     """
     Audit utility to track and discourage expensive rglob calls.
     
-    Logs a DeprecationWarning suggesting ssot_discovery before executing the scan.
+    Logs a DeprecationWarning suggesting FileCache before executing the scan.
     Use this as a drop-in replacement for path.rglob() during migration.
     
     Args:
@@ -50,18 +65,32 @@ def guarded_rglob(path: Path, pattern: str, caller: Optional[str] = None) -> Ite
         files = list(guarded_rglob(path, "*.py"))
     """
     caller_info = f" (caller: {caller})" if caller else ""
+    path_str = str(path)
+    
+    # Block scanning of dangerous directories (CRITICAL: Prevents hangs)
+    for dangerous in DANGEROUS_DIRECTORIES:
+        if dangerous in path_str:
+            warnings.warn(
+                f"BLOCKED: Dangerous directory scan attempted: {path}. "
+                "This can cause infinite loops or extreme I/O. Use FileCache instead.",
+                RuntimeWarning,
+                stacklevel=2
+            )
+            Logger.error(f"[SCAN_GUARD] BLOCKED: Dangerous directory scan: {path}")
+            # Fail-safe: Return empty iterator instead of allowing scan
+            return iter([])
     
     warnings.warn(
         f"Expensive rglob('{pattern}') detected at {path}{caller_info}. "
-        "Please refactor to use agentic_core.utils.ssot_discovery.get_python_files() "
-        "for better performance (excludes 10k+ backup files).",
+        "Please refactor to use agentic_core.utils.file_cache.FileCache "
+        "for better performance (uses os.walk with directory pruning).",
         DeprecationWarning,
         stacklevel=2
     )
     
     Logger.warning(
         f"[SCAN_GUARD] rglob('{pattern}') called on {path}{caller_info}. "
-        "Consider migrating to ssot_discovery."
+        "Consider migrating to FileCache."
     )
     
     return path.rglob(pattern)
@@ -71,7 +100,7 @@ def guarded_glob(path: Path, pattern: str, caller: Optional[str] = None) -> Iter
     """
     Audit utility to track and discourage expensive glob calls.
     
-    Logs a DeprecationWarning suggesting ssot_discovery before executing the scan.
+    Logs a DeprecationWarning suggesting FileCache before executing the scan.
     Use this as a drop-in replacement for path.glob() during migration.
     
     Args:

@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 import shutil
 import logging
@@ -54,7 +54,7 @@ class LocationHealerAgent(SovereignBaseAgent):
     All operations follow ZLM protocol with shadow backups.
     """
     
-    project_root: Path
+    project_root: Path = field(default=None)
     
     def __post_init__(self):
         """Initialize healer with backup infrastructure."""

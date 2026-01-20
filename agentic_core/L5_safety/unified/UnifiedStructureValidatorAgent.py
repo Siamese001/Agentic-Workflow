@@ -32,6 +32,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.file_cache import FileCache
 
 Logger = logging.getLogger(__name__)
 
@@ -327,7 +328,14 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         violations = []
         agent_locations: Dict[str, List[Path]] = {}
         
-        for file_path in directory.glob(pattern):
+        # Use FileCache instead of raw glob for I/O efficiency
+        cache = FileCache.get_instance(directory)
+        all_py_files = cache.get_python_files()
+        # Filter by pattern (e.g., *Agent.py)
+        pattern_suffix = pattern.replace('**/', '').replace('*', '')
+        for file_path in all_py_files:
+            if not file_path.name.endswith(pattern_suffix.lstrip('*')):
+                continue
             # Skip archives and tests
             if "archive" in str(file_path).lower() or "test" in str(file_path).lower():
                 continue
@@ -372,7 +380,12 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
             discovery = self._load_discovery()
             registered_agents = {a.get("class_name", "") for a in discovery}
         
-        for file_path in directory.glob("**/*Agent.py"):
+        # Use FileCache instead of raw glob for I/O efficiency
+        cache = FileCache.get_instance(directory)
+        all_py_files = cache.get_python_files()
+        for file_path in all_py_files:
+            if not file_path.name.endswith('Agent.py'):
+                continue
             # Skip archives and tests
             if "archive" in str(file_path).lower() or "test" in str(file_path).lower():
                 continue
@@ -442,9 +455,10 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         
         all_violations = []
         
-        # Check gravity violations
+        # Check gravity violations - use FileCache for I/O efficiency
         if config.check_gravity:
-            for file_path in directory.glob("**/*.py"):
+            cache = FileCache.get_instance(directory)
+            for file_path in cache.get_python_files():
                 if "archive" in str(file_path).lower():
                     continue
                 violations = self.check_gravity(file_path)
@@ -463,8 +477,9 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
             all_violations.extend(violations)
             report.orphans_found = len(violations)
         
-        # Count agents
-        agent_files = list(directory.glob("**/*Agent.py"))
+        # Count agents - use FileCache for I/O efficiency
+        cache = FileCache.get_instance(directory)
+        agent_files = [f for f in cache.get_python_files() if f.name.endswith('Agent.py')]
         report.agents_found = len([f for f in agent_files if "archive" not in str(f).lower()])
         
         report.violations = all_violations

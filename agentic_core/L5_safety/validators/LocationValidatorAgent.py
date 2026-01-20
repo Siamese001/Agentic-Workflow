@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import List, Tuple, Dict, Any, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.location_constants import (
@@ -46,7 +46,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
     Use LocationHealerAgent for remediation.
     """
     
-    project_root: Path
+    project_root: Path = field(default=None)
     
     def __post_init__(self):
         """Initialize validator with project root validation."""
