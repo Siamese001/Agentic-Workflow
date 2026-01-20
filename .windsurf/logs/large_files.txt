@@ -1,0 +1,24 @@
+
+Lines File
+----- ----
+70613 agentic_core/L6_observability/dashboards/autonomy_dashboard…
+62253 archives/legacy_code/cache/call_graph.json
+39536 archives/legacy_code/venv_stable/Lib/site-packages/pydantic…
+15672 archives/legacy_code/cache/execution_history.json
+15034 agentic_core/L6_observability/dashboards/autonomy_dashboard…
+13179 agentic_core/L6_observability/dashboards/dashboard_verifica…
+11052 agentic_core/L6_observability/dashboards/data/agent_data.js
+ 9745 agent_discovery_full.json
+ 8941 archives/legacy_code/docs/DoorDash Executive Summary.pdf
+ 6910 agentic_core/L0_maintenance/scripts/.secrets.baseline
+ 4294 agentic_core/L6_observability/dashboards/playwright_screens…
+ 3316 agentic_core/L6_observability/dashboards/plotly.min.js
+ 3247 agentic_core/L5_safety/validators/test_dashboard_end_to_end…
+ 2480 archives/legacy_code/cache/context.json
+ 2138 agentic_core/L5_safety/validators/LocationAgent.py
+ 1990 archives/legacy_code/docs/validator_output.txt
+ 1982 archives/legacy_code/docs/validator_detailed.txt
+ 1925 apps_rg/engines/full_agent_discovery.py
+ 1841 apps_rg/engines/NamingAgent.py
+ 1733 scripts/full_agent_discovery.py
+

@@ -35,7 +35,7 @@ sys.modules['agentic_core.config.blueprint_sovereign.structure_blueprint'] = moc
 import importlib.util
 spec = importlib.util.spec_from_file_location(
     'GospelSyncAgent',
-    Path('agentic_core/L0_maintenance/GospelSyncAgent.py')
+    Path('agentic_core/L5_safety/validators/GospelSyncAgent.py')
 )
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

@@ -14,7 +14,7 @@ These tests enforce the Single Source of Truth principle.
 import pytest
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.canonical_truth_1 import (
+from agentic_core.L5_safety.validators.canonical_truth import (
     calculate_health_score,
     get_canonical_layer,
     validate_health_components,
