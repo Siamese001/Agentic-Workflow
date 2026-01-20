@@ -92,7 +92,7 @@ def test_tc26_maintenance_script_integrity():
     print("TC-26: Maintenance Script Integrity")
     print("="*60)
     
-    from agentic_core.L5_safety.validators.healer_mixin import HealerMixin, HealResult
+    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
     
     # Create a test agent
     class TestHealerAgent(HealerMixin):
@@ -203,7 +203,7 @@ def test_tc27_key_exhaustion():
         print("   No legacy 'violations' keys found in active logic")
     
     # Verify _normalize_result handles legacy keys correctly
-    from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
     
     class TestAgent(HealerMixin):
         name = "TestAgent"

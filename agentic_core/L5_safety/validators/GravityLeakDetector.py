@@ -32,11 +32,11 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 # Gravity-specific constants - define locally if not in location_constants
 CORE_TERRITORY_KEYWORDS = {"core", "sovereign", "canon", "base", "mixin", "agent"}
 APP_RG_AST_TERMS = {"rg", "regulatory", "compliance"}
-APP_LIC_AST_TERMS = {"lic", "license", "licensing"}
+APP_LIC_AST_TERMS = {"lic", "linkedin", "canonical"}
 APP_RG_VARIABLE_TERMS = {"rg_", "regulatory_"}
-APP_LIC_VARIABLE_TERMS = {"lic_", "license_"}
+APP_LIC_VARIABLE_TERMS = {"lic_", "linkedin_"}
 APP_RG_STRING_TERMS = {"RG", "Regulatory"}
-APP_LIC_STRING_TERMS = {"LIC", "License"}
+APP_LIC_STRING_TERMS = {"LIC", "LinkedIn Canonical"}
 VARIABLE_HIT_WEIGHT = 1.0
 STRING_HIT_WEIGHT = 0.5
 

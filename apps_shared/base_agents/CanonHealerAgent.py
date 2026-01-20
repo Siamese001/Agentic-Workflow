@@ -40,7 +40,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGI
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
 MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT] Derive depth map from SOVEREIGN_REGISTRY

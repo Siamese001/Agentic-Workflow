@@ -251,32 +251,32 @@ def run_standard_mode():
         print(f"\n🛑 SYSTEM INITIALIZATION FAILED: {e}")
         sys.exit(1)
 
-    # Build COMPLETE agent list - ALL 50 KEYS COVERED (ZERO CAPABILITY LOSS)
+    # Build COMPLETE agent list - Full sovereign validation coverage
     # Order matches original IntelligentOrchestratorAgent swarm order
     agents = [
-        # 1. Structure (Blocker) - Keys 40, 41, 50 + syntax fix
+        # 1. Structure (Blocker) - Architecture validation + syntax fix
         ArchitectureGovernor(ctx),
-        # 2. Generative Policy - Key 45 + auto-delete
+        # 2. Generative Policy - Hygiene + auto-delete
         HygieneGuardian(ctx),
-        # 3. Syntax/Style (Signal: AST_VALID) - Keys 10-16, 21, 47 + auto-fix
+        # 3. Syntax/Style (Signal: AST_VALID) - Code style + auto-fix
         CodeStyleGuardian(ctx),
-        # 4. Import Hygiene (Signal: DEPS_VALID) - Keys 7, 8, 9, 14, 44 + autoflake/isort
+        # 4. Import Hygiene (Signal: DEPS_VALID) - Dependencies + autoflake/isort
         DependencySentinelAgent(ctx),
-        # 5. Security (Signal: SECURE) - Keys 0-6, 60
+        # 5. Security (Signal: SECURE) - Safety validation
         SafetyInspectorAgent(ctx),
-        # 6. Patterns - Keys 26-39
+        # 6. Patterns - Pattern enforcement
         PatternEnforcerAgent(ctx),
-        # 7. Naming - Key 47 + auto-fix
+        # 7. Naming - Naming conventions + auto-fix
         NamingEnforcer(ctx),
-        # 8. Types - Key 22 + auto-inject typing
+        # 8. Types - Type hints + auto-inject typing
         TypeEnforcer(ctx),
-        # 9. Concurrency - Keys 61, 63, 64
+        # 9. Concurrency - Async/threading safety
         ConcurrencyGuardianAgent(ctx),
-        # 10. Structure - Keys 17, 18, 20, 25, 42, 43, 46
+        # 10. Structure - Structural validation
         StructuralEngineer(ctx),
         # 11. History
         Historian(ctx),
-        # 12. Tests - Key 22
+        # 12. Tests - Test validation
         TestPilot(ctx),
     ]
 

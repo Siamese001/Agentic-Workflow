@@ -251,7 +251,7 @@ def test_attribute_collision():
     
     # Check HealerMixin uses _healer_ prefix
     try:
-        from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
         import inspect
         source = inspect.getsource(HealerMixin.__init__)
         

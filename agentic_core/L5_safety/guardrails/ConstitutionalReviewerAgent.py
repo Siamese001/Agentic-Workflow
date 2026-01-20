@@ -10,7 +10,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 """Constitutional Reviewer Agent - Performs final constitutional review of the output."""
 
 import json
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 base class
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin

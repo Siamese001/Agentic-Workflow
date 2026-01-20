@@ -6,8 +6,8 @@
 # This boosts alignment detection — review and integrate appropriately
 
 # Canon Validator - Thin Wrapper Entry Point
-# Coordinates L1-L5 components for 50-key canon validation.
-# VERSION 3.2 - FULL REPO SCAN (All folders, all 20 keys, all agents)
+# Coordinates L1-L5 components for sovereign canon validation.
+# VERSION 3.2 - FULL REPO SCAN (All folders, all agents)
 # RATIONALE: All logic extracted to SSOT-compliant modules. This file is entry point only.
 
 import sys
@@ -263,8 +263,17 @@ AGENT_LAYERS = {
     "ComplianceOrchestratorAgent": "L5 – Safety & Governance",
     "AutonomyGuardianAgent": "L5 – Safety & Governance",
     
+    # Core Hygiene Agents (NEW)
+    "ImportAgent": "L5 – Safety & Governance",
+    "CodeDeduplicationAgent": "L5 – Safety & Governance",
+    "UnifiedCodeValidatorAgent": "L5 – Safety & Governance",
+    "UnifiedStructureEnforcerAgent": "L5 – Safety & Governance",
+    "GitHygieneAgent": "L5 – Safety & Governance",
+    "FileCleanupAgent": "L5 – Safety & Governance",
+    "CodeJanitorAgent": "L5 – Safety & Governance",
+    "HygieneGuardianAgent": "L5 – Safety & Governance",
+    
     # L2 Execution (Future Activation)
-    "ImportAgent": "L2 – Execution & Tools",
     "StructuralEngineerAgent": "L2 – Execution & Tools",
     
     # L1 Cognition (Future Activation)
@@ -376,6 +385,21 @@ def main():
         choices=[0, 1, 2, 3, 4],
         default=None,
         help="Run specific healing tier only (0=Pre-Flight, 1=Structural, 2=Architectural, 3=Dynamic, 4=Final Gate)"
+    )
+    parser.add_argument(
+        "--hygiene",
+        action="store_true",
+        help="Run core hygiene agents only (Tier 0-1)"
+    )
+    parser.add_argument(
+        "--full-hygiene",
+        action="store_true",
+        help="Run all hygiene agents (Tier 0-3)"
+    )
+    parser.add_argument(
+        "--preflight-only",
+        action="store_true",
+        help="Run mandatory preflight checks only (syntax, imports, location)"
     )
     args = parser.parse_args()
     
@@ -562,6 +586,75 @@ def main():
             sys.exit(1)
         
         return  # Exit after agent mode
+    
+    # Handle hygiene modes
+    if args.preflight_only or args.hygiene or args.full_hygiene:
+        from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+        from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+        from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
+        
+        execute_heal = getattr(args, 'execute_heal', False) or getattr(args, 'execute', False)
+        mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
+        
+        if args.preflight_only:
+            print("\n[*] PREFLIGHT MODE - Running mandatory checks only")
+            print(f"   Agents: {', '.join(MANDATORY_PREFLIGHT)}")
+            print(f"   [MODE] {mode_str}")
+            
+            # Create custom strategy with only preflight agents
+            strategy = HealingStrategy(project_root=project_root)
+            strategy._tiers = {
+                "Tier 0: Pre-Flight": MANDATORY_PREFLIGHT,
+            }
+        
+        elif args.hygiene:
+            print("\n[*] CORE HYGIENE MODE - Running Tier 0-1 agents")
+            print(f"   [MODE] {mode_str}")
+            
+            strategy = HealingStrategy(project_root=project_root)
+            strategy._tiers = {
+                "Tier 0: Pre-Flight": CORE_HYGIENE_AGENTS["tier_0_preflight"],
+                "Tier 1: Structural": CORE_HYGIENE_AGENTS["tier_1_structural"],
+            }
+        
+        elif args.full_hygiene:
+            print("\n[*] FULL HYGIENE MODE - Running Tier 0-3 agents")
+            print(f"   [MODE] {mode_str}")
+            
+            strategy = HealingStrategy(project_root=project_root)
+            strategy._tiers = {
+                "Tier 0: Pre-Flight": CORE_HYGIENE_AGENTS["tier_0_preflight"],
+                "Tier 1: Structural": CORE_HYGIENE_AGENTS["tier_1_structural"],
+                "Tier 2: Architectural": CORE_HYGIENE_AGENTS["tier_2_architectural"],
+                "Tier 3: Autonomy": CORE_HYGIENE_AGENTS["tier_3_autonomy"],
+            }
+        
+        # Run orchestrator with hygiene strategy
+        orchestrator = UnifiedOrchestratorAgent(
+            strategy=strategy,
+            project_root=project_root,
+            name="HygieneOrchestrator"
+        )
+        
+        mission_context = {
+            "dry_run": not execute_heal,
+            "execute": execute_heal,
+            "scan_mode": "hygiene_sweep"
+        }
+        
+        try:
+            print("\n" + "="*70)
+            results = orchestrator.run_mission(mission_context)
+            print("="*70)
+            print("\n[HYGIENE COMPLETE]")
+            print(f"   Total violations: {results.get('total_violations', 0)}")
+            print(f"   Violations fixed: {results.get('violations_fixed', 0)}")
+        except Exception as e:
+            print(f"\n[!] Hygiene mode failed: {e}")
+            traceback.print_exc()
+            sys.exit(1)
+        
+        return  # Exit after hygiene mode
     
     # Handle autonomous healing mode
     if args.heal:

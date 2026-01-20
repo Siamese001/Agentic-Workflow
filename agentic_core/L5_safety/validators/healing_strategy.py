@@ -26,6 +26,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from agentic_core.config.core_hygiene_agents import (
+    CORE_HYGIENE_AGENTS,
+    MANDATORY_PREFLIGHT,
+)
+
 Logger = logging.getLogger(__name__)
 
 
@@ -50,25 +55,20 @@ class HealingStrategy:
         self._agents: Dict[str, Any] = {}
         self._dedup_agent: Optional[Any] = None
         
-        # Define the 5-tier execution plan
+        # Define the 5-tier execution plan using core registry
         self._tiers: Dict[str, List[str]] = {
-            "Tier 0: Pre-Flight": [
-                "UnifiedCodeValidatorAgent",
-            ],
+            "Tier 0: Pre-Flight": CORE_HYGIENE_AGENTS["tier_0_preflight"],
             "Tier 1: Structural": [
                 "TwoPhaseDeduplicationAgent_PhaseA",  # Identity collisions (early)
-                "HygieneGuardianAgent",
-                "NamingAgent",
-                "LocationAgent",
-            ],
+            ] + CORE_HYGIENE_AGENTS["tier_1_structural"],
             "Tier 2: Architectural": [
                 "StructuralHealerAgent",  # File relocation, fission/fusion (WIRED)
-                "UnifiedStructureEnforcerAgent",
+            ] + CORE_HYGIENE_AGENTS["tier_2_architectural"] + [
                 "TwoPhaseDeduplicationAgent_PhaseB",  # Logic duplicates (late)
             ],
             "Tier 3: Dynamic": [
                 "UnifiedCodeEnforcerAgent",
-            ],
+            ] + CORE_HYGIENE_AGENTS["tier_3_autonomy"],
             "Tier 4: Final Gate": [
                 # Reserved for future safety validators
             ],
@@ -174,7 +174,7 @@ class HealingStrategy:
         try:
             if agent_name == "UnifiedCodeValidatorAgent":
                 from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
-                return UnifiedCodeValidatorAgent(project_root=self.project_root)
+                return UnifiedCodeValidatorAgent()
             
             elif agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
@@ -199,6 +199,39 @@ class HealingStrategy:
             elif agent_name == "StructuralHealerAgent":
                 from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
                 return StructuralHealerAgent(project_root=self.project_root)
+            
+            # Core Hygiene Agents
+            elif agent_name == "ImportAgent":
+                from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+                return ImportAgent(project_root=self.project_root)
+            
+            elif agent_name == "HierarchyAgent":
+                from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+                return HierarchyAgent(project_root=self.project_root)
+            
+            elif agent_name == "CodeDeduplicationAgent":
+                from agentic_core.L5_safety.validators.CodeDeduplicationAgent import CodeDeduplicationAgent
+                return CodeDeduplicationAgent()
+            
+            elif agent_name == "FilesystemSSOTReconcilerAgent":
+                from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+                return FilesystemSSOTReconcilerAgent(project_root=self.project_root)
+            
+            elif agent_name == "GitHygieneAgent":
+                from agentic_core.L5_safety.guardrails.GitHygieneAgent import GitHygieneAgent
+                return GitHygieneAgent(project_root=self.project_root, ctx=None)
+            
+            elif agent_name == "FileCleanupAgent":
+                from agentic_core.L5_safety.guardrails.FileCleanupAgent import FileCleanupAgent
+                return FileCleanupAgent(project_root=self.project_root, ctx=None)
+            
+            elif agent_name == "AutonomyGuardianAgent":
+                from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
+                return AutonomyGuardianAgent(project_root=self.project_root)
+            
+            elif agent_name == "CodeJanitorAgent":
+                from agentic_core.L5_safety.validators.CodeJanitorAgent import CodeJanitorAgent
+                return CodeJanitorAgent()
             
             else:
                 Logger.warning(f"[HealingStrategy] Unknown agent: {agent_name}")

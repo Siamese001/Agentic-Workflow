@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # L0DelegationTestingMixin - archived, use stub for backward compatibility
 try:

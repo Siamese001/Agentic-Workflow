@@ -23,7 +23,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class AgentGym(HealerMixin):
     """Agent Gym for self-evolution and benchmarking.

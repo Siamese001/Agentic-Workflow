@@ -11,7 +11,7 @@ import logging
 from typing import List, Dict, Any
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
 Logger: Any = logging.getLogger(__name__)
 banned_imports: Any = {'Redis': ['import\\s+redis', 'from\\s+redis'], 'LLM SDKs': ['import\\s+openai', 'import\\s+anthropic', 'google\\.generativeai'], 'Vector SDKs': ['from\\s+pinecone', 'Pinecone\\s*\\('], 'HTTP Clients': ['import\\s+requests', 'import\\s+httpx', 'urllib\\.request'], 'Filesystem': ['open\\(', '\\.read_text\\(', '\\.write_text\\('], 'Git Operations': ['subprocess\\..*?git', 'os\\.system\\(.*?git', 'import\\s+git\\s', 'from\\s+git\\s+import'], 'MCP Manager': ['from\\s+.*L2_execution.*mcp_manager', 'from\\s+.*P1_core.*mcp_manager', 'from\\s+\\.mcp_manager\\s+import']}

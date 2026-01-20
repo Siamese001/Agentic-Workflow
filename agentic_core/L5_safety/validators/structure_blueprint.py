@@ -207,7 +207,7 @@ CANON_SIGNALS: set[str] = {'agent', 'manager', 'engine', 'validator', 'healer', 
 
 APP_SPECIFIC_PREFIXES: Dict[str, str] = {
     'rg_': 'apps_rg',      # Resume Gen executors/tools
-    'lic_': 'apps_lic',    # LinkedIn Connector executors/tools
+    'lic_': 'apps_lic',    # LinkedIn Canonical executors/tools
     'resume_': 'apps_rg',  # Resume-related files
     'outreach_': 'apps_rg', # Outreach-related files
     'dispatch_resume': 'apps_rg',  # Resume dispatch tools
@@ -223,7 +223,7 @@ APP_SPECIFIC_TARGET_SUBFOLDER: str = "engines"
 # Files matching these patterns should NEVER be in agentic_core
 APP_SPECIFIC_PATTERNS: List[str] = [
     r'^rg_.*\.py$',           # Resume Gen files
-    r'^lic_.*\.py$',          # LinkedIn Connector files  
+    r'^lic_.*\.py$',          # LinkedIn Canonical files  
     r'^resume_.*\.py$',       # Resume-related files
     r'^outreach_.*\.py$',     # Outreach-related files
     r'^dispatch_(resume|outreach).*\.py$',  # Dispatch tools

@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

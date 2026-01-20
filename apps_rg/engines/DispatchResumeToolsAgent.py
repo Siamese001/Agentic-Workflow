@@ -22,7 +22,7 @@ except ImportError as e:
     TITANIUM_AVAILABLE: Any = False
     LOGGER.warning(f'Titanium RAG Pipeline not available: {e}')
 
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30

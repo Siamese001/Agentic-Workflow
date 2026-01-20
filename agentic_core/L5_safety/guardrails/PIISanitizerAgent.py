@@ -19,7 +19,7 @@ import json
 import re
 from typing import Any, Dict, Optional, Pattern, Set
 
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from .L5SafetyBaseAgent import L5SafetyBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
