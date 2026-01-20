@@ -22,6 +22,7 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
+from agentic_core.utils.ssot_discovery import get_python_files
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 try:
     import redis
@@ -140,11 +141,10 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             self._persist_to_redis()
 
     def _find_python_files(self) -> List[str]:
-        """Find all Python files in agentic_core."""
-        python_files = []
-        for py_file in Path('agentic_core').rglob('*.py'):
-            python_files.append(str(py_file))
-        return python_files
+        """Find all Python files in agentic_core using SSOT discovery."""
+        project_root = Path(__file__).parent.parent.parent.parent
+        all_py = get_python_files(project_root)
+        return [str(f) for f in all_py if 'agentic_core' in str(f)]
 
     def _parse_imports(self, file_path: str) -> Set[str]:
         """Parse imports from a Python file."""

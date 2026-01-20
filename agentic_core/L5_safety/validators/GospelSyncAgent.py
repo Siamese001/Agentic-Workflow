@@ -23,6 +23,7 @@ from typing import Dict, List, Set, Any
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.ssot_discovery import get_python_files
 
 
 @dataclass
@@ -99,9 +100,9 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
         Scans the physical agentic_core directory for .py files, ignoring __init__.
         """
         actual = set()
-        core_path = self.root / "agentic_core"
-        for py_file in core_path.glob("**/*.py"):
-            if "__init__" not in py_file.name:
+        all_py = get_python_files(self.root)
+        for py_file in all_py:
+            if "agentic_core" in str(py_file) and "__init__" not in py_file.name:
                 rel_path = py_file.relative_to(self.root)
                 actual.add(str(rel_path).replace("\\", "/"))
         return actual

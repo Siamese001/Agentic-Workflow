@@ -44,6 +44,13 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Set, Tuple
 from collections import defaultdict
 
+# SSOT discovery - replaces rglob
+try:
+    from agentic_core.utils.ssot_discovery import get_python_files
+    SSOT_AVAILABLE = True
+except ImportError:
+    SSOT_AVAILABLE = False
+
 # SSOT: Import territory name definitions
 sys.path.insert(0, str(Path(__file__).parent))
 from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
@@ -1313,10 +1320,13 @@ def discover_all_agents(project_root: Path = None) -> List[Dict[str, Any]]:
     # Build inheritance map for MRO detection
     # VOLATILITY FIX: Sort files for deterministic ordering across runs
     # HARDENING: Use normalized, case-insensitive path key for cross-platform stability (Windows/Linux)
-    all_py_files = sorted(
-        [p for p in project_root.rglob('*.py') if not should_exclude_path(p)],
-        key=lambda p: str(p).replace('\\', '/').lower()
-    )
+    if SSOT_AVAILABLE:
+        all_py_files = sorted(get_python_files(project_root), key=lambda p: str(p).replace('\\', '/').lower())
+    else:
+        all_py_files = sorted(
+            [p for p in project_root.rglob('*.py') if not should_exclude_path(p)],
+            key=lambda p: str(p).replace('\\', '/').lower()
+        )
     parsed_files = {}
     
     for py_file in all_py_files:

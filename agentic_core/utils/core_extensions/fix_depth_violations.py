@@ -15,6 +15,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     safe_path_join,
 )
 from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.ssot_discovery import get_python_files
 
 # FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations
 PROJECT_ROOT = get_validated_project_root()
@@ -29,7 +30,9 @@ def fix_depth_violations() -> Any:
         layer_path: Any = CORE / layer_name
         if not layer_path.exists():
             continue
-        for py_file in layer_path.glob('*.py'):
+        all_py = get_python_files(PROJECT_ROOT)
+        layer_files = [f for f in all_py if str(f).startswith(str(layer_path)) and f.parent == layer_path]
+        for py_file in layer_files:
             if py_file.name == '__init__.py':
                 continue
             stage_path: Any = layer_path / default_stage

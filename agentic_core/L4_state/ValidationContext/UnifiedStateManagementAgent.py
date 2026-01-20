@@ -37,6 +37,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.ssot_discovery import get_data_files
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
@@ -422,7 +423,8 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             for subdir in ["state", "conversations", "results", "checkpoints"]:
                 subdir_path = self.memory_root / subdir
                 if subdir_path.exists():
-                    for file_path in subdir_path.rglob("*.json"):
+                    json_files = get_data_files(subdir_path, extensions=['.json'])
+                    for file_path in json_files:
                         if file_path.name != "manifest.json":
                             rel_path = str(file_path.relative_to(self.memory_root))
                             physical_files.add(rel_path)

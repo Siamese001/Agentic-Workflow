@@ -28,6 +28,7 @@ Depth: agentic_core/observability/compliance/reporting_agent.py
 """
 from pathlib import Path
 from typing import Dict, Any, List, Optional
+from agentic_core.utils.ssot_discovery import get_python_files
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from datetime import datetime
 
@@ -107,8 +108,9 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             if folder_path.name.startswith('.'):
                 continue
 
-            # Count all .py files recursively within this root
-            py_files = list(folder_path.rglob("*.py"))
+            # Count all .py files recursively within this root using SSOT
+            all_py = get_python_files(self.project_root)
+            py_files = [f for f in all_py if str(f).startswith(str(folder_path))]
             summary[folder_path.name] = len(py_files)
 
         return summary

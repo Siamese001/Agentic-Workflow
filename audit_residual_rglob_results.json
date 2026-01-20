@@ -1,187 +1,49 @@
 {
-  "total_calls": 5,
-  "files_scanned": 1312,
+  "total_calls": 1,
+  "files_scanned": 1315,
   "calls": [
     {
-      "file": "agentic_core\\utils\\core_extensions\\airlock_flush.py",
-      "line": 15,
-      "method": "rglob",
-      "context": "for init_file in CORE.rglob('__init__.py'):",
-      "pattern": "unknown",
-      "directory": "agentic_core\\utils\\core_extensions"
-    },
-    {
-      "file": "agentic_core\\utils\\core_extensions\\bridge_builder.py",
-      "line": 38,
-      "method": "rglob",
-      "context": "for py_file in app_dir.rglob('*.py'):",
-      "pattern": "*.py",
-      "directory": "agentic_core\\utils\\core_extensions"
-    },
-    {
-      "file": "agentic_core\\utils\\core_extensions\\fix_all_tunnels.py",
-      "line": 20,
-      "method": "rglob",
-      "context": "for py_file in CORE.rglob('*.py'):",
-      "pattern": "*.py",
-      "directory": "agentic_core\\utils\\core_extensions"
-    },
-    {
-      "file": "agentic_core\\utils\\core_extensions\\fix_all_type_imports.py",
-      "line": 26,
-      "method": "rglob",
-      "context": "for py_file in CORE.rglob(impl_file):",
-      "pattern": "unknown",
-      "directory": "agentic_core\\utils\\core_extensions"
-    },
-    {
-      "file": "agentic_core\\utils\\core_extensions\\fix_depth_violations.py",
-      "line": 32,
+      "file": "agentic_core\\L5_safety\\unified\\UnifiedCodeValidatorAgent.py",
+      "line": 565,
       "method": "glob",
-      "context": "for py_file in layer_path.glob('*.py'):",
-      "pattern": "*.py",
-      "directory": "agentic_core\\utils\\core_extensions"
+      "context": "for path in directory.glob(pattern):",
+      "pattern": "unknown",
+      "directory": "agentic_core\\L5_safety\\unified"
     }
   ],
   "by_directory": {
-    "agentic_core\\utils\\core_extensions": [
+    "agentic_core\\L5_safety\\unified": [
       {
-        "file": "agentic_core\\utils\\core_extensions\\airlock_flush.py",
-        "line": 15,
-        "method": "rglob",
-        "context": "for init_file in CORE.rglob('__init__.py'):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\utils\\core_extensions"
-      },
-      {
-        "file": "agentic_core\\utils\\core_extensions\\bridge_builder.py",
-        "line": 38,
-        "method": "rglob",
-        "context": "for py_file in app_dir.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\utils\\core_extensions"
-      },
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_all_tunnels.py",
-        "line": 20,
-        "method": "rglob",
-        "context": "for py_file in CORE.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\utils\\core_extensions"
-      },
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_all_type_imports.py",
-        "line": 26,
-        "method": "rglob",
-        "context": "for py_file in CORE.rglob(impl_file):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\utils\\core_extensions"
-      },
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_depth_violations.py",
-        "line": 32,
+        "file": "agentic_core\\L5_safety\\unified\\UnifiedCodeValidatorAgent.py",
+        "line": 565,
         "method": "glob",
-        "context": "for py_file in layer_path.glob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\utils\\core_extensions"
+        "context": "for path in directory.glob(pattern):",
+        "pattern": "unknown",
+        "directory": "agentic_core\\L5_safety\\unified"
       }
     ]
   },
   "by_pattern": {
     "unknown": [
       {
-        "file": "agentic_core\\utils\\core_extensions\\airlock_flush.py",
-        "line": 15,
-        "method": "rglob",
-        "context": "for init_file in CORE.rglob('__init__.py'):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\utils\\core_extensions"
-      },
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_all_type_imports.py",
-        "line": 26,
-        "method": "rglob",
-        "context": "for py_file in CORE.rglob(impl_file):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\utils\\core_extensions"
-      }
-    ],
-    "*.py": [
-      {
-        "file": "agentic_core\\utils\\core_extensions\\bridge_builder.py",
-        "line": 38,
-        "method": "rglob",
-        "context": "for py_file in app_dir.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\utils\\core_extensions"
-      },
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_all_tunnels.py",
-        "line": 20,
-        "method": "rglob",
-        "context": "for py_file in CORE.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\utils\\core_extensions"
-      },
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_depth_violations.py",
-        "line": 32,
+        "file": "agentic_core\\L5_safety\\unified\\UnifiedCodeValidatorAgent.py",
+        "line": 565,
         "method": "glob",
-        "context": "for py_file in layer_path.glob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\utils\\core_extensions"
+        "context": "for path in directory.glob(pattern):",
+        "pattern": "unknown",
+        "directory": "agentic_core\\L5_safety\\unified"
       }
     ]
   },
   "by_file": {
-    "agentic_core\\utils\\core_extensions\\airlock_flush.py": [
+    "agentic_core\\L5_safety\\unified\\UnifiedCodeValidatorAgent.py": [
       {
-        "file": "agentic_core\\utils\\core_extensions\\airlock_flush.py",
-        "line": 15,
-        "method": "rglob",
-        "context": "for init_file in CORE.rglob('__init__.py'):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\utils\\core_extensions"
-      }
-    ],
-    "agentic_core\\utils\\core_extensions\\bridge_builder.py": [
-      {
-        "file": "agentic_core\\utils\\core_extensions\\bridge_builder.py",
-        "line": 38,
-        "method": "rglob",
-        "context": "for py_file in app_dir.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\utils\\core_extensions"
-      }
-    ],
-    "agentic_core\\utils\\core_extensions\\fix_all_tunnels.py": [
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_all_tunnels.py",
-        "line": 20,
-        "method": "rglob",
-        "context": "for py_file in CORE.rglob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\utils\\core_extensions"
-      }
-    ],
-    "agentic_core\\utils\\core_extensions\\fix_all_type_imports.py": [
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_all_type_imports.py",
-        "line": 26,
-        "method": "rglob",
-        "context": "for py_file in CORE.rglob(impl_file):",
-        "pattern": "unknown",
-        "directory": "agentic_core\\utils\\core_extensions"
-      }
-    ],
-    "agentic_core\\utils\\core_extensions\\fix_depth_violations.py": [
-      {
-        "file": "agentic_core\\utils\\core_extensions\\fix_depth_violations.py",
-        "line": 32,
+        "file": "agentic_core\\L5_safety\\unified\\UnifiedCodeValidatorAgent.py",
+        "line": 565,
         "method": "glob",
-        "context": "for py_file in layer_path.glob('*.py'):",
-        "pattern": "*.py",
-        "directory": "agentic_core\\utils\\core_extensions"
+        "context": "for path in directory.glob(pattern):",
+        "pattern": "unknown",
+        "directory": "agentic_core\\L5_safety\\unified"
       }
     ]
   }

@@ -24,6 +24,7 @@ import os
 from pathlib import Path
 from typing import Dict, List, Set, Any
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.ssot_discovery import get_python_files
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -78,7 +79,8 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
     def audit_boundaries(self) -> List[Dict]:
         """Scans L0 for complexity violations and upward leakage potential."""
         l0_path = self.root / AGENTIC_CORE_DIR / "L0_maintenance"
-        for py_file in l0_path.glob("**/*.py"):
+        all_py = get_python_files(self.root)
+        for py_file in [f for f in all_py if str(f).startswith(str(l0_path))]:
             metrics = self._analyze_file_complexity(py_file)
             if metrics['method_count'] > self.threshold:
                 self.violations.append({

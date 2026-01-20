@@ -22,6 +22,7 @@ import redis
 
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 from agentic_core.L5_safety.validators.structure_blueprint import TERRITORY_EXAMPLES
+from agentic_core.utils.ssot_discovery import get_python_files
 try:
     from agentic_core.L2_execution.ToolRegistry.PineconeSovereignAgent import PineconeSovereignAgent
 except ImportError:
@@ -194,10 +195,8 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
             "unmapped_files": []
         }
         
-        # Scan all Python files
-        for py_file in self.project_root.rglob("*.py"):
-            if "__pycache__" in str(py_file):
-                continue
+        # Scan all Python files using SSOT discovery
+        for py_file in get_python_files(self.project_root):
                 
             stats["total_files"] += 1
             territory, confidence = self.map_file_to_territory(py_file)
