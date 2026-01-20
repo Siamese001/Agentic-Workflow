@@ -21,7 +21,7 @@ Logger: Any = logging.getLogger(__name__)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Extracted to L1 canonical agent_logic.py (2026-01-06)
-from agentic_core.L1_cognition.thought_engine.agent_logic import CanonValidatorAgent
+from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
@@ -41,7 +41,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
 
     def __init__(self, similarity_threshold: float=0.75, manifest_path: str='active_manifest.json') -> None:
         """
-        Initializes the CanonValidatorAgent with connection managers and cache settings.
+        Initializes the UnifiedCodeValidatorAgent with connection managers and cache settings.
 
         Args:
             similarity_threshold (float): The minimum similarity score for an L2 match.

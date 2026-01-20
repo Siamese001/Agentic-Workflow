@@ -5,11 +5,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L5_safety.validators.SyntaxValidatorAgent import SyntaxValidatorAgent
+from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
 
 def main():
     project_root = Path(__file__).parent.parent
-    agent = SyntaxValidatorAgent(project_root=project_root)
+    agent = UnifiedCodeValidatorAgent(project_root=project_root)
     result = agent.validate_repository()
     
     print(f"Total errors: {result['total_violations']}")

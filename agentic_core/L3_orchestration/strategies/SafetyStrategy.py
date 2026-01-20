@@ -52,7 +52,7 @@ class SafetyStrategy:
         """
         return {
             "Tier 0: Pre-Flight": [
-                "SyntaxValidatorAgent",
+                "UnifiedCodeValidatorAgent",
             ],
             "Tier 1: Compliance": [
                 "HygieneGuardianAgent",
@@ -79,9 +79,9 @@ class SafetyStrategy:
         """
         try:
             # Dynamic import based on agent name
-            if agent_name == "SyntaxValidatorAgent":
-                from agentic_core.L5_safety.validators.SyntaxValidatorAgent import SyntaxValidatorAgent
-                return SyntaxValidatorAgent(project_root=self.project_root)
+            if agent_name == "UnifiedCodeValidatorAgent":
+                from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
+                return UnifiedCodeValidatorAgent(project_root=self.project_root)
             elif agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
                 return HygieneGuardianAgent(project_root=self.project_root)

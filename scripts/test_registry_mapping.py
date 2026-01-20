@@ -21,7 +21,7 @@ def test_registry_mapping():
     
     # Import unified agents directly to test the mapping
     from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
-    from agentic_core.L5_safety.validators.UnifiedHygieneValidatorAgent import UnifiedHygieneValidatorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
     from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import UnifiedCheckpointManagerAgent
     from agentic_core.L5_safety.validators.CodeStandardsEnforcerAgent import CodeStandardsEnforcerAgent
     from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import UnifiedStateManagementAgent
@@ -36,8 +36,8 @@ def test_registry_mapping():
             "DangerousBuiltinsValidator": UnifiedASTValidatorAgent,
             "DebuggerValidator": UnifiedASTValidatorAgent,
             # Phase 2: L5 Hygiene Validator Consolidation
-            "HygieneGuardian": UnifiedHygieneValidatorAgent,
-            "HygieneValidator": UnifiedHygieneValidatorAgent,
+            "HygieneGuardian": UnifiedStructureValidatorAgent,
+            "HygieneValidator": UnifiedStructureValidatorAgent,
             # Phase 3: L4 Checkpoint Manager Consolidation
             "CheckpointManager": UnifiedCheckpointManagerAgent,
             "AutonomousCheckpointManager": UnifiedCheckpointManagerAgent,
