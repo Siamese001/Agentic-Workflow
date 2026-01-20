@@ -8,8 +8,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# ARCHIVED: SelfRecoveringOrchestratorAgent import removed # (
-    SelfRecoveringOrchestratorAgent,
+from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import (
+    CoreOrchestrationAgent,
 )
 
 
@@ -32,7 +32,7 @@ async def test_cognitive_recovery_in_execution():
     print("Testing Cognitive Recovery in Orchestrator Execution Loop...")
     
     # Create orchestrator
-    orchestrator = SelfRecoveringOrchestratorAgent()
+    orchestrator = CoreOrchestrationAgent()
     print("\n[TEST 1] Orchestrator instantiated")
     
     # Create a failing node

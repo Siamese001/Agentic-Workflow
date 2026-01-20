@@ -36,7 +36,8 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     def __init__(self):
         """Initialize the Knowledge Graph client with sovereign routing."""
         super().__init__()
-        self.router = SovereignMCPRouter(role='memory')
+        from agentic_core.L3_orchestration.workflow_engines.SovereignMcpRouter import SovereignMcpRouter
+        self.router = SovereignMcpRouter(role='memory')
         self.initialized = False
         self._mcp_audit('init')
         Logger.info('[L4 KG] Sovereign Graph Client initialized')

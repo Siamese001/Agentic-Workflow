@@ -25,8 +25,8 @@ class SovereignLlmRouterMcpClient(MCPHardenedMixin, HealerMixin):
         super().__init__()
         if not config.LLM_ROUTER_MCP_ENABLED:
             raise ValueError('LLM Router MCP disabled in sovereign config')
-        # ARCHIVED: SovereignMCPRouter import removed
-        self.router = SovereignMCPRouter(role=role)
+        from agentic_core.L3_orchestration.workflow_engines.SovereignMcpRouter import SovereignMcpRouter
+        self.router = SovereignMcpRouter(role=role)
         self._mcp_audit('init')
         Logger.info('[L5 LLM ROUTER] Sovereign LLM Router MCP client initialized')
 

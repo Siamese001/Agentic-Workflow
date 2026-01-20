@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test CognitiveRecoveryMixin integration in SelfRecoveringOrchestratorAgent."""
+"""Test CognitiveRecoveryMixin integration in CoreOrchestrationAgent (formerly SelfRecoveringOrchestratorAgent)."""
 
 import sys
 from pathlib import Path
@@ -7,17 +7,18 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# ARCHIVED: SelfRecoveringOrchestratorAgent import removed # (
-    SelfRecoveringOrchestratorAgent,
+from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import (
+    CoreOrchestrationAgent,
+    create_legacy_self_recovering_orchestrator,
 )
 
 
 def main():
-    print("Testing SelfRecoveringOrchestratorAgent with CognitiveRecoveryMixin...")
+    print("Testing CoreOrchestrationAgent with CognitiveRecoveryMixin...")
 
     # Test 1: Import and instantiation
     print("\n[TEST 1] Import and Instantiation")
-    agent = SelfRecoveringOrchestratorAgent()
+    agent = CoreOrchestrationAgent()
     print("  ✅ Agent instantiated successfully")
 
     # Test 2: Check for cognitive recovery methods
@@ -45,7 +46,7 @@ def main():
         else:
             print("  ⚠️  No high-confidence pattern (expected for some errors)")
 
-    print("\n✅ All tests passed - SelfRecoveringOrchestratorAgent has cognitive capabilities")
+    print("\n✅ All tests passed - CoreOrchestrationAgent has cognitive capabilities")
     return 0
 
 
