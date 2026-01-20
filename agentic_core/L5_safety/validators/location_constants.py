@@ -1,0 +1,38 @@
+"""
+Shared constants for Location Validation and Healing.
+
+Extracted from LocationAgent.py during SRP fission.
+All location-related agents should import from this module.
+"""
+from typing import Dict
+
+# Archive subfolder mapping for violation types
+ARCHIVE_SUBFOLDERS: Dict[str, str] = {
+    "VOID VIOLATION": "void_violations",
+    "GRAVITY": "void_violations",
+    "LAYER PREFIX VIOLATION": "naming_violations",
+}
+
+# Default archive subfolder for unclassified violations
+DEFAULT_ARCHIVE_SUBFOLDER: str = "location_violations"
+
+# Healing strategy mapping (violation type → method name)
+HEALING_STRATEGY_MAP: Dict[str, str] = {
+    "BROKEN BACKUP": "_heal_broken_backup",
+    "APP-SPECIFIC IN CORE": "_heal_app_specific_violation",
+    "TERRITORY MISMATCH": "_heal_territory_mismatch",
+    "DEEP VIOLATION": "_heal_depth_violation",
+}
+
+# Default app healing target subfolder
+DEFAULT_APP_HEALING_TARGET: str = "engines"
+
+# Violation severity thresholds
+VIOLATION_THRESHOLDS: Dict[str, int] = {
+    "critical": 10,
+    "high": 25,
+    "medium": 50,
+}
+
+# Default report path
+DEFAULT_REPORT_PATH: str = "reports/location_audit.json"

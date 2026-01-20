@@ -359,82 +359,235 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         return target
 
     def validate_sovereign_roots(self) -> List[Tuple[Path, str]]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator.validate_sovereign_roots()
+        """Ensure all required sovereign roots exist and are directories."""
+        violations: List[Tuple[Path, str]] = []
+        for root_name in ROOT_WHITELIST:
+            root_path = self.project_root / root_name
+            if not root_path.exists():
+                violations.append((root_path, f"Missing sovereign root: {root_name}"))
+            elif not root_path.is_dir():
+                violations.append((root_path, f"Sovereign root is not a directory: {root_name}"))
+        return violations
 
     def validate_file_location(self, file_path: Path) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator.validate_file_location(file_path)
+        """Per-file location validation with correct forbidden-check ordering."""
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            parts = rel_path.parts
+            root_folder = parts[0]
+        except ValueError:
+            return False, "VOID VIOLATION: File outside project root"
+
+        # Early validation chain - exit on first violation
+        result = self._validate_forbidden_patterns(parts, root_folder)
+        if not result[0]:
+            return result
+            
+        result = self._validate_root_whitelist(root_folder, rel_path)
+        if not result[0]:
+            return result
+            
+        result = self._validate_depth_requirements(parts, root_folder, rel_path)
+        if not result[0]:
+            return result
+
+        # Continue validation chain
+        result = self._validate_app_specific_files(root_folder, file_path)
+        if not result[0]:
+            return result
+            
+        result = self._validate_filename_patterns(file_path)
+        if not result[0]:
+            return result
+
+        # AST validation for agentic_core files
+        result = self._validate_ast_violations(root_folder, file_path, rel_path)
+        if not result[0]:
+            return result
+
+        # Final validation checks
+        result = self._validate_final_checks(root_folder, file_path, parts)
+        if not result[0]:
+            return result
+
+        return True, f"Location compliant in sovereign territory: {root_folder}"
 
     def _validate_ast_violations(self, root_folder: str, file_path: Path, rel_path: Path) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._validate_ast_violations(root_folder, file_path, rel_path)
+        """Validate AST-based violations for agentic_core Python files."""
+        if root_folder != "agentic_core" or file_path.suffix != ".py":
+            return True, "OK"
+            
+        try:
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
+            tree = ast.parse(content)
+            
+            # Territory inference from path
+            try:
+                rel_parts = file_path.relative_to(self.project_root / "agentic_core").parts
+                current_l1 = rel_parts[0] if len(rel_parts) > 1 else None
+                current_l2 = rel_parts[1] if len(rel_parts) > 2 else None
+                current_territory = f"{current_l1}/{current_l2}" if current_l2 else current_l1
+            except ValueError:
+                current_l1, current_l2, current_territory = None, None, None
+
+            # Check for forbidden imports
+            result = self._check_forbidden_imports(tree, current_l1, rel_path)
+            if not result[0]:
+                return result
+                
+            # Check semantic alignment
+            result = self._check_semantic_alignment(tree, current_territory, rel_path)
+            if not result[0]:
+                return result
+                
+        except Exception as e:
+            Logger.debug(f"[LocationAgent] AST failure in {file_path}: {e}")
+            
+        return True, "OK"
 
     def _check_forbidden_imports(self, tree: ast.AST, current_l1: str, rel_path: Path) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._check_forbidden_imports(tree, current_l1, rel_path)
+        """Check for forbidden app imports and layer violations."""
+        forbidden_app_import, forbidden_layer_import = self._scan_imports_for_violations(tree, current_l1)
+        
+        if forbidden_app_import:
+            return False, (
+                f"GRAVITY VIOLATION (AST-resolved): Imports from apps_* modules forbidden in agentic_core. "
+                f"Move file to correct apps_*/engines/ folder. File: {rel_path}"
+            )
+        if forbidden_layer_import:
+            return False, (
+                f"INTERNAL GRAVITY VIOLATION: {forbidden_layer_import} import direction forbidden. "
+                f"Refactor to respect layer gravity or move file. File: {rel_path}"
+            )
+            
+        return True, "OK"
     
     def _scan_imports_for_violations(self, tree: ast.AST, current_l1: str) -> Tuple[bool, Optional[str]]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._scan_imports_for_violations(tree, current_l1)
+        """Scan AST for forbidden imports and return violation flags."""
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                modules = self._extract_modules_from_node(node)
+                
+                for module in modules:
+                    if self._is_forbidden_app_import(module):
+                        return True, None
+                    
+                    layer_violation = self._check_layer_import_violation(module, current_l1)
+                    if layer_violation:
+                        return False, layer_violation
+        
+        return False, None
     
     def _extract_modules_from_node(self, node: ast.AST) -> List[str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._extract_modules_from_node(node)
+        """Extract module names from import node."""
+        if isinstance(node, ast.Import):
+            return [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            return [node.module]
+        return []
     
     def _is_forbidden_app_import(self, module: str) -> bool:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._is_forbidden_app_import(module)
+        """Check if module is a forbidden app import."""
+        return module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES
     
     def _check_layer_import_violation(self, module: str, current_l1: str) -> Optional[str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._check_layer_import_violation(module, current_l1)
+        """Check for layer import violations and return violation description."""
+        if not current_l1:
+            return None
+        
+        if module.startswith("agentic_core.") and len(module.split(".")) > 2:
+            imported_l1 = module.split(".")[1]
+            if imported_l1 in LAYER_FORBIDDEN_IMPORTS.get(current_l1, set()):
+                return f"{current_l1} → {imported_l1}"
+        
+        return None
 
     def _check_semantic_alignment(self, tree: ast.AST, current_territory: str, rel_path: Path) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._check_semantic_alignment(tree, current_territory, rel_path)
+        """Check semantic alignment between file location and content."""
+        if not current_territory:
+            return True, "OK"
+            
+        # Calculate semantic scores
+        app_rg_score, app_lic_score, territory_scores = self._calculate_semantic_scores(tree)
+        
+        # Check for app-specific violations
+        result = self._check_app_domain_violation(app_rg_score, app_lic_score, rel_path)
+        if not result[0]:
+            return result
+        
+        # Check territory alignment
+        return self._check_territory_alignment(current_territory, territory_scores, rel_path)
     
     def _calculate_semantic_scores(self, tree: ast.AST) -> Tuple[float, float, Dict[str, float]]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._calculate_semantic_scores(tree)
+        """Calculate semantic scores for app and territory alignment."""
+        app_rg_score = 0.0
+        app_lic_score = 0.0
+        territory_scores: Dict[str, float] = {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
+
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+                name = node.name.lower()
+                if any(t in name for t in APP_RG_AST_TERMS):
+                    app_rg_score += 1.0
+                if any(t in name for t in APP_LIC_AST_TERMS):
+                    app_lic_score += 1.0
+                for terr, cats in CORE_TERRITORY_KEYWORDS.items():
+                    for terms in cats.values():
+                        if any(t in name for t in terms):
+                            territory_scores[terr] += 1.0
+        
+        return app_rg_score, app_lic_score, territory_scores
     
     def _check_app_domain_violation(self, app_rg_score: float, app_lic_score: float, rel_path: Path) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._check_app_domain_violation(app_rg_score, app_lic_score, rel_path)
+        """Check for app-specific domain violations."""
+        total_app_score = app_rg_score + app_lic_score
+        if total_app_score >= AST_DOMAIN_HIT_THRESHOLD:
+            dominant = "apps_rg" if app_rg_score >= app_lic_score else "apps_lic"
+            target = get_correct_app_path(rel_path.name) or f"{dominant}/{APP_SPECIFIC_TARGET_SUBFOLDER}"
+            return False, (
+                f"AST DOMAIN VIOLATION (app score {total_app_score:.2f}): "
+                f"Strong application signals (RG: {app_rg_score:.2f}, LIC: {app_lic_score:.2f}). "
+                f"Move to '{target}/'. File: {rel_path}"
+            )
+        return True, "OK"
     
     def _check_territory_alignment(self, current_territory: str, territory_scores: Dict[str, float], rel_path: Path) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._check_territory_alignment(current_territory, territory_scores, rel_path)
+        """Check territory alignment between file location and content."""
+        if not territory_scores:
+            return True, "OK"
+        
+        current_score = territory_scores.get(current_territory, 0.0)
+        best_territory = max(territory_scores, key=territory_scores.get)
+        max_other = max((s for t, s in territory_scores.items() if t != current_territory), default=0.0)
+
+        if current_score < MIN_ALIGNMENT_SCORE and max_other >= MIN_ALIGNMENT_SCORE:
+            return False, (
+                f"TERRITORY ALIGNMENT WEAK: Current '{current_territory}' score {current_score:.2f} < {MIN_ALIGNMENT_SCORE}. "
+                f"Lacks semantic signals — refactor or move to '{best_territory}'. File: {rel_path}"
+            )
+        if max_other > current_score + TERRITORY_MISMATCH_THRESHOLD:
+            return False, (
+                f"TERRITORY MISMATCH VIOLATION: Stronger signals for '{best_territory}' ({max_other:.2f}) "
+                f"vs current ({current_score:.2f}). Move to agentic_core/{best_territory}. File: {rel_path}"
+            )
+
+        return True, "OK"
 
     def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._validate_final_checks(root_folder, file_path, parts)
+        """Final validation checks for root-level files and gravity leaks."""
+        # Root-level file protections (Key 0)
+        if len(parts) == 1 and file_path.suffix == ".py":
+            if file_path.name in ROOT_PROTECTED_FILES:
+                return True, "Protected sovereign root file (Key 0 exempt)"
+            if root_folder == "tests" and file_path.name in TESTS_ROOT_FILE_WHITELIST:
+                return True, "Whitelisted tests root file"
+
+        # Gravity leak: compliance/validation logic must not appear in downstream apps
+        compliance_markers = {"validator", "compliance", "canon", "enforcer", "auditor"}
+        if root_folder.startswith("apps_") and any(marker in file_path.stem.lower() for marker in compliance_markers):
+            return False, f"GRAVITY ERROR: Sovereign compliance logic leaked into downstream '{root_folder}'"
+
+        return True, "OK"
 
     # Healing strategy dispatch table (reduces CC by eliminating if/elif chains)
     HEALING_STRATEGIES = {
@@ -581,37 +734,92 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         return move_result
 
     def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._validate_forbidden_patterns(parts, root_folder)
+        """Validate forbidden folder patterns and numbered roots."""
+        # Check all parts for forbidden folders
+        for part in parts:
+            if part in FORBIDDEN_ROOT_FOLDERS:
+                return False, f"VOID VIOLATION: Forbidden folder '{part}' at any depth"
+            
+            # Check for regex pattern match if applicable
+            if hasattr(FORBIDDEN_FOLDER_PATTERN, 'match'):
+                if FORBIDDEN_FOLDER_PATTERN.match(part):
+                    return False, f"VOID VIOLATION: Numbered folder pattern '{part}' forbidden"
+
+        # Numbered root folders (e.g., 08_scripts) forbidden
+        if len(root_folder) >= 3 and root_folder[:2].isdigit() and root_folder[2:3] == "_":
+            return False, f"VOID VIOLATION: Numbered root folder '{root_folder}' not approved"
+            
+        return True, "OK"
 
     def _validate_root_whitelist(self, root_folder: str, rel_path: Path = None) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._validate_root_whitelist(root_folder, rel_path)
+        """Validate path is within an allowed sovereign territory using SSOT helper."""
+        # Use is_path_allowed for nested path validation (SSOT fix)
+        if rel_path is not None:
+            if not is_path_allowed(str(rel_path)):
+                return False, f"VOID VIOLATION: Path '{rel_path}' not in sovereign territory"
+            return True, "OK"
+        
+        # Fallback to root-only check
+        if root_folder not in ROOT_WHITELIST:
+            return False, f"VOID VIOLATION: Unapproved root folder '{root_folder}'"
+        return True, "OK"
 
     # Subfolders that legitimately have variable depth (not fixed at depth 3)
     # [SSOT] VARIABLE_DEPTH_SUBFOLDERS imported at module level from structure_blueprint.py
     
     def _validate_depth_requirements(self, parts: tuple, root_folder: str, rel_path: Path) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._validate_depth_requirements(parts, root_folder, rel_path)
+        """Validate depth requirements from sovereign registry.
+        
+        SSOT FIX: Allow variable depth for certain subfolders that legitimately
+        have deeper structures (e.g., utils/core_extensions/, config/blueprint_sovereign/).
+        """
+        expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth")
+        actual_depth = len(parts) - 1
+        
+        # Check if this is a variable-depth subfolder (exempt from strict depth check)
+        if root_folder == "agentic_core" and len(parts) > 1:
+            subfolder = parts[1]
+            if subfolder in VARIABLE_DEPTH_SUBFOLDERS:
+                # Allow any depth >= 2 for variable-depth subfolders
+                if actual_depth >= 2:
+                    return True, "OK"
+        
+        # Standard depth validation (non-variable subfolders)
+        if expected_depth is not None and actual_depth != expected_depth:
+            reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
+            return False, f"{reason} VIOLATION ({root_folder}): depth {actual_depth} != {expected_depth}"
+        
+        return True, "OK"
 
     def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._validate_app_specific_files(root_folder, file_path)
+        """Validate app-specific files are not in core."""
+        if root_folder == "agentic_core" and is_app_specific_file(file_path.name):
+            correct_path = get_correct_app_path(file_path.name) or "appropriate apps_* folder"
+            return False, (
+                f"APP-SPECIFIC IN CORE VIOLATION: '{file_path.name}' is application-specific "
+                f"and must not live in agentic_core. Move to '{correct_path}/'."
+            )
+        return True, "OK"
 
     def _validate_filename_patterns(self, file_path: Path) -> Tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        validator = LocationValidatorAgent(project_root=self.project_root)
-        return validator._validate_filename_patterns(file_path)
+        """Validate filename patterns for forbidden prefixes and backup files."""
+        # Forbidden layer prefixes
+        forbidden_prefix = has_forbidden_layer_prefix(file_path.name)
+        if forbidden_prefix:
+            return False, (
+                f"LAYER PREFIX VIOLATION: '{file_path.name}' begins with forbidden prefix '{forbidden_prefix}'. "
+                f"Layer/priority info belongs in folder structure, not filenames. "
+                f"Rename to remove the '{forbidden_prefix}' prefix."
+            )
+
+        # Broken backup files
+        if is_broken_backup_file(file_path.name):
+            return False, (
+                f"BROKEN BACKUP FILE: '{file_path.name}' matches forbidden backup pattern (.bak.NNNNNN). "
+                f"These files break archiving logic. Delete or properly archive this file."
+            )
+            
+        return True, "OK"
 
     def enforce_void_compliance(self, files: List[Path]) -> Tuple[List[Path], List[Tuple[Path, str]]]:
         """Filter files and collect all location-based violations."""
