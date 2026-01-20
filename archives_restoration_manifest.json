@@ -1,0 +1,621 @@
+{
+  "current_count": 214,
+  "unique_to_restore": 117,
+  "by_folder": {
+    "L4_state": {
+      "count": 4,
+      "agents": [
+        {
+          "name": "LegacyAutonomousCheckpointManagerAgent",
+          "path": "L4_state\\ValidationContext\\LegacyAutonomousCheckpointManagerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "LegacyAutonomousStateGuardianAgent",
+          "path": "L4_state\\ValidationContext\\LegacyAutonomousStateGuardianAgent.py",
+          "unique": true
+        },
+        {
+          "name": "LegacyPineconeSovereignAgent",
+          "path": "L4_state\\ValidationContext\\LegacyPineconeSovereignAgent.py",
+          "unique": true
+        },
+        {
+          "name": "LegacyValidationContextManagerAgent",
+          "path": "L4_state\\ValidationContext\\LegacyValidationContextManagerAgent.py",
+          "unique": true
+        }
+      ]
+    },
+    "Reachout Engine Archive": {
+      "count": 4,
+      "agents": [
+        {
+          "name": "k1_router_agent",
+          "path": "Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k1_router_agent.py",
+          "unique": true
+        },
+        {
+          "name": "k5_cta_agent",
+          "path": "Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k5_cta_agent.py",
+          "unique": true
+        },
+        {
+          "name": "k6_signature_agent",
+          "path": "Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k6_signature_agent.py",
+          "unique": true
+        },
+        {
+          "name": "k7_validator_agent",
+          "path": "Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k7_validator_agent.py",
+          "unique": true
+        }
+      ]
+    },
+    "apps_rg": {
+      "count": 1,
+      "agents": [
+        {
+          "name": "k25_research_agent",
+          "path": "apps_rg\\L1_cognition\\k25_research_agent.py",
+          "unique": true
+        }
+      ]
+    },
+    "location_violations": {
+      "count": 12,
+      "agents": [
+        {
+          "name": "AutonomousPromptEvolutionAgent",
+          "path": "location_violations\\AutonomousPromptEvolutionAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ConsolidatedOrchestratorAgent",
+          "path": "location_violations\\ConsolidatedOrchestratorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "DispatchOutreachToolsAgent",
+          "path": "location_violations\\DispatchOutreachToolsAgent.py",
+          "unique": true
+        },
+        {
+          "name": "DispatchResumeToolsAgent",
+          "path": "location_violations\\DispatchResumeToolsAgent.py",
+          "unique": true
+        },
+        {
+          "name": "extract_pattern_agent",
+          "path": "location_violations\\extract_pattern_agent.py",
+          "unique": true
+        },
+        {
+          "name": "GospelSyncAgent",
+          "path": "location_violations\\GospelSyncAgent.py",
+          "unique": true
+        },
+        {
+          "name": "GravityStateAgent",
+          "path": "location_violations\\GravityStateAgent.py",
+          "unique": true
+        },
+        {
+          "name": "LegacyNamingAgent",
+          "path": "location_violations\\LegacyNamingAgent.py",
+          "unique": true
+        },
+        {
+          "name": "OrchestratorAgentAndScopeManagerAgent",
+          "path": "location_violations\\OrchestratorAgentAndScopeManagerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "PilotOrchestratorAgent",
+          "path": "location_violations\\PilotOrchestratorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SafetyExecutorAgent",
+          "path": "location_violations\\SafetyExecutorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SovereignObservabilityAgent",
+          "path": "location_violations\\SovereignObservabilityAgent.py",
+          "unique": true
+        }
+      ]
+    },
+    "runtime": {
+      "count": 14,
+      "agents": [
+        {
+          "name": "architecture_visualizer_agent",
+          "path": "runtime\\shared\\architecture_visualizer_agent.py",
+          "unique": true
+        },
+        {
+          "name": "competitor_recon_agent",
+          "path": "runtime\\shared\\competitor_recon_agent.py",
+          "unique": true
+        },
+        {
+          "name": "cultural_decoder_agent",
+          "path": "runtime\\shared\\cultural_decoder_agent.py",
+          "unique": true
+        },
+        {
+          "name": "executive_brief_agent",
+          "path": "runtime\\shared\\executive_brief_agent.py",
+          "unique": true
+        },
+        {
+          "name": "governance_shield_agent",
+          "path": "runtime\\shared\\governance_shield_agent.py",
+          "unique": true
+        },
+        {
+          "name": "k1_routing_agent",
+          "path": "runtime\\shared\\k1_routing_agent.py",
+          "unique": true
+        },
+        {
+          "name": "k3_message_body_agent",
+          "path": "runtime\\shared\\k3_message_body_agent.py",
+          "unique": true
+        },
+        {
+          "name": "k5a_agent",
+          "path": "runtime\\shared\\k5a_agent.py",
+          "unique": true
+        },
+        {
+          "name": "k5_cta_agent",
+          "path": "runtime\\shared\\k5_cta_agent.py",
+          "unique": true
+        },
+        {
+          "name": "k7_assembly_agent",
+          "path": "runtime\\shared\\k7_assembly_agent.py",
+          "unique": true
+        },
+        {
+          "name": "knowledge_graph_agent",
+          "path": "runtime\\shared\\knowledge_graph_agent.py",
+          "unique": true
+        },
+        {
+          "name": "onboarding_planner_agent",
+          "path": "runtime\\shared\\onboarding_planner_agent.py",
+          "unique": true
+        },
+        {
+          "name": "pre_mortem_agent",
+          "path": "runtime\\shared\\pre_mortem_agent.py",
+          "unique": true
+        },
+        {
+          "name": "stack_modernization_agent",
+          "path": "runtime\\shared\\stack_modernization_agent.py",
+          "unique": true
+        }
+      ]
+    },
+    "void_violations": {
+      "count": 82,
+      "agents": [
+        {
+          "name": "AgentPermissionManagerAgent",
+          "path": "void_violations\\AgentPermissionManagerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "AsyncBlockingValidatorAgent",
+          "path": "void_violations\\AsyncBlockingValidatorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "CachedOrchestratorAgent",
+          "path": "void_violations\\CachedOrchestratorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "CanonAstValidatorAgent",
+          "path": "void_violations\\CanonAstValidatorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "CanonBaseAgent",
+          "path": "void_violations\\CanonBaseAgent.py",
+          "unique": true
+        },
+        {
+          "name": "CanonDependencySentinelAgent",
+          "path": "void_violations\\CanonDependencySentinelAgent.py",
+          "unique": true
+        },
+        {
+          "name": "CanonValidatorAgent",
+          "path": "void_violations\\CanonValidatorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "CartographerAgent",
+          "path": "void_violations\\CartographerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "CodeJanitorAgent",
+          "path": "void_violations\\CodeJanitorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "CognitiveContractValidatorAgent",
+          "path": "void_violations\\CognitiveContractValidatorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ContextAwareValidatorAgent",
+          "path": "void_violations\\ContextAwareValidatorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ContextCuratorAgent",
+          "path": "void_violations\\ContextCuratorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "CoordinateObservabilityOperationsAgent",
+          "path": "void_violations\\CoordinateObservabilityOperationsAgent.py",
+          "unique": true
+        },
+        {
+          "name": "DeadCodeDetectorAgent",
+          "path": "void_violations\\DeadCodeDetectorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "DependencyDiplomatAgent",
+          "path": "void_violations\\DependencyDiplomatAgent.py",
+          "unique": true
+        },
+        {
+          "name": "DocEnforcerAgent",
+          "path": "void_violations\\DocEnforcerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "DriftDetectorAgent",
+          "path": "void_violations\\DriftDetectorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "DynamicModelRouterAgent",
+          "path": "void_violations\\DynamicModelRouterAgent.py",
+          "unique": true
+        },
+        {
+          "name": "DynamicSealAgent",
+          "path": "void_violations\\DynamicSealAgent.py",
+          "unique": true
+        },
+        {
+          "name": "FallbackManagerAgent",
+          "path": "void_violations\\FallbackManagerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "FissionManagerAgent",
+          "path": "void_violations\\FissionManagerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "GenerativeGuardDeprecatedAgent",
+          "path": "void_violations\\GenerativeGuardDeprecatedAgent.py",
+          "unique": true
+        },
+        {
+          "name": "GlobalComplianceAggregatorAgent",
+          "path": "void_violations\\GlobalComplianceAggregatorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "GospelSyncAgent",
+          "path": "void_violations\\GospelSyncAgent.py",
+          "unique": true
+        },
+        {
+          "name": "GovernanceAgent",
+          "path": "void_violations\\GovernanceAgent.py",
+          "unique": true
+        },
+        {
+          "name": "GravityHealerAgent",
+          "path": "void_violations\\GravityHealerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "HallucinationDetectorAgent",
+          "path": "void_violations\\HallucinationDetectorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "HealerAgent",
+          "path": "void_violations\\HealerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "HierarchyEnforcerAgent",
+          "path": "void_violations\\HierarchyEnforcerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "HygieneValidatorAgent",
+          "path": "void_violations\\HygieneValidatorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ImportHealerAgent",
+          "path": "void_violations\\ImportHealerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "IntelligentOrchestratorAgent",
+          "path": "void_violations\\IntelligentOrchestratorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "InterfaceBoundaryAgent",
+          "path": "void_violations\\InterfaceBoundaryAgent.py",
+          "unique": true
+        },
+        {
+          "name": "L2Agent",
+          "path": "void_violations\\L2Agent.py",
+          "unique": true
+        },
+        {
+          "name": "L3Agent",
+          "path": "void_violations\\L3Agent.py",
+          "unique": true
+        },
+        {
+          "name": "LegacyNamingAgent",
+          "path": "void_violations\\LegacyNamingAgent.py",
+          "unique": true
+        },
+        {
+          "name": "LLMPromptGovernorAgent",
+          "path": "void_violations\\LLMPromptGovernorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "MaintenanceBaseAgent",
+          "path": "void_violations\\MaintenanceBaseAgent.py",
+          "unique": true
+        },
+        {
+          "name": "McpConnectionManagerAgent",
+          "path": "void_violations\\McpConnectionManagerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "McpRouterAgent",
+          "path": "void_violations\\McpRouterAgent.py",
+          "unique": true
+        },
+        {
+          "name": "MetricsAgent",
+          "path": "void_violations\\MetricsAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ModelRouterAgent",
+          "path": "void_violations\\ModelRouterAgent.py",
+          "unique": true
+        },
+        {
+          "name": "NamingEnforcerAgent",
+          "path": "void_violations\\NamingEnforcerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "OmniContextAgent",
+          "path": "void_violations\\OmniContextAgent.py",
+          "unique": true
+        },
+        {
+          "name": "OrganizationAgent",
+          "path": "void_violations\\OrganizationAgent.py",
+          "unique": true
+        },
+        {
+          "name": "PatternEnforcerAgent",
+          "path": "void_violations\\PatternEnforcerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "PredictiveCostAuditorAgent",
+          "path": "void_violations\\PredictiveCostAuditorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ProactiveResourceManagerAgent",
+          "path": "void_violations\\ProactiveResourceManagerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ReasoningRouterAgent",
+          "path": "void_violations\\ReasoningRouterAgent.py",
+          "unique": true
+        },
+        {
+          "name": "RecipientAgent",
+          "path": "void_violations\\RecipientAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ReflectionAgent",
+          "path": "void_violations\\ReflectionAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ReportingAgent",
+          "path": "void_violations\\ReportingAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ResumeOrchestratorAgent",
+          "path": "void_violations\\ResumeOrchestratorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "S2_SupervisorAgent",
+          "path": "void_violations\\S2_SupervisorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "ScriptsPlanningOrchestratorAgent",
+          "path": "void_violations\\ScriptsPlanningOrchestratorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SemanticGatekeeperAgent",
+          "path": "void_violations\\SemanticGatekeeperAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SemanticMapperAgent",
+          "path": "void_violations\\SemanticMapperAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SemanticTerritoryMapperAgent",
+          "path": "void_violations\\SemanticTerritoryMapperAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SherlockAgent",
+          "path": "void_violations\\SherlockAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SignatureVerifierAgent",
+          "path": "void_violations\\SignatureVerifierAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SovereignActionPlaneAgent",
+          "path": "void_violations\\SovereignActionPlaneAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SovereignCanonAuditorAgent",
+          "path": "void_violations\\SovereignCanonAuditorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SovereignCognitivePlaneAgent",
+          "path": "void_violations\\SovereignCognitivePlaneAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SovereignPineconeStoreAgent",
+          "path": "void_violations\\SovereignPineconeStoreAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SovereignRagOrchestratorAgent",
+          "path": "void_violations\\SovereignRagOrchestratorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SovereignRedisOrchestratorAgent",
+          "path": "void_violations\\SovereignRedisOrchestratorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SprawlInspectorAgent",
+          "path": "void_violations\\SprawlInspectorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "StateValidatorAgent",
+          "path": "void_violations\\StateValidatorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "StateValidatorDeprecatedAgent",
+          "path": "void_violations\\StateValidatorDeprecatedAgent.py",
+          "unique": true
+        },
+        {
+          "name": "StrategistAgent",
+          "path": "void_violations\\StrategistAgent.py",
+          "unique": true
+        },
+        {
+          "name": "StructuralEngineerAgent",
+          "path": "void_violations\\StructuralEngineerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SubatomicHopAgent",
+          "path": "void_violations\\SubatomicHopAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SystemArchitectAgent",
+          "path": "void_violations\\SystemArchitectAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SystemArchitectDeprecatedAgent",
+          "path": "void_violations\\SystemArchitectDeprecatedAgent.py",
+          "unique": true
+        },
+        {
+          "name": "SystemCommandExecutorAgent",
+          "path": "void_violations\\SystemCommandExecutorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "TelemetryAgent",
+          "path": "void_violations\\TelemetryAgent.py",
+          "unique": true
+        },
+        {
+          "name": "TerritoryChangeHandlerAgent",
+          "path": "void_violations\\TerritoryChangeHandlerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "TerritoryHealerAgent",
+          "path": "void_violations\\TerritoryHealerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "TokenBudgetInspectorAgent",
+          "path": "void_violations\\TokenBudgetInspectorAgent.py",
+          "unique": true
+        },
+        {
+          "name": "TrackObservabilityCostAgent",
+          "path": "void_violations\\TrackObservabilityCostAgent.py",
+          "unique": true
+        },
+        {
+          "name": "TypeEnforcerAgent",
+          "path": "void_violations\\TypeEnforcerAgent.py",
+          "unique": true
+        },
+        {
+          "name": "UiValidationAgent",
+          "path": "void_violations\\UiValidationAgent.py",
+          "unique": true
+        }
+      ]
+    }
+  }
+}
