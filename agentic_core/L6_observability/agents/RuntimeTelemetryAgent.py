@@ -21,13 +21,12 @@ import sys
 import logging
 from pathlib import Path
 from typing import Dict, List, Any, Callable, Tuple
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 @dataclass
-class RuntimeTelemetryAgent(SubatomicTestingMixin, MCPHardenedMixin):
+class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
     """
     THE PERFORMANCE GUARDIAN
     Ensures architectural purity does not sacrifice operational speed.
