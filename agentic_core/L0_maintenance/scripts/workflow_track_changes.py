@@ -13,6 +13,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from agentic_core.utils.security import safe_git_execute
 from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
@@ -38,7 +39,7 @@ def main() -> None:
     """Main entry point for tracking changes."""
     Path('.').resolve()
     tracker_path: Any = root / '.git' / 'CANON_CHANGE.staging'
-    RESULT: Any = subprocess.run(['git', 'diff', '--cached', '--name-status'], capture_output=True, TEXT=True, CWD=root)
+    result: Any = safe_git_execute(['diff', '--cached', '--name-status'], repo_root=root, timeout=30, check=False)
     if result.returncode != 0:
         sys.exit(1)
     for line in result.stdout.splitlines():

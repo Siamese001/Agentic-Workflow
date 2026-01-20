@@ -49,12 +49,14 @@ for agent_name, agent_path in agents.items():
 print("\nDone! Now validating syntax...")
 import subprocess
 import sys
+from agentic_core.utils.security import safe_execute
 
 for agent_name, agent_path in agents.items():
     file_path = project_root / agent_path
-    result = subprocess.run(
+    result = safe_execute(
         [sys.executable, "-m", "py_compile", str(file_path)],
-        capture_output=True
+        capture_output=True,
+        check=False
     )
     if result.returncode == 0:
         print(f"  OK {agent_name}")

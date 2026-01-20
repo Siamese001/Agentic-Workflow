@@ -11,6 +11,7 @@ Simple wrapper to run the validator and capture output
 import subprocess
 import sys
 from typing import Any
+from agentic_core.utils.security import safe_execute
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -28,5 +29,5 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-result: Any = subprocess.run([sys.executable, 'canon_validator_agentic_v2.py', '--target', AGENTIC_CORE_DIR], cwd='.', capture_output=False, text=True)
+result: Any = safe_execute([sys.executable, 'canon_validator_agentic_v2.py', '--target', AGENTIC_CORE_DIR], cwd='.', capture_output=False, text=True, check=False)
 sys.exit(result.returncode)

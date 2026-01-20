@@ -15,6 +15,7 @@ import os
 import subprocess
 import sys
 import signal
+from agentic_core.utils.security import safe_execute
 
 # Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR
@@ -27,13 +28,14 @@ def regenerate_dashboard():
     """Trigger dashboard regeneration."""
     print("\n🔄 Source files changed → Regenerating autonomy_dashboard.html...")
     try:
-        result = subprocess.run(
+        result = safe_execute(
             [sys.executable, "-c", 
              "from pathlib import Path; from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent; "
              "agent = AutonomyGuardianAgent(project_root=Path('.')); agent.generate_compliance_report()"],
             capture_output=True,
             text=True,
-            cwd=PROJECT_ROOT
+            cwd=PROJECT_ROOT,
+            check=False
         )
         if result.returncode == 0:
             print("   ✅ Dashboard regenerated successfully")

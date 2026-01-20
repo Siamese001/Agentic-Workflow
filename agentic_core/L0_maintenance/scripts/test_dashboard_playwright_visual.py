@@ -21,6 +21,7 @@ import time
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Tuple
+from agentic_core.utils.security import safe_popen
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -48,7 +49,7 @@ def run_playwright_visual_tests() -> Tuple[bool, List[str]]:
     print("\n1. Starting dashboard server on port 8765...")
     dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
     
-    server_process = subprocess.Popen(
+    server_process = safe_popen(
         [sys.executable, "-m", "http.server", "8765"],
         cwd=str(dashboard_dir),
         stdout=subprocess.PIPE,

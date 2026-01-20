@@ -21,7 +21,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.security import safe_git_execute
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -141,11 +140,12 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         Returns:
             Completed process
         """
+        cmd = self.git_cmd + args
         try:
-            result = safe_git_execute(args, repo_root=self.repo_root, timeout=30, check=check)
+            result = subprocess.run(cmd, capture_output=True, text=True, check=check)
             return result
         except subprocess.CalledProcessError as e:
-            Logger.error(f"Git command failed: git {' '.join(args)}")
+            Logger.error(f"Git command failed: {' '.join(cmd)}")
             Logger.error(f'Error: {e.stderr}')
             raise
 

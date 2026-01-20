@@ -14,11 +14,11 @@ Usage:
 import hashlib
 import json
 import logging
-import subprocess
 import sys
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
+from agentic_core.utils.security import safe_execute
 from typing import List, Optional, Tuple
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
@@ -184,12 +184,13 @@ def run_discovery(force: bool = False) -> int:
     log.info("Launching full_agent_discovery.py...")
     start = time.time()
     try:
-        result = subprocess.run(
+        result = safe_execute(
             cmd,
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
             timeout=300,  # 5 min max
+            check=False
         )
         elapsed = time.time() - start
         if result.returncode == 0:

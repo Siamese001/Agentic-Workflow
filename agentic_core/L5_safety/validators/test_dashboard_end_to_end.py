@@ -33,7 +33,8 @@ Usage:
 import json
 import re
 import hashlib
-import subprocess
+import safe_execute
+import safe_popen
 import argparse
 import sys
 from pathlib import Path
@@ -2868,14 +2869,13 @@ def regenerate_agent_discovery() -> bool:
         env["PYTHONPATH"] = str(project_root)
         env["PYTHONIOENCODING"] = "utf-8"
         
-        result = subprocess.run(
+        result = safe_execute(
             [sys.executable, str(discovery_script)],
             cwd=str(project_root),
             capture_output=True,
             timeout=300,
             env=env,
-            encoding="utf-8",
-            errors="replace"
+            check=False
         )
         
         # Check if discovery file was created/updated (more reliable than return code)
@@ -2926,14 +2926,13 @@ def regenerate_dashboard() -> bool:
         env["PYTHONPATH"] = str(project_root)
         env["PYTHONIOENCODING"] = "utf-8"
         
-        result = subprocess.run(
+        result = safe_execute(
             [sys.executable, str(dashboard_script)],
             cwd=str(project_root),
             capture_output=True,
             timeout=120,
             env=env,
-            encoding="utf-8",
-            errors="replace"
+            check=False
         )
         
         if result.returncode != 0:
@@ -3107,7 +3106,7 @@ def restart_dashboard_server():
     
     try:
         # Start server as background process
-        server_process = subprocess.Popen(
+        server_process = safe_popen(
             [sys.executable, "-m", "http.server", "8765"],
             cwd=str(dashboard_dir),
             stdout=subprocess.PIPE,
@@ -3254,12 +3253,13 @@ if __name__ == "__main__":
         try:
             playwright_script = PROJECT_ROOT / "scripts" / "test_dashboard_playwright_visual.py"
             if playwright_script.exists():
-                result = subprocess.run(
+                result = safe_execute(
                     [sys.executable, str(playwright_script)],
                     cwd=str(PROJECT_ROOT),
                     capture_output=True,
                     text=True,
-                    timeout=120
+                    timeout=120,
+                    check=False
                 )
                 
                 if result.returncode == 0:

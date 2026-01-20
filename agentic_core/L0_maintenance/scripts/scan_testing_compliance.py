@@ -13,8 +13,9 @@ Detects both direct methods and inherited capabilities from base classes.
 import ast
 import json
 import os
-import subprocess
+import sys
 from pathlib import Path
+from agentic_core.utils.security import safe_execute
 from typing import Dict, List, Set, Tuple
 from collections import defaultdict
 
@@ -145,7 +146,7 @@ def analyze_agent(class_node: ast.ClassDef, file_path: Path) -> Dict:
 def regenerate_discovery_json():
     """Regenerate the canonical agent discovery JSON."""
     print("[REGENERATING] Running full_agent_discovery.py for fresh data...")
-    subprocess.run(['python', str(DISCOVERY_SCRIPT)], cwd=str(PROJECT_ROOT))
+    safe_execute(['python', str(DISCOVERY_SCRIPT)], cwd=str(PROJECT_ROOT), check=False)
 
 
 def load_from_canonical_json() -> List[Dict]:

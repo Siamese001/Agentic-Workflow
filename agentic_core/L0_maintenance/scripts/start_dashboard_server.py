@@ -8,6 +8,7 @@ import sys
 import os
 import signal
 from pathlib import Path
+from agentic_core.utils.security import safe_popen
 
 # Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR
@@ -44,7 +45,7 @@ else:
     print("Press Ctrl+C to stop the server")
     os.chdir(REPORTS_DIR)
     try:
-        server_process = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT)])
+        server_process = safe_popen([sys.executable, "-m", "http.server", str(PORT)])
         server_process.wait()
     except KeyboardInterrupt:
         print("\n\n✅ Server stopped gracefully.")

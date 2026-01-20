@@ -7,6 +7,7 @@ import subprocess
 import json
 from pathlib import Path
 from datetime import datetime
+from agentic_core.utils.security import safe_execute
 from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 
@@ -39,11 +40,12 @@ def main():
     print("Running duplicate detection...")
     
     # Run find_duplicate_agents.py and capture output
-    result = subprocess.run(
+    result = safe_execute(
         ["python", "scripts/find_duplicate_agents.py", "--output", "json"],
         capture_output=True,
         text=True,
-        cwd=Path.cwd()
+        cwd=Path.cwd(),
+        check=False
     )
     
     if result.returncode != 0:

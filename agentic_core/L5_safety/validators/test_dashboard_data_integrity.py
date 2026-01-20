@@ -7,8 +7,10 @@ Run this BEFORE test_mcp_hardening_all_territories.py
 import json
 import sys
 import re
+import subprocess
 from pathlib import Path
 from collections import defaultdict
+from agentic_core.utils.security import safe_execute
 
 project_root = Path(__file__).parent.parent
 
@@ -406,14 +408,13 @@ def validate_performance():
     
     try:
         # Use UTF-8 encoding for subprocess to handle Unicode characters
-        result = subprocess.run(
+        result = safe_execute(
             ['python', 'scripts/regenerate_dashboard_data.py'],
             cwd=str(project_root),
             capture_output=True,
             text=True,
             timeout=30,
-            encoding='utf-8',
-            errors='replace'  # Replace problematic characters
+            check=False
         )
         
         elapsed = time.time() - start_time

@@ -23,9 +23,9 @@ Delegated from L2-L4 agents for coverage, integration, regression.
 from __future__ import annotations
 
 import re
-import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional
+from agentic_core.utils.security import safe_execute
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
@@ -140,11 +140,12 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
     def _run_full_repo_tests(self, coverage_target: float) -> Dict:
         """Run full pytest with coverage."""
         try:
-            result = subprocess.run(
+            result = safe_execute(
                 ["pytest", "--cov=.", "--cov-report=term-Missing", "-q", "--tb=short"],
                 capture_output=True,
                 timeout=120,
-                cwd=self.repo_root
+                cwd=self.repo_root,
+                check=False
             )
             
             output = result.stdout.decode()
@@ -157,13 +158,6 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 TESTS_DIR: [{"name": "pytest_cov", "passed": result.returncode == 0}],
                 "output": output[:2000]
             }
-        except subprocess.TimeoutExpired:
-            return {
-                "passed": False,
-                "coverage": 0.0,
-                TESTS_DIR: [{"name": "pytest_cov", "passed": False, "error": "timeout"}],
-                "output": "Test timeout after 120s"
-            }
         except Exception as e:
             return {
                 "passed": False,
@@ -175,11 +169,12 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
     def _run_basic_tests(self) -> Dict:
         """Run basic pytest without coverage."""
         try:
-            result = subprocess.run(
+            result = safe_execute(
                 ["pytest", "-q", "--tb=no"],
                 capture_output=True,
                 timeout=60,
-                cwd=self.repo_root
+                cwd=self.repo_root,
+                check=False
             )
             
             passed = result.returncode == 0
@@ -201,11 +196,12 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         """Run targeted tests on specific files/modules."""
         target = request.get("target", "tests/")
         try:
-            result = subprocess.run(
+            result = safe_execute(
                 ["pytest", target, "-q", "--tb=short"],
                 capture_output=True,
                 timeout=60,
-                cwd=self.repo_root
+                cwd=self.repo_root,
+                check=False
             )
             
             passed = result.returncode == 0

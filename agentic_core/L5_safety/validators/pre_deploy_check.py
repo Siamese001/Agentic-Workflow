@@ -18,6 +18,7 @@ Exit Codes:
 import subprocess
 import sys
 from pathlib import Path
+from agentic_core.utils.security import safe_execute
 from datetime import datetime
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -41,11 +42,12 @@ def run_e2e_tests() -> bool:
         return False
     
     try:
-        result = subprocess.run(
+        result = safe_execute(
             [sys.executable, str(test_script), "--auto", "--yes"],
             cwd=str(PROJECT_ROOT),
             capture_output=False,  # Show output in real-time
-            timeout=300  # 5 minute timeout
+            timeout=300,  # 5 minute timeout
+            check=False
         )
         
         return result.returncode == 0

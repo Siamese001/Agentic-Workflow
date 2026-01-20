@@ -6,6 +6,7 @@ import sys
 import time
 import subprocess
 from pathlib import Path
+from agentic_core.utils.security import safe_popen
 
 project_root = Path(__file__).parent.parent
 
@@ -19,7 +20,7 @@ def test_mcp_hardening():
     
     print("Starting dashboard server...")
     dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
-    server = subprocess.Popen(
+    server = safe_popen(
         [sys.executable, "-m", "http.server", "8765"],
         cwd=str(dashboard_dir),
         stdout=subprocess.PIPE,

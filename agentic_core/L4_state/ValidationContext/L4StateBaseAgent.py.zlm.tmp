@@ -37,16 +37,14 @@ DOMAIN-SPECIFIC INTEGRATIONS (State Management):
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-import importlib
+
 import json
-import logging
 import subprocess
-import sys
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime
+from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
-from agentic_core.utils.security import safe_execute
+from typing import Any, Dict, List, Optional, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
@@ -392,11 +390,10 @@ def test_artifact_exists():
             temp_test = Path.cwd() / "temp_l4_test.py"
             temp_test.write_text(tests, encoding='utf-8')
             
-            result = safe_execute(
+            result = subprocess.run(
                 ["pytest", str(temp_test), "-q", "--tb=short"],
                 capture_output=True,
                 timeout=30,
-                check=False,
                 cwd=Path.cwd()
             )
             

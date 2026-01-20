@@ -18,7 +18,6 @@ import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.security import safe_git_execute
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.validators.structure_blueprint import (
@@ -291,7 +290,7 @@ def run_standard_mode():
         # LEVEL 6: Create healing branch on start (GitOps)
         branch_name = f"healing/auto_{int(time.time())}"
         try:
-            safe_git_execute(["checkout", "-b", branch_name], repo_root=Path.cwd(), timeout=10, check=False)
+            subprocess.run(["git", "checkout", "-b", branch_name], capture_output=True, check=False)
             print(f"   [GIT] GitOps: Created healing branch '{branch_name}'")
         except Exception:
             print("   [!] GitOps: Could not create branch (may not be in git repo)")
