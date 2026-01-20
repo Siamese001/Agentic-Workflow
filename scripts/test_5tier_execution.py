@@ -36,9 +36,9 @@ def test_1_syntax_gate():
     print("="*60)
     
     # Create a mock SyntaxValidatorAgent that returns violations
-    from archives.location_violations.ConsolidatedOrchestratorAgent import ConsolidatedOrchestratorAgent
+    from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
     
-    orchestrator = ConsolidatedOrchestratorAgent(PROJECT_ROOT)
+    orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
     
     # Mock agent that simulates syntax errors
     class MockSyntaxValidator:

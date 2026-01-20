@@ -64,8 +64,10 @@ class FilesystemAgent(HealerMixin):
         self.dry_run = dry_run
 
         # Healing configuration derived from Mission SSOT
+        # [SSOT FIX 2026-01-19] Changed from .sovereign_healing_backup to archives/healing_backups
+        # Per SSOT: Only archives/ is the canonical backup location
         self.max_cleanups = HEALING_CONFIG.get("max_filesystem_cleanups_per_run", 50)
-        self.backup_dir = self.project_root / ".sovereign_healing_backup" / "filesystem" / datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.backup_dir = self.project_root / "archives" / "healing_backups" / "filesystem" / datetime.now().strftime("%Y%m%d_%H%M%S")
         self.archives_root = self.project_root / "archives"
         self.cleanups_applied = 0
 

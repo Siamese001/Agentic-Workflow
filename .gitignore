@@ -47,6 +47,11 @@ cache/               # Unauthorized root folder - strictly ignored
 # Temp extraction folders
 temp_*/              # Automated sprawl - strictly ignored
 
+# [SSOT VIOLATION FIX] Healing backup folders - MUST be gitignored
+# These are created by LocationAgent during healing operations
+# Per SSOT: Only archives/ is the canonical backup location
+.sovereign_healing_backup/
+
 # [L6 PHYSICS] ARCHITECTURAL NOISE
 0[0-9]_*/            # Numbered migration folders (Forbidden Root Folders)
 core/                # Unauthorized sprawl directory

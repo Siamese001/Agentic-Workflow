@@ -150,7 +150,7 @@ class TestCaseB_LegacyWrapper:
     
     def test_get_consolidated_orchestrator_returns_unified(self):
         """Verify factory returns UnifiedOrchestratorAgent."""
-        from archives.location_violations.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
+        from archives.location_violations.CoreOrchestrationAgent import get_consolidated_orchestrator
         from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
         
         orchestrator = get_consolidated_orchestrator(Path.cwd())
@@ -160,7 +160,7 @@ class TestCaseB_LegacyWrapper:
     
     def test_get_consolidated_orchestrator_has_healing_strategy(self):
         """Verify factory configures HealingStrategy."""
-        from archives.location_violations.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
+        from archives.location_violations.CoreOrchestrationAgent import get_consolidated_orchestrator
         from archives.void_violations.healing_strategy import HealingStrategy
         
         orchestrator = get_consolidated_orchestrator(Path.cwd())
@@ -170,16 +170,16 @@ class TestCaseB_LegacyWrapper:
             "Strategy must be HealingStrategy"
     
     def test_legacy_wrapper_run_mission(self):
-        """Verify legacy ConsolidatedOrchestratorAgent.run_mission works."""
+        """Verify legacy CoreOrchestrationAgent.run_mission works."""
         import warnings
-        from archives.location_violations.ConsolidatedOrchestratorAgent import ConsolidatedOrchestratorAgent
+        from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
         
         # Suppress deprecation warning for test
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
             
             # Create with mock to avoid actual agent execution
-            with patch('agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent.get_consolidated_orchestrator') as mock_factory:
+            with patch('agentic_core.L3_orchestration.CoreOrchestrationAgent.get_consolidated_orchestrator') as mock_factory:
                 mock_orchestrator = MagicMock()
                 mock_orchestrator.run_mission.return_value = {
                     "status": "SUCCESS",
@@ -193,7 +193,7 @@ class TestCaseB_LegacyWrapper:
                 }
                 mock_factory.return_value = mock_orchestrator
                 
-                legacy = ConsolidatedOrchestratorAgent(Path.cwd())
+                legacy = CoreOrchestrationAgent(Path.cwd())
                 result = legacy.run_mission(context={"dry_run": True})
         
         # Verify legacy format
@@ -203,15 +203,15 @@ class TestCaseB_LegacyWrapper:
         assert "is_stable" in result
     
     def test_legacy_wrapper_emits_deprecation_warning(self):
-        """Verify ConsolidatedOrchestratorAgent emits deprecation warning."""
+        """Verify CoreOrchestrationAgent emits deprecation warning."""
         import warnings
-        from archives.location_violations.ConsolidatedOrchestratorAgent import ConsolidatedOrchestratorAgent
+        from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
         
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             
-            with patch('agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent.get_consolidated_orchestrator'):
-                _ = ConsolidatedOrchestratorAgent(Path.cwd())
+            with patch('agentic_core.L3_orchestration.CoreOrchestrationAgent.get_consolidated_orchestrator'):
+                _ = CoreOrchestrationAgent(Path.cwd())
             
             # Check for deprecation warning
             deprecation_warnings = [x for x in w if issubclass(x.category, DeprecationWarning)]

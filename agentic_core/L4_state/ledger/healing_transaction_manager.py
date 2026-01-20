@@ -31,7 +31,9 @@ class HealingTransaction:
 
     def __init__(self):
         self.timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-        self.backup_dir = Path(f'.sovereign_healing_backup/{self.timestamp}')
+        # [SSOT FIX 2026-01-19] Changed from .sovereign_healing_backup to archives/healing_backups
+        # Per SSOT: Only archives/ is the canonical backup location
+        self.backup_dir = Path(f'archives/healing_backups/transactions/{self.timestamp}')
         self.backups: List[Tuple[Path, Path]] = []
         self.committed = False
         self.rolled_back = False
