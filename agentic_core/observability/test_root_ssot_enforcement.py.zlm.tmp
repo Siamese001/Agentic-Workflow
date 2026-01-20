@@ -17,9 +17,7 @@ Run: python scripts/test_root_ssot_enforcement.py
 import sys
 import os
 if sys.platform.startswith("win"):
-    from agentic_core.utils.security import safe_execute
-    # Replace os.system with safe_execute for security
-    safe_execute(['chcp', '65001'], capture_output=True, check=False)
+    os.system("chcp 65001 >nul 2>&1")
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 

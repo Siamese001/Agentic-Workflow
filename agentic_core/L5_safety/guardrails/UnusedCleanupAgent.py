@@ -25,6 +25,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.security import safe_execute
 
 
 @dataclass
@@ -69,7 +70,7 @@ class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         try:
             # Autoflake removes unused imports/variables in place
-            result = subprocess.run(
+            result = safe_execute(
                 [
                     "autoflake",
                     "--in-place",
@@ -79,6 +80,7 @@ class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 ],
                 capture_output=True,
                 text=True,
+                check=False
             )
 
             # Check if file changed (autoflake returns 0 on success)
