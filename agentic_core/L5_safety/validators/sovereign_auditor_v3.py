@@ -18,13 +18,7 @@ from pathlib import Path
 from typing import Dict, List
 
 # [SSOT] IMPORT PHYSICAL LAW FROM BLUEPRINT
-try:
-    from agentic_core.L5_safety.validators.structure_blueprint import (
-        ACTIVE_CANON_KEYS,
-        CANON_KEY_TO_FOLDER_MAP,
-    )
-except ImportError:
-    raise RuntimeError("CRITICAL: SSOT Blueprint Missing. Physics cannot be established.")
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 
 # Add repo root to path for imports
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
@@ -136,16 +130,15 @@ def main():
     
     report = SovereignReport()
     
-    # 1. Dynamic Key Coverage Audit (Key 20 Compliance)
-    key_issues = []
-    for key in ACTIVE_CANON_KEYS:
-        target_folders = CANON_KEY_TO_FOLDER_MAP.get(key, [])
-        for folder in target_folders:
-            if not (REPO_ROOT / folder).exists():
-                key_issues.append(f"Key {key}: Missing Territory {folder}")
+    # 1. Territory Coverage Audit (Agent-based validation replaces legacy canon keys)
+    territory_issues = []
+    for territory, config in SOVEREIGN_REGISTRY.items():
+        territory_path = REPO_ROOT / territory
+        if not territory_path.exists() and not config.get('volatile', False):
+            territory_issues.append(f"Missing Territory: {territory}")
     
-    key_score = 100.0 * (1 - (len(key_issues) / len(ACTIVE_CANON_KEYS))) if ACTIVE_CANON_KEYS else 100.0
-    report.record_result("Key Coverage", key_score, key_issues)
+    territory_score = 100.0 * (1 - (len(territory_issues) / len(SOVEREIGN_REGISTRY))) if SOVEREIGN_REGISTRY else 100.0
+    report.record_result("Territory Coverage", territory_score, territory_issues)
 
     # 2. Schema SSOT (Key 3 Alignment)
     score, issues = validate_schema_ssot(str(REPO_ROOT / "agentic_core"))
