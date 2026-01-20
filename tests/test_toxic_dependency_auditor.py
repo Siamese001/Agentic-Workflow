@@ -15,7 +15,7 @@ sys.modules['agentic_core.utils.core_extensions.mcp_hardened_mixin'] = mock_modu
 # Direct import
 import importlib.util
 
-from agentic_core.L5_safety.validators.structure_blueprint_1 import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -33,7 +33,7 @@ from agentic_core.L5_safety.validators.structure_blueprint_1 import (
 )
 spec = importlib.util.spec_from_file_location(
     'ToxicDependencyAuditor',
-    Path('agentic_core/L5_safety/validators/ToxicDependencyAuditor.py')
+    Path('agentic_core/L5_safety/gravity/ToxicDependencyAuditor.py')
 )
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

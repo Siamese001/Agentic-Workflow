@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 import pytest
 
-from agentic_core.L5_safety.validators.structure_blueprint_1 import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -24,6 +24,7 @@ from agentic_core.L5_safety.validators.structure_blueprint_1 import (
     L4_STATE_DIR,
     L5_SAFETY_DIR,
     L6_OBSERVABILITY_DIR,
+    REPORTS_DIR,
     get_validated_project_root,
 )
 

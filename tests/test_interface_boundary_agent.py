@@ -17,7 +17,7 @@ sys.modules['agentic_core.utils.core_extensions.mcp_hardened_mixin'] = mock_modu
 import importlib.util
 spec = importlib.util.spec_from_file_location(
     'InterfaceBoundaryAgent',
-    Path('agentic_core/L2_execution/ToolRegistry/InterfaceBoundaryAgent.py')
+    Path('agentic_core/L5_safety/validators/InterfaceBoundaryAgent.py')
 )
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

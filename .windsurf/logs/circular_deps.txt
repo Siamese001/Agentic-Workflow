@@ -1,0 +1,1 @@
+N/A - JS/TS circular dependency check not applicable for Python project

@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import pytest
 
-from agentic_core.L5_safety.validators.structure_blueprint_1 import (
+from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,

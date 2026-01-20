@@ -39,7 +39,7 @@ def get_performance_analyst(project_root: Path) -> 'PerformanceAnalystAgent':
 
 
 @dataclass
-class PerformanceAnalystAgent(SubatomicTestingMixin, L6ObservabilityBaseAgent):
+class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
     """
     The Performance Critic - Skeptical analyst for agent performance.
     
