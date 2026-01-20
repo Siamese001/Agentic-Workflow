@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
@@ -27,7 +28,6 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.security import safe_execute
 
 
 @dataclass
@@ -67,13 +67,11 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
             List of unused package names, empty if deptry fails or not installed.
         """
         try:
-            result = safe_execute(
+            result: subprocess.CompletedProcess[str] = subprocess.run(
                 ["deptry", ".", "--json"],
                 capture_output=True,
                 text=True,
                 cwd=self.project_root,
-                check=False,
-                timeout=60
             )
             if result.returncode == 0:
                 data: Dict[str, Any] = json.loads(result.stdout)

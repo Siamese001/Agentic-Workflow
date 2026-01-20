@@ -28,7 +28,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.security import safe_git_execute
+
 
 @dataclass
 class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -67,16 +67,18 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         
         Args:
             cmd: Git command arguments (without 'git' prefix).
-            **kwargs: Additional arguments passed to safe_git_execute.
+            **kwargs: Additional arguments passed to subprocess.run.
             
         Returns:
             Command stdout if successful, empty string otherwise.
         """
         try:
-            result = safe_git_execute(
-                cmd,
-                repo_root=self.project_root,
-                timeout=kwargs.get('timeout', 30),
+            result: subprocess.CompletedProcess[str] = subprocess.run(
+                ["git"] + cmd,
+                capture_output=True,
+                text=True,
+                cwd=self.project_root,
+                **kwargs,
             )
             return result.stdout.strip() if result.returncode == 0 else ""
         except FileNotFoundError:

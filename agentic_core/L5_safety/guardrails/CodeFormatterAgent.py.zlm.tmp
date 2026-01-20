@@ -25,7 +25,6 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.security import safe_execute
 
 
 @dataclass
@@ -75,20 +74,15 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         changed: bool = False
         try:
             # Black formatting
-            black_result = safe_execute(
-                ["black", "--quiet", str(file)], 
-                capture_output=True, 
-                text=True,
-                check=False
+            black_result: subprocess.CompletedProcess[str] = subprocess.run(
+                ["black", "--quiet", str(file)], capture_output=True, text=True
             )
             if black_result.returncode == 0 and "reformatted" in black_result.stderr:
                 changed = True
 
             # Ruff lint auto-fix
-            ruff_result = safe_execute(
-                ["ruff", "check", "--fix", "--quiet", str(file)], 
-                capture_output=True,
-                check=False
+            ruff_result: subprocess.CompletedProcess[bytes] = subprocess.run(
+                ["ruff", "check", "--fix", "--quiet", str(file)], capture_output=True
             )
             if ruff_result.returncode == 0:
                 pass  # Ruff ran successfully
