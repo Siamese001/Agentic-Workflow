@@ -21,8 +21,9 @@ from typing import Any, Dict, List, Optional
 
 Logger = logging.getLogger(__name__)
 
-# L2 Resource awareness
-# ARCHIVED: ProactiveResourceManagerAgent import removed # (
+# L2 Resource awareness - Use UnifiedResourceManagerAgent (consolidates ProactiveResourceManagerAgent)
+from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
+    UnifiedResourceManagerAgent,
     create_proactive_resource_manager,
 )
 
