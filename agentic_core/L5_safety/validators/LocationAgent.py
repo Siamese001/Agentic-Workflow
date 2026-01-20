@@ -850,12 +850,16 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
 
     # SUPPLEMENTED FROM FilesystemAgent — enhances backup + cleanup capability — merged 2025-12-30
+    # [SSOT FIX 2026-01-19] Changed from .sovereign_healing_backup to archives/healing_backups
+    # Per SSOT: Only archives/ is the canonical backup location
     def _init_backup_dir(self) -> Path:
         """
         SUPPLEMENTED FROM FilesystemAgent — merged 2025-12-30
         Initialize backup directory for safe mutations.
+        
+        SSOT COMPLIANCE: Uses archives/healing_backups/ instead of .sovereign_healing_backup/
         """
-        backup_dir = self.project_root / ".sovereign_healing_backup" / "location" / datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_dir = self.project_root / "archives" / "healing_backups" / "location" / datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_dir.mkdir(parents=True, exist_ok=True)
         return backup_dir
 

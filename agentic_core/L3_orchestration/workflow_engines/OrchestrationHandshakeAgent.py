@@ -20,7 +20,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
-from archives.void_violations.CachedOrchestratorAgent import CachedOrchestratorAgent
+from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -31,7 +31,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
-class OrchestrationHandshakeAgent(CachedOrchestratorAgent, MCPHardenedMixin):
+class OrchestrationHandshakeAgent(CoreOrchestrationAgent, MCPHardenedMixin):
     """
     Sovereign handshake protocol — now with deep L3 caching.
     Renamed from OrchestrationHandshake for consistent Agent suffix pattern.

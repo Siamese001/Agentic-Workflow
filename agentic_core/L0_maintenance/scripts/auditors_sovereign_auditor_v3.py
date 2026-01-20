@@ -26,7 +26,7 @@ from agentic_core.L0_maintenance.scripts.metrics_witness import MetricsWitness
 from agentic_core.L0_maintenance.scripts.guardian_orchestrator import GuardianOrchestratorAgent
 
 # [PHASE 16] Healing Orchestrator – Sovereign Agent
-from agentic_core.L0_maintenance.scripts.healing_orchestrator import LicHealingOrchestratorAgent
+from agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent import AppWorkflowOrchestratorAgent
 
 # [PHASE 17] Script-to-Agent Classifier – Sovereign Agent
 from agentic_core.L0_maintenance.scripts.script_to_agent_classifier import ScriptToAgentClassifierAgent

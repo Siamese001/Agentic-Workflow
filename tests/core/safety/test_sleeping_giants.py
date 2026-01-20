@@ -43,18 +43,18 @@ def test_two_phase_dedup_import():
         test_fail("GIANT-01", f"Unexpected error: {e}")
 
 # =============================================================================
-# Test 2: ScriptsPlanningOrchestratorAgent Task Validation
+# Test 2: CoreOrchestrationAgent Task Validation
 # =============================================================================
 def test_scripts_planning_validation():
-    """Verify ScriptsPlanningOrchestratorAgent wires _validate_tasks."""
+    """Verify CoreOrchestrationAgent wires _validate_tasks."""
     print("\n" + "=" * 70)
-    print("Test 2: ScriptsPlanningOrchestratorAgent Task Validation")
+    print("Test 2: CoreOrchestrationAgent Task Validation")
     print("=" * 70)
     
     try:
-        from archives.void_violations.ScriptsPlanningOrchestratorAgent import ScriptsPlanningOrchestratorAgent
+        from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
         
-        agent = ScriptsPlanningOrchestratorAgent()
+        agent = CoreOrchestrationAgent()
         
         # Verify heal_repository exists and has proper signature
         if hasattr(agent, 'heal_repository'):

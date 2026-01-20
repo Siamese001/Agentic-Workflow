@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test Suite: ConsolidatedOrchestratorAgent Stability Gate & Metrics
+Test Suite: CoreOrchestrationAgent Stability Gate & Metrics
 
 Tests the 5 detailed test cases for:
 1. Stability Gate: Execution Failure
@@ -17,7 +17,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from archives.location_violations.ConsolidatedOrchestratorAgent import ConsolidatedOrchestratorAgent
+from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
 
 class MockAgent:
@@ -48,7 +48,7 @@ def test_1_stability_gate_execution_failure():
     print("TEST 1: Stability Gate - Execution Failure")
     print("="*60)
     
-    orchestrator = ConsolidatedOrchestratorAgent(PROJECT_ROOT)
+    orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
     
     # Agent returns violations with execute=True
     mock_agent = MockAgent(return_value={"violations": 5, "fixed": 0})
@@ -76,7 +76,7 @@ def test_2_stability_gate_dry_run_safety():
     print("TEST 2: Stability Gate - Dry-Run Safety")
     print("="*60)
     
-    orchestrator = ConsolidatedOrchestratorAgent(PROJECT_ROOT)
+    orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
     
     # Agent returns violations but in dry-run mode
     mock_agent = MockAgent(return_value={"violations": 10, "fixed": 0})
@@ -104,7 +104,7 @@ def test_3_ssot_key_extraction():
     print("TEST 3: SSOT Key Extraction")
     print("="*60)
     
-    orchestrator = ConsolidatedOrchestratorAgent(PROJECT_ROOT)
+    orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
     
     # Test various legacy key formats
     test_cases = [
@@ -152,7 +152,7 @@ def test_4_observability_duration():
     print("TEST 4: Observability Duration")
     print("="*60)
     
-    orchestrator = ConsolidatedOrchestratorAgent(PROJECT_ROOT)
+    orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
     
     # Create agents with known delays
     delay_1 = 0.1  # 100ms
@@ -202,7 +202,7 @@ def test_5_critical_error_transparency():
     print("TEST 5: Critical Error Transparency")
     print("="*60)
     
-    orchestrator = ConsolidatedOrchestratorAgent(PROJECT_ROOT)
+    orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
     
     error_message = "Simulated critical failure for testing"
     
@@ -248,7 +248,7 @@ def test_5_critical_error_transparency():
 def run_all_tests():
     """Run all test cases."""
     print("\n" + "#"*60)
-    print("# ConsolidatedOrchestratorAgent Test Suite")
+    print("# CoreOrchestrationAgent Test Suite")
     print("# Testing: Stability Gate & Standardized Metrics")
     print("#"*60)
     

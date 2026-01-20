@@ -195,7 +195,7 @@ class TheOmniContext:
             LOGGER.warning('Pinecone client not available - skipping sync')
             return {'synced': 0, 'error': 'Pinecone not available'}
         try:
-            from L1_cognition.reflection_agent import LicHealingOrchestratorAgent
+            from agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent import AppWorkflowOrchestratorAgent
             reflection: Any = RgReflectionAgent(pinecone_client=self.pinecone_client)
             synced: Any = 0
             for file_key, data in file_summaries.items():
