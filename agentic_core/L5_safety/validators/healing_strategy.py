@@ -63,11 +63,11 @@ class HealingStrategy:
             ],
             "Tier 2: Architectural": [
                 "StructuralHealerAgent",  # File relocation, fission/fusion (WIRED)
-                "GravityEnforcerAgent",
+                "UnifiedStructureEnforcerAgent",
                 "TwoPhaseDeduplicationAgent_PhaseB",  # Logic duplicates (late)
             ],
             "Tier 3: Dynamic": [
-                "CodeSSOTEnforcerAgent",
+                "UnifiedCodeEnforcerAgent",
             ],
             "Tier 4: Final Gate": [
                 # Reserved for future safety validators
@@ -180,9 +180,9 @@ class HealingStrategy:
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
                 return HygieneGuardianAgent(project_root=self.project_root)
             
-            elif agent_name == "GravityEnforcerAgent":
-                from agentic_core.L5_safety.guardrails.GravityEnforcerAgent import GravityEnforcerAgent
-                return GravityEnforcerAgent(project_root=self.project_root)
+            elif agent_name == "UnifiedStructureEnforcerAgent":
+                from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
+                return UnifiedStructureEnforcerAgent(project_root=self.project_root)
             
             elif agent_name == "NamingAgent":
                 from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
@@ -192,9 +192,9 @@ class HealingStrategy:
                 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
                 return LocationAgent(project_root=self.project_root)
             
-            elif agent_name == "CodeSSOTEnforcerAgent":
-                from agentic_core.L5_safety.validators.CodeSSOTEnforcerAgent import CodeSSOTEnforcerAgent
-                return CodeSSOTEnforcerAgent()
+            elif agent_name == "UnifiedCodeEnforcerAgent":
+                from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
+                return UnifiedCodeEnforcerAgent()
             
             elif agent_name == "StructuralHealerAgent":
                 from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent

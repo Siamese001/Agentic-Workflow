@@ -61,9 +61,9 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         
         # Archived agents - use stubs for backward compatibility
         try:
-            from agentic_core.L5_safety.validators.PatternEnforcerAgent import PatternEnforcerAgent
+            from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
         except ImportError:
-            PatternEnforcerAgent = None
+            UnifiedCodeEnforcerAgent = None
         try:
             from agentic_core.L5_safety.validators.DocumentationAgent import DocumentationAgent
         except ImportError:
@@ -87,7 +87,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         deps = DependencySentinelAgent(ctx)
         docs = DocumentationAgent(ctx)
         naming = NamingAgent(ctx)
-        pattern = PatternEnforcerAgent(ctx)
+        pattern = UnifiedCodeEnforcerAgent(ctx)
         safety = SafetyInspectorAgent(ctx)
         struct = StructuralEngineerAgent(ctx)
         type_mech = TypeMechanicAgent(ctx)

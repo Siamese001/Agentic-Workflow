@@ -60,7 +60,7 @@ class SafetyStrategy:
             ],
             "Tier 2: Safety": [
                 "LocationAgent",
-                "GravityEnforcerAgent",
+                "UnifiedStructureEnforcerAgent",
             ],
             "Tier 3: Healing": [
                 "StructuralHealerAgent",
@@ -91,9 +91,9 @@ class SafetyStrategy:
             elif agent_name == "LocationAgent":
                 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
                 return LocationAgent(project_root=self.project_root)
-            elif agent_name == "GravityEnforcerAgent":
-                from agentic_core.L5_safety.validators.GravityEnforcerAgent import GravityEnforcerAgent
-                return GravityEnforcerAgent(project_root=self.project_root)
+            elif agent_name == "UnifiedStructureEnforcerAgent":
+                from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
+                return UnifiedStructureEnforcerAgent(project_root=self.project_root)
             elif agent_name == "StructuralHealerAgent":
                 from agentic_core.L5_safety.validators.StructuralHealerAgent import StructuralHealerAgent
                 return StructuralHealerAgent(project_root=self.project_root)

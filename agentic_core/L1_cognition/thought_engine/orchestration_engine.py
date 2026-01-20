@@ -22,7 +22,7 @@ except ImportError:
 
 # [DEPRECATED IMPORTS] Legacy agent imports - now using canon_agents_* modules
 # TODO: Migrate to agentic_core.L1_cognition.thought_engine.canon_agents_* when needed
-# from agentic_core.agents.engineering import PatternEnforcerAgent, StructuralEngineer
+# from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent, StructuralEngineer
 # from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinelAgent
 # from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
 # from agentic_core.agents.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
