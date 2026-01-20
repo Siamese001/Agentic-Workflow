@@ -5,7 +5,7 @@
 
 ## Executive Summary
 
-A systematic review identified **23 files** in `agentic_core` that contained application-specific logic for Resume Gen (`apps_rg`) or LinkedIn Connector (`apps_lic`). These files were misaligned with the Sovereign Architecture principles.
+A systematic review identified **23 files** in `agentic_core` that contained application-specific logic for Resume Gen (`apps_rg`) or LinkedIn Canonical (`apps_lic`). These files were misaligned with the Sovereign Architecture principles.
 
 ## Rationale for Placement Rules
 
@@ -17,7 +17,7 @@ The repository follows a clear separation of concerns:
 |--------|---------|-------|
 | `agentic_core/` | **Framework-agnostic** core infrastructure (L0-L5 layers) | 3 |
 | `apps_rg/` | Resume Gen application-specific logic | 2 |
-| `apps_lic/` | LinkedIn Connector application-specific logic | 2 |
+| `apps_lic/` | LinkedIn Canonical application-specific logic | 2 |
 | `apps_shared/` | Shared utilities across apps | 2 |
 | `tests/` | Test suites | 2 |
 
@@ -75,7 +75,7 @@ Added to `agentic_core/config/blueprint_sovereign/structure_blueprint.py`:
 # === APP-SPECIFIC FILE PLACEMENT RULES ===
 APP_SPECIFIC_PREFIXES: Dict[str, str] = {
     'rg_': 'apps_rg',      # Resume Gen executors/tools
-    'lic_': 'apps_lic',    # LinkedIn Connector executors/tools
+    'lic_': 'apps_lic',    # LinkedIn Canonical executors/tools
     'resume_': 'apps_rg',  # Resume-related files
     'outreach_': 'apps_rg', # Outreach-related files
     'dispatch_resume': 'apps_rg',

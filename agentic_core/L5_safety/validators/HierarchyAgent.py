@@ -35,7 +35,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
-from agentic_core.utils.general_helpers.mission_utils import (
+from agentic_core.L5_safety.gravity.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
 )
@@ -43,6 +43,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # [MISSION AUDIT] Standardized logging for L4 Ledger consumption
 logging.basicConfig(level=logging.INFO)

@@ -41,7 +41,7 @@ warnings.warn(
     stacklevel=2
 )
 
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
 class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):

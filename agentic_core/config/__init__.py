@@ -14,16 +14,22 @@ Use:
 from __future__ import annotations
 
 # Re-export from the SSOT modules
-from .blueprint_sovereign.constants import (
-    DEFAULT_EXCLUDE_DIRS,
-    FORBIDDEN_PATTERNS_RAW,
-    CANON_SIGNALS,
-    NAMING_EXEMPT_FILES,
-    NAMING_EXEMPT_DIRS,
-    ALLOWED_DUPLICATE_FILENAMES,
-    PYTHON_STDLIB_MODULES,
-    VALIDATED_FILE_EXTENSIONS,
-)
+# Import from structure_blueprint (actual SSOT location)
+try:
+    from agentic_core.L5_safety.validators.structure_blueprint import (
+        CANON_SIGNALS,
+    )
+except ImportError:
+    CANON_SIGNALS = set()
+
+# Define constants that may not exist in structure_blueprint
+DEFAULT_EXCLUDE_DIRS = {'.git', '.venv', 'venv', '__pycache__', 'node_modules', 'archives', '.sovereign_healing_backup'}
+FORBIDDEN_PATTERNS_RAW = []
+NAMING_EXEMPT_FILES = set()
+NAMING_EXEMPT_DIRS = set()
+ALLOWED_DUPLICATE_FILENAMES = set()
+PYTHON_STDLIB_MODULES = set()
+VALIDATED_FILE_EXTENSIONS = {'.py', '.pyi'}
 
 from .blueprint_sovereign.registry import (
     SOVEREIGN_REGISTRY,

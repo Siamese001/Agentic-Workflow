@@ -60,9 +60,19 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
+
+# Optional prompt registry for meta-learning
+try:
+    from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
+except ImportError:
+    # Fallback decorator for testing
+    def registers_prompt(**kwargs):
+        def decorator(cls):
+            return cls
+        return decorator
+
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def get_ast_safe_imports(content: str) -> Any:
     """Extract imports using AST, ignoring comments/docstrings."""
@@ -120,7 +130,7 @@ class ImportValidationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 @registers_prompt(

@@ -8,9 +8,9 @@ from __future__ import annotations
 """
 Master Mission Orchestrator - Observability Sovereignty Execution
 Responsible for:
-- Orchestrating 50-key canon validation sweeps.
+- Orchestrating sovereign canon validation sweeps.
 - Enforcing Zero-Latency Neural Link integrity.
-- Managing Atomic Fission (Key 42) for large files.
+- Managing Atomic Fission for large files.
 """
 import asyncio
 import os

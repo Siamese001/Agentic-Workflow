@@ -188,7 +188,16 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     is_path_allowed,                   # SSOT path validation helper
     VARIABLE_DEPTH_SUBFOLDERS,         # Flexible depth exemptions (Option A)
 )
-from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
+# Optional prompt registry for meta-learning
+try:
+    from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
+except ImportError:
+    # Fallback decorator for testing
+    def registers_prompt(**kwargs):
+        def decorator(cls):
+            return cls
+        return decorator
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
 
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation

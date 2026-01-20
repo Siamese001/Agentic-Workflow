@@ -43,7 +43,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP
 )
 
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
 
 Logger = logging.getLogger(__name__)

@@ -15,7 +15,7 @@ import os
 import re
 import time
 from collections import defaultdict
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from archives.location_violations.file_utils import safe_read_file, safe_write_file
 

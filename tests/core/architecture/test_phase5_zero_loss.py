@@ -161,7 +161,7 @@ def test_tc23_keyword_resilience():
     print("TC-23: Keyword Resilience")
     print("="*60)
     
-    from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
     
     # Create a test instance that inherits from HealerMixin
     class TestHealerAgent(HealerMixin):
@@ -220,7 +220,7 @@ def test_tc24_status_consistency():
     print("TC-24: Status Consistency")
     print("="*60)
     
-    from agentic_core.L5_safety.validators.healer_mixin import HealerMixin, HealResult
+    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
     
     # Create test agent
     class TestHealerAgent(HealerMixin):

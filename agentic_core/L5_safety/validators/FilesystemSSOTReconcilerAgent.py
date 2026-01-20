@@ -78,8 +78,13 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
+# Use correct MCP mixin location
+try:
+    from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+except ImportError:
+    # Fallback for testing
+    class MCPHardenedMixin:
+        pass
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 

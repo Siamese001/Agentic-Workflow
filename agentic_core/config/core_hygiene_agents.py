@@ -1,0 +1,94 @@
+"""
+Core Hygiene Agents Registry - Mandatory agents for repo health.
+
+These agents form the "gravity anchor" for repository hygiene and must
+run before any other validation work.
+
+Territory: agentic_core/config/
+"""
+
+from __future__ import annotations
+
+from typing import Dict, List
+
+# Core hygiene agents organized by tier
+CORE_HYGIENE_AGENTS: Dict[str, List[str]] = {
+    "tier_0_preflight": [
+        "UnifiedCodeValidatorAgent",
+    ],
+    "tier_1_structural": [
+        "ImportAgent",
+        "LocationAgent", 
+        "NamingAgent",
+        "HierarchyAgent",
+        "CodeDeduplicationAgent",
+        "HygieneGuardianAgent",
+    ],
+    "tier_2_architectural": [
+        "UnifiedStructureEnforcerAgent",
+        "FilesystemSSOTReconcilerAgent",
+        "GitHygieneAgent",
+        "FileCleanupAgent",
+    ],
+    "tier_3_autonomy": [
+        "AutonomyGuardianAgent",
+        "CodeJanitorAgent",
+    ],
+}
+
+# Agents that MUST pass before any healing proceeds
+MANDATORY_PREFLIGHT: List[str] = [
+    "UnifiedCodeValidatorAgent",  # Syntax must be valid
+    "ImportAgent",                # Imports must be valid
+    "LocationAgent",              # Files must be in valid locations
+]
+
+# Agent descriptions for documentation
+AGENT_DESCRIPTIONS: Dict[str, str] = {
+    "UnifiedCodeValidatorAgent": "Syntax validation, AST parsing, canon compliance",
+    "ImportAgent": "Import ordering, gravity waterfall, unused import detection",
+    "LocationAgent": "Root folder whitelist, depth enforcement, forbidden patterns",
+    "NamingAgent": "Naming conventions, *Agent suffix enforcement",
+    "HierarchyAgent": "L2/L3 structure creation, depth enforcement, orphan purging",
+    "CodeDeduplicationAgent": "Filename uniqueness, whole-file duplicate detection",
+    "HygieneGuardianAgent": "Empty files, orphaned __init__.py, backup/temp file cleanup",
+    "UnifiedStructureEnforcerAgent": "Gravity/layer import enforcement, hierarchy validation",
+    "FilesystemSSOTReconcilerAgent": "Blueprint → Filesystem alignment, drift detection",
+    "GitHygieneAgent": "Stale branches, large files, uncommitted changes",
+    "FileCleanupAgent": "Repeated filename strings, duplicate file removal",
+    "AutonomyGuardianAgent": "Agent autonomy enforcement, heal_repository() requirement",
+    "CodeJanitorAgent": "Syntax, style, formatting validation",
+}
+
+def get_all_hygiene_agents() -> List[str]:
+    """Get flat list of all hygiene agents."""
+    all_agents = []
+    for tier_agents in CORE_HYGIENE_AGENTS.values():
+        all_agents.extend(tier_agents)
+    return all_agents
+
+def get_tier_agents(tier: int) -> List[str]:
+    """
+    Get agents for a specific tier.
+    
+    Args:
+        tier: Tier number (0-3)
+        
+    Returns:
+        List of agent names for that tier
+    """
+    tier_map = {
+        0: "tier_0_preflight",
+        1: "tier_1_structural",
+        2: "tier_2_architectural",
+        3: "tier_3_autonomy",
+    }
+    
+    tier_key = tier_map.get(tier)
+    if tier_key:
+        return CORE_HYGIENE_AGENTS.get(tier_key, [])
+    return []
+
+def is_mandatory_agent(agent_name: str) -> bool:
+    """Check if agent is in mandatory preflight list."""
+    return agent_name in MANDATORY_PREFLIGHT

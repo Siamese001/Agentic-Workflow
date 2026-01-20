@@ -25,7 +25,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L4_state.validation_context.CachedStateLedger import CachedStateLedger as CachedStateLedger
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
