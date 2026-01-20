@@ -51,12 +51,12 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
         """
         print(f"\n[>>>] {self.name} ACTIVATED: Type System Check...")
 
-        passed, details = self.check_key_22_no_missing_type_hints()
+        passed, details = self.check_no_missing_type_hints()
         self.ctx.report(self.name, 22, passed, details)
-        passed, details = self.check_key_23_no_unreachable_code()
+        passed, details = self.check_no_unreachable_code()
         self.ctx.report(self.name, 23, passed, details)
 
-        passed, details = self.check_key_24_no_unused_variables()
+        passed, details = self.check_no_unused_variables()
         self.ctx.report(self.name, 24, passed, details)
 
     def _read_and_parse_file(self, fp: str) -> Tuple[ast.AST | None, str | None]:
@@ -85,7 +85,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                 )
         return file_violations
 
-    def check_key_22_no_missing_type_hints(self) -> Tuple[bool, List[str]]:
+    def check_no_missing_type_hints(self) -> Tuple[bool, List[str]]:
         """
         Checks for functions with Missing type hints (return types).
         Excludes __init__, __str__, __repr__ methods.
@@ -126,7 +126,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                 file_violations.extend(self._check_function_for_unreachable_code(fp, node)) # Depth 4
         return file_violations
 
-    def check_key_23_no_unreachable_code(self) -> Tuple[bool, List[str]]:
+    def check_no_unreachable_code(self) -> Tuple[bool, List[str]]:
         """
         Checks for unreachable code, specifically statements after a 'return' statement
         within a function body.
@@ -192,7 +192,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
             self.ctx.log_error(f"Error parsing {fp} for unused variables: {e}")
             return []
 
-    def check_key_24_no_unused_variables(self) -> Tuple[bool, List[str]]:
+    def check_no_unused_variables(self) -> Tuple[bool, List[str]]:
         """
         Checks for variables that are assigned but never used within a function.
         Refactored to reduce nesting depth.

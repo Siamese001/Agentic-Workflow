@@ -56,13 +56,13 @@ class CodeJanitor:
         print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Sanitizing Codebase...")
 
         # Check and fix trailing whitespace (Key 11)
-        passed, details = self.check_key_11_no_trailing_whitespace()
+        passed, details = self.check_no_trailing_whitespace()
         self.agent.ctx.report(self.agent.name, 11, passed, details)
         if not passed:
             print("      [+] Auto-fixing trailing whitespace...")
             self._fix_trailing_whitespace()
             # Re-check after fix
-            passed, details = self.check_key_11_no_trailing_whitespace()
+            passed, details = self.check_no_trailing_whitespace()
             self.agent.ctx.report(self.agent.name, 11, passed, details)
             if not passed:
                 print("      [X] Trailing whitespace fix failed or new violations appeared.")
@@ -70,7 +70,7 @@ class CodeJanitor:
                 print("      [OK] Trailing whitespace fixed successfully.")
 
         # Check and fix Missing final newlines (Key 12)
-        passed, details = self.check_key_12_no_missing_newline()
+        passed, details = self.check_no_missing_newline()
         if not passed:
             print("      [+] Auto-fixing Missing final newlines...")
             for file_path in details:
@@ -81,7 +81,7 @@ class CodeJanitor:
                 except IOError as e:
                     print(f"      [X] Failed to fix newline in {file_path}: {e}")
             # Re-check after fix
-            passed, details = self.check_key_12_no_missing_newline()
+            passed, details = self.check_no_missing_newline()
             self.agent.ctx.report(self.agent.name, 12, passed, details)
             if not passed:
                 print("      [X] Missing final newline fix failed or new violations appeared.")
@@ -91,7 +91,7 @@ class CodeJanitor:
             self.agent.ctx.report(self.agent.name, 12, passed, details)
 
         # Check and fix tabs (Key 13)
-        passed, details = self.check_key_13_no_tabs()
+        passed, details = self.check_no_tabs()
         if not passed and self.agent.ctx.intelligence_enabled:
             print("      Converting tabs to spaces using smart_fix...")
             # Smart fix is applied per file, so we need unique file paths
@@ -99,7 +99,7 @@ class CodeJanitor:
             for file_path in list(files_with_tabs)[:3]:  # Limit to first 3 files for smart_fix
                 await self.smart_fix(file_path, 13)
             # Re-check after fix
-            passed, details = self.check_key_13_no_tabs()
+            passed, details = self.check_no_tabs()
             self.agent.ctx.report(self.agent.name, 13, passed, details)
             if not passed:
                 print("      [X] Tab conversion fix failed or new violations appeared.")
@@ -110,9 +110,9 @@ class CodeJanitor:
 
         # Generic checks for keys that might benefit from smart_fix
         keys_to_check = {
-            10: self.check_key_10_no_long_lines,
-            15: self.check_key_15_no_magic_numbers,
-            16: self.check_key_16_no_deep_nesting
+            10: self.check_no_long_lines,
+            15: self.check_no_magic_numbers,
+            16: self.check_no_deep_nesting
         }
 
         for key, check_func in keys_to_check.items():
@@ -133,7 +133,7 @@ class CodeJanitor:
 
         self.agent.ctx.signal_ast_valid()
         print(f"[<<<] {self.agent.name} FINISHED.")
-    def check_key_11_no_trailing_whitespace(self) -> Tuple[bool, List[str]]:
+    def check_no_trailing_whitespace(self) -> Tuple[bool, List[str]]:
         """
         Checks for trailing whitespace on lines (excluding the final newline character).
         Reports file paths and line numbers.
@@ -153,7 +153,7 @@ class CodeJanitor:
                 continue
         return (len(violations) == 0, violations)
 
-    def check_key_12_no_missing_newline(self) -> Tuple[bool, List[str]]:
+    def check_no_missing_newline(self) -> Tuple[bool, List[str]]:
         """
         Checks if files are Missing a final newline character (PEP 8).
         Reports file paths.
@@ -170,7 +170,7 @@ class CodeJanitor:
                 continue
         return (len(violations) == 0, violations)
 
-    def check_key_13_no_tabs(self) -> Tuple[bool, List[str]]:
+    def check_no_tabs(self) -> Tuple[bool, List[str]]:
         """
         Checks for the presence of tab characters for indentation.
         Reports file paths and line numbers.
@@ -187,7 +187,7 @@ class CodeJanitor:
                 continue
         return (len(violations) == 0, violations)
 
-    def check_key_10_no_long_lines(self) -> Tuple[bool, List[str]]:
+    def check_no_long_lines(self) -> Tuple[bool, List[str]]:
         """
         Checks for lines exceeding the maximum allowed length.
         The maximum line length is configurable via the 'MAX_LINE_LENGTH' environment variable (default: 100).
@@ -207,7 +207,7 @@ class CodeJanitor:
                 continue
         return (len(violations) == 0, violations)
 
-    def check_key_15_no_magic_numbers(self) -> Tuple[bool, List[str]]:
+    def check_no_magic_numbers(self) -> Tuple[bool, List[str]]:
         """
         Checks for 'magic numbers' (numeric literals without meaningful names).
         Excludes common small integers (0, 1, -1, 2).
@@ -238,7 +238,7 @@ class CodeJanitor:
                 continue
         return len(violations) == 0, violations
 
-    def check_key_16_no_deep_nesting(self) -> Tuple[bool, List[str]]:
+    def check_no_deep_nesting(self) -> Tuple[bool, List[str]]:
         """
         Checks for deeply nested code blocks (e.g., if, for, while, try, with, function, class statements).
         The maximum nesting depth is configurable via 'MAX_NESTING_DEPTH' environment variable (default: 4).
@@ -384,20 +384,20 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
             print("      ⏩ Skipping isort: not installed.")
 
         # Perform checks after auto-fixes
-        passed, details = self.check_key_07_no_star_imports()
+        passed, details = self.check_no_star_imports()
         self.agent.ctx.report(self.agent.name, 7, passed, details)
 
-        passed, details = self.check_key_08_no_relative_imports()
+        passed, details = self.check_no_relative_imports()
         self.agent.ctx.report(self.agent.name, 8, passed, details)
         # Key 9 (Unused Imports) is largely handled by autoflake.
         # The AST check below is a fallback/verification, but less robust.
-        passed, details = self.check_key_09_no_unused_imports()
+        passed, details = self.check_no_unused_imports()
         self.agent.ctx.report(self.agent.name, 9, passed, details)  # Report only for Key 9
 
-        passed, details = self.check_key_14_no_duplicate_imports()
+        passed, details = self.check_no_duplicate_imports()
         self.agent.ctx.report(self.agent.name, 14, passed, details)
 
-        passed, details = self.check_key_44_no_circular_imports()
+        passed, details = self.check_no_circular_imports()
         self.agent.ctx.report(self.agent.name, 44, passed, details)
 
         self.agent.ctx.signal_deps_valid()
@@ -445,17 +445,17 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                     violations.append(f"{fp}:{node.lineno}")
         return len(violations) == 0, violations
 
-    def check_key_07_no_star_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_star_imports(self) -> Tuple[bool, List[str]]:
         """Checks for 'from module import *' (star imports)."""
         return self._check_import_pattern(
             7, lambda node: any(alias.name == "*" for alias in node.names)
         )
 
-    def check_key_08_no_relative_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_relative_imports(self) -> Tuple[bool, List[str]]:
         """Checks for relative imports (level > 0)."""
         return self._check_import_pattern(8, lambda node: node.level > 0)
 
-    def check_key_09_no_unused_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_unused_imports(self) -> Tuple[bool, List[str]]:
         """
         Checks for unused imports.
         Note: This AST-based check is a basic heuristic and may not be as robust
@@ -510,7 +510,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                 continue
         return len(violations) == 0, violations
 
-    def check_key_14_no_duplicate_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_duplicate_imports(self) -> Tuple[bool, List[str]]:
         """
         Checks for duplicate import statements within a single file.
         This check identifies if the exact same module or name is imported more than once.
@@ -558,7 +558,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                 continue
         return len(violations) == 0, violations
 
-    def check_key_44_no_circular_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_circular_imports(self) -> Tuple[bool, List[str]]:
         """
         Checks for circular import dependencies between modules.
         Note: This is a complex check requiring graph analysis of the entire codebase.

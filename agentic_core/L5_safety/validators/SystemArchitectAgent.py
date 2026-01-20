@@ -50,7 +50,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         """
         print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...')
         print(f'   [{self.name}] 🔍 Checking Key 40: Hierarchy & Headers...')
-        passed_arch, arch_viols = self.check_key_40_core_architecture()
+        passed_arch, arch_viols = self.check_core_architecture()
         header_viols: Any = await self._check_file_headers()
         k40_violations: Any = arch_viols + header_viols
         if not k40_violations:
@@ -59,14 +59,14 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
             print(f'   [{self.name}] ❌ Key 40: FAIL ({len(k40_violations)} violations)')
             await self._heal_violations(40, k40_violations)
         print(f'   [{self.name}] 🔍 Checking Key 41: Physical Folder Depth...')
-        passed_depth, depth_viols = self.check_key_41_no_deep_nesting()
+        passed_depth, depth_viols = self.check_no_deep_nesting()
         if not passed_depth:
             print(f'   [{self.name}] ❌ Key 41: FAIL ({len(depth_viols)} violations)')
             await self._heal_violations(41, depth_viols)
         else:
             print(f'   [{self.name}] ✅ Key 41: PASS - Folder depth compliant (3-5)')
         print(f'   [{self.name}] 🔍 Checking Key 42: Large Files...')
-        passed, violations = self.check_key_42_no_large_files()
+        passed, violations = self.check_no_large_files()
         if not passed:
             print(f'   [{self.name}] ❌ Key 42: FAIL ({len(violations)} violations)')
             await self._heal_violations(42, violations)
@@ -91,7 +91,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                 continue
         return violations
 
-    def check_key_40_core_architecture(self) -> Tuple[bool, List[str]]:
+    def check_core_architecture(self) -> Tuple[bool, List[str]]:
         """
         [L6 HARDENING] Core Hierarchy SSOT Verification.
         Reuses centralized hierarchy validation to prevent drift.
@@ -129,7 +129,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                                 violations.append(f'{root_folder}/{l1_name}/{l2_name}: Missing __init__.py')
         return (len(violations) == 0, violations)
 
-    def check_key_41_no_deep_nesting(self) -> Tuple[bool, List[str]]:
+    def check_no_deep_nesting(self) -> Tuple[bool, List[str]]:
         """
         [KEY 41 HARDENING] Enforce Physical Folder Nesting (Min 3, Max 5).
         Validates the physical directory depth relative to project root.
@@ -156,7 +156,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                 continue
         return (len(violations) == 0, violations)
 
-    def check_key_42_no_large_files(self) -> Tuple[bool, List[str]]:
+    def check_no_large_files(self) -> Tuple[bool, List[str]]:
         """
         Check for files exceeding 1000 lines.
         

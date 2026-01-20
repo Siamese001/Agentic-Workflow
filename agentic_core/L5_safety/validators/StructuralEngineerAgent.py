@@ -58,21 +58,21 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
         """Execute Structural Engineer validation checks."""
         print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Code Structure...')
         print(f'   [{self.name}] 🔍 Checking Key 20: Large Classes...')
-        passed, violations = self.check_key_20_no_large_classes()
+        passed, violations = self.check_no_large_classes()
         if not passed:
             print(f'   [{self.name}] ❌ Key 20: FAIL ({len(violations)} violations)')
             await self._heal_violations(20, violations)
         else:
             print(f'   [{self.name}] ✅ Key 20: PASS - All classes within limits')
         print(f'   [{self.name}] 🔍 Checking Key 21: Large Functions...')
-        passed, violations = self.check_key_21_no_large_functions()
+        passed, violations = self.check_no_large_functions()
         if not passed:
             print(f'   [{self.name}] ❌ Key 21: FAIL ({len(violations)} violations) - Large functions detected')
             await self._heal_violations(21, violations)
         else:
             print(f'   [{self.name}] ✅ Key 21: PASS - All functions within limits')
 
-    def check_key_20_no_large_classes(self) -> Tuple[bool, List[str]]:
+    def check_no_large_classes(self) -> Tuple[bool, List[str]]:
         """
         Check for classes with >20 methods or >500 lines.
         
@@ -105,7 +105,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
                 continue
         return (len(violations) == 0, violations)
 
-    def check_key_21_no_large_functions(self) -> Tuple[bool, List[str]]:
+    def check_no_large_functions(self) -> Tuple[bool, List[str]]:
         """
         Check for functions exceeding 50 lines.
         
@@ -131,7 +131,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
                 continue
         return (len(violations) == 0, violations)
 
-    def check_key_22_cyclomatic_complexity(self) -> Tuple[bool, List[str]]:
+    def check_cyclomatic_complexity(self) -> Tuple[bool, List[str]]:
         """
         Check for high cyclomatic complexity (>10).
         

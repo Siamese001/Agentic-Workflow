@@ -64,14 +64,14 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     async def execute(self) -> Any:
         """Execute Code Janitor validation checks."""
         print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Syntax and Style...')
-        passed, violations = self.check_key_10_syntax()
+        passed, violations = self.check_syntax()
         if not passed:
             print(f'   [{self.name}] Key 10: FAIL ({len(violations)} violations)')
             return {"passed": False, "violations": violations}
 
         return {"passed": True, "violations": []}
 
-    def check_key_10_syntax(self) -> Tuple[bool, List[str]]:
+    def check_syntax(self) -> Tuple[bool, List[str]]:
         """
         Check for syntax errors in Python files.
         
@@ -91,7 +91,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                 continue
         return (len(violations) == 0, violations)
 
-    def check_key_11_indentation(self) -> Tuple[bool, List[str]]:
+    def check_indentation(self) -> Tuple[bool, List[str]]:
         """
         Check for proper indentation (4 spaces, no tabs).
         
@@ -120,7 +120,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
             if leading_spaces % 4 != 0:
                 violations.append(f'{file_path}:{line_num}: Indentation not multiple of 4 ({leading_spaces} spaces)')
 
-    def check_key_12_trailing_whitespace(self) -> Tuple[bool, List[str]]:
+    def check_trailing_whitespace(self) -> Tuple[bool, List[str]]:
         """
         Check for trailing whitespace at end of lines.
         
@@ -172,7 +172,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
         except Exception as e:
             violations.append(f'{file_path}:0: General Error - {e}')
 
-    def check_key_14_naming_conventions(self) -> Tuple[bool, List[str]]:
+    def check_naming_conventions(self) -> Tuple[bool, List[str]]:
         """
         Check for proper naming conventions (snake_case for functions/variables, PascalCase for classes).
         
@@ -288,13 +288,13 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
 
         try:
             if key_id == 10:
-                passed, _ = self.check_key_10_syntax()
+                passed, _ = self.check_syntax()
             elif key_id == 11:
-                passed, _ = self.check_key_11_indentation()
+                passed, _ = self.check_indentation()
             elif key_id == 12:
-                passed, _ = self.check_key_12_trailing_whitespace()
+                passed, _ = self.check_trailing_whitespace()
             elif key_id == 14:
-                passed, _ = self.check_key_14_naming_conventions()
+                passed, _ = self.check_naming_conventions()
             else:
                 passed = True
 
@@ -387,10 +387,10 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
 
         # Check all keys
         checks = [
-            (10, self.check_key_10_syntax),
-            (11, self.check_key_11_indentation),
-            (12, self.check_key_12_trailing_whitespace),
-            (14, self.check_key_14_naming_conventions),
+            (10, self.check_syntax),
+            (11, self.check_indentation),
+            (12, self.check_trailing_whitespace),
+            (14, self.check_naming_conventions),
         ]
 
         for key_id, check_fn in checks:
