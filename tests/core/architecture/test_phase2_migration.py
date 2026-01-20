@@ -100,10 +100,16 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_accepts_strategy(self):
         """Verify UnifiedOrchestratorAgent accepts a strategy in __init__."""
-        from archives.location_violations.unified_orchestrator import (
-            UnifiedOrchestratorAgent,
-            MissionStrategy,
-        )
+        try:
+            from agentic_core.L3_orchestration.unified_orchestrator import (
+                UnifiedOrchestratorAgent,
+                MissionStrategy,
+            )
+        except ImportError:
+            from archives.location_violations.unified_orchestrator import (
+                UnifiedOrchestratorAgent,
+                MissionStrategy,
+            )
         
         # Create mock strategy
         mock_strategy = MagicMock(spec=MissionStrategy)
@@ -117,10 +123,16 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_calls_strategy_get_tiers(self):
         """Verify run_mission calls strategy.get_tiers()."""
-        from archives.location_violations.unified_orchestrator import (
-            UnifiedOrchestratorAgent,
-            MissionStrategy,
-        )
+        try:
+            from agentic_core.L3_orchestration.unified_orchestrator import (
+                UnifiedOrchestratorAgent,
+                MissionStrategy,
+            )
+        except ImportError:
+            from archives.location_violations.unified_orchestrator import (
+                UnifiedOrchestratorAgent,
+                MissionStrategy,
+            )
         
         # Create mock strategy
         mock_strategy = MagicMock(spec=MissionStrategy)
@@ -137,10 +149,16 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_calls_strategy_get_agent(self):
         """Verify run_mission calls strategy.get_agent() for each agent."""
-        from archives.location_violations.unified_orchestrator import (
-            UnifiedOrchestratorAgent,
-            MissionStrategy,
-        )
+        try:
+            from agentic_core.L3_orchestration.unified_orchestrator import (
+                UnifiedOrchestratorAgent,
+                MissionStrategy,
+            )
+        except ImportError:
+            from archives.location_violations.unified_orchestrator import (
+                UnifiedOrchestratorAgent,
+                MissionStrategy,
+            )
         
         # Create mock strategy with one tier and one agent
         mock_strategy = MagicMock(spec=MissionStrategy)
@@ -159,10 +177,16 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_calls_strategy_execute_agent(self):
         """Verify run_mission calls strategy.execute_agent() for available agents."""
-        from archives.location_violations.unified_orchestrator import (
-            UnifiedOrchestratorAgent,
-            MissionStrategy,
-        )
+        try:
+            from agentic_core.L3_orchestration.unified_orchestrator import (
+                UnifiedOrchestratorAgent,
+                MissionStrategy,
+            )
+        except ImportError:
+            from archives.location_violations.unified_orchestrator import (
+                UnifiedOrchestratorAgent,
+                MissionStrategy,
+            )
         
         # Create mock agent
         mock_agent = MagicMock()
@@ -192,7 +216,10 @@ class TestCaseB_StrategyInjection:
     
     def test_unified_orchestrator_implements_iorchestrator(self):
         """Verify UnifiedOrchestratorAgent implements IOrchestrator protocol."""
-        from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
+        try:
+            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+        except ImportError:
+            from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
         from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
         
         # Create mock strategy
@@ -483,7 +510,10 @@ class TestHealingStrategy:
     
     def test_healing_strategy_has_name(self):
         """Verify HealingStrategy has a name property."""
-        from archives.void_violations.healing_strategy import HealingStrategy
+        try:
+            from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+        except ImportError:
+            from archives.void_violations.healing_strategy import HealingStrategy
         
         strategy = HealingStrategy()
         
@@ -491,7 +521,10 @@ class TestHealingStrategy:
     
     def test_healing_strategy_has_five_tiers(self):
         """Verify HealingStrategy defines 5 tiers."""
-        from archives.void_violations.healing_strategy import HealingStrategy
+        try:
+            from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+        except ImportError:
+            from archives.void_violations.healing_strategy import HealingStrategy
         
         strategy = HealingStrategy()
         tiers = strategy.get_tiers()
@@ -501,7 +534,10 @@ class TestHealingStrategy:
     
     def test_healing_strategy_tier0_has_syntax_validator(self):
         """Verify Tier 0 includes SyntaxValidatorAgent."""
-        from archives.void_violations.healing_strategy import HealingStrategy
+        try:
+            from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+        except ImportError:
+            from archives.void_violations.healing_strategy import HealingStrategy
         
         strategy = HealingStrategy()
         tiers = strategy.get_tiers()
@@ -518,7 +554,10 @@ class TestHealingStrategy:
     
     def test_healing_strategy_abort_on_syntax_failure(self):
         """Verify should_abort_tier returns True for Tier 0 failure."""
-        from archives.void_violations.healing_strategy import HealingStrategy
+        try:
+            from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+        except ImportError:
+            from archives.void_violations.healing_strategy import HealingStrategy
         
         strategy = HealingStrategy()
         
@@ -540,7 +579,10 @@ class TestMissionReport:
     
     def test_mission_report_success_rate(self):
         """Verify success_rate calculation."""
-        from archives.location_violations.unified_orchestrator import MissionReport
+        try:
+            from agentic_core.L3_orchestration.unified_orchestrator import MissionReport
+        except ImportError:
+            from archives.location_violations.unified_orchestrator import MissionReport
         
         report = MissionReport(
             timestamp="2024-01-01T00:00:00",
@@ -558,7 +600,10 @@ class TestMissionReport:
     
     def test_mission_report_is_stable(self):
         """Verify is_stable property."""
-        from archives.location_violations.unified_orchestrator import MissionReport
+        try:
+            from agentic_core.L3_orchestration.unified_orchestrator import MissionReport
+        except ImportError:
+            from archives.location_violations.unified_orchestrator import MissionReport
         
         # Stable report
         stable_report = MissionReport(
