@@ -82,11 +82,11 @@ class L0DelegationTestingMixin:
             
             # Check 3: Hygiene validator delegation (if available)
             try:
-                from agentic_core.L0_maintenance.scripts.hygiene_validator import HygieneValidatorAgent
+                from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
                 # Don't run full scan at boot - just verify importability
-                Logger.debug(f"[L0 DELEGATION] {class_name}: HygieneValidatorAgent available for delegation")
+                Logger.debug(f"[L0 DELEGATION] {class_name}: UnifiedStructureValidatorAgent available for delegation")
             except ImportError:
-                Logger.debug(f"[L0 DELEGATION] {class_name}: HygieneValidatorAgent not available")
+                Logger.debug(f"[L0 DELEGATION] {class_name}: UnifiedStructureValidatorAgent not available")
             
             # Check 4: Gravity compliance module presence (L5 delegation target)
             try:

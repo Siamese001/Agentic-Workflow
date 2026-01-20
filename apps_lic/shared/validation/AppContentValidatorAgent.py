@@ -1,0 +1,481 @@
+#!/usr/bin/env python3
+"""
+AppContentValidatorAgent - Application Content Validation
+
+Phase 2 Consolidation: Merges functionality from:
+- ContactValidatorAgent (contact validation)
+- ContentCleanlinessValidatorAgent (content cleanliness)
+- MessageDiversityValidatorAgent (message diversity/similarity)
+
+Features:
+- Contact validation (email, LinkedIn URL, phone)
+- Content cleanliness (profanity, spam, placeholder detection)
+- Message diversity (similarity threshold checking)
+- Configurable validation rules
+"""
+from __future__ import annotations
+
+import logging
+import re
+import warnings
+from dataclasses import dataclass, field
+from datetime import datetime
+from difflib import SequenceMatcher
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Set
+
+Logger = logging.getLogger(__name__)
+
+
+class ContentViolationType(Enum):
+    """Types of content violations."""
+    CONTACT_INVALID = auto()
+    CONTACT_MISSING = auto()
+    PROFANITY = auto()
+    SPAM = auto()
+    PLACEHOLDER = auto()
+    SIMILARITY = auto()
+    LENGTH = auto()
+    FORMAT = auto()
+
+
+@dataclass
+class ContentViolation:
+    """Represents a content violation."""
+    violation_type: ContentViolationType
+    message: str
+    field_name: Optional[str] = None
+    value: Optional[str] = None
+    severity: str = "error"
+    rule_id: Optional[str] = None
+    suggestion: Optional[str] = None
+    similarity_score: Optional[float] = None
+    
+    def __str__(self) -> str:
+        field_info = f" [{self.field_name}]" if self.field_name else ""
+        return f"[{self.violation_type.name}]{field_info}: {self.message}"
+
+
+@dataclass
+class ContentValidationReport:
+    """Report of content validation results."""
+    violations: List[ContentViolation] = field(default_factory=list)
+    items_validated: int = 0
+    items_passed: int = 0
+    items_failed: int = 0
+    execution_time: float = 0.0
+    
+    @property
+    def has_errors(self) -> bool:
+        return any(v.severity == "error" for v in self.violations)
+    
+    @property
+    def is_valid(self) -> bool:
+        return not self.has_errors
+    
+    @property
+    def pass_rate(self) -> float:
+        if self.items_validated == 0:
+            return 0.0
+        return self.items_passed / self.items_validated
+
+
+@dataclass
+class ContentConfig:
+    """Configuration for content validation."""
+    # Contact validation
+    validate_email: bool = True
+    validate_linkedin: bool = True
+    validate_phone: bool = False
+    require_contact: bool = True
+    
+    # Content cleanliness
+    check_profanity: bool = True
+    check_spam: bool = True
+    check_placeholders: bool = True
+    
+    # Message diversity
+    check_similarity: bool = True
+    similarity_threshold: float = 0.90  # 90% similarity = too similar
+    min_unique_ratio: float = 0.10  # At least 10% unique content
+    
+    # Length constraints
+    min_length: int = 50
+    max_length: int = 2000
+    
+    # Custom patterns
+    profanity_patterns: List[str] = field(default_factory=list)
+    spam_patterns: List[str] = field(default_factory=list)
+    placeholder_patterns: List[str] = field(default_factory=lambda: [
+        r"\[.*?\]",
+        r"\{.*?\}",
+        r"<.*?>",
+        r"XXX",
+        r"TODO",
+        r"PLACEHOLDER",
+        r"INSERT.*HERE",
+    ])
+
+
+# Default patterns
+DEFAULT_SPAM_PATTERNS = [
+    r"click here",
+    r"act now",
+    r"limited time",
+    r"free money",
+    r"guaranteed",
+    r"no obligation",
+    r"winner",
+    r"congratulations",
+]
+
+
+@dataclass
+class AppContentValidatorAgent:
+    """
+    Unified content validation for outreach messages.
+    
+    Consolidates:
+    - ContactValidatorAgent (contact validation)
+    - ContentCleanlinessValidatorAgent (content cleanliness)
+    - MessageDiversityValidatorAgent (message diversity)
+    
+    Usage:
+        agent = AppContentValidatorAgent()
+        
+        # Validate a single message
+        report = agent.validate_message({
+            "recipient_email": "john@example.com",
+            "message_body": "Hello John, I wanted to reach out...",
+        })
+        
+        # Check message diversity
+        messages = ["Hello John...", "Hello Jane...", "Hello John..."]
+        report = agent.validate_diversity(messages)
+    """
+    
+    config: ContentConfig = field(default_factory=ContentConfig)
+    
+    def __post_init__(self) -> None:
+        """Initialize the validator."""
+        self._email_pattern = re.compile(
+            r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        )
+        self._linkedin_pattern = re.compile(
+            r"^(https?://)?(www\.)?linkedin\.com/(in|pub)/[a-zA-Z0-9_-]+/?$"
+        )
+        self._phone_pattern = re.compile(
+            r"^\+?1?\d{9,15}$"
+        )
+        Logger.info("AppContentValidatorAgent initialized")
+    
+    def validate_email(self, email: str) -> List[ContentViolation]:
+        """Validate an email address."""
+        violations = []
+        
+        if not email:
+            if self.config.require_contact:
+                violations.append(ContentViolation(
+                    violation_type=ContentViolationType.CONTACT_MISSING,
+                    message="Email address is required",
+                    field_name="email",
+                    severity="error",
+                    rule_id="CONTACT-001",
+                ))
+            return violations
+        
+        if not self._email_pattern.match(email):
+            violations.append(ContentViolation(
+                violation_type=ContentViolationType.CONTACT_INVALID,
+                message=f"Invalid email format: {email}",
+                field_name="email",
+                value=email,
+                severity="error",
+                rule_id="CONTACT-002",
+                suggestion="Provide a valid email address",
+            ))
+        
+        return violations
+    
+    def validate_linkedin(self, url: str) -> List[ContentViolation]:
+        """Validate a LinkedIn URL."""
+        violations = []
+        
+        if not url:
+            return violations  # LinkedIn is optional
+        
+        if not self._linkedin_pattern.match(url):
+            violations.append(ContentViolation(
+                violation_type=ContentViolationType.CONTACT_INVALID,
+                message=f"Invalid LinkedIn URL format: {url}",
+                field_name="linkedin_url",
+                value=url,
+                severity="warning",
+                rule_id="CONTACT-003",
+                suggestion="Provide a valid LinkedIn profile URL",
+            ))
+        
+        return violations
+    
+    def validate_content_cleanliness(self, content: str) -> List[ContentViolation]:
+        """Check content for profanity, spam, and placeholders."""
+        violations = []
+        
+        if not content:
+            return violations
+        
+        content_lower = content.lower()
+        
+        # Check for placeholders
+        if self.config.check_placeholders:
+            for pattern in self.config.placeholder_patterns:
+                matches = re.findall(pattern, content, re.IGNORECASE)
+                if matches:
+                    violations.append(ContentViolation(
+                        violation_type=ContentViolationType.PLACEHOLDER,
+                        message=f"Placeholder detected: {matches[0]}",
+                        value=matches[0],
+                        severity="error",
+                        rule_id="CLEAN-001",
+                        suggestion="Replace placeholder with actual content",
+                    ))
+        
+        # Check for spam patterns
+        if self.config.check_spam:
+            spam_patterns = self.config.spam_patterns or DEFAULT_SPAM_PATTERNS
+            for pattern in spam_patterns:
+                if re.search(pattern, content_lower):
+                    violations.append(ContentViolation(
+                        violation_type=ContentViolationType.SPAM,
+                        message=f"Spam pattern detected: '{pattern}'",
+                        severity="warning",
+                        rule_id="CLEAN-002",
+                        suggestion="Remove or rephrase spam-like content",
+                    ))
+        
+        # Check length
+        if len(content) < self.config.min_length:
+            violations.append(ContentViolation(
+                violation_type=ContentViolationType.LENGTH,
+                message=f"Content too short: {len(content)} chars (min: {self.config.min_length})",
+                severity="warning",
+                rule_id="CLEAN-003",
+            ))
+        
+        if len(content) > self.config.max_length:
+            violations.append(ContentViolation(
+                violation_type=ContentViolationType.LENGTH,
+                message=f"Content too long: {len(content)} chars (max: {self.config.max_length})",
+                severity="warning",
+                rule_id="CLEAN-004",
+            ))
+        
+        return violations
+    
+    def calculate_similarity(self, text1: str, text2: str) -> float:
+        """Calculate similarity ratio between two texts."""
+        return SequenceMatcher(None, text1.lower(), text2.lower()).ratio()
+    
+    def validate_diversity(
+        self,
+        messages: List[str],
+        threshold: Optional[float] = None,
+    ) -> ContentValidationReport:
+        """
+        Validate message diversity (check for too-similar messages).
+        
+        Args:
+            messages: List of message texts to compare
+            threshold: Similarity threshold (default from config)
+            
+        Returns:
+            ContentValidationReport with similarity violations
+        """
+        threshold = threshold or self.config.similarity_threshold
+        report = ContentValidationReport()
+        start_time = datetime.now()
+        
+        report.items_validated = len(messages)
+        similar_pairs = []
+        
+        # Compare all pairs
+        for i in range(len(messages)):
+            for j in range(i + 1, len(messages)):
+                similarity = self.calculate_similarity(messages[i], messages[j])
+                
+                if similarity >= threshold:
+                    similar_pairs.append((i, j, similarity))
+                    report.violations.append(ContentViolation(
+                        violation_type=ContentViolationType.SIMILARITY,
+                        message=f"Messages {i+1} and {j+1} are {similarity:.1%} similar (threshold: {threshold:.1%})",
+                        severity="error",
+                        rule_id="DIV-001",
+                        similarity_score=similarity,
+                        suggestion="Increase message variation to improve personalization",
+                    ))
+        
+        # Calculate pass/fail
+        flagged_indices = set()
+        for i, j, _ in similar_pairs:
+            flagged_indices.add(i)
+            flagged_indices.add(j)
+        
+        report.items_failed = len(flagged_indices)
+        report.items_passed = report.items_validated - report.items_failed
+        report.execution_time = (datetime.now() - start_time).total_seconds()
+        
+        return report
+    
+    def validate_message(
+        self,
+        message_data: Dict[str, Any],
+        config: Optional[ContentConfig] = None,
+    ) -> ContentValidationReport:
+        """
+        Validate a single outreach message.
+        
+        Args:
+            message_data: Dictionary with message fields
+            config: Optional custom configuration
+            
+        Returns:
+            ContentValidationReport with all violations
+        """
+        config = config or self.config
+        report = ContentValidationReport()
+        start_time = datetime.now()
+        report.items_validated = 1
+        
+        all_violations = []
+        
+        # Validate contact info
+        if config.validate_email:
+            email = message_data.get("recipient_email", message_data.get("email", ""))
+            all_violations.extend(self.validate_email(email))
+        
+        if config.validate_linkedin:
+            linkedin = message_data.get("linkedin_url", message_data.get("linkedin", ""))
+            all_violations.extend(self.validate_linkedin(linkedin))
+        
+        # Validate content
+        content = message_data.get("message_body", message_data.get("body", message_data.get("content", "")))
+        all_violations.extend(self.validate_content_cleanliness(content))
+        
+        report.violations = all_violations
+        report.items_passed = 0 if report.has_errors else 1
+        report.items_failed = 1 if report.has_errors else 0
+        report.execution_time = (datetime.now() - start_time).total_seconds()
+        
+        return report
+    
+    def validate_messages(
+        self,
+        messages: List[Dict[str, Any]],
+        check_diversity: bool = True,
+    ) -> ContentValidationReport:
+        """
+        Validate multiple messages with optional diversity check.
+        
+        Args:
+            messages: List of message dictionaries
+            check_diversity: Whether to check for similar messages
+            
+        Returns:
+            Aggregated ContentValidationReport
+        """
+        report = ContentValidationReport()
+        start_time = datetime.now()
+        
+        # Validate each message
+        for msg in messages:
+            msg_report = self.validate_message(msg)
+            report.violations.extend(msg_report.violations)
+            report.items_validated += 1
+            report.items_passed += msg_report.items_passed
+            report.items_failed += msg_report.items_failed
+        
+        # Check diversity
+        if check_diversity and self.config.check_similarity:
+            message_bodies = [
+                msg.get("message_body", msg.get("body", msg.get("content", "")))
+                for msg in messages
+            ]
+            diversity_report = self.validate_diversity(message_bodies)
+            report.violations.extend(diversity_report.violations)
+        
+        report.execution_time = (datetime.now() - start_time).total_seconds()
+        return report
+
+
+# =============================================================================
+# BACKWARD COMPATIBILITY FACTORY METHODS
+# =============================================================================
+
+def create_legacy_contact_validator(**kwargs: Any) -> AppContentValidatorAgent:
+    """
+    Factory for backward compatibility with ContactValidatorAgent.
+    
+    DEPRECATED: Use AppContentValidatorAgent directly.
+    """
+    warnings.warn(
+        "ContactValidatorAgent is deprecated. Use AppContentValidatorAgent instead. "
+        "This factory will be removed after 2026-02-19.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    config = ContentConfig(
+        validate_email=True,
+        validate_linkedin=True,
+        check_profanity=False,
+        check_spam=False,
+        check_placeholders=False,
+        check_similarity=False,
+    )
+    return AppContentValidatorAgent(config=config, **kwargs)
+
+
+def create_legacy_content_cleanliness_validator(**kwargs: Any) -> AppContentValidatorAgent:
+    """
+    Factory for backward compatibility with ContentCleanlinessValidatorAgent.
+    
+    DEPRECATED: Use AppContentValidatorAgent directly.
+    """
+    warnings.warn(
+        "ContentCleanlinessValidatorAgent is deprecated. Use AppContentValidatorAgent instead. "
+        "This factory will be removed after 2026-02-19.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    config = ContentConfig(
+        validate_email=False,
+        validate_linkedin=False,
+        check_profanity=True,
+        check_spam=True,
+        check_placeholders=True,
+        check_similarity=False,
+    )
+    return AppContentValidatorAgent(config=config, **kwargs)
+
+
+def create_legacy_message_diversity_validator(**kwargs: Any) -> AppContentValidatorAgent:
+    """
+    Factory for backward compatibility with MessageDiversityValidatorAgent.
+    
+    DEPRECATED: Use AppContentValidatorAgent directly.
+    """
+    warnings.warn(
+        "MessageDiversityValidatorAgent is deprecated. Use AppContentValidatorAgent instead. "
+        "This factory will be removed after 2026-02-19.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    config = ContentConfig(
+        validate_email=False,
+        validate_linkedin=False,
+        check_profanity=False,
+        check_spam=False,
+        check_placeholders=False,
+        check_similarity=True,
+        similarity_threshold=0.90,
+    )
+    return AppContentValidatorAgent(config=config, **kwargs)

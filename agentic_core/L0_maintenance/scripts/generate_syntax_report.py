@@ -8,7 +8,7 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L5_safety.validators.SyntaxValidatorAgent import SyntaxValidatorAgent
+from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
 
 def main():
     project_root = Path(__file__).parent.parent
@@ -17,7 +17,7 @@ def main():
     print()
     
     # Initialize validator
-    agent = SyntaxValidatorAgent(project_root=project_root)
+    agent = UnifiedCodeValidatorAgent(project_root=project_root)
     
     # Run validation
     results = agent.validate_repository()

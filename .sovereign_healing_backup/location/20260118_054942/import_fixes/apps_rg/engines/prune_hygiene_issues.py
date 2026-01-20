@@ -11,7 +11,7 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from agentic_core.L0_maintenance.scripts.hygiene_validator import HygieneValidatorAgent
+from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
 
 from agentic_core.L5_safety.validators.structure_blueprint_2 import (
     AGENT_DISCOVERY_JSON,
@@ -59,7 +59,7 @@ class HygienePruner:
 
     def __init__(self, root_path):
         self.root_path = Path(root_path)
-        self.validator = HygieneValidatorAgent(str(root_path))
+        self.validator = UnifiedStructureValidatorAgent(str(root_path))
         print(f"Scanning {root_path} for hygiene issues...")
         self.validator.scan()
         self.deleted_count = 0

@@ -53,7 +53,7 @@ class HealingStrategy:
         # Define the 5-tier execution plan
         self._tiers: Dict[str, List[str]] = {
             "Tier 0: Pre-Flight": [
-                "SyntaxValidatorAgent",
+                "UnifiedCodeValidatorAgent",
             ],
             "Tier 1: Structural": [
                 "TwoPhaseDeduplicationAgent_PhaseA",  # Identity collisions (early)
@@ -172,9 +172,9 @@ class HealingStrategy:
             Agent instance or None if not available
         """
         try:
-            if agent_name == "SyntaxValidatorAgent":
-                from agentic_core.L5_safety.validators.SyntaxValidatorAgent import SyntaxValidatorAgent
-                return SyntaxValidatorAgent(project_root=self.project_root)
+            if agent_name == "UnifiedCodeValidatorAgent":
+                from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
+                return UnifiedCodeValidatorAgent(project_root=self.project_root)
             
             elif agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent

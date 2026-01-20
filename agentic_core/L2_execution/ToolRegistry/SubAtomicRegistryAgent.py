@@ -60,7 +60,7 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
     """
     # Import unified agents lazily to avoid circular dependencies
     from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
-    from agentic_core.L5_safety.validators.UnifiedHygieneValidatorAgent import UnifiedHygieneValidatorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
     from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import UnifiedCheckpointManagerAgent
     from agentic_core.L5_safety.validators.CodeStandardsEnforcerAgent import CodeStandardsEnforcerAgent
     from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import UnifiedStateManagementAgent
@@ -79,10 +79,10 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
         "DebuggerValidatorAgent": UnifiedASTValidatorAgent,
         
         # Phase 2: L5 Hygiene Validator Consolidation
-        "HygieneGuardian": UnifiedHygieneValidatorAgent,
-        "HygieneGuardianAgent": UnifiedHygieneValidatorAgent,
-        "HygieneValidator": UnifiedHygieneValidatorAgent,
-        "HygieneValidatorAgent": UnifiedHygieneValidatorAgent,
+        "HygieneGuardian": UnifiedStructureValidatorAgent,
+        "HygieneGuardianAgent": UnifiedStructureValidatorAgent,
+        "HygieneValidator": UnifiedStructureValidatorAgent,
+        "HygieneValidatorAgent": UnifiedStructureValidatorAgent,
         
         # Phase 3: L4 Checkpoint Manager Consolidation
         "CheckpointManager": UnifiedCheckpointManagerAgent,
@@ -108,6 +108,39 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
     }
 
 
+def _get_phase2_validator_mapping() -> Dict[str, Type]:
+    """
+    Phase 2 Validator Consolidation: Maps legacy validators to unified agents.
+    
+    Returns:
+        Dictionary mapping legacy validator names to unified validator classes.
+    """
+    from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
+    from apps_lic.shared.validation.AppContentValidatorAgent import AppContentValidatorAgent
+    
+    return {
+        # Unified Code Validator (L5) - Single-pass AST validation
+        "SyntaxValidatorAgent": UnifiedCodeValidatorAgent,
+        "CanonAstValidatorAgent": UnifiedCodeValidatorAgent,
+        "CanonValidatorAgent": UnifiedCodeValidatorAgent,
+        "AsyncBlockingValidatorAgent": UnifiedCodeValidatorAgent,
+        "PrintStatementValidatorAgent": UnifiedCodeValidatorAgent,
+        
+        # Unified Structure Validator (L5) - Gravity/Hygiene/Registry
+        "GravityValidatorAgent": UnifiedStructureValidatorAgent,
+        "HygieneValidatorAgent": UnifiedStructureValidatorAgent,
+        "UnifiedStructureValidatorAgent": UnifiedStructureValidatorAgent,
+        "AgentRegistryValidatorAgent": UnifiedStructureValidatorAgent,
+        "CognitiveContractValidatorAgent": UnifiedStructureValidatorAgent,
+        
+        # App Content Validator (Apps) - Contact/Content/Diversity
+        "ContactValidatorAgent": AppContentValidatorAgent,
+        "ContentCleanlinessValidatorAgent": AppContentValidatorAgent,
+        "MessageDiversityValidatorAgent": AppContentValidatorAgent,
+    }
+
+
 def get_unified_agent_class(agent_id: str) -> Type:
     """
     Returns the unified agent class for a given legacy agent ID.
@@ -122,11 +155,20 @@ def get_unified_agent_class(agent_id: str) -> Type:
     Raises:
         ValueError: If agent_id is not found in the mapping
     """
+    # Check Phase 1 mapping first
     mapping = _get_unified_agent_mapping()
-    
     if agent_id in mapping:
-        Logger.info(f"Registry: Mapping legacy agent '{agent_id}' to Unified Class.")
+        Logger.info(f"Registry: Mapping legacy agent '{agent_id}' to Unified Class (Phase 1).")
         return mapping[agent_id]
+    
+    # Check Phase 2 validator mapping
+    try:
+        validator_mapping = _get_phase2_validator_mapping()
+        if agent_id in validator_mapping:
+            Logger.info(f"Registry: Mapping legacy validator '{agent_id}' to Unified Class (Phase 2).")
+            return validator_mapping[agent_id]
+    except ImportError as e:
+        Logger.warning(f"Phase 2 validator mapping not available: {e}")
     
     raise ValueError(f"Agent ID '{agent_id}' not found in unified agent registry.")
 

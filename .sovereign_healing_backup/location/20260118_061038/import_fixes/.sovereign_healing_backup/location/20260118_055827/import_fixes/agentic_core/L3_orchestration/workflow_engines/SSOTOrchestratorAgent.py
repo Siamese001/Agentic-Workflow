@@ -11,7 +11,7 @@ RESPONSIBILITIES:
 - Manage healing sequence and dependencies
 
 ORCHESTRATES:
-- SyntaxValidatorAgent (L5) - Run FIRST (heal-first protocol)
+- UnifiedCodeValidatorAgent (L5) - Run FIRST (heal-first protocol)
 - HygieneGuardianAgent (L5) - Empty files, tech debt
 - GravityEnforcerAgent (L5) - Upward imports
 - DuplicateCodeDetectorAgent (L5) - Duplicate files
@@ -76,7 +76,7 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
     runs before any other analysis to ensure files are parseable.
     
     Execution Order:
-    1. SyntaxValidatorAgent (CRITICAL - must pass before others)
+    1. UnifiedCodeValidatorAgent (CRITICAL - must pass before others)
     2. HygieneGuardianAgent (cleanup empty files)
     3. GravityEnforcerAgent (architectural violations)
     4. DuplicateCodeDetectorAgent (duplicate files)
@@ -94,7 +94,7 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
         # Track agent instances
         self._agents = {}
         self._execution_order = [
-            'SyntaxValidatorAgent',
+            'UnifiedCodeValidatorAgent',
             'HygieneGuardianAgent',
             'GravityEnforcerAgent',
             'DuplicateCodeDetectorAgent',
@@ -117,9 +117,9 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
             return self._agents[agent_name]
         
         try:
-            if agent_name == 'SyntaxValidatorAgent':
-                from agentic_core.L5_safety.validators.SyntaxValidatorAgent import SyntaxValidatorAgent
-                agent = SyntaxValidatorAgent(project_root=self.project_root)
+            if agent_name == 'UnifiedCodeValidatorAgent':
+                from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
+                agent = UnifiedCodeValidatorAgent(project_root=self.project_root)
             elif agent_name == 'HygieneGuardianAgent':
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
                 agent = HygieneGuardianAgent(project_root=self.project_root)
@@ -270,7 +270,7 @@ class SSOTOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
                 self.logger.error(f"❌ {agent_name}: ERROR - {result.error_message}")
             
             # Heal-First Protocol: Stop if syntax validation fails
-            if stop_on_syntax_error and agent_name == 'SyntaxValidatorAgent':
+            if stop_on_syntax_error and agent_name == 'UnifiedCodeValidatorAgent':
                 if result.status == 'FAIL':
                     self.logger.error(
                         "CRITICAL: Syntax validation failed. "
