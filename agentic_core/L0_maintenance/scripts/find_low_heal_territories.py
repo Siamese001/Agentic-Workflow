@@ -2,7 +2,7 @@
 """Find territories with low heal capability from dashboard data."""
 import json
 import re
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Read the dashboard file
 with open('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html', 'r', encoding='utf-8') as f:

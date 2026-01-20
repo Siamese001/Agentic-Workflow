@@ -23,8 +23,8 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from archives.location_violations.sovereign_index import SovereignIndex
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 root: Any = Path('C:/Git/Agentic-Workflow')
 hierarchy: Any = {'LEVEL_0_SOVEREIGN_CORE': {'folders': [AGENTIC_CORE_DIR], 'description': 'The Sovereign Core - L1-L5 layers', 'can_import_from': []}, 'LEVEL_1_ARCHITECTURAL': {'folders': ['prompt_governance', 'schemas', 'config', SCRIPTS_DIR], 'description': 'Architectural Supports - Blueprints & Rules', 'can_import_from': [AGENTIC_CORE_DIR, 'prompt_governance', 'schemas', 'config', SCRIPTS_DIR]}, 'LEVEL_2_OBSERVABILITY': {'folders': ['observability'], 'description': 'The Mirror - Logs all activity', 'can_import_from': [AGENTIC_CORE_DIR, 'prompt_governance', 'schemas', 'config', SCRIPTS_DIR]}, 'LEVEL_3_SHARED': {'folders': [APPS_SHARED_DIR], 'description': 'Transit Zone - Shared utilities', 'can_import_from': [AGENTIC_CORE_DIR, 'prompt_governance', 'schemas', 'config', SCRIPTS_DIR, 'observability']}, 'LEVEL_4_DOWNSTREAM': {'folders': [APPS_RG_DIR, APPS_LIC_DIR], 'description': 'The Territory - Domain-specific apps', 'can_import_from': [AGENTIC_CORE_DIR, 'prompt_governance', 'schemas', 'config', SCRIPTS_DIR, 'observability', APPS_SHARED_DIR]}}
 exempt_folders: Any = {'.git', '.venv', 'venv', '__pycache__', 'node_modules', 'data', ARCHIVES_DIR, TESTS_DIR, 'knowledge', 'infra', 'memory'}

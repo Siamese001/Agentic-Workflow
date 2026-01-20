@@ -16,7 +16,7 @@ import logging
 import time
 from typing import Any, Optional
 
-from archives.location_violations.flags import USE_REDIS_CACHE, CACHE_METRICS_ENABLED, GRACEFUL_DEGRADATION
+from agentic_core.config.feature_flags import USE_REDIS_CACHE, CACHE_METRICS_ENABLED, GRACEFUL_DEGRADATION
 from agentic_core.observability.cache_metrics import get_cache_metrics
 
 log = logging.getLogger(__name__)

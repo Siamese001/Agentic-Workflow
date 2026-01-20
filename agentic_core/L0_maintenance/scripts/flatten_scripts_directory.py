@@ -12,7 +12,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     validate_no_duplicate_prefix,
 )
 from typing import Any
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 scripts_dir: Any = CORE / 'L0_maintenance/scripts'

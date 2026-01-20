@@ -50,7 +50,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
 )
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 @dataclass

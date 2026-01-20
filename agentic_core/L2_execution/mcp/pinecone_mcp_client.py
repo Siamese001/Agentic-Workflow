@@ -8,7 +8,7 @@ L3 routed, L5 shielded vector operations.
 """
 import logging
 from typing import Optional, List, Dict, Any
-from archives.void_violations.mcp_router_sovereign import SovereignMCPRouter
+# ARCHIVED IMPORT REMOVED - dependency no longer available
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin

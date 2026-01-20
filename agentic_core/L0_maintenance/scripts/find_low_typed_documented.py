@@ -2,7 +2,7 @@
 """Find agents with Typed % < 100% or Documented % < 100%."""
 import json
 from pathlib import Path
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 

@@ -10,7 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from services.configuration import ConfigurationService
 from typing import Any
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 Logger: Any = logging.getLogger(__name__)
 
 def load_review_log() -> Any:

@@ -29,7 +29,7 @@ sys.path.insert(0, str(REPO))
 
 from agentic_core.utils.core_extensions.ssot_scanner import SSOTScanner
 from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTValidator
-from archives.location_violations.ssot_relocator import SSOTRelocator
+# ARCHIVED: ssot_relocator import removed # SSOTRelocator
 
 
 def print_header(title: str, char: str = "=", width: int = 80) -> None:

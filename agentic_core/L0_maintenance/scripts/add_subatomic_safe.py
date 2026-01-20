@@ -8,7 +8,7 @@ import re
 import ast
 from pathlib import Path
 import sys
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))

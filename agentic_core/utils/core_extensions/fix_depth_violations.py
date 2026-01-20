@@ -14,7 +14,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
     safe_path_join,
 )
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 # FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations
 PROJECT_ROOT = get_validated_project_root()

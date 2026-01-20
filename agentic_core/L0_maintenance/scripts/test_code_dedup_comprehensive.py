@@ -9,7 +9,7 @@ import time
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from archives.void_violations.CodeDeduplicationAgent import CodeDeduplicationAgent
+# ARCHIVED IMPORT REMOVED - dependency no longer available
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -27,7 +27,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 
 def run_all_tests():
     """Execute comprehensive test suite."""

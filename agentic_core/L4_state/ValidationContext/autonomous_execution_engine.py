@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional
 Logger = logging.getLogger(__name__)
 
 # L2 Resource awareness
-from archives.void_violations.ProactiveResourceManagerAgent import (
+# ARCHIVED: ProactiveResourceManagerAgent import removed # (
     create_proactive_resource_manager,
 )
 

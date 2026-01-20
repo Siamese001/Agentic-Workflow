@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify heal invocation coverage after fixes."""
 import json
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 data = json.load(open('agent_discovery_full.json'))
 

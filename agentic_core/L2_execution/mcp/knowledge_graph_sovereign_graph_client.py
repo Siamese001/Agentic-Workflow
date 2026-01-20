@@ -9,7 +9,7 @@ complementing Pinecone's vector storage with explicit entity graphs.
 """
 import logging
 from typing import List, Dict, Any, Optional
-from archives.void_violations.mcp_router_sovereign import SovereignMCPRouter
+# ARCHIVED IMPORT REMOVED - dependency no longer available
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

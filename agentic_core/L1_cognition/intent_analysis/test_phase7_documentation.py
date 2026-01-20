@@ -307,7 +307,7 @@ def test_runtime_state_schema():
     print("\n--- Test 3.4: Runtime State Schema ---")
     
     try:
-        from archives.void_violations.canon_validator_agentic_v2_thin_1 import _runtime_state
+        # ARCHIVED: canon_validator import removed # _runtime_state
         
         required_fields = [
             "status", "start_time", "end_time", "current_agent", "current_layer",

@@ -2,7 +2,7 @@
 """Find all agents with 'Base Class' in their territory field."""
 import json
 from pathlib import Path
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 discovery_file = project_root / "agent_discovery_full.json"

@@ -23,7 +23,7 @@ class PeerIntelligenceConfig:
         self.differentiator_threshold = 0.3
 
 from agentic_core.L5_safety.validators.healer_mixin import HealerMixin
-from archives.void_violations.IntegrityGateExecutorAgent import IntegrityGateExecutorAgent
+# ARCHIVED: IntegrityGateExecutorAgent import removed
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 

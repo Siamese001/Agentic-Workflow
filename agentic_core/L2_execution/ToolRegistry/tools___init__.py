@@ -1,7 +1,7 @@
 from __future__ import annotations
 """Airlock: tools — Code Transformation and Analysis Tools."""
 
-from archives.location_violations.code_transform import (
+# ARCHIVED IMPORT REMOVED - dependency no longer available
     CodeTransformArgs,
     TransformOperation,
     TransformResult,

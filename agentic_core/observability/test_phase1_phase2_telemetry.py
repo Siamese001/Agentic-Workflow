@@ -45,7 +45,7 @@ def test_phase1_1_runtime_state_schema():
     
     try:
         # Import the runtime state from canon_validator
-        from archives.void_violations.canon_validator_agentic_v2_thin_1 import _runtime_state
+        # ARCHIVED: canon_validator import removed # _runtime_state
         
         # Test 1: Basic fields exist
         basic_fields = ["status", "start_time", "end_time", "current_agent", 
@@ -497,7 +497,7 @@ def test_update_functions():
     print("=" * 70)
     
     try:
-        from archives.void_violations.canon_validator_agentic_v2_thin_1 import (
+        # ARCHIVED: canon_validator import removed # (
             _runtime_state,
             _update_meta_learning_state,
             _update_redis_state,

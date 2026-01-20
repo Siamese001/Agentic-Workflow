@@ -23,7 +23,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / AGENTIC_CORE_DIR
 rewire_rules: Any = [('from agentic_core\\.utils import', 'from agentic_core.utils.P1_core import'), ('from agentic_core\\.memory import', 'from agentic_core.memory.P1_core import')]

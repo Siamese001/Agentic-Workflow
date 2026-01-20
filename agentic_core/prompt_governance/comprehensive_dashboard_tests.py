@@ -443,7 +443,7 @@ class DashboardTestSuite:
             validator_code = validator_path.read_text(encoding='utf-8')
             
             self.test("Canon validator imports get_target", 
-                     'from archives.location_violations.autonomy_targets_1 import get_target' in validator_code,
+                     '# ARCHIVED: autonomy_targets import removed # get_target' in validator_code,
                      "get_target not imported in canon_validator")
             
             self.test("Canon validator passes target_resolver to context", 

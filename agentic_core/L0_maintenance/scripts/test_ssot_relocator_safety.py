@@ -13,7 +13,7 @@ import sys
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from archives.location_violations.ssot_relocator import SSOTRelocator
+# ARCHIVED: ssot_relocator import removed # SSOTRelocator
 
 
 def test_protected_paths():

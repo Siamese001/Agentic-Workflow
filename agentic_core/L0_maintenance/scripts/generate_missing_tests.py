@@ -6,7 +6,7 @@ This script creates comprehensive test files for all agents without tests.
 import json
 from pathlib import Path
 from typing import List, Dict, Any
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 TESTS_DIR = PROJECT_ROOT / "tests"

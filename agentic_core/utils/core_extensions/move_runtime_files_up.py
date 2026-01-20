@@ -22,7 +22,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.sovereign_index import SovereignIndex
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / AGENTIC_CORE_DIR
 obs_runtime: Any = CORE / 'observability/P1_core/runtime'
