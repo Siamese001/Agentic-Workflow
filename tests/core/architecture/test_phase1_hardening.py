@@ -162,17 +162,26 @@ class TestSovereignIndex:
     
     def setup_method(self):
         """Reset singleton before each test."""
-        from archives.location_violations.sovereign_index import SovereignIndex
+        try:
+            from agentic_core.utils.sovereign_index import SovereignIndex
+        except ImportError:
+            from archives.location_violations.sovereign_index import SovereignIndex
         SovereignIndex.reset_instance()
     
     def teardown_method(self):
         """Reset singleton after each test."""
-        from archives.location_violations.sovereign_index import SovereignIndex
+        try:
+            from agentic_core.utils.sovereign_index import SovereignIndex
+        except ImportError:
+            from archives.location_violations.sovereign_index import SovereignIndex
         SovereignIndex.reset_instance()
     
     def test_singleton_pattern(self):
         """get_instance returns the same instance."""
-        from archives.location_violations.sovereign_index import SovereignIndex
+        try:
+            from agentic_core.utils.sovereign_index import SovereignIndex
+        except ImportError:
+            from archives.location_violations.sovereign_index import SovereignIndex
         
         index1 = SovereignIndex.get_instance(PROJECT_ROOT)
         index2 = SovereignIndex.get_instance()
@@ -181,7 +190,10 @@ class TestSovereignIndex:
     
     def test_get_files_basic(self):
         """get_files returns files matching pattern."""
-        from archives.location_violations.sovereign_index import SovereignIndex
+        try:
+            from agentic_core.utils.sovereign_index import SovereignIndex
+        except ImportError:
+            from archives.location_violations.sovereign_index import SovereignIndex
         
         index = SovereignIndex.get_instance(PROJECT_ROOT)
         
@@ -192,7 +204,10 @@ class TestSovereignIndex:
     
     def test_get_agent_files(self):
         """get_agent_files returns agent files."""
-        from archives.location_violations.sovereign_index import SovereignIndex
+        try:
+            from agentic_core.utils.sovereign_index import SovereignIndex
+        except ImportError:
+            from archives.location_violations.sovereign_index import SovereignIndex
         import fnmatch
         
         index = SovereignIndex.get_instance(PROJECT_ROOT)
@@ -206,7 +221,10 @@ class TestSovereignIndex:
     
     def test_phantom_file_cache_invalidation(self, tmp_path):
         """Test Case B: Phantom file detection via cache invalidation."""
-        from archives.location_violations.sovereign_index import SovereignIndex
+        try:
+            from agentic_core.utils.sovereign_index import SovereignIndex
+        except ImportError:
+            from archives.location_violations.sovereign_index import SovereignIndex
         
         # Create a temporary directory structure
         test_dir = tmp_path / "test_project"
@@ -247,7 +265,10 @@ class TestSovereignIndex:
     
     def test_exclusion_patterns(self, tmp_path):
         """Excluded directories are not scanned."""
-        from archives.location_violations.sovereign_index import SovereignIndex
+        try:
+            from agentic_core.utils.sovereign_index import SovereignIndex
+        except ImportError:
+            from archives.location_violations.sovereign_index import SovereignIndex
         
         # Create temp structure with excluded dir
         test_dir = tmp_path / "test_project"
@@ -273,7 +294,10 @@ class TestSovereignIndex:
     
     def test_get_stats(self):
         """get_stats returns index statistics."""
-        from archives.location_violations.sovereign_index import SovereignIndex
+        try:
+            from agentic_core.utils.sovereign_index import SovereignIndex
+        except ImportError:
+            from archives.location_violations.sovereign_index import SovereignIndex
         
         index = SovereignIndex.get_instance(PROJECT_ROOT)
         index.refresh()
@@ -287,7 +311,10 @@ class TestSovereignIndex:
     
     def test_add_remove_exclusion(self, tmp_path):
         """add_exclusion and remove_exclusion work correctly."""
-        from archives.location_violations.sovereign_index import SovereignIndex
+        try:
+            from agentic_core.utils.sovereign_index import SovereignIndex
+        except ImportError:
+            from archives.location_violations.sovereign_index import SovereignIndex
         
         test_dir = tmp_path / "test_project"
         test_dir.mkdir()

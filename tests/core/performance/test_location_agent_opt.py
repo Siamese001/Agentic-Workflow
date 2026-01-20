@@ -36,8 +36,10 @@ def test_sovereign_index_import():
     location_agent = PROJECT_ROOT / "agentic_core/L5_safety/validators/LocationAgent.py"
     content = location_agent.read_text(encoding='utf-8')
     
-    if "from archives.location_violations.sovereign_index import SovereignIndex" in content:
-        test_pass("IMPORT", "SovereignIndex import present")
+    if "from agentic_core.utils.sovereign_index import SovereignIndex" in content:
+        test_pass("IMPORT", "SovereignIndex import present (canonical)")
+    elif "from archives.location_violations.sovereign_index import SovereignIndex" in content:
+        test_pass("IMPORT", "SovereignIndex import present (legacy)")
     else:
         test_fail("IMPORT", "SovereignIndex import missing")
     
