@@ -6,9 +6,9 @@ Comprehensive audit of all heal_repository() methods to verify super() presence
 and chain completeness across the entire codebase.
 """
 
-import subprocess
-import re
+import sys
 from pathlib import Path
+from agentic_core.utils.security import safe_execute
 from typing import Dict, List, Tuple
 from datetime import datetime
 
@@ -62,7 +62,7 @@ class HealingInvocationAudit:
         ]
         
         try:
-            result = subprocess.run(grep_cmd, capture_output=True, text=True)
+            result = safe_execute(grep_cmd, capture_output=True, text=True, check=False)
             matches = result.stdout.strip().split('\n') if result.stdout else []
             
             for match in matches:

@@ -8,7 +8,6 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple, TypedDict
-from agentic_core.utils.security import safe_execute
 
 class ExecuteCommandArgs(TypedDict):
     """Brief description of functionality and purpose."""
@@ -114,7 +113,7 @@ def execute_with_timeout(command: List[str], timeout: int=30, cwd: Optional[str]
     if cwd:
         work_dir: Any = validate_sandbox(cwd)
     try:
-        result: Any = safe_execute(command, cwd=str(work_dir), capture_output=capture_output, text=True, timeout=timeout, check=check)
+        result: Any = subprocess.run(command, cwd=str(work_dir), capture_output=capture_output, text=True, timeout=timeout, check=check)
         return result
     except subprocess.TimeoutExpired as e:
         raise ExecutionTimeoutError(f"Command timed out after {timeout}s: {' '.join(command)}") from e
@@ -158,7 +157,7 @@ def check_tool_installed(tool_name: str) -> bool:
         return False
     for command in ALLOWED_COMMANDS[tool_name]:
         try:
-            result: Any = safe_execute([command, '--version'], capture_output=True, timeout=5, check=False)
+            result: Any = subprocess.run([command, '--version'], capture_output=True, timeout=5, check=False)
             if result.returncode == 0:
                 return True
         except (subprocess.TimeoutExpired, FileNotFoundError):

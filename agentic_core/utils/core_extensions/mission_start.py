@@ -6,6 +6,7 @@ import os
 import subprocess
 from pathlib import Path
 from typing import Any
+from agentic_core.utils.security import safe_popen
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -29,7 +30,7 @@ def wake_the_brain() -> Any:
     print('[*] MISSION START: FINAL SOVEREIGN VALIDATION')
     cmd: Any = ['python', 'canon_validator_agentic_v2.py', '--target', AGENTIC_CORE_DIR, '--mode', 'comprehensive', '--heal', 'true']
     try:
-        process: Any = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        process: Any = safe_popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in process.stdout:
             print(line, end='')
         process.wait()

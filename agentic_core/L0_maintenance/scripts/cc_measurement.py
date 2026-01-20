@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple
+from agentic_core.utils.security import safe_execute
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -60,11 +61,12 @@ class CCMeasurement:
                 '-j'   # JSON output
             ]
             
-            result = subprocess.run(
+            result = safe_execute(
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=60
+                timeout=60,
+                check=False
             )
             
             if result.returncode != 0:

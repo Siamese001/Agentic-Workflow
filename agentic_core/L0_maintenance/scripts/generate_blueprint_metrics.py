@@ -4,8 +4,10 @@ Generate functionality metrics and unified diffs for blueprint duplicate pairs.
 Phase 1 of duplicate cleanup workflow.
 """
 import subprocess
+import json
 from pathlib import Path
 from datetime import datetime
+from agentic_core.utils.security import safe_git_execute
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
@@ -55,11 +57,11 @@ def count_lines(file_path: Path) -> int:
 def generate_unified_diff(canonical: Path, duplicate: Path) -> str:
     """Generate unified diff between files."""
     try:
-        result = subprocess.run(
-            ['git', 'diff', '--no-index', '--unified=3', str(canonical), str(duplicate)],
-            capture_output=True,
-            text=True,
-            cwd=canonical.parent
+        result = safe_git_execute(
+            ['diff', '--no-index', '--unified=3', str(canonical), str(duplicate)],
+            repo_root=canonical.parent,
+            timeout=30,
+            check=False
         )
         return result.stdout
     except:

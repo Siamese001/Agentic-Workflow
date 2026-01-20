@@ -14,8 +14,10 @@ Test Cases:
 import sys
 import json
 import shutil
-import subprocess
+import sys
+import json
 from pathlib import Path
+from agentic_core.utils.security import safe_execute
 from datetime import datetime
 
 # Add project root to path
@@ -39,12 +41,13 @@ class TieredExecutionTester:
         if mode == "execute":
             cmd.append("--execute-heal")
         
-        result = subprocess.run(
+        result = safe_execute(
             cmd,
             cwd=str(self.project_root),
             capture_output=True,
             text=True,
-            timeout=600
+            timeout=600,
+            check=False
         )
         
         return {
