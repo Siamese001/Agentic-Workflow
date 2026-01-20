@@ -149,6 +149,59 @@ def _get_phase3_manager_enforcer_mapping() -> Dict[str, Type]:
     }
 
 
+def _get_phase4_detector_healer_router_executor_mapping() -> Dict[str, Type]:
+    """
+    Phase 4 Detector/Healer/Router/Executor Consolidation: Hard Migration mappings.
+    
+    Returns:
+        Dictionary mapping legacy detector/healer/router/executor names to unified classes.
+    """
+    from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import UnifiedCodeDetectorAgent
+    from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import UnifiedSafetyDetectorAgent
+    from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import UnifiedCodeHealerAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import UnifiedStructureHealerAgent
+    from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import UnifiedModelRouterAgent
+    from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import UnifiedSafetyExecutorAgent
+    
+    return {
+        # Code Detectors -> UnifiedCodeDetectorAgent
+        "DeadCodeDetectorAgent": UnifiedCodeDetectorAgent,
+        "DeadlockDetectorAgent": UnifiedCodeDetectorAgent,
+        "DriftDetectorAgent": UnifiedCodeDetectorAgent,
+        "MethodChangeDetectorAgent": UnifiedCodeDetectorAgent,
+        "MemoryLeakDetectorAgent": UnifiedCodeDetectorAgent,
+        
+        # Safety Detectors -> UnifiedSafetyDetectorAgent
+        "BiasDetectorAgent": UnifiedSafetyDetectorAgent,
+        "HallucinationDetectorAgent": UnifiedSafetyDetectorAgent,
+        "PromptInjectionDetectorAgent": UnifiedSafetyDetectorAgent,
+        
+        # Code Healers -> UnifiedCodeHealerAgent
+        "CanonHealerAgent": UnifiedCodeHealerAgent,
+        "ImportHealerAgent": UnifiedCodeHealerAgent,
+        "StructuralHealerAgent": UnifiedCodeHealerAgent,
+        
+        # Structure Healers -> UnifiedStructureHealerAgent
+        "GravityHealerAgent": UnifiedStructureHealerAgent,
+        "HierarchyHealerAgent": UnifiedStructureHealerAgent,
+        "NamingLawHealerAgent": UnifiedStructureHealerAgent,
+        "TerritoryHealerAgent": UnifiedStructureHealerAgent,
+        "BlueprintHierarchyHealerAgent": UnifiedStructureHealerAgent,
+        
+        # Routers -> UnifiedModelRouterAgent
+        "ModelRouterAgent": UnifiedModelRouterAgent,
+        "DynamicModelRouterAgent": UnifiedModelRouterAgent,
+        "MultiProviderRouterAgent": UnifiedModelRouterAgent,
+        "ReasoningRouterAgent": UnifiedModelRouterAgent,
+        "McpRouterAgent": UnifiedModelRouterAgent,
+        
+        # Executors -> UnifiedSafetyExecutorAgent
+        "IntegrityGateExecutorAgent": UnifiedSafetyExecutorAgent,
+        "L5IntegrityGateExecutorAgent": UnifiedSafetyExecutorAgent,
+        "SafetyExecutorAgent": UnifiedSafetyExecutorAgent,
+    }
+
+
 def _get_phase2_validator_mapping() -> Dict[str, Type]:
     """
     Phase 2 Validator Consolidation: Maps legacy validators to unified agents.
@@ -219,6 +272,15 @@ def get_unified_agent_class(agent_id: str) -> Type:
             return phase3_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 3 manager/enforcer mapping not available: {e}")
+    
+    # Check Phase 4 detector/healer/router/executor mapping
+    try:
+        phase4_mapping = _get_phase4_detector_healer_router_executor_mapping()
+        if agent_id in phase4_mapping:
+            Logger.info(f"Registry: Mapping legacy detector/healer/router/executor '{agent_id}' to Unified Class (Phase 4).")
+            return phase4_mapping[agent_id]
+    except ImportError as e:
+        Logger.warning(f"Phase 4 detector/healer/router/executor mapping not available: {e}")
     
     raise ValueError(f"Agent ID '{agent_id}' not found in unified agent registry.")
 
