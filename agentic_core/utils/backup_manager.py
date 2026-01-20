@@ -193,3 +193,62 @@ class BackupManager:
         except Exception as e:
             print(f"Error restoring backup: {e}")
             return False
+
+    @classmethod
+    def decommission_legacy_backups(
+        cls,
+        project_root: Optional[Union[str, Path]] = None
+    ) -> int:
+        """
+        Final cleanup of deprecated backup directories.
+        
+        Removes legacy backup directories that are no longer used:
+        - .sovereign_healing_backup/
+        - .governance_healer_backups/
+        
+        Args:
+            project_root: Root of the repository (defaults to CWD)
+            
+        Returns:
+            int: Number of legacy directories removed
+        """
+        root = Path(project_root) if project_root else Path.cwd()
+        legacy_dirs = [".sovereign_healing_backup", ".governance_healer_backups"]
+        removed_count = 0
+        
+        for legacy_name in legacy_dirs:
+            legacy_path = root / legacy_name
+            if legacy_path.exists() and legacy_path.is_dir():
+                try:
+                    shutil.rmtree(legacy_path)
+                    removed_count += 1
+                    print(f"Removed legacy backup directory: {legacy_path}")
+                except OSError as e:
+                    print(f"Error removing legacy backup {legacy_path}: {e}")
+        
+        return removed_count
+
+    @classmethod
+    def get_legacy_backup_dirs(
+        cls,
+        project_root: Optional[Union[str, Path]] = None
+    ) -> List[Path]:
+        """
+        List any legacy backup directories that still exist.
+        
+        Args:
+            project_root: Root of the repository (defaults to CWD)
+            
+        Returns:
+            List of legacy backup directory paths that exist
+        """
+        root = Path(project_root) if project_root else Path.cwd()
+        legacy_dirs = [".sovereign_healing_backup", ".governance_healer_backups"]
+        
+        existing = []
+        for legacy_name in legacy_dirs:
+            legacy_path = root / legacy_name
+            if legacy_path.exists() and legacy_path.is_dir():
+                existing.append(legacy_path)
+        
+        return existing
