@@ -284,24 +284,32 @@ def get_python_files_cached(
     return files
 
 
-# Default directories to exclude from all scans
-# These directories contain backup bloat or non-essential files
-DEFAULT_EXCLUDE_DIRS: Set[str] = {
-    ".sovereign_healing_backup",
-    "archives",
-    ".git",
-    "__pycache__",
-    ".pytest_cache",
-    ".mypy_cache",
-    "node_modules",
-    ".venv",
-    "venv",
-    "env",
-    ".tox",
-    "build",
-    "dist",
-    "*.egg-info",
-}
+# SSOT Import: Use centralized exclusion list from config
+# This ensures consistency across all file discovery operations
+try:
+    from agentic_core.config.blueprint_sovereign.constants import (
+        DEFAULT_EXCLUDE_DIRS as SSOT_EXCLUDE_DIRS
+    )
+    # Convert frozenset to set for compatibility
+    DEFAULT_EXCLUDE_DIRS: Set[str] = set(SSOT_EXCLUDE_DIRS)
+except ImportError:
+    # Fallback if config not available (bootstrap scenario)
+    DEFAULT_EXCLUDE_DIRS: Set[str] = {
+        ".sovereign_healing_backup",
+        "archives",
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        "node_modules",
+        ".venv",
+        "venv",
+        "env",
+        ".tox",
+        "build",
+        "dist",
+        "*.egg-info",
+    }
 
 # Layer directories in agentic_core
 LAYER_DIRS: Dict[str, str] = {

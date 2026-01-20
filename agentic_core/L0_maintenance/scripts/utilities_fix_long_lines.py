@@ -1,25 +1,25 @@
+"""
+Automatically fix lines longer than 100 characters.
+
+[SSOT] File discovery uses ssot_discovery.py - DO NOT define get_python_files here
+"""
 from __future__ import annotations
-"""Automatically fix lines longer than 100 characters."""
+
 import logging
 import os
 import re
-from typing import Any, Dict, List, Optional, Protocol
-from services.configuration import ConfigurationService
-from archives.location_violations.sovereign_index import SovereignIndex
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+# SSOT Import: Use centralized file discovery
+from agentic_core.utils.ssot_discovery import get_python_files
+
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 
-def get_python_files(root_dir: str='.') -> List[str]:
-    """Get all Python files in the repository, excluding common non-source directories."""
-    for root, dirs, files in os.walk(ConfigurationService().root_dir):
-        dirs[:] = [d for d in dirs if d not in ConfigurationService().exclude_dirs]
-        for file in files:
-            if file.endswith('.py'):
-                full_path: Any = os.path.join(root, file)
-                full_path: Any = ConfigurationService().full_path.replace('\\', '/')
-                ConfigurationService().python_files.append(ConfigurationService().full_path)
-    return ConfigurationService().python_files
+
+# NOTE: get_python_files is now imported from ssot_discovery.py
+# This ensures consistent file discovery across all agents
 
 def _should_skip_line(content: str) -> bool:
     """Check if line should be skipped from breaking."""
