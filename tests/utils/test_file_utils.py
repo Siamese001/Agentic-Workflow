@@ -16,15 +16,27 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import pytest
-from archives.location_violations.file_utils import (
-    safe_read_file,
-    safe_write_file,
-    safe_read_json,
-    safe_write_json,
-    safe_read_lines,
-    file_exists,
-    ensure_directory,
-)
+try:
+    from agentic_core.utils.file_utils import (
+        safe_read_file,
+        safe_write_file,
+        safe_read_json,
+        safe_write_json,
+        safe_read_lines,
+        file_exists,
+        ensure_directory,
+    )
+except ImportError:
+    # Fallback to archived location for legacy tests
+    from archives.location_violations.file_utils import (
+        safe_read_file,
+        safe_write_file,
+        safe_read_json,
+        safe_write_json,
+        safe_read_lines,
+        file_exists,
+        ensure_directory,
+    )
 
 
 class TestSafeReadFile:
