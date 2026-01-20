@@ -5,7 +5,6 @@ This package is the Single Source of Truth for:
 - DEFAULT_EXCLUDE_DIRS: Unified directory exclusion list
 - SOVEREIGN_REGISTRY: Core territory definitions
 - HEALING_CONFIG: Healing operation configuration
-- ACTIVE_CANON_KEYS: Canon key definitions
 
 SSOT Consolidation (Jan 20, 2026):
 - constants.py: Exclusion lists and naming constants
@@ -19,7 +18,6 @@ from __future__ import annotations
 # SSOT Exports - New canonical locations
 from .constants import (
     DEFAULT_EXCLUDE_DIRS,
-    ACTIVE_CANON_KEYS,
     FORBIDDEN_PATTERNS_RAW,
     CANON_SIGNALS,
     NAMING_EXEMPT_FILES,
@@ -44,18 +42,15 @@ from .registry import (
 )
 
 # Backward compatibility: Re-export from structure_blueprint
-# These will emit deprecation warnings when imported from there
 from agentic_core.L5_safety.validators.structure_blueprint import (
     FORBIDDEN_ROOT_FOLDERS,
     FORBIDDEN_FOLDER_PATTERN,
     ROOT_PROTECTED_FILES,
-    CANON_KEY_TO_FOLDER_MAP,
 )
 
 __all__ = [
     # From constants.py (SSOT)
     "DEFAULT_EXCLUDE_DIRS",
-    "ACTIVE_CANON_KEYS",
     "FORBIDDEN_PATTERNS_RAW",
     "CANON_SIGNALS",
     "NAMING_EXEMPT_FILES",
@@ -79,5 +74,4 @@ __all__ = [
     "FORBIDDEN_ROOT_FOLDERS",
     "FORBIDDEN_FOLDER_PATTERN",
     "ROOT_PROTECTED_FILES",
-    "CANON_KEY_TO_FOLDER_MAP",
 ]

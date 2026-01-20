@@ -25,10 +25,11 @@ from typing import Any, Optional, List, Dict, Tuple
 # [SOVEREIGN IMPORTS]
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY, MISSION_CONFIG, HEALING_CONFIG, 
-    AGENT_RESILIENCE_CONFIG, CANON_KEY_TO_FOLDER_MAP, 
-    SCOPE_SUMMARY_EXCLUSIONS, PROTECTED_FOLDERS, GRAVITY_SURGERY_ENABLED,
+    AGENT_RESILIENCE_CONFIG,
+    SCOPE_SUMMARY_EXCLUSIONS, protected_folders, GRAVITY_SURGERY_ENABLED,
     FORBIDDEN_ROOT_FOLDERS
 )
+PROTECTED_FOLDERS = protected_folders  # Alias for backward compatibility
 
 # [L0 IMPORTS]
 from agentic_core.L0_maintenance.sovereign_enforcement import run_l6_preflight

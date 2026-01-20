@@ -16,7 +16,6 @@ from __future__ import annotations
 # Re-export from the SSOT modules
 from .blueprint_sovereign.constants import (
     DEFAULT_EXCLUDE_DIRS,
-    ACTIVE_CANON_KEYS,
     FORBIDDEN_PATTERNS_RAW,
     CANON_SIGNALS,
     NAMING_EXEMPT_FILES,
@@ -43,7 +42,6 @@ from .blueprint_sovereign.registry import (
 __all__ = [
     # Constants
     "DEFAULT_EXCLUDE_DIRS",
-    "ACTIVE_CANON_KEYS",
     "FORBIDDEN_PATTERNS_RAW",
     "CANON_SIGNALS",
     "NAMING_EXEMPT_FILES",

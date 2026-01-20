@@ -53,11 +53,6 @@ DEFAULT_EXCLUDE_DIRS: FrozenSet[str] = frozenset({
 })
 
 # ============================================================================
-# ACTIVE CANON KEYS - Defines enforced structure
-# ============================================================================
-ACTIVE_CANON_KEYS: List[int] = list(range(0, 20))
-
-# ============================================================================
 # FORBIDDEN PATTERNS - Strictly forbidden in filenames
 # ============================================================================
 FORBIDDEN_PATTERNS_RAW: List[str] = [
@@ -181,7 +176,6 @@ VALIDATED_FILE_EXTENSIONS: FrozenSet[str] = frozenset({
 
 __all__ = [
     "DEFAULT_EXCLUDE_DIRS",
-    "ACTIVE_CANON_KEYS",
     "FORBIDDEN_PATTERNS_RAW",
     "CANON_SIGNALS",
     "NAMING_EXEMPT_FILES",
