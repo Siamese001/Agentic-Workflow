@@ -341,8 +341,44 @@ Aggregated statistics:
 
 ---
 
+## Consolidated Pipeline (January 2026)
+
+The dashboard pipeline has been consolidated for easier maintenance. Use these canonical scripts:
+
+### Regeneration
+
+```bash
+# Full regeneration (HTML + data)
+python scripts/regenerate_dashboard.py --full
+
+# Data files only
+python scripts/regenerate_dashboard.py --data-only
+```
+
+### Verification
+
+```bash
+# Quick check
+python scripts/verify_dashboard.py --quick
+
+# Full validation
+python scripts/verify_dashboard.py --full
+```
+
+### Testing
+
+```bash
+# Run all dashboard tests
+pytest tests/dashboard/
+```
+
+For detailed developer documentation, see [DASHBOARD_DEVELOPER_GUIDE.md](DASHBOARD_DEVELOPER_GUIDE.md).
+
+---
+
 ## Related Documentation
 
+- [DASHBOARD_DEVELOPER_GUIDE.md](DASHBOARD_DEVELOPER_GUIDE.md) - Developer guide for dashboard pipeline
 - [META_LEARNING_TELEMETRY_API.md](META_LEARNING_TELEMETRY_API.md) - Developer API documentation
 - [DASHBOARD_LIVE_RUNTIME_META_LEARNING_PLAN.md](../DASHBOARD_LIVE_RUNTIME_META_LEARNING_PLAN.md) - Implementation plan
 
