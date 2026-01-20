@@ -13,17 +13,19 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.ssot_discovery import get_python_files
 
-root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
-type_import_fixes: Any = {'agent_gym_impl.py': {'module': 'agentic_core.L3_orchestration.training.agent_gym_types', 'types': ['GoldenStateEvaluator', 'JudgeEvaluator', 'TrainingScenario', 'BenchmarkResult', 'PerformanceMetrics']}}
+ROOT: Any = Path(__file__).parent.parent.parent.parent
+CORE: Any = ROOT / 'agentic_core'
+TYPE_IMPORT_FIXES: Any = {'agent_gym_impl.py': {'module': 'agentic_core.L3_orchestration.training.agent_gym_types', 'types': ['GoldenStateEvaluator', 'JudgeEvaluator', 'TrainingScenario', 'BenchmarkResult', 'PerformanceMetrics']}}
 
 def fix_type_imports() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] FIXING ALL TYPE IMPORTS...')
     fixed: Any = 0
+    all_py = get_python_files(ROOT)
     for impl_file, config in TYPE_IMPORT_FIXES.items():
-        for py_file in CORE.rglob(impl_file):
+        for py_file in [f for f in all_py if f.name == impl_file]:
             try:
                 with open(py_file, 'r', encoding='utf-8') as f:
                     content: Any = f.read()

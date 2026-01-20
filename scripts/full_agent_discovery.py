@@ -43,6 +43,13 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Set, Tuple
 from collections import defaultdict
 
+# SSOT discovery - replaces rglob
+try:
+    from agentic_core.utils.ssot_discovery import get_python_files
+    SSOT_AVAILABLE = True
+except ImportError:
+    SSOT_AVAILABLE = False
+
 # SSOT: Import territory name definitions
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core" / "L0_maintenance" / "scripts"))
@@ -1317,8 +1324,11 @@ def main():
     seen_agents: Set[Tuple[str, str]] = set()
     duplicates_skipped = 0
     
-    # Scan ALL Python files in project (collect once for hashing later)
-    all_py_files = [p for p in PROJECT_ROOT.rglob('*.py') if not should_exclude_path(p)]
+    # Scan ALL Python files in project using SSOT discovery
+    if SSOT_AVAILABLE:
+        all_py_files = get_python_files(PROJECT_ROOT)
+    else:
+        all_py_files = [p for p in PROJECT_ROOT.rglob('*.py') if not should_exclude_path(p)]
     log.info(f"Scanning {len(all_py_files)} Python files...")
     log.info(f"   -> Excluded vendor/cache dirs via should_exclude_path()")
     

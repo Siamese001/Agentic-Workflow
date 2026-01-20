@@ -9,15 +9,18 @@ from pathlib import Path
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
 from agentic_core.utils.sovereign_index import SovereignIndex
-root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
-required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
+from agentic_core.utils.ssot_discovery import get_python_files
+
+ROOT: Any = Path(__file__).parent.parent.parent.parent
+CORE: Any = ROOT / 'agentic_core'
+REQUIRED_DEPTH: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
 
 def fix_tunnel_violations() -> Any:
     """Moves files from deep tunnels up to proper SSOT-compliant depth structure."""
     print(f'[*] FIXING ALL TUNNEL VIOLATIONS (target depth: {REQUIRED_DEPTH})...')
     fixed: Any = 0
-    for py_file in CORE.rglob('*.py'):
+    all_py = get_python_files(ROOT)
+    for py_file in [f for f in all_py if str(f).startswith(str(CORE))]:
         if py_file.name == '__init__.py':
             continue
         parts: Any = py_file.relative_to(CORE).parts

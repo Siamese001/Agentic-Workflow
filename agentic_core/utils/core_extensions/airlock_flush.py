@@ -7,12 +7,16 @@ from pathlib import Path
 from typing import Any
 from agentic_core.utils.sovereign_index import SovereignIndex
 from agentic_core.utils.file_utils import safe_read_file, safe_write_file
-core: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
+from agentic_core.utils.ssot_discovery import get_python_files
+
+ROOT: Any = Path(__file__).parent.parent.parent.parent
+CORE: Any = ROOT / 'agentic_core'
 
 def flush_airlocks() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] PERFORMING AIRLOCK FLUSH...')
-    for init_file in CORE.rglob('__init__.py'):
+    all_py = get_python_files(ROOT)
+    for init_file in [f for f in all_py if f.name == '__init__.py' and str(f).startswith(str(CORE))]:
         with open(init_file, 'w', encoding='utf-8') as f:
             f.write(f'"""Airlock: {init_file.parent.name}"""\n')
         print(f'  [✓] Flushed: {init_file.relative_to(CORE.parent)}')

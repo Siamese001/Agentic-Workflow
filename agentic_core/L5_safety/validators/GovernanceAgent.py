@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state
@@ -6,6 +5,7 @@
 
 from __future__ import annotations
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+from agentic_core.utils.ssot_discovery import get_python_files
 """
 L6 Sovereign Code Graph & Governance Infrastructure
 
@@ -239,7 +239,7 @@ class DependencyGraph:
                 to_name: Any = dep.replace('/', '_').replace('\\', '_').replace('.py', '')
                 dot.append(f'  "{from_name}" -> "{to_name}";')
         dot.append('}')
-        dot_str: Any = '\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n'.join(dot)
+        dot_str: Any = '\n'.join(dot)
         if output_file:
             with open(output_file, 'w') as f:
                 f.write(dot_str)
@@ -330,10 +330,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Args:
             file_patterns: Glob patterns for Python files
         """
-        all_files: Any = []
-        for pattern in file_patterns:
-            all_files.extend(glob.glob(pattern, recursive=True))
-        all_files: Any = list(set(all_files))
+        all_files: Any = [str(f) for f in get_python_files(self.root_dir)]
         self.DependencyGraph.build(all_files, str(self.root_dir))
 
     def check_root_hygiene(self, auto_sanitize: bool=True) -> List[str]:
@@ -800,7 +797,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         GOLD STANDARD WORKFLOW — Full governance compliance with autonomous cleanup.
         """
         if file_paths is None:
-            file_paths = [str(p) for p in self.root_dir.rglob("*.py")]
+            file_paths = [str(p) for p in get_python_files(self.root_dir)]
 
         cleanup_results = self.cleanup_violations(file_paths, dry_run=dry_run)
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}

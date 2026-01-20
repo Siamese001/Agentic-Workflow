@@ -1,0 +1,281 @@
+"""Execution Orchestrator - Silent Execution & Full Content Display (PART 4)
+
+This module implements silent execution mode and full content display protocols.
+Enforces zero conversational filler and complete artifact visibility.
+
+Layer: Runtime/Shared
+Responsibilities:
+- Execute workflows silently (no conversational filler)
+- Display all generated artifacts in full
+- Generate audit.json trace files
+- Manage execution state and logging
+
+Non-responsibilities:
+- Content generation
+- Validation execution
+- Temperature management
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import time
+from dataclasses import dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from runtime.shared.integrity_gate_executor import IntegrityGateExecutor
+from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
+
+
+@dataclass
+class ExecutionArtifact:
+    artifact_type: str
+    content: str
+    metadata: Dict[str, Any]
+    timestamp: float = field(default_factory=time.time)
+
+
+@dataclass
+class ExecutionTrace:
+    run_sha: str
+    start_time: float
+    end_time: Optional[float]
+    decision_path: List[str]
+    temperature_log: List[Dict[str, Any]]
+    validation_failures: List[Dict[str, Any]]
+    artifacts: List[ExecutionArtifact]
+    success: bool
+    error: Optional[str] = None
+
+
+class ExecutionOrchestrator:
+    """
+    Silent Execution & Full Content Display
+    
+    Rules:
+    1. Silent Execution: NEVER explain thinking during processing
+    2. Full Content Display: Show ALL artifacts in chat window
+    3. Audit Trail: Generate audit.json with complete trace
+    
+    Banned Phrases:
+    - "I will now..."
+    - "Processing K.5..."
+    - "Analyzing JD..."
+    - Any conversational filler
+    """
+    
+    BANNED_LOG_PHRASES = [
+        "I will now", "Processing", "Analyzing", "Let me",
+        "I'm going to", "Next, I'll", "Working on"
+    ]
+    
+    def __init__(
+        self,
+        output_dir: Optional[Path] = None,
+        silent_mode: bool = True
+    ):
+        self.output_dir = output_dir or Path("./output")
+        self.silent_mode = silent_mode
+        self.current_trace: Optional[ExecutionTrace] = None
+        self.artifacts: List[ExecutionArtifact] = []
+        
+    def start_execution(self, context: Dict[str, Any]) -> str:
+        """
+        Start new execution with silent mode.
+        Returns run_sha for tracking.
+        """
+        run_sha = self._generate_run_sha(context)
+        
+        self.current_trace = ExecutionTrace(
+            run_sha=run_sha,
+            start_time=time.time(),
+            end_time=None,
+            decision_path=[],
+            temperature_log=[],
+            validation_failures=[],
+            artifacts=[],
+            success=False
+        )
+        
+        if not self.silent_mode:
+            self._log(f"Execution started: {run_sha}")
+        
+        return run_sha
+    
+    def record_decision(self, decision: str, details: Optional[Dict[str, Any]] = None) -> None:
+        """Record a decision point in the execution path"""
+        if self.current_trace:
+            decision_entry = decision
+            if details:
+                decision_entry = f"{decision} | {json.dumps(details, separators=(',', ':'))}"
+            self.current_trace.decision_path.append(decision_entry)
+    
+    def record_temperature_adjustment(
+        self,
+        recovery_loop: AdaptiveRecoveryLoop
+    ) -> None:
+        """Record temperature adjustments from recovery loop"""
+        if self.current_trace:
+            self.current_trace.temperature_log.extend(
+                recovery_loop.get_temperature_log()
+            )
+    
+    def record_validation_failure(
+        self,
+        gate_executor: IntegrityGateExecutor
+    ) -> None:
+        """Record validation failures from gate executor"""
+        if self.current_trace:
+            failed_results = [
+                {
+                    'gate_id': r.gate_id,
+                    'message': r.message,
+                    'severity': r.severity.value if hasattr(r.severity, 'value') else str(r.severity),
+                    'details': r.details,
+                    'timestamp': time.time()
+                }
+                for r in gate_executor.results
+                if not r.passed
+            ]
+            self.current_trace.validation_failures.extend(failed_results)
+    
+    def add_artifact(
+        self,
+        artifact_type: str,
+        content: str,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> None:
+        """Add generated artifact to execution trace"""
+        artifact = ExecutionArtifact(
+            artifact_type=artifact_type,
+            content=content,
+            metadata=metadata or {}
+        )
+        
+        self.artifacts.append(artifact)
+        
+        if self.current_trace:
+            self.current_trace.artifacts.append(artifact)
+    
+    def complete_execution(
+        self,
+        success: bool,
+        error: Optional[str] = None
+    ) -> ExecutionTrace:
+        """
+        Complete execution and generate audit.json.
+        Returns final execution trace.
+        """
+        if not self.current_trace:
+            raise RuntimeError("No active execution trace")
+        
+        self.current_trace.end_time = time.time()
+        self.current_trace.success = success
+        self.current_trace.error = error
+        
+        self._save_audit_json(self.current_trace)
+        
+        if not self.silent_mode:
+            duration = self.current_trace.end_time - self.current_trace.start_time
+            self._log(f"Execution completed: {success} ({duration:.2f}s)")
+        
+        return self.current_trace
+    
+    def display_all_artifacts(self) -> str:
+        """
+        Generate full content display of all artifacts.
+        Returns formatted string for chat window display.
+        """
+        if not self.artifacts:
+            return "No artifacts generated."
+        
+        output_sections = []
+        
+        output_sections.append("=" * 80)
+        output_sections.append("GENERATED ARTIFACTS")
+        output_sections.append("=" * 80)
+        output_sections.append("")
+        
+        for i, artifact in enumerate(self.artifacts, 1):
+            output_sections.append(f"### {i}. {artifact.artifact_type.upper()}")
+            output_sections.append("")
+            output_sections.append(artifact.content)
+            output_sections.append("")
+            
+            if artifact.metadata:
+                output_sections.append(f"**Metadata:** {json.dumps(artifact.metadata, indent=2)}")
+                output_sections.append("")
+            
+            output_sections.append("-" * 80)
+            output_sections.append("")
+        
+        return "\n".join(output_sections)
+    
+    def _generate_run_sha(self, context: Dict[str, Any]) -> str:
+        """Generate unique SHA for this execution run"""
+        timestamp = str(time.time())
+        context_str = json.dumps(context, sort_keys=True)
+        sha_input = f"{timestamp}:{context_str}"
+        return hashlib.sha256(sha_input.encode()).hexdigest()[:16]
+    
+    def _save_audit_json(self, trace: ExecutionTrace) -> Path:
+        """Save audit.json with complete execution trace"""
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        
+        audit_data = {
+            'run_sha': trace.run_sha,
+            'timestamp': datetime.fromtimestamp(trace.start_time).isoformat(),
+            'duration_seconds': (trace.end_time - trace.start_time) if trace.end_time else None,
+            'success': trace.success,
+            'error': trace.error,
+            'decision_path': trace.decision_path,
+            'temperature_log': trace.temperature_log,
+            'validation_failures': trace.validation_failures,
+            'artifacts': [
+                {
+                    'type': a.artifact_type,
+                    'length': len(a.content),
+                    'metadata': a.metadata,
+                    'timestamp': datetime.fromtimestamp(a.timestamp).isoformat()
+                }
+                for a in trace.artifacts
+            ],
+            'stats': {
+                'total_decisions': len(trace.decision_path),
+                'total_temp_adjustments': len(trace.temperature_log),
+                'total_validation_failures': len(trace.validation_failures),
+                'total_artifacts': len(trace.artifacts)
+            }
+        }
+        
+        audit_path = self.output_dir / f"audit_{trace.run_sha}.json"
+        
+        with open(audit_path, 'w', encoding='utf-8') as f:
+            json.dump(audit_data, f, indent=2, ensure_ascii=False)
+        
+        return audit_path
+    
+    def _log(self, message: str) -> None:
+        """
+        Internal logging that respects silent mode.
+        Blocks banned conversational phrases.
+        """
+        if self.silent_mode:
+            return
+        
+        for banned_phrase in self.BANNED_LOG_PHRASES:
+            if banned_phrase.lower() in message.lower():
+                return
+        
+        print(f"[SYSTEM] {message}")
+
+
+def create_execution_orchestrator(
+    output_dir: Optional[Path] = None,
+    silent_mode: bool = True
+) -> ExecutionOrchestrator:
+    """Factory function to create ExecutionOrchestrator instance"""
+    return ExecutionOrchestrator(output_dir=output_dir, silent_mode=silent_mode)

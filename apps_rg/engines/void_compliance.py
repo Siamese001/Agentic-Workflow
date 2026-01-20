@@ -24,6 +24,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 from agentic_core.utils.sovereign_index import SovereignIndex
 from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.ssot_discovery import get_python_files
 
 Logger = logging.getLogger(__name__)
 
@@ -402,10 +403,11 @@ def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
     """
     summary = {folder: 0 for folder in ALLOWED_ROOT_FOLDERS}
     
+    all_py = get_python_files(project_root)
     for folder in ALLOWED_ROOT_FOLDERS:
         folder_path = project_root / folder
         if folder_path.exists() and folder_path.is_dir():
-            py_files = list(folder_path.rglob("*.py"))
+            py_files = [f for f in all_py if str(f).startswith(str(folder_path))]
             summary[folder] = len(py_files)
     
     return summary
