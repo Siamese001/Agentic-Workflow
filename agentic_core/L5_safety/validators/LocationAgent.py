@@ -348,15 +348,10 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
             self.project_root = validated_root
 
     def safe_create_directory(self, relative_path: str) -> Path:
-        """
-        Safely create a directory within the project root.
-        Validates path is within project before creation.
-        """
-        target = safe_path_join(self.project_root, relative_path)
-        if not target.exists():
-            target.mkdir(parents=True, exist_ok=True)
-            Logger.info(f"[LocationAgent] Created directory: {target}")
-        return target
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer.safe_create_directory(relative_path)
 
     def validate_sovereign_roots(self) -> List[Tuple[Path, str]]:
         """FACADE: Delegates to LocationValidatorAgent."""
@@ -652,37 +647,16 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
     # [SSOT FIX 2026-01-19] Changed from .sovereign_healing_backup to archives/healing_backups
     # Per SSOT: Only archives/ is the canonical backup location
     def _init_backup_dir(self) -> Path:
-        """
-        SUPPLEMENTED FROM FilesystemAgent — merged 2025-12-30
-        Initialize backup directory for safe mutations.
-        
-        SSOT COMPLIANCE: Uses archives/healing_backups/ instead of .sovereign_healing_backup/
-        """
-        backup_dir = self.project_root / "archives" / "healing_backups" / "location" / datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_dir.mkdir(parents=True, exist_ok=True)
-        return backup_dir
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._init_backup_dir()
 
     def _backup_file(self, file_path: Path, backup_dir: Path = None) -> Path:
-        """
-        SUPPLEMENTED FROM FilesystemAgent — merged 2025-12-30
-        Create a physical safety copy before mutation.
-        
-        Args:
-            file_path: File to backup
-            backup_dir: Optional backup directory (auto-created if None)
-            
-        Returns:
-            Path to the backup file
-        """
-        if backup_dir is None:
-            backup_dir = self._init_backup_dir()
-            
-        rel = file_path.relative_to(self.project_root)
-        backup_path = backup_dir / rel
-        backup_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(file_path, backup_path)
-        Logger.info(f"[LocationAgent] Backed up: {rel}")
-        return backup_path
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._backup_file(file_path, backup_dir)
 
     def post_heal_validation(self, original_path: Path, new_path: Optional[Path] = None, dry_run: bool = True) -> Dict[str, Any]:
         """
@@ -886,86 +860,16 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         return import_result
 
     def safe_move(self, src_path: Path, dst_path: Path, dry_run: bool = True) -> Dict[str, Any]:
-        """
-        Safely move a file with backup, collision handling, post-heal validation, and import fixing.
-        """
-        result = {
-            "applied": False,
-            "action_taken": "",
-            "error": None,
-        }
-        
-        if dry_run:
-            result["applied"] = True
-            result["action_taken"] = f"PREVIEW: Would move to {dst_path.relative_to(self.project_root)}"
-            return result
-            
-        try:
-            dst_path.parent.mkdir(parents=True, exist_ok=True)
-            self._backup_file(src_path)
-            
-            # Collision handling
-            final_dst = dst_path
-            stem, suffix = dst_path.stem, dst_path.suffix
-            counter = 1
-            while final_dst.exists():
-                final_dst = dst_path.parent / f"{stem}_{counter}{suffix}"
-                counter += 1
-            
-            src_path.rename(final_dst)
-            result["applied"] = True
-            result["action_taken"] = f"MOVED: {final_dst.relative_to(self.project_root)}"
-            Logger.info(f"[LocationAgent] Moved: {src_path} → {final_dst}")
-            
-            # Auto post-heal validation
-            result.update(self.post_heal_validation(src_path, final_dst, dry_run=False))
-            
-            # Ultra import fix integration
-            result.update(self.fix_imports_after_move(src_path, final_dst, dry_run=False))
-            
-            # Gravity integration flag: if move is core → apps, mark for special gravity handling
-            if "agentic_core" in str(src_path) and "apps_" in str(final_dst):
-                result["gravity_resolution_expected"] = True
-                result["moved_module"] = self._compute_module_path(final_dst)
-            else:
-                result["gravity_resolution_expected"] = False
-            
-        except Exception as e:
-            result["error"] = str(e)
-            Logger.error(f"[LocationAgent] Move failed: {e}")
-            
-        return result
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer.safe_move(src_path, dst_path, dry_run)
 
     def safe_delete(self, file_path: Path, dry_run: bool = True) -> Dict[str, Any]:
-        """
-        Safely delete a file with backup and post-heal validation.
-        """
-        result = {
-            "applied": False,
-            "action_taken": "",
-            "error": None,
-        }
-        
-        if dry_run:
-            result["applied"] = True
-            result["action_taken"] = f"PREVIEW: Would delete {file_path.name}"
-            return result
-            
-        try:
-            self._backup_file(file_path)
-            file_path.unlink()
-            result["applied"] = True
-            result["action_taken"] = "DELETED (backed up)"
-            Logger.info(f"[LocationAgent] Deleted: {file_path}")
-            
-            # Auto post-heal validation
-            result.update(self.post_heal_validation(file_path, None, dry_run=False))
-            
-        except Exception as e:
-            result["error"] = str(e)
-            Logger.error(f"[LocationAgent] Delete failed: {e}")
-            
-        return result
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer.safe_delete(file_path, dry_run)
 
     def post_naming_validation(self, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
         """
