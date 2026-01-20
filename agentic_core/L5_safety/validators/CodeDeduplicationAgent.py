@@ -94,6 +94,9 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
 )
 
+# Archives directory constant for exclusion
+ARCHIVES_DIR = "archives"
+
 class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
@@ -138,6 +141,15 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         self.extracted_count = 0
         self.consolidated_count = 0
         self.errors: List[str] = []
+        
+        # Initialize tree-sitter parser if available
+        self.ts_parser = None
+        if TREE_SITTER_AVAILABLE and Parser and tspython:
+            try:
+                self.ts_parser = Parser()
+                self.ts_parser.set_language(Language(tspython.language()))
+            except Exception:
+                self.ts_parser = None
     
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L2 compliance."""

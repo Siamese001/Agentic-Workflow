@@ -500,21 +500,11 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
 
 
 # =============================================================================
-# BACKWARD COMPATIBILITY FACTORY METHODS
+# BACKWARD COMPATIBILITY FACTORY METHODS (Migration Complete)
 # =============================================================================
 
 def create_legacy_gravity_validator(**kwargs: Any) -> UnifiedStructureValidatorAgent:
-    """
-    Factory for backward compatibility with GravityValidatorAgent.
-    
-    DEPRECATED: Use UnifiedStructureValidatorAgent directly.
-    """
-    warnings.warn(
-        "GravityValidatorAgent is deprecated. Use UnifiedStructureValidatorAgent instead. "
-        "This factory will be removed after 2026-02-19.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
+    """Factory for backward compatibility with GravityValidatorAgent."""
     config = StructureConfig(
         check_gravity=True,
         check_duplicates=False,
@@ -525,17 +515,7 @@ def create_legacy_gravity_validator(**kwargs: Any) -> UnifiedStructureValidatorA
 
 
 def create_legacy_hygiene_validator(**kwargs: Any) -> UnifiedStructureValidatorAgent:
-    """
-    Factory for backward compatibility with HygieneValidatorAgent.
-    
-    DEPRECATED: Use UnifiedStructureValidatorAgent directly.
-    """
-    warnings.warn(
-        "HygieneValidatorAgent is deprecated. Use UnifiedStructureValidatorAgent instead. "
-        "This factory will be removed after 2026-02-19.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
+    """Factory for backward compatibility with HygieneValidatorAgent."""
     config = StructureConfig(
         check_gravity=False,
         check_duplicates=True,
@@ -546,17 +526,7 @@ def create_legacy_hygiene_validator(**kwargs: Any) -> UnifiedStructureValidatorA
 
 
 def create_legacy_registry_validator(**kwargs: Any) -> UnifiedStructureValidatorAgent:
-    """
-    Factory for backward compatibility with AgentRegistryValidatorAgent.
-    
-    DEPRECATED: Use UnifiedStructureValidatorAgent directly.
-    """
-    warnings.warn(
-        "AgentRegistryValidatorAgent is deprecated. Use UnifiedStructureValidatorAgent instead. "
-        "This factory will be removed after 2026-02-19.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
+    """Factory for backward compatibility with AgentRegistryValidatorAgent."""
     config = StructureConfig(
         check_gravity=False,
         check_duplicates=False,
