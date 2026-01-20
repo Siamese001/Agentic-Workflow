@@ -47,7 +47,8 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     # [PHASE 2] Redis/Pinecone integration
     _cache_prefix: str = "l1_cognition"
     _namespace: str = "l1_patterns"
-    VERIFICATION_REGISTRY: dict = field(default_factory=dict)
+    # Consistent hardening: prevent mutable default bugs
+    VERIFICATION_REGISTRY: Dict[str, Any] = field(default_factory=dict)
     _registry_built: bool = False
 
     @classmethod
