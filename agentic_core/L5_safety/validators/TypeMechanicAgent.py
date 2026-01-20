@@ -19,14 +19,20 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 @dataclass
 class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
     """
-    KEYS: 22 (Missing Types), 23 (Unreachable Code), 24 (Unused Vars)
+    Type Mechanic Agent - Type hints and code quality enforcement.
+    
+    Validates:
+    - Missing type hints
+    - Unreachable code
+    - Unused variables
+    
     ROLE: Precision Engineering. Requires AST_VALID signal.
     """
 
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
-        Autonomous healing method (Canon Key 51 compliance).
+        Autonomous healing method.
         
         Args:
             dry_run: If True, only report violations without fixing

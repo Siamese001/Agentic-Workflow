@@ -48,13 +48,13 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     """
     Code Janitor validates syntax, style, and formatting.
     
-    Validates Canon Keys 10-20:
-    - Key 10: No syntax errors
-    - Key 11: Proper indentation (4 spaces)
-    - Key 12: No trailing whitespace
-    - Key 13: Proper line endings (implicitly handled by editors/git, but can be checked)
-    - Key 14: Naming conventions (snake_case, PascalCase)
-    - Key 15-20: Other style guide compliance (e.g., line length, blank lines, imports)
+    Validates:
+    - No syntax errors
+    - Proper indentation (4 spaces)
+    - No trailing whitespace
+    - Proper line endings (implicitly handled by editors/git, but can be checked)
+    - Naming conventions (snake_case, PascalCase)
+    - Other style guide compliance (e.g., line length, blank lines, imports)
     """
 
     def get_validation_keys(self) -> List[int]:
@@ -66,7 +66,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
         print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Syntax and Style...')
         passed, violations = self.check_syntax()
         if not passed:
-            print(f'   [{self.name}] Key 10: FAIL ({len(violations)} violations)')
+            print(f'   [{self.name}] Syntax: FAIL ({len(violations)} violations)')
             return {"passed": False, "violations": violations}
 
         return {"passed": True, "violations": []}

@@ -7,18 +7,18 @@
 from __future__ import annotations
 from dataclasses import dataclass
 """
-Structural Engineer Agent - Code Structure Validation (Keys 17-46)
+Structural Engineer Agent - Code Structure Validation
 CANONICAL: True - Consolidated 2026-01-06 (merged from engineering.py)
 
 Responsible for:
-- Key 17: Large functions
-- Key 18: Many parameters
-- Key 20: No large classes (>20 methods or >500 lines)
-- Key 21-25: Complexity metrics, cyclomatic complexity
-- Key 26-30: Code organization, modularity, cohesion
-- Key 42: Large files
-- Key 43: Class density
-- Key 46: Duplicate code
+- Large functions
+- Many parameters
+- No large classes (>20 methods or >500 lines)
+- Complexity metrics, cyclomatic complexity
+- Code organization, modularity, cohesion
+- Large files
+- Class density
+- Duplicate code
 """
 import ast
 import os
@@ -43,11 +43,11 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     """
     Structural Engineer validates code structure and organization.
     
-    Validates Canon Keys 20-30:
-    - Key 20: No large classes (>20 methods or >500 lines)
-    - Key 21: Proper function size (<50 lines)
-    - Key 22: Cyclomatic complexity (<10)
-    - Key 23-30: Modularity, cohesion, coupling
+    Validates:
+    - No large classes (>20 methods or >500 lines)
+    - Proper function size (<50 lines)
+    - Cyclomatic complexity (<10)
+    - Modularity, cohesion, coupling
     """
 
     def get_validation_keys(self) -> List[int]:
@@ -57,20 +57,20 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     async def execute(self) -> Any:
         """Execute Structural Engineer validation checks."""
         print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Code Structure...')
-        print(f'   [{self.name}] 🔍 Checking Key 20: Large Classes...')
+        print(f'   [{self.name}] 🔍 Checking Large Classes...')
         passed, violations = self.check_no_large_classes()
         if not passed:
-            print(f'   [{self.name}] ❌ Key 20: FAIL ({len(violations)} violations)')
-            await self._heal_violations(20, violations)
+            print(f'   [{self.name}] ❌ Large Classes: FAIL ({len(violations)} violations)')
+            await self._heal_violations('large_classes', violations)
         else:
-            print(f'   [{self.name}] ✅ Key 20: PASS - All classes within limits')
-        print(f'   [{self.name}] 🔍 Checking Key 21: Large Functions...')
+            print(f'   [{self.name}] ✅ Large Classes: PASS - All classes within limits')
+        print(f'   [{self.name}] 🔍 Checking Large Functions...')
         passed, violations = self.check_no_large_functions()
         if not passed:
-            print(f'   [{self.name}] ❌ Key 21: FAIL ({len(violations)} violations) - Large functions detected')
-            await self._heal_violations(21, violations)
+            print(f'   [{self.name}] ❌ Large Functions: FAIL ({len(violations)} violations) - Large functions detected')
+            await self._heal_violations('large_functions', violations)
         else:
-            print(f'   [{self.name}] ✅ Key 21: PASS - All functions within limits')
+            print(f'   [{self.name}] ✅ Large Functions: PASS - All functions within limits')
 
     def check_no_large_classes(self) -> Tuple[bool, List[str]]:
         """
