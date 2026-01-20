@@ -446,115 +446,43 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         self, file_path: Path, msg: str, archives_root: Path, dry_run: bool,
         affected_paths: List[Path], import_touched_paths: List[Path]
     ) -> Dict[str, Any]:
-        """Apply appropriate healing strategy based on violation message."""
-        # Check dispatch table for matching strategy
-        for pattern, method_name in self.HEALING_STRATEGIES.items():
-            if pattern in msg:
-                method = getattr(self, method_name)
-                if method_name == "_heal_broken_backup":
-                    return method(file_path, dry_run, affected_paths)
-                return method(file_path, msg, dry_run, affected_paths, import_touched_paths)
-        
-        # Fallback to archiving
-        return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._apply_healing_strategy(file_path, msg, archives_root, dry_run, affected_paths, import_touched_paths)
 
     def _heal_broken_backup(self, file_path: Path, dry_run: bool, affected_paths: List[Path]) -> Dict[str, Any]:
-        """Heal broken backup files by deletion."""
-        result = self.safe_delete(file_path, dry_run=dry_run)
-        if result.get("applied") and not dry_run:
-            affected_paths.append(file_path)
-        return result
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._heal_broken_backup(file_path, dry_run, affected_paths)
 
     def _heal_app_specific_violation(
         self, file_path: Path, msg: str, dry_run: bool,
         affected_paths: List[Path], import_touched_paths: List[Path]
     ) -> Dict[str, Any]:
-        """Heal app-specific violations by moving to correct apps folder."""
-        target_match = re.search(r"Move to '([^']+)'", msg)
-        if target_match:
-            relative_target = target_match.group(1).rstrip("/")
-            target_path = self.project_root / relative_target / file_path.name
-            move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
-            if move_result.get("applied") and not dry_run:
-                affected_paths.extend([file_path, target_path])
-                # Collect import-touched files
-                if "import_files_touched" in move_result:
-                    for rel in move_result["import_files_touched"]:
-                        import_touched_paths.append(self.project_root / rel)
-            return move_result
-        else:
-            return {"action_taken": f"SKIPPED: Could not parse target path. Using fallback: {DEFAULT_APP_HEALING_TARGET}"}
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._heal_app_specific_violation(file_path, msg, dry_run, affected_paths, import_touched_paths)
 
     def _heal_territory_mismatch(
         self, file_path: Path, msg: str, dry_run: bool,
         affected_paths: List[Path], import_touched_paths: List[Path]
     ) -> Dict[str, Any]:
-        """Heal territory mismatch violations by moving to correct agentic_core location."""
-        target_match = re.search(r"Move to agentic_core/([^\s.]+)", msg) or re.search(r"move to '([^']+)'", msg)
-        if target_match:
-            territory = target_match.group(1)
-            target_path = self.project_root / "agentic_core" / territory / file_path.name
-            move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
-            if move_result.get("applied") and not dry_run:
-                affected_paths.extend([file_path, target_path])
-                if "import_files_touched" in move_result:
-                    for rel in move_result["import_files_touched"]:
-                        import_touched_paths.append(self.project_root / rel)
-            return move_result
-        else:
-            return {"action_taken": "SKIPPED: Could not parse target territory"}
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._heal_territory_mismatch(file_path, msg, dry_run, affected_paths, import_touched_paths)
 
     def _heal_depth_violation(
         self, file_path: Path, msg: str, dry_run: bool,
         affected_paths: List[Path], import_touched_paths: List[Path]
     ) -> Dict[str, Any]:
-        """
-        Heal depth violations by realigning file within its Sovereign Territory.
-        - DEEP: Flattens path (moves up).
-        - SHALLOW: Nests path (injects 'depth_aligned' spacer).
-        Replaces aggressive archiving.
-        """
-        try:
-            rel_path = file_path.relative_to(self.project_root)
-            parts = rel_path.parts
-            root_folder = parts[0]
-            
-            expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth", 3)
-            current_depth = len(parts) - 1  # 0-indexed parts
-            
-            if current_depth == expected_depth:
-                return {"action_taken": "SKIPPED: Depth already correct (race condition?)"}
-
-            target_path = None
-            
-            if current_depth > expected_depth:
-                # Too Deep: Flatten up to parent
-                # e.g. root/a/b/c/file.py (Depth 4) -> root/a/b/file.py (Depth 3)
-                new_parts = parts[:expected_depth] + (parts[-1],)
-                target_path = self.project_root.joinpath(*new_parts)
-                action_type = "FLATTENED"
-                
-            else:
-                # Too Shallow: Nest deeper
-                # e.g. root/file.py (Depth 1) -> root/depth_aligned/file.py (Depth 2/3?)
-                deficit = expected_depth - current_depth
-                # Inject 'depth_aligned' folders
-                spacers = tuple(["depth_aligned"] * deficit)
-                # Insert spacers before filename
-                new_parts = parts[:-1] + spacers + (parts[-1],)
-                target_path = self.project_root.joinpath(*new_parts)
-                action_type = "NESTED"
-
-            move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
-            if move_result.get("applied"):
-                move_result["action_taken"] = f"{action_type} to align depth: {target_path.relative_to(self.project_root)}"
-                if not dry_run:
-                    affected_paths.extend([file_path, target_path])
-            return move_result
-
-        except Exception as e:
-            Logger.error(f"[LocationAgent] Depth heal failed: {e}")
-            return {"error": str(e)}
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._heal_depth_violation(file_path, msg, dry_run, affected_paths, import_touched_paths)
 
     # Archive subfolder mapping moved to location_constants.py
 
@@ -562,18 +490,10 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         self, file_path: Path, msg: str, archives_root: Path, 
         dry_run: bool, affected_paths: List[Path]
     ) -> Dict[str, Any]:
-        """Heal violations by archiving to appropriate subfolder."""
-        subfolder = next(
-            (sf for pattern, sf in ARCHIVE_SUBFOLDERS.items() if pattern in msg),
-            DEFAULT_ARCHIVE_SUBFOLDER
-        )
-        target_path = archives_root / subfolder / file_path.name
-        move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
-        if "MOVED" in move_result.get("action_taken", ""):
-            move_result["action_taken"] = move_result["action_taken"].replace("MOVED", "ARCHIVED")
-        if move_result.get("applied") and not dry_run:
-            affected_paths.extend([file_path, target_path])
-        return move_result
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
     def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> Tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
@@ -659,57 +579,10 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         return healer._backup_file(file_path, backup_dir)
 
     def post_heal_validation(self, original_path: Path, new_path: Optional[Path] = None, dry_run: bool = True) -> Dict[str, Any]:
-        """
-        Re-validate after healing to confirm fix effectiveness.
-        Called automatically in safe_move/safe_delete after applied actions.
-        
-        Returns structured post-heal report added to action dict.
-        """
-        report = {
-            "post_heal_status": "SKIPPED",
-            "post_heal_violations": [],
-            "post_heal_message": "",
-        }
-
-        if dry_run:
-            report["post_heal_message"] = "PREVIEW: Post-heal validation skipped in dry-run"
-            return report
-
-        try:
-            # Case 1: Delete — confirm absence
-            if new_path is None:
-                if not original_path.exists():
-                    report["post_heal_status"] = "SUCCESS"
-                    report["post_heal_message"] = "File successfully deleted — no longer exists"
-                else:
-                    report["post_heal_status"] = "FAILED"
-                    report["post_heal_message"] = "Delete failed — file still exists"
-                return report
-
-            # Case 2: Move/Archive — validate new location
-            if new_path.exists():
-                is_valid, msg = self.validate_file_location(new_path)
-                if is_valid:
-                    report["post_heal_status"] = "SUCCESS"
-                    report["post_heal_message"] = "Healing successful — new location compliant"
-                else:
-                    report["post_heal_status"] = "PARTIAL"
-                    report["post_heal_violations"] = [msg]
-                    report["post_heal_message"] = f"Partial heal — new violations: {msg}"
-            else:
-                report["post_heal_status"] = "FAILED"
-                report["post_heal_message"] = "Healing failed — destination file does not exist"
-
-            # Bonus: Confirm original path cleared (move/archive success)
-            if original_path.exists():
-                report["post_heal_message"] += " | WARNING: Original file still exists (partial move?)"
-
-        except Exception as e:
-            report["post_heal_status"] = "ERROR"
-            report["post_heal_message"] = f"Post-heal validation error: {e}"
-            Logger.error(f"[LocationAgent] Post-heal validation failed: {e}")
-
-        return report
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer.post_heal_validation(original_path, new_path, dry_run)
 
     def _compute_module_path(self, file_path: Path) -> str:
         """Wrapper for shared compute_module_path utility."""
@@ -729,135 +602,10 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
             return ""
 
     def fix_imports_after_move(self, old_path: Path, new_path: Path, dry_run: bool = True) -> Dict[str, Any]:
-        """
-        Ultra import healing post-move.
-        Scans entire repo for references to old module and updates to new module.
-        Patterns matched:
-        - from old.parent import old_stem
-        - from old.parent.sub import old_stem
-        - import old.parent.old_stem
-        Safe regex, backs up changed files.
-        
-        POST-IMPORT-FIX VALIDATION (Ultra Reliability 2026-01-02):
-        - After applying fixes, re-scan repo for any remaining references to old module
-        - Reports remaining broken imports (files + line previews)
-        - Status: FULL_SUCCESS (0 remaining), PARTIAL (some remaining), FAILED (more than before)
-        """
-        import_result = {
-            "import_fix_applied": False,
-            "import_files_touched": [],
-            "import_fix_count": 0,
-            "import_message": "",
-            "import_post_fix_status": "SKIPPED",
-            "import_remaining_references": [],
-            "import_remaining_count": 0,
-        }
-
-        if dry_run:
-            import_result["import_message"] = "PREVIEW: Import fix skipped in dry-run"
-            import_result["import_post_fix_status"] = "PREVIEW"
-            return import_result
-
-        old_module = self._compute_module_path(old_path)
-        new_module = self._compute_module_path(new_path)
-
-        if not old_module or not new_module:
-            import_result["import_message"] = "SKIPPED: Could not compute module paths"
-            import_result["import_post_fix_status"] = "SKIPPED"
-            return import_result
-
-        # Regex patterns for common import styles
-        patterns = [
-            (rf"from\s+{re.escape(old_module)}\s+import", rf"from {new_module} import"),
-            (rf"import\s+{re.escape(old_module)}", f"import {new_module}"),
-            (rf"from\s+([^ \t]+)\.{re.escape(old_path.stem)}\s+import", rf"from \1.{new_path.stem} import"),
-            (rf"import\s+([^ \t]+)\.{re.escape(old_path.stem)}", rf"import \1.{new_path.stem}"),
-        ]
-
-        touched_files: List[str] = []
-        fix_count = 0
-
-        try:
-            for py_file in _get_python_files(self.project_root):
-                if py_file == new_path or py_file == old_path:
-                    continue  # Skip self
-                if any(part in {".git", "__pycache__", "archives"} for part in py_file.parts):
-                    continue
-
-                try:
-                    content = py_file.read_text(encoding="utf-8", errors="ignore")
-                except Exception:
-                    continue
-                    
-                new_content = content
-
-                for old_pat, new_pat in patterns:
-                    new_content, count = re.subn(old_pat, new_pat, new_content)
-                    fix_count += count
-
-                if new_content != content:
-                    # Backup changed file
-                    backup_dir = self._init_backup_dir() / "import_fixes"
-                    backup_dir.mkdir(parents=True, exist_ok=True)
-                    try:
-                        backup_path = backup_dir / py_file.relative_to(self.project_root)
-                        backup_path.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copy2(py_file, backup_path)
-                    except Exception:
-                        pass  # Best effort backup
-
-                    py_file.write_text(new_content, encoding="utf-8")
-                    touched_files.append(str(py_file.relative_to(self.project_root)))
-
-            import_result["import_fix_applied"] = True
-            import_result["import_files_touched"] = touched_files
-            import_result["import_fix_count"] = fix_count
-            import_result["import_message"] = f"Fixed {fix_count} imports across {len(touched_files)} files"
-            Logger.info(f"[LocationAgent] Import fix: {old_module} → {new_module} ({fix_count} fixes)")
-
-            # === POST-IMPORT-FIX VALIDATION ===
-            remaining_references = []
-            remaining_count = 0
-
-            validation_pattern = re.compile(rf"{re.escape(old_module)}")
-            for py_file in _get_python_files(self.project_root):
-                if any(part in {".git", "__pycache__", "archives"} for part in py_file.parts):
-                    continue
-
-                try:
-                    lines = py_file.read_text(encoding="utf-8", errors="ignore").splitlines()
-                    for line_num, line in enumerate(lines, 1):
-                        if validation_pattern.search(line):
-                            remaining_references.append({
-                                "file": str(py_file.relative_to(self.project_root)),
-                                "line": line_num,
-                                "preview": line.strip()[:100],
-                            })
-                            remaining_count += 1
-                except Exception:
-                    continue
-
-            import_result["import_remaining_references"] = remaining_references[:20]  # Cap for report size
-            import_result["import_remaining_count"] = remaining_count
-
-            if remaining_count == 0:
-                import_result["import_post_fix_status"] = "FULL_SUCCESS"
-                import_result["import_message"] += " | All imports resolved"
-            elif remaining_count <= 3:
-                import_result["import_post_fix_status"] = "PARTIAL"
-                import_result["import_message"] += f" | {remaining_count} remaining references (likely strings/dynamic)"
-            else:
-                import_result["import_post_fix_status"] = "NEEDS_REVIEW"
-                import_result["import_message"] += f" | {remaining_count} remaining references — review unhandled patterns"
-
-            Logger.info(f"[LocationAgent] Post-import validation: {import_result['import_post_fix_status']} ({remaining_count} remaining)")
-
-        except Exception as e:
-            import_result["import_message"] = f"ERROR during import fix: {e}"
-            import_result["import_post_fix_status"] = "ERROR"
-            Logger.error(f"[LocationAgent] Import fix failed: {e}")
-
-        return import_result
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer.fix_imports_after_move(old_path, new_path, dry_run)
 
     def safe_move(self, src_path: Path, dst_path: Path, dry_run: bool = True) -> Dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
@@ -1003,84 +751,52 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
     # Refactored: Phase-based — orchestrator low CC (~10–15)
     def _recompute_ast_scores(self, tree: ast.AST) -> Tuple[float, float, Dict[str, float]]:
-        """AST score recomputation orchestrator — linear walk + aggregation."""
-        initial_scores = {
-            "app_rg": 0.0,
-            "app_lic": 0.0,
-            "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
-        }
-
-        # Phase 1: Walk and collect raw increments
-        raw_increments = self._collect_ast_increments(tree)
-
-        # Phase 2: Aggregate and apply
-        final_scores = self._aggregate_ast_increments(initial_scores, raw_increments)
-
-        return final_scores["app_rg"], final_scores["app_lic"], final_scores["territories"]
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._recompute_ast_scores(tree)
 
     def _collect_ast_increments(self, tree: ast.AST) -> dict:
-        """Phase 1: Pure AST walk — collect raw risk increments."""
-        increments = {"app_rg": 0.0, "app_lic": 0.0, "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}}
-        
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
-                self._score_identifier(node.name.lower(), 1.0, increments)
-            elif isinstance(node, ast.arguments):
-                self._score_arguments(node, increments)
-            elif isinstance(node, ast.Assign):
-                self._score_assignments(node, increments)
-            elif isinstance(node, ast.Constant) and isinstance(node.value, str) and len(node.value) > 8:
-                self._score_string(node.value.lower(), increments)
-        return increments
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._collect_ast_increments(tree)
 
     def _score_identifier(self, name: str, weight: float, increments: dict) -> None:
-        """Score an identifier against app/territory terms."""
-        if any(t in name for t in APP_RG_AST_TERMS):
-            increments["app_rg"] += weight
-        if any(t in name for t in APP_LIC_AST_TERMS):
-            increments["app_lic"] += weight
-        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-            if any(t in name for terms in cats.values() for t in terms):
-                increments["territories"][terr] += weight
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._score_identifier(name, weight, increments)
 
     def _score_arguments(self, node: ast.arguments, increments: dict) -> None:
-        """Score function arguments."""
-        all_args = node.args + getattr(node, "kwonlyargs", []) + getattr(node, "posonlyargs", [])
-        for arg in all_args:
-            if arg.arg and arg.arg not in {"self", "cls"}:
-                self._score_variable(arg.arg.lower(), increments)
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._score_arguments(node, increments)
 
     def _score_assignments(self, node: ast.Assign, increments: dict) -> None:
-        """Score assignment targets."""
-        for target in node.targets:
-            if isinstance(target, ast.Name):
-                self._score_variable(target.id.lower(), increments)
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._score_assignments(node, increments)
 
     def _score_variable(self, name: str, increments: dict) -> None:
-        """Score a variable name."""
-        if any(t in name for t in APP_RG_VARIABLE_TERMS):
-            increments["app_rg"] += VARIABLE_HIT_WEIGHT
-        if any(t in name for t in APP_LIC_VARIABLE_TERMS):
-            increments["app_lic"] += VARIABLE_HIT_WEIGHT
-        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-            if any(t in name for terms in cats.values() for t in terms):
-                increments["territories"][terr] += VARIABLE_HIT_WEIGHT
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._score_variable(name, increments)
 
     def _score_string(self, text: str, increments: dict) -> None:
-        """Score a string literal."""
-        increments["app_rg"] += sum(1 for t in APP_RG_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-        increments["app_lic"] += sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-            increments["territories"][terr] += sum(1 for terms in cats.values() for t in terms if t in text) * STRING_HIT_WEIGHT
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._score_string(text, increments)
 
     def _aggregate_ast_increments(self, initial_scores: dict, increments: dict) -> dict:
-        """Phase 2: Simple aggregation (CC ~5)."""
-        final_scores = initial_scores.copy()
-        final_scores["app_rg"] += increments["app_rg"]
-        final_scores["app_lic"] += increments["app_lic"]
-        for terr in final_scores["territories"]:
-            final_scores["territories"][terr] += increments["territories"].get(terr, 0.0)
-        return final_scores
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._aggregate_ast_increments(initial_scores, increments)
 
     def post_import_validation_and_heal(self, affected_paths: List[Path], import_touched_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
         """
@@ -1174,97 +890,28 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         return full_report
 
     def _heal_gravity_violations(self, gravity_issues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Helper method to heal gravity violations by removing offending imports."""
-        gravity_heal_actions = []
-        for grav in gravity_issues:
-            path = Path(grav["path"]) if isinstance(grav["path"], str) else grav["path"]
-            msg = grav["issue"]
-            
-            try:
-                downstream_roots = self._extract_downstream_roots(msg)
-                if not downstream_roots:
-                    continue
-                
-                content = path.read_text(encoding="utf-8")
-                lines = content.splitlines()
-                
-                new_lines, removed_modules = self._remove_offending_imports(lines, downstream_roots)
-                
-                if removed_modules:
-                    new_content = self._insert_gravity_heal_todo(new_lines, msg, removed_modules)
-                    self._backup_and_write_file(path, new_content)
-                    
-                    gravity_heal_actions.append({
-                        "type": "GRAVITY_AUTO_HEAL",
-                        "file": grav["file"],
-                        "removed_imports": removed_modules,
-                    })
-            
-            except Exception as e:
-                gravity_heal_actions.append({
-                    "type": "GRAVITY_HEAL_ERROR",
-                    "file": grav["file"],
-                    "error": str(e),
-                })
-        
-        return gravity_heal_actions
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._heal_gravity_violations(gravity_issues)
     
     def _extract_downstream_roots(self, msg: str) -> List[str]:
-        """Extract downstream roots from gravity violation message."""
-        downstream_match = re.search(r"downstream roots: \[(.*?)\]", msg)
-        if downstream_match:
-            return [r.strip().strip("'\"") for r in downstream_match.group(1).split(",")]
-        
-        downstream_match = re.search(r"apps_[a-z_]+", msg)
-        if downstream_match:
-            return [downstream_match.group(0)]
-        
-        return []
-    
-    def _remove_offending_imports(self, lines: List[str], downstream_roots: List[str]) -> Tuple[List[str], List[str]]:
-        """Remove import lines containing downstream roots."""
-        new_lines = []
-        removed_modules = []
-        
-        for line in lines:
-            if any(root in line for root in downstream_roots) and line.strip().startswith(("import ", "from ")):
-                match = re.match(r"^(import|from)\s+([a-zA-Z0-9_.]+)", line.strip())
-                if match:
-                    removed_modules.append(match.group(2))
-                continue
-            new_lines.append(line)
-        
-        return new_lines, removed_modules
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._extract_downstream_roots(msg)
     
     def _insert_gravity_heal_todo(self, lines: List[str], msg: str, removed_modules: List[str]) -> str:
-        """Insert TODO block after shebang/docstring."""
-        todo_block = [
-            "",
-            "# TODO: GRAVITY VIOLATION AUTO-HEALED",
-            "# Downstream imports removed — move shared logic to apps_shared or sovereign utils",
-            "# Original violation: " + msg[:200],
-            "# Removed: " + ", ".join(removed_modules),
-            "",
-        ]
-        
-        insert_idx = self._find_todo_insert_position(lines)
-        new_lines = lines[:insert_idx] + todo_block + lines[insert_idx:]
-        return "\n".join(new_lines)
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._insert_gravity_heal_todo(lines, msg, removed_modules)
     
     def _find_todo_insert_position(self, lines: List[str]) -> int:
-        """Find position to insert TODO block after shebang/docstring."""
-        insert_idx = 0
-        
-        if lines and lines[0].startswith("#!"):
-            insert_idx = 1
-        
-        if len(lines) > insert_idx and lines[insert_idx].strip().startswith('"""'):
-            for i, l in enumerate(lines[insert_idx:], insert_idx):
-                if i > insert_idx and '"""' in l:
-                    insert_idx = i + 1
-                    break
-        
-        return insert_idx
+        """FACADE: Delegates to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._find_todo_insert_position(lines)
     
     def _backup_and_write_file(self, path: Path, content: str) -> None:
         """Backup file and write new content."""
@@ -1506,46 +1153,10 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         return deep_naming_report
 
     def _collect_naming_violations(self, py_files: List[Path], affected_paths: List[Path]) -> Tuple[list, list]:
-        """Phase 1: Scan files for naming violations (CC ~20)."""
-        heal_actions = []
-        semantic_issues = []
-
-        for path in py_files:
-            try:
-                rel = str(path.relative_to(self.project_root))
-                filename = path.name
-                filename_lower = filename.lower()
-                content = path.read_text(encoding="utf-8", errors="ignore")
-                content_lower = content.lower()
-
-                # Check conventions
-                issues = self._check_naming_conventions(filename)
-                if issues:
-                    heal_actions.append({"path": path, "rel": rel, "filename": filename, "issues": issues})
-
-                # Check prefix-location
-                if hasattr(self.naming_agent, 'validate_prefix_location_match'):
-                    prefix_issues = self.naming_agent.validate_prefix_location_match(path)
-                    if prefix_issues:
-                        issues.extend(prefix_issues if isinstance(prefix_issues, list) else [prefix_issues])
-
-                # Check high-signal keywords
-                missing_signals = self._check_high_signal_keywords(filename_lower, content_lower)
-                if missing_signals:
-                    semantic_issues.append({
-                        "file": rel,
-                        "issue": "MISSING_HIGH_SIGNAL_KEYWORDS",
-                        "missing": list(missing_signals),
-                    })
-                    heal_actions.append({"path": path, "rel": rel, "missing_signals": missing_signals})
-
-                # Check sovereign markers
-                self._check_sovereign_markers(path, rel, filename_lower, content_lower, semantic_issues, heal_actions)
-
-            except Exception as e:
-                heal_actions.append({"type": "NAMING_FILE_ERROR", "error": str(e)})
-
-        return heal_actions, semantic_issues
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._collect_naming_violations(py_files, affected_paths)
 
     def _check_naming_conventions(self, filename: str) -> list:
         """Check filename conventions (CC ~8)."""
@@ -1579,116 +1190,40 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
             pass
 
     def _apply_naming_heals(self, heal_actions: list, affected_paths: List[Path]) -> int:
-        """Phase 2: Apply healing actions (CC ~15)."""
-        healed_count = 0
-        for action in heal_actions:
-            try:
-                path = action.get("path")
-                if not path or not path.exists():
-                    continue
-
-                # Handle semantic keyword insertion
-                if "missing_signals" in action:
-                    self._insert_semantic_keywords(path, action["missing_signals"])
-                    healed_count += 1
-
-                # Handle sovereign marker
-                if action.get("type") == "SOVEREIGN_MARKER":
-                    self._insert_sovereign_marker(path)
-                    healed_count += 1
-
-                # Handle convention fixes
-                if "issues" in action:
-                    self._apply_convention_fixes(path, action, affected_paths)
-                    healed_count += 1
-
-            except Exception as e:
-                action["error"] = str(e)
-
-        return healed_count
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._apply_naming_heals(heal_actions, affected_paths)
 
     def _insert_semantic_keywords(self, path: Path, missing_signals: set) -> None:
-        """Insert semantic keyword TODO block (CC ~8)."""
-        content = path.read_text(encoding="utf-8", errors="ignore")
-        todo_block = [
-            "",
-            "# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)",
-            "# File appears to be a sovereign component but missing canon high-signal keywords.",
-            "# Suggested keywords to add in docstring/code: " + ", ".join(sorted(missing_signals)),
-            "# This boosts alignment detection — review and integrate appropriately",
-            "",
-        ]
-        lines = content.splitlines()
-        insert_idx = self._find_docstring_end(lines)
-        new_lines = lines[:insert_idx] + todo_block + lines[insert_idx:]
-        new_content = "\n".join(new_lines)
-        backup_dir = self._init_backup_dir() / "semantic_keyword_insertion"
-        backup_dir.mkdir(parents=True, exist_ok=True)
-        backup_path = backup_dir / path.relative_to(self.project_root)
-        backup_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(path, backup_path)
-        path.write_text(new_content, encoding="utf-8")
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._insert_semantic_keywords(path, missing_signals)
 
     def _find_docstring_end(self, lines: list) -> int:
-        """Find insertion point after docstring/shebang (CC ~6)."""
-        insert_idx = 0
-        if lines and lines[0].startswith("#!"):
-            insert_idx = 1
-        if len(lines) > insert_idx and lines[insert_idx].strip().startswith(('"""', "'''")):
-            quote = lines[insert_idx].strip()[:3]
-            for i, l in enumerate(lines[insert_idx:], insert_idx):
-                if i > insert_idx and quote in l:
-                    insert_idx = i + 1
-                    break
-        return insert_idx
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._find_docstring_end(lines)
 
     def _insert_sovereign_marker(self, path: Path) -> None:
-        """Insert sovereign marker TODO (CC ~5)."""
-        content = path.read_text(encoding="utf-8", errors="ignore")
-        todo = "\n# SOVEREIGN MARKER MISSING - ADD CANON COMPLIANCE COMMENT\n"
-        if todo not in content:
-            backup_dir = self._init_backup_dir() / "naming_marker"
-            backup_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(path, backup_dir / path.name)
-            path.write_text(content + todo, encoding="utf-8")
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._insert_sovereign_marker(path)
 
     def _apply_convention_fixes(self, path: Path, action: dict, affected_paths: List[Path]) -> None:
-        """Apply filename/prefix convention fixes (CC ~10)."""
-        filename = path.name
-        new_name = re.sub(r'[^a-zA-Z0-9_.]', '_', filename)
-        new_name = re.sub(r'_+', '_', new_name).strip('_')
-        if not new_name.endswith('.py'):
-            new_name += '.py'
-        new_path = path.parent / new_name
-
-        if new_path != path and new_name.lower() != filename.lower():
-            move_result = self.safe_move(path, new_path, dry_run=False)
-            if move_result.get("applied"):
-                action["type"] = "FILENAME_CANONICAL_RENAME"
-                action["new"] = str(new_path.relative_to(self.project_root))
-                affected_paths.append(new_path)
-
-            # Prefix-location canonical move
-            if hasattr(self.naming_agent, 'move_to_canonical_location') and new_path.exists():
-                canonical_result = self.naming_agent.move_to_canonical_location(new_path, dry_run=False)
-                if canonical_result.get("moved") and canonical_result.get("new_path"):
-                    affected_paths.append(self.project_root / canonical_result["new_path"])
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._apply_convention_fixes(path, action, affected_paths)
 
     def _set_naming_final_status(self, report: dict, heal_actions: list, semantic_issues: list) -> None:
-        """Phase 3: Set final status (CC ~5)."""
-        if not heal_actions and not semantic_issues:
-            report["naming_deep_status"] = "FULL_SUCCESS"
-            report["naming_final_status"] = "FULL_SUCCESS"
-        elif not semantic_issues:
-            report["naming_deep_status"] = "CONVENTIONS_FIXED"
-            report["naming_final_status"] = "CONVENTIONS_FIXED"
-        else:
-            report["naming_deep_status"] = "PARTIAL"
-            report["naming_final_status"] = "PARTIAL"
-
-        report["naming_message"] = f"Deep naming: {len(heal_actions)} convention heals, {len(semantic_issues)} semantic issues → Final: {report['naming_deep_status']}"
-        if any(a.get("type") == "SEMANTIC_KEYWORD_AUTO_INSERT" for a in heal_actions):
-            report["naming_message"] += " | Semantic keywords auto-inserted"
+        """FACADE: Delegates to LocationHealerAgent."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        return healer._set_naming_final_status(report, heal_actions, semantic_issues)
 
     def cleanup_violations(
         self, 
