@@ -23,8 +23,8 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
     """
     Documentation enforcement agent for docstring validation.
     
-    Validates Canon Keys:
-        - Key 21: No missing docstrings in classes and functions.
+    Validates:
+        - No missing docstrings in classes and functions.
     
     Role:
         Pure focus on docstring presence and quality.
@@ -40,7 +40,7 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
         """
         Execute documentation validation checks.
         
-        Runs Key 21 (missing docstrings) check and reports results
+        Runs missing docstrings check and reports results
         to the validation context.
         """
         print(f'\n[>>>] {self.agent.name} ACTIVATED: Documentation Check...')

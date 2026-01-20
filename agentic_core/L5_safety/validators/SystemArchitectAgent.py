@@ -7,13 +7,13 @@
 from __future__ import annotations
 from dataclasses import dataclass
 """
-System Architect Agent - Core Architecture Validation (Keys 40-50)
+System Architect Agent - Core Architecture Validation
 CANONICAL: True - Consolidated 2026-01-06 (removed system_architect.py duplicate)
 
 Responsible for:
-- Key 40: Core architecture integrity
-- Key 41-47: Import dependencies, module structure
-- Key 48-50: Architectural patterns and design
+- Core architecture integrity
+- Import dependencies, module structure
+- Architectural patterns and design
 """
 import ast
 import os
@@ -32,11 +32,11 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
     """
     System Architect validates core architecture and import dependencies.
     
-    Validates Canon Keys 40-50:
-    - Key 40: Core modules exist and are accessible
-    - Key 41: No deep nesting (max 4 levels)
-    - Key 42: No large files (>1000 lines)
-    - Key 43-50: Import structure, dependencies, architecture
+    Validates:
+    - Core modules exist and are accessible
+    - No deep nesting (max 4 levels)
+    - No large files (>1000 lines)
+    - Import structure, dependencies, architecture
     """
 
     def get_validation_keys(self) -> List[int]:
@@ -46,36 +46,36 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
     async def execute(self) -> Any:
         """
         [L5 HARDENING] Sovereign Architectural Execution.
-        Enforces Hierarchy (Key 40), Nesting (Key 41), and Header Sovereignty.
+        Enforces Hierarchy, Nesting, and Header Sovereignty.
         """
         print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...')
-        print(f'   [{self.name}] 🔍 Checking Key 40: Hierarchy & Headers...')
+        print(f'   [{self.name}] 🔍 Checking Architecture: Hierarchy & Headers...')
         passed_arch, arch_viols = self.check_core_architecture()
         header_viols: Any = await self._check_file_headers()
-        k40_violations: Any = arch_viols + header_viols
-        if not k40_violations:
-            print(f'   [{self.name}] ✅ Key 40: PASS - Core architecture & headers valid')
+        arch_violations: Any = arch_viols + header_viols
+        if not arch_violations:
+            print(f'   [{self.name}] ✅ Architecture: PASS - Core architecture & headers valid')
         else:
-            print(f'   [{self.name}] ❌ Key 40: FAIL ({len(k40_violations)} violations)')
-            await self._heal_violations(40, k40_violations)
-        print(f'   [{self.name}] 🔍 Checking Key 41: Physical Folder Depth...')
+            print(f'   [{self.name}] ❌ Architecture: FAIL ({len(arch_violations)} violations)')
+            await self._heal_violations('architecture', arch_violations)
+        print(f'   [{self.name}] 🔍 Checking Depth: Physical Folder Depth...')
         passed_depth, depth_viols = self.check_no_deep_nesting()
         if not passed_depth:
-            print(f'   [{self.name}] ❌ Key 41: FAIL ({len(depth_viols)} violations)')
-            await self._heal_violations(41, depth_viols)
+            print(f'   [{self.name}] ❌ Depth: FAIL ({len(depth_viols)} violations)')
+            await self._heal_violations('depth', depth_viols)
         else:
-            print(f'   [{self.name}] ✅ Key 41: PASS - Folder depth compliant (3-5)')
-        print(f'   [{self.name}] 🔍 Checking Key 42: Large Files...')
+            print(f'   [{self.name}] ✅ Depth: PASS - Folder depth compliant (3-5)')
+        print(f'   [{self.name}] 🔍 Checking File Size: Large Files...')
         passed, violations = self.check_no_large_files()
         if not passed:
-            print(f'   [{self.name}] ❌ Key 42: FAIL ({len(violations)} violations)')
-            await self._heal_violations(42, violations)
+            print(f'   [{self.name}] ❌ File Size: FAIL ({len(violations)} violations)')
+            await self._heal_violations('file_size', violations)
         else:
-            print(f'   [{self.name}] ✅ Key 42: PASS - All files within size limits')
+            print(f'   [{self.name}] ✅ File Size: PASS - All files within size limits')
 
     async def _check_file_headers(self) -> List[str]:
         """
-        [KEY 40] Documentation Sovereignty Pass.
+        Documentation Sovereignty Pass.
         Checks for high-signal headers and specialized Test Protocols.
         """
         violations = []
@@ -131,7 +131,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
 
     def check_no_deep_nesting(self) -> Tuple[bool, List[str]]:
         """
-        [KEY 41 HARDENING] Enforce Physical Folder Nesting (Min 3, Max 5).
+        Enforce Physical Folder Nesting (Min 3, Max 5).
         Validates the physical directory depth relative to project root.
         Tests folder requires exactly depth 3.
         """
@@ -177,9 +177,9 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                 continue
         return (len(violations) == 0, violations)
 
-    async def _heal_violations(self, key: int, violations: List[str]):
+    async def _heal_violations(self, check_type: str, violations: List[str]):
         """
-        [KEY 40 HARDENING] Structural & Strategy Healing.
+        Structural & Strategy Healing.
         Handles both physical package initialization and logic mutation.
         """
         structural_fixes = [v for v in violations if 'Missing __init__.py' in v]
@@ -194,10 +194,10 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         remaining_violations = [v for v in violations if 'Missing __init__.py' not in v]
         if not remaining_violations:
             return
-        if key == 42:
+        if check_type == 'architecture':
             for Violation in remaining_violations:
                 file_path = Violation.split(':')[0].strip()
-                await self._smart_fix(file_path, key, [Violation])
+                await self._smart_fix(file_path, check_type, [Violation])
             return
         max_healing_per_file = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
         file_violations = {}
@@ -210,11 +210,11 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                         file_violations[file_path] = []
                     file_violations[file_path].append(Violation)
         for file_path, file_viols in file_violations.items():
-            await self._smart_fix(file_path, key, file_viols)
+            await self._smart_fix(file_path, check_type, file_viols)
 
-    async def _smart_fix(self, file_path: str, violation_key: int, violations: List[str]):
+    async def _smart_fix(self, file_path: str, check_type: str, violations: List[str]):
         """
-        [KEY 40] Sovereign Header & Strategy Repair.
+        Sovereign Header & Strategy Repair.
         Injects specialized Test Protocols and high-signal headers.
         """
         from pathlib import Path
@@ -226,17 +226,17 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
             print(f'      [!] Cannot read {file_path}: {e}')
             return
         if any((marker in v for marker in ['Missing Canonical Header', 'Missing Test Protocol'] for v in violations)):
-            Task = f"### ROLE: ARCHITECTURAL_SURGEON\n### TASK: Inject Standard Sovereign Header (Key 40).\nFILE: {os.path.basename(file_path)}\n\nINSTRUCTIONS:\n1. Create a high-signal docstring at the VERY TOP of the file.\n2. The header must describe the file's purpose based on its content.\n3. Include 'Responsible for:' section with bullet points.\n4. IF THIS IS A TEST FILE: You MUST include a 'Test Protocol' section explaining exactly which canon key or functional behavior this file verifies.\n5. Preserve all existing code exactly as-is.\n\nReturn ONLY the full code with the new header injected."
+            Task = f"### ROLE: ARCHITECTURAL_SURGEON\n### TASK: Inject Standard Sovereign Header.\nFILE: {os.path.basename(file_path)}\n\nINSTRUCTIONS:\n1. Create a high-signal docstring at the VERY TOP of the file.\n2. The header must describe the file's purpose based on its content.\n3. Include 'Responsible for:' section with bullet points.\n4. IF THIS IS A TEST FILE: You MUST include a 'Test Protocol' section explaining exactly which functional behavior this file verifies.\n5. Preserve all existing code exactly as-is.\n\nReturn ONLY the full code with the new header injected."
         else:
             violation_details = '\n'.join(violations)
-            Task = f'Fix Subatomic Canon Key {violation_key}. Violations:\n{violation_details}'
+            Task = f'Fix {check_type} violations. Violations:\n{violation_details}'
         max_rounds = 5
         current_code = original_code
         previous_failure = None
         for round_num in range(1, max_rounds + 1):
-            print(f'      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}')
+            print(f'      [Round {round_num}/{max_rounds}] Healing {check_type} → {os.path.basename(file_path)}')
             mutated_code = await self.resilient_mutation(Task=Task, code=current_code, file_path=file_path, round_num=round_num, previous_failure=previous_failure)
-            is_valid, reason = await self.verify_fix(original_code, mutated_code, violation_key)
+            is_valid, reason = await self.verify_fix(original_code, mutated_code, check_type)
             if not is_valid:
                 print(f'      [!] Round {round_num}: {reason} – retrying')
                 previous_failure = reason
