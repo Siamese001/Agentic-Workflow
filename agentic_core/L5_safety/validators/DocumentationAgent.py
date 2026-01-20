@@ -44,7 +44,7 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
         to the validation context.
         """
         print(f'\n[>>>] {self.agent.name} ACTIVATED: Documentation Check...')
-        passed, details = self.check_key_21_no_missing_docstrings()
+        passed, details = self.check_no_missing_docstrings()
         self.agent.ctx.report(self.agent.name, 21, passed, details)
 
     def _has_missing_docstring(self, node: ast.AST) -> bool:
@@ -76,7 +76,7 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
                 file_violations.append(f'{fp}:{node.lineno} {node.name}')
         return file_violations
 
-    def check_key_21_no_missing_docstrings(self) -> Tuple[bool, List[str]]:
+    def check_no_missing_docstrings(self) -> Tuple[bool, List[str]]:
         """
         Check for missing docstrings in classes and functions.
         
