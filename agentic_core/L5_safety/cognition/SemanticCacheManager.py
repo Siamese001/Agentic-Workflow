@@ -15,6 +15,7 @@ import hashlib
 import json
 import logging
 import os
+import threading
 from typing import Any, Optional
 
 Logger = logging.getLogger(__name__)
@@ -47,6 +48,9 @@ class SemanticCacheManager:
         """
         self.api_key = api_key
         self.similarity_threshold = similarity_threshold
+        
+        # Thread safety lock for concurrent access
+        self._lock = threading.RLock()
         
         # Layer 1: Redis (Exact Cache)
         self.redis_client = None
@@ -120,14 +124,15 @@ class SemanticCacheManager:
             Logger.warning(f"[SEMANTIC] Pinecone unavailable: {e}")
     
     def _get_embedding_client(self):
-        """Lazy-load the embedding client."""
-        if self._embedding_client is None and self.api_key:
-            try:
-                from google import genai
-                self._embedding_client = genai.Client(api_key=self.api_key)
-                Logger.debug("[SEMANTIC] Embedding client initialized")
-            except Exception as e:
-                Logger.warning(f"[SEMANTIC] Embedding client failed: {e}")
+        """Lazy-load the embedding client (thread-safe)."""
+        with self._lock:
+            if self._embedding_client is None and self.api_key:
+                try:
+                    from google import genai
+                    self._embedding_client = genai.Client(api_key=self.api_key)
+                    Logger.debug("[SEMANTIC] Embedding client initialized")
+                except Exception as e:
+                    Logger.warning(f"[SEMANTIC] Embedding client failed: {e}")
         return self._embedding_client
     
     def _compute_hash(self, content: str, violation_type: str) -> str:
@@ -187,7 +192,8 @@ class SemanticCacheManager:
                 cached_json = self.redis_client.get(f"decision:{content_hash}")
                 if cached_json:
                     Logger.info("  [CACHE] Hit (Exact - Redis)")
-                    self.stats["redis_hits"] += 1
+                    with self._lock:
+                        self.stats["redis_hits"] += 1
                     return json.loads(cached_json)
             except Exception as e:
                 Logger.debug(f"[SEMANTIC] Redis get failed: {e}")
@@ -207,13 +213,15 @@ class SemanticCacheManager:
                     if results.matches and results.matches[0].score >= self.similarity_threshold:
                         score = results.matches[0].score
                         Logger.info(f"  [CACHE] Hit (Semantic - Pinecone: {score:.2f})")
-                        self.stats["pinecone_hits"] += 1
+                        with self._lock:
+                            self.stats["pinecone_hits"] += 1
                         return json.loads(results.matches[0].metadata["decision_json"])
                         
                 except Exception as e:
                     Logger.debug(f"[SEMANTIC] Pinecone query failed: {e}")
         
-        self.stats["cache_misses"] += 1
+        with self._lock:
+            self.stats["cache_misses"] += 1
         return None
     
     def cache_decision(
@@ -260,7 +268,8 @@ class SemanticCacheManager:
                 except Exception as e:
                     Logger.debug(f"[SEMANTIC] Pinecone upsert failed: {e}")
         
-        self.stats["cache_stores"] += 1
+        with self._lock:
+            self.stats["cache_stores"] += 1
     
     def get_statistics(self) -> dict[str, Any]:
         """Get cache statistics."""
