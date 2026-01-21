@@ -910,3 +910,415 @@ class TestPIISanitizer:
         
         # is_safe should return True
         assert PIISanitizer.is_safe(test_content) is True
+
+
+class TestKnowledgeGraphBridge:
+    """Phase 20+ Tests: Knowledge Graph Bridge for Meta-Learning DNA."""
+    
+    def test_kg_bridge_singleton(self):
+        """[Phase 20+] Verify KnowledgeGraphBridge is a singleton."""
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        KnowledgeGraphBridge.reset_instance()
+        
+        instance1 = KnowledgeGraphBridge.get_instance()
+        instance2 = KnowledgeGraphBridge.get_instance()
+        
+        assert instance1 is instance2
+        
+        KnowledgeGraphBridge.reset_instance()
+    
+    def test_kg_bridge_register_agent(self):
+        """[Phase 20+] Verify agent registration creates entity."""
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        KnowledgeGraphBridge.reset_instance()
+        bridge = KnowledgeGraphBridge.get_instance()
+        
+        result = bridge.register_agent("TestAgent", "Agent")
+        
+        assert result is True
+        assert bridge.stats["entities_created"] == 1
+        
+        KnowledgeGraphBridge.reset_instance()
+    
+    def test_kg_bridge_create_relation(self):
+        """[Phase 20+] Verify relation creation."""
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        KnowledgeGraphBridge.reset_instance()
+        bridge = KnowledgeGraphBridge.get_instance()
+        
+        result = bridge.create_relation(
+            from_entity="GovernorAgent",
+            to_entity="RouterAgent",
+            relation_type=KnowledgeGraphBridge.RELATION_INTERACTS_WITH,
+        )
+        
+        assert result is True
+        assert bridge.stats["relations_created"] == 1
+        
+        KnowledgeGraphBridge.reset_instance()
+    
+    def test_kg_bridge_add_observation(self):
+        """[Phase 20+] Verify observation addition."""
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        KnowledgeGraphBridge.reset_instance()
+        bridge = KnowledgeGraphBridge.get_instance()
+        
+        result = bridge.add_observation(
+            entity_name="GovernorAgent",
+            observation="Tends to fail when RouterAgent timeout is < 500ms",
+        )
+        
+        assert result is True
+        assert bridge.stats["observations_added"] == 1
+        
+        KnowledgeGraphBridge.reset_instance()
+    
+    def test_kg_bridge_reflect_on_success(self):
+        """[Phase 20+] Verify reflection on successful execution."""
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+            ExecutionTrace,
+        )
+        
+        KnowledgeGraphBridge.reset_instance()
+        bridge = KnowledgeGraphBridge.get_instance()
+        
+        trace = ExecutionTrace(
+            agent_name="TestAgent",
+            task_id="task_123",
+            status="success",
+            duration_ms=100,
+        )
+        
+        bridge.reflect_on_execution(trace)
+        
+        # Should create SUCCESSFULLY_COMPLETED relation
+        assert bridge.stats["relations_created"] == 1
+        
+        KnowledgeGraphBridge.reset_instance()
+    
+    def test_kg_bridge_reflect_on_failure(self):
+        """[Phase 20+] Verify reflection on failed execution."""
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+            ExecutionTrace,
+        )
+        
+        KnowledgeGraphBridge.reset_instance()
+        bridge = KnowledgeGraphBridge.get_instance()
+        
+        trace = ExecutionTrace(
+            agent_name="TestAgent",
+            task_id="task_456",
+            status="failure",
+            error_type="TimeoutError",
+            error_message="Connection timed out",
+        )
+        
+        bridge.reflect_on_execution(trace)
+        
+        # Should create FAILED_CALL relation and add observation
+        assert bridge.stats["relations_created"] == 1
+        assert bridge.stats["observations_added"] == 1
+        
+        KnowledgeGraphBridge.reset_instance()
+    
+    def test_kg_bridge_record_agent_interaction(self):
+        """[Phase 20+] Verify agent interaction recording."""
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        KnowledgeGraphBridge.reset_instance()
+        bridge = KnowledgeGraphBridge.get_instance()
+        
+        # Record successful interaction
+        bridge.record_agent_interaction(
+            caller_agent="GovernorAgent",
+            callee_agent="RouterAgent",
+            success=True,
+        )
+        
+        # Should create INTERACTS_WITH relation
+        assert bridge.stats["relations_created"] == 1
+        
+        # Record failed interaction
+        bridge.record_agent_interaction(
+            caller_agent="GovernorAgent",
+            callee_agent="RouterAgent",
+            success=False,
+            error_type="TimeoutError",
+        )
+        
+        # Should create INTERACTS_WITH and FAILED_CALL relations + observation
+        # First call: 1 relation, Second call: 2 relations (INTERACTS_WITH + FAILED_CALL)
+        assert bridge.stats["relations_created"] == 3  # 1 + 2
+        assert bridge.stats["observations_added"] == 1
+        
+        KnowledgeGraphBridge.reset_instance()
+    
+    def test_kg_bridge_establish_inheritance(self):
+        """[Phase 20+] Verify rule inheritance establishment."""
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        KnowledgeGraphBridge.reset_instance()
+        bridge = KnowledgeGraphBridge.get_instance()
+        
+        bridge.establish_inheritance(
+            child_entity="RouterAgent",
+            parent_entity="Global_Safety_Protocol",
+        )
+        
+        # Should create INHERITS_RULES_FROM relation
+        assert bridge.stats["relations_created"] == 1
+        
+        KnowledgeGraphBridge.reset_instance()
+    
+    def test_kg_bridge_mark_incompatibility(self):
+        """[Phase 20+] Verify incompatibility marking."""
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        KnowledgeGraphBridge.reset_instance()
+        bridge = KnowledgeGraphBridge.get_instance()
+        
+        bridge.mark_incompatibility(
+            entity_a="AgentX",
+            entity_b="PromptY",
+            reason="Causes infinite loop",
+        )
+        
+        # Should create INCOMPATIBLE_WITH relation and add observation
+        assert bridge.stats["relations_created"] == 1
+        assert bridge.stats["observations_added"] == 1
+        
+        KnowledgeGraphBridge.reset_instance()
+
+
+class TestMetaLearningKGIntegration:
+    """Phase 20+ Tests: MetaLearningMixin Knowledge Graph integration."""
+    
+    def test_mixin_kg_connection_on_init(self):
+        """[Phase 20+] Verify KG connection is established on agent init."""
+        import os
+        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+            MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        # Reset state
+        SemanticCacheManager.reset_instance()
+        MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
+        MetaLearningMixin._kg_bridge = None
+        KnowledgeGraphBridge.reset_instance()
+        
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+                
+                class TestAgent(MetaLearningMixin):
+                    pass
+                
+                agent = TestAgent()
+                
+                # KG bridge should be connected
+                assert MetaLearningMixin._kg_bridge is not None
+                
+                # Agent should have discovered context
+                assert hasattr(agent, "_discovered_context")
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
+            MetaLearningMixin._memory = None
+            MetaLearningMixin._lobotomized = False
+            MetaLearningMixin._kg_bridge = None
+            KnowledgeGraphBridge.reset_instance()
+    
+    def test_mixin_reflect_on_execution(self):
+        """[Phase 20+] Verify reflect_on_execution creates KG entries."""
+        import os
+        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+            MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        # Reset state
+        SemanticCacheManager.reset_instance()
+        MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
+        MetaLearningMixin._kg_bridge = None
+        KnowledgeGraphBridge.reset_instance()
+        
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+                
+                class TestAgent(MetaLearningMixin):
+                    pass
+                
+                agent = TestAgent()
+                
+                # Reflect on a successful execution
+                agent.reflect_on_execution(
+                    task_id="task_789",
+                    status="success",
+                    duration_ms=150,
+                )
+                
+                # Should have created a relation
+                kg_stats = agent.get_kg_stats()
+                assert kg_stats is not None
+                assert kg_stats["relations_created"] >= 1
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
+            MetaLearningMixin._memory = None
+            MetaLearningMixin._lobotomized = False
+            MetaLearningMixin._kg_bridge = None
+            KnowledgeGraphBridge.reset_instance()
+    
+    def test_mixin_add_architectural_observation(self):
+        """[Phase 20+] Verify architectural observations are recorded."""
+        import os
+        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+            MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        # Reset state
+        SemanticCacheManager.reset_instance()
+        MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
+        MetaLearningMixin._kg_bridge = None
+        KnowledgeGraphBridge.reset_instance()
+        
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+                
+                class TestAgent(MetaLearningMixin):
+                    pass
+                
+                agent = TestAgent()
+                
+                # Add an architectural observation
+                agent.add_architectural_observation(
+                    "Tends to fail when RouterAgent timeout is < 500ms"
+                )
+                
+                # Should have added an observation
+                kg_stats = agent.get_kg_stats()
+                assert kg_stats is not None
+                assert kg_stats["observations_added"] >= 1
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
+            MetaLearningMixin._memory = None
+            MetaLearningMixin._lobotomized = False
+            MetaLearningMixin._kg_bridge = None
+            KnowledgeGraphBridge.reset_instance()
+    
+    def test_mixin_kg_resilient_mode(self):
+        """[Phase 20+] Verify KG unavailability doesn't crash agent."""
+        import os
+        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+            MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+            KnowledgeGraphBridge,
+        )
+        
+        # Reset state
+        SemanticCacheManager.reset_instance()
+        MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
+        MetaLearningMixin._kg_bridge = None
+        KnowledgeGraphBridge.reset_instance()
+        
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+                
+                # Force KG to be unavailable
+                with patch(
+                    "agentic_core.utils.core_extensions.knowledge_graph_bridge.KnowledgeGraphBridge.get_instance",
+                    side_effect=Exception("MCP unavailable")
+                ):
+                    class TestAgent(MetaLearningMixin):
+                        pass
+                    
+                    # Should NOT crash
+                    agent = TestAgent()
+                    
+                    # KG operations should be no-ops
+                    agent.reflect_on_execution("task", "success")
+                    agent.add_architectural_observation("test")
+                    agent.record_agent_interaction("OtherAgent", True)
+                    
+                    # All should complete without error
+                    assert True
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
+            MetaLearningMixin._memory = None
+            MetaLearningMixin._lobotomized = False
+            MetaLearningMixin._kg_bridge = None
+            KnowledgeGraphBridge.reset_instance()

@@ -1,15 +1,20 @@
 """
-[PHASE 20] Meta-Learning Mixin - The DNA of Collective Intelligence.
+[PHASE 20+] Meta-Learning Mixin - The DNA of Collective Intelligence.
 
 The genetic trait that enables any agent to access the Hive Mind.
-Integrates with L4_state/memory for persistence.
+Integrates with L4_state/memory for persistence and Knowledge Graph for reasoning.
 
 MANDATORY: All core agents should inherit this for collective learning.
+
+Storage Layer Roles:
+- Pinecone (via SemanticCacheManager): Raw semantic search of past experiences
+- Memory MCP (via KnowledgeGraphBridge): Architectural Truths and synthesized facts
 
 Hardening Features:
 - Circuit Breaker (_lobotomized): Graceful degradation when Hive Mind unavailable
 - Thread-Safe Initialization: RLock prevents race conditions during singleton load
 - Serialization Guard: Protects primary workflow from learning failures
+- Knowledge Graph Integration: Entity-driven discovery and cross-agent learning
 
 Usage:
     class MyAgent(MetaLearningMixin, SovereignBaseAgent):
@@ -19,13 +24,14 @@ Usage:
                 execution_fn=lambda: self._do_work(task)
             )
 
-[SSOT] Integrates with L4_state/memory/SemanticCacheManager.
+[SSOT] Integrates with L4_state/memory/SemanticCacheManager and KnowledgeGraphBridge.
 """
 from __future__ import annotations
 
 import hashlib
 import logging
 import threading
+import time
 from typing import Any, Callable, Optional
 
 Logger = logging.getLogger(__name__)
@@ -36,9 +42,11 @@ class MetaLearningMixin:
     Mixin that provides collective intelligence capabilities to agents.
     
     Enables agents to:
-    1. Recall previous experiences from the Hive Mind
+    1. Recall previous experiences from the Hive Mind (Pinecone)
     2. Learn new experiences for future agents
     3. Bypass execution if a cached result exists (recall_or_execute)
+    4. Discover architectural context from Knowledge Graph (Memory MCP)
+    5. Record synthesized truths for cross-agent learning
     
     The namespace is automatically derived from the agent's class name,
     ensuring DNA segregation between different agent types.
@@ -46,18 +54,31 @@ class MetaLearningMixin:
     Thread Safety:
         Uses RLock for thread-safe singleton initialization.
         Circuit breaker prevents repeated connection attempts on failure.
+    
+    Knowledge Graph Integration:
+        On startup, agents auto-discover their context from the KG.
+        Execution traces are reflected as synthesized truths, not raw logs.
     """
     
-    _memory = None  # Lazy-loaded singleton
+    _memory = None  # Lazy-loaded Hive Mind singleton
     _memory_lock = threading.RLock()  # Thread safety for initialization
     _lobotomized = False  # Circuit breaker state
+    _kg_bridge = None  # Knowledge Graph Bridge singleton
+    _kg_lock = threading.RLock()  # Thread safety for KG initialization
     
     def __init__(self, *args, **kwargs):
         """
-        DNA Activation: Connect to Hive Mind immediately upon instantiation.
+        DNA Activation: Connect to Hive Mind and Knowledge Graph on instantiation.
         """
         # Lazy-load the Hive Mind singleton
         self._ensure_memory_connection()
+        
+        # Lazy-load the Knowledge Graph Bridge
+        self._ensure_kg_connection()
+        
+        # Auto-discover context from Knowledge Graph
+        self._discovered_context = self._discover_agent_context()
+        
         super().__init__(*args, **kwargs)
     
     def _ensure_memory_connection(self) -> None:
@@ -89,6 +110,66 @@ class MetaLearningMixin:
                             f"[{self.__class__.__name__}] LOBOTOMY PROTOCOL ACTIVE: "
                             f"Hive Mind unavailable ({e})"
                         )
+    
+    def _ensure_kg_connection(self) -> None:
+        """
+        Ensure connection to the Knowledge Graph Bridge (thread-safe).
+        
+        Resilient Mode: If KG is unavailable, logs warning but doesn't crash.
+        """
+        if MetaLearningMixin._kg_bridge is None:
+            with MetaLearningMixin._kg_lock:
+                if MetaLearningMixin._kg_bridge is None:
+                    try:
+                        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+                            KnowledgeGraphBridge,
+                        )
+                        MetaLearningMixin._kg_bridge = KnowledgeGraphBridge.get_instance()
+                        
+                        # Register this agent as an entity
+                        MetaLearningMixin._kg_bridge.register_agent(
+                            self.__class__.__name__,
+                            agent_type="Agent"
+                        )
+                        
+                        Logger.debug(f"[{self.__class__.__name__}] Connected to Knowledge Graph")
+                    except Exception as e:
+                        # KG is optional - don't crash, just log
+                        Logger.warning(
+                            f"[{self.__class__.__name__}] Knowledge Graph unavailable: {e}"
+                        )
+    
+    def _discover_agent_context(self) -> dict[str, Any]:
+        """
+        Auto-discover context for this agent from the Knowledge Graph.
+        
+        Queries for:
+        - Observations about this agent
+        - Relations with other agents
+        - Inherited rules and protocols
+        - Known incompatibilities
+        
+        Returns:
+            Dictionary with discovered context
+        """
+        if MetaLearningMixin._kg_bridge is None:
+            return {}
+        
+        try:
+            context = MetaLearningMixin._kg_bridge.discover_agent_context(
+                self.__class__.__name__
+            )
+            
+            if context.get("observations"):
+                Logger.info(
+                    f"[{self.__class__.__name__}] Discovered {len(context['observations'])} "
+                    f"observations from Knowledge Graph"
+                )
+            
+            return context
+        except Exception as e:
+            Logger.warning(f"[{self.__class__.__name__}] Context discovery failed: {e}")
+            return {}
     
     @property
     def _namespace(self) -> str:
@@ -226,6 +307,155 @@ class MetaLearningMixin:
         except Exception:
             return None
     
+    def get_kg_stats(self) -> Optional[dict[str, Any]]:
+        """Get statistics from the Knowledge Graph."""
+        if MetaLearningMixin._kg_bridge is None:
+            return None
+        
+        try:
+            return MetaLearningMixin._kg_bridge.get_statistics()
+        except Exception:
+            return None
+    
+    def reflect_on_execution(
+        self,
+        task_id: str,
+        status: str,
+        error_type: Optional[str] = None,
+        error_message: Optional[str] = None,
+        duration_ms: Optional[float] = None,
+    ) -> None:
+        """
+        Reflect on an execution and synthesize truths for the Knowledge Graph.
+        
+        Instead of just saving raw logs to Pinecone, this method:
+        1. Creates relations based on execution outcome
+        2. Adds observations for failures
+        3. Tracks weak nodes in the architecture
+        
+        Args:
+            task_id: Identifier for the task
+            status: "success", "failure", or "timeout"
+            error_type: Type of error if failed
+            error_message: Error message if failed
+            duration_ms: Execution duration in milliseconds
+        """
+        if MetaLearningMixin._kg_bridge is None:
+            return
+        
+        try:
+            from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+                ExecutionTrace,
+            )
+            
+            trace = ExecutionTrace(
+                agent_name=self.__class__.__name__,
+                task_id=task_id,
+                status=status,
+                error_type=error_type,
+                error_message=error_message,
+                duration_ms=duration_ms,
+            )
+            
+            MetaLearningMixin._kg_bridge.reflect_on_execution(trace)
+        except Exception as e:
+            Logger.warning(f"[{self._namespace}] Reflection failed: {e}")
+    
+    def record_agent_interaction(
+        self,
+        callee_agent: str,
+        success: bool,
+        error_type: Optional[str] = None,
+    ) -> None:
+        """
+        Record an interaction with another agent in the Knowledge Graph.
+        
+        This builds the sub-atomic trace map for identifying weak nodes.
+        
+        Args:
+            callee_agent: The agent that was called
+            success: Whether the interaction succeeded
+            error_type: Type of error if failed
+        """
+        if MetaLearningMixin._kg_bridge is None:
+            return
+        
+        try:
+            MetaLearningMixin._kg_bridge.record_agent_interaction(
+                caller_agent=self.__class__.__name__,
+                callee_agent=callee_agent,
+                success=success,
+                error_type=error_type,
+            )
+        except Exception as e:
+            Logger.warning(f"[{self._namespace}] Interaction recording failed: {e}")
+    
+    def inherit_rules_from(self, parent_entity: str) -> None:
+        """
+        Establish rule inheritance from a parent entity.
+        
+        This enables cross-agent learning and rule propagation.
+        Example: RouterAgent inherits from Global_Safety_Protocol
+        
+        Args:
+            parent_entity: The entity providing rules
+        """
+        if MetaLearningMixin._kg_bridge is None:
+            return
+        
+        try:
+            MetaLearningMixin._kg_bridge.establish_inheritance(
+                child_entity=self.__class__.__name__,
+                parent_entity=parent_entity,
+            )
+        except Exception as e:
+            Logger.warning(f"[{self._namespace}] Inheritance setup failed: {e}")
+    
+    def mark_incompatible_with(self, other_entity: str, reason: str) -> None:
+        """
+        Mark this agent as incompatible with another entity.
+        
+        This is an architectural truth that prevents problematic combinations.
+        
+        Args:
+            other_entity: The incompatible entity
+            reason: Why they are incompatible
+        """
+        if MetaLearningMixin._kg_bridge is None:
+            return
+        
+        try:
+            MetaLearningMixin._kg_bridge.mark_incompatibility(
+                entity_a=self.__class__.__name__,
+                entity_b=other_entity,
+                reason=reason,
+            )
+        except Exception as e:
+            Logger.warning(f"[{self._namespace}] Incompatibility marking failed: {e}")
+    
+    def add_architectural_observation(self, observation: str) -> None:
+        """
+        Add an architectural observation about this agent.
+        
+        Observations are synthesized truths, not raw logs.
+        Examples:
+        - "GovernorAgent tends to fail when RouterAgent timeout is < 500ms"
+        - "Phase 4 requires Asset Z to be loaded"
+        
+        Args:
+            observation: The synthesized truth to record
+        """
+        if MetaLearningMixin._kg_bridge is None:
+            return
+        
+        try:
+            MetaLearningMixin._kg_bridge.add_observation(
+                entity_name=self.__class__.__name__,
+                observation=observation,
+            )
+        except Exception as e:
+            Logger.warning(f"[{self._namespace}] Observation recording failed: {e}")
+    
     @classmethod
     def reset_lobotomy(cls) -> None:
         """
@@ -236,3 +466,11 @@ class MetaLearningMixin:
         cls._lobotomized = False
         cls._memory = None
         Logger.info("[MetaLearningMixin] Lobotomy state reset - will attempt reconnection")
+    
+    @classmethod
+    def reset_kg(cls) -> None:
+        """
+        Reset the Knowledge Graph Bridge (for testing only).
+        """
+        cls._kg_bridge = None
+        Logger.info("[MetaLearningMixin] Knowledge Graph Bridge reset")
