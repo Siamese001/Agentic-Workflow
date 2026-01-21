@@ -1,14 +1,16 @@
 """
 Unified L5 Safety/Validation Agents
 
+[SOVEREIGN UPGRADE 2026-01-21]: Semantic Realignment in progress.
 Phase 2 Consolidation: 18 validators → 3 unified agents
 
 This module provides consolidated validation agents that merge functionality
 from multiple legacy validators while maintaining backward compatibility.
 
-Unified Agents:
+Agents:
 - UnifiedCodeValidatorAgent: Single-pass AST validation (syntax, canon, async, print)
-- UnifiedStructureValidatorAgent: Gravity, hygiene, registry, contract validation
+- StructuralValidatorAgent: Gravity, hygiene, registry, contract validation
+  (Renamed from UnifiedStructureValidatorAgent - alias maintained for backward compat)
 """
 
 from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import UnifiedCodeDetectorAgent
@@ -33,16 +35,22 @@ from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
     UnifiedStructureEnforcerAgent,
 )
 from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import UnifiedStructureHealerAgent
-from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+from agentic_core.L5_safety.unified.StructuralValidatorAgent import (
+    StructureConfig,
+    StructureReport,
     StructureViolation,
     StructureViolationType,
-    UnifiedStructureValidatorAgent,
+    StructuralValidatorAgent,
+    UnifiedStructureValidatorAgent,  # Backward compat alias
     create_legacy_gravity_validator,
     create_legacy_hygiene_validator,
     create_legacy_registry_validator,
 )
 
 __all__ = [
+    # New canonical names
+    "StructuralValidatorAgent",
+    # Legacy aliases (backward compat)
     "UnifiedCodeValidatorAgent",
     "UnifiedStructureValidatorAgent",
     "UnifiedCodeDetectorAgent",
@@ -54,12 +62,16 @@ __all__ = [
     "UnifiedSecurityManagerAgent",
     "UnifiedStructureEnforcerAgent",
     "UnifiedStructureHealerAgent",
+    # Data classes
     "RuleSet",
     "ValidationReport",
     "Violation",
     "ViolationType",
+    "StructureConfig",
+    "StructureReport",
     "StructureViolation",
     "StructureViolationType",
+    # Factory methods
     "create_legacy_syntax_validator",
     "create_legacy_canon_validator",
     "create_legacy_async_validator",

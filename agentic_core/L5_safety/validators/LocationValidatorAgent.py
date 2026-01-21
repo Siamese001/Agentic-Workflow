@@ -611,29 +611,54 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     # Validation orchestration
     def run(self) -> dict[str, Any]:
-        """Execute validation-only scan."""
-        from agentic_core.L5_safety.validators.location_utils import get_agent_files
+        """
+        Execute validation-only scan across ALL sovereign territories.
+
+        Phase 4.1 Upgrade: Universal root scanning using SOVEREIGN_REGISTRY.
+        """
+        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 
         violations = []
         compliant_files = 0
         total_files = 0
+        roots_scanned = []
 
-        # Scan all Python files
-        python_files = get_agent_files(str(self.project_root / "agentic_core"))
+        # Scan all SOVEREIGN_REGISTRY roots (Universal Scope)
+        for root_name in SOVEREIGN_REGISTRY.keys():
+            root_path = self.project_root / root_name
+            if not root_path.exists():
+                continue
 
-        for file_str in python_files:
-            file_path = Path(file_str)
-            total_files += 1
+            roots_scanned.append(root_name)
 
-            is_valid, reason = self.validate_file_location(file_path)
-            if is_valid:
-                compliant_files += 1
-            else:
-                violations.append({"file": str(file_path), "reason": reason})
+            # Scan Python files in this root
+            for py_file in root_path.rglob("*.py"):
+                # Skip common ignore patterns
+                if any(
+                    skip in py_file.parts
+                    for skip in [
+                        "__pycache__",
+                        ".git",
+                        "archives",
+                        ".venv",
+                        ".sovereign_healing_backup",
+                        "node_modules",
+                    ]
+                ):
+                    continue
+
+                total_files += 1
+                is_valid, reason = self.validate_file_location(py_file)
+
+                if is_valid:
+                    compliant_files += 1
+                else:
+                    violations.append({"file": str(py_file), "reason": reason})
 
         return {
             "violations": violations,
             "total_files_scanned": total_files,
             "compliant_files": compliant_files,
+            "roots_scanned": roots_scanned,
             "status": "COMPLETE",
         }
