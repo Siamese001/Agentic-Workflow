@@ -1,6 +1,5 @@
 import re
 from collections import Counter
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 pat = re.compile(r'"Territory":\s*"([^"]+)",\s*"Total":\s*(\d+)')
 

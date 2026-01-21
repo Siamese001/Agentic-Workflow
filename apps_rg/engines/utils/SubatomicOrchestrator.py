@@ -6,21 +6,21 @@ of SubatomicHops assembled based on functional roles from the AgentRegistry.
 
 import asyncio
 import logging
-import networkx as nx
-from typing import Dict, List, Any, Optional, Set, Tuple
 from dataclasses import dataclass, field
-from enum import Enum
 from datetime import datetime
+from enum import Enum
+from typing import Any
 
-from ..runtime.core.SubatomicHop import SubatomicHop, HopState, MicroStage
+import networkx as nx
+
 from ..runtime.core.dynamic_dag_manager import DAGManager, MutationAction
+from ..runtime.core.SubatomicHop import SubatomicHop
 from ..runtime.registry.agent_capabilities import (
     AgentRegistry,
     AgentRole,
-    get_agent_registry,
     create_functional_agent,
-    LegacyCodeError,
-    validate_no_legacy_code
+    get_agent_registry,
+    validate_no_legacy_code,
 )
 
 Logger = logging.getLogger(__name__)
@@ -40,16 +40,16 @@ class WorkflowBlueprint:
     """Blueprint for a workflow graph."""
     name: str
     description: str
-    roles: List[AgentRole]
-    edges: List[Tuple[AgentRole, AgentRole]]
-    mutation_hooks: Dict[AgentRole, List[Tuple[MutationAction, AgentRole]]] = field(default_factory=dict)
-    parallel_groups: List[List[AgentRole]] = field(default_factory=list)
+    roles: list[AgentRole]
+    edges: list[tuple[AgentRole, AgentRole]]
+    mutation_hooks: dict[AgentRole, list[tuple[MutationAction, AgentRole]]] = field(default_factory=dict)
+    parallel_groups: list[list[AgentRole]] = field(default_factory=list)
 
 
 class SubatomicOrchestrator:
     """Orchestrator that builds and executes dynamic DAGs of functional agents."""
 
-    def __init__(self, registry: Optional[AgentRegistry] = None):
+    def __init__(self, registry: AgentRegistry | None = None):
         """Initialize the orchestrator.
 
         Args:
@@ -57,8 +57,8 @@ class SubatomicOrchestrator:
         """
         self.registry = registry or get_agent_registry()
         self.DagManager = DAGManager()
-        self.active_graphs: Dict[str, nx.DiGraph] = {}
-        self.execution_history: List[Dict[str, Any]] = []
+        self.active_graphs: dict[str, nx.DiGraph] = {}
+        self.execution_history: list[dict[str, Any]] = []
 
         # Define standard workflows
         self._define_standard_workflows()
@@ -168,8 +168,8 @@ class SubatomicOrchestrator:
 
     def build_custom_pipeline(
         self,
-        roles: List[AgentRole],
-        edges: List[Tuple[AgentRole, AgentRole]],
+        roles: list[AgentRole],
+        edges: list[tuple[AgentRole, AgentRole]],
         **kwargs
     ) -> nx.DiGraph:
         """Build a custom workflow pipeline.
@@ -208,7 +208,7 @@ class SubatomicOrchestrator:
         G = nx.DiGraph()
 
         # Create agent instances
-        role_to_hop: Dict[AgentRole, SubatomicHop] = {}
+        role_to_hop: dict[AgentRole, SubatomicHop] = {}
 
         for role in blueprint.roles:
             # Get the hop function for this role
@@ -293,9 +293,9 @@ class SubatomicOrchestrator:
     async def execute_graph(
         self,
         graph: nx.DiGraph,
-        initial_inputs: Dict[str, Any],
+        initial_inputs: dict[str, Any],
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute a workflow graph.
 
         Args:
@@ -392,8 +392,8 @@ class SubatomicOrchestrator:
     def _get_ready_nodes(
         self,
         graph: nx.DiGraph,
-        completed_nodes: Set[SubatomicHop]
-    ) -> List[SubatomicHop]:
+        completed_nodes: set[SubatomicHop]
+    ) -> list[SubatomicHop]:
         """Get nodes that are ready to execute.
 
         Args:
@@ -420,9 +420,9 @@ class SubatomicOrchestrator:
         self,
         graph: nx.DiGraph,
         node: SubatomicHop,
-        results: Dict[SubatomicHop, Any],
-        initial_inputs: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        results: dict[SubatomicHop, Any],
+        initial_inputs: dict[str, Any]
+    ) -> dict[str, Any]:
         """Get inputs for a node.
 
         Args:
@@ -447,7 +447,7 @@ class SubatomicOrchestrator:
     async def _execute_node(
         self,
         node: SubatomicHop,
-        inputs: Dict[str, Any]
+        inputs: dict[str, Any]
     ) -> Any:
         """Execute a single node.
 
@@ -511,7 +511,7 @@ class SubatomicOrchestrator:
             except Exception as e:
                 Logger.error(f"Failed to apply mutation: {e}")
 
-    def get_execution_stats(self) -> Dict[str, Any]:
+    def get_execution_stats(self) -> dict[str, Any]:
         """Get execution statistics.
 
         Returns:
@@ -537,7 +537,7 @@ class SubatomicOrchestrator:
 
 
 # Global orchestrator instance
-_orchestrator: Optional[SubatomicOrchestrator] = None
+_orchestrator: SubatomicOrchestrator | None = None
 
 
 def get_orchestrator() -> SubatomicOrchestrator:
@@ -555,7 +555,7 @@ def get_orchestrator() -> SubatomicOrchestrator:
 
 
 # Convenience functions
-async def execute_resume_workflow(profile_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+async def execute_resume_workflow(profile_data: dict[str, Any], **kwargs) -> dict[str, Any]:
     """Execute the resume generation workflow.
 
     Args:
@@ -582,10 +582,10 @@ async def execute_resume_workflow(profile_data: Dict[str, Any], **kwargs) -> Dic
 
 
 async def execute_message_workflow(
-    recipient_data: Dict[str, Any],
+    recipient_data: dict[str, Any],
     message_type: str,
     **kwargs
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Execute the message outreach workflow.
 
     Args:

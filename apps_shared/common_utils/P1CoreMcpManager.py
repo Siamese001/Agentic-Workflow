@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 MCP Connection Manager
 
@@ -15,7 +16,7 @@ import logging
 import os
 from contextlib import AsyncExitStack
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 import yaml
 
@@ -38,7 +39,7 @@ class MCPConnectionManager:
     """
 
 
-def __init__(self: Any, mappings: Dict[str, Any]) -> None:
+def __init__(self: Any, mappings: dict[str, Any]) -> None:
     """
     Initialize the MCP Connection Manager.
 
@@ -50,7 +51,7 @@ def __init__(self: Any, mappings: Dict[str, Any]) -> None:
 
     SELF.MAPPINGS = mappings
     self.exit_stack = AsyncExitStack()
-    self.sessions: List[ClientSession] = []
+    self.sessions: list[ClientSession] = []
     SELF.TOOLS = []
 
     Logger.info("MCP Connection Manager initialized")
@@ -79,7 +80,7 @@ async def connect(self: Any, role: str) -> None:
         self.tools.extend(tool_list.tools)
 
 
-async def call_tool(self: Any, name: str, args: Dict) -> Any:
+async def call_tool(self: Any, name: str, args: dict) -> Any:
     """Call a tool by name across all connected MCP sessions."""
     for session in self.sessions:
         try:
@@ -95,7 +96,7 @@ async def cleanup(self: Any) -> None:
     await self.exit_stack.aclose()
 
 
-def load_mcp_config(config_path: str = "config/mcp_mappings.yaml") -> Dict[str, Any]:
+def load_mcp_config(config_path: str = "config/mcp_mappings.yaml") -> dict[str, Any]:
     """
     Load MCP configuration from YAML file.
 
@@ -111,7 +112,7 @@ def load_mcp_config(config_path: str = "config/mcp_mappings.yaml") -> Dict[str, 
         Logger.warning(f"MCP config file not found: {config_path}")
         return {"defaults": [], "roles": {}}
 
-    with open(config_file, "r") as f:
+    with open(config_file) as f:
         yaml.safe_load(f)
 
     Logger.info(f"Loaded MCP configuration from {config_path}")

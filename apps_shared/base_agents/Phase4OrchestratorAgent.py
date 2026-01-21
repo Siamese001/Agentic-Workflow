@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 GitOps & Advanced Mutation Module - Phase 4 Implementation
 
@@ -8,11 +9,6 @@ This module provides advanced mutation and GitOps capabilities:
 - ImportPatcher: Automatic import path updates
 - ConversationalRepair: Multi-agent collective intelligence (AutoGen-style)
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-import time
-
-
 import ast
 import asyncio
 import hashlib
@@ -23,13 +19,17 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
+    L3SubatomicTestingMixin,
+)
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .context import ResumeEngineContext
 from .learning import ConfidenceScorer
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 
 class MutationMode(Enum):
@@ -82,7 +82,7 @@ class MutationResult:
     attempts: int
     confidence: float
     mode: MutationMode
-    error: Optional[str] = None
+    error: str | None = None
     diff_applied: bool = False
 
 
@@ -126,17 +126,17 @@ class GitOpsManager:
         self.enable_git = enable_git
 
         # File backups for rollback
-        self._backups: Dict[str, FileBackup] = {}
+        self._backups: dict[str, FileBackup] = {}
 
         # Current healing branch
-        self._current_branch: Optional[str] = None
-        self._original_branch: Optional[str] = None
+        self._current_branch: str | None = None
+        self._original_branch: str | None = None
 
         # Statistics
         self.files_modified = 0
         self.rollbacks_performed = 0
 
-    def create_healing_branch(self) -> Optional[str]:
+    def create_healing_branch(self) -> str | None:
         """
         Create a new healing branch for this session.
 
@@ -194,7 +194,7 @@ class GitOpsManager:
             if not os.path.exists(path):
                 return False
 
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 content = f.read()
 
             file_hash = hashlib.sha256(content.encode()).hexdigest()
@@ -384,7 +384,7 @@ class GitOpsManager:
         except Exception:
             return False
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get GitOps statistics."""
         return {
             "files_modified": self.files_modified,
@@ -429,7 +429,7 @@ class ResilientMutator:
         agent_name: str,
         Task: str,
         content: str,
-        file_path: Optional[str] = None,
+        file_path: str | None = None,
         mode: MutationMode = MutationMode.FULL_CODE,
     ) -> MutationResult:
         """
@@ -560,7 +560,7 @@ OUTPUT FORMAT: Full Python Code. NO MARKDOWN. NO BACKTICKS."""
 
         return prompt
 
-    async def _call_llm(self, agent_name: str, prompt: str) -> Optional[str]:
+    async def _call_llm(self, agent_name: str, prompt: str) -> str | None:
         """Call the LLM for mutation."""
         if not self.ctx.intelligence_enabled:
             return None
@@ -588,7 +588,7 @@ OUTPUT FORMAT: Full Python Code. NO MARKDOWN. NO BACKTICKS."""
             )
 
             # Reload content
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 return f.read()
 
         except Exception:
@@ -612,7 +612,7 @@ OUTPUT FORMAT: Full Python Code. NO MARKDOWN. NO BACKTICKS."""
 
         return clean.strip()
 
-    def _apply_diff(self, original: str, diff_text: str) -> Optional[str]:
+    def _apply_diff(self, original: str, diff_text: str) -> str | None:
         """Apply a unified diff to content."""
         try:
             diff_text = self._clean_llm_output(diff_text)
@@ -666,7 +666,7 @@ OUTPUT FORMAT: Full Python Code. NO MARKDOWN. NO BACKTICKS."""
             print(f"   ❌ Diff application failed: {e}")
             return None
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get mutation statistics."""
         return {
             "total_mutations": self.total_mutations,
@@ -689,9 +689,9 @@ class ImportPatcher:
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._import_map: Dict[str, List[str]] = {}
+        self._import_map: dict[str, list[str]] = {}
 
-    def build_import_map(self, files: List[str]) -> Dict[str, List[str]]:
+    def build_import_map(self, files: list[str]) -> dict[str, list[str]]:
         """
         Build a map of which files import which modules.
 
@@ -705,7 +705,7 @@ class ImportPatcher:
 
         for file_path in files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     tree = ast.parse(f.read())
 
                 for node in ast.walk(tree):
@@ -731,7 +731,7 @@ class ImportPatcher:
         self._import_map = import_map
         return import_map
 
-    def get_affected_files(self, module_name: str) -> List[str]:
+    def get_affected_files(self, module_name: str) -> list[str]:
         """
         Get files that import a given module.
 
@@ -745,8 +745,8 @@ class ImportPatcher:
 
     async def patch_imports(
         self,
-        change_map: Dict[str, str],
-        mutator: Optional[ResilientMutator] = None,
+        change_map: dict[str, str],
+        mutator: ResilientMutator | None = None,
     ) -> int:
         """
         Patch imports after module changes.
@@ -770,7 +770,7 @@ class ImportPatcher:
 
         for file_path in affected_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 new_content = content
@@ -808,7 +808,7 @@ class ImportPatcher:
 
         return patched
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get import patcher statistics."""
         return {
             "modules_tracked": len(self._import_map),
@@ -836,14 +836,14 @@ class ConversationalRepair:
         }
 
         # Repair history
-        self.repair_history: List[RepairProposal] = []
+        self.repair_history: list[RepairProposal] = []
 
     async def repair(
         self,
         issue_description: str,
         affected_content: str,
-        context: Optional[str] = None,
-    ) -> Optional[str]:
+        context: str | None = None,
+    ) -> str | None:
         """
         Perform conversational repair on an issue.
 
@@ -858,7 +858,7 @@ class ConversationalRepair:
         if not self.ctx.intelligence_enabled:
             return None
 
-        print(f"   🗣️ Initiating CONVERSATIONAL REPAIR...")
+        print("   🗣️ Initiating CONVERSATIONAL REPAIR...")
 
         proposals = []
 
@@ -893,8 +893,8 @@ class ConversationalRepair:
         persona: str,
         issue: str,
         content: str,
-        context: Optional[str],
-    ) -> Optional[RepairProposal]:
+        context: str | None,
+    ) -> RepairProposal | None:
         """Get a repair proposal from an agent."""
         try:
             prompt = f"""
@@ -941,9 +941,9 @@ No explanations, no markdown.
 
     async def _vote_on_proposals(
         self,
-        proposals: List[RepairProposal],
+        proposals: list[RepairProposal],
         issue: str,
-    ) -> Optional[RepairProposal]:
+    ) -> RepairProposal | None:
         """Have agents vote on proposals."""
         if not proposals:
             return None
@@ -986,7 +986,7 @@ No explanations, no markdown.
 
         return clean.strip()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get repair statistics."""
         return {
             "total_repairs": len(self.repair_history),
@@ -1021,7 +1021,7 @@ class Phase4OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
         self,
         Task: str,
         content: str,
-        file_path: Optional[str] = None,
+        file_path: str | None = None,
         use_diff: bool = False,
         use_conversational: bool = False,
     ) -> MutationResult:
@@ -1080,7 +1080,7 @@ class Phase4OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
 
         return result
 
-    def get_comprehensive_stats(self) -> Dict[str, Any]:
+    def get_comprehensive_stats(self) -> dict[str, Any]:
         """Get comprehensive statistics from all components."""
         return {
             "gitops": self.gitops.get_stats(),

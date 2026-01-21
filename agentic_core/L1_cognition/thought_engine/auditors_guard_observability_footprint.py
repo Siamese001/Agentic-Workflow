@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign Guardian: Observability Footprint (Dark Reasoning Check)
 Ensures every L1 reasoning step leaves an L6 observability trail.
@@ -13,17 +14,11 @@ Phase 9C: Dark Reasoning Guardian (Dec 26, 2025)
 """
 import ast
 from pathlib import Path
-from typing import List, Tuple
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 
-def check_dark_reasoning(filepath: Path) -> List[str]:
+def check_dark_reasoning(filepath: Path) -> list[str]:
     """
     Check for reasoning operations without corresponding observability footprints.
 
@@ -75,7 +70,7 @@ def check_dark_reasoning(filepath: Path) -> List[str]:
 
     return issues
 
-def validate_observability_footprint(target_dir: str) -> Tuple[float, List[str]]:
+def validate_observability_footprint(target_dir: str) -> tuple[float, list[str]]:
     """
     Validate that all reasoning operations have observability footprints.
 

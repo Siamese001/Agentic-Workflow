@@ -1,10 +1,10 @@
 from __future__ import annotations
-import logging
-'''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
 
-from typing import Any, Dict, List, Optional, Protocol
+'''Brief description of functionality and purpose.'''
+
+from typing import Any
 
 
 # NAMING FIXED: PIIVault → PiiVault
@@ -13,7 +13,7 @@ class PiiVault:
     L5 Safety: The Secret Vault.
     Handles tokenization and de-tokenization of sensitive data.
     """
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self.config = config
         self._vault = {} # simple in-memory map for the demo
 

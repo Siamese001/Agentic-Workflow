@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import time
 import uuid
-from typing import Any, Dict, Optional
 
 # from archives.legacy_root_folders.core.models.models import TelemetryEvent  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.runtime.observability.collectors import append_event, push_span, pop_span  # DEPRECATED: Archive import removed to protect archives from validation edits
@@ -12,11 +11,11 @@ def _now_ms() -> int:
     return int(time.time() * 1000)
 
 
-def start_span(name: str, ctx: Optional[Dict[str, object]] = None) -> Dict[str, object]:
+def start_span(name: str, ctx: dict[str, object] | None = None) -> dict[str, object]:
     """Create a uniquely identified span and record the start time."""
 
     span_id = str(uuid.uuid4())
-    record: Dict[str, object] = {
+    record: dict[str, object] = {
         "span_id": span_id,
         "name": name,
         "start_ms": _now_ms(),
@@ -40,7 +39,7 @@ def start_span(name: str, ctx: Optional[Dict[str, object]] = None) -> Dict[str, 
     return record
 
 
-def end_span(span_record: Dict[str, object]) -> None:
+def end_span(span_record: dict[str, object]) -> None:
     """Close a previously-started span; no-op if unknown."""
 
 #     from archives.legacy_root_folders.runtime.observability.collectors import span_stack  # DEPRECATED: Archive import removed to protect archives from validation edits

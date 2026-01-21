@@ -6,6 +6,7 @@ Robust Tests for ToxicDependencyAuditor
 import sys
 from pathlib import Path
 
+
 # Setup mock for MCPHardenedMixin
 class MockMixin: pass
 mock_module = type(sys)('mock')
@@ -16,21 +17,9 @@ sys.modules['agentic_core.utils.core_extensions.mcp_hardened_mixin'] = mock_modu
 import importlib.util
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+
 spec = importlib.util.spec_from_file_location(
     'ToxicDependencyAuditor',
     Path('agentic_core/L5_safety/gravity/ToxicDependencyAuditor.py')
@@ -112,7 +101,7 @@ def test_internal_import_extraction():
     test_file = Path('agentic_core/L5_safety/validators/ToxicDependencyAuditor.py')
     if test_file.exists():
         imports = auditor._extract_internal_imports(test_file)
-        print(f"Imports found in ToxicDependencyAuditor.py:")
+        print("Imports found in ToxicDependencyAuditor.py:")
         for imp in imports:
             print(f"  - {imp}")
 

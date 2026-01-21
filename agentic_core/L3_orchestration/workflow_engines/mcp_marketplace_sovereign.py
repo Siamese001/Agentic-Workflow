@@ -1,16 +1,12 @@
 from __future__ import annotations
+
 """L3 Orchestration: Sovereign MCP Marketplace Integration
 Safe discovery and registration of marketplace MCPs with L5 sovereignty enforcement.
 GEMINI-ONLY policy — forbidden providers auto-blocked.
 """
 import logging
-from typing import Dict, List
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 Logger = logging.getLogger(__name__)
@@ -32,9 +28,9 @@ class SovereignMcpMarketplace:
 
     def __init__(self, manager):
         self.manager = manager
-        self.safe_tools: List[str] = []
+        self.safe_tools: list[str] = []
 
-    def discover_and_register_safe(self, marketplace_data: Dict) -> None:
+    def discover_and_register_safe(self, marketplace_data: dict) -> None:
         """Parse marketplace and register only sovereign-safe MCPs."""
         installed = marketplace_data.get("installed", [])
         available = marketplace_data.get("available", [])
@@ -60,6 +56,6 @@ class SovereignMcpMarketplace:
         if not self.safe_tools:
             Logger.warning("[L3 MARKETPLACE] No safe MCPs found. Running in LLM-only mode.")
 
-    def get_safe_tools(self) -> List[str]:
+    def get_safe_tools(self) -> list[str]:
 
         return self.safe_tools

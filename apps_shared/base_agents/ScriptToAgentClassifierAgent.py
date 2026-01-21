@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ScriptToAgentClassifierAgent – Sovereign Agent (Phase 17 – Dec 30, 2025)
 SSOT-compliant location: L0_maintenance/scripts/
@@ -28,18 +29,17 @@ Pure analysis – zero side effects.
 import ast
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Tuple, Optional
-from collections import Counter
-
-# Sovereign Hardening Mixins – Phase 36
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
-from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+
+# Sovereign Hardening Mixins – Phase 36
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
 class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
@@ -80,7 +80,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             "experience_buffer",
         ]
 
-    def classify_module(self, file_path: Path) -> Dict[str, Any]:
+    def classify_module(self, file_path: Path) -> dict[str, Any]:
         """
         Primary classification entry point.
         Returns comprehensive Verdict with confidence and rationale.
@@ -122,7 +122,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
 
         return Verdict
 
-    def _compute_script_score(self, signals: Dict[str, Any], rationale: List[str]) -> float:
+    def _compute_script_score(self, signals: dict[str, Any], rationale: list[str]) -> float:
         """Compute script indicator score."""
         score = 0.0
         if signals["has_main_guard"]:
@@ -142,7 +142,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             rationale.append("Few or single class → acceptable in script")
         return score
 
-    def _compute_agent_score(self, signals: Dict[str, Any], filename: str, rationale: List[str]) -> float:
+    def _compute_agent_score(self, signals: dict[str, Any], filename: str, rationale: list[str]) -> float:
         """Compute agent indicator score."""
         score = 0.0
         if signals["num_classes"] >= 2:
@@ -162,7 +162,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             rationale.append("Filename matches sovereign agent pattern")
         return score
 
-    def _determine_recommendation(self, signals: Dict[str, Any], score_script: float, score_agent: float) -> Tuple[str, float]:
+    def _determine_recommendation(self, signals: dict[str, Any], score_script: float, score_agent: float) -> tuple[str, float]:
         """Determine final recommendation and confidence."""
         total = score_script + score_agent
         if total == 0:
@@ -177,9 +177,9 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             return "fusion_needed", max(confidence, 0.8)
         return "agent", confidence
 
-    def _compute_verdict(self, signals: Dict[str, Any], filename: str) -> Dict[str, Any]:
+    def _compute_verdict(self, signals: dict[str, Any], filename: str) -> dict[str, Any]:
         """Constitutional decision engine. Returns recommended_type with confidence and rationale."""
-        rationale: List[str] = []
+        rationale: list[str] = []
         score_script = self._compute_script_score(signals, rationale)
         score_agent = self._compute_agent_score(signals, filename, rationale)
         recommended, confidence = self._determine_recommendation(signals, score_script, score_agent)
@@ -190,7 +190,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             "rationale": rationale,
         }
 
-    def suggest_fission_targets(self, file_path: Path) -> List[Dict[str, Any]]:
+    def suggest_fission_targets(self, file_path: Path) -> list[dict[str, Any]]:
         """
         For monolithic modules, suggest class → agent extraction points.
         Returns list of proposed new agents.
@@ -231,7 +231,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
         return sorted(suggestions, key=lambda x: x["priority"], reverse=True)
 
     # === AutonomyMixin Override ===
-    async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+    async def _detect_action_opportunity(self) -> dict[str, Any] | None:
         """Proactively scan for new or changed files that may need classification."""
         # Simple trigger: check if experience buffer has low confidence entries
         recent = self.experience_buffer.find_similar(limit=10)
@@ -247,7 +247,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
         return None
 
     # === AdaptiveExecutionMixin Overrides ===
-    async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_conservative(self, ctx: Any, **context: dict[str, Any]) -> Any:
         self.Logger.info("Conservative mode: using cached classifications where possible")
         # Skip AST parsing for known files
         file_path = context.get("file_path")
@@ -262,7 +262,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
         # Fallback to standard
         return await self._execute_standard(ctx, **context)
 
-    async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_minimal(self, ctx: Any, **context: dict[str, Any]) -> Any:
         self.Logger.warning("Minimal mode: classification paused")
         return {
             "mode": "minimal",
@@ -270,7 +270,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             "reason": "resource_preservation"
         }
 
-    async def _execute_standard(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_standard(self, ctx: Any, **context: dict[str, Any]) -> Any:
         """Standard mode — full classification."""
         file_path = context.get("file_path") or ctx
         if isinstance(file_path, Path):
@@ -302,7 +302,7 @@ class _ModuleAnalyzer(ast.NodeVisitor):
         self.side_effect_calls = []
         self.line_count = len(self.source_lines)
 
-    def extract_signals(self) -> Dict[str, Any]:
+    def extract_signals(self) -> dict[str, Any]:
         """Execute extract_signals operation."""
         self.visit(self.tree)
         return {
@@ -371,7 +371,7 @@ class _ClassExtractionVisitor(ast.NodeVisitor):
     Extracts class definitions for fission suggestions.
     """
     def __init__(self) -> None:
-        self.classes: List[ast.ClassDef] = []
+        self.classes: list[ast.ClassDef] = []
 
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
         """Execute visit_ClassDef operation."""

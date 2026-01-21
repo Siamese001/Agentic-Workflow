@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 This script initializes the Pinecone client, ensures a specific index exists,
 and connects to it. It also includes a placeholder for AI assistant creation,
@@ -6,9 +7,11 @@ noting that this functionality is not part of the standard Pinecone client libra
 """
 import os
 from pathlib import Path
+from typing import Any
+
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
-from typing import Any
+
 index_name: Any = 'canon-memory-l2'
 index_dimension: Any = 768
 index_metric: Any = 'cosine'

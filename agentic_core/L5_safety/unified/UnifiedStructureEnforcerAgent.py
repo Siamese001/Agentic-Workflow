@@ -25,10 +25,10 @@ import logging
 import re
 import shutil
 import threading
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class StructureViolation:
     line_number: int
     violation_type: str
     message: str
-    suggested_fix: Optional[str] = None
+    suggested_fix: str | None = None
     auto_fixable: bool = False
     severity: str = "ERROR"
 
@@ -119,17 +119,17 @@ class UnifiedStructureEnforcerAgent:
 
     def __init__(
         self,
-        project_root: Optional[Path] = None,
-        config: Optional[StructureConfig] = None,
+        project_root: Path | None = None,
+        config: StructureConfig | None = None,
     ):
         self.project_root = project_root or Path.cwd()
         self.config = config or StructureConfig()
         self._lock = threading.RLock()
-        self._violations: List[StructureViolation] = []
+        self._violations: list[StructureViolation] = []
 
         Logger.info("UnifiedStructureEnforcerAgent initialized")
 
-    def validate_file(self, file_path: Path) -> List[StructureViolation]:
+    def validate_file(self, file_path: Path) -> list[StructureViolation]:
         """Validate a file for all structure rules."""
         violations = []
 
@@ -157,7 +157,7 @@ class UnifiedStructureEnforcerAgent:
 
         return violations
 
-    def _extract_layer(self, path: Path) -> Optional[str]:
+    def _extract_layer(self, path: Path) -> str | None:
         """Extract layer from file path."""
         path_str = str(path)
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
@@ -165,14 +165,14 @@ class UnifiedStructureEnforcerAgent:
                 return layer
         return None
 
-    def _extract_layer_from_module(self, module: str) -> Optional[str]:
+    def _extract_layer_from_module(self, module: str) -> str | None:
         """Extract layer from module name."""
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
             if f".{layer}_" in module or module.startswith(f"{layer}_") or f"_{layer}_" in module:
                 return layer
         return None
 
-    def _check_gravity(self, file_path: Path, content: str) -> List[StructureViolation]:
+    def _check_gravity(self, file_path: Path, content: str) -> list[StructureViolation]:
         """Check gravity (layer import) violations."""
         violations = []
 
@@ -201,7 +201,7 @@ class UnifiedStructureEnforcerAgent:
 
         return violations
 
-    def _check_naming(self, file_path: Path, content: str) -> List[StructureViolation]:
+    def _check_naming(self, file_path: Path, content: str) -> list[StructureViolation]:
         """Check naming convention violations."""
         violations = []
 
@@ -228,7 +228,7 @@ class UnifiedStructureEnforcerAgent:
 
         return violations
 
-    def _check_documentation(self, file_path: Path, content: str) -> List[StructureViolation]:
+    def _check_documentation(self, file_path: Path, content: str) -> list[StructureViolation]:
         """Check documentation violations."""
         violations = []
 
@@ -238,7 +238,7 @@ class UnifiedStructureEnforcerAgent:
             return violations
 
         for node in ast.walk(tree):
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+            if isinstance(node, ast.ClassDef | ast.FunctionDef):
                 docstring = ast.get_docstring(node)
 
                 if self.config.required_docstring and not docstring:
@@ -260,7 +260,7 @@ class UnifiedStructureEnforcerAgent:
 
         return violations
 
-    def _check_ascii(self, file_path: Path, content: str) -> List[StructureViolation]:
+    def _check_ascii(self, file_path: Path, content: str) -> list[StructureViolation]:
         """Check ASCII compliance."""
         violations = []
 
@@ -281,7 +281,7 @@ class UnifiedStructureEnforcerAgent:
 
         return violations
 
-    def check_gravity_import(self, source_layer: str, target_layer: str) -> Tuple[bool, str]:
+    def check_gravity_import(self, source_layer: str, target_layer: str) -> tuple[bool, str]:
         """
         Check if an import from source to target layer is allowed.
 
@@ -305,7 +305,7 @@ class UnifiedStructureEnforcerAgent:
         old_name: str,
         new_name: str,
         dry_run: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Force rename a class to comply with naming conventions.
 
@@ -368,7 +368,7 @@ class UnifiedStructureEnforcerAgent:
 
         return result
 
-    def validate_hierarchy(self, file_path: Path) -> List[StructureViolation]:
+    def validate_hierarchy(self, file_path: Path) -> list[StructureViolation]:
         """Validate file hierarchy placement."""
         violations = []
 
@@ -396,7 +396,7 @@ class UnifiedStructureEnforcerAgent:
 
         return violations
 
-    def get_violations(self) -> List[StructureViolation]:
+    def get_violations(self) -> list[StructureViolation]:
         """Get all recorded violations."""
         return self._violations.copy()
 

@@ -1,18 +1,20 @@
 from __future__ import annotations
+
 import ast
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import json
 import logging
-import re
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any
+
 import yaml
 from llm_client import LLMClient
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 class CognitiveNode:
     """
@@ -20,7 +22,7 @@ class CognitiveNode:
     Forces the LLM to 'Show its work' before generating the final code.
     """
 
-    def __init__(self, config_path: Optional[str]=None):
+    def __init__(self, config_path: str | None=None):
         self.Logger = logging.getLogger('CognitiveNode')
         self.llm = LLMClient()
         if config_path is None:
@@ -28,7 +30,7 @@ class CognitiveNode:
         else:
             config_path = Path(config_path)
         try:
-            with open(config_path, 'r', encoding='utf-8') as f:
+            with open(config_path, encoding='utf-8') as f:
                 self.config = yaml.safe_load(f)
         except FileNotFoundError:
             self.Logger.warning(f'Config file not found at {config_path}, using defaults')
@@ -84,7 +86,7 @@ class CognitiveNode:
         else:
             return 'Phase: EXECUTION. FINAL WARNING. You must conclude immediately. Do not ask for more information.'
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Return default configuration if config file is Missing or invalid."""
         return {'max_steps': 5, 'step_timeout': 30, 'overall_timeout': 300, 'circuit_breaker_trips': 2, 'slow_step_threshold': 30, 'persist_history': True, 'history_dir': 'logs/thought_history', 'max_syntax_attempts': 2, 'base_temperature': 0.7, 'min_temperature': 0.0, 'log_thoughts': True, 'log_timing': True}
 
@@ -126,7 +128,7 @@ class CognitiveNode:
             self.Logger.error(f'[X] Overall thinking timeout exceeded ({self.overall_timeout}s)')
             raise TimeoutError('Sequential thinking exceeded maximum allowed duration')
 
-    def _build_thinking_prompt(self, user_goal: str, toolbox_desc: str, current_step: int, history: List[Dict[str, Any]], phase_directive: str) -> str:
+    def _build_thinking_prompt(self, user_goal: str, toolbox_desc: str, current_step: int, history: list[dict[str, Any]], phase_directive: str) -> str:
         """
         Builds the system prompt for a thinking step.
 
@@ -143,7 +145,7 @@ class CognitiveNode:
         history_block = '\n'.join([f"Step {h['step']}: {h['thought']}" for h in history])
         return f'You are a Sequential Thinking Engine. {phase_directive}\n\nGoal: {user_goal}\nTools: {toolbox_desc}\nCurrent Step: {current_step + 1}/{self.max_steps}\n\nPAST THOUGHTS:\n{history_block}\n\nINSTRUCTIONS:\n1. Analyze the goal and the past thoughts.\n2. Decide if you have enough information and clarity to write the final Python code.\n3. Output JSON ONLY:\n{{\n    "thought": "Your analysis of the current situation and next step in the sequence.",\n    "needs_more_thought": true/false (Set to false ONLY when the thought is sufficient to write the final code),\n    "step": {current_step + 1}\n}}\n'
 
-    def _execute_thinking_step(self, system_prompt: str, raw_prompt: str, current_step: int, circuit_breaker_count: int) -> Tuple[Dict[str, Any], int, float]:
+    def _execute_thinking_step(self, system_prompt: str, raw_prompt: str, current_step: int, circuit_breaker_count: int) -> tuple[dict[str, Any], int, float]:
         """
         Executes a single LLM thinking step, handles timeouts and circuit breaker.
         Args:
@@ -174,7 +176,7 @@ class CognitiveNode:
             self.Logger.error(f'[X] Cognitive Step Failed: {e}')
             raise RuntimeError(f'Cognitive step {current_step + 1} failed: {str(e)}') from e
 
-    def _process_thinking_step_result(self, session_id: str, user_goal: str, current_step: int, response: Dict[str, Any], step_duration: float, history: List[Dict[str, Any]]) -> Tuple[str, bool]:
+    def _process_thinking_step_result(self, session_id: str, user_goal: str, current_step: int, response: dict[str, Any], step_duration: float, history: list[dict[str, Any]]) -> tuple[str, bool]:
         """
         Processes the LLM's thought response, updates history, and persists it.
 
@@ -199,7 +201,7 @@ class CognitiveNode:
             self._save_thought_history(session_id, user_goal, history)
         return (thought, needs_more)
 
-    def _handle_final_synthesis(self, session_id: str, user_goal: str, history: List[Dict[str, Any]], toolbox_desc: str) -> str:
+    def _handle_final_synthesis(self, session_id: str, user_goal: str, history: list[dict[str, Any]], toolbox_desc: str) -> str:
         """
         Handles the final code synthesis and persistence.
 
@@ -238,7 +240,7 @@ class CognitiveNode:
         start_time: Any = time.time()
         session_id: Any = datetime.now().strftime('%Y%m%d_%H%M%S')
         self.Logger.info(f'🧠 STARTING SEQUENTIAL THINKING LOOP (Max {self.max_steps} Steps, {self.step_timeout}s timeout each)...')
-        history: List[Dict[str, Any]] = []
+        history: list[dict[str, Any]] = []
         circuit_breaker_count: Any = 0
         raw_prompt: Any = user_goal
         for i in range(self.max_steps):
@@ -270,7 +272,7 @@ class CognitiveNode:
             raise ValueError('Generated code is empty or only whitespace.')
         ast.parse(code)
 
-    def _build_synthesis_prompt(self, goal: str, thoughts: str, toolbox_desc: str, attempt: int, last_error: Optional[str]) -> str:
+    def _build_synthesis_prompt(self, goal: str, thoughts: str, toolbox_desc: str, attempt: int, last_error: str | None) -> str:
         """
         Helper to build the synthesis prompt, reducing nesting.
 
@@ -289,7 +291,7 @@ class CognitiveNode:
             base_prompt += f'\n\nPREVIOUS ATTEMPT FAILED WITH SYNTAX ERROR:\n{last_error}\n\nPlease fix the syntax error and try again.'
         return base_prompt
 
-    def _attempt_code_synthesis_single_pass(self, goal: str, thoughts: str, toolbox_desc: str, attempt: int, last_error: Optional[str]) -> str:
+    def _attempt_code_synthesis_single_pass(self, goal: str, thoughts: str, toolbox_desc: str, attempt: int, last_error: str | None) -> str:
         """
         Performs a single attempt at code synthesis, including LLM call and validation.
 
@@ -320,7 +322,7 @@ class CognitiveNode:
         self._validate_generated_code(code)
         return code
 
-    def _perform_synthesis_attempt(self, goal: str, thoughts: str, toolbox_desc: str, attempt: int, last_error: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
+    def _perform_synthesis_attempt(self, goal: str, thoughts: str, toolbox_desc: str, attempt: int, last_error: str | None) -> tuple[str | None, str | None]:
         """
         Helper to perform a single code synthesis attempt and return code or error.
         Returns (code, None) on success, or (None, error_message) on failure.
@@ -332,7 +334,7 @@ class CognitiveNode:
         except (SyntaxError, ValueError, RuntimeError) as e:
             return (None, f'Validation/Synthesis error: {str(e)}')
 
-    def _synthesize_code(self, goal: str, history: List[Dict[str, Any]], toolbox_desc: str) -> str:
+    def _synthesize_code(self, goal: str, history: list[dict[str, Any]], toolbox_desc: str) -> str:
         """
         Ask the LLM to convert the sequential thought history into Final Python Code.
 
@@ -361,7 +363,7 @@ class CognitiveNode:
         self.Logger.error('[X] Max validation attempts reached. Raising exception.')
         raise RuntimeError(f'Failed to generate valid code after {max_attempts} attempts. Last error: {last_error}')
 
-    def _save_thought_history(self, session_id: str, goal: str, history: List[Dict[str, Any]]) -> None:
+    def _save_thought_history(self, session_id: str, goal: str, history: list[dict[str, Any]]) -> None:
         """
         Save thought history to disk for debugging.
 

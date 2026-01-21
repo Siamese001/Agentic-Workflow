@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 """
 Sovereign Rescue & Review (SRR)
 """
-import os
 import hashlib
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+
 # from agentic_core.L4_state.vector.PineconeSovereignAgent import PineconeSovereignAgent  # Refactored to dynamic import (Sprint 1)
 def _get_pinecone_sovereign_agent():
     """Lazy load PineconeSovereignAgent to avoid L0 → L4 dependency."""
@@ -43,7 +45,7 @@ class RescueReviewer:
         self.auto_home_threshold = 0.9
         self.auto_home_min_signals = 3
 
-    def _map_active_canon(self) -> Dict[str, str]:
+    def _map_active_canon(self) -> dict[str, str]:
         """Map every active .py file hash to its current path"""
         hash_map = {}
         targets = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'tests']
@@ -69,7 +71,11 @@ class RescueReviewer:
             print('[OK] Archive is empty. Sovereignty is pure.')
             return
         print(f'\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---')
-        from agentic_core.L5_safety.validators.structure_blueprint import CANON_SIGNALS, CANON_KEY_TO_FOLDER_MAP
+        from agentic_core.L5_safety.validators.structure_blueprint import (
+            CANON_KEY_TO_FOLDER_MAP,
+            CANON_SIGNALS,
+        )
+
         # Phase 6.6: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         for arch_file in get_python_files(self.archive_path):
@@ -94,12 +100,10 @@ class RescueReviewer:
                 match: Any = results[0]
                 territory: Any = match['metadata']['territory']
                 conf: Any = match['score']
-                key: Any = None
-                for k, paths in CANON_KEY_TO_FOLDER_MAP.items():
-                    if any((p in territory for p in paths)):
-                        key: Any = k
+                for _k, paths in CANON_KEY_TO_FOLDER_MAP.items():
+                    if any(p in territory for p in paths):
                         break
-                sig_count: Any = sum((1 for s in CANON_SIGNALS if s in content.lower()))
+                sig_count: Any = sum(1 for s in CANON_SIGNALS if s in content.lower())
                 print(f'         SUGGESTION: {territory} (Conf: {conf:.2f})')
                 Verdict: Any = 'MANUAL_REVIEW'
                 if auto_home and conf >= self.auto_home_threshold and (sig_count >= self.auto_home_min_signals):
@@ -109,7 +113,7 @@ class RescueReviewer:
                 if self.redis:
                     self.redis.set(cache_key, json.dumps({'Verdict': Verdict, 'action': 'moved' if Verdict == 'RESCUED_AUTO' else 'stay'}), ex=604800)
             else:
-                print(f'         VERDICT: Unknown logic. Manual review required.')
+                print('         VERDICT: Unknown logic. Manual review required.')
 
     def _execute_rescue(self, arch_file, territory):
         target_dir = self.root / territory

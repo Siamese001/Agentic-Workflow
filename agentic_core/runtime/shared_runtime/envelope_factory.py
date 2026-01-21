@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Envelope Factory
 Creates and manages data envelopes for pipeline processing.
@@ -6,7 +7,8 @@ Creates and manages data envelopes for pipeline processing.
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -14,7 +16,7 @@ class Envelope:
     """Data Envelope for pipeline processing."""
     id: str
     data: Any
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
     completed_stages: set = field(default_factory=set)
 
@@ -39,7 +41,7 @@ class EnvelopeFactory:
     """Factory for creating envelopes."""
 
     @staticmethod
-    def create_envelope(data: Any, metadata: Optional[Dict[str, Any]]=None, envelope_id: Optional[str]=None) -> Envelope:
+    def create_envelope(data: Any, metadata: dict[str, Any] | None=None, envelope_id: str | None=None) -> Envelope:
         """Create a new Envelope."""
         import uuid
         envelope_id: Any = envelope_id or str(uuid.uuid4())

@@ -1,11 +1,11 @@
 from __future__ import annotations
+
 """
 Autonomous Checkpoint Manager - L4 State Enhancement
 
 Automatically manages state checkpoints with intelligent recovery.
 Provides rollback capabilities and state consistency verification.
 """
-import asyncio
 import hashlib
 import json
 import logging
@@ -13,8 +13,8 @@ import os
 import shutil
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -22,18 +22,18 @@ class Checkpoint:
     """Represents a state Checkpoint."""
     checkpoint_id: str
     timestamp: datetime
-    state_snapshot: Dict[str, Any]
-    file_hashes: Dict[str, str]
-    metadata: Dict[str, Any]
+    state_snapshot: dict[str, Any]
+    file_hashes: dict[str, str]
+    metadata: dict[str, Any]
     is_valid: bool = True
     recovery_count: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert Checkpoint to dictionary."""
         return {'checkpoint_id': self.checkpoint_id, 'timestamp': self.timestamp.isoformat(), 'state_snapshot': self.state_snapshot, 'file_hashes': self.file_hashes, 'metadata': self.metadata, 'is_valid': self.is_valid, 'recovery_count': self.recovery_count}
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Checkpoint':
+    def from_dict(cls, data: dict[str, Any]) -> Checkpoint:
         """Create Checkpoint from dictionary."""
         return cls(checkpoint_id=data['checkpoint_id'], timestamp=datetime.fromisoformat(data['timestamp']), state_snapshot=data['state_snapshot'], file_hashes=data['file_hashes'], metadata=data['metadata'], is_valid=data.get('is_valid', True), recovery_count=data.get('recovery_count', 0))
 
@@ -44,10 +44,11 @@ class RecoveryResult:
     checkpoint_id: str
     files_restored: int
     state_restored: bool
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
     recovery_time: float = 0.0
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class AutonomousCheckpointManagerAgent(HealerMixin):
@@ -62,15 +63,15 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
     - Corruption detection and recovery
     """
 
-    def __init__(self, checkpoint_dir: Optional[str]=None):
+    def __init__(self, checkpoint_dir: str | None=None):
         """Initialize the Checkpoint manager."""
         self.checkpoint_dir = checkpoint_dir or os.path.join(os.getcwd(), '.workflow_state', 'checkpoints')
         os.makedirs(self.checkpoint_dir, exist_ok=True)
-        self.checkpoints: Dict[str, Checkpoint] = {}
-        self.current_checkpoint_id: Optional[str] = None
+        self.checkpoints: dict[str, Checkpoint] = {}
+        self.current_checkpoint_id: str | None = None
         self.max_checkpoints = 10
         self.auto_checkpoint_interval = timedelta(minutes=5)
-        self.last_auto_checkpoint: Optional[datetime] = None
+        self.last_auto_checkpoint: datetime | None = None
         self._run_self_tests()
         self._load_checkpoints()
         Logger.info(f'Autonomous Checkpoint Manager initialized at {self.checkpoint_dir}')
@@ -86,7 +87,7 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
         try:
             checkpoint_index = os.path.join(self.checkpoint_dir, 'index.json')
             if os.path.exists(checkpoint_index):
-                with open(checkpoint_index, 'r', encoding='utf-8') as f:
+                with open(checkpoint_index, encoding='utf-8') as f:
                     data = json.load(f)
                 for cp_data in data.get('checkpoints', []):
                     Checkpoint = Checkpoint.from_dict(cp_data)
@@ -120,7 +121,7 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         return f'cp_{timestamp}_{len(self.checkpoints)}'
 
-    async def create_checkpoint(self, state: Dict[str, Any], files_to_track: List[str], metadata: Optional[Dict[str, Any]]=None) -> str:
+    async def create_checkpoint(self, state: dict[str, Any], files_to_track: list[str], metadata: dict[str, Any] | None=None) -> str:
         """
         Create a new Checkpoint.
 
@@ -154,7 +155,7 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
         Logger.info(f'Created Checkpoint {checkpoint_id} with {len(file_hashes)} files')
         return checkpoint_id
 
-    async def auto_checkpoint_if_needed(self, state: Dict[str, Any], files_to_track: List[str], force: bool=False) -> Optional[str]:
+    async def auto_checkpoint_if_needed(self, state: dict[str, Any], files_to_track: list[str], force: bool=False) -> str | None:
         """
         Automatically create Checkpoint if interval has passed.
 
@@ -175,7 +176,7 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
         self.last_auto_checkpoint = datetime.now()
         return checkpoint_id
 
-    async def verify_checkpoint(self, checkpoint_id: str) -> Tuple[bool, List[str]]:
+    async def verify_checkpoint(self, checkpoint_id: str) -> tuple[bool, list[str]]:
         """
         Verify Checkpoint integrity.
 
@@ -251,7 +252,7 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
         Logger.info(f'Rollback to {checkpoint_id}: {result.files_restored} files restored, state restored: {result.state_restored}')
         return result
 
-    async def auto_recover_on_failure(self, current_state: Dict[str, Any], error: Exception) -> Optional[RecoveryResult]:
+    async def auto_recover_on_failure(self, current_state: dict[str, Any], error: Exception) -> RecoveryResult | None:
         """
         Automatically recover from failure using best Checkpoint.
 
@@ -290,11 +291,11 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
             except Exception as e:
                 Logger.error(f'Failed to remove Checkpoint {Checkpoint.checkpoint_id}: {e}')
 
-    def get_checkpoint_history(self) -> List[Dict[str, Any]]:
+    def get_checkpoint_history(self) -> list[dict[str, Any]]:
         """Get Checkpoint history."""
         return [{'checkpoint_id': cp.checkpoint_id, 'timestamp': cp.timestamp.isoformat(), 'files_tracked': len(cp.file_hashes), 'is_valid': cp.is_valid, 'recovery_count': cp.recovery_count, 'metadata': cp.metadata} for cp in sorted(self.checkpoints.values(), key=lambda c: c.timestamp, reverse=True)]
 
-    def get_current_state(self) -> Optional[Dict[str, Any]]:
+    def get_current_state(self) -> dict[str, Any] | None:
         """Get state from current Checkpoint."""
         if not self.current_checkpoint_id:
             return None
@@ -319,7 +320,7 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
-def create_autonomous_checkpoint_manager(checkpoint_dir: Optional[str]=None) -> AutonomousCheckpointManager:
+def create_autonomous_checkpoint_manager(checkpoint_dir: str | None=None) -> AutonomousCheckpointManager:
     """Factory function to create autonomous Checkpoint manager."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()

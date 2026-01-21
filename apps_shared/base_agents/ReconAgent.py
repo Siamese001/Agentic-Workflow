@@ -7,7 +7,6 @@ for signaling deep authority.
 
 import logging
 from enum import Enum
-from typing import Dict, List, Optional, Set
 
 from pydantic import BaseModel, Field
 
@@ -25,19 +24,19 @@ class Company(BaseModel):
     """Company information."""
     name: str
     industry: str
-    description: Optional[str] = None
-    competitors: List[str] = Field(default_factory=list)
-    adjacent_companies: List[str] = Field(default_factory=list)
+    description: str | None = None
+    competitors: list[str] = Field(default_factory=list)
+    adjacent_companies: list[str] = Field(default_factory=list)
 
 
 class ReconSignal(BaseModel):
     """Signal from competitive reconnaissance."""
     target_company: str
-    competitor_detected: Optional[str] = None
+    competitor_detected: str | None = None
     position: CompetitivePosition
     strategy_recommendation: str
     confidence_score: float = Field(default=0.0, description="Confidence in signal")
-    market_insights: List[str] = Field(default_factory=list)
+    market_insights: list[str] = Field(default_factory=list)
 
 
 class ReconAgent:
@@ -46,10 +45,10 @@ class ReconAgent:
     def __init__(self):
         """Initialize recon agent with competitor database."""
         # Mock competitor database - in production, this would query real data
-        self.competitor_db: Dict[str, Company] = self._build_competitor_db()
+        self.competitor_db: dict[str, Company] = self._build_competitor_db()
 
         # Industry mapping for adjacent markets
-        self.industry_adjacency: Dict[str, List[str]] = {
+        self.industry_adjacency: dict[str, list[str]] = {
             "rideshare": ["delivery", "logistics", "transportation"],
             "delivery": ["rideshare", "logistics", "grocery"],
             "fintech": ["banking", "payments", "lending"],
@@ -64,7 +63,7 @@ class ReconAgent:
 
         logger.info("Initialized ReconAgent with competitor database")
 
-    def _build_competitor_db(self) -> Dict[str, Company]:
+    def _build_competitor_db(self) -> dict[str, Company]:
         """Build mock competitor database.
 
         Returns:
@@ -175,7 +174,7 @@ class ReconAgent:
     def analyze(
         self,
         target_company: str,
-        candidate_history: List[str]
+        candidate_history: list[str]
     ) -> ReconSignal:
         """Analyze candidate history for competitive signals.
 
@@ -218,8 +217,8 @@ class ReconAgent:
     def _find_direct_competitor(
         self,
         target: Company,
-        candidate_history: List[str]
-    ) -> Optional[str]:
+        candidate_history: list[str]
+    ) -> str | None:
         """Find if candidate worked at direct competitor.
 
         Args:
@@ -240,8 +239,8 @@ class ReconAgent:
     def _find_adjacent_competitor(
         self,
         target: Company,
-        candidate_history: List[str]
-    ) -> Optional[str]:
+        candidate_history: list[str]
+    ) -> str | None:
         """Find if candidate worked at adjacent market company.
 
         Args:
@@ -347,7 +346,7 @@ class ReconAgent:
         self.competitor_db[company.name] = company
         logger.debug(f"Added company to database: {company.name}")
 
-    def update_competitors(self, company_name: str, competitors: List[str]) -> None:
+    def update_competitors(self, company_name: str, competitors: list[str]) -> None:
         """Update competitor list for a company.
 
         Args:
@@ -358,7 +357,7 @@ class ReconAgent:
             self.competitor_db[company_name].competitors = competitors
             logger.debug(f"Updated competitors for {company_name}")
 
-    def get_competitive_landscape(self, company_name: str) -> Optional[Dict[str, List[str]]]:
+    def get_competitive_landscape(self, company_name: str) -> dict[str, list[str]] | None:
         """Get competitive landscape for a company.
 
         Args:
@@ -379,9 +378,9 @@ class ReconAgent:
 
     def batch_analyze(
         self,
-        target_companies: List[str],
-        candidate_history: List[str]
-    ) -> List[ReconSignal]:
+        target_companies: list[str],
+        candidate_history: list[str]
+    ) -> list[ReconSignal]:
         """Analyze multiple target companies.
 
         Args:
@@ -400,7 +399,7 @@ class ReconAgent:
 
 
 # Global agent instance
-_recon_agent: Optional[ReconAgent] = None
+_recon_agent: ReconAgent | None = None
 
 
 def get_recon_agent() -> ReconAgent:
@@ -418,7 +417,7 @@ def get_recon_agent() -> ReconAgent:
 # Convenience function
 def analyze_competitive_fit(
     target_company: str,
-    candidate_history: List[str]
+    candidate_history: list[str]
 ) -> ReconSignal:
     """Analyze candidate's competitive fit for target company.
 

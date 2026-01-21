@@ -1,11 +1,11 @@
 from __future__ import annotations
+
 """MCP Provider mappings and defaults.
 
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
 
 from enum import Enum
-from typing import Dict, Optional
 
 
 class ProviderType(Enum):
@@ -22,7 +22,7 @@ class ProviderType(Enum):
     CUSTOM = "custom"
 
 
-DEFAULT_PROVIDER_MODULES: Dict[str, str] = {
+DEFAULT_PROVIDER_MODULES: dict[str, str] = {
     "stub": None,
     "redis": "redis",
     "chromadb": "chromadb",
@@ -35,7 +35,7 @@ DEFAULT_PROVIDER_MODULES: Dict[str, str] = {
 }
 
 
-DEFAULT_PROVIDER_CLASSES: Dict[str, str] = {
+DEFAULT_PROVIDER_CLASSES: dict[str, str] = {
     "stub": "MCPClientStub",
     "redis": "Redis",
     "chromadb": "Client",
@@ -48,7 +48,7 @@ DEFAULT_PROVIDER_CLASSES: Dict[str, str] = {
 }
 
 
-def get_default_module(Provider: str) -> Optional[str]:
+def get_default_module(Provider: str) -> str | None:
     """Get default module name for a Provider.
 
     Args:
@@ -60,7 +60,7 @@ def get_default_module(Provider: str) -> Optional[str]:
     return DEFAULT_PROVIDER_MODULES.get(Provider.lower())
 
 
-def get_default_class(Provider: str) -> Optional[str]:
+def get_default_class(Provider: str) -> str | None:
     """Get default class name for a Provider.
 
     Args:

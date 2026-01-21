@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Secure Logging Utility - Prevents sensitive data leakage in logs.
 
 This module provides a secure logging wrapper that sanitizes log messages
@@ -8,9 +9,7 @@ to prevent PII, secrets, or sensitive user data from being written to logs.
 import json
 import logging
 import re
-from typing import Any, Dict, List, Optional, Union
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Patterns for sensitive data detection
 SENSITIVE_PATTERNS = [
@@ -102,11 +101,11 @@ class SecureLogger:
         for arg in args:
             if isinstance(arg, str):
                 sanitized_args.append(self._sanitize_message(arg))
-            elif isinstance(arg, (dict, list)):
+            elif isinstance(arg, dict | list):
                 # Convert to JSON and sanitize
                 json_str = json.dumps(arg, default=str)
-                sanitized_json = self._sanitize_message(json_str)
-                sanitized_args.append(f"<sanitized_data>")
+                self._sanitize_message(json_str)
+                sanitized_args.append("<sanitized_data>")
             else:
                 sanitized_args.append(str(arg))
 
@@ -238,7 +237,7 @@ class SecureLogContext:
 
 
 # Audit function to check for potential log leakage
-def audit_logs_for_leakage(log_file: Path) -> List[str]:
+def audit_logs_for_leakage(log_file: Path) -> list[str]:
     """Audit log file for potential sensitive data leakage.
 
     Args:
@@ -250,7 +249,7 @@ def audit_logs_for_leakage(log_file: Path) -> List[str]:
     issues = []
 
     try:
-        with open(log_file, 'r') as f:
+        with open(log_file) as f:
             for line_num, line in enumerate(f, 1):
                 # Check for sensitive patterns
                 for pattern in SENSITIVE_PATTERNS:

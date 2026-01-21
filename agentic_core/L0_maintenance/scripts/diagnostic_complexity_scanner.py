@@ -48,8 +48,8 @@ class ComplexityScanner:
         Logger.info(f'🔍 Scanning directory: {directory}')
         pattern: Any = '**/*.py' if recursive else '*.py'
         # Phase 6.9: Use ssot_discovery instead of glob
-    from agentic_core.utils.ssot_discovery import get_python_files
-    python_files: Any = list(get_python_files(directory))
+        from agentic_core.utils.ssot_discovery import get_python_files
+        python_files: Any = list(get_python_files(directory))
         Logger.info(f'📁 Found {len(python_files)} Python files')
         violations: Any = []
         for file_path in python_files:

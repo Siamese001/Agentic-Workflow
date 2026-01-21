@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 Specialized Resume Agents - Phase 1 Implementation
 
@@ -14,13 +16,14 @@ This module contains all specialized agents for autonomous resume generation:
 - RgStrategicPlannerAgent: Plans execution strategy
 - RgReflectionAgent: Learns from execution
 """
-from typing import Any, Optional, Protocol, Dict, List
 import json
 import re
+from typing import Any
+
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 from .resume_base import ResumeAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -124,7 +127,7 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             return json.dumps(content)
         return str(content)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -187,7 +190,7 @@ class TestPilot(ResumeAgent):
             self.record_fail(f"Tests failed: {failed_tests}", data=test_results)
             self.add_signal("TEST_FAILURE")
 
-    def _test_schema(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def _test_schema(self, resume: dict[str, Any]) -> dict[str, Any]:
         """
         Test basic schema structure.
 
@@ -204,7 +207,7 @@ class TestPilot(ResumeAgent):
             "missing_fields": Missing,
         }
 
-    def _test_completeness(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def _test_completeness(self, resume: dict[str, Any]) -> dict[str, Any]:
         """
         Test content completeness.
 
@@ -222,7 +225,7 @@ class TestPilot(ResumeAgent):
             "total_chars": total_content,
         }
 
-    def _test_no_empty_sections(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def _test_no_empty_sections(self, resume: dict[str, Any]) -> dict[str, Any]:
         """
         Test for empty sections.
 
@@ -238,7 +241,7 @@ class TestPilot(ResumeAgent):
             "empty_sections": empty,
         }
 
-    def _test_reasonable_lengths(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def _test_reasonable_lengths(self, resume: dict[str, Any]) -> dict[str, Any]:
         """
         Test section lengths are reasonable.
 

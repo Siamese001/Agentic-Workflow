@@ -9,23 +9,9 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Dict
 
 from agentic_core.L5_safety.validators.structure_blueprint_1 import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 logger = logging.getLogger(__name__)
@@ -34,10 +20,11 @@ logger = logging.getLogger(__name__)
 sys.path.append(str(Path(__file__).parent.parent))
 
 try:
-    from data.sdks_mcps.client_wrappers.anthropic_client import create_anthropic_client
     from agentic_core.L5_safety.guardrails.multi_provider_router_agent import (
         create_multi_provider_router,
     )
+
+    from data.sdks_mcps.client_wrappers.anthropic_client import create_anthropic_client
     from data.sdks_mcps.client_wrappers.openai_client import create_openai_client
     from data.sdks_mcps.client_wrappers.vertex_client import create_vertex_client
 except ImportError as e:
@@ -48,7 +35,7 @@ except ImportError as e:
     def create_vertex_client(): return None
     def create_multi_provider_router(): return None
 
-def test_openai_client() -> Dict[str, object]:
+def test_openai_client() -> dict[str, object]:
     """Test OpenAI client functionality."""
     results = {
         "provider": "OpenAI",
@@ -119,7 +106,7 @@ def test_openai_client() -> Dict[str, object]:
 
     return results
 
-def test_anthropic_client() -> Dict[str, object]:
+def test_anthropic_client() -> dict[str, object]:
     """Test Anthropic client functionality."""
     results = {
         "provider": "Anthropic",
@@ -203,7 +190,7 @@ def test_anthropic_client() -> Dict[str, object]:
 
     return results
 
-def test_vertex_client() -> Dict[str, object]:
+def test_vertex_client() -> dict[str, object]:
     """Test Google Vertex client functionality."""
     results = {
         "provider": "Google Vertex",
@@ -265,7 +252,7 @@ def test_vertex_client() -> Dict[str, object]:
 
     return results
 
-def test_multi_provider_router() -> Dict[str, object]:
+def test_multi_provider_router() -> dict[str, object]:
     """Test multi-provider router functionality."""
     results = {
         "provider": "Multi-Provider Router",
@@ -333,7 +320,7 @@ def test_multi_provider_router() -> Dict[str, object]:
 
     return results
 
-def test_reference_clients() -> Dict[str, object]:
+def test_reference_clients() -> dict[str, object]:
     """Test minimal reference clients."""
     results = {
         "provider": "Reference Clients",

@@ -7,23 +7,15 @@
 from __future__ import annotations
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-import asyncio
+
 '''Brief description of functionality and purpose.'''
 
 import datetime
 import os
-import re
 import time
-from typing import Any, Dict, List, Optional, Protocol
-
-from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 # NAMING FIXED: EXCLUDED_DIRS → excluded_dirs
 excluded_dirs = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}
@@ -79,7 +71,7 @@ class HistorianAgent(SovereignBaseAgent):
                 if f.tell() == 0:
                     f.write("| Time | Agent | Status | Details |\n|---|---|---|---|\n")
                 f.write(entry)
-        except (IOError, OSError) as e:
+        except OSError as e:
             print(f"   [!] Historian failed to write: {e}")
 
     def heal_repository(self) -> dict:

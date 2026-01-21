@@ -1,40 +1,29 @@
 from __future__ import annotations
+
 """
 Sovereign Configuration SSOT
 Centralizes all environment variables, feature flags, and system constants.
 """
 import os
 from dataclasses import dataclass
-from typing import Any, Optional, Dict, List
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    APPS_SHARED_DIR,
-    APPS_RG_DIR,
     APPS_LIC_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
 )
+
 
 # NOT_AN_AGENT — config dataclass, not a true agent — excluded from agent discovery
 @dataclass(frozen=True)
 class SovereignConfig:
     """Brief description of functionality and purpose."""
-    PINECONE_API_KEY: Optional[str] = os.getenv('PINECONE_API_KEY')
+    PINECONE_API_KEY: str | None = os.getenv('PINECONE_API_KEY')
     PINECONE_ENV: str = os.getenv('PINECONE_ENV', 'us-east-1')
     PINECONE_CLOUD: str = os.getenv('PINECONE_CLOUD', 'aws')
-    OPENAI_API_KEY: Optional[str] = os.getenv('OPENAI_API_KEY')
+    OPENAI_API_KEY: str | None = os.getenv('OPENAI_API_KEY')
     DEFAULT_EMBEDDING_MODEL: str = 'text-embedding-3-large'
     DEFAULT_EMBEDDING_DIM: int = 1024
     PRIMARY_MODEL: str = 'gemini-2.5-flash'
@@ -57,7 +46,7 @@ class SovereignConfig:
     APP_LOG_LEVEL: str = 'INFO'
     APP_CACHE_TTL_SECONDS: int = 3600
     AGENT_IMPLEMENTATION_MODE: str = 'real'
-    MODEL_PRICING: Dict[str, Dict[str, float]] = None
+    MODEL_PRICING: dict[str, dict[str, float]] = None
     DEFAULT_COST_MODEL: str = 'gemini-2.5-flash'
     SEQUENTIAL_THINKING_MCP_ENABLED: bool = True
     SEQ_THINKING_MAX_STEPS: int = 20
@@ -101,8 +90,8 @@ class SovereignConfig:
     LLM_ROUTER_MAX_TOKENS: int = 1024
     FILESYSTEM_MCP_ENABLED: bool = True
     FILESYSTEM_MAX_READ_SIZE: int = 10000000
-    FILESYSTEM_ALLOWED_ROOTS: List[str] = None
-    FILESYSTEM_FORBIDDEN_PATTERNS: List[str] = None
+    FILESYSTEM_ALLOWED_ROOTS: list[str] = None
+    FILESYSTEM_FORBIDDEN_PATTERNS: list[str] = None
     GITKRAKEN_MCP_ENABLED: bool = True
     GITKRAKEN_DEFAULT_REPO: str = 'xai/sovereign-canon'
     GITKRAKEN_HEALING_BRANCH: str = 'sovereign-healing'

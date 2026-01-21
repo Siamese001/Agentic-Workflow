@@ -24,12 +24,11 @@ import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
 
 Logger = logging.getLogger(__name__)
 
 
-from enum import Enum, auto
+from enum import Enum
 
 
 class HealingType(Enum):
@@ -60,7 +59,7 @@ class HealerConfig:
     enable_structural: bool = True
     dry_run: bool = True
     backup_before_heal: bool = True
-    backup_dir: Optional[Path] = None
+    backup_dir: Path | None = None
 
 
 class UnifiedCodeHealerAgent:
@@ -92,20 +91,20 @@ class UnifiedCodeHealerAgent:
 
     def __init__(
         self,
-        project_root: Optional[Path] = None,
-        config: Optional[HealerConfig] = None,
+        project_root: Path | None = None,
+        config: HealerConfig | None = None,
     ):
         self.project_root = project_root or Path.cwd()
         self.config = config or HealerConfig()
         self._lock = threading.RLock()
-        self._actions: List[HealingAction] = []
+        self._actions: list[HealingAction] = []
 
         if self.config.backup_dir is None:
             self.config.backup_dir = self.project_root / "archives" / "healing_backups" / "code"
 
         Logger.info("UnifiedCodeHealerAgent initialized")
 
-    def heal_all(self, file_path: Path) -> List[HealingAction]:
+    def heal_all(self, file_path: Path) -> list[HealingAction]:
         """Run all enabled healing on a file."""
         actions = []
 
@@ -123,7 +122,7 @@ class UnifiedCodeHealerAgent:
 
         return actions
 
-    def heal_imports(self, file_path: Path) -> List[HealingAction]:
+    def heal_imports(self, file_path: Path) -> list[HealingAction]:
         """Fix broken and unused imports."""
         actions = []
 
@@ -140,8 +139,8 @@ class UnifiedCodeHealerAgent:
             return actions
 
         # Collect imports and their usage
-        imports: List[Tuple[ast.AST, str, int]] = []
-        used_names: Set[str] = set()
+        imports: list[tuple[ast.AST, str, int]] = []
+        used_names: set[str] = set()
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
@@ -196,7 +195,7 @@ class UnifiedCodeHealerAgent:
         self._actions.extend(actions)
         return actions
 
-    def heal_canon(self, file_path: Path) -> List[HealingAction]:
+    def heal_canon(self, file_path: Path) -> list[HealingAction]:
         """Fix canon compliance issues."""
         actions = []
 
@@ -252,7 +251,7 @@ class UnifiedCodeHealerAgent:
         self._actions.extend(actions)
         return actions
 
-    def heal_structural(self, file_path: Path) -> List[HealingAction]:
+    def heal_structural(self, file_path: Path) -> list[HealingAction]:
         """Fix structural issues."""
         actions = []
 
@@ -308,7 +307,7 @@ class UnifiedCodeHealerAgent:
         self._actions.extend(actions)
         return actions
 
-    def _backup_file(self, file_path: Path) -> Optional[Path]:
+    def _backup_file(self, file_path: Path) -> Path | None:
         """Create backup before healing."""
         if not self.config.backup_before_heal:
             return None
@@ -324,7 +323,7 @@ class UnifiedCodeHealerAgent:
 
         return backup_path
 
-    def get_actions(self) -> List[HealingAction]:
+    def get_actions(self) -> list[HealingAction]:
         """Get all recorded healing actions."""
         return self._actions.copy()
 

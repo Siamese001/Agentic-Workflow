@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ValidationContext - State management for validation cycles
 
@@ -19,46 +20,42 @@ to optimize performance and prevent unnecessary re-scanning.
 """
 import json
 import logging
-import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L4_state.validation_context.CachedStateLedger import CachedStateLedger as CachedStateLedger
+from typing import Any
 
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
+from agentic_core.L4_state.validation_context.CachedStateLedger import (
+    CachedStateLedger as CachedStateLedger,
 )
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class ValidationContext:
     """ValidationContext agent for autonomous operations."""
-    modified_files: Set[Path] = field(default_factory=set)
-    signals: List[str] = field(default_factory=list)
-    file_hashes: Dict[str, str] = field(default_factory=dict)
+    modified_files: set[Path] = field(default_factory=set)
+    signals: list[str] = field(default_factory=list)
+    file_hashes: dict[str, str] = field(default_factory=dict)
     cycle_id: int = 0
     start_time: datetime = field(default_factory=datetime.utcnow)
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
     status: str = 'RUNNING'
     files_scanned: int = 0
     files_skipped: int = 0
     violations_found: int = 0
-    flapping_files: Dict[str, int] = field(default_factory=dict)
-    recent_cycles: List[Dict[str, Any]] = field(default_factory=list)
-    ledger: Optional[CachedStateLedger] = field(default=None, init=False)
-    project_root: Optional[Path] = field(default=None, init=False)
-    session_id: Optional[str] = field(default=None, init=False)
+    flapping_files: dict[str, int] = field(default_factory=dict)
+    recent_cycles: list[dict[str, Any]] = field(default_factory=list)
+    ledger: CachedStateLedger | None = field(default=None, init=False)
+    project_root: Path | None = field(default=None, init=False)
+    session_id: str | None = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         """Initialize ledger if project_root and session_id are available."""
@@ -71,7 +68,7 @@ class ValidationContext:
         self.session_id = session_id
         self.ledger = CachedStateLedger(project_root, session_id)
 
-    def get_context(self, key: str) -> Optional[Dict]:
+    def get_context(self, key: str) -> dict | None:
         """Get context with cache-first recall."""
         if self.ledger:
             cached: Any = self.ledger.get_cached_validation_context(key)
@@ -82,7 +79,7 @@ class ValidationContext:
             self.ledger.cache_validation_context(key, context)
         return context
 
-    def _compute_raw_context(self, key: str) -> Optional[Dict]:
+    def _compute_raw_context(self, key: str) -> dict | None:
         """Compute raw context - override in subclasses."""
         return {'key': key, 'cycle_id': self.cycle_id, 'status': self.status, 'files_scanned': self.files_scanned, 'violations_found': self.violations_found}
 
@@ -98,7 +95,7 @@ class ValidationContext:
         """Update the hash for a file."""
         self.file_hashes[file_path] = file_hash
 
-    def get_file_hash(self, file_path: str) -> Optional[str]:
+    def get_file_hash(self, file_path: str) -> str | None:
         """Get the hash for a file."""
         return self.file_hashes.get(file_path)
 
@@ -124,7 +121,7 @@ class ValidationContext:
         self.end_time = datetime.utcnow()
         self.status = status
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         data: Any = asdict(self)
         data['modified_files'] = [str(p) for p in self.modified_files]
@@ -133,7 +130,7 @@ class ValidationContext:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'ValidationContext':
+    def from_dict(cls, data: dict[str, Any]) -> ValidationContext:
         """Create from dictionary."""
         if 'modified_files' in data:
             data['modified_files'] = {Path(p) for p in data['modified_files']}
@@ -153,12 +150,12 @@ class ValidationContext:
             LOGGER.error(f'Failed to save ValidationContext: {e}')
 
     @classmethod
-    def load_from_file(cls, file_path: Path) -> Optional['ValidationContext']:
+    def load_from_file(cls, file_path: Path) -> ValidationContext | None:
         """Load context from file."""
         try:
             if not file_path.exists():
                 return None
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 data: Any = json.load(f)
             Logger.debug(f'Loaded ValidationContext from {file_path}')
             return cls.from_dict(data)
@@ -182,8 +179,8 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         """
         self.memory_dir = memory_dir or Path('observability/memory')
         self.memory_dir.mkdir(parents=True, exist_ok=True)
-        self.current_context: Optional[ValidationContext] = None
-        self.context_history: List[ValidationContext] = []
+        self.current_context: ValidationContext | None = None
+        self.context_history: list[ValidationContext] = []
         self.canon_memory_file = self.memory_dir / 'canon_memory.json'
         self.current_context_file = self.memory_dir / 'current_context.json'
 
@@ -200,7 +197,7 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         if cycle_id is None:
             last_id: Any = 0
             if self.context_history:
-                last_id: Any = max((ctx.cycle_id for ctx in self.context_history))
+                last_id: Any = max(ctx.cycle_id for ctx in self.context_history)
             cycle_id: Any = last_id + 1
         self.current_context = ValidationContext(cycle_id=cycle_id)
         LOGGER.info(f'Started validation cycle {cycle_id}')
@@ -235,7 +232,7 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         """
         if self.canon_memory_file.exists():
             try:
-                with open(self.canon_memory_file, 'r') as f:
+                with open(self.canon_memory_file) as f:
                     memory_data: Any = json.load(f)
                 LOGGER.info(f"Loaded memory from cycle {memory_data.get('last_cycle_id')}")
                 return True
@@ -243,22 +240,22 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
                 LOGGER.error(f'Failed to load canon memory: {e}')
         return False
 
-    def get_last_file_hashes(self) -> Dict[str, str]:
+    def get_last_file_hashes(self) -> dict[str, str]:
         """Get file hashes from the last cycle."""
         if self.canon_memory_file.exists():
             try:
-                with open(self.canon_memory_file, 'r') as f:
+                with open(self.canon_memory_file) as f:
                     memory_data: Any = json.load(f)
                 return memory_data.get('file_hashes', {})
             except Exception as e:
                 LOGGER.error(f'Failed to load file hashes: {e}')
         return {}
 
-    def get_flapping_files(self) -> Dict[str, int]:
+    def get_flapping_files(self) -> dict[str, int]:
         """Get flapping files from history."""
         if self.canon_memory_file.exists():
             try:
-                with open(self.canon_memory_file, 'r') as f:
+                with open(self.canon_memory_file) as f:
                     memory_data: Any = json.load(f)
                 return memory_data.get('flapping_files', {})
             except Exception as e:
@@ -267,7 +264,7 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L4 state agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -286,7 +283,7 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
 
 # [NAMING ALIAS] PascalCase alias for backward compatibility
 
-_context_manager: Optional[ValidationContextManagerAgent] = None
+_context_manager: ValidationContextManagerAgent | None = None
 
 def get_context_manager() -> ValidationContextManagerAgent:
     """Get or create the global context manager."""
@@ -298,7 +295,7 @@ def get_context_manager() -> ValidationContextManagerAgent:
         _context_manager = ValidationContextManagerAgent()
     return _context_manager
 
-def get_current_context() -> Optional[ValidationContext]:
+def get_current_context() -> ValidationContext | None:
     """Get the current validation context."""
     manager: Any = get_context_manager()
     return manager.current_context

@@ -2,11 +2,12 @@
 """
 compare_agent_lists.py - Compare agent lists between commits to trace reductions
 """
-import subprocess
 import json
+import subprocess
 import sys
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 
 def get_agents_at_commit(commit_hash):
     """Get agent list from agent_discovery_full.json at a specific commit."""

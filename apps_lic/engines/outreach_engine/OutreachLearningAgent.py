@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Outreach Engine Learning Module
 
@@ -7,21 +8,16 @@ Provides learning and memory capabilities:
 - Confidence scoring for decisions
 - Memory persistence across sessions
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-import time
-
-
 import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from .outreach_base import OutreachAgent
 from .context import OutreachEngineContext
+from .outreach_base import OutreachAgent
 
 
 class OutreachConfidenceLevel(Enum):
@@ -90,7 +86,7 @@ class OutreachLearningLoop:
         _patterns: Dictionary of recognized patterns and their counts
     """
 
-    def __init__(self, ctx: 'OutreachEngineContext') -> None:
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         """
         Initialize the learning loop.
 
@@ -98,8 +94,8 @@ class OutreachLearningLoop:
             ctx: Outreach engine context
         """
         self.ctx = ctx
-        self._examples: List[OutreachLearningExample] = []
-        self._patterns: Dict[str, int] = {}
+        self._examples: list[OutreachLearningExample] = []
+        self._patterns: dict[str, int] = {}
 
     async def record_success(
         self,
@@ -164,7 +160,7 @@ class OutreachLearningLoop:
 
         return successes / total
 
-    def get_examples(self, TaskType: str = None, limit: int = 10) -> List[OutreachLearningExample]:
+    def get_examples(self, TaskType: str = None, limit: int = 10) -> list[OutreachLearningExample]:
         """Get learning examples."""
         if TaskType:
             examples = [e for e in self._examples if e.TaskType == TaskType]
@@ -183,7 +179,7 @@ class OutreachConfidenceScorer:
         self.ctx = ctx
         self.learning_loop = OutreachLearningLoop(ctx)
 
-    def score_lead(self, lead: Dict[str, Any]) -> float:
+    def score_lead(self, lead: dict[str, Any]) -> float:
         """Score confidence for a lead."""
         score = 0.5  # Base score
 
@@ -209,7 +205,7 @@ class OutreachConfidenceScorer:
 
         return min(1.0, score)
 
-    def score_message(self, message: Dict[str, Any]) -> float:
+    def score_message(self, message: dict[str, Any]) -> float:
         """Score confidence for a message."""
         score = 0.5  # Base score
 
@@ -254,7 +250,7 @@ class OutreachMemoryPersistence:
 
     def __init__(self, memory_file: str = "outreach_memory.json") -> None:
         self.memory_file = Path(memory_file)
-        self._memory: Dict[str, Any] = {}
+        self._memory: dict[str, Any] = {}
         self._load()
 
     def _load(self):
@@ -280,14 +276,14 @@ class OutreachMemoryPersistence:
         }
         self._save()
 
-    def retrieve(self, key: str) -> Optional[Any]:
+    def retrieve(self, key: str) -> Any | None:
         """Retrieve a value from agentic_core.semantic_memory."""
         entry = self._memory.get(key)
         if entry:
             return entry.get("value")
         return None
 
-    def list_keys(self) -> List[str]:
+    def list_keys(self) -> list[str]:
         """List all memory keys."""
         return list(self._memory.keys())
 

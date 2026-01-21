@@ -3,7 +3,6 @@ Budget Auditor - Token usage tracking and cost enforcement.
 Extracted from BudgetManagerAgent.py for single responsibility.
 """
 from __future__ import annotations
-from typing import Dict
 
 
 class BudgetAuditor:
@@ -60,7 +59,7 @@ class BudgetAuditor:
             f'({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)'
         )
 
-    def get_metrics(self) -> Dict[str, float]:
+    def get_metrics(self) -> dict[str, float]:
         """Get detailed budget metrics.
 
         Returns:

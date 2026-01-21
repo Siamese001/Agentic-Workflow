@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """Find territories with low heal capability from dashboard data."""
 import json
-import re
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Read the dashboard file
-with open('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html', 'r', encoding='utf-8') as f:
+with open('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html', encoding='utf-8') as f:
     data = f.read()
 
 # Extract JSON data
@@ -37,7 +35,7 @@ print(f"\n=== Territories with <50% Heal Capability ({len(low_heal)}) ===")
 for name, pct, count in sorted(low_heal, key=lambda x: x[1]):
     print(f"  {name}: {pct}% ({count} agents)")
 
-print(f"\n=== Summary ===")
+print("\n=== Summary ===")
 print(f"Total territories at 0%: {len(zero_heal)}")
 print(f"Total territories <50%: {len(low_heal)}")
 print(f"Total territories needing fix: {len(zero_heal) + len(low_heal)}")

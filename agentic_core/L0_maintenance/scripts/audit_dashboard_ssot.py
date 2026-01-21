@@ -2,7 +2,6 @@
 Dashboard SSOT Audit Script
 Identifies split-brain violations where metric definitions differ between scripts.
 """
-import re
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent

@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import logging
-'''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
 
-from typing import Any, Dict, List, Optional, Protocol
+'''Brief description of functionality and purpose.'''
+
+from typing import Any
 
 
 # NAMING FIXED: AirlockProtocol → AirlockProtocol
@@ -13,13 +15,13 @@ class AirlockProtocol:
     L5 Safety Guardrail: The Execution Airlock.
     Validates tool calls against a mission-specific Permission matrix.
     """
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self.config = config
         # Bedrock permissions
         self.allowed_tools = config.get("allowed_tools", ["read_file", "search_web", "get_status"])
         self.high_risk_tools = ["run_python", "write_file", "delete_file", "execute_shell"]
 
-    async def acquire_permission(self, tool_name: str, args: Dict[str, Any]) -> bool:
+    async def acquire_permission(self, tool_name: str, args: dict[str, Any]) -> bool:
         """Determines if a tool execution is safe to proceed under Zero-Trust."""
         # 1. Check Registry Whitelist
         if tool_name not in self.allowed_tools and tool_name not in self.high_risk_tools:
@@ -32,7 +34,7 @@ class AirlockProtocol:
 
         return True
 
-    def _validate_risk_parameters(self, tool: str, args: Dict) -> bool:
+    def _validate_risk_parameters(self, tool: str, args: dict) -> bool:
         # Prevent agents from touching system files or the .env soul
         path = str(args.get("path", "")).lower()
         protected_targets = [".env", ".git", "/etc/", "c:/windows/", "system32"]

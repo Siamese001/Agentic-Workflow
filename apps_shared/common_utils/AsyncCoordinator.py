@@ -7,11 +7,11 @@ managing timeouts safely, and ensuring proper cleanup of async resources.
 import asyncio
 import logging
 import time
-import weakref
+from collections.abc import Awaitable, Callable
 from contextlib import asynccontextmanager
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Set, Union
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,11 +31,11 @@ class TaskInfo:
     task_id: str
     task: asyncio.Task
     created_at: float
-    timeout: Optional[float]
+    timeout: float | None
     state: TaskState = TaskState.PENDING
-    parent_id: Optional[str] = None
-    children_ids: Set[str] = field(default_factory=set)
-    cleanup_callback: Optional[Callable] = None
+    parent_id: str | None = None
+    children_ids: set[str] = field(default_factory=set)
+    cleanup_callback: Callable | None = None
 
 
 class AsyncCoordinator:
@@ -52,7 +52,7 @@ class AsyncCoordinator:
         self.max_concurrent = max_concurrent
 
         # Task tracking
-        self._tasks: Dict[str, TaskInfo] = {}
+        self._tasks: dict[str, TaskInfo] = {}
         self._task_counter = 0
         self._lock = asyncio.Lock()
 
@@ -60,7 +60,7 @@ class AsyncCoordinator:
         self._semaphore = asyncio.Semaphore(max_concurrent)
 
         # Background cleanup task
-        self._cleanup_task: Optional[asyncio.Task] = None
+        self._cleanup_task: asyncio.Task | None = None
         self._running = False
 
         logger.debug(f"Initialized AsyncCoordinator: {name}")
@@ -106,9 +106,9 @@ class AsyncCoordinator:
     async def create_task(
         self,
         coro: Awaitable,
-        timeout: Optional[float] = None,
-        parent_id: Optional[str] = None,
-        cleanup_callback: Optional[Callable] = None
+        timeout: float | None = None,
+        parent_id: str | None = None,
+        cleanup_callback: Callable | None = None
     ) -> str:
         """Create and manage a new task.
 
@@ -157,7 +157,7 @@ class AsyncCoordinator:
     async def _run_with_timeout(
         self,
         coro: Awaitable,
-        timeout: Optional[float],
+        timeout: float | None,
         task_id: str
     ) -> Any:
         """Run a coroutine with timeout handling.
@@ -241,7 +241,7 @@ class AsyncCoordinator:
             except Exception as e:
                 logger.error(f"Cleanup callback failed for {task_id}: {e}")
 
-    async def wait_for_task(self, task_id: str, timeout: Optional[float] = None) -> Any:
+    async def wait_for_task(self, task_id: str, timeout: float | None = None) -> Any:
         """Wait for a specific task to complete.
 
         Args:
@@ -305,7 +305,7 @@ class AsyncCoordinator:
         logger.info(f"Cancelled {cancelled} tasks in coordinator {self.name}")
         return cancelled
 
-    async def get_task_status(self, task_id: str) -> Optional[TaskState]:
+    async def get_task_status(self, task_id: str) -> TaskState | None:
         """Get the status of a task.
 
         Args:
@@ -318,7 +318,7 @@ class AsyncCoordinator:
             task_info = self._tasks.get(task_id)
             return task_info.state if task_info else None
 
-    async def list_tasks(self) -> Dict[str, Dict[str, Any]]:
+    async def list_tasks(self) -> dict[str, dict[str, Any]]:
         """List all managed tasks.
 
         Returns:
@@ -369,8 +369,8 @@ class AsyncCoordinator:
     async def managed_task(
         self,
         coro: Awaitable,
-        timeout: Optional[float] = None,
-        cleanup_callback: Optional[Callable] = None
+        timeout: float | None = None,
+        cleanup_callback: Callable | None = None
     ):
         """Context manager for a managed task.
 
@@ -392,7 +392,7 @@ class AsyncCoordinator:
 
 
 # Global coordinator registry
-_coordinators: Dict[str, AsyncCoordinator] = {}
+_coordinators: dict[str, AsyncCoordinator] = {}
 _coordinator_lock = asyncio.Lock()
 
 
@@ -425,8 +425,8 @@ async def shutdown_all_coordinators() -> None:
 # Decorator for managed async functions
 def managed(
     coordinator_name: str = "default",
-    timeout: Optional[float] = None,
-    cleanup_callback: Optional[Callable] = None
+    timeout: float | None = None,
+    cleanup_callback: Callable | None = None
 ):
     """Decorator to run functions in a managed async context.
 

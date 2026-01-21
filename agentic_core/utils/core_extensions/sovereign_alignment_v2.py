@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -9,12 +9,6 @@ from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 root: Any = Path.cwd()
 core: Any = ROOT / 'agentic_core'
@@ -60,7 +54,7 @@ def flush_and_align() -> Any:
         if 'legacy_code' in str(py_file) or 'data' in str(py_file):
             continue
         try:
-            with open(py_file, 'r', encoding='utf-8') as f:
+            with open(py_file, encoding='utf-8') as f:
                 content: Any = f.read()
             new_content: Any = content
             for old, new in rewire:

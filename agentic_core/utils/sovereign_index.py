@@ -34,7 +34,6 @@ import os
 import threading
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
 
 # [SSOT] Import exclusion patterns from the single source of truth
 try:
@@ -63,12 +62,12 @@ class SovereignIndex:
     5. Configurable exclusion patterns
     """
 
-    _instance: Optional[SovereignIndex] = None
+    _instance: SovereignIndex | None = None
     _lock: threading.Lock = threading.Lock()
 
     # Default exclusion patterns - Use SSOT from structure_blueprint if available
     # PRODUCTION LENS: Excludes test directories to focus on production code
-    DEFAULT_EXCLUDED_DIRS: Set[str] = (
+    DEFAULT_EXCLUDED_DIRS: set[str] = (
         set(GLOBAL_EXCLUDED_DIRS) if _SSOT_EXCLUSIONS_AVAILABLE and GLOBAL_EXCLUDED_DIRS else {
             '__pycache__', '.pytest_cache', '.mypy_cache', 'build', 'dist', '.eggs',
             '.git', '.svn', '.hg',
@@ -90,18 +89,18 @@ class SovereignIndex:
             project_root: Root directory to index
         """
         self._project_root = Path(project_root).resolve()
-        self._cache: Dict[str, List[Path]] = {}
-        self._all_files: List[Path] = []
+        self._cache: dict[str, list[Path]] = {}
+        self._all_files: list[Path] = []
         self._last_scan_time: float = 0.0
         self._root_mtime: float = 0.0
-        self._excluded_dirs: Set[str] = self.DEFAULT_EXCLUDED_DIRS.copy()
+        self._excluded_dirs: set[str] = self.DEFAULT_EXCLUDED_DIRS.copy()
         self._initialized: bool = False
         self._scan_lock: threading.Lock = threading.Lock()
 
         Logger.debug(f"[INDEX] SovereignIndex created for {self._project_root}")
 
     @classmethod
-    def get_instance(cls, project_root: Optional[Path] = None) -> SovereignIndex:
+    def get_instance(cls, project_root: Path | None = None) -> SovereignIndex:
         """
         Get the singleton instance of SovereignIndex.
 
@@ -140,7 +139,7 @@ class SovereignIndex:
         with cls._lock:
             cls._instance = None
 
-    def get_files(self, pattern: str = "*") -> List[Path]:
+    def get_files(self, pattern: str = "*") -> list[Path]:
         """
         Get files matching a glob pattern.
 
@@ -177,7 +176,7 @@ class SovereignIndex:
         Logger.info(f"[INDEX] Disk Scan: Pattern '{pattern}' matched {len(matched)} files (now cached)")
         return matched.copy()
 
-    def get_python_files(self) -> List[Path]:
+    def get_python_files(self) -> list[Path]:
         """
         Get all Python files in the index.
 
@@ -188,7 +187,7 @@ class SovereignIndex:
         """
         return self.get_files("*.py")
 
-    def get_agent_files(self) -> List[Path]:
+    def get_agent_files(self) -> list[Path]:
         """
         Get all agent files in the index.
 
@@ -267,7 +266,7 @@ class SovereignIndex:
         self._excluded_dirs.discard(dir_name)
         self.invalidate()
 
-    def get_stats(self) -> Dict[str, any]:
+    def get_stats(self) -> dict[str, any]:
         """
         Get statistics about the index.
 

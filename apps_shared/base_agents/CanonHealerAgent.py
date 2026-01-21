@@ -11,7 +11,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+
 """
 Canon Validator Core Agents - DEPRECATED FILE
 
@@ -24,12 +26,7 @@ This file has been split into individual agent files following one-file-per-agen
 TODO: Remove this file after all imports are updated to use new locations.
 """
 import ast
-import logging
-import os
-import re
-import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 # GRAVITY VIOLATION: from archives.void_violations.canon_base_agent_interface import CanonBaseAgentInterface
 try:
@@ -37,11 +34,11 @@ try:
 except ImportError:
     CanonBaseAgent = None
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
+MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT] Derive depth map from SOVEREIGN_REGISTRY
 # NAMING FIXED: DEPTH_MAP → depth_map
@@ -78,8 +75,8 @@ class NestVisitor(ast.NodeVisitor):
     def __init__(self, fp: str, max_nesting_depth: int):
         self.fp = fp
         self.depth = 0
-        self.scope_stack: List[str] = ["global"]
-        self.violations_in_file: List[str] = []
+        self.scope_stack: list[str] = ["global"]
+        self.violations_in_file: list[str] = []
         self.MAX_NESTING_DEPTH = max_nesting_depth
 
     @property
@@ -125,7 +122,6 @@ class NestVisitor(ast.NodeVisitor):
 
 # DEPRECATED: Moved to SystemArchitectAgent.py (Jan 6, 2026)
 # Import for backward compatibility
-from .SystemArchitectAgent import SystemArchitectAgent as SystemArchitect
 # SystemArchitectDeprecatedAgent extracted to SystemArchitectDeprecatedAgent.py (Phase B Task 5)
 
 # HealerAgent extracted to HealerAgent.py (Phase B Task 5)
@@ -134,8 +130,8 @@ from .SystemArchitectAgent import SystemArchitectAgent as SystemArchitect
 
 # DEPRECATED: Moved to GenerativeGuardAgent.py (Jan 6, 2026)
 # Import for backward compatibility
-from .GenerativeGuardAgent import GenerativeGuardAgent as GenerativeGuard
 from agentic_core.L5_safety.validators.decorators import standard_heal
+
 # GenerativeGuardDeprecatedAgent extracted to GenerativeGuardDeprecatedAgent.py (Phase B Task 5)
 
 

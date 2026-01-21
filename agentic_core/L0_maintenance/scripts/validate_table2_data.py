@@ -16,6 +16,7 @@ import json
 import sys
 from pathlib import Path
 
+
 def main():
     print("=" * 80)
     print("TABLE 2 (CODE QUALITY) VALIDATION")
@@ -64,7 +65,7 @@ def main():
                     errors.append(f"Table 2 fields missing: {missing_fields}")
                     print(f"   ❌ Missing fields: {missing_fields}")
                 else:
-                    print(f"   ✅ All Table 2 fields present")
+                    print("   ✅ All Table 2 fields present")
 
                     # Show sample values
                     print(f"      Typed %: {total_row.get('Typed %')}")

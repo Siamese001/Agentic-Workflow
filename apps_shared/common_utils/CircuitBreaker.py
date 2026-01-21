@@ -7,11 +7,12 @@ attempt recovery after a timeout.
 
 import asyncio
 import logging
-import time
-from enum import Enum
-from typing import Callable, Any, Optional, Dict
-from dataclasses import dataclass, field
 import threading
+import time
+from collections.abc import Callable
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ class CircuitBreaker:
     Tracks failures and automatically opens/closes based on configuration.
     """
 
-    def __init__(self, name: str, config: Optional[CircuitBreakerConfig] = None):
+    def __init__(self, name: str, config: CircuitBreakerConfig | None = None):
         """Initialize the circuit breaker.
 
         Args:
@@ -184,7 +185,7 @@ class CircuitBreaker:
         """Get the current circuit state."""
         return self.state
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get circuit breaker statistics."""
         return {
             "name": self.name,
@@ -214,7 +215,7 @@ class CircuitBreakerFactory:
 
     _instance = None
     _lock = threading.Lock()
-    _breakers: Dict[str, CircuitBreaker] = {}
+    _breakers: dict[str, CircuitBreaker] = {}
     _breakers_lock = threading.RLock()  # Reentrant lock for nested operations
 
     def __new__(cls):
@@ -239,7 +240,7 @@ class CircuitBreakerFactory:
             logger.info("Initialized CircuitBreakerFactory with thread safety")
 
     @classmethod
-    def get(cls, name: str, config: Optional[CircuitBreakerConfig] = None) -> CircuitBreaker:
+    def get(cls, name: str, config: CircuitBreakerConfig | None = None) -> CircuitBreaker:
         """Get or create a circuit breaker by name with thread safety.
 
         Args:
@@ -261,7 +262,7 @@ class CircuitBreakerFactory:
         return factory._breakers[name]
 
     @classmethod
-    def list_all(cls) -> Dict[str, Dict[str, Any]]:
+    def list_all(cls) -> dict[str, dict[str, Any]]:
         """List all circuit breakers and their states with thread safety.
 
         Returns:
@@ -323,7 +324,7 @@ class CircuitBreakerFactory:
 
 
 # Convenience functions for direct access
-def get_circuit_breaker(name: str, config: Optional[CircuitBreakerConfig] = None) -> CircuitBreaker:
+def get_circuit_breaker(name: str, config: CircuitBreakerConfig | None = None) -> CircuitBreaker:
     """Get a circuit breaker by name.
 
     Args:
@@ -338,7 +339,7 @@ def get_circuit_breaker(name: str, config: Optional[CircuitBreakerConfig] = None
 
 def with_circuit_breaker(
     breaker_name: str,
-    config: Optional[CircuitBreakerConfig] = None
+    config: CircuitBreakerConfig | None = None
 ):
     """Decorator to wrap functions with circuit breaker protection.
 

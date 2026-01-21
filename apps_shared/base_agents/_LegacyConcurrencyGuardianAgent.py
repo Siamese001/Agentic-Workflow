@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 import asyncio
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import logging
 import os
-import time
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Protocol
+
 Logger: Any = logging.getLogger(__name__)
 
 class LockStorageProtocol(Protocol):
@@ -29,7 +31,7 @@ class LockStorageProtocol(Protocol):
         Returns True if the lock was successfully released, False otherwise.
         """
         ...
-_global_lock_implementation: Optional[LockStorageProtocol] = None
+_global_lock_implementation: LockStorageProtocol | None = None
 
 def configure_distributed_locks(lock_impl: LockStorageProtocol) -> Any:
     """
@@ -91,12 +93,12 @@ class LockInfo:
         """Check if lock has expired using UTC-aware comparison."""
         return datetime.now(timezone.utc) > self.expires_at
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary."""
         return {'key': self.key, 'owner': self.owner, 'timeout': self.timeout, 'acquired_at': self.acquired_at.isoformat(), 'expires_at': self.expires_at.isoformat()}
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.ToolRegistry.security import ConcurrencyGuardianAgent
+
 
 # Legacy L1 version - use L2 canonical (concurrency is execution-level)
 class _LegacyConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -112,8 +114,8 @@ class _LegacyConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, H
 
     def __init__(self) -> None:
         """Initialize the ConcurrencyGuardianAgent."""
-        self.active_locks: Dict[str, LockInfo] = {}
-        self.lock_history: List[Dict] = []
+        self.active_locks: dict[str, LockInfo] = {}
+        self.lock_history: list[dict] = []
         self.enabled = True
         self.stats = {'locks_acquired': 0, 'locks_released': 0, 'timeouts': 0, 'conflicts': 0}
         LOGGER.info('ConcurrencyGuardianAgent initialized')

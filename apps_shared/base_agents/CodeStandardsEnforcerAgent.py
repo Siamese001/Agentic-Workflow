@@ -24,26 +24,16 @@ from __future__ import annotations
 import ast
 import json
 import logging
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
-from agentic_core.L5_safety.validators.L5Agent import L5Agent
-from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENTIC_CORE_DIR,
-    GLOBAL_EXCLUDED_DIRS,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.L5Agent import L5Agent
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    GLOBAL_EXCLUDED_DIRS,
+)
+from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
 Logger = logging.getLogger(__name__)
 
@@ -56,8 +46,8 @@ class CodeViolation:
     violation_type: str  # INHERITANCE_ERR, PATTERN_VIOLATION, TYPE_HINT_ERR
     message: str
     severity: str = "MEDIUM"  # LOW, MEDIUM, HIGH, CRITICAL
-    canon_key: Optional[int] = None  # Canon key number if applicable
-    suggested_fix: Optional[str] = None
+    canon_key: int | None = None  # Canon key number if applicable
+    suggested_fix: str | None = None
 
 
 @dataclass
@@ -83,7 +73,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
     project_root: Path = field(default_factory=Path.cwd)
 
     # Canonical layer bases for inheritance validation
-    LAYER_BASES: Dict[str, str] = field(default_factory=lambda: {
+    LAYER_BASES: dict[str, str] = field(default_factory=lambda: {
         'L0': 'L0MaintenanceBaseAgent',
         'L1': 'L1CognitionBaseAgent',
         'L2': 'L2ExecutionBaseAgent',
@@ -94,7 +84,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
     })
 
     # Layer directory patterns for matching
-    LAYER_PATTERNS: Dict[str, str] = field(default_factory=lambda: {
+    LAYER_PATTERNS: dict[str, str] = field(default_factory=lambda: {
         'L0_maintenance': 'L0',
         'L1_cognition': 'L1',
         'L2_execution': 'L2',
@@ -105,7 +95,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
     })
 
     # Python builtins that should not be shadowed
-    BUILTINS: Set[str] = field(default_factory=lambda: {
+    BUILTINS: set[str] = field(default_factory=lambda: {
         'list', 'dict', 'set', 'tuple', 'str', 'int', 'float', 'bool',
         'type', 'object', 'len', 'range', 'print', 'input', 'open',
         'file', 'id', 'hash', 'sum', 'min', 'max', 'abs', 'all', 'any',
@@ -115,10 +105,10 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
     })
 
     # Directories to skip
-    SKIP_DIRS: Set[str] = field(default_factory=lambda: set(GLOBAL_EXCLUDED_DIRS))
+    SKIP_DIRS: set[str] = field(default_factory=lambda: set(GLOBAL_EXCLUDED_DIRS))
 
     # Internal state
-    violations: List[CodeViolation] = field(default_factory=list)
+    violations: list[CodeViolation] = field(default_factory=list)
     current_file: str = ""
     _in_class: bool = False
     _current_class_name: str = ""
@@ -132,7 +122,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
         if not isinstance(self.violations, list):
             self.violations = []
 
-    def validate_repository(self, targets: Optional[List[str]] = None) -> Dict[str, Any]:
+    def validate_repository(self, targets: list[str] | None = None) -> dict[str, Any]:
         """
         Comprehensive standards sweep across inheritance, patterns, and types.
 
@@ -166,7 +156,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             self._current_class_name = ""
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     source = f.read()
 
                 tree = ast.parse(source)
@@ -478,8 +468,8 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
         message: str,
         violation_type: str,
         severity: str = "MEDIUM",
-        canon_key: Optional[int] = None,
-        suggested_fix: Optional[str] = None,
+        canon_key: int | None = None,
+        suggested_fix: str | None = None,
     ) -> None:
         """
         Add a violation to the list.
@@ -502,7 +492,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             suggested_fix=suggested_fix,
         ))
 
-    def _get_repo_files(self) -> List[Path]:
+    def _get_repo_files(self) -> list[Path]:
         """
         Get all Python files in the repository.
 
@@ -535,8 +525,8 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, Any]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, Any]:
         """
         Audit and report code standards violations.
 
@@ -590,7 +580,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
     # SELF-TESTS
     # =========================================================================
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """Run internal self-tests for the unified code standards enforcer."""
         results = {"passed": 0, "failed": 0, "tests": []}
 
@@ -662,7 +652,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
 # FACTORY FUNCTIONS
 # =========================================================================
 
-def get_code_standards_enforcer(project_root: Optional[Path] = None) -> CodeStandardsEnforcerAgent:
+def get_code_standards_enforcer(project_root: Path | None = None) -> CodeStandardsEnforcerAgent:
     """
     Factory function to get CodeStandardsEnforcerAgent instance.
 
@@ -679,21 +669,21 @@ def get_code_standards_enforcer(project_root: Optional[Path] = None) -> CodeStan
 
 
 # Convenience functions for backward compatibility
-def check_inheritance(project_root: Optional[Path] = None) -> List[Dict[str, Any]]:
+def check_inheritance(project_root: Path | None = None) -> list[dict[str, Any]]:
     """Check layer base class inheritance violations."""
     enforcer = get_code_standards_enforcer(project_root)
     results = enforcer.validate_repository()
     return [v for v in results["details"] if v["type"] == "INHERITANCE_ERR"]
 
 
-def check_patterns(project_root: Optional[Path] = None) -> List[Dict[str, Any]]:
+def check_patterns(project_root: Path | None = None) -> list[dict[str, Any]]:
     """Check coding pattern violations."""
     enforcer = get_code_standards_enforcer(project_root)
     results = enforcer.validate_repository()
     return [v for v in results["details"] if v["type"] == "PATTERN_VIOLATION"]
 
 
-def check_type_hints(project_root: Optional[Path] = None) -> List[Dict[str, Any]]:
+def check_type_hints(project_root: Path | None = None) -> list[dict[str, Any]]:
     """Check type hint violations."""
     enforcer = get_code_standards_enforcer(project_root)
     results = enforcer.validate_repository()
@@ -744,6 +734,6 @@ if __name__ == "__main__":
             print(f"\nStatus: {results['status']}")
 
             if results['details']:
-                print(f"\nTop violations:")
+                print("\nTop violations:")
                 for v in results['details'][:10]:
                     print(f"  [{v['type']}] {v['file']}:{v['line']} - {v['message']}")

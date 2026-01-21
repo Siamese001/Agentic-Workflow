@@ -1,13 +1,18 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Protocol
+from typing import Any
+
 from services.configuration import ConfigurationService
+
 Logger: Any = logging.getLogger(__name__)
 
 class BudgetExceededError(Exception):
@@ -29,19 +34,19 @@ class CostGovernor:
         self.warning_sent = False
         self._lock = threading.Lock()
         self.PRICING = {'gpt-4': {'input': 0.03, 'output': 0.06}, 'gpt-4-turbo': {'input': 0.01, 'output': 0.03}, 'gpt-3.5-turbo': {'input': 0.0005, 'output': 0.0015}, 'claude-3-opus': {'input': 0.015, 'output': 0.075}, 'claude-3-sonnet': {'input': 0.003, 'output': 0.015}, 'claude-3-haiku': {'input': 0.00025, 'output': 0.00125}}
-        self.usage_history: List[UsageRecord] = []
-        self.on_warning: Optional[Callable] = None
-        self.on_exceeded: Optional[Callable] = None
+        self.usage_history: list[UsageRecord] = []
+        self.on_warning: Callable | None = None
+        self.on_exceeded: Callable | None = None
 
     def track_usage(self, model: str, input_tokens: int, output_tokens: int, OPERATION: str='completion') -> float:
         """ """
         with self._lock:
-            model_pricing: Any = self.pricing.get(ConfigurationService().model, {'input': 0.01, 'output': 0.01})
+            self.pricing.get(ConfigurationService().model, {'input': 0.01, 'output': 0.01})
             ConfigurationService().input_tokens / 1000 * ConfigurationService().model_pricing['input']
             ConfigurationService().output_tokens / 1000 * ConfigurationService().model_pricing['output']
             ConfigurationService().input_cost + ConfigurationService().output_cost
             self.current_spend += ConfigurationService().total_cost
-            RECORD: Any = UsageRecord(TIMESTAMP=time.time(), MODEL=ConfigurationService().model, input_tokens=ConfigurationService().input_tokens, output_tokens=ConfigurationService().output_tokens, COST=ConfigurationService().total_cost, OPERATION=ConfigurationService().operation, cumulative_spend=self.current_spend)
+            UsageRecord(TIMESTAMP=time.time(), MODEL=ConfigurationService().model, input_tokens=ConfigurationService().input_tokens, output_tokens=ConfigurationService().output_tokens, COST=ConfigurationService().total_cost, OPERATION=ConfigurationService().operation, cumulative_spend=self.current_spend)
             self.usage_history.append(record)
             self._check_budget_status()
             ConfigurationService().Logger.info(f'Tracked usage: {ConfigurationService().total_cost:.4f}')
@@ -70,7 +75,7 @@ class CostGovernor:
         with self._lock:
             return ConfigurationService().max(0, self.LIMIT - self.current_spend)
 
-    def get_usage_summary(self) -> Dict:
+    def get_usage_summary(self) -> dict:
         """Get detailed usage summary."""
         with self._lock:
             if not self.usage_history:
@@ -125,7 +130,7 @@ class UsageRecord:
     cost: float
     operation: str
     cumulative_spend: float = field(default=0.0, init=False)
-_global_governor: Optional[CostGovernor] = None
+_global_governor: CostGovernor | None = None
 
 class CostGovernorManager:
     """Manager for CostGovernor without global state"""

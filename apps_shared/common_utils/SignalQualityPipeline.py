@@ -7,9 +7,8 @@ unverifiable content is filtered out to ensure only high-signal content is used.
 
 import logging
 import re
-from typing import Dict, List, Optional, Set, Tuple, Any, Union
-from pydantic import BaseModel, Field, confloat, validator
 
+from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +21,8 @@ class QualityAssessment(BaseModel):
     authority_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Source authority")
     specificity_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Metric specificity")
     coherence_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Content coherence")
-    flags: List[str] = Field(default_factory=list, description="Quality flags/warnings")
-    doc_id: Optional[str] = Field(None, description="Document identifier for logging")
+    flags: list[str] = Field(default_factory=list, description="Quality flags/warnings")
+    doc_id: str | None = Field(None, description="Document identifier for logging")
 
     @validator('flags', pre=True)
     def validate_flags(cls, v):
@@ -135,9 +134,9 @@ class SignalQualityPipeline:
     def evaluate_signal(
         self,
         content: str,
-        metadata: Dict[str, str],
+        metadata: dict[str, str],
         query: str,
-        doc_id: Optional[str] = None
+        doc_id: str | None = None
     ) -> QualityAssessment:
         """Evaluate a signal through all quality checks.
 
@@ -257,7 +256,7 @@ class SignalQualityPipeline:
             logger.error(f"Error checking relevance: {str(e)}")
             return 0.0
 
-    def _check_authority(self, metadata: Dict[str, str]) -> float:
+    def _check_authority(self, metadata: dict[str, str]) -> float:
         """Check source authority based on metadata.
 
         Args:
@@ -364,7 +363,7 @@ class SignalQualityPipeline:
             logger.error(f"Error checking coherence: {str(e)}")
             return 0.5  # Neutral default
 
-    def _normalize_text(self, text: str) -> List[str]:
+    def _normalize_text(self, text: str) -> list[str]:
         """Normalize text and extract meaningful tokens.
 
         Args:
@@ -390,9 +389,9 @@ class SignalQualityPipeline:
 
     def batch_evaluate(
         self,
-        documents: List[Tuple[str, Dict[str, str], str]],
+        documents: list[tuple[str, dict[str, str], str]],
         filter_failed: bool = True
-    ) -> List[Tuple[Dict[str, str], QualityAssessment]]:
+    ) -> list[tuple[dict[str, str], QualityAssessment]]:
         """Evaluate multiple documents in batch.
 
         Args:
@@ -454,9 +453,9 @@ def create_quality_pipeline(
 
 # Convenience function for quick filtering
 def filter_high_quality_signals(
-    documents: List[Tuple[str, Dict[str, str], str]],
+    documents: list[tuple[str, dict[str, str], str]],
     strict_mode: bool = False
-) -> List[Dict[str, str]]:
+) -> list[dict[str, str]]:
     """Quickly filter documents for high-quality signals.
 
     Args:

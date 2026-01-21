@@ -1,12 +1,14 @@
 from __future__ import annotations
+
 """
 Timeout decorator for autonomous agent healing.
 Cross-platform: threading.Timer (works on Windows + Unix).
 Canon Key 51 support — prevents hanging heal_repository() calls.
 """
-from functools import wraps
-from typing import Callable, Any
 import threading
+from collections.abc import Callable
+from functools import wraps
+from typing import Any
 
 
 class HealTimeoutError(Exception):

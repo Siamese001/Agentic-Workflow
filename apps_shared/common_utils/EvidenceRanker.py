@@ -8,9 +8,9 @@ the Resume Engine cites the most current and verified truth.
 import logging
 import re
 from datetime import datetime
-from typing import Dict, List, Optional, Set, Tuple, Any, Union
-from pydantic import BaseModel, Field, confloat, validator
+from typing import Any
 
+from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
 
@@ -22,11 +22,11 @@ class RankedEvidence(BaseModel):
     final_score: confloat(ge=0.0, le=1.0) = Field(..., description="Final ranking score")
     freshness_score: confloat(ge=0.0, le=1.0) = Field(..., description="Freshness score")
     corroboration_count: int = Field(..., ge=0, description="Number of corroborating sources")
-    year_detected: Optional[int] = Field(None, description="Year extracted from content")
+    year_detected: int | None = Field(None, description="Year extracted from content")
     semantic_score: confloat(ge=0.0, le=1.0) = Field(..., description="Original semantic score")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Document metadata")
-    key_entities: List[str] = Field(default_factory=list, description="Corroborated entities")
-    doc_id: Optional[str] = Field(None, description="Document identifier for logging")
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Document metadata")
+    key_entities: list[str] = Field(default_factory=list, description="Corroborated entities")
+    doc_id: str | None = Field(None, description="Document identifier for logging")
 
     @validator('year_detected')
     def validate_year(cls, v):
@@ -64,7 +64,7 @@ class EvidenceRanker:
         freshness_weight: float = 0.4,
         corroboration_weight: float = 0.2,
         semantic_weight: float = 0.4,
-        current_year: Optional[int] = None
+        current_year: int | None = None
     ):
         """Initialize the evidence ranker.
 
@@ -107,9 +107,9 @@ class EvidenceRanker:
 
     def rank_evidence(
         self,
-        signals: List[Dict[str, Any]],
-        current_year: Optional[int] = None
-    ) -> List[RankedEvidence]:
+        signals: list[dict[str, Any]],
+        current_year: int | None = None
+    ) -> list[RankedEvidence]:
         """Rank evidence based on freshness and corroboration.
 
         Args:
@@ -204,7 +204,7 @@ class EvidenceRanker:
             logger.error(f"Error in rank_evidence: {str(e)}")
             return []
 
-    def _score_freshness(self, content: str, metadata: Dict[str, str]) -> Tuple[float, Optional[int]]:
+    def _score_freshness(self, content: str, metadata: dict[str, str]) -> tuple[float, int | None]:
         """Score content based on freshness (recency).
 
         Args:
@@ -258,7 +258,7 @@ class EvidenceRanker:
             logger.error(f"Error scoring freshness: {str(e)}")
             return 0.5, None
 
-    def _extract_year(self, text: str) -> Optional[int]:
+    def _extract_year(self, text: str) -> int | None:
         """Extract a 4-digit year from text.
 
         Args:
@@ -286,9 +286,9 @@ class EvidenceRanker:
     def _count_corroboration(
         self,
         content: str,
-        all_entities: Dict[str, List[str]],
-        all_signals: List[Dict[str, Any]]
-    ) -> Tuple[int, List[str]]:
+        all_entities: dict[str, list[str]],
+        all_signals: list[dict[str, Any]]
+    ) -> tuple[int, list[str]]:
         """Count how many other signals corroborate this one.
 
         Args:
@@ -324,7 +324,7 @@ class EvidenceRanker:
             logger.error(f"Error counting corroboration: {str(e)}")
             return 0, []
 
-    def _extract_all_entities(self, signals: List[Dict[str, Any]]) -> Dict[str, List[str]]:
+    def _extract_all_entities(self, signals: list[dict[str, Any]]) -> dict[str, list[str]]:
         """Extract entities from all signals for corroboration checking.
 
         Args:
@@ -351,7 +351,7 @@ class EvidenceRanker:
             logger.error(f"Error extracting all entities: {str(e)}")
             return {}
 
-    def _extract_entities(self, content: str) -> List[str]:
+    def _extract_entities(self, content: str) -> list[str]:
         """Extract key entities from content.
 
         Args:
@@ -398,7 +398,7 @@ class EvidenceRanker:
             logger.error(f"Error extracting entities: {str(e)}")
             return []
 
-    def get_ranking_summary(self, ranked_evidence: List[RankedEvidence]) -> Dict[str, Any]:
+    def get_ranking_summary(self, ranked_evidence: list[RankedEvidence]) -> dict[str, Any]:
         """Get a summary of the ranking results.
 
         Args:
@@ -438,7 +438,7 @@ def create_evidence_ranker(
     freshness_weight: float = 0.4,
     corroboration_weight: float = 0.2,
     semantic_weight: float = 0.4,
-    current_year: Optional[int] = None
+    current_year: int | None = None
 ) -> EvidenceRanker:
     """Create an EvidenceRanker instance.
 
@@ -461,10 +461,10 @@ def create_evidence_ranker(
 
 # Convenience function for quick ranking
 def rank_evidence(
-    signals: List[Dict[str, Any]],
+    signals: list[dict[str, Any]],
     prioritize_freshness: bool = True,
-    current_year: Optional[int] = None
-) -> List[RankedEvidence]:
+    current_year: int | None = None
+) -> list[RankedEvidence]:
     """Quickly rank evidence by freshness and corroboration.
 
     Args:

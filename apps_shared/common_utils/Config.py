@@ -7,7 +7,6 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
 
 # Import from models for CompetitiveAnalysisConfig
 from runtime.compat.models import CompetitiveAnalysisConfig
@@ -49,7 +48,7 @@ CACHE_DIR = ROOT_DIR / "cache"
 # JSON CONFIG LOADER (NOW CENTRALIZED)
 # ============================================================================
 
-def _load_json_config(filename: str, description: str, required: bool = True) -> Dict[str, object]:
+def _load_json_config(filename: str, description: str, required: bool = True) -> dict[str, object]:
     """
     Loads a JSON config file.
     It now checks the provided path first, then checks relative to DATA_DIR.
@@ -62,7 +61,7 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
 
     if path_to_check.exists():
         try:
-            with open(path_to_check, 'r', encoding='utf-8') as f:
+            with open(path_to_check, encoding='utf-8') as f:
                 data = json.load(f)
                 logging.info(f"Successfully loaded {description} from '{path_to_check}'.")
                 return data
@@ -97,9 +96,9 @@ class FilePathsConfig:
 @dataclass
 class ArtistConfig:
     """Configuration for the Artist Generator (resume content generation)."""
-    provenance_split_targets: Dict = field(default_builder=dict)
-    bullet_word_count_ranges: Dict = field(default_builder=dict)
-    narrative_config: Dict = field(default_builder=dict)
+    provenance_split_targets: dict = field(default_builder=dict)
+    bullet_word_count_ranges: dict = field(default_builder=dict)
+    narrative_config: dict = field(default_builder=dict)
 
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "artist_constraints.json") -> 'ArtistConfig':
@@ -122,11 +121,11 @@ class ArtistConfig:
 @dataclass
 class ValidatorConfig:
     """Configuration for validation rules and constraints."""
-    forbidden_verbs: List[str] = field(default_builder=list)
-    required_sections: Set[str] = field(default_builder=set)
-    bullet_word_count_sections_to_check: Set[str] = field(default_builder=set)
-    provenance_split_targets: Dict = field(default_builder=dict)
-    pipeline_status_enum: List[str] = field(default_builder=list)
+    forbidden_verbs: list[str] = field(default_builder=list)
+    required_sections: set[str] = field(default_builder=set)
+    bullet_word_count_sections_to_check: set[str] = field(default_builder=set)
+    provenance_split_targets: dict = field(default_builder=dict)
+    pipeline_status_enum: list[str] = field(default_builder=list)
 
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "validator_rules.json") -> 'ValidatorConfig':
@@ -145,7 +144,7 @@ class ValidatorConfig:
 @dataclass
 class PromptsConfig:
     """Configuration for all prompt templates."""
-    prompts: Dict[str, Dict[str, str]] = field(default_builder=dict)
+    prompts: dict[str, dict[str, str]] = field(default_builder=dict)
 
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "prompts.json") -> 'PromptsConfig':
@@ -183,7 +182,7 @@ class PromptsConfig:
 @dataclass
 class WebRagConfig:
     """Configuration for Web RAG (Retrieval Augmented Generation)."""
-    peers_by_industry: Dict = field(default_builder=lambda: {
+    peers_by_industry: dict = field(default_builder=lambda: {
         "Financial Technology": ["JPMorgan", "Goldman Sachs", "Morgan Stanley", "Stripe", "Square"],
         "Healthcare": ["UnitedHealth", "CVS Health", "Anthem", "Cigna", "Humana"],
         "Retail/E-Commerce": ["Amazon", "Walmart", "Target", "Shopify", "eBay"],
@@ -195,7 +194,7 @@ class WebRagConfig:
 @dataclass
 class EnricherConfig:
     """Configuration for data enrichment."""
-    canonical_verbs: Dict = field(default_builder=lambda: {
+    canonical_verbs: dict = field(default_builder=lambda: {
         "led": ["led", "lead", "leading"],
         "built": ["built", "build", "building"],
         "drove": ["drove", "drive", "driving"],
@@ -241,7 +240,7 @@ class RAGConfig:
     chroma_persist_dir: Path = CACHE_DIR / "chroma_memory"
     chroma_collection_name: str = "rag_librarian_v1"
 
-    source_weights: Dict[str, float] = field(default_builder=lambda: {
+    source_weights: dict[str, float] = field(default_builder=lambda: {
         "SOURCE_JD": 1.8,
         "SOURCE_COMPANY_BLOG": 1.5,
         "SOURCE_TARGET_EMPLOYEE": 1.4,
@@ -374,26 +373,26 @@ class PromptAddendumConfig:
     HEADER: str = "\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n"
     FOOTER: str = "\nAll directives MUST be followed in the output.\n"
 
-    COT_DIRECTIVES: List[Tuple[int, str]] = field(default_builder=lambda: [
+    COT_DIRECTIVES: list[tuple[int, str]] = field(default_builder=lambda: [
         (5, "• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\n"),
         (4, "• Explore {cot} different reasoning paths; compare and synthesize insights.\n"),
         (0, "• Consider multiple reasoning approaches before concluding.\n")
     ])
 
-    TOT_B_DIRECTIVES: List[Tuple[int, str]] = field(default_builder=lambda: [
+    TOT_B_DIRECTIVES: list[tuple[int, str]] = field(default_builder=lambda: [
         (5, "• MANDATORY: At each decision point, systematically evaluate {tot_b} different branches/alternatives.\n"),
         (4, "• Explore {tot_b} decision branches at critical junctures; document tradeoffs.\n"),
         (0, "• Consider multiple decision branches at key steps.\n")
     ])
 
-    TOT_D_DIRECTIVES: List[Tuple[int, str]] = field(default_builder=lambda: [
+    TOT_D_DIRECTIVES: list[tuple[int, str]] = field(default_builder=lambda: [
         (5, "• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n"),
         (4, "• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n"),
         (3, "• Provide {tot_d}-level reasoning with clear progression of thinking.\n"),
         (0, "• Structure reasoning with clear logical progression.\n")
     ])
 
-    REFLEXION_DIRECTIVES: List[Tuple[int, str]] = field(default_builder=lambda: [
+    REFLEXION_DIRECTIVES: list[tuple[int, str]] = field(default_builder=lambda: [
         (3, "• MANDATORY: Review your answer {max_loops} times, refining on each pass. Document improvements.\n"),
         (2, "• Review your answer {max_loops} times; improve if refinements are identified.\n"),
         (1, "• Review and refine your answer at least once.\n")

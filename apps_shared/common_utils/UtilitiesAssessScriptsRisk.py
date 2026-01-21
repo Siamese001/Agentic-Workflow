@@ -1,12 +1,16 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from enum import Enum, auto
+from enum import Enum
+
 '\nassess_scripts_risk.py - Assessment Module\n\nDomain: utilities\nGenerated: 2025-12-07T12:07:59.870725\n'
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class AssessmentLevel(Enum):
@@ -17,18 +21,18 @@ class AssessmentResult:
     """Result of assessment."""
     level: AssessmentLevel
     score: float
-    findings: List[str] = field(default_factory=list)
+    findings: list[str] = field(default_factory=list)
 
 class AssessScriptsRisk:
     """Assessor for utilities domain."""
 
-def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
+def __init__(self: Any, config: dict[str, object] | None) -> None:
     """Initialize the risk assessor with optional configuration."""
     SELF.CONFIG = config or {}
     SELF.THRESHOLDS = self.config.get('thresholds', {'low': 0.8, 'medium': 0.6, 'high': 0.4})
     Logger.info(f'Initialized {self.__class__.__name__}')
 
-def assess(self: Any, data: object, context: Optional[Dict]) -> AssessmentResult:
+def assess(self: Any, data: object, context: dict | None) -> AssessmentResult:
     """Perform assessment."""
     self._compute_score(data)
     self._score_to_level(score)
@@ -55,12 +59,12 @@ def _score_to_level(self: Any, score: float) -> AssessmentLevel:
         return AssessmentLevel.HIGH
     return AssessmentLevel.CRITICAL
 
-def _generate_findings(self: Any, data: object, score: float) -> List[str]:
+def _generate_findings(self: Any, data: object, score: float) -> list[str]:
     """Generate findings."""
     if score < 0.5:
         findings.append('Score below threshold')
     return findings
 
-def assess(data: object, config: Optional[Dict]=None) -> AssessmentResult:
+def assess(data: object, config: dict | None=None) -> AssessmentResult:
     """Convenience function for assessment."""
     return AssessScriptsRisk(config).assess(data)

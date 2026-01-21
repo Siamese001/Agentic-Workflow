@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 AnomalyReport - Sovereign Anomaly Detection Schema
 
@@ -10,7 +11,7 @@ Location: agentic_core/schemas/anomaly_report.py
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class AnomalySeverity(Enum):
@@ -42,14 +43,14 @@ class AnomalyReport:
     severity: AnomalySeverity
     description: str
     source: str
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
     timestamp: float = field(default_factory=time.time)
-    provenance_id: Optional[str] = None
+    provenance_id: str | None = None
 
     def __str__(self) -> str:
         return f"[{self.severity.value.upper()}] {self.source}: {self.type} — {self.description}"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """For MCP auditing / serialization."""
         return {
             "type": self.type,
@@ -62,7 +63,7 @@ class AnomalyReport:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "AnomalyReport":
+    def from_dict(cls, data: dict[str, Any]) -> AnomalyReport:
         """Create from dictionary."""
         return cls(
             type=data["type"],

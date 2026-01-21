@@ -6,14 +6,9 @@ the CredentialScannerAgent when running in COMPLIANCE mode.
 
 Risk 4: Hardcoded Credential Detection Integration
 """
-import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
-    UnifiedOrchestratorAgent,
-    OrchestratorMode
-)
-from agentic_core.L5_safety.validators.CredentialScannerAgent import CredentialScannerAgent
+from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
 
 
 class TestComplianceIntegration:

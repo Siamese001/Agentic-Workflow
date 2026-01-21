@@ -2,11 +2,10 @@
 """Find which L0 Maintenance/Core agent is not MCP hardened."""
 import json
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 
-with open(project_root / "agent_discovery_full.json", 'r', encoding='utf-8') as f:
+with open(project_root / "agent_discovery_full.json", encoding='utf-8') as f:
     data = json.load(f)
 
 l0_agents = [a for a in data if a.get('territory') == 'L0 Maintenance/Core']

@@ -4,21 +4,18 @@ Generate test files for agents lacking test coverage.
 Priority: L5 > L4 > L3 > L2 > L1 > L0 > Base > Apps
 """
 import json
-import ast
 from pathlib import Path
-from typing import List, Dict
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 
 # Load untested agents
-with open(project_root / "untested_agents.json", 'r', encoding='utf-8') as f:
+with open(project_root / "untested_agents.json", encoding='utf-8') as f:
     untested_agents = json.load(f)
 
 # Priority order for test generation
 LAYER_PRIORITY = ['L5', 'L4', 'L3', 'L2', 'L1', 'L0', 'Base', 'L6', 'Apps', 'Utils']
 
-def get_test_template(agent: Dict) -> str:
+def get_test_template(agent: dict) -> str:
     """Generate a test file template for an agent."""
     class_name = agent['class_name']
     agent_path = agent['path'].replace('\\', '/')
@@ -89,7 +86,7 @@ if __name__ == "__main__":
     return template
 
 
-def generate_tests_for_layer(layer: str, agents: List[Dict], max_count: int = 10) -> int:
+def generate_tests_for_layer(layer: str, agents: list[dict], max_count: int = 10) -> int:
     """Generate test files for agents in a specific layer."""
     layer_agents = [a for a in agents if a['layer'] == layer]
 

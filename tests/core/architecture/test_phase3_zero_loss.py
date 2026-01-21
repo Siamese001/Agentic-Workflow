@@ -16,7 +16,6 @@ Phase: 3 - BaseAgent Standardization & Mixin Root Injection
 """
 import sys
 from pathlib import Path
-from typing import Dict, Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -75,7 +74,7 @@ def test_tc9_mro_integrity():
         return False
 
     print("✅ PASS: MRO follows correct inheritance path")
-    print(f"   L2ExecutionBaseAgent -> ... -> SovereignBaseAgent -> InfrastructureMixin -> object")
+    print("   L2ExecutionBaseAgent -> ... -> SovereignBaseAgent -> InfrastructureMixin -> object")
     return True
 
 
@@ -91,7 +90,6 @@ def test_tc10_inheritance_continuity():
     print("="*60)
 
     from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
     # Create a test agent
     class TestL2Agent(SovereignBaseAgent):
@@ -128,10 +126,10 @@ def test_tc10_inheritance_continuity():
         return False
 
     print("✅ PASS: Agents have access to all inherited methods")
-    print(f"   heal_repository: ✓")
+    print("   heal_repository: ✓")
     print(f"   HealerMixin methods: {healer_methods}")
     print(f"   InfrastructureMixin methods: {infra_methods}")
-    print(f"   _infra_initialized: True")
+    print("   _infra_initialized: True")
     return True
 
 
@@ -227,7 +225,7 @@ def test_tc12_import_stability():
             import_errors.append((class_name, str(e)))
 
     if import_errors:
-        print(f"❌ FAIL: Import errors for canonical bases:")
+        print("❌ FAIL: Import errors for canonical bases:")
         for name, error in import_errors:
             print(f"   - {name}: {error}")
         return False
@@ -265,7 +263,7 @@ def test_base_agent_count():
         print(f"\n❌ FAIL: Expected exactly 8 BaseAgent files, found {len(base_agent_files)}")
         return False
 
-    print(f"\n✅ PASS: Exactly 8 BaseAgent files (target achieved)")
+    print("\n✅ PASS: Exactly 8 BaseAgent files (target achieved)")
     return True
 
 

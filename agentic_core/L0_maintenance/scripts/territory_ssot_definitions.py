@@ -504,7 +504,7 @@ def _categorize_l5_guardrails(class_name: str, docstring: str, path_str: str) ->
 def _categorize_l1_cognition(class_name: str, docstring: str, path_str: str) -> str:
     """Categorize L1 Cognition/Core agents into 4 sub-territories."""
     name_lower = class_name.lower()
-    doc_lower = (docstring or '').lower()
+    (docstring or '').lower()
 
     # Memory and context
     if any(kw in name_lower for kw in ['memory', 'context', 'cache', 'recall', 'history']):

@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Iterable, List, Sequence, Tuple
 
 from ..rag import ContentStore, EvidenceRegistry, RetrievalPlan
 from ..rag.tool_registry import ToolRegistry, ToolResult
@@ -28,10 +28,10 @@ class DraftPackage:
     """Container describing the composed draft and supporting evidence."""  # pragma: no cover
 
     draft: str
-    artifacts: Dict[str, str]
+    artifacts: dict[str, str]
     total_latency_ms: int = 0
 
-    def with_draft(self, new_draft: str) -> "DraftPackage":
+    def with_draft(self, new_draft: str) -> DraftPackage:
         return DraftPackage(new_draft, dict(self.artifacts), self.total_latency_ms)
 
 
@@ -92,8 +92,8 @@ class MessageArchitect:
     # ------------------------------------------------------------------
     # Planning helpers
     # ------------------------------------------------------------------
-    def _derive_wants(self, prompt: str, inputs) -> List[str]:
-        wants: List[str] = []
+    def _derive_wants(self, prompt: str, inputs) -> list[str]:
+        wants: list[str] = []
         normalized_prompt = (prompt or "").strip()
         company_id = getattr(inputs, "company_id", None)
         contact_id = getattr(inputs, "contact_id", None)
@@ -135,10 +135,10 @@ class MessageArchitect:
     # ------------------------------------------------------------------
     # Evidence helpers
     # ------------------------------------------------------------------
-    def _record_evidence(self, retrievals, inputs) -> List[Tuple[str, str, Dict[str, object]]]:
+    def _record_evidence(self, retrievals, inputs) -> list[tuple[str, str, dict[str, object]]]:
         company_id = getattr(inputs, "company_id", None)
         scope = "outreach"
-        evidence: List[Tuple[str, str, Dict[str, object]]] = []
+        evidence: list[tuple[str, str, dict[str, object]]] = []
         for source, job, payload in retrievals:
             summary, metadata = self._summarize_payload(payload, source)
             artifact_id = self.evidence_registry.upsert(
@@ -155,7 +155,7 @@ class MessageArchitect:
             evidence.append((artifact_id, summary, metadata))
         return evidence
 
-    def _summarize_payload(self, payload, source_label: str) -> Tuple[str, Dict[str, object]]:
+    def _summarize_payload(self, payload, source_label: str) -> tuple[str, dict[str, object]]:
         if isinstance(payload, ToolResult):
             summary = payload.content
             source_url = payload.sources[0] if payload.sources else source_label
@@ -172,9 +172,9 @@ class MessageArchitect:
     # Draft construction helpers
     # ------------------------------------------------------------------
     def _compose_body(
-        self, prompt: str, evidence: Iterable[Tuple[str, str, Dict[str, object]]]
-    ) -> List[str]:
-        body_lines: List[str] = []
+        self, prompt: str, evidence: Iterable[tuple[str, str, dict[str, object]]]
+    ) -> list[str]:
+        body_lines: list[str] = []
         intro = prompt or "Thanks for connecting!"
         body_lines.append(intro)
 

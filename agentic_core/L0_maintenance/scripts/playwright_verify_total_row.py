@@ -7,6 +7,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+
 from agentic_core.utils.security import safe_popen
 
 project_root = Path(__file__).parent.parent

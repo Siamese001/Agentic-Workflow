@@ -15,14 +15,15 @@ L2 agents handle execution - running tools, calling APIs.
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Any, Dict
 
+from dataclasses import dataclass
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 @dataclass
@@ -43,7 +44,7 @@ class L2Agent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
     layer: str = "L2"
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         if _call_path is None:
             _call_path = set()

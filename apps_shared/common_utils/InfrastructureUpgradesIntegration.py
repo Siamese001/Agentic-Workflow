@@ -6,13 +6,13 @@ performance, and brand compliance across all engines.
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
+from .brand_voice_enforcer import ToneEnforcer, ToneViolation, ToneVoice, get_tone_enforcer
+from .core.event_bus import EventType, SystemEvent
 from .fact_ledger import FactLedger, VerificationResult, get_fact_ledger
 from .global_cache import GlobalCache, get_global_cache
-from .brand_voice_enforcer import ToneEnforcer, ToneVoice, ToneViolation, get_tone_enforcer
 from .infrastructure_integration import InfrastructureOrchestrator, TaskType
-from .core.event_bus import EventType, SystemEvent
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +22,10 @@ class InfrastructureUpgradesOrchestrator:
 
     def __init__(self):
         """Initialize infrastructure upgrades orchestrator."""
-        self.fact_ledger: Optional[FactLedger] = None
-        self.global_cache: Optional[GlobalCache] = None
-        self.tone_enforcer: Optional[ToneEnforcer] = None
-        self.infrastructure: Optional[InfrastructureOrchestrator] = None
+        self.fact_ledger: FactLedger | None = None
+        self.global_cache: GlobalCache | None = None
+        self.tone_enforcer: ToneEnforcer | None = None
+        self.infrastructure: InfrastructureOrchestrator | None = None
 
         self._initialized = False
 
@@ -147,7 +147,7 @@ class InfrastructureUpgradesOrchestrator:
         except Exception as e:
             logger.error(f"Failed to handle tone violation: {e}")
 
-    async def _verify_content_facts(self, content: str, trace_id: str) -> List[VerificationResult]:
+    async def _verify_content_facts(self, content: str, trace_id: str) -> list[VerificationResult]:
         """Verify facts in generated content.
 
         Args:
@@ -192,12 +192,12 @@ class InfrastructureUpgradesOrchestrator:
         self,
         task_type: TaskType,
         prompt: str,
-        tone_voice: Optional[ToneVoice] = None,
+        tone_voice: ToneVoice | None = None,
         verify_facts: bool = True,
         enforce_tone: bool = True,
         use_cache: bool = True,
-        trace_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        trace_id: str | None = None
+    ) -> dict[str, Any]:
         """Generate content with all infrastructure upgrades.
 
         Args:
@@ -347,7 +347,7 @@ class InfrastructureUpgradesOrchestrator:
 
             raise
 
-    async def load_profile_facts(self, profile_data: Dict[str, Any]) -> None:
+    async def load_profile_facts(self, profile_data: dict[str, Any]) -> None:
         """Load profile facts into the ledger.
 
         Args:
@@ -359,7 +359,7 @@ class InfrastructureUpgradesOrchestrator:
         self.fact_ledger.load_facts(profile_data)
         logger.info(f"Loaded profile facts: {self.fact_ledger.get_stats()['facts_loaded']} facts")
 
-    def get_upgrades_stats(self) -> Dict[str, Any]:
+    def get_upgrades_stats(self) -> dict[str, Any]:
         """Get statistics for all upgrade components.
 
         Returns:
@@ -375,7 +375,7 @@ class InfrastructureUpgradesOrchestrator:
 
 
 # Global orchestrator
-_upgrades_orchestrator: Optional[InfrastructureUpgradesOrchestrator] = None
+_upgrades_orchestrator: InfrastructureUpgradesOrchestrator | None = None
 _orchestrator_lock = None
 
 
@@ -403,11 +403,11 @@ async def get_infrastructure_upgrades_orchestrator() -> InfrastructureUpgradesOr
 async def generate_with_consistency(
     task_type: TaskType,
     prompt: str,
-    tone_voice: Optional[ToneVoice] = None,
+    tone_voice: ToneVoice | None = None,
     verify_facts: bool = True,
     enforce_tone: bool = True,
-    trace_id: Optional[str] = None
-) -> Dict[str, Any]:
+    trace_id: str | None = None
+) -> dict[str, Any]:
     """Generate content with consistency checks.
 
     Args:
@@ -433,7 +433,7 @@ async def generate_with_consistency(
     )
 
 
-async def verify_claims(content: str) -> List[VerificationResult]:
+async def verify_claims(content: str) -> list[VerificationResult]:
     """Verify claims in content.
 
     Args:
@@ -458,7 +458,7 @@ async def verify_claims(content: str) -> List[VerificationResult]:
     return results
 
 
-def audit_tone(text: str, voice: ToneVoice) -> List[ToneViolation]:
+def audit_tone(text: str, voice: ToneVoice) -> list[ToneViolation]:
     """Audit text for tone compliance.
 
     Args:

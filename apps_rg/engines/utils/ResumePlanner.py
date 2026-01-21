@@ -7,9 +7,9 @@ This is the L1 planning layer that coordinates:
 Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification → K4 Rewriting → K5 Skill Mapping → K6 Section Assembly → K7 Formatting → K8 Validation
 """
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 import logging
+from dataclasses import dataclass, field
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class ResumeAnalysisPlan:
     formatting_standards: str  # "ats_optimized", "creative", "executive"
     validation_level: str  # "basic", "comprehensive", "enterprise"
     confidence_threshold: float = 0.7
-    metadata: Dict[str, object] = field(default_factory=dict)
+    metadata: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -41,28 +41,28 @@ class ResumeSectionConfig:
     max_length: int
     priority: int  # 1 = highest
     content_type: str  # "experience", "skills", "education", "projects"
-    extraction_rules: List[str]
-    validation_rules: List[str]
-    formatting_rules: List[str]
-    metadata: Dict[str, object] = field(default_factory=dict)
+    extraction_rules: list[str]
+    validation_rules: list[str]
+    formatting_rules: list[str]
+    metadata: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
 class ResumeProcessingPlan:
     """Complete resume processing plan for K1-K8 pipeline."""
     analysis_plan: ResumeAnalysisPlan
-    section_configs: List[ResumeSectionConfig]
-    extraction_params: Dict[str, object]
-    cleaning_params: Dict[str, object]
-    quantification_params: Dict[str, object]
-    rewriting_params: Dict[str, object]
-    skill_mapping_params: Dict[str, object]
-    assembly_params: Dict[str, object]
-    formatting_params: Dict[str, object]
-    validation_params: Dict[str, object]
-    execution_order: List[str]
-    fallback_strategies: Dict[str, str]
-    metadata: Dict[str, object] = field(default_factory=dict)
+    section_configs: list[ResumeSectionConfig]
+    extraction_params: dict[str, object]
+    cleaning_params: dict[str, object]
+    quantification_params: dict[str, object]
+    rewriting_params: dict[str, object]
+    skill_mapping_params: dict[str, object]
+    assembly_params: dict[str, object]
+    formatting_params: dict[str, object]
+    validation_params: dict[str, object]
+    execution_order: list[str]
+    fallback_strategies: dict[str, str]
+    metadata: dict[str, object] = field(default_factory=dict)
 
 
 class RGPlanner:
@@ -73,8 +73,8 @@ class RGPlanner:
     """
 
     def __init__(self,
-                 config: Optional[Dict[str, object]] = None,
-                 telemetry_bus: Optional[Any] = None) -> None:
+                 config: dict[str, object] | None = None,
+                 telemetry_bus: Any | None = None) -> None:
         """Initialize resume generation planner."""
         self.config = config or {}
         self.telemetry_bus = telemetry_bus
@@ -100,9 +100,9 @@ class RGPlanner:
     def plan_resume_processing(
         self,
         *,
-        job_input: Dict[str, object],
-        resume_input: Dict[str, object],
-        processing_options: Optional[Dict[str, object]] = None
+        job_input: dict[str, object],
+        resume_input: dict[str, object],
+        processing_options: dict[str, object] | None = None
     ) -> ResumeProcessingPlan:
         """Generate comprehensive resume processing plan.
 
@@ -171,7 +171,7 @@ class RGPlanner:
 
         return processing_plan
 
-    def _analyze_job_requirements(self, job_input: Dict[str, object]) -> Dict[str, object]:
+    def _analyze_job_requirements(self, job_input: dict[str, object]) -> dict[str, object]:
         """Analyze job requirements to inform processing strategy."""
         return {
             "target_role": job_input.get("title", ""),
@@ -184,7 +184,7 @@ class RGPlanner:
             "complexity_score": self._calculate_job_complexity(job_input)
         }
 
-    def _analyze_resume_structure(self, resume_input: Dict[str, object]) -> Dict[str, object]:
+    def _analyze_resume_structure(self, resume_input: dict[str, object]) -> dict[str, object]:
         """Analyze current resume structure and content."""
         sections = resume_input.get("sections", {})
 
@@ -200,10 +200,10 @@ class RGPlanner:
 
     def _determine_processing_strategy(
         self,
-        job_analysis: Dict[str, object],
-        resume_analysis: Dict[str, object],
-        options: Dict[str, object]
-    ) -> Dict[str, object]:
+        job_analysis: dict[str, object],
+        resume_analysis: dict[str, object],
+        options: dict[str, object]
+    ) -> dict[str, object]:
         """Determine optimal processing strategy based on analysis."""
         job_complexity = job_analysis.get("complexity_score", 0.5)
         resume_quality = resume_analysis.get("completeness_score", 0.5)
@@ -236,8 +236,8 @@ class RGPlanner:
 
     def _create_analysis_plan(
         self,
-        job_analysis: Dict[str, object],
-        strategy: Dict[str, object]
+        job_analysis: dict[str, object],
+        strategy: dict[str, object]
     ) -> ResumeAnalysisPlan:
         """Create detailed resume analysis plan."""
         return ResumeAnalysisPlan(
@@ -258,9 +258,9 @@ class RGPlanner:
 
     def _configure_section_processing(
         self,
-        resume_analysis: Dict[str, object],
-        strategy: Dict[str, object]
-    ) -> List[ResumeSectionConfig]:
+        resume_analysis: dict[str, object],
+        strategy: dict[str, object]
+    ) -> list[ResumeSectionConfig]:
         """Configure processing for each resume section."""
         section_configs = []
 
@@ -279,7 +279,7 @@ class RGPlanner:
 
         return section_configs
 
-    def _set_k_node_parameters(self, strategy: Dict[str, object]) -> Dict[str, Dict[str, object]]:
+    def _set_k_node_parameters(self, strategy: dict[str, object]) -> dict[str, dict[str, object]]:
         """Set parameters for each K-node in the processing pipeline."""
         return {
             "extraction": {
@@ -324,7 +324,7 @@ class RGPlanner:
             }
         }
 
-    def _define_execution_order(self, strategy: Dict[str, object]) -> List[str]:
+    def _define_execution_order(self, strategy: dict[str, object]) -> list[str]:
         """Define optimal execution order for K-nodes."""
         return [
             "k1_extract",
@@ -337,7 +337,7 @@ class RGPlanner:
             "k8_validate"
         ]
 
-    def _configure_fallback_strategies(self, strategy: Dict[str, object]) -> Dict[str, str]:
+    def _configure_fallback_strategies(self, strategy: dict[str, object]) -> dict[str, str]:
         """Configure fallback strategies for each K-node."""
         return {
             "k1_extract": "basic_section_parsing",
@@ -350,7 +350,7 @@ class RGPlanner:
             "k8_validate": "basic_spell_check"
         }
 
-    def _calculate_job_complexity(self, job_input: Dict[str, object]) -> float:
+    def _calculate_job_complexity(self, job_input: dict[str, object]) -> float:
         """Calculate complexity score for job requirements."""
         complexity_factors = [
             len(job_input.get("requirements", [])) * 0.1,
@@ -360,7 +360,7 @@ class RGPlanner:
         ]
         return min(sum(complexity_factors), 1.0)
 
-    def _assess_format_quality(self, resume_input: Dict[str, object]) -> float:
+    def _assess_format_quality(self, resume_input: dict[str, object]) -> float:
         """Assess current resume formatting quality."""
         # Simple heuristic based on structure and organization
         sections = resume_input.get("sections", {})
@@ -368,14 +368,14 @@ class RGPlanner:
         content_score = min(len(resume_input.get("content", "")) / 1000, 1.0) * 0.5
         return structure_score + content_score
 
-    def _calculate_completeness(self, resume_input: Dict[str, object]) -> float:
+    def _calculate_completeness(self, resume_input: dict[str, object]) -> float:
         """Calculate resume completeness score."""
         sections = resume_input.get("sections", {})
         required_sections = ["contact_info", "summary", "experience"]
         present_required = sum(1 for section in required_sections if section in sections)
         return present_required / len(required_sections)
 
-    def _get_section_max_length(self, section_name: str, strategy: Dict[str, object]) -> int:
+    def _get_section_max_length(self, section_name: str, strategy: dict[str, object]) -> int:
         """Get maximum length for a section based on strategy."""
         length_map = {
             "summary": 200,
@@ -407,7 +407,7 @@ class RGPlanner:
         }
         return type_map.get(section_name, "general")
 
-    def _get_extraction_rules(self, section_name: str, strategy: Dict[str, object]) -> List[str]:
+    def _get_extraction_rules(self, section_name: str, strategy: dict[str, object]) -> list[str]:
         """Get extraction rules for a section."""
         return [
             "extract_key_phrases",
@@ -415,7 +415,7 @@ class RGPlanner:
             "detect_achievements"
         ]
 
-    def _get_validation_rules(self, section_name: str, strategy: Dict[str, object]) -> List[str]:
+    def _get_validation_rules(self, section_name: str, strategy: dict[str, object]) -> list[str]:
         """Get validation rules for a section."""
         return [
             "check_completeness",
@@ -423,7 +423,7 @@ class RGPlanner:
             "validate_format"
         ]
 
-    def _get_formatting_rules(self, section_name: str, strategy: Dict[str, object]) -> List[str]:
+    def _get_formatting_rules(self, section_name: str, strategy: dict[str, object]) -> list[str]:
         """Get formatting rules for a section."""
         return [
             "apply_consistent_styling",
@@ -443,7 +443,7 @@ class RGPlanner:
         except Exception as e:
             Logger.debug(f"Failed to record telemetry: {e}")
 
-    def get_planning_summary(self, processing_plan: ResumeProcessingPlan) -> Dict[str, object]:
+    def get_planning_summary(self, processing_plan: ResumeProcessingPlan) -> dict[str, object]:
         """Get a summary of the planning execution for debugging/telemetry."""
         return {
             "execution_id": "RgPlanner",

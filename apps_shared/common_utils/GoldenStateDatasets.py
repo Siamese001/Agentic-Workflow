@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List
 
 # from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase, GoldenCase  # DEPRECATED: Archive import removed to protect archives from validation edits
 
@@ -11,7 +10,7 @@ _BASE_DIR = Path(__file__).resolve().parent
 _BASELINES_DIR = _BASE_DIR / "baselines"
 
 
-def _load_json(name: str) -> Dict[str, object]:
+def _load_json(name: str) -> dict[str, object]:
     path = _BASELINES_DIR / name
     if not path.exists():
         return None
@@ -19,7 +18,7 @@ def _load_json(name: str) -> Dict[str, object]:
         return json.load(f)
 
 
-def load_golden_inputs() -> List[GoldenStateTestCase]:
+def load_golden_inputs() -> list[GoldenStateTestCase]:
     """Return a small, deterministic set of golden test cases.
 
     For now this is hard-coded but can be extended to read from files.
@@ -41,27 +40,27 @@ def load_golden_inputs() -> List[GoldenStateTestCase]:
     ]
 
 
-def load_baseline_scores() -> Dict[str, object]:
+def load_baseline_scores() -> dict[str, object]:
     """Load baseline scores used for gating, or an empty dict if missing."""
 
     data = _load_json("baseline_scores.json")
     return data or {}
 
 
-def load_exemplar_prompts() -> Dict[str, object]:
+def load_exemplar_prompts() -> dict[str, object]:
     """Load exemplar prompts used as reference, or an empty dict if missing."""
 
     data = _load_json("exemplar_prompts.json")
     return data or {}
 
 
-def load_golden_cases() -> List[GoldenCase]:
+def load_golden_cases() -> list[GoldenCase]:
     """Load golden test cases from inputs and convert to GoldenCase format.
 
     Returns:
         List of GoldenCase objects with expected behaviors and criteria
     """
-    cases: List[GoldenCase] = []
+    cases: list[GoldenCase] = []
     for tc in load_golden_inputs():
         cases.append(
             GoldenCase(
@@ -75,5 +74,5 @@ def load_golden_cases() -> List[GoldenCase]:
     return cases
 
 
-def load_golden_baseline_scores() -> Dict[str, object]:
+def load_golden_baseline_scores() -> dict[str, object]:
     return load_baseline_scores()

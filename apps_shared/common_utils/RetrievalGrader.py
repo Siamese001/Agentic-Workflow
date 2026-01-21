@@ -8,9 +8,9 @@ like web search to ensure high-quality responses.
 import asyncio
 import logging
 import time
-from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +28,8 @@ class RetrievalGrade:
     status: GradeStatus
     relevance_ratio: float
     confidence: float
-    relevant_docs: List[int] = None
-    irrelevant_docs: List[int] = None
+    relevant_docs: list[int] = None
+    irrelevant_docs: list[int] = None
     reasoning: str = ""
 
     def __post_init__(self):
@@ -74,8 +74,8 @@ class RetrievalGrader:
 
     async def grade_documents(self,
                             query: str,
-                            documents: List[str],
-                            document_ids: Optional[List[str]] = None) -> RetrievalGrade:
+                            documents: list[str],
+                            document_ids: list[str] | None = None) -> RetrievalGrade:
         """Grade documents for relevance to the query.
 
         Args:
@@ -146,7 +146,7 @@ class RetrievalGrader:
             reasoning=reasoning
         )
 
-    async def _grade_single_document(self, query: str, document: str) -> Tuple[bool, float]:
+    async def _grade_single_document(self, query: str, document: str) -> tuple[bool, float]:
         """Grade a single document for relevance.
 
         Args:
@@ -192,7 +192,7 @@ class RetrievalGrader:
 
         return is_relevant, confidence
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get grader statistics.
 
         Returns:
@@ -236,7 +236,7 @@ class WebSearchFallback:
 
         logger.info(f"Initialized WebSearchFallback with {search_provider}")
 
-    async def search(self, query: str) -> Dict[str, Any]:
+    async def search(self, query: str) -> dict[str, Any]:
         """Perform web search for the query.
 
         Args:
@@ -288,8 +288,8 @@ class WebSearchFallback:
 
 
 # Global instances
-_retrieval_grader: Optional[RetrievalGrader] = None
-_web_search_fallback: Optional[WebSearchFallback] = None
+_retrieval_grader: RetrievalGrader | None = None
+_web_search_fallback: WebSearchFallback | None = None
 
 
 def get_retrieval_grader(**kwargs) -> RetrievalGrader:
@@ -327,7 +327,7 @@ def get_web_search_fallback(**kwargs) -> WebSearchFallback:
 
 
 # Convenience functions
-async def grade_retrieval(query: str, documents: List[str], **kwargs) -> RetrievalGrade:
+async def grade_retrieval(query: str, documents: list[str], **kwargs) -> RetrievalGrade:
     """Convenience function to grade retrieval results.
 
     Args:
@@ -342,7 +342,7 @@ async def grade_retrieval(query: str, documents: List[str], **kwargs) -> Retriev
     return await grader.grade_documents(query, documents)
 
 
-async def fallback_web_search(query: str, **kwargs) -> Dict[str, Any]:
+async def fallback_web_search(query: str, **kwargs) -> dict[str, Any]:
     """Convenience function for web search fallback.
 
     Args:

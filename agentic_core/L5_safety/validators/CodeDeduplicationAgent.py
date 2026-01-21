@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import sys
 from pathlib import Path
 
@@ -35,17 +36,18 @@ _add_project_root_to_sys_path()
 # === END PATH FIX ===
 
 import ast
+
 '''Brief description of functionality and purpose.'''
 import difflib
 
 'Brief description of functionality and purpose.'
 import hashlib
-from collections import defaultdict
-from pathlib import Path
-from typing import Any, Dict, List, Tuple, Optional
-import textwrap
 import shutil
+import textwrap
 import warnings
+from collections import defaultdict
+from typing import Any
+
 from tqdm import tqdm  # Best-in-class progress with colors & stats
 
 # NamingAgent bridge for future-proof uniqueness (post-2025-12-31 consolidation)
@@ -54,7 +56,7 @@ try:
     NAMING_AGENT_AVAILABLE = True
 except ImportError:
     NAMING_AGENT_AVAILABLE = False
-    warnings.warn("NamingAgent not available — falling back to heuristic uniqueness resolution", RuntimeWarning)
+    warnings.warn("NamingAgent not available — falling back to heuristic uniqueness resolution", RuntimeWarning, stacklevel=2)
 
 try:
     from apps_shared.config.operational_config import OPERATIONAL_EXCLUDED_DIRS
@@ -63,8 +65,8 @@ except ImportError:
 
 # Tree-sitter for AST fingerprinting (optional enhancement)
 try:
-    from tree_sitter import Parser, Language
     import tree_sitter_python as tspython
+    from tree_sitter import Language, Parser
     TREE_SITTER_AVAILABLE = True
 except ImportError:
     TREE_SITTER_AVAILABLE = False
@@ -72,27 +74,13 @@ except ImportError:
     Language = None
     tspython = None
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.cache_decorator import cached
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Archives directory constant for exclusion
 ARCHIVES_DIR = "archives"
@@ -135,12 +123,12 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         """
         self.threshold = 1.0  # HARDENED: Absolute structural identity required
         self.min_lines = min_lines
-        self.duplicate_groups: Dict[str, List[Tuple[Path, str, int, str]]] = defaultdict(list)
-        self.file_duplicate_groups: Dict[str, List[Path]] = defaultdict(list)
-        self.filename_duplicates: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)
+        self.duplicate_groups: dict[str, list[tuple[Path, str, int, str]]] = defaultdict(list)
+        self.file_duplicate_groups: dict[str, list[Path]] = defaultdict(list)
+        self.filename_duplicates: dict[str, list[tuple[Path, str]]] = defaultdict(list)
         self.extracted_count = 0
         self.consolidated_count = 0
-        self.errors: List[str] = []
+        self.errors: list[str] = []
 
         # Initialize tree-sitter parser if available
         self.ts_parser = None
@@ -166,7 +154,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         return ' '.join(lines)
 
     @staticmethod
-    def _filter_code_lines(code: str) -> List[str]:
+    def _filter_code_lines(code: str) -> list[str]:
         """Filter code lines by removing comments and empty lines."""
         lines = []
         for line in code.splitlines():
@@ -183,7 +171,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             return 'VAR'
         elif isinstance(node, ast.Constant):
             return f'CONST_{type(node.value).__name__}'
-        elif isinstance(node, (ast.Num, ast.Str)):
+        elif isinstance(node, ast.Num | ast.Str):
             # Backward compatibility for older Python versions
             return 'CONST'
         children = [self._normalize_ast_tree(child) for child in ast.iter_child_nodes(node)]
@@ -222,7 +210,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             normalized = self._normalize_code(code)
             return hashlib.sha256(normalized.encode('utf-8')).hexdigest()
 
-    def _extract_functions_classes(self, file_path: Path) -> List[Tuple[str, str, int]]:
+    def _extract_functions_classes(self, file_path: Path) -> list[tuple[str, str, int]]:
         """Parse file and extract function/class bodies."""
         try:
             source = file_path.read_text(encoding='utf-8')
@@ -232,18 +220,18 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         blocks = []
         source_lines = source.splitlines()
         for node in ast.iter_child_nodes(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
                 if node.end_lineno - node.lineno + 1 < self.min_lines:
                     continue
                 code_block = '\n'.join(source_lines[node.lineno - 1:node.end_lineno])
                 blocks.append((node.name, code_block, node.lineno))
         return blocks
 
-    def scan_for_duplicates(self, python_files: List[str]) -> Any:
+    def scan_for_duplicates(self, python_files: list[str]) -> Any:
         """Phase 2 entry point - cross-file territory sweep."""
         print('\n[*] CodeDeduplicationAgent: Scanning for cross-file duplicates...')
         # Collect all candidate blocks with their best normalized representation
-        candidates: List[Tuple[Path, str, int, str, str, int]] = []  # (path, name, line, code, norm_str, len_norm)
+        candidates: list[tuple[Path, str, int, str, str, int]] = []  # (path, name, line, code, norm_str, len_norm)
 
         # Best-in-class: Colored, dynamic filename + live group stats
         pbar = tqdm(
@@ -293,7 +281,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         pbar.close()
 
         # === FAST EXACT STRUCTURAL GROUPING ===
-        exact_groups: Dict[str, List[Tuple[Path, str, int, str, str, int]]] = defaultdict(list)
+        exact_groups: dict[str, list[tuple[Path, str, int, str, str, int]]] = defaultdict(list)
         for cand in candidates:
             struct_hash = hashlib.sha256(cand[4].encode("utf-8")).hexdigest()
             exact_groups[struct_hash].append(cand)
@@ -318,7 +306,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         """Create deduplicated utility in sovereign shared location."""
         utils_dir = project_root / AGENTIC_CORE_DIR / 'utils' / 'deduplicated'
         utils_dir.mkdir(parents=True, exist_ok=True)
-        safe_name = ''.join((c if c.isalnum() else '_' for c in func_name.lower()))[:40]
+        safe_name = ''.join(c if c.isalnum() else '_' for c in func_name.lower())[:40]
         candidate = utils_dir / f'{safe_name}_shared.py'
         counter = 1
         while candidate.exists():
@@ -334,7 +322,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             print('   [INFO] Auto-extraction disabled (RUN_SPRAWL_SURGERY=False)')
             return
         print('\n[*] CONTENT DEDUPLICATION SURGERY: Extracting common blocks...')
-        for block_hash, occurrences in self.duplicate_groups.items():
+        for _block_hash, occurrences in self.duplicate_groups.items():
             if len(occurrences) < 2:
                 continue
             primary_path, func_name, _, canonical_code = occurrences[0]
@@ -360,7 +348,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                     print(f"      [!] Backup failed for {file_path}: {e}")
         print(f'   [SURGERY COMPLETE] {self.extracted_count} instances extracted')
 
-    def _hash_entire_file(self, file_path: Path) -> Optional[str]:
+    def _hash_entire_file(self, file_path: Path) -> str | None:
         """SHA256 of normalized entire file (dedent, strip comments, collapse whitespace)."""
         try:
             source = file_path.read_text(encoding='utf-8')
@@ -378,10 +366,10 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             self.errors.append(f'File hash error {file_path}: {e}')
             return None
 
-    def scan_file_level_duplicates(self, python_files: List[Path]) -> None:
+    def scan_file_level_duplicates(self, python_files: list[Path]) -> None:
         """Detect exact whole-file duplicates (identical content)."""
         print('\n[*] CodeDeduplicationAgent: Scanning for whole-file duplicates...')
-        hash_to_files: Dict[str, List[Path]] = defaultdict(list)
+        hash_to_files: dict[str, list[Path]] = defaultdict(list)
 
         pbar = tqdm(
             total=len(python_files),
@@ -419,10 +407,10 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         if not self.file_duplicate_groups:
             print('   [OK] No whole-file duplicates detected.')
 
-    def scan_filename_duplicates(self, python_files: List[Path], project_root: Path) -> None:
+    def scan_filename_duplicates(self, python_files: list[Path], project_root: Path) -> None:
         """Detect duplicate basenames with safety check (identical vs divergent content)."""
         print('\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (safety-enhanced)...')
-        basename_to_entries: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)
+        basename_to_entries: dict[str, list[tuple[Path, str]]] = defaultdict(list)
 
         pbar = tqdm(
             total=len(python_files),
@@ -479,8 +467,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         """Primary: NamingAgent if available; Fallback: content heuristics."""
         if NAMING_AGENT_AVAILABLE:
             try:
-                naming = get_naming_agent(project_root)
-                proposed = file_path.name
+                get_naming_agent(project_root)
             except Exception as e:
                 self.errors.append(f'NamingAgent call failed: {e}')
 
@@ -514,7 +501,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         """Central resolution: identical files → consolidate; divergent filenames → rename."""
         print('\n[*] SAFE DUPLICATE RESOLUTION SURGERY...')
         # First: identical whole files
-        for file_hash, paths in self.file_duplicate_groups.items():
+        for _file_hash, paths in self.file_duplicate_groups.items():
             if len(paths) > 1:
                 # Prefer active locations over archives
                 primary = min(paths, key=lambda p: (ARCHIVES_DIR in str(p), 'old' in str(p), str(p)))
@@ -530,9 +517,9 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                             print(f'      [DRY-RUN] Would delete: {p}')
 
         # Second: filename conflicts (AGGRESSIVE PURGE MODE)
-        for basename, entries in self.filename_duplicates.items():
+        for _basename, entries in self.filename_duplicates.items():
             paths = [p for p, _ in entries]
-            hashes = {h for _, h in entries}
+            {h for _, h in entries}
 
             # CASE-COLLISION AWARE PURGE:
             # Prioritizes snake_case 'tool_registry' as the canonical SSOT location.
@@ -556,7 +543,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                             print(f'      [DRY-RUN] Would delete: {p}')
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -612,7 +599,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         await self.auto_extract_duplicates(project_root_path, ctx)
 
         # Report results
-        print(f'\n[*] DEDUPLICATION SUMMARY:')
+        print('\n[*] DEDUPLICATION SUMMARY:')
         print(f'    Code block duplicates: {len(self.duplicate_groups)} groups')
         print(f'    Whole-file duplicates: {len(self.file_duplicate_groups)} groups')
         print(f'    Filename duplicates: {len(self.filename_duplicates)} groups')
@@ -626,12 +613,12 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         import_lines, def_lines = {}, {}
 
         for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
+            if isinstance(node, ast.Import | ast.ImportFrom):
                 for alias in node.names:
                     name = alias.asname or alias.name
                     imported_names.add(name)
                     import_lines[name] = node.lineno
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 defined_functions.add(node.name)
                 def_lines[node.name] = node.lineno
             elif isinstance(node, ast.ClassDef):
@@ -642,7 +629,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
 
         return imported_names, defined_functions, defined_classes, used_names, import_lines, def_lines
 
-    def detect_dead_code(self, file_path: Path) -> Dict[str, Any]:
+    def detect_dead_code(self, file_path: Path) -> dict[str, Any]:
         """Analyze a single Python file for dead code."""
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -666,7 +653,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             'unused_classes': [{'name': n, 'line': def_lines.get(n)} for n in classes if n not in used and not n.startswith('_')],
         }
 
-    def scan_dead_code(self, directory: Path, recursive: bool = True) -> Dict[str, Any]:
+    def scan_dead_code(self, directory: Path, recursive: bool = True) -> dict[str, Any]:
         """
         SUPPLEMENTED FROM DeadCodeDetectorAgent — merged 2025-12-30
 
@@ -706,7 +693,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
 
         return results
 
-    def prune_dead_code(self, file_path: Path, dry_run: bool = True) -> Dict[str, Any]:
+    def prune_dead_code(self, file_path: Path, dry_run: bool = True) -> dict[str, Any]:
         """
         SUPPLEMENTED FROM DeadCodePrunerAgent — merged 2025-12-30
 

@@ -7,12 +7,11 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +24,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
     """
 
     debug_mode: bool = False
-    enabled_rules: List[str] = field(default_factory=lambda: [
+    enabled_rules: list[str] = field(default_factory=lambda: [
         "secret_detection",
         "config_validation",
         "policy_enforcement",
@@ -36,7 +35,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
         self.checks_executed = 0
         self.violations_found = 0
 
-    async def validate_config(self, config: Dict[str, Any]) -> Dict[str, Any]:
+    async def validate_config(self, config: dict[str, Any]) -> dict[str, Any]:
         """Validate configuration against security rules."""
         logger.info(f"[{self.name}] Validating configuration")
 
@@ -69,7 +68,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
                 "error": str(e),
             }
 
-    async def _apply_rule(self, rule: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    async def _apply_rule(self, rule: str, config: dict[str, Any]) -> dict[str, Any]:
         """Apply a specific validation rule."""
         if rule == "secret_detection":
             return self._detect_secrets(config)
@@ -79,7 +78,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
             return self._enforce_policies(config)
         return {"valid": True}
 
-    def _detect_secrets(self, config: Dict[str, Any]) -> Dict[str, Any]:
+    def _detect_secrets(self, config: dict[str, Any]) -> dict[str, Any]:
         """Detect exposed secrets in configuration."""
         violations = []
         secret_patterns = {
@@ -104,7 +103,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
             "violations": violations,
         }
 
-    def _validate_config_structure(self, config: Dict[str, Any]) -> Dict[str, Any]:
+    def _validate_config_structure(self, config: dict[str, Any]) -> dict[str, Any]:
         """Validate configuration structure and required fields."""
         violations = []
 
@@ -129,7 +128,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
             "violations": violations,
         }
 
-    def _enforce_policies(self, config: Dict[str, Any]) -> Dict[str, Any]:
+    def _enforce_policies(self, config: dict[str, Any]) -> dict[str, Any]:
         """Enforce security policies on configuration."""
         violations = []
 
@@ -161,7 +160,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
         return True
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"violations_fixed": 0, "skipped": 0, "parent": result}

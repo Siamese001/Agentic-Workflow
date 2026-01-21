@@ -5,15 +5,19 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import ast
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any
+
+from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.decorators import standard_heal
+
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -33,7 +37,7 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     """
     MIN_DOCSTRING: str = "'''Brief description of functionality and purpose.'''"
 
-    def __init__(self, ctx: Any, project_root: Optional[str] = None) -> None:
+    def __init__(self, ctx: Any, project_root: str | None = None) -> None:
         """
         Initialize with mandatory ctx for sovereign operation.
 
@@ -49,7 +53,7 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         self.ctx = ctx
         self.project_root = project_root
 
-    async def execute(self, file_path: str) -> Dict[str, Any]:
+    async def execute(self, file_path: str) -> dict[str, Any]:
         """
         Execute method for validator compatibility.
 
@@ -61,7 +65,7 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         """
         return await self.heal_violation(Path(file_path), self.ctx)
 
-    async def heal_violation(self, file_path: Path, ctx: Optional[Any] = None) -> Dict[str, Any]:
+    async def heal_violation(self, file_path: Path, ctx: Any | None = None) -> dict[str, Any]:
         """
         Per-file healing: add missing docstrings.
 
@@ -80,7 +84,7 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             if not ast.get_docstring(tree):
                 needs_docstring.append(('module', 0))
             for node in ast.walk(tree):
-                if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                if isinstance(node, ast.ClassDef | ast.FunctionDef | ast.AsyncFunctionDef):
                     if node.name.startswith('_'):
                         continue
                     if ast.get_docstring(node) is None:
@@ -120,7 +124,7 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Autonomous docstring compliance enforcement."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

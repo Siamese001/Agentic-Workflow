@@ -32,9 +32,9 @@ def test_tc35_memory_manager_discovery_integrity():
     print("TC-35: MemoryManagerAgent Discovery Integrity")
     print("="*60)
 
-    from agentic_core.L4_state.ValidationContext.MemoryManagerAgent import MemoryManagerAgent
     import tempfile
-    import json
+
+    from agentic_core.L4_state.ValidationContext.MemoryManagerAgent import MemoryManagerAgent
 
     # Create a temporary memory directory
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -72,10 +72,10 @@ def test_tc35_memory_manager_discovery_integrity():
         loaded = agent.load_validation_results(session_id="test_session")
 
         if loaded.get("test") != "data":
-            print(f"❌ FAIL: Failed to load validation results")
+            print("❌ FAIL: Failed to load validation results")
             return False
 
-        print(f"   Validation results loaded correctly ✓")
+        print("   Validation results loaded correctly ✓")
 
         # Test cleanup (uses get_json_files internally)
         agent.cleanup_old_memories(days=0)  # Should clean up all
@@ -121,7 +121,7 @@ def test_tc36_legacy_extraction_parity():
             print(f"      rglob calls: {rglob_count}")
 
             if not has_ssot_import:
-                print(f"      ❌ Missing ssot_discovery import")
+                print("      ❌ Missing ssot_discovery import")
                 all_use_ssot = False
 
             if rglob_count > 0:
@@ -157,7 +157,7 @@ def test_tc37_sub_200_achievement():
     total_count, offenders = scan_for_rglob_usage(agentic_core)
 
     print(f"   Current rglob/glob count: {total_count}")
-    print(f"   Target: < 200")
+    print("   Target: < 200")
 
     # Phase 6.3 baseline was 227
     baseline = 227
@@ -172,7 +172,7 @@ def test_tc37_sub_200_achievement():
 
     # Show top offenders
     if offenders:
-        print(f"   Top 5 remaining offenders:")
+        print("   Top 5 remaining offenders:")
         for offender in offenders[:5]:
             print(f"      - {Path(offender['file']).name}: {offender['count']} calls")
 
@@ -271,8 +271,8 @@ def main():
     if core_passed == 3:
         print("✅ 100% PASS - All Phase 6.4 Zero-Loss tests passed!")
         print("\nPhase 6.4 Sub-200 rglob Purge is verified.")
-        print(f"\n🎯 ACHIEVEMENT: rglob count reduced from 227 to 199 (28 calls, 12.3% reduction)")
-        print(f"🏆 SUB-200 TARGET ACHIEVED!")
+        print("\n🎯 ACHIEVEMENT: rglob count reduced from 227 to 199 (28 calls, 12.3% reduction)")
+        print("🏆 SUB-200 TARGET ACHIEVED!")
         return 0
     else:
         print(f"❌ FAIL - {3 - core_passed} core test(s) failed")

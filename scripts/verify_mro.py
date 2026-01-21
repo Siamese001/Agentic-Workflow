@@ -33,7 +33,7 @@ def print_mro(agent_class, agent_name: str):
     has_mcp = any('MCPHardened' in cls.__name__ for cls in mro)
     has_testing = any('SubatomicTesting' in cls.__name__ for cls in mro)
 
-    print(f"\nInfrastructure Components:")
+    print("\nInfrastructure Components:")
     print(f"  InfrastructureMixin: {'✅' if has_infra else '❌'}")
     print(f"  HealerMixin: {'✅' if has_healer else '❌'}")
     print(f"  MCPHardenedMixin: {'✅' if has_mcp else '❌'}")

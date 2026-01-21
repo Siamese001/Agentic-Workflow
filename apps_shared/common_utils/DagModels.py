@@ -1,18 +1,17 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict
 
 # from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
-async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:
+async def _noop_node(ctx: dict[str, object]) -> dict[str, object]:
     ctx = dict(ctx)
     ctx.setdefault("steps", []).append("noop")
     return ctx
 
 
-async def _set_value(ctx: Dict[str, object]) -> Dict[str, object]:
+async def _set_value(ctx: dict[str, object]) -> dict[str, object]:
     ctx = dict(ctx)
     ctx["value"] = 42
     return ctx

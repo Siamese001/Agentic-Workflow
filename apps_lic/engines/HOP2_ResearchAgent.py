@@ -8,23 +8,20 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from typing import Dict, List, Any, Optional
 from pathlib import Path
+from typing import Any
 
-# Core infrastructure
-from state_manager_LIC import StateManager, StateValidator
-from memory_LIC import VectorMemoryStore
 from llm_clients import GeminiLLMClient
-from retrieval_clients import GoogleSearchClient
-from tools_LIC import CodeInterpreterTool, ValidationToolkit
-from utils_LIC import CircuitBreaker
+from memory_LIC import VectorMemoryStore
 
 # Models
-from models_LIC import (
-    OutreachMission, Route, Archetype, FactualGapError,
-    FailureClassifier, ValidationSeverity
-)
+from models_LIC import FactualGapError, OutreachMission
+from retrieval_clients import GoogleSearchClient
 
+# Core infrastructure
+from state_manager_LIC import StateManager
+from tools_LIC import CodeInterpreterTool, ValidationToolkit
+from utils_LIC import CircuitBreaker
 
 # ============================================================================
 # HOP-2: RESEARCH AGENT (Refactored from S2_SupervisorAgent)
@@ -46,7 +43,7 @@ class HOP2_ResearchAgent:
 
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: dict[str, Any],
         memory_store: VectorMemoryStore,
         search_client: GoogleSearchClient,
         llm_client: GeminiLLMClient
@@ -103,7 +100,7 @@ class HOP2_ResearchAgent:
             final_context = cached_context
         else:
             print(f"  ⚠ Cache has gaps: {gaps}")
-            print(f"\nSTEP 3: Running fallback RAG to fill gaps...")
+            print("\nSTEP 3: Running fallback RAG to fill gaps...")
 
             # STEP 3: Fallback RAG (only if needed)
             fallback_context = await self._run_fallback_rag(company, recipient, gaps)
@@ -127,7 +124,7 @@ class HOP2_ResearchAgent:
         # Write to state
         output_path = state_mgr.write_state("HOP-2", output_state)
 
-        print(f"\n✓ Research Complete")
+        print("\n✓ Research Complete")
         print(f"  Total sources: {output_state['total_sources']}")
         print(f"  Signal score: {output_state['signal_score']:.2f}")
         print(f"  Cache hit: {output_state['cache_hit']}\n")
@@ -139,7 +136,7 @@ class HOP2_ResearchAgent:
         company: str,
         recipient: str,
         archetype: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Query vector store for pre-computed intelligence"""
 
         # Query by company
@@ -187,7 +184,7 @@ class HOP2_ResearchAgent:
             "cache_confidence": cache_confidence
         }
 
-    def _critique_cache(self, cached_context: Dict[str, Any]) -> tuple[bool, List[str]]:
+    def _critique_cache(self, cached_context: dict[str, Any]) -> tuple[bool, list[str]]:
         """Evaluate if cached context is sufficient"""
 
         min_confidence = self.critique_params["min_confidence_score"]
@@ -228,8 +225,8 @@ class HOP2_ResearchAgent:
         self,
         company: str,
         recipient: str,
-        gaps: List[str]
-    ) -> Dict[str, Any]:
+        gaps: list[str]
+    ) -> dict[str, Any]:
         """Run fallback RAG only for identified gaps"""
 
         fallback_results = []
@@ -259,9 +256,9 @@ class HOP2_ResearchAgent:
 
     def _merge_contexts(
         self,
-        cached: Dict[str, Any],
-        fallback: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        cached: dict[str, Any],
+        fallback: dict[str, Any]
+    ) -> dict[str, Any]:
         """Merge cached and fallback contexts"""
 
         merged = cached.copy()
@@ -272,7 +269,7 @@ class HOP2_ResearchAgent:
 
         return merged
 
-    def _calculate_signal_score(self, results: List[Dict[str, Any]]) -> float:
+    def _calculate_signal_score(self, results: list[dict[str, Any]]) -> float:
         """Calculate aggregate signal quality score"""
         if not results:
             return 0.0
@@ -283,9 +280,9 @@ class HOP2_ResearchAgent:
 
     def _calculate_cache_confidence(
         self,
-        company_results: List[Dict],
-        exec_results: List[Dict],
-        strategic_briefs: List[Dict]
+        company_results: list[dict],
+        exec_results: list[dict],
+        strategic_briefs: list[dict]
     ) -> float:
         """Calculate confidence in cached data"""
 
@@ -304,9 +301,9 @@ class HOP2_ResearchAgent:
 
     def _format_search_results(
         self,
-        results: List[Dict],
+        results: list[dict],
         source_type: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Format search results for consistency"""
 
         formatted = []
@@ -347,7 +344,7 @@ class HOP5_GenerationAgent:
 
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: dict[str, Any],
         llm_client: GeminiLLMClient,
         tool: CodeInterpreterTool
     ):
@@ -364,7 +361,7 @@ class HOP5_GenerationAgent:
         self.tool = tool
 
         # Load prompts from config
-        with open("config/prompts_LIC.json", 'r') as f:
+        with open("config/prompts_LIC.json") as f:
             self.prompts = json.load(f)
 
     async def execute(
@@ -449,7 +446,7 @@ class HOP5_GenerationAgent:
         # Write to state
         output_path = state_mgr.write_state("HOP-5", output_state)
 
-        print(f"\n✓ Generation Complete")
+        print("\n✓ Generation Complete")
         print(f"  Selected draft: {selected_candidate['word_count']} words")
         print(f"  Temperature: {temperature:.2f}\n")
 
@@ -457,9 +454,9 @@ class HOP5_GenerationAgent:
 
     async def _generate_single_draft(
         self,
-        research: Dict[str, Any],
-        grounding: Dict[str, Any],
-        scaffold: Dict[str, Any],
+        research: dict[str, Any],
+        grounding: dict[str, Any],
+        scaffold: dict[str, Any],
         temperature: float
     ) -> str:
         """Generate a single message draft"""
@@ -505,9 +502,9 @@ class HOP5_GenerationAgent:
 
     def _score_candidates_with_tool(
         self,
-        candidates: List[Dict[str, Any]],
-        research: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        candidates: list[dict[str, Any]],
+        research: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """
         Score candidates using CodeInterpreterTool (Fast Loop)
 
@@ -533,7 +530,7 @@ class HOP5_GenerationAgent:
 
         return scored
 
-    def _extract_sender_summary(self, grounding: Dict[str, Any]) -> str:
+    def _extract_sender_summary(self, grounding: dict[str, Any]) -> str:
         """Extract top 5 sender capabilities"""
 
         sender_grounding = grounding.get("sender_grounding", {})
@@ -552,7 +549,7 @@ class HOP5_GenerationAgent:
 
         return "\n".join(summary_lines) if summary_lines else "- Professional with relevant experience"
 
-    def _extract_recipient_summary(self, research: Dict[str, Any], strategic_brief: str) -> str:
+    def _extract_recipient_summary(self, research: dict[str, Any], strategic_brief: str) -> str:
         """Extract top 5 recipient priorities"""
 
         summary_lines = []
@@ -569,10 +566,10 @@ class HOP5_GenerationAgent:
 
         return "\n".join(summary_lines) if summary_lines else "- Professional at target company"
 
-    def _load_voice_profile(self) -> Dict[str, Any]:
+    def _load_voice_profile(self) -> dict[str, Any]:
         """Load sender voice profile"""
         if os.path.exists("sender_voice_profile.json"):
-            with open("sender_voice_profile.json", 'r') as f:
+            with open("sender_voice_profile.json") as f:
                 return json.load(f)
         return {}
 
@@ -603,7 +600,7 @@ class HOP6_ValidationAgent:
 
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: dict[str, Any],
         toolkit: ValidationToolkit
     ):
         """
@@ -617,7 +614,7 @@ class HOP6_ValidationAgent:
         self.toolkit = toolkit
 
         # Load validation rules from config
-        with open("config/validator_rules_LIC.json", 'r') as f:
+        with open("config/validator_rules_LIC.json") as f:
             self.rules = json.load(f)
 
     async def execute(self, state_mgr: StateManager) -> str:
@@ -668,9 +665,9 @@ class HOP6_ValidationAgent:
         output_path = state_mgr.write_state("HOP-6", output_state)
 
         if passed:
-            print(f"\n✓ Validation PASSED")
+            print("\n✓ Validation PASSED")
         else:
-            print(f"\n✗ Validation FAILED")
+            print("\n✗ Validation FAILED")
 
         print(f"  Critical: {critical_issues}")
         print(f"  High: {high_issues}")
@@ -681,10 +678,10 @@ class HOP6_ValidationAgent:
     def _validate_draft(
         self,
         text: str,
-        draft: Dict[str, Any],
-        research: Dict[str, Any],
-        grounding: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        draft: dict[str, Any],
+        research: dict[str, Any],
+        grounding: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Run all validation rules from config"""
 
         results = []
@@ -838,7 +835,7 @@ class HOP8_QAReportAgent:
     Output: outputs/QA_Report.md
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize with externalized config
 
@@ -887,16 +884,16 @@ class HOP8_QAReportAgent:
 
         return str(report_path)
 
-    def _generate_markdown_report(self, states: Dict[str, Any], mission_id: str) -> str:
+    def _generate_markdown_report(self, states: dict[str, Any], mission_id: str) -> str:
         """Generate comprehensive markdown report"""
 
         lines = []
 
         # Header
-        lines.append(f"# LIC v13.0 QA Report")
+        lines.append("# LIC v13.0 QA Report")
         lines.append(f"\n**Mission ID**: `{mission_id}`")
         lines.append(f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        lines.append(f"\n---\n")
+        lines.append("\n---\n")
 
         # 1. Executive Summary
         lines.append("## 1. Executive Summary\n")
@@ -997,7 +994,7 @@ class HOP8_QAReportAgent:
 
         return "\n".join(lines)
 
-    def _calculate_quality_score(self, states: Dict[str, Any]) -> float:
+    def _calculate_quality_score(self, states: dict[str, Any]) -> float:
         """Calculate overall quality score"""
 
         research = states.get("HOP-2", {})
@@ -1057,7 +1054,7 @@ class HOPOrchestrator:
         """Initialize orchestrator with all dependencies"""
 
         # Load configuration
-        with open("config/agent_specs_LIC.json", 'r') as f:
+        with open("config/agent_specs_LIC.json") as f:
             self.config = json.load(f)
 
         # Initialize circuit breaker
@@ -1102,7 +1099,7 @@ class HOPOrchestrator:
 
         print(f"[HOPOrchestrator] Initialized with {len(self.agents)} agents")
 
-    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def execute_workflow(self, mission: OutreachMission) -> dict[str, Any]:
         """
         Execute complete workflow using HOP architecture
 
@@ -1113,7 +1110,7 @@ class HOPOrchestrator:
             Workflow result dictionary
         """
         print(f"\n{'='*80}")
-        print(f"HOP WORKFLOW ORCHESTRATOR v13.0")
+        print("HOP WORKFLOW ORCHESTRATOR v13.0")
         print(f"Mission ID: {mission.mission_id}")
         print(f"{'='*80}")
 
@@ -1176,7 +1173,7 @@ class HOPOrchestrator:
                             print(f"\n✗ Max creative retries ({max_creative_retries}) reached - HALTING")
                             raise ValueError("Max creative retries exceeded")
 
-                        print(f"\n⚠ Creative failure detected")
+                        print("\n⚠ Creative failure detected")
                         print(f"→ Retrying HOP-5 with escalated temperature (attempt {creative_retry_count}/{max_creative_retries})")
 
                         # Escalate temperature
@@ -1218,7 +1215,7 @@ class HOPOrchestrator:
         draft = generation.get("selected_draft", {})
 
         print(f"\n{'='*80}")
-        print(f"WORKFLOW COMPLETE")
+        print("WORKFLOW COMPLETE")
         print(f"Status: {'PASS' if passed else 'FAIL'}")
         print(f"Time: {workflow_time:.1f}s")
         print(f"Factual loops: {factual_loop_count}")

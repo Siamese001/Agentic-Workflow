@@ -7,11 +7,10 @@ termination point of the heal chain.
 """
 import json
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
 discovery_path = Path('agent_discovery_full.json')
-with open(discovery_path, 'r') as f:
+with open(discovery_path) as f:
     agents = json.load(f)
 
 print(f"Total agents: {len(agents)}")
@@ -33,6 +32,6 @@ with open(discovery_path, 'w') as f:
     json.dump(agents, f, indent=2)
 
 print(f"\n✅ Updated all {len(agents)} agents:")
-print(f"   - invocation='Yes'")
-print(f"   - has_tests=True")
+print("   - invocation='Yes'")
+print("   - has_tests=True")
 print(f"Saved to: {discovery_path}")

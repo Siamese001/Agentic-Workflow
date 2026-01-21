@@ -18,25 +18,13 @@ import sys
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
-from agentic_core.utils.security import safe_execute
-from typing import List, Optional, Tuple
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.utils.security import safe_execute
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
@@ -62,14 +50,14 @@ logging.basicConfig(
 log = logging.getLogger("smart_discovery")
 
 
-def _scan_python_files() -> List[Path]:
+def _scan_python_files() -> list[Path]:
     """Return list of all non-excluded .py files."""
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     return list(get_python_files(PROJECT_ROOT))
 
 
-def get_json_mtime() -> Optional[datetime]:
+def get_json_mtime() -> datetime | None:
     """Get modification time of discovery JSON."""
     if not DISCOVERY_JSON.exists():
         return None
@@ -94,7 +82,7 @@ def get_latest_source_mtime() -> datetime:
     return latest if latest != datetime.min else datetime.now()
 
 
-def is_discovery_stale() -> Tuple[bool, str]:
+def is_discovery_stale() -> tuple[bool, str]:
     """
     Check if discovery JSON needs refresh.
 
@@ -121,7 +109,7 @@ def is_discovery_stale() -> Tuple[bool, str]:
     return False, "JSON is fresh"
 
 
-def get_changed_files() -> List[Path]:
+def get_changed_files() -> list[Path]:
     """Return list of changed files since last manifest (for logging only)."""
     if not MANIFEST_JSON.exists():
         return _scan_python_files()  # Force full if no manifest

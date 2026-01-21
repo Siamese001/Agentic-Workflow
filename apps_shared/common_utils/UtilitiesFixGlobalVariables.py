@@ -1,15 +1,16 @@
 from __future__ import annotations
+
 """
 Fix global variable violations by replacing with manager pattern
 """
 import os
 import re
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 def fix_global_variables(file_path: str) -> Any:
     """Fix global variables in a Python file"""
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         content: Any = f.read()
     original: Any = content
     pattern: Any = '(_\\w+)\\s*=\\s*None\\s*\\n\\s*\\n\\s*def\\s+get_\\w+\\([^)]*\\):\\s*\\n\\s*global\\s+\\1\\s*\\n\\s*if\\s+\\1\\s+is\\s+None:\\s*\\n\\s+\\1\\s*=\\s*\\w+\\([^)]*\\)\\s*\\n\\s*return\\s+\\1'

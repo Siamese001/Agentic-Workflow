@@ -9,14 +9,13 @@ import asyncio
 import logging
 import time
 import uuid
-from enum import Enum
-from typing import Dict, Any, Optional, List, Callable
-from dataclasses import dataclass, field
+from collections.abc import Callable
 from datetime import datetime
+from typing import Any
+
 from pydantic import BaseModel, Field, validator
 
-from .subatomic_hop import SubatomicHop, HopState, MicroStage
-from .dynamic_dag_manager import DAGManager
+from .subatomic_hop import HopState, MicroStage, SubatomicHop
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +27,7 @@ class NegotiationMessage(BaseModel):
     to_hop: str
     message_type: str  # "CLARIFICATION_REQUEST", "CHANGE_REQUEST", "REJECTION"
     payload: str
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
     timestamp: datetime = Field(default_factory=datetime.now)
     priority: int = Field(default=0, ge=0, le=10)
 
@@ -43,12 +42,12 @@ class NegotiationMessage(BaseModel):
 class NegotiationRound(BaseModel):
     """A round of negotiation between nodes."""
     round_id: str
-    participants: List[str]
-    messages: List[NegotiationMessage] = Field(default_factory=list)
+    participants: list[str]
+    messages: list[NegotiationMessage] = Field(default_factory=list)
     start_time: datetime = Field(default_factory=datetime.now)
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
     status: str = "ACTIVE"  # ACTIVE, RESOLVED, FAILED
-    resolution: Optional[str] = None
+    resolution: str | None = None
 
 
 class NegotiationConfig(BaseModel):
@@ -64,24 +63,24 @@ class NegotiationResult(BaseModel):
     """Result of a negotiation."""
     success: bool
     resolution_type: str  # "AGREEMENT", "COMPROMISE", "ESCALATION", "TIMEOUT"
-    final_output: Optional[Any] = None
-    negotiation_log: List[str] = Field(default_factory=list)
+    final_output: Any | None = None
+    negotiation_log: list[str] = Field(default_factory=list)
     rounds_completed: int = 0
 
 
 class NodeNegotiator:
     """Manages negotiation between nodes."""
 
-    def __init__(self, config: Optional[NegotiationConfig] = None):
+    def __init__(self, config: NegotiationConfig | None = None):
         """Initialize the Node Negotiator.
 
         Args:
             config: Optional configuration
         """
         self.config = config or NegotiationConfig()
-        self.active_negotiations: Dict[str, NegotiationRound] = {}
-        self.negotiation_history: List[NegotiationRound] = []
-        self.message_handlers: Dict[str, Callable] = {}
+        self.active_negotiations: dict[str, NegotiationRound] = {}
+        self.negotiation_history: list[NegotiationRound] = []
+        self.message_handlers: dict[str, Callable] = {}
 
         # Statistics
         self.stats = {
@@ -110,7 +109,7 @@ class NodeNegotiator:
         to_hop_id: str,
         message_type: str,
         payload: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
         priority: int = 0
     ) -> bool:
         """Send feedback from one node to another.
@@ -163,7 +162,7 @@ class NodeNegotiator:
         upstream_hop_id: str,
         requested_change: str,
         reason: str,
-        context: Optional[Dict[str, Any]] = None
+        context: dict[str, Any] | None = None
     ) -> NegotiationResult:
         """Request a change from an upstream node.
 
@@ -350,7 +349,7 @@ class NodeNegotiator:
 
         return any(indicator in payload_lower for indicator in positive_indicators)
 
-    def _get_active_hop(self, hop_id: str) -> Optional[SubatomicHop]:
+    def _get_active_hop(self, hop_id: str) -> SubatomicHop | None:
         """Get an active hop by ID.
 
         In a real implementation, this would query the DAGManager.
@@ -358,13 +357,13 @@ class NodeNegotiator:
         # Placeholder - would be implemented with actual hop registry
         return None
 
-    def get_negotiation_history(self, limit: Optional[int] = None) -> List[NegotiationRound]:
+    def get_negotiation_history(self, limit: int | None = None) -> list[NegotiationRound]:
         """Get negotiation history."""
         if limit:
             return self.negotiation_history[-limit:]
         return self.negotiation_history
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get negotiation statistics."""
         return {
             **self.stats,
@@ -377,7 +376,7 @@ class NodeNegotiator:
 
 
 # Global instance
-_node_negotiator: Optional[NodeNegotiator] = None
+_node_negotiator: NodeNegotiator | None = None
 
 
 def get_node_negotiator(**kwargs) -> NodeNegotiator:
@@ -468,7 +467,7 @@ class NegotiatingHop(SubatomicHop):
     async def evaluate_downstream_feedback(
         self,
         downstream_output: Any,
-        expected_criteria: List[str]
+        expected_criteria: list[str]
     ) -> bool:
         """Evaluate if downstream feedback requires negotiation.
 

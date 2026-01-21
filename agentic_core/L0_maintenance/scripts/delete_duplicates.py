@@ -8,8 +8,8 @@ Delete duplicate files based on scan results.
 # Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_lic']. Move shared logic to apps_shared or sovereign utils.
 # Removed: apps_lic.engines.DuplicateCodeDetectorAgent
 
-import asyncio
 import argparse
+import asyncio
 import sys
 from pathlib import Path
 

@@ -5,11 +5,12 @@ Comprehensive validation to prevent data sourcing issues.
 Run this BEFORE test_mcp_hardening_all_territories.py
 """
 import json
-import sys
 import re
 import subprocess
-from pathlib import Path
+import sys
 from collections import defaultdict
+from pathlib import Path
+
 from agentic_core.utils.security import safe_execute
 
 project_root = Path(__file__).parent.parent
@@ -23,10 +24,17 @@ def validate_ssot_compliance():
     # Import SSOT column names
     sys.path.insert(0, str(project_root / "scripts"))
     from dashboard_ssot_definitions import (
-        COL_HEAL_CAP, COL_INVOCATION, COL_TEST,
-        COL_HARDENED, COL_TYPED, COL_DOCUMENTED,
-        COL_SCHEMA, COL_CANONICAL_INHERITANCE,
-        COL_COMPLEXITY_HEALTH, COL_CODE_QUALITY, COL_HEALTH
+        COL_CANONICAL_INHERITANCE,
+        COL_CODE_QUALITY,
+        COL_COMPLEXITY_HEALTH,
+        COL_DOCUMENTED,
+        COL_HARDENED,
+        COL_HEAL_CAP,
+        COL_HEALTH,
+        COL_INVOCATION,
+        COL_SCHEMA,
+        COL_TEST,
+        COL_TYPED,
     )
 
     required_columns = [
@@ -78,9 +86,13 @@ def validate_field_name_consistency():
     # Import SSOT field names
     sys.path.insert(0, str(project_root / "scripts"))
     from dashboard_ssot_definitions import (
-        FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS,
-        FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
-        FIELD_CYCLOMATIC_COMPLEXITY
+        FIELD_CYCLOMATIC_COMPLEXITY,
+        FIELD_DOCUMENTED_PCT,
+        FIELD_HAS_HEALING,
+        FIELD_HAS_TESTS,
+        FIELD_INVOCATION,
+        FIELD_SCHEMA_STRICTNESS,
+        FIELD_TYPED_PCT,
     )
 
     ssot_fields = [
@@ -122,11 +134,23 @@ def validate_calculation_integrity():
     # Import SSOT calculation functions and column names
     sys.path.insert(0, str(project_root / "scripts"))
     from dashboard_ssot_definitions import (
-        calc_heal_cap_pct, calc_invocation_pct, calc_test_pct,
-        calc_hardened_pct, calc_avg_cc, calc_complexity_health,
-        calc_typed_pct, calc_documented_pct, calc_canonical_inheritance_pct,
-        COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
-        COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_CANONICAL_INHERITANCE
+        COL_CANONICAL_INHERITANCE,
+        COL_COMPLEXITY_HEALTH,
+        COL_DOCUMENTED,
+        COL_HARDENED,
+        COL_HEAL_CAP,
+        COL_INVOCATION,
+        COL_TEST,
+        COL_TYPED,
+        calc_avg_cc,
+        calc_canonical_inheritance_pct,
+        calc_complexity_health,
+        calc_documented_pct,
+        calc_hardened_pct,
+        calc_heal_cap_pct,
+        calc_invocation_pct,
+        calc_test_pct,
+        calc_typed_pct,
     )
 
     # Load source data
@@ -233,7 +257,7 @@ def validate_territory_count():
         failures.append(f"Extra in dashboard: {extra}")
 
     if failures:
-        print(f"\n❌ TERRITORY COUNT MISMATCH:")
+        print("\n❌ TERRITORY COUNT MISMATCH:")
         for f in failures:
             print(f"   {f}")
         return False
@@ -287,7 +311,7 @@ def validate_data_types():
             print(f"   ... and {len(failures) - 10} more")
         return False
     else:
-        print(f"\n✅ PASSED: All fields have correct data types")
+        print("\n✅ PASSED: All fields have correct data types")
         print(f"   Validated: Territory (str), Total (int), {len(percentage_fields)} percentage fields (numeric)")
         return True
 
@@ -338,7 +362,7 @@ def validate_expected_ranges():
         if len(warnings) > 10:
             print(f"   ... and {len(warnings) - 10} more")
     else:
-        print(f"\n✅ PASSED: All values within expected ranges")
+        print("\n✅ PASSED: All values within expected ranges")
 
     # Always return True - these are warnings, not failures
     return True
@@ -367,23 +391,23 @@ def validate_snapshot():
             baseline_hash = f.read().strip()
 
         if current_hash != baseline_hash:
-            print(f"\n⚠️  SNAPSHOT MISMATCH: Integrity Deviation Detected")
+            print("\n⚠️  SNAPSHOT MISMATCH: Integrity Deviation Detected")
             print(f"   Current SHA-256:  {current_hash[:32]}...")
             print(f"   Baseline SHA-256: {baseline_hash[:32]}...")
 
             # Hardening: Check if the deviation is structural (agent counts)
             # (Implementation of metadata comparison)
-            print(f"\n   This is expected if you intentionally regenerated data.")
-            print(f"   Review changes and update baseline if correct.")
+            print("\n   This is expected if you intentionally regenerated data.")
+            print("   Review changes and update baseline if correct.")
 
             # Show what changed
             lines_current = current_content.split('\n')
             print(f"\n   Current data: {len(lines_current)} lines")
         else:
-            print(f"\n✅ PASSED: Dashboard data matches baseline")
+            print("\n✅ PASSED: Dashboard data matches baseline")
             print(f"   Hash: {current_hash[:16]}...")
     else:
-        print(f"\n📝 BASELINE CREATED: First run, creating baseline")
+        print("\n📝 BASELINE CREATED: First run, creating baseline")
         print(f"   Hash: {current_hash[:16]}...")
 
     # Update baseline
@@ -400,7 +424,6 @@ def validate_performance():
     print("="*70)
 
     import time
-    import subprocess
 
     print("\n   Benchmarking data generation script...")
 
@@ -434,16 +457,16 @@ def validate_performance():
             else:
                 print(f"\n❌ SLOW: Data generation took {elapsed:.2f}s")
                 print(f"   Performance: Too slow (> {THRESHOLD_ERROR}s)")
-                print(f"   Consider optimization")
+                print("   Consider optimization")
                 return False
         else:
             # Check if it's just a Unicode print issue
             if "Dashboard data written to" in result.stdout or len(result.stdout) > 100:
                 print(f"\n✅ PASSED: Data generation completed in {elapsed:.2f}s")
-                print(f"   (Minor Unicode output issue ignored)")
+                print("   (Minor Unicode output issue ignored)")
                 return True
             else:
-                print(f"\n❌ FAILED: Data generation script failed")
+                print("\n❌ FAILED: Data generation script failed")
                 if result.stderr:
                     print(f"   Error: {result.stderr[:200]}")
                 return False
@@ -451,7 +474,7 @@ def validate_performance():
         return True
 
     except subprocess.TimeoutExpired:
-        print(f"\n❌ TIMEOUT: Data generation exceeded 30s")
+        print("\n❌ TIMEOUT: Data generation exceeded 30s")
         return False
     except Exception as e:
         print(f"\n⚠️  BENCHMARK SKIPPED: {e}")

@@ -1,20 +1,23 @@
 from __future__ import annotations
+
 """
 Sovereign Core Embedder – Primary Embedding Engine
 Uses OpenAI text-embedding-3-large (SOTA as of Dec 2025).
 Configurable dimensions for Pinecone cost/accuracy trade-off.
 SSOT for all embedding calls in the agentic core.
 """
-from typing import Any, List
 import hashlib
+from typing import Any
+
 import openai
 from cachetools import LRUCache
+
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # Global deterministic embedding cache (LRU in-memory; extend to diskcache if needed)
 _embedding_cache: LRUCache = LRUCache(maxsize=10000)  # ~10k entries × 6KB ≈ 60MB RAM
 
-def get_embedding(text: str, model: str=config.DEFAULT_EMBEDDING_MODEL, dimensions: int=config.DEFAULT_EMBEDDING_DIM) -> List[float]:
+def get_embedding(text: str, model: str=config.DEFAULT_EMBEDDING_MODEL, dimensions: int=config.DEFAULT_EMBEDDING_DIM) -> list[float]:
     """
     Cached sovereign embedding function – used by bootstrap, healers, and RAG pipelines.
 
@@ -28,7 +31,7 @@ def get_embedding(text: str, model: str=config.DEFAULT_EMBEDDING_MODEL, dimensio
 
     # Cache key: hash of text + model + dimensions
     cache_key = hashlib.sha256(
-        f"{normalized_text}{model}{dimensions}".encode('utf-8')
+        f"{normalized_text}{model}{dimensions}".encode()
     ).hexdigest()
 
     # Cache hit

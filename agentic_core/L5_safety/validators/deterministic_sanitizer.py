@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L6 Deterministic Pre-Flight Sanitation
 
@@ -12,10 +13,11 @@ import re
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any
+
 from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 from agentic_core.utils.security import safe_execute
+
 Logger: Any = logging.getLogger(__name__)
 
 class DeterministicCleaner:
@@ -51,7 +53,7 @@ class DeterministicCleaner:
         except (subprocess.CalledProcessError, FileNotFoundError):
             return False
 
-    def deterministic_clean(self, code: str, file_path: Optional[str]=None) -> Tuple[str, bool]:
+    def deterministic_clean(self, code: str, file_path: str | None=None) -> tuple[str, bool]:
         """
         Apply deterministic cleaning to code.
 
@@ -96,15 +98,15 @@ class DeterministicCleaner:
         code = code.strip()
         return code
 
-    def _apply_isort(self, code: str, file_path: Optional[str]=None) -> str:
+    def _apply_isort(self, code: str, file_path: str | None=None) -> str:
         """Apply isort to sort imports."""
         try:
             with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
                 f.write(code)
                 temp_file = f.name
             try:
-                result = safe_execute(['isort', '--profile', 'black', temp_file], capture_output=True, text=True, check=True)
-                with open(temp_file, 'r') as f:
+                safe_execute(['isort', '--profile', 'black', temp_file], capture_output=True, text=True, check=True)
+                with open(temp_file) as f:
                     return f.read()
             finally:
                 os.unlink(temp_file)
@@ -112,7 +114,7 @@ class DeterministicCleaner:
             LOGGER.warning(f'isort failed: {e.stderr}')
             return code
 
-    def _apply_autopep8(self, code: str, file_path: Optional[str]=None) -> str:
+    def _apply_autopep8(self, code: str, file_path: str | None=None) -> str:
         """Apply autopep8 for PEP8 formatting."""
         try:
             result = safe_execute(['autopep8', '--', '-'], input=code, capture_output=True, text=True, check=True)
@@ -144,7 +146,7 @@ class CompliantFileWriter:
     Writes files with compliance checks and validation.
     """
 
-    def __init__(self, root_dir: Optional[str]=None):
+    def __init__(self, root_dir: str | None=None):
         """
         Initialize the compliant file writer.
 
@@ -204,8 +206,8 @@ class CompliantFileWriter:
         except Exception as e:
             LOGGER.error(f'Validation error: {e}')
             return False
-_cleaner: Optional[DeterministicCleaner] = None
-_writer: Optional[CompliantFileWriter] = None
+_cleaner: DeterministicCleaner | None = None
+_writer: CompliantFileWriter | None = None
 
 def get_deterministic_cleaner() -> DeterministicCleaner:
     """Get or create the global deterministic cleaner instance."""
@@ -214,14 +216,14 @@ def get_deterministic_cleaner() -> DeterministicCleaner:
         _cleaner = DeterministicCleaner()
     return _cleaner
 
-def get_compliant_writer(root_dir: Optional[str]=None) -> CompliantFileWriter:
+def get_compliant_writer(root_dir: str | None=None) -> CompliantFileWriter:
     """Get or create the global compliant file writer instance."""
     global _writer
     if _writer is None:
         _writer = CompliantFileWriter(root_dir)
     return _writer
 
-def deterministic_clean(code: str, file_path: Optional[str]=None) -> Tuple[str, bool]:
+def deterministic_clean(code: str, file_path: str | None=None) -> tuple[str, bool]:
     """
     Apply deterministic cleaning to code.
     Args:

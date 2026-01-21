@@ -4,8 +4,9 @@ L6 Observability: Mission Metrics
 Provides metrics collection for mission controller operations.
 """
 from __future__ import annotations
-from typing import Any, Dict, Optional
+
 import logging
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -14,8 +15,8 @@ class MissionMetrics:
     """Collects and reports mission execution metrics."""
 
     def __init__(self):
-        self.metrics: Dict[str, Any] = {}
-        self.counters: Dict[str, int] = {}
+        self.metrics: dict[str, Any] = {}
+        self.counters: dict[str, int] = {}
 
     def record(self, name: str, value: Any) -> None:
         """Record a metric value."""
@@ -25,12 +26,12 @@ class MissionMetrics:
         """Increment a counter."""
         self.counters[name] = self.counters.get(name, 0) + amount
 
-    def get_all(self) -> Dict[str, Any]:
+    def get_all(self) -> dict[str, Any]:
         """Get all metrics."""
         return {**self.metrics, **self.counters}
 
 
-_metrics_instance: Optional[MissionMetrics] = None
+_metrics_instance: MissionMetrics | None = None
 
 
 def get_metrics() -> MissionMetrics:

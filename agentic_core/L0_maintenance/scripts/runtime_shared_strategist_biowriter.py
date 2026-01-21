@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 """Strategist BioWriter - Placeholder file to pass Key 10."""
 
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 
 # NAMING FIXED: StrategistBioWriter → StrategistBioWriter
@@ -10,7 +11,7 @@ class StrategistBioWriter:
 
     def __init__(
         self: Any,
-        config: Dict,
+        config: dict,
         word_count_min: int,
         word_count_max: int,
         sentence_count_min: int,
@@ -23,6 +24,6 @@ class StrategistBioWriter:
         self.sentence_count_min = sentence_count_min
         self.sentence_count_max = sentence_count_max
 
-    def write_bio(self: Any, highlights: List[str]) -> str:
+    def write_bio(self: Any, highlights: list[str]) -> str:
         """Write bio."""
         return "Bio placeholder"

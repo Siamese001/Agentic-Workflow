@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L6 Conversational Repair & Multi-Agent Debate
 
@@ -7,7 +8,8 @@ discuss complex failures to reach consensus on fixes.
 """
 import json
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class ConversationalRepair:
@@ -29,7 +31,7 @@ class ConversationalRepair:
         self.max_rounds = 3
         self.specialists = {'sherlock': {'name': 'Sherlock', 'role': 'Root Cause Analysis', 'prompt_template': self._get_sherlock_prompt()}, 'safety': {'name': 'SafetyInspectorAgent', 'role': 'Security Review', 'prompt_template': self._get_safety_prompt()}, 'dependency': {'name': 'DependencySentinelAgent', 'role': 'Import Analysis', 'prompt_template': self._get_dependency_prompt()}, 'architecture': {'name': 'ArchitectureGovernor', 'role': 'Architecture Compliance', 'prompt_template': self._get_architecture_prompt()}}
 
-    async def debate_failure(self, failure_context: Dict[str, Any]) -> Dict[str, Any]:
+    async def debate_failure(self, failure_context: dict[str, Any]) -> dict[str, Any]:
         """
         Initiate multi-agent debate to resolve a failure.
 
@@ -39,7 +41,7 @@ class ConversationalRepair:
         Returns:
             Debate results including consensus fix
         """
-        LOGGER.info(f'🗣️  Initiating conversational repair for failure')
+        LOGGER.info('🗣️  Initiating conversational repair for failure')
         debate_log: Any = []
         specialist_responses: Any = {}
         LOGGER.info('Round 1: Initial specialist analysis')
@@ -66,7 +68,7 @@ class ConversationalRepair:
             LOGGER.warning('[!]  No consensus reached')
         return result
 
-    async def _query_specialist(self, specialist_id: str, failure_context: Dict[str, Any], previous_responses: List[str]) -> Dict[str, str]:
+    async def _query_specialist(self, specialist_id: str, failure_context: dict[str, Any], previous_responses: list[str]) -> dict[str, str]:
         """
         Query a specialist agent for analysis and proposal.
 
@@ -106,9 +108,9 @@ class ConversationalRepair:
             return f'Mock response for: {prompt[:50]}...'
         except Exception as e:
             LOGGER.error(f'LLM query failed: {e}')
-            return f'Error: Unable to query LLM'
+            return 'Error: Unable to query LLM'
 
-    def _extract_section(self, response: str, section: str) -> Optional[str]:
+    def _extract_section(self, response: str, section: str) -> str | None:
         """
         Extract a section from LLM response.
 
@@ -129,12 +131,12 @@ class ConversationalRepair:
                 if content:
                     section_lines.append(content)
             elif in_section and line.strip():
-                if any((line.strip().startswith(s) for s in ['ANALYSIS:', 'PROPOSAL:', 'CONSENSUS:'])):
+                if any(line.strip().startswith(s) for s in ['ANALYSIS:', 'PROPOSAL:', 'CONSENSUS:']):
                     break
                 section_lines.append(line.strip())
         return '\n'.join(section_lines) if section_lines else None
 
-    def _extract_code_block(self, response: str) -> Optional[str]:
+    def _extract_code_block(self, response: str) -> str | None:
         """
         Extract Python code block from response.
 
@@ -155,7 +157,7 @@ class ConversationalRepair:
             return match.group(1).strip()
         return None
 
-    def _build_consensus_prompt(self, specialist_responses: Dict[str, Dict[str, str]]) -> str:
+    def _build_consensus_prompt(self, specialist_responses: dict[str, dict[str, str]]) -> str:
         """
         Build prompt for consensus extraction.
 
@@ -189,7 +191,7 @@ class ConversationalRepair:
     def _get_architecture_prompt(self) -> str:
         """Get ArchitectureGovernor's compliance review prompt."""
         return 'You are ArchitectureGovernor, the Architecture Compliance specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from an architecture perspective:\n- Does this violate architectural rules?\n- Is the code properly structured?\n- Are naming conventions followed?\n- Is the file in the correct location?\n\nPROPOSAL:\nPropose a fix that maintains architectural integrity.\nEnsure compliance with all architectural laws.\n'
-_conversational_repair: Optional[ConversationalRepair] = None
+_conversational_repair: ConversationalRepair | None = None
 
 def get_conversational_repair() -> ConversationalRepair:
     """Get or create the global ConversationalRepair instance."""
@@ -209,7 +211,7 @@ async def initialize_conversational_repair(llm_client: Any=None) -> Any:
     _conversational_repair = ConversationalRepair(llm_client)
     LOGGER.info('Conversational repair system initialized')
 
-async def debate_complex_failure(failure_context: Dict[str, Any]) -> Dict[str, Any]:
+async def debate_complex_failure(failure_context: dict[str, Any]) -> dict[str, Any]:
     """
     Initiate debate for a complex failure.
 

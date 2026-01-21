@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class ResearchCache:
@@ -20,9 +20,9 @@ class ResearchCache:
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.cache_file = self.cache_dir / 'ResearchCache.jsonl'
 
-    def store(self, query: str, content: str, metadata: Optional[Dict[str, Any]] = None) -> None:
+    def store(self, query: str, content: str, metadata: dict[str, Any] | None = None) -> None:
         """Atomically store a research result with metadata."""
-        entry: Dict[str, Any] = {
+        entry: dict[str, Any] = {
             'query': query.lower(),
             'content': content,
             'metadata': metadata or {},
@@ -32,10 +32,10 @@ class ResearchCache:
             json.dump(entry, f)
             f.write('\n')
 
-    def query(self, query: str, top_k: int = 3) -> List[str]:
+    def query(self, query: str, top_k: int = 3) -> list[str]:
         """Performs simple keyword-matching retrieval from the research cache."""
         query_lower: str = query.lower()
-        results: List[str] = []
+        results: list[str] = []
 
         if not self.cache_file.exists():
             return results
@@ -45,7 +45,7 @@ class ResearchCache:
                 if not line.strip():
                     continue
                 try:
-                    entry: Dict[str, Any] = json.loads(line)
+                    entry: dict[str, Any] = json.loads(line)
                     if query_lower in entry['query']:
                         results.append(entry['content'])
                 except json.JSONDecodeError:
@@ -55,9 +55,9 @@ class ResearchCache:
 
         return results
 
-    def get_all_entries(self) -> List[Dict[str, Any]]:
+    def get_all_entries(self) -> list[dict[str, Any]]:
         """Retrieve all cache entries."""
-        entries: List[Dict[str, Any]] = []
+        entries: list[dict[str, Any]] = []
 
         if not self.cache_file.exists():
             return entries

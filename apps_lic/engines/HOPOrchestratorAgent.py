@@ -14,8 +14,8 @@ __version__ = "13.0"
 
 import json
 from datetime import datetime
-from typing import Dict, Any, Optional
 from pathlib import Path
+from typing import Any
 
 
 class HOPOrchestratorAgent:
@@ -34,9 +34,9 @@ class HOPOrchestratorAgent:
 
     def __init__(
         self,
-        config: Optional[Dict[str, Any]] = None,
-        agents: Optional[Dict[str, Any]] = None,
-        state_manager_class: Optional[type] = None,
+        config: dict[str, Any] | None = None,
+        agents: dict[str, Any] | None = None,
+        state_manager_class: type | None = None,
     ):
         """
         Initialize orchestrator with dependencies.
@@ -57,11 +57,11 @@ class HOPOrchestratorAgent:
         self.max_factual_loops = self.config.get("max_factual_loops", 2)
         self.max_creative_retries = self.config.get("max_creative_retries", 3)
 
-    def _load_default_config(self) -> Dict[str, Any]:
+    def _load_default_config(self) -> dict[str, Any]:
         """Load default configuration from file."""
         config_path = Path("config/agent_specs_LIC.json")
         if config_path.exists():
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return json.load(f)
         return {
             "hop_execution_order": {"hops": []},
@@ -73,7 +73,7 @@ class HOPOrchestratorAgent:
         """Register a HOP agent."""
         self.agents[hop_id] = agent
 
-    async def execute_workflow(self, mission: Any) -> Dict[str, Any]:
+    async def execute_workflow(self, mission: Any) -> dict[str, Any]:
         """
         Execute complete workflow using HOP architecture.
 
@@ -150,7 +150,7 @@ class HOPOrchestratorAgent:
                             print(f"\n✗ Max creative retries ({self.max_creative_retries}) reached - HALTING")
                             raise ValueError("Max creative retries exceeded")
 
-                        print(f"\n⚠ Creative failure detected")
+                        print("\n⚠ Creative failure detected")
                         print(f"→ Retrying HOP-5 with escalated temperature (attempt {creative_retry_count}/{self.max_creative_retries})")
 
                         # Escalate temperature
@@ -194,7 +194,7 @@ class HOPOrchestratorAgent:
         draft = generation.get("selected_draft", {})
 
         print(f"\n{'=' * 80}")
-        print(f"WORKFLOW COMPLETE")
+        print("WORKFLOW COMPLETE")
         print(f"Status: {'PASS' if passed else 'FAIL'}")
         print(f"Time: {workflow_time:.1f}s")
         print(f"Factual loops: {factual_loop_count}")
@@ -228,12 +228,12 @@ class _DummyStateManager:
 
     def __init__(self, mission_id: str):
         self.mission_id = mission_id
-        self._states: Dict[str, Dict] = {}
+        self._states: dict[str, dict] = {}
 
-    def write_state(self, hop_id: str, state: Dict) -> None:
+    def write_state(self, hop_id: str, state: dict) -> None:
         self._states[hop_id] = state
 
-    def read_state(self, hop_id: str) -> Dict:
+    def read_state(self, hop_id: str) -> dict:
         return self._states.get(hop_id, {})
 
     def state_exists(self, hop_id: str) -> bool:

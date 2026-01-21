@@ -11,6 +11,9 @@ Strategies:
 
 import ast
 import re
+from collections import defaultdict
+from pathlib import Path
+from typing import Dict, List, Tuple
 
 APPS_DIRS = ['apps_rg', 'apps_lic', 'apps_shared']
 
@@ -161,7 +164,7 @@ def main():
         to_delete.add(f)
 
     # For similar named files, keep the shortest path (likely the canonical one)
-    for name, files in similar_groups.items():
+    for _name, files in similar_groups.items():
         if len(files) > 1:
             # Sort by path length, keep shortest
             files_sorted = sorted(files, key=lambda x: len(x))

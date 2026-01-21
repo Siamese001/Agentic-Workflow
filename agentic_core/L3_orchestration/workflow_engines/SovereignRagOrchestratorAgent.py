@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System
 Adapts parameters based on performance with persistent configuration
@@ -13,18 +15,15 @@ Adapts parameters based on performance with persistent configuration
 import asyncio
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
@@ -45,7 +44,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     Adapts parameters based on performance with persistent configuration.
     """
 
-    def __init__(self, retriever: Optional[Any] = None, QueryPlanner: Optional[Any] = None, guardrail: Optional[Any] = None, engine: Optional[Any] = None) -> None:
+    def __init__(self, retriever: Any | None = None, QueryPlanner: Any | None = None, guardrail: Any | None = None, engine: Any | None = None) -> None:
         """
         Initialize sovereign RAG orchestrator.
 
@@ -55,15 +54,15 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             guardrail: Optional guardrail instance
             engine: Optional engine instance
         """
-        self.query_history: List[Any] = []
+        self.query_history: list[Any] = []
         self.config_path: Path = Path('agentic_core/L4_state/ValidationContext/.sovereign_config.json')
         self._load_sovereign_config()
         self.threshold_adaptation_rate: float = 0.02
         self.performance_window: int = 50
-        self.retriever: Optional[Any] = retriever
-        self.QueryPlanner: Optional[Any] = QueryPlanner
-        self.guardrail: Optional[Any] = guardrail
-        self.engine: Optional[Any] = engine
+        self.retriever: Any | None = retriever
+        self.QueryPlanner: Any | None = QueryPlanner
+        self.guardrail: Any | None = guardrail
+        self.engine: Any | None = engine
         self.enable_red_team_critique: bool = False
         self.max_critique_rounds: int = 2
 
@@ -92,7 +91,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
         self.config_path.write_text(json.dumps({'faithfulness_threshold': self.faithfulness_threshold, 'max_hops': self.max_hops, 'base_top_k': self.base_top_k}))
 
-    async def red_team_critique(self, answer: str, documents: List[Any], query: str) -> Dict[str, Any]:
+    async def red_team_critique(self, answer: str, documents: list[Any], query: str) -> dict[str, Any]:
         """
         L5: Red team critique for faithfulness validation.
 
@@ -118,7 +117,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
                 return {'faithfulness_score': 0.0, 'improvement_suggestion': 'Critical parsing error. Retry retrieval.'}
         return _parse_critique(response)
 
-    async def sovereign_retrieve(self, query: str, top_k: Optional[int]=None, filters: Optional[Dict]=None, mission_context: Optional[Dict]=None) -> Dict[str, Any]:
+    async def sovereign_retrieve(self, query: str, top_k: int | None=None, filters: dict | None=None, mission_context: dict | None=None) -> dict[str, Any]:
         """
         Main retrieval method with multi-hop expansion and self-optimization
         """
@@ -148,7 +147,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             await self.adapt_parameters(result)
         return result
 
-    async def adapt_parameters(self, result: Dict) -> Any:
+    async def adapt_parameters(self, result: dict) -> Any:
         """Self-optimization: adjust thresholds with dampen and persistence"""
         recent: Any = self.query_history[-self.performance_window:]
         faithfulness_scores: Any = [r.get('faithfulness', 0.0) for r in recent]
@@ -170,7 +169,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             self._save_sovereign_config()
             print(f'   [SELF-OPT] Increasing top_k to {self.base_top_k}')
 
-    async def multi_hop_retrieve(self, query: str, max_hops: Optional[int]=None) -> Dict[str, Any]:
+    async def multi_hop_retrieve(self, query: str, max_hops: int | None=None) -> dict[str, Any]:
         """
         Multi-hop retrieval with iterative refinement
         """
@@ -186,13 +185,13 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             current_query: Any = f'Refined: {current_query}'
         return {'query': query, 'documents': all_documents, 'hops': hop + 1, 'faithfulness': result.get('faithfulness', 0.0)}
 
-    def get_config(self) -> Dict[str, Any]:
+    def get_config(self) -> dict[str, Any]:
         """Get current configuration"""
         return {'faithfulness_threshold': self.faithfulness_threshold, 'max_hops': self.max_hops, 'base_top_k': self.base_top_k, 'threshold_adaptation_rate': self.threshold_adaptation_rate, 'performance_window': self.performance_window}
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration/workflow_engines - operational only."""
         if _call_path is None:
             _call_path = set()

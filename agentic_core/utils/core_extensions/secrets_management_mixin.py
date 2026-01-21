@@ -1,9 +1,8 @@
-import os
 import logging
-import time
+import os
 import re
-from typing import Optional, Dict, Any
-from datetime import datetime
+import time
+
 
 class SecretAccessError(Exception):
     """Raised when a secret cannot be retrieved or accessed."""
@@ -24,7 +23,7 @@ class SecretsManagementMixin:
         self._sm_logger = logging.getLogger(self.__class__.__name__)
         # Determine environment context
         self._env_context = os.getenv("SOVEREIGN_ENV", "DEV").upper()
-        self._secret_cache: Dict[str, tuple[str, float]] = {}
+        self._secret_cache: dict[str, tuple[str, float]] = {}
         self._CACHE_TTL = 600
 
     def _is_valid_secret_key(self, key: str) -> bool:
@@ -40,7 +39,7 @@ class SecretsManagementMixin:
             f"Env='{self._env_context}' | Status='{status}'"
         )
 
-    async def get_secret(self, key: str, default: Optional[str] = None) -> str:
+    async def get_secret(self, key: str, default: str | None = None) -> str:
         """
         Securely retrieve a secret value.
 

@@ -15,16 +15,15 @@ Typical usage:
 
 from __future__ import annotations
 
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional, Set
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.security import safe_execute
 
 
@@ -54,7 +53,7 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.project_root: Path = Path(project_root)
         self.ctx: Any = ctx
 
-    async def execute(self, file_path: str) -> Dict[str, Any]:
+    async def execute(self, file_path: str) -> dict[str, Any]:
         """Format a single file using Black and Ruff.
 
         Applies Black formatting first, then Ruff lint auto-fixes.
@@ -116,8 +115,8 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational agent - no repository healing required.

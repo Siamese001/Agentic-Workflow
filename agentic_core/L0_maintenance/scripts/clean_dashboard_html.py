@@ -15,7 +15,7 @@ matches = list(re.finditer(pattern, html))
 print(f"Found {len(matches)} realAgentData blocks")
 
 if len(matches) > 1:
-    print(f"⚠️  Multiple realAgentData blocks found - removing all")
+    print("⚠️  Multiple realAgentData blocks found - removing all")
     # Remove all matches
     for match in reversed(matches):  # Reverse to maintain indices
         html = html[:match.start()] + html[match.end():]

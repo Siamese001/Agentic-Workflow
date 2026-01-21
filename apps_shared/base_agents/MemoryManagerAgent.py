@@ -13,6 +13,7 @@ Migration:
     )
 """
 import warnings
+
 warnings.warn(
     "MemoryManagerAgent is deprecated. Use UnifiedStateManagementAgent instead.",
     DeprecationWarning,
@@ -25,7 +26,9 @@ warnings.warn(
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 Memory Manager - JSON Persistence for Canon Validator State
 
@@ -34,16 +37,16 @@ and other persistent data structures.
 """
 import json
 import os
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from typing import Any
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 @dataclass
 class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -76,7 +79,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         self.results_dir.mkdir(exist_ok=True)
         self.state_dir.mkdir(exist_ok=True)
 
-    def load_conversation_history(self, file_path: str) -> List[Dict[str, Any]]:
+    def load_conversation_history(self, file_path: str) -> list[dict[str, Any]]:
         """
         Load conversation history for a file.
 
@@ -91,13 +94,13 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         if not history_file.exists():
             return []
         try:
-            with open(history_file, 'r', encoding='utf-8') as f:
+            with open(history_file, encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
             print(f'[!] Failed to load conversation history for {file_path}: {e}')
             return []
 
-    def save_conversation_history(self, file_path: str, history: List[Dict[str, Any]]) -> Any:
+    def save_conversation_history(self, file_path: str, history: list[dict[str, Any]]) -> Any:
         """
         Save conversation history for a file.
 
@@ -127,7 +130,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             except Exception as e:
                 print(f'[!] Failed to clear conversation history for {file_path}: {e}')
 
-    def load_validation_results(self, session_id: str=None) -> Dict[str, Any]:
+    def load_validation_results(self, session_id: str=None) -> dict[str, Any]:
         """
         Load validation results.
 
@@ -149,13 +152,13 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         if not results_file.exists():
             return {}
         try:
-            with open(results_file, 'r', encoding='utf-8') as f:
+            with open(results_file, encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
             print(f'[!] Failed to load validation results: {e}')
             return {}
 
-    def save_validation_results(self, results: Dict[str, Any], session_id: str=None) -> Any:
+    def save_validation_results(self, results: dict[str, Any], session_id: str=None) -> Any:
         """
         Save validation results.
 
@@ -171,7 +174,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         except Exception as e:
             print(f'[!] Failed to save validation results: {e}')
 
-    def load_agent_state(self, agent_name: str) -> Dict[str, Any]:
+    def load_agent_state(self, agent_name: str) -> dict[str, Any]:
         """
         Load state for a specific agent.
 
@@ -185,13 +188,13 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         if not state_file.exists():
             return {}
         try:
-            with open(state_file, 'r', encoding='utf-8') as f:
+            with open(state_file, encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
             print(f'[!] Failed to load state for {agent_name}: {e}')
             return {}
 
-    def save_agent_state(self, agent_name: str, state: Dict[str, Any]) -> Any:
+    def save_agent_state(self, agent_name: str, state: dict[str, Any]) -> Any:
         """
         Save state for a specific agent.
 
@@ -205,7 +208,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         except Exception as e:
             print(f'[!] Failed to save state for {agent_name}: {e}')
 
-    def load_memory(self, key: str, category: str='general') -> Optional[Any]:
+    def load_memory(self, key: str, category: str='general') -> Any | None:
         """
         Load arbitrary memory by key.
 
@@ -223,7 +226,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         if not memory_file.exists():
             return None
         try:
-            with open(memory_file, 'r', encoding='utf-8') as f:
+            with open(memory_file, encoding='utf-8') as f:
                 data: Any = json.load(f)
                 return data.get('value')
         except Exception as e:
@@ -285,7 +288,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                 except Exception as e:
                     print(f'[!] Failed to cleanup {memory_file}: {e}')
 
-    def get_memory_stats(self) -> Dict[str, Any]:
+    def get_memory_stats(self) -> dict[str, Any]:
         """
         Get statistics about stored memories.
 
@@ -359,8 +362,8 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Wired Memory Hygiene - Validates vector stores and reconciles memory state.
 

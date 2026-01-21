@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 🚀 PHASE 5: THIN WRAPPER - Hardened Workflow Orchestrator
 
@@ -21,17 +23,21 @@ Legacy API preserved for backward compatibility.
 # - Consolidated 2026-01-06
 
 import logging
-import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 Logger: Any = logging.getLogger(__name__)
 from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
+    L3SubatomicTestingMixin,
+)
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
@@ -42,7 +48,7 @@ class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3Subatom
     Legacy API preserved for backward compatibility.
     """
 
-    def __init__(self, workflow_spec: Optional[Any]=None, run_base_dir: str='./pipeline_runs', storage_path: Optional[str]=None) -> None:
+    def __init__(self, workflow_spec: Any | None=None, run_base_dir: str='./pipeline_runs', storage_path: str | None=None) -> None:
         """Initialize the hardened orchestrator wrapper.
 
         Args:
@@ -56,20 +62,20 @@ class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3Subatom
         self.run_base_dir = run_base_dir
         Logger.info('🔗 HardenedWorkflowOrchestratorAgent wrapper initialized (delegates to orchestrator_main)')
 
-    async def initialize_or_resume_workflow(self, workflow_id: str, total_k_nodes: int, context: Dict[str, Any]) -> Dict[str, Any]:
+    async def initialize_or_resume_workflow(self, workflow_id: str, total_k_nodes: int, context: dict[str, Any]) -> dict[str, Any]:
         """Initialize new workflow or resume from Checkpoint (legacy wrapper)."""
-        Logger.info(f'🔗 Delegating workflow initialization to orchestrator_main')
+        Logger.info('🔗 Delegating workflow initialization to orchestrator_main')
         return context
 
-    async def execute_workflow_with_resilience(self, workflow_id: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_workflow_with_resilience(self, workflow_id: str, context: dict[str, Any]) -> dict[str, Any]:
         """Execute workflow with resilience (delegates to orchestrator_main)."""
-        Logger.info(f'🚀 Delegating workflow execution to orchestrator_main')
+        Logger.info('🚀 Delegating workflow execution to orchestrator_main')
         results: Any = await self.orchestrator.run_mission(target_path=context.get('target_path'), workflow_id=workflow_id)
         return results
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -94,7 +100,7 @@ def get_hardened_workflow_orchestrator() -> HardenedWorkflowOrchestratorAgent:
 
     return HardenedWorkflowOrchestratorAgent()
 
-def create_hardened_orchestrator(workflow_spec: Optional[Any]=None, run_base_dir: str='./pipeline_runs', storage_path: Optional[str]=None) -> HardenedWorkflowOrchestratorAgent:
+def create_hardened_orchestrator(workflow_spec: Any | None=None, run_base_dir: str='./pipeline_runs', storage_path: str | None=None) -> HardenedWorkflowOrchestratorAgent:
     """Create a hardened orchestrator (thin wrapper to consolidated orchestrator).
 
     Args:

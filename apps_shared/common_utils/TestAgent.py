@@ -14,10 +14,9 @@ Verifies:
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt
 # This boosts alignment detection — review and integrate appropriately
 
-import sys
 import inspect
+import sys
 from pathlib import Path
-from typing import List, Tuple, Set
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -35,8 +34,6 @@ def test_root_end_guarantee():
     print("TEST 1: Root-End Guarantee")
     print("=" * 70)
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
     test_cases = [
         ("L0MaintenanceBaseAgent", "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent", "L0MaintenanceBaseAgent"),
@@ -117,8 +114,9 @@ def test_initialization_chain():
 
     # Test with L5SafetyBaseAgent
     try:
-        from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
         from dataclasses import dataclass
+
+        from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
 
         @dataclass
         class TestAgent(InitTrackerMixin, L5SafetyBaseAgent):
@@ -184,7 +182,6 @@ def test_shadowing_audit():
         ("L3OrchestrationBaseAgent", "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent", "L3OrchestrationBaseAgent"),
     ]
 
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
     for name, module_path, class_name in test_cases:
         try:
@@ -251,8 +248,9 @@ def test_attribute_collision():
 
     # Check HealerMixin uses _healer_ prefix
     try:
-        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
         import inspect
+
+        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
         source = inspect.getsource(HealerMixin.__init__)
 
         if '_healer_cache' in source and '_healer_metrics' in source:
@@ -280,7 +278,6 @@ def test_cooperative_super():
         ("HealerMixin", "agentic_core.utils.core_extensions.healer_mixin"),
     ]
 
-    import inspect
 
     for mixin_name, module_path in mixins_to_check:
         try:

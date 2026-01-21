@@ -1,23 +1,23 @@
 from __future__ import annotations
+
 """L3 Orchestration: Sovereign MCP Router — Eternal Integration
 Hardened routing of canon violations to MCP tools across all layers and apps.
 L5 safety shielded + auto-immune on breach.
 """
-import asyncio
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from agentic_core.L3_orchestration.workflow_engines.mcp_manager import MCPConnectionManager, load_mcp_config
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
+from typing import Any
 
+from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
+    MCPConnectionManager,
+    load_mcp_config,
+)
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class SovereignMcpRouter(HealerMixin, MCPHardenedMixin):
     def __init__(self, role: str='validator', config_path: str='config/mcp_mappings.yaml'):
         self.role = role
         self.config_path = Path(config_path)
-        self.manager: Optional[MCPConnectionManager] = None
+        self.manager: MCPConnectionManager | None = None
         self.initialized = False
 
     async def initialize(self) -> Any:
@@ -45,7 +45,7 @@ class SovereignMcpRouter(HealerMixin, MCPHardenedMixin):
             mcp_authority.record_breach(str(e))
             raise
 
-    async def resolve_violation(self, key_id: int, file_path: str, violation_desc: str) -> Dict[str, Any]:
+    async def resolve_violation(self, key_id: int, file_path: str, violation_desc: str) -> dict[str, Any]:
         """Route canon key Violation to hardened MCP tool — L5 shielded"""
         if not mcp_authority.is_authorized():
             return {'status': 'blocked', 'reason': 'MCP sovereignty compromised'}

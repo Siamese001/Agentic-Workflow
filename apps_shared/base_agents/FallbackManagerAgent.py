@@ -5,20 +5,25 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Automatic Fallback Manager for Tool Providers.
 
 Phase 3 - Pillar 8 (Cont.): Tool Ecosystem (Automatic Fallbacks)
 Implements ordered fallback chains when primary providers fail.
 """
 import logging
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from enum import Enum
+from typing import Any
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 Logger: Any = logging.getLogger(__name__)
 
 class FallbackStrategy(Enum):
@@ -31,10 +36,10 @@ class FallbackStrategy(Enum):
 class ToolProvider:
     """Tool Provider configuration."""
     name: str
-    execute_fn: Callable[[Dict[str, Any]], Awaitable[Any]]
+    execute_fn: Callable[[dict[str, Any]], Awaitable[Any]]
     priority: int = 0
-    circuit_breaker: Optional[Any] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    circuit_breaker: Any | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def is_available(self) -> bool:
         """Check if Provider is available.
@@ -46,7 +51,7 @@ class ToolProvider:
             return self.circuit_breaker.can_execute()
         return True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {'name': self.name, 'priority': self.priority, 'available': self.is_available(), 'circuit_state': self.circuit_breaker.state if self.circuit_breaker else 'N/A', 'metadata': self.metadata}
 
@@ -56,11 +61,11 @@ class FallbackResult:
     success: bool
     provider_used: str
     output: Any = None
-    error: Optional[str] = None
-    attempts: List[Dict[str, Any]] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    error: str | None = None
+    attempts: list[dict[str, Any]] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {'success': self.success, 'provider_used': self.provider_used, 'output': self.output, 'error': self.error, 'attempts': self.attempts, 'metadata': self.metadata}
 
@@ -84,11 +89,11 @@ class FallbackManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         """
         self.strategy: FallbackStrategy = strategy
         self.enable_logging: bool = enable_logging
-        self._fallback_chains: Dict[str, List[ToolProvider]] = {}
+        self._fallback_chains: dict[str, list[ToolProvider]] = {}
         if self.enable_logging:
             Logger.info('fallback_manager_initialized', extra={'strategy': strategy.value})
 
-    def register_chain(self, tool_name: str, providers: List[ToolProvider]) -> None:
+    def register_chain(self, tool_name: str, providers: list[ToolProvider]) -> None:
         """Register a fallback chain for a tool.
 
         Args:
@@ -100,7 +105,7 @@ class FallbackManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         if self.enable_logging:
             LOGGER.info('fallback_chain_registered', extra={'tool_name': tool_name, 'provider_count': len(providers), 'providers': [p.name for p in providers]})
 
-    async def execute_with_fallback(self, tool_name: str, parameters: Dict[str, Any], max_attempts: Optional[int]=None) -> FallbackResult:
+    async def execute_with_fallback(self, tool_name: str, parameters: dict[str, Any], max_attempts: int | None=None) -> FallbackResult:
         """Execute tool with automatic fallback.
 
         Args:
@@ -126,18 +131,18 @@ class FallbackManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                 return result
         return self._handle_all_providers_failed(tool_name, attempts)
 
-    def _log_fallback_start(self, tool_name: str, providers: List) -> None:
+    def _log_fallback_start(self, tool_name: str, providers: list) -> None:
         """Log fallback execution start."""
         if self.enable_logging:
             LOGGER.info('executing_with_fallback', extra={'tool_name': tool_name, 'provider_count': len(providers)})
 
-    def _handle_unavailable_provider(self, tool_name: str, Provider, attempts: List) -> None:
+    def _handle_unavailable_provider(self, tool_name: str, Provider, attempts: list) -> None:
         """Handle unavailable Provider."""
         attempts.append({'Provider': Provider.name, 'skipped': True, 'reason': 'Circuit breaker open'})
         if self.enable_logging:
             LOGGER.warning('provider_skipped', extra={'tool_name': tool_name, 'Provider': Provider.name, 'reason': 'circuit_breaker_open'})
 
-    async def _try_provider(self, tool_name: str, Provider, parameters: Dict, attempt_num: int, attempts: List) -> Optional[FallbackResult]:
+    async def _try_provider(self, tool_name: str, Provider, parameters: dict, attempt_num: int, attempts: list) -> FallbackResult | None:
         """Try executing with a Provider."""
         try:
             if self.enable_logging:
@@ -157,13 +162,13 @@ class FallbackManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                 LOGGER.warning('provider_failed', extra={'tool_name': tool_name, 'Provider': Provider.name, 'error': str(e), 'attempt': attempt_num + 1})
             return None
 
-    def _handle_all_providers_failed(self, tool_name: str, attempts: List) -> FallbackResult:
+    def _handle_all_providers_failed(self, tool_name: str, attempts: list) -> FallbackResult:
         """Handle all providers failed."""
         if self.enable_logging:
             LOGGER.error('all_providers_failed', extra={'tool_name': tool_name, 'attempts': len(attempts)})
         return FallbackResult(success=False, provider_used='none', error='All providers failed', attempts=attempts, metadata={'total_attempts': len(attempts)})
 
-    def get_chain(self, tool_name: str) -> List[ToolProvider]:
+    def get_chain(self, tool_name: str) -> list[ToolProvider]:
         """Get fallback chain for a tool.
 
         Args:
@@ -174,7 +179,7 @@ class FallbackManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         """
         return self._fallback_chains.get(tool_name, [])
 
-    def get_available_providers(self, tool_name: str) -> List[ToolProvider]:
+    def get_available_providers(self, tool_name: str) -> list[ToolProvider]:
         """Get available providers for a tool.
 
         Args:
@@ -188,7 +193,7 @@ class FallbackManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

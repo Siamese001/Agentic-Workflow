@@ -13,21 +13,18 @@ from __future__ import annotations
 
 import logging
 import uuid
-from enum import Enum
-from typing import Dict, Any, Optional, List, Callable, Union
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum
+from typing import TYPE_CHECKING, Any
+
 import networkx as nx
 from pydantic import BaseModel, Field, validator
 
-from agentic_core.schemas.models.runtime_models import HopState, MicroStage
-from agentic_core.runtime.shared_runtime.reflection_engine import MutationRequest
-from typing import TYPE_CHECKING
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 if TYPE_CHECKING:
-    from agentic_core.runtime.shared_runtime.SubatomicHop import SubatomicHop
+    pass
 
 Logger = logging.getLogger(__name__)
 
@@ -152,10 +149,10 @@ class HopSpec(BaseModel):
     """Specification for creating a new hop."""
     hop_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     hop_function: str  # Name of function to create
-    parameters: Dict[str, Any] = Field(default_factory=dict)
+    parameters: dict[str, Any] = Field(default_factory=dict)
     priority: int = Field(default=0)
     timeout: float = Field(default=300.0)
-    retry_policy: Optional[Dict[str, Any]] = None
+    retry_policy: dict[str, Any] | None = None
 
     class Config:
         extra = "allow"  # Allow additional fields
@@ -166,7 +163,7 @@ class DAGMutation(BaseModel):
     mutation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     action: MutationAction
     target_hop_id: str
-    new_hop_spec: Optional[HopSpec] = None
+    new_hop_spec: HopSpec | None = None
     reason: str
     timestamp: datetime = Field(default_factory=datetime.now)
     requester_hop_id: str
@@ -184,8 +181,8 @@ class MutationResult(BaseModel):
     mutation_id: str
     success: bool
     message: str
-    affected_nodes: List[str] = Field(default_factory=list)
-    new_edges: List[tuple] = Field(default_factory=list)
+    affected_nodes: list[str] = Field(default_factory=list)
+    new_edges: list[tuple] = Field(default_factory=list)
     timestamp: datetime = Field(default_factory=datetime.now)
 
 
@@ -196,9 +193,12 @@ class DAGConfig(BaseModel):
     enable_mutation_logging: bool = True
     mutation_history_size: int = Field(default=1000, ge=100)
 
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
+    L3SubatomicTestingMixin,
+)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
+
 
 class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Handles the actual graph mutations."""
@@ -210,7 +210,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
             config: DAG configuration
         """
         self.config = config
-        self.mutation_history: List[MutationResult] = []
+        self.mutation_history: list[MutationResult] = []
 
     def apply_mutation(
         self,
@@ -468,7 +468,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         if len(self.mutation_history) > self.config.mutation_history_size:
             self.mutation_history = self.mutation_history[-self.config.mutation_history_size:]
 
-    def get_mutation_history(self, limit: Optional[int] = None) -> List[MutationResult]:
+    def get_mutation_history(self, limit: int | None = None) -> list[MutationResult]:
         """Get mutation history."""
         if limit:
             return self.mutation_history[-limit:]
@@ -482,8 +482,8 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         DAG Mutation Healing - Validates graph mutation logic integrity.
 
@@ -526,17 +526,12 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
 
         return metrics
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.cache_decorator import cached
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Global instance
-_dag_manager: Optional[DAGManagerAgent] = None
+_dag_manager: DAGManagerAgent | None = None
 
 
 def get_dag_manager(**kwargs) -> DAGManagerAgent:
@@ -561,7 +556,7 @@ def get_dag_manager(**kwargs) -> DAGManagerAgent:
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

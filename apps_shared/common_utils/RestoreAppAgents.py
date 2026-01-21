@@ -19,7 +19,6 @@ import re
 import shutil
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / "archives" / "hierarchy_violations" / "apps_depth"
@@ -31,10 +30,10 @@ def extract_original_path(file_path: Path) -> str:
 
     Files have a header like:
     # APPS DEPTH VIOLATION — 2026-01-18 05:20:53
-    # apps_lic\domain\validators\ASCIIEnforcerAgent.py was depth 4, MUST be 3.
+    # apps_lic\\domain\validators\\ASCIIEnforcerAgent.py was depth 4, MUST be 3.
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             content = f.read(500)  # Read first 500 chars
 
         # Look for the path pattern
@@ -49,7 +48,7 @@ def extract_original_path(file_path: Path) -> str:
     return str(rel_path).replace('\\', '/')
 
 
-def get_agents_to_restore() -> List[Tuple[Path, Path]]:
+def get_agents_to_restore() -> list[tuple[Path, Path]]:
     """
     Get list of (source, destination) pairs for restoration.
 
@@ -73,7 +72,7 @@ def get_agents_to_restore() -> List[Tuple[Path, Path]]:
 
 def remove_violation_header(file_path: Path) -> None:
     """Remove the APPS DEPTH VIOLATION header from the file."""
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         content = f.read()
 
     # Remove the violation header (first 2-3 lines if they contain APPS DEPTH VIOLATION)

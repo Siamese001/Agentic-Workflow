@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 MCP Tool Stubs - Planned Feature Integration
 
@@ -16,7 +17,8 @@ EXTRACTED: From action_registry.py via Atomic Fission Protocol
 TOOL ID PREFIX: ACT-012+
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger('ActionRegistry.MCPStubs')
 
 class FigmaTools:
@@ -28,7 +30,7 @@ class FigmaTools:
     def __init__(self):
         """Initializes FigmaTools. No specific state needed."""
 
-    def get_variable_defs(self, node_id: str, file_key: Optional[str]=None) -> str:
+    def get_variable_defs(self, node_id: str, file_key: str | None=None) -> str:
         """
         Gets Figma variable definitions.
         Tool ID: ACT-012
@@ -43,7 +45,7 @@ class FigmaTools:
         Logger.info(f"🎨 Figma: get_variable_defs for node '{node_id}' (file: {file_key})")
         return 'Figma MCP not implemented in Phase 1'
 
-    def get_screenshot(self, node_id: str, file_key: Optional[str]=None) -> str:
+    def get_screenshot(self, node_id: str, file_key: str | None=None) -> str:
         """
         Gets a screenshot of a Figma node.
         Tool ID: ACT-013
@@ -58,7 +60,7 @@ class FigmaTools:
         Logger.info(f"🎨 Figma: get_screenshot for node '{node_id}' (file: {file_key})")
         return 'Figma MCP not implemented in Phase 1'
 
-    def get_design_context(self, node_id: str, file_key: Optional[str]=None) -> str:
+    def get_design_context(self, node_id: str, file_key: str | None=None) -> str:
         """
         Gets design context for a Figma node.
         Tool ID: ACT-014

@@ -1,10 +1,13 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 
 class GenealogyRegistry:
     """
@@ -12,7 +15,7 @@ class GenealogyRegistry:
     Tracks the 'ancestry' of every hop and decision.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self.config = config
         self.history = []
 

@@ -7,9 +7,7 @@ queries and serve cached responses instantly.
 import json
 import logging
 import time
-from datetime import datetime, timedelta
-from functools import lru_cache
-from typing import List, Optional, Dict, Any
+from typing import Any
 
 import numpy as np
 from pydantic import BaseModel, Field, validator
@@ -22,7 +20,7 @@ class CacheEntry(BaseModel):
 
     query_text: str = Field(..., description="Original query text")
     response_text: str = Field(..., description="Cached response")
-    embedding: List[float] = Field(..., description="Query embedding vector")
+    embedding: list[float] = Field(..., description="Query embedding vector")
     timestamp: float = Field(..., description="Creation timestamp")
     access_count: int = Field(default=0, description="Number of times accessed")
     last_accessed: float = Field(default_factory=time.time, description="Last access timestamp")
@@ -51,7 +49,7 @@ class ContrastiveSemanticCache:
         similarity_threshold: float = 0.92,
         max_entries: int = 1000,
         lazy_load: bool = True,
-        ttl_seconds: Optional[int] = None
+        ttl_seconds: int | None = None
     ):
         """Initialize the Contrastive Semantic Cache.
 
@@ -69,8 +67,8 @@ class ContrastiveSemanticCache:
         self.ttl_seconds = ttl_seconds
 
         # Storage
-        self._cache: List[CacheEntry] = []
-        self._embedding_matrix: Optional[np.ndarray] = None
+        self._cache: list[CacheEntry] = []
+        self._embedding_matrix: np.ndarray | None = None
 
         # Model state
         self._model = None
@@ -97,8 +95,8 @@ class ContrastiveSemanticCache:
             return False
         # Try to check availability without loading
         try:
-            from sentence_transformers import SentenceTransformer
             import numpy as np
+            from sentence_transformers import SentenceTransformer
             return True
         except ImportError:
             logger.warning("sentence_transformers or numpy not available, cache will be in fallback mode")
@@ -115,8 +113,8 @@ class ContrastiveSemanticCache:
 
         try:
             # Import required libraries
-            from sentence_transformers import SentenceTransformer
             import numpy as np
+            from sentence_transformers import SentenceTransformer
 
             logger.info(f"Loading SentenceTransformer model: {self.model_name}")
             start_time = time.time()
@@ -144,7 +142,7 @@ class ContrastiveSemanticCache:
             self._model_loaded = True
             return False
 
-    def _encode_query(self, query: str) -> Optional[np.ndarray]:
+    def _encode_query(self, query: str) -> np.ndarray | None:
         """Encode a query into an embedding vector.
 
         Args:
@@ -248,7 +246,7 @@ class ContrastiveSemanticCache:
         age = time.time() - entry.timestamp
         return age > self.ttl_seconds
 
-    def get(self, query: str, threshold: Optional[float] = None) -> Optional[str]:
+    def get(self, query: str, threshold: float | None = None) -> str | None:
         """Get cached response for a semantically similar query.
 
         Args:
@@ -363,7 +361,7 @@ class ContrastiveSemanticCache:
         self._embedding_matrix = None
         logger.info("Cache cleared")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics.
 
         Returns:
@@ -417,7 +415,7 @@ class ContrastiveSemanticCache:
             clear_existing: Whether to clear existing cache
         """
         try:
-            with open(filepath, 'r') as f:
+            with open(filepath) as f:
                 data = json.load(f)
 
             if clear_existing:
@@ -438,7 +436,7 @@ class ContrastiveSemanticCache:
 
 
 # Convenience function for direct usage
-def get_cached_response(query: str, cache: ContrastiveSemanticCache) -> Optional[str]:
+def get_cached_response(query: str, cache: ContrastiveSemanticCache) -> str | None:
     """Get cached response for a query.
 
     Args:
@@ -459,7 +457,7 @@ class NullCache:
         """Initialize the null cache."""
         logger.warning("Using NullCache - no caching will be performed")
 
-    def get(self, query: str, threshold: Optional[float] = None) -> Optional[str]:
+    def get(self, query: str, threshold: float | None = None) -> str | None:
         """Always return None (cache miss)."""
         return None
 
@@ -471,7 +469,7 @@ class NullCache:
         """No-op."""
         pass
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Return empty stats."""
         return {
             "entries": 0,

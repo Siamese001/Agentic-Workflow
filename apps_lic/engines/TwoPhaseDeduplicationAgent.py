@@ -34,8 +34,9 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
@@ -45,10 +46,9 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L5_SAFETY_DIR,
     SOVEREIGN_REGISTRY,
 )
+from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -63,9 +63,9 @@ class ShallowDuplicate:
     filename: str
     hash: str
     size: int
-    paths: List[Path]
-    canonical_path: Optional[Path] = None
-    duplicate_paths: List[Path] = field(default_factory=list)
+    paths: list[Path]
+    canonical_path: Path | None = None
+    duplicate_paths: list[Path] = field(default_factory=list)
     rationale: str = ""
 
 
@@ -74,9 +74,9 @@ class DeepDuplicate:
     """Phase B: Logic/code duplicate (different names, same structure)."""
     ast_fingerprint: str
     similarity_score: float
-    paths: List[Path]
-    canonical_path: Optional[Path] = None
-    duplicate_paths: List[Path] = field(default_factory=list)
+    paths: list[Path]
+    canonical_path: Path | None = None
+    duplicate_paths: list[Path] = field(default_factory=list)
     code_snippet: str = ""
     rationale: str = ""
 
@@ -84,8 +84,8 @@ class DeepDuplicate:
 @dataclass
 class DeduplicationReport:
     """Combined report from both phases."""
-    phase_a_duplicates: List[ShallowDuplicate] = field(default_factory=list)
-    phase_b_duplicates: List[DeepDuplicate] = field(default_factory=list)
+    phase_a_duplicates: list[ShallowDuplicate] = field(default_factory=list)
+    phase_b_duplicates: list[DeepDuplicate] = field(default_factory=list)
     total_identity_collisions: int = 0
     total_logic_duplicates: int = 0
     files_scanned: int = 0
@@ -128,7 +128,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         'agentic_core/config': 30,
     }
 
-    def __init__(self, project_root: Optional[Path] = None) -> None:
+    def __init__(self, project_root: Path | None = None) -> None:
         """Initialize the two-phase deduplication agent."""
         self.project_root = Path(project_root) if project_root else Path.cwd()
         self.min_lines = 10  # Minimum lines for Phase B detection
@@ -140,7 +140,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
     # PHASE A: SHALLOW DUPLICATE CHECK (Identity Collisions)
     # ========================================================================
 
-    def run_phase_a(self, file_types: Optional[Set[str]] = None) -> List[ShallowDuplicate]:
+    def run_phase_a(self, file_types: set[str] | None = None) -> list[ShallowDuplicate]:
         """
         Phase A: Shallow Duplicate Check - Identity Collisions.
 
@@ -163,7 +163,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         file_types = file_types or self.SUPPORTED_EXTENSIONS
 
         # Hash all files
-        content_hashes: Dict[str, List[Tuple[Path, int]]] = defaultdict(list)
+        content_hashes: dict[str, list[tuple[Path, int]]] = defaultdict(list)
         files_scanned = 0
 
         for file_path in self._iter_files(file_types):
@@ -211,7 +211,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
     # PHASE B: DEEP SSOT DUPLICATE CHECK (Logic Duplicates)
     # ========================================================================
 
-    def run_phase_b(self, file_types: Optional[Set[str]] = None) -> List[DeepDuplicate]:
+    def run_phase_b(self, file_types: set[str] | None = None) -> list[DeepDuplicate]:
         """
         Phase B: Deep SSOT Duplicate Check - Logic Duplicates.
 
@@ -235,7 +235,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         file_types = {'.py'}
 
         # Generate AST fingerprints for all Python files
-        ast_fingerprints: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)
+        ast_fingerprints: dict[str, list[tuple[Path, str]]] = defaultdict(list)
 
         for file_path in self._iter_files(file_types):
             try:
@@ -288,7 +288,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
     # HELPER METHODS
     # ========================================================================
 
-    def _iter_files(self, file_types: Set[str]):
+    def _iter_files(self, file_types: set[str]):
         """Iterate over files in project, excluding certain directories."""
         for root_name in SOVEREIGN_REGISTRY.keys():
             root_path = self.project_root / root_name
@@ -307,7 +307,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
                 if file_path.suffix.lower() in file_types:
                     yield file_path
 
-    def _select_canonical_path(self, paths: List[Path]) -> Tuple[Path, List[Path], str]:
+    def _select_canonical_path(self, paths: list[Path]) -> tuple[Path, list[Path], str]:
         """
         Select the canonical path from a list of duplicate paths.
 
@@ -319,7 +319,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         Returns:
             Tuple of (canonical_path, duplicate_paths, rationale)
         """
-        def get_priority(path: Path) -> Tuple[int, int, str]:
+        def get_priority(path: Path) -> tuple[int, int, str]:
             rel_path = str(path.relative_to(self.project_root))
 
             # Find matching canonical prefix
@@ -344,7 +344,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
 
         return canonical, duplicates, rationale
 
-    def _generate_ast_fingerprint(self, code: str) -> Optional[str]:
+    def _generate_ast_fingerprint(self, code: str) -> str | None:
         """Generate normalized AST fingerprint for code."""
         try:
             tree = ast.parse(code)
@@ -385,7 +385,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         """Get the current deduplication report."""
         return self._report
 
-    def heal_phase_a(self, dry_run: bool = True) -> Dict[str, Any]:
+    def heal_phase_a(self, dry_run: bool = True) -> dict[str, Any]:
         """
         Heal Phase A duplicates (identity collisions).
 
@@ -439,7 +439,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
 
         return results
 
-    def heal_phase_b(self, dry_run: bool = True) -> Dict[str, Any]:
+    def heal_phase_b(self, dry_run: bool = True) -> dict[str, Any]:
         """
         Heal Phase B duplicates (logic duplicates).
 
@@ -481,10 +481,10 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None,
+        _call_path: set[str] | None = None,
         phase: str = "both",
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute two-phase deduplication healing.
 

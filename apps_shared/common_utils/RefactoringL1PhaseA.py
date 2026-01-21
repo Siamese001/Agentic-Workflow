@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import sys
-import pytest
 from pathlib import Path
+
+import pytest
 
 # Add project root to path
 # This file is in refactoring/phase_a/2025-11-24_l1_planning_layer/
@@ -19,7 +20,7 @@ def test_l1_imports() -> None:
 #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
         assert l1 is not None
 
-    except Exception as e:
+    except Exception:
         pass
         raise
 
@@ -38,7 +39,7 @@ def test_l1_strategy_planning_imports() -> None:
         assert callable(plan_draft)
         assert callable(generate_latent_thinking_plan)
 
-    except Exception as e:
+    except Exception:
         pass
         raise
 
@@ -57,7 +58,7 @@ def test_l1_rag_planning_imports() -> None:
         assert callable(plan_rag_reasoning)
         assert callable(plan_hyde_query)
 
-    except Exception as e:
+    except Exception:
         pass
         raise
 
@@ -79,7 +80,7 @@ def test_l1_qa_planning_imports() -> None:
         assert callable(plan_semantic_qa)
         assert callable(plan_council_review)
 
-    except Exception as e:
+    except Exception:
         pass
         raise
 
@@ -97,7 +98,7 @@ def test_l1_safety_planning_imports() -> None:
         assert SafetyPlan is not None
         assert callable(plan_safety_review)
 
-    except Exception as e:
+    except Exception:
         pass
         raise
 
@@ -120,7 +121,7 @@ def test_cognitive_agents_imports() -> None:
         assert HYDEQueryAgent is not None
         assert QACouncilAgent is not None
 
-    except Exception as e:
+    except Exception:
         pass
         raise
 
@@ -135,7 +136,7 @@ def test_l2_imports() -> None:
         assert callable(l2.run_l2)
         assert callable(l2.execute_workflow_plans)
 
-    except Exception as e:
+    except Exception:
         pass
         raise
 
@@ -150,7 +151,7 @@ def test_no_circular_dependencies() -> None:
 #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l2  # INVALID: Cannot import from path with hyphens
         pass
 
-    except Exception as e:
+    except Exception:
         pass
         raise
 
@@ -175,7 +176,7 @@ def test_l1_planning_is_pure() -> None:
                 # Frozen dataclasses should have __frozen__ or be immutable
                 pass
 
-    except Exception as e:
+    except Exception:
         pass
         raise
 

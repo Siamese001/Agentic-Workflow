@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ⚛️ Context Curator - Prompt Engineer Agent
 
@@ -18,21 +19,16 @@ Impact: Agents don't get confused by previous stage history
 """
 import json
 import logging
-import re
-import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -61,10 +57,10 @@ class HandoffSummary:
     """Compressed summary for stage handoff."""
     previous_stage: str
     next_stage: str
-    structural_facts: List[str]
-    critical_decisions: List[str]
-    lessons_learned: List[str]
-    warnings: List[str]
+    structural_facts: list[str]
+    critical_decisions: list[str]
+    lessons_learned: list[str]
+    warnings: list[str]
     compressed_context: str
 
     def _run_self_tests(self) -> bool:
@@ -142,7 +138,7 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
             total_size += len(str(self.ctx.signals))
         return ContextSnapshot(timestamp=datetime.now(timezone.utc).isoformat(), stage='current', total_size=total_size, ephemeral_logs=0, semantic_facts=0, compressed_size=0)
 
-    def _classify_content(self) -> tuple[List[str], List[str]]:
+    def _classify_content(self) -> tuple[list[str], list[str]]:
         """
         Classify content as ephemeral vs semantic.
 
@@ -169,9 +165,9 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
         """Determine if content is ephemeral."""
         ephemeral_keywords = ['processing', 'checking', 'scanning', 'analyzing', 'attempt', 'retry', 'waiting', 'loading']
         content_lower = content.lower()
-        return any((keyword in content_lower for keyword in ephemeral_keywords))
+        return any(keyword in content_lower for keyword in ephemeral_keywords)
 
-    async def _compress_context(self, semantic_facts: List[str]) -> HandoffSummary:
+    async def _compress_context(self, semantic_facts: list[str]) -> HandoffSummary:
         """
         Compress context using Gemini.
 
@@ -192,11 +188,11 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
             compressed = self._simple_compression(semantic_facts)
         return self._parse_compression(compressed, semantic_facts)
 
-    def _build_compression_prompt(self, semantic_facts: List[str]) -> str:
+    def _build_compression_prompt(self, semantic_facts: list[str]) -> str:
         """Build prompt for Gemini compression."""
-        return f"""# Context Compression Task\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n\nYou are compressing a context window for a multi-stage pipeline.\n\n## Current Context ({len(semantic_facts)} items):\n{chr(10).join((f'- {fact}' for fact in semantic_facts[:50]))}\n\n## Task:\nExtract ONLY the structural facts that must persist to the next stage.\n\nFocus on:\n1. Architectural decisions (e.g., "Extracted X into Y module")\n2. Critical constraints (e.g., "Must maintain 90% preservation")\n3. Lessons learned (e.g., "Nesting > 3 causes healing failures")\n4. Warnings (e.g., "File X is a healing sink")\n\nIgnore:\n- Temporary status updates\n- Processing logs\n- Retry attempts\n\nFormat your response as:\nSTRUCTURAL_FACTS:\n- [fact 1]\n- [fact 2]\n\nCRITICAL_DECISIONS:\n- [decision 1]\n\nLESSONS_LEARNED:\n- [lesson 1]\n\nWARNINGS:\n- [warning 1]\n"""
+        return f"""# Context Compression Task\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n\nYou are compressing a context window for a multi-stage pipeline.\n\n## Current Context ({len(semantic_facts)} items):\n{chr(10).join(f'- {fact}' for fact in semantic_facts[:50])}\n\n## Task:\nExtract ONLY the structural facts that must persist to the next stage.\n\nFocus on:\n1. Architectural decisions (e.g., "Extracted X into Y module")\n2. Critical constraints (e.g., "Must maintain 90% preservation")\n3. Lessons learned (e.g., "Nesting > 3 causes healing failures")\n4. Warnings (e.g., "File X is a healing sink")\n\nIgnore:\n- Temporary status updates\n- Processing logs\n- Retry attempts\n\nFormat your response as:\nSTRUCTURAL_FACTS:\n- [fact 1]\n- [fact 2]\n\nCRITICAL_DECISIONS:\n- [decision 1]\n\nLESSONS_LEARNED:\n- [lesson 1]\n\nWARNINGS:\n- [warning 1]\n"""
 
-    def _simple_compression(self, semantic_facts: List[str]) -> str:
+    def _simple_compression(self, semantic_facts: list[str]) -> str:
         """Simple compression without Gemini."""
         structural = []
         decisions = []
@@ -213,16 +209,16 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
             else:
                 structural.append(fact)
         output = 'STRUCTURAL_FACTS:\n'
-        output += '\n'.join((f'- {f}' for f in structural[:10]))
+        output += '\n'.join(f'- {f}' for f in structural[:10])
         output += '\n\nCRITICAL_DECISIONS:\n'
-        output += '\n'.join((f'- {d}' for d in decisions[:5]))
+        output += '\n'.join(f'- {d}' for d in decisions[:5])
         output += '\n\nLESSONS_LEARNED:\n'
-        output += '\n'.join((f'- {l}' for l in lessons[:5]))
+        output += '\n'.join(f'- {l}' for l in lessons[:5])
         output += '\n\nWARNINGS:\n'
-        output += '\n'.join((f'- {w}' for w in warnings[:5]))
+        output += '\n'.join(f'- {w}' for w in warnings[:5])
         return output
 
-    def _parse_compression(self, compressed: str, original_facts: List[str]) -> HandoffSummary:
+    def _parse_compression(self, compressed: str, original_facts: list[str]) -> HandoffSummary:
         """Parse compressed output into HandoffSummary."""
         structural_facts = []
         critical_decisions = []
@@ -254,12 +250,12 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
     def _write_handoff_summary(self, handoff: HandoffSummary) -> Any:
         """Write handoff summary to .canon_memory/."""
         summary_file = self.memory_dir / 'HandoffSummary.md'
-        content = f"# Context Handoff Summary\n\nGenerated: {datetime.now(timezone.utc).isoformat()}\n\n## Structural Facts\n{chr(10).join((f'- {fact}' for fact in handoff.structural_facts))}\n\n## Critical Decisions\n{chr(10).join((f'- {decision}' for decision in handoff.critical_decisions))}\n\n## Lessons Learned\n{chr(10).join((f'- {lesson}' for lesson in handoff.lessons_learned))}\n\n## Warnings\n{chr(10).join((f'- {warning}' for warning in handoff.warnings))}\n\n---\n\n## Full Compressed Context\n{handoff.compressed_context}\n"
+        content = f"# Context Handoff Summary\n\nGenerated: {datetime.now(timezone.utc).isoformat()}\n\n## Structural Facts\n{chr(10).join(f'- {fact}' for fact in handoff.structural_facts)}\n\n## Critical Decisions\n{chr(10).join(f'- {decision}' for decision in handoff.critical_decisions)}\n\n## Lessons Learned\n{chr(10).join(f'- {lesson}' for lesson in handoff.lessons_learned)}\n\n## Warnings\n{chr(10).join(f'- {warning}' for warning in handoff.warnings)}\n\n---\n\n## Full Compressed Context\n{handoff.compressed_context}\n"
         with open(summary_file, 'w') as f:
             f.write(content)
         Logger.info(f'   Handoff summary written to {summary_file}')
 
-    def _archive_logs(self, ephemeral_logs: List[str]) -> Any:
+    def _archive_logs(self, ephemeral_logs: list[str]) -> Any:
         """Archive ephemeral logs."""
         if not ephemeral_logs:
             return
@@ -277,13 +273,13 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
             self.ctx.signals = set()
         Logger.info('   Active memory wiped for fresh context window')
 
-    def load_handoff_summary(self) -> Optional[HandoffSummary]:
+    def load_handoff_summary(self) -> HandoffSummary | None:
         """Load handoff summary from previous stage."""
         summary_file: Any = self.memory_dir / 'HandoffSummary.md'
         if not summary_file.exists():
             return None
         try:
-            with open(summary_file, 'r') as f:
+            with open(summary_file) as f:
                 content: Any = f.read()
             Logger.info(f'   Loaded handoff summary from {summary_file}')
             return HandoffSummary(previous_stage='previous', next_stage='current', structural_facts=[], critical_decisions=[], lessons_learned=[], warnings=[], compressed_context=content)
@@ -292,7 +288,7 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
             return None
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

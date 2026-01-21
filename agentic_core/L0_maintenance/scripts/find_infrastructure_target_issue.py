@@ -1,6 +1,6 @@
 """Find which Infrastructure territory has wrong target."""
-import re
 import json
+import re
 from pathlib import Path
 
 dashboard_path = Path("reports/autonomy_dashboard.html")
@@ -18,4 +18,4 @@ for row in infra_rows:
     target_inv = row.get('Target Invocation')
     print(f"  {terr}: Target = {target_inv}")
     if target_inv == 20:
-        print(f"    ⚠️  WRONG! Should be 70")
+        print("    ⚠️  WRONG! Should be 70")

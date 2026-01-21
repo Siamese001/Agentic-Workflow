@@ -9,27 +9,11 @@ This script:
 """
 import ast
 import json
-import re
 from pathlib import Path
-from typing import List, Dict, Set, Tuple
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
@@ -40,14 +24,14 @@ HEAL_METHOD_TEMPLATE = '''
         return super().heal_repository()
 '''
 
-def load_inherited_agents() -> List[Dict]:
+def load_inherited_agents() -> list[dict]:
     """Load agents with invocation='Inherited' status."""
-    with open(DISCOVERY_JSON, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_JSON, encoding='utf-8') as f:
         agents = json.load(f)
     return [a for a in agents if a.get('invocation') == 'Inherited']
 
 
-def find_class_end(source: str, class_name: str) -> Tuple[int, int]:
+def find_class_end(source: str, class_name: str) -> tuple[int, int]:
     """Find the end of a class definition to insert method before it."""
     try:
         tree = ast.parse(source)
@@ -144,7 +128,7 @@ def main():
     print(f"\nFound {len(agents)} agents with 'Inherited' invocation status\n")
 
     # Group by file to avoid multiple writes
-    by_file: Dict[str, List[str]] = {}
+    by_file: dict[str, list[str]] = {}
     for agent in agents:
         path = agent.get('path', '')
         class_name = agent.get('class_name', '')

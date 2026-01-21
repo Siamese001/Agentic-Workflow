@@ -1,11 +1,13 @@
 from __future__ import annotations
+
 """
 Git Tools - Atomic Module
 Extracted from action_registry.py via Atomic Fission Protocol
 Tool ID Prefix: ACT-010
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger('ActionRegistry.GitTools')
 
 class GitTools:

@@ -1,14 +1,15 @@
 from __future__ import annotations
+
 """
 Pitch Generator for Outreach Engine
 Generates personalized outreach pitches
 """
 import json
 import logging
-import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -16,7 +17,7 @@ class PitchResult:
     """Result from pitch generation."""
     subject: str
     content: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 class PitchGenerator:
     """Generates personalized outreach pitches."""
@@ -30,7 +31,7 @@ class PitchGenerator:
         """
         self.llm_client = llm_client
 
-    def generate_pitch(self, context: Dict[str, Any], relationships: Dict[str, Any]) -> PitchResult:
+    def generate_pitch(self, context: dict[str, Any], relationships: dict[str, Any]) -> PitchResult:
         """
         Generate personalized pitch based on context and relationships.
 
@@ -46,7 +47,7 @@ class PitchGenerator:
         else:
             return self._generate_with_template(context, relationships)
 
-    def _generate_with_llm(self, context: Dict[str, Any], relationships: Dict[str, Any]) -> PitchResult:
+    def _generate_with_llm(self, context: dict[str, Any], relationships: dict[str, Any]) -> PitchResult:
         """Generate pitch using LLM."""
         try:
             prompt = self._build_pitch_prompt(context, relationships)
@@ -59,7 +60,7 @@ class PitchGenerator:
             Logger.error(f'LLM pitch generation failed: {e}')
             return self._generate_with_template(context, relationships)
 
-    def _generate_with_template(self, context: Dict[str, Any], relationships: Dict[str, Any]) -> PitchResult:
+    def _generate_with_template(self, context: dict[str, Any], relationships: dict[str, Any]) -> PitchResult:
         """Generate pitch using template."""
         company_name = context.get('company_name', 'the company')
         recent_news = context.get('recent_news', 'recent developments')
@@ -69,7 +70,7 @@ class PitchGenerator:
         content = f"Dear {contact_name},\n\nI hope this email finds you well. I've been following {company_name}'s work and was particularly impressed by {recent_news}.\n\n{('We share several mutual connections: ' + ', '.join(mutual_connections[:3]) + '.' if mutual_connections else '')}\n\nI believe my experience in {context.get('my_field', 'technology')} could be valuable to your team, especially given your focus on {context.get('company_focus', 'innovation')}.\n\nWould you be open to a brief conversation next week to explore potential synergies?\n\nBest regards,\n{context.get('my_name', 'Your Name')}\n{context.get('my_title', 'Your Title')}\n{context.get('my_contact', 'your@email.com')}\n"
         return PitchResult(subject=subject, content=content, metadata={'source': 'template', 'template': 'professional_outreach', 'timestamp': datetime.now().isoformat()})
 
-    def _build_pitch_prompt(self, context: Dict[str, Any], relationships: Dict[str, Any]) -> str:
+    def _build_pitch_prompt(self, context: dict[str, Any], relationships: dict[str, Any]) -> str:
         """Build prompt for LLM pitch generation."""
         return f'\nGenerate a professional outreach email based on the following:\n\nCOMPANY CONTEXT:\n{json.dumps(context, indent=2)}\n\nRELATIONSHIP CONTEXT:\n{json.dumps(relationships, indent=2)}\n\nRequirements:\n- Write a compelling subject line\n- Keep the email concise (150-200 words)\n- Personalize with recent company news or developments\n- Mention mutual connections if available\n- Include a clear call to action\n- Maintain professional but friendly tone\n- Avoid sales-heavy language\n\nFormat the response with the subject line first, followed by the email body.\n'
 

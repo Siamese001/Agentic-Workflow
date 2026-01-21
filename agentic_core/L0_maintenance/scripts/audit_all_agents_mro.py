@@ -9,21 +9,19 @@ This script finds all classes ending in 'Agent' and runs comprehensive MRO audit
 Usage:
     python scripts/audit_all_agents_mro.py
 """
-import sys
-from pathlib import Path
-from typing import List, Tuple, Type
 import importlib.util
 import inspect
+import sys
+from pathlib import Path
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.utils.testing.mro_auditor import MROAuditor
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 
-def find_all_agent_classes(root_dir: Path) -> List[Tuple[str, Type]]:
+def find_all_agent_classes(root_dir: Path) -> list[tuple[str, type]]:
     """
     Find all classes ending in 'Agent' in the agentic_core directory.
 
@@ -64,7 +62,7 @@ def find_all_agent_classes(root_dir: Path) -> List[Tuple[str, Type]]:
                     if name.endswith("Agent") and obj.__module__ == module_name:
                         agent_classes.append((module_name, obj))
 
-        except Exception as e:
+        except Exception:
             # Skip files that can't be imported (silently)
             pass
 

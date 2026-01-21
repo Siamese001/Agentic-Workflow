@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Atomic Blackboard - Thread-Safe State Management for Canon Validator
 
@@ -14,10 +15,10 @@ across concurrent healing operations. Features:
 import hashlib
 import json
 import os
-import re
 import time
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from dataclasses import dataclass
+from typing import Any
+
 
 @dataclass
 class FileHealthScore:
@@ -28,12 +29,12 @@ class FileHealthScore:
     healing_attempts: int = 0
     last_hash: str = ''
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for storage."""
         return {'file_path': self.file_path, 'current_violations': self.current_violations, 'last_healed_timestamp': self.last_healed_timestamp, 'healing_attempts': self.healing_attempts, 'last_hash': self.last_hash}
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'FileHealthScore':
+    def from_dict(cls, data: dict[str, Any]) -> FileHealthScore:
         """Create from dictionary."""
         return cls(file_path=data['file_path'], current_violations=data['current_violations'], last_healed_timestamp=data['last_healed_timestamp'], healing_attempts=data.get('healing_attempts', 0), last_hash=data.get('last_hash', ''))
 
@@ -54,12 +55,14 @@ class HealingLease:
         """Get remaining time in seconds."""
         return max(0, self.expires_at - time.time())
 
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import (
+    L4SubatomicTestingMixin,
+)
+from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+
 
 class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """
@@ -84,12 +87,12 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         super().__init__()
         self.redis_client = redis_client
         self.pinecone_index = pinecone_index
-        self.redis_fallback: Dict[str, Any] = {}
+        self.redis_fallback: dict[str, Any] = {}
         self.lease_duration = int(os.getenv('HEALING_LEASE_DURATION', '30'))
         self.max_backoff = int(os.getenv('MAX_LEASE_BACKOFF', '60'))
         self.health_score_ttl = int(os.getenv('HEALTH_SCORE_TTL', '86400'))
-        self._leases: Dict[str, HealingLease] = {}
-        self._health_scores: Dict[str, FileHealthScore] = {}
+        self._leases: dict[str, HealingLease] = {}
+        self._health_scores: dict[str, FileHealthScore] = {}
         self._mcp_audit('init')
 
     def _run_self_tests(self) -> bool:
@@ -123,7 +126,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                 return True
 
             # Expire all stale leases
-            current_time = time.time()
+            time.time()
             stale = [k for k, v in self._leases.items() if v.is_expired()]
             for key in stale:
                 del self._leases[key]
@@ -150,7 +153,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
 
     def _all_leases_valid(self) -> bool:
         """Idempotency check: are all current leases valid?"""
-        current_time = time.time()
+        time.time()
         for v in self._leases.values():
             if v.is_expired():
                 return False
@@ -165,7 +168,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                 # Connection lost, clear fallback
                 self.redis_fallback.clear()
 
-    async def acquire_lease_async(self, file_path: str, agent_name: str) -> Optional[HealingLease]:
+    async def acquire_lease_async(self, file_path: str, agent_name: str) -> HealingLease | None:
         """Non-blocking lease acquisition for orchestrators."""
         try:
             return self.acquire_lease(file_path, agent_name)
@@ -180,7 +183,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             await self.heal_async({}, anomaly)  # Non-blocking
             raise
 
-    def acquire_lease(self, file_path: str, agent_name: str) -> Optional[HealingLease]:
+    def acquire_lease(self, file_path: str, agent_name: str) -> HealingLease | None:
         """
         Acquire a healing lease on a file.
 
@@ -274,7 +277,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                 return True
         return False
 
-    def wait_for_lease(self, file_path: str, agent_name: str, max_wait: int=None) -> Optional[HealingLease]:
+    def wait_for_lease(self, file_path: str, agent_name: str, max_wait: int=None) -> HealingLease | None:
         """
         Wait for a lease with exponential backoff.
 
@@ -302,7 +305,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         print(f'      ⏰ Timeout waiting for lease on {os.path.basename(file_path)}')
         return None
 
-    def get_health_score(self, file_path: str) -> Optional[FileHealthScore]:
+    def get_health_score(self, file_path: str) -> FileHealthScore | None:
         """
         Get health score for a file.
 
@@ -352,7 +355,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             self.redis_fallback[score_key] = score.to_dict()
         return score
 
-    def check_regression(self, file_path: str, new_violations: int, new_hash: str) -> Tuple[bool, str]:
+    def check_regression(self, file_path: str, new_violations: int, new_hash: str) -> tuple[bool, str]:
         """
         Check if a mutation would cause regression (increase errors).
 
@@ -417,7 +420,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         except Exception as e:
             print(f'      [!] Failed to store pattern in Pinecone: {e}')
 
-    def find_similar_patterns(self, violation_desc: str, top_k: int=3) -> List[Dict[str, Any]]:
+    def find_similar_patterns(self, violation_desc: str, top_k: int=3) -> list[dict[str, Any]]:
         """
         Find similar healing patterns from Pinecone.
 
@@ -443,7 +446,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             print(f'      [!] Failed to query Pinecone: {e}')
             return []
 
-    def get_cached_result(self, cache_key: str) -> Optional[Dict]:
+    def get_cached_result(self, cache_key: str) -> dict | None:
         """Get cached validation result."""
         if self.redis_client:
             try:
@@ -453,7 +456,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                 pass
         return self.redis_fallback.get(cache_key)
 
-    def cache_result(self, cache_key: str, result: Dict, ttl: int=3600) -> Any:
+    def cache_result(self, cache_key: str, result: dict, ttl: int=3600) -> Any:
         """Cache validation result."""
         if self.redis_client:
             try:
@@ -472,7 +475,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         except:
             return ''
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get blackboard statistics."""
         stats: Any = {'redis_connected': self.redis_client is not None, 'pinecone_connected': self.pinecone_index is not None, 'fallback_entries': len(self.redis_fallback), 'lease_duration': self.lease_duration, 'max_backoff': self.max_backoff}
         if self.redis_client:

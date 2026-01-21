@@ -3,27 +3,24 @@
 # Prompt Templates module for Resume Workflow
 # Contains all *logic* for loading and formatting prompts from prompts.json
 
-import scripts.validation.check_canonical_structure
 import json
 import logging
-import os  # <-- Import os
-from typing import Dict, List, Tuple, Optional
-from collections import defaultdict
+
+# Import models needed for type hinting
+from typing import TYPE_CHECKING
 
 # --- FIX: Import the DATA_DIR constant ---
 from config.config import DATA_DIR
 
-# Import models needed for type hinting
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from apps_shared.rag.hardening.models import RAGMission, MasterResumeIndex, ThematicAnalysis
-    from config.config import ContentConstraintsConfig, CompetitiveAnalysisConfig
+    from apps_shared.rag.hardening.models import MasterResumeIndex, RAGMission, ThematicAnalysis
+    from config.config import CompetitiveAnalysisConfig
 
 # --- LOGIC: Load the 'Recipe Book' (prompts.json) at startup ---
 try:
     # --- FIX: Build path relative to this file ---
     prompts_path = DATA_DIR / "prompts.json"
-    with open(prompts_path, "r", encoding="utf-8") as f:
+    with open(prompts_path, encoding="utf-8") as f:
         PROMPT_TEMPLATES = json.load(f)
     logging.info(f"Successfully loaded prompts.json from {prompts_path}")
 except Exception as e:
@@ -63,7 +60,7 @@ def build_librarian_mission_extraction_prompt(
 def build_librarian_strategic_analysis_prompt(
     job_description: str,
     rag_mission: 'RAGMission',
-    previous_context: Optional[str] = None
+    previous_context: str | None = None
 ) -> str:
     """
     Builds prompt for Librarian to analyze strategic priorities and initiatives.
@@ -124,8 +121,8 @@ def build_phase1_prompt(
     job_description: str,
     mission: 'RAGMission',
     master_resume_index: 'MasterResumeIndex',
-    company_name: Optional[str] = None,
-    librarian_context: Optional[str] = None
+    company_name: str | None = None,
+    librarian_context: str | None = None
 ) -> str:
     """
     Build Phase 1 RAG prompt with Librarian context integration.
@@ -169,7 +166,7 @@ def build_phase2_prompt(
     job_description: str,
     mission: 'RAGMission',
     industry: str,
-    librarian_context: Optional[str] = None
+    librarian_context: str | None = None
 ) -> str:
     """
     Build Phase 2 RAG prompt with enhanced signal extraction.
@@ -200,10 +197,10 @@ def build_phase3_prompt(
     job_description: str,
     mission: 'RAGMission',
     master_resume_index: 'MasterResumeIndex',
-    peer_companies: List[str],
+    peer_companies: list[str],
     comp_config: 'CompetitiveAnalysisConfig',
     industry: str,
-    librarian_context: Optional[str] = None
+    librarian_context: str | None = None
 ) -> str:
     """
     Build Phase 3 RAG prompt with competitive intelligence focus.
@@ -243,7 +240,7 @@ def build_phase3_prompt(
 
 def build_phase4_prompt(
     mission: 'RAGMission',
-    librarian_context: Optional[str] = None
+    librarian_context: str | None = None
 ) -> str:
     """
     Build Phase 4 RAG prompt with problem-solution narrative focus.
@@ -310,8 +307,8 @@ def build_macro_tot_generation_prompt(
     )
 
 def build_evaluator_scoring_prompt(
-    drafts: List[str],
-    criteria: Dict[str, object],
+    drafts: list[str],
+    criteria: dict[str, object],
     section_name: str
 ) -> str:
     """
@@ -337,7 +334,7 @@ def build_evaluator_scoring_prompt(
 
 def build_macro_tot_synthesis_prompt(
     original_prompt: str,
-    scored_drafts: List[Tuple[str, float]],
+    scored_drafts: list[tuple[str, float]],
     top_k: int = 2
 ) -> str:
     """
@@ -390,7 +387,7 @@ def build_narrative_prompt(
     )
 
 def build_verbatim_bullet_selection_prompt(
-    master_bullets_text_list: List[str],
+    master_bullets_text_list: list[str],
     verbatim_count: int,
     thematic_analysis: 'ThematicAnalysis'
 ) -> str:
@@ -413,7 +410,7 @@ def build_verbatim_bullet_selection_prompt(
     )
 
 def build_customized_bullet_prompt(
-    source_bullets_text: List[str],
+    source_bullets_text: list[str],
     thematic_analysis: 'ThematicAnalysis'
 ) -> str:
     """Builds the prompt for customizing bullets."""
@@ -499,8 +496,8 @@ def build_bullet_reorder_prompt(
 
 def build_bullet_rewrite_prompt(
     original_bullet: str,
-    target_word_count_range: Tuple[int, int],
-    **kwargs: Dict[str, any]
+    target_word_count_range: tuple[int, int],
+    **kwargs: dict[str, any]
 ) -> str:
     """Builds the prompt for rewriting a single bullet to a word count."""
     template = _get_prompt_template("artist_bullet_rewrite_wc")
@@ -513,10 +510,10 @@ def build_bullet_rewrite_prompt(
 
 def build_overview_generation_prompt(
     bullet_summary_input: str,
-    word_count_range: Tuple[int, int],
+    word_count_range: tuple[int, int],
     thematic_analysis: 'ThematicAnalysis',
     job_description: str,
-    **kwargs: Dict[str, object]) -> str:
+    **kwargs: dict[str, object]) -> str:
     """Builds the prompt for generating an experience overview."""
     template = _get_prompt_template("artist_overview_generation")
 
@@ -543,7 +540,7 @@ def build_overview_generation_prompt(
 
 def build_generation_prompt_with_reinforced_constraints(
     base_prompt: str,
-    constraints: Dict[str, object],
+    constraints: dict[str, object],
     attempt_number: int
 ) -> str:
     """
@@ -607,7 +604,7 @@ DO NOT output until STEP 7.
 
 def build_sc_synthesis_prompt(
     original_prompt: str,
-    candidate_responses: List[str]
+    candidate_responses: list[str]
 ) -> str:
     """Builds the prompt for self-consistency synthesis."""
     template = _get_prompt_template("artist_sc_synthesis")
@@ -668,7 +665,7 @@ def get_prompt_template(template_key: str) -> str:
     return _get_prompt_template(template_key)
 
 
-def list_available_templates() -> List[str]:
+def list_available_templates() -> list[str]:
     """
     List all available prompt template keys from the JSON file.
     """

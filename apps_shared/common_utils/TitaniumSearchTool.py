@@ -6,18 +6,14 @@ to ensure all agents benefit from the SOTA retrieval system.
 
 import asyncio
 import logging
-from typing import Dict, List, Optional, Any
-from functools import lru_cache
+from typing import Any
 
-from .titanium_rag_pipeline import (
-    TitaniumRAGPipeline,
-    create_titanium_pipeline
-)
+from .titanium_rag_pipeline import TitaniumRAGPipeline, create_titanium_pipeline
 
 logger = logging.getLogger(__name__)
 
 # Global singleton to preserve Cache/Lazy Models
-_TITANIUM_PIPELINE: Optional[TitaniumRAGPipeline] = None
+_TITANIUM_PIPELINE: TitaniumRAGPipeline | None = None
 _LEGACY_FALLBACK_ENABLED = True
 _INITIALIZATION_LOCK = asyncio.Lock()
 
@@ -44,9 +40,9 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
 
             # Test availability
             component_info = _TITANIUM_PIPELINE.get_component_info()
-            logger.info(f"Pipeline initialized successfully:")
-            logger.info(f"  - Phase 1 (Precision): Available")
-            logger.info(f"  - Phase 2 (Reasoning): Available")
+            logger.info("Pipeline initialized successfully:")
+            logger.info("  - Phase 1 (Precision): Available")
+            logger.info("  - Phase 2 (Reasoning): Available")
             logger.info(f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
                        f"Cache={component_info['phase_3_sota']['cache_available']}")
 
@@ -80,7 +76,7 @@ async def _create_fallback_pipeline() -> TitaniumRAGPipeline:
 
 async def get_titanium_search_tool(
     query: str,
-    context: Optional[str] = None,
+    context: str | None = None,
     max_results: int = 5,
     include_metadata: bool = False
 ) -> str:
@@ -191,13 +187,13 @@ async def get_titanium_search_tool(
 
     except Exception as e:
         logger.error(f"Search failed for query '{query}': {e}")
-        return f"Search encountered an error. Please try rephrasing your query."
+        return "Search encountered an error. Please try rephrasing your query."
 
 
 async def get_titanium_search_with_sources(
     query: str,
-    context: Optional[str] = None
-) -> Dict[str, Any]:
+    context: str | None = None
+) -> dict[str, Any]:
     """
     Get search results with full source information.
 
@@ -289,7 +285,7 @@ async def get_titanium_search_with_sources(
         }
 
 
-def get_pipeline_stats() -> Dict[str, Any]:
+def get_pipeline_stats() -> dict[str, Any]:
     """Get statistics about the Titanium pipeline.
 
     Returns:
@@ -325,7 +321,7 @@ async def clear_cache():
 
 
 # Convenience function for synchronous contexts
-def sync_search(query: str, context: Optional[str] = None) -> str:
+def sync_search(query: str, context: str | None = None) -> str:
     """Synchronous wrapper for async search function.
 
     Args:
@@ -341,7 +337,6 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
         # If we're in an async context, we can't use run_until_complete
         # Use run_coroutine_threadsafe instead
         import concurrent.futures
-        import threading
 
         def run_in_thread():
             new_loop = asyncio.new_event_loop()

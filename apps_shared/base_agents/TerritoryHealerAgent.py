@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 Territory Healer Agent - Exhaustive Territory Enforcement
@@ -20,11 +22,13 @@ Examples:
 """
 
 from pathlib import Path
-from typing import Dict, Any, List, Optional
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from typing import Any
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
@@ -38,14 +42,13 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         self.root = project_root
         self.ctx = ctx
 
+        from agentic_core.runtime.shared_runtime.void_compliance import get_placement_guidance
+
         from agentic_core.L5_safety.validators.structure_blueprint import (
             CANON_KEY_TO_FOLDER_MAP,
             CANON_SIGNALS_MK2,
             ROOT_PROTECTED_FILES,
-            SOVEREIGN_REGISTRY,
-            TERRITORY_EXAMPLES,
         )
-        from agentic_core.runtime.shared_runtime.void_compliance import get_placement_guidance
 
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
         self.key_positive_signals = CANON_SIGNALS_MK2  # Legacy bridge – migrate to CANON_SIGNALS_MK2
@@ -75,7 +78,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         assert hasattr(self, 'ctx'), "Missing ctx"
         return True
 
-    def check_depth_precision(self, file_path: Path) -> Optional[dict]:
+    def check_depth_precision(self, file_path: Path) -> dict | None:
         """
         Check if file violates precision depth requirements.
         Only heal if root precision is violated.
@@ -125,7 +128,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
 
         return None
 
-    def is_stray_in_territory(self, rel_path: str, content_lower: str, stem_lower: str) -> Optional[dict]:
+    def is_stray_in_territory(self, rel_path: str, content_lower: str, stem_lower: str) -> dict | None:
         """
         Check if file is stray WITHIN its current key territory.
         Uses DOUBLE-LOCK: negative signals (what doesn't belong) + positive signals (what does belong).
@@ -159,7 +162,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             move = self._suggest_move(content_lower, rel_path, current_territory)
             if move:
                 if has_negative:
-                    move["reason"] += f" (negative signals detected)"
+                    move["reason"] += " (negative signals detected)"
                 if positive_score < 2:
                     move["reason"] += f" (weak positive: {positive_score}/3)"
                 return move
@@ -174,7 +177,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             "reason": f"Unknown territory — no positive signals (confidence {positive_score})"
         }
 
-    def _suggest_move(self, content_lower: str, rel_path: str, current_territory: int) -> Optional[dict]:
+    def _suggest_move(self, content_lower: str, rel_path: str, current_territory: int) -> dict | None:
         """
         Suggest better territory via semantic guidance.
         """
@@ -198,7 +201,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             }
         return None
 
-    def find_all_stray(self) -> List[dict]:
+    def find_all_stray(self) -> list[dict]:
         """
         Scan entire codebase for stray files in wrong territories.
         """
@@ -250,7 +253,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         return moves
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -275,12 +278,12 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         Main execution entry point.
         Finds and executes all territory violations with cache purging.
         """
-        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays...")
+        print("\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays...")
 
         stray_actions = self.find_all_stray()
 
         if not stray_actions:
-            print(f"   [✓] No territory violations detected")
+            print("   [✓] No territory violations detected")
             return
 
         print(f"\n   [!] Found {len(stray_actions)} territory violations:")
@@ -293,8 +296,12 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
 
         # [GHOST PURGE] Connect to Redis and Pinecone for cleanup
         try:
-            from agentic_core.L2_execution.ToolRegistry.PineconeSovereignAgent import PineconeSovereignAgent
-            from agentic_core.L2_execution.ToolRegistry.RedisSovereignAgent import RedisSovereignAgent
+            from agentic_core.L2_execution.ToolRegistry.PineconeSovereignAgent import (
+                PineconeSovereignAgent,
+            )
+            from agentic_core.L2_execution.ToolRegistry.RedisSovereignAgent import (
+                RedisSovereignAgent,
+            )
             redis_agent = RedisSovereignAgent(self.root)
             pinecone_agent = PineconeSovereignAgent(self.root)
         except Exception:

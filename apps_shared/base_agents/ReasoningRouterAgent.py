@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """Reasoning strategy router for selecting appropriate reasoning mode.
 
 Phase 1 - Pillar 6: Reasoning Models (Structured Reasoning)
@@ -14,13 +16,15 @@ Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 
 import logging
 from enum import Enum
-from typing import Optional, Dict, Any
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from .react_engine import ReasoningMode
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -58,7 +62,7 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         self.default_mode: ReasoningMode = default_mode
         self.enable_adaptive_routing: bool = enable_adaptive_routing
 
-        self._strategy_map: Dict[TaskType, ReasoningMode] = {
+        self._strategy_map: dict[TaskType, ReasoningMode] = {
             TaskType.TOOL_USE: ReasoningMode.REACT,
             TaskType.QUESTION_ANSWERING: ReasoningMode.CHAIN_OF_THOUGHT,
             TaskType.CLASSIFICATION: ReasoningMode.SHOTGUN,
@@ -74,7 +78,7 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
     _CLASSIFICATION_INDICATORS = ["classify", "categorize", "is this", "does this", "true or false", "yes or no"]
     _PLANNING_INDICATORS = ["plan", "strategy", "approach", "steps to", "how to"]
 
-    def _get_task_type_from_context(self, context: Optional[Dict[str, Any]]) -> Optional[TaskType]:
+    def _get_task_type_from_context(self, context: dict[str, Any] | None) -> TaskType | None:
         """Extract TaskType from context if provided."""
         if context and "TaskType" in context:
             try:
@@ -83,14 +87,14 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                 pass
         return None
 
-    def _match_indicators(self, task_lower: str, indicators: list, task_type: TaskType) -> Optional[TaskType]:
+    def _match_indicators(self, task_lower: str, indicators: list, task_type: TaskType) -> TaskType | None:
         """Check if any indicator matches and return task type."""
         for indicator in indicators:
             if indicator in task_lower:
                 return task_type
         return None
 
-    def classify_task(self, Task: str, context: Optional[Dict[str, Any]] = None) -> TaskType:
+    def classify_task(self, Task: str, context: dict[str, Any] | None = None) -> TaskType:
         """Classify Task type based on content and context."""
         context_type = self._get_task_type_from_context(context)
         if context_type:
@@ -119,7 +123,7 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
     def select_strategy(
         self,
         Task: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> ReasoningMode:
         """Select appropriate reasoning strategy for Task.
 
@@ -163,7 +167,7 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         )
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -183,8 +187,8 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
 
 def select_reasoning_strategy(
     Task: str,
-    context: Optional[Dict[str, Any]] = None,
-    router: Optional[ReasoningRouterAgent] = None,
+    context: dict[str, Any] | None = None,
+    router: ReasoningRouterAgent | None = None,
 ) -> ReasoningMode:
     """Convenience function to select reasoning strategy.
 

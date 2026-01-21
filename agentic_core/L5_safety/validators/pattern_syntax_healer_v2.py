@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 Pattern Syntax Healer v2 - Automated Final Sweep
 Phase 2.5: Meta-Learning Implementation
@@ -26,7 +27,6 @@ the remaining syntax remediation.
 import os
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 
 class PatternSyntaxHealerV2:
@@ -44,7 +44,7 @@ class PatternSyntaxHealerV2:
         self.fixes_applied = 0
         self.files_modified = []
 
-    def heal_all_patterns(self) -> Dict[str, int]:
+    def heal_all_patterns(self) -> dict[str, int]:
         """
         Execute all pattern-based fixes across the codebase.
 
@@ -71,7 +71,7 @@ class PatternSyntaxHealerV2:
             stats['files_scanned'] += 1
 
             try:
-                with open(py_file, 'r', encoding='utf-8') as f:
+                with open(py_file, encoding='utf-8') as f:
                     original_content = f.read()
             except Exception as e:
                 print(f"⚠️  Could not read {py_file}: {e}")
@@ -114,7 +114,7 @@ class PatternSyntaxHealerV2:
         skip_patterns = ['.backup', '__pycache__', '.git', 'venv', 'node_modules']
         return any(pattern in str(file_path) for pattern in skip_patterns)
 
-    def _fix_pattern1_malformed_imports(self, content: str) -> Tuple[str, int]:
+    def _fix_pattern1_malformed_imports(self, content: str) -> tuple[str, int]:
         """
         Fix Pattern 1: Malformed imports inside structure_blueprint blocks.
 
@@ -168,7 +168,7 @@ class PatternSyntaxHealerV2:
         def simple_replace(match):
             nonlocal fixes
             header = match.group(1)
-            malformed = match.group(2)
+            match.group(2)
             footer = match.group(3)
             fixes += 1
             return header + footer
@@ -177,7 +177,7 @@ class PatternSyntaxHealerV2:
 
         return modified, fixes
 
-    def _fix_pattern2_empty_try_blocks(self, content: str) -> Tuple[str, int]:
+    def _fix_pattern2_empty_try_blocks(self, content: str) -> tuple[str, int]:
         """
         Fix Pattern 2: Empty try blocks.
 
@@ -210,7 +210,7 @@ class PatternSyntaxHealerV2:
         modified = pattern.sub(replace_func, content)
         return modified, fixes
 
-    def _fix_pattern3_indentation(self, content: str) -> Tuple[str, int]:
+    def _fix_pattern3_indentation(self, content: str) -> tuple[str, int]:
         """
         Fix Pattern 3: Unindented imports after try: or def:
 
@@ -241,7 +241,7 @@ class PatternSyntaxHealerV2:
         modified = pattern.sub(replace_func, content)
         return modified, fixes
 
-    def _print_summary(self, stats: Dict[str, int]):
+    def _print_summary(self, stats: dict[str, int]):
         """Print summary of fixes applied."""
         print("\n" + "=" * 80)
         print("PATTERN HEALER V2 - SUMMARY")
@@ -299,7 +299,7 @@ def main():
     print("=" * 80)
 
     print("\n✅ Pattern healing complete!")
-    print(f"Run SyntaxValidatorAgent to verify: python scripts/generate_syntax_report.py")
+    print("Run SyntaxValidatorAgent to verify: python scripts/generate_syntax_report.py")
 
     return {'production': stats, 'tests': test_stats, 'total_fixes': total_fixes}
 

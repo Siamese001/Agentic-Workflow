@@ -1,13 +1,12 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import re
-from enum import Enum, auto
 from pathlib import Path
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
+
 root: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
 path_redirects: Any = {}
 
@@ -29,7 +28,7 @@ def hardwire_discovery() -> Any:
                 py_file.write_text(content, encoding='utf-8')
                 print(f'  [✓] Synapse Anchored: {py_file.relative_to(ROOT)}')
                 fixed += 1
-        except Exception as e:
+        except Exception:
             pass
     print(f'\n[OK] DISCOVERY FIXED. {fixed} files anchored.')
 if __name__ == '__main__':

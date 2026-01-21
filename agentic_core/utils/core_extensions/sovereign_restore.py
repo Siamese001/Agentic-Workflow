@@ -1,30 +1,17 @@
 from __future__ import annotations
+
 import ast
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-import os
 from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / AGENTIC_CORE_DIR
 
@@ -32,7 +19,7 @@ def get_class_names(file_path: Any) -> Any:
     """Statically parse class names to avoid execution/circular imports."""
     classes: Any = []
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             node: Any = ast.parse(f.read())
         for n in node.body:
             if isinstance(n, ast.ClassDef):

@@ -1,16 +1,24 @@
 from __future__ import annotations
+
 """
 SOVEREIGN STRUCTURE FINALIZER
 Creates all Missing directories to enforce the 3-level depth law.
 """
 import os
-from agentic_core.L5_safety.validators.structure_blueprint import APPS_LIC_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP, CORE_SUBFOLDER_MAP, TESTS_L2_SUBFOLDER_MAP
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    APPS_LIC_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
+    APPS_SHARED_SUBFOLDER_MAP,
+    CORE_SUBFOLDER_MAP,
+    TESTS_L2_SUBFOLDER_MAP,
+)
+
 
 def finalize_structure(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""
-    print(f'--- FINALIZING SOVEREIGN STRUCTURE ---')
+    print('--- FINALIZING SOVEREIGN STRUCTURE ---')
     for l1, l2_list in CORE_SUBFOLDER_MAP.items():
         for l2 in l2_list:
             path: Any = os.path.join(root_path, 'agentic_core', l1, l2)

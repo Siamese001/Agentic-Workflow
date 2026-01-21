@@ -1,12 +1,14 @@
 from __future__ import annotations
+
 """
 Networking Utilities for Agentic Workflow
 Provides P8 Egress Filter for strict domain whitelisting
 """
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol, Set
+from dataclasses import dataclass
+from typing import Any
 from urllib.parse import urlparse
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -19,7 +21,7 @@ class EgressResult:
 class NetworkingUtility:
     """Provides networking utilities with P8 Egress Filter enforcement."""
 
-    def __init__(self, allowed_hosts: Optional[Set[str]]=None):
+    def __init__(self, allowed_hosts: set[str] | None=None):
         """
         Initialize networking utility.
 
@@ -30,7 +32,7 @@ class NetworkingUtility:
         self.blocked_count = 0
         self.allowed_count = 0
 
-    def strict_egress_filter(self, url: str, allowed: Optional[Set[str]]=None) -> EgressResult:
+    def strict_egress_filter(self, url: str, allowed: set[str] | None=None) -> EgressResult:
         """
         Check if URL is allowed by egress filter.
 
@@ -61,7 +63,7 @@ class NetworkingUtility:
             Logger.error(f'P8_ERROR: Failed to parse URL {url}: {e}')
             return EgressResult(status='FAIL', reason=f'Parse error: {str(e)}', host='unknown')
 
-    def send_email(self, to: str, subject: str, body: str, send_time: Optional[str]=None, dry_run: bool=True) -> dict:
+    def send_email(self, to: str, subject: str, body: str, send_time: str | None=None, dry_run: bool=True) -> dict:
         """
         Send email with P8 enforcement.
 
@@ -83,7 +85,7 @@ class NetworkingUtility:
         Logger.warning('EMAIL_SEND: Real email sending not implemented, using dry run')
         return self.send_email(to, subject, body, send_time, dry_run=True)
 
-    def fetch_url(self, url: str, headers: Optional[dict]=None) -> dict:
+    def fetch_url(self, url: str, headers: dict | None=None) -> dict:
         """
         Fetch URL content with P8 enforcement.
 
@@ -106,17 +108,17 @@ class NetworkingUtility:
 outreach_allowed_hosts: Any = {'linkedin.com', 'crunchbase.com', 'techcrunch.com', 'venturebeat.com', 'company-websites.com', 'api.email-service.com'}
 _networking_instance = None
 
-def get_networking_utility(allowed_hosts: Optional[Set[str]]=None) -> NetworkingUtility:
+def get_networking_utility(allowed_hosts: set[str] | None=None) -> NetworkingUtility:
     """Get singleton networking utility instance."""
     global _networking_instance
     if _networking_instance is None:
         _networking_instance = NetworkingUtility(allowed_hosts or OUTREACH_ALLOWED_HOSTS)
     return _networking_instance
 
-def strict_egress_filter(url: str, allowed: Optional[Set[str]]=None) -> EgressResult:
+def strict_egress_filter(url: str, allowed: set[str] | None=None) -> EgressResult:
     """Convenience function for egress filter check."""
     return get_networking_utility().strict_egress_filter(url, allowed)
 
-def send_email(to: str, subject: str, body: str, send_time: Optional[str]=None, dry_run: bool=True) -> dict:
+def send_email(to: str, subject: str, body: str, send_time: str | None=None, dry_run: bool=True) -> dict:
     """Convenience function for sending email."""
     return get_networking_utility().send_email(to, subject, body, send_time, dry_run)

@@ -1,16 +1,12 @@
 from __future__ import annotations
+
 """Automated cognitive density fixer - splits files with >5 top-level definitions."""
 import ast
 import logging
-from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 def count_top_level_defs(filepath: Path) -> int:
@@ -19,7 +15,7 @@ def count_top_level_defs(filepath: Path) -> int:
     'Count top-level definitions in a Python file.'
     try:
         tree: Any = ast.parse(filepath.read_text(encoding='utf-8'))
-        return sum((1 for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef))))
+        return sum(1 for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)))
     except Exception:
         return 0
 
@@ -33,9 +29,9 @@ def split_file_by_type(filepath: Path) -> None:
     functions: Any = []
     for node in tree.body:
         if isinstance(node, ast.ClassDef):
-            if any((base.id == 'Enum' for base in node.bases if isinstance(base, ast.Name))):
+            if any(base.id == 'Enum' for base in node.bases if isinstance(base, ast.Name)):
                 enums.append(node)
-            elif any((isinstance(d, ast.Name) and d.id == 'dataclass' or (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and (d.func.id == 'dataclass')) for d in node.decorator_list)):
+            elif any(isinstance(d, ast.Name) and d.id == 'dataclass' or (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and (d.func.id == 'dataclass')) for d in node.decorator_list):
                 dataclasses.append(node)
             else:
                 classes.append(node)

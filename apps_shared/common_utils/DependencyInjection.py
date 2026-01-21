@@ -4,8 +4,9 @@ Tests DI container functionality and proper service injection
 across all layers to maintain L1-L5 atomicity.
 """
 
+from unittest.mock import Mock
+
 import pytest
-from unittest.mock import Mock, patch
 
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapter, PineconeConfig  # Archive import removed
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  # Archive import removed
@@ -152,7 +153,7 @@ class TestLayerDIIntegration:
 
         # Should have retrieve_evidence method for DI
         assert hasattr(adapter, 'retrieve_evidence')
-        assert callable(getattr(adapter, 'retrieve_evidence'))
+        assert callable(adapter.retrieve_evidence)
 
     def test_safety_engine_di_interface(self) -> None:
         """Test that SafetyEngine provides DI-compatible interface."""
@@ -160,7 +161,7 @@ class TestLayerDIIntegration:
 
         # Should have evaluate method for DI
         assert hasattr(engine, 'evaluate')
-        assert callable(getattr(engine, 'evaluate'))
+        assert callable(engine.evaluate)
 
 
 class TestDIAtomicityCompliance:
@@ -173,7 +174,7 @@ class TestDIAtomicityCompliance:
         # Should import from DI container, not direct services
         source_lines = []
         try:
-            with open('l2/execution.py', 'r') as f:
+            with open('l2/execution.py') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
             # Skip if file not found in test environment
@@ -203,7 +204,7 @@ class TestDIAtomicityCompliance:
         # Should import from DI container
         source_lines = []
         try:
-            with open('l3/__init__.py', 'r') as f:
+            with open('l3/__init__.py') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
             return

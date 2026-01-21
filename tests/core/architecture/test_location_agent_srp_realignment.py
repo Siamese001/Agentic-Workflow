@@ -12,7 +12,7 @@ These tests verify the LocationAgent SRP fission is properly integrated.
 """
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import pytest
 
@@ -44,7 +44,7 @@ class TestT3P101ValidatorPathIntegrity:
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=PROJECT_ROOT)
         assert hasattr(validator, 'validate_sovereign_roots')
-        assert callable(getattr(validator, 'validate_sovereign_roots'))
+        assert callable(validator.validate_sovereign_roots)
 
 
 class TestT3P102HealerSafeMoveMocking:
@@ -71,7 +71,7 @@ class TestT3P102HealerSafeMoveMocking:
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=PROJECT_ROOT)
         assert hasattr(healer, 'heal_repository')
-        assert callable(getattr(healer, 'heal_repository'))
+        assert callable(healer.heal_repository)
 
     @patch('agentic_core.L5_safety.validators.LocationHealerAgent.LocationHealerAgent.heal_repository')
     def test_mock_healer_intercepts_call(self, mock_heal):
@@ -112,7 +112,7 @@ class TestT3P103SecurityWrapperDiscovery:
 
     def test_safe_execute_importable(self):
         """Verify safe_execute can be imported from security module."""
-        from agentic_core.utils.security import safe_execute, safe_popen, safe_git_execute
+        from agentic_core.utils.security import safe_execute, safe_git_execute, safe_popen
         assert safe_execute is not None
         assert safe_popen is not None
         assert safe_git_execute is not None
@@ -130,8 +130,6 @@ class TestT3P104SSOTConstantAccess:
             ARCHIVE_SUBFOLDERS,
             DEFAULT_ARCHIVE_SUBFOLDER,
             HEALING_STRATEGY_MAP,
-            DEFAULT_APP_HEALING_TARGET,
-            VIOLATION_THRESHOLDS,
         )
         assert ARCHIVE_SUBFOLDERS is not None
         assert DEFAULT_ARCHIVE_SUBFOLDER is not None

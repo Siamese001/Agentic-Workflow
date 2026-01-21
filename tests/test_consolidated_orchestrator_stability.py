@@ -129,15 +129,15 @@ def test_3_ssot_key_extraction():
 
     # Verify individual mission_log entries
     log = result["mission_log"]
-    assert log[0]["violations"] == 3, f"LegacyAgent1 violations_found not mapped correctly"
-    assert log[0]["fixed"] == 2, f"LegacyAgent1 violations_fixed not mapped correctly"
-    assert log[1]["violations"] == 5, f"LegacyAgent2 errors not mapped correctly"
-    assert log[1]["fixed"] == 1, f"LegacyAgent2 renamed not mapped correctly"
+    assert log[0]["violations"] == 3, "LegacyAgent1 violations_found not mapped correctly"
+    assert log[0]["fixed"] == 2, "LegacyAgent1 violations_fixed not mapped correctly"
+    assert log[1]["violations"] == 5, "LegacyAgent2 errors not mapped correctly"
+    assert log[1]["fixed"] == 1, "LegacyAgent2 renamed not mapped correctly"
 
-    print(f"✅ PASSED: SSOT key extraction working")
+    print("✅ PASSED: SSOT key extraction working")
     print(f"   total_violations={result['total_violations']} (expected {expected_violations})")
     print(f"   total_fixes={result['total_fixes']} (expected {expected_fixes})")
-    print(f"   Legacy keys (violations_found, errors, violations_fixed, renamed) correctly mapped")
+    print("   Legacy keys (violations_found, errors, violations_fixed, renamed) correctly mapped")
     return True
 
 
@@ -183,7 +183,7 @@ def test_4_observability_duration():
     assert log[1]["duration_sec"] >= delay_2 - tolerance, \
         f"SlowAgent duration {log[1]['duration_sec']} should be >= {delay_2}"
 
-    print(f"✅ PASSED: Duration tracking working")
+    print("✅ PASSED: Duration tracking working")
     print(f"   Mission duration_sec={result['duration_sec']}")
     print(f"   FastAgent duration_sec={log[0]['duration_sec']} (expected ~{delay_1})")
     print(f"   SlowAgent duration_sec={log[1]['duration_sec']} (expected ~{delay_2})")
@@ -221,23 +221,23 @@ def test_5_critical_error_transparency():
     assert len(log) == 3, f"Expected 3 log entries, got {len(log)}"
 
     # Verify first agent succeeded
-    assert log[0]["status"] == "success", f"HealthyAgent1 should have status=success"
-    assert log[0]["fixed"] == 1, f"HealthyAgent1 should have fixed=1"
+    assert log[0]["status"] == "success", "HealthyAgent1 should have status=success"
+    assert log[0]["fixed"] == 1, "HealthyAgent1 should have fixed=1"
 
     # Verify failing agent recorded correctly
-    assert log[1]["status"] == "failed", f"FailingAgent should have status=failed"
+    assert log[1]["status"] == "failed", "FailingAgent should have status=failed"
     assert "error" in log[1], "FailingAgent should have error field"
-    assert error_message in log[1]["error"], f"Error message not recorded correctly"
+    assert error_message in log[1]["error"], "Error message not recorded correctly"
     assert "duration_sec" in log[1], "FailingAgent should have duration_sec even on failure"
 
     # Verify third agent still executed (mission continued)
-    assert log[2]["status"] == "success", f"HealthyAgent2 should have status=success"
-    assert log[2]["fixed"] == 2, f"HealthyAgent2 should have fixed=2"
+    assert log[2]["status"] == "success", "HealthyAgent2 should have status=success"
+    assert log[2]["fixed"] == 2, "HealthyAgent2 should have fixed=2"
 
     # Verify total_fixes only counts successful agents
     assert result["total_fixes"] == 3, f"Expected total_fixes=3 (1+2), got {result['total_fixes']}"
 
-    print(f"✅ PASSED: Critical error transparency working")
+    print("✅ PASSED: Critical error transparency working")
     print(f"   FailingAgent status={log[1]['status']}")
     print(f"   Error recorded: '{log[1]['error'][:50]}...'")
     print(f"   Mission continued: HealthyAgent2 executed with fixed={log[2]['fixed']}")

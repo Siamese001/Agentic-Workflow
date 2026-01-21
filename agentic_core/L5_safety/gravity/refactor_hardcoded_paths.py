@@ -4,8 +4,6 @@ Bulk refactor hardcoded paths to use SSOT constants from structure_blueprint.py
 """
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -146,7 +144,7 @@ def add_ssot_import(content: str) -> str:
         lines.insert(insert_idx + 1, '')
         return '\n'.join(lines)
 
-def refactor_file(file_path: Path, dry_run: bool = False) -> Tuple[bool, int]:
+def refactor_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
     """Refactor a single file to use SSOT constants.
 
     Returns:
@@ -191,7 +189,7 @@ def refactor_file(file_path: Path, dry_run: bool = False) -> Tuple[bool, int]:
         print(f"❌ Error processing {file_path}: {e}")
         return False, 0
 
-def refactor_repository(dry_run: bool = False) -> Dict[str, int]:
+def refactor_repository(dry_run: bool = False) -> dict[str, int]:
     """Refactor entire repository.
 
     Returns:

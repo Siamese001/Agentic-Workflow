@@ -1,16 +1,19 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 OutreachTestPilotAgent - Campaign validation testing agent.
 
 Extracted from LeadQualityAgent.py for one-file-per-agent pattern (Jan 6, 2026).
 Renamed from OutreachTestPilot for consistent Agent suffix.
 """
-from typing import Any, Dict
+from typing import Any
+
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 from .OutreachAgent import OutreachAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -73,6 +76,6 @@ class OutreachTestPilotAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
             self.record_result(False, f"Failed: {failed_tests}")
             print(f"   [{self.name}] ❌ Failed tests: {failed_tests}")
 
-    def heal_repository(self) -> Dict[str, Any]:
+    def heal_repository(self) -> dict[str, Any]:
         """Invoke healing chain via super()."""
         return super().heal_repository()

@@ -5,20 +5,22 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """HOP-4: Routing Agent - Determine optimal message Route."""
 
 __version__ = "13.1"
 
-from typing import Dict, Any
+from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from apps_lic.domain.lic_models import OutreachMission
 from apps_shared.utils.state_manager import StateManager
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
@@ -32,7 +34,7 @@ class HOP4RoutingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     Output: state/4_routing_decision.json
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """
         Initialize with externalized configuration
 
@@ -120,7 +122,7 @@ class HOP4RoutingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         # Write to state
         output_path = state_mgr.write_state("HOP-4", output_state)
 
-        print(f"✓ Routing Decision Complete")
+        print("✓ Routing Decision Complete")
         print(f"  Route: {selected_route}")
         print(f"  Archetype: {Archetype}")
         print(f"  Word range: {constraints['word_range']}")
@@ -129,7 +131,7 @@ class HOP4RoutingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         return output_path
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, int]:
         """Operational agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()

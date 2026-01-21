@@ -24,17 +24,17 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from runtime.shared.integrity_gate_executor import IntegrityGateExecutor
 from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
+from runtime.shared.integrity_gate_executor import IntegrityGateExecutor
 
 
 @dataclass
 class ExecutionArtifact:
     artifact_type: str
     content: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     timestamp: float = field(default_factory=time.time)
 
 
@@ -42,13 +42,13 @@ class ExecutionArtifact:
 class ExecutionTrace:
     run_sha: str
     start_time: float
-    end_time: Optional[float]
-    decision_path: List[str]
-    temperature_log: List[Dict[str, Any]]
-    validation_failures: List[Dict[str, Any]]
-    artifacts: List[ExecutionArtifact]
+    end_time: float | None
+    decision_path: list[str]
+    temperature_log: list[dict[str, Any]]
+    validation_failures: list[dict[str, Any]]
+    artifacts: list[ExecutionArtifact]
     success: bool
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class ExecutionOrchestrator:
@@ -74,15 +74,15 @@ class ExecutionOrchestrator:
 
     def __init__(
         self,
-        output_dir: Optional[Path] = None,
+        output_dir: Path | None = None,
         silent_mode: bool = True
     ):
         self.output_dir = output_dir or Path("./output")
         self.silent_mode = silent_mode
-        self.current_trace: Optional[ExecutionTrace] = None
-        self.artifacts: List[ExecutionArtifact] = []
+        self.current_trace: ExecutionTrace | None = None
+        self.artifacts: list[ExecutionArtifact] = []
 
-    def start_execution(self, context: Dict[str, Any]) -> str:
+    def start_execution(self, context: dict[str, Any]) -> str:
         """
         Start new execution with silent mode.
         Returns run_sha for tracking.
@@ -105,7 +105,7 @@ class ExecutionOrchestrator:
 
         return run_sha
 
-    def record_decision(self, decision: str, details: Optional[Dict[str, Any]] = None) -> None:
+    def record_decision(self, decision: str, details: dict[str, Any] | None = None) -> None:
         """Record a decision point in the execution path"""
         if self.current_trace:
             decision_entry = decision
@@ -146,7 +146,7 @@ class ExecutionOrchestrator:
         self,
         artifact_type: str,
         content: str,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ) -> None:
         """Add generated artifact to execution trace"""
         artifact = ExecutionArtifact(
@@ -163,7 +163,7 @@ class ExecutionOrchestrator:
     def complete_execution(
         self,
         success: bool,
-        error: Optional[str] = None
+        error: str | None = None
     ) -> ExecutionTrace:
         """
         Complete execution and generate audit.json.
@@ -214,7 +214,7 @@ class ExecutionOrchestrator:
 
         return "\n".join(output_sections)
 
-    def _generate_run_sha(self, context: Dict[str, Any]) -> str:
+    def _generate_run_sha(self, context: dict[str, Any]) -> str:
         """Generate unique SHA for this execution run"""
         timestamp = str(time.time())
         context_str = json.dumps(context, sort_keys=True)
@@ -274,7 +274,7 @@ class ExecutionOrchestrator:
 
 
 def create_execution_orchestrator(
-    output_dir: Optional[Path] = None,
+    output_dir: Path | None = None,
     silent_mode: bool = True
 ) -> ExecutionOrchestrator:
     """Factory function to create ExecutionOrchestrator instance"""

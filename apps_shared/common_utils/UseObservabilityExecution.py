@@ -5,13 +5,14 @@ resource management, error handling, and result processing.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Callable
 import logging
-from datetime import datetime
-from enum import Enum
 import time
 import uuid
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -37,23 +38,23 @@ class ExecutionRequest:
     """Request for observability execution."""
     request_id: str
     operation_type: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     strategy: ExecutionStrategy = ExecutionStrategy.IMMEDIATE
     priority: ExecutionPriority = ExecutionPriority.NORMAL
     timeout: float = 30.0
-    retry_policy: Dict[str, Any] = field(default_factory=dict)
-    dependencies: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    retry_policy: dict[str, Any] = field(default_factory=dict)
+    dependencies: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ExecutionEnvironment:
     """Environment for execution."""
     env_id: str
-    resources: Dict[str, Any] = field(default_factory=dict)
-    variables: Dict[str, str] = field(default_factory=dict)
-    limits: Dict[str, Any] = field(default_factory=dict)
-    permissions: List[str] = field(default_factory=list)
+    resources: dict[str, Any] = field(default_factory=dict)
+    variables: dict[str, str] = field(default_factory=dict)
+    limits: dict[str, Any] = field(default_factory=dict)
+    permissions: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -74,29 +75,29 @@ class ExecutionResult:
     request_id: str
     operation_type: str
     success: bool
-    output: Optional[Any] = None
-    exit_code: Optional[int] = None
-    stdout: Optional[str] = None
-    stderr: Optional[str] = None
-    metrics: Dict[str, float] = field(default_factory=dict)
-    artifacts: List[str] = field(default_factory=list)
-    error: Optional[str] = None
-    warnings: List[str] = field(default_factory=list)
+    output: Any | None = None
+    exit_code: int | None = None
+    stdout: str | None = None
+    stderr: str | None = None
+    metrics: dict[str, float] = field(default_factory=dict)
+    artifacts: list[str] = field(default_factory=list)
+    error: str | None = None
+    warnings: list[str] = field(default_factory=list)
     execution_time: float = 0.0
-    resource_usage: Dict[str, float] = field(default_factory=dict)
+    resource_usage: dict[str, float] = field(default_factory=dict)
 
 
 class ObservabilityExecutionEngine:
     """Main engine for observability execution."""
 
-    def __init__(self, config: Optional[ExecutionConfig] = None):
+    def __init__(self, config: ExecutionConfig | None = None):
         self.config = config or ExecutionConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._operation_handlers: Dict[str, Callable] = {}
-        self._execution_queue: List[ExecutionRequest] = []
-        self._active_executions: Dict[str, Dict[str, Any]] = {}
-        self._execution_history: List[ExecutionResult] = []
-        self._environments: Dict[str, ExecutionEnvironment] = {}
+        self._operation_handlers: dict[str, Callable] = {}
+        self._execution_queue: list[ExecutionRequest] = []
+        self._active_executions: dict[str, dict[str, Any]] = {}
+        self._execution_history: list[ExecutionResult] = []
+        self._environments: dict[str, ExecutionEnvironment] = {}
         self._initialize_handlers()
 
     def register_operation(self, operation_type: str, handler: Callable) -> None:
@@ -110,7 +111,7 @@ class ObservabilityExecutionEngine:
         self.logger.info(f"Registered operation: {operation_type}")
 
     def execute(self, request: ExecutionRequest,
-                environment: Optional[ExecutionEnvironment] = None) -> ExecutionResult:
+                environment: ExecutionEnvironment | None = None) -> ExecutionResult:
         """Execute an observability operation.
 
         Args:
@@ -172,8 +173,8 @@ class ObservabilityExecutionEngine:
                 start_time
             )
 
-    def execute_batch(self, requests: List[ExecutionRequest],
-                     environment: Optional[ExecutionEnvironment] = None) -> List[ExecutionResult]:
+    def execute_batch(self, requests: list[ExecutionRequest],
+                     environment: ExecutionEnvironment | None = None) -> list[ExecutionResult]:
         """Execute multiple operations.
 
         Args:
@@ -215,7 +216,7 @@ class ObservabilityExecutionEngine:
         self.logger.info(f"Queued execution: {request.request_id}")
         return True
 
-    def process_queue(self, environment: Optional[ExecutionEnvironment] = None) -> List[ExecutionResult]:
+    def process_queue(self, environment: ExecutionEnvironment | None = None) -> list[ExecutionResult]:
         """Process queued executions.
 
         Args:
@@ -234,7 +235,7 @@ class ObservabilityExecutionEngine:
 
         return results
 
-    def get_execution_status(self, request_id: str) -> Optional[Dict[str, Any]]:
+    def get_execution_status(self, request_id: str) -> dict[str, Any] | None:
         """Get execution status.
 
         Args:
@@ -278,7 +279,7 @@ class ObservabilityExecutionEngine:
         self._environments[environment.env_id] = environment
         self.logger.info(f"Registered environment: {environment.env_id}")
 
-    def get_execution_history(self, limit: Optional[int] = None) -> List[ExecutionResult]:
+    def get_execution_history(self, limit: int | None = None) -> list[ExecutionResult]:
         """Get execution history.
 
         Args:
@@ -292,12 +293,12 @@ class ObservabilityExecutionEngine:
         return self._execution_history
 
     def _execute_immediate(self, request: ExecutionRequest,
-                          environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+                          environment: ExecutionEnvironment | None) -> ExecutionResult:
         """Execute immediately."""
         return self._execute_with_handler(request, environment)
 
     def _execute_queued(self, request: ExecutionRequest,
-                       environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+                       environment: ExecutionEnvironment | None) -> ExecutionResult:
         """Execute from queue."""
         # For queued execution, we execute immediately but with queue metadata
         result = self._execute_with_handler(request, environment)
@@ -305,7 +306,7 @@ class ObservabilityExecutionEngine:
         return result
 
     def _execute_scheduled(self, request: ExecutionRequest,
-                          environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+                          environment: ExecutionEnvironment | None) -> ExecutionResult:
         """Execute scheduled execution."""
         # Check if scheduled time has arrived
         scheduled_time = request.metadata.get("scheduled_time")
@@ -322,7 +323,7 @@ class ObservabilityExecutionEngine:
         return self._execute_with_handler(request, environment)
 
     def _execute_conditional(self, request: ExecutionRequest,
-                            environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+                            environment: ExecutionEnvironment | None) -> ExecutionResult:
         """Execute based on conditions."""
         # Check conditions
         conditions = request.metadata.get("conditions", {})
@@ -340,7 +341,7 @@ class ObservabilityExecutionEngine:
         return self._execute_with_handler(request, environment)
 
     def _execute_with_handler(self, request: ExecutionRequest,
-                             environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+                             environment: ExecutionEnvironment | None) -> ExecutionResult:
         """Execute with registered handler."""
         handler = self._operation_handlers[request.operation_type]
 
@@ -377,7 +378,7 @@ class ObservabilityExecutionEngine:
         finally:
             self._track_execution_complete(request)
 
-    def _check_dependencies(self, dependencies: List[str]) -> bool:
+    def _check_dependencies(self, dependencies: list[str]) -> bool:
         """Check if dependencies are satisfied."""
         for dep in dependencies:
             # Check if dependency exists in history
@@ -390,7 +391,7 @@ class ObservabilityExecutionEngine:
         return True
 
     def _evaluate_condition(self, condition: str,
-                           environment: Optional[ExecutionEnvironment]) -> object:
+                           environment: ExecutionEnvironment | None) -> object:
         """Evaluate a condition."""
         if environment:
             # Check environment variables
@@ -453,7 +454,7 @@ class ObservabilityExecutionEngine:
     def _initialize_handlers(self) -> None:
         """Initialize built-in handlers."""
         # Metrics collection handler
-        def _metrics_handler(context: Dict[str, Any]) -> Dict[str, Any]:
+        def _metrics_handler(context: dict[str, Any]) -> dict[str, Any]:
             request = context["request"]
             params = request.parameters
 
@@ -468,7 +469,7 @@ class ObservabilityExecutionEngine:
             }
 
         # Log analysis handler
-        def _log_analysis_handler(context: Dict[str, Any]) -> Dict[str, Any]:
+        def _log_analysis_handler(context: dict[str, Any]) -> dict[str, Any]:
             request = context["request"]
             params = request.parameters
 
@@ -486,7 +487,7 @@ class ObservabilityExecutionEngine:
             }
 
         # Trace analysis handler
-        def _trace_analysis_handler(context: Dict[str, Any]) -> Dict[str, Any]:
+        def _trace_analysis_handler(context: dict[str, Any]) -> dict[str, Any]:
             request = context["request"]
             params = request.parameters
 
@@ -503,7 +504,7 @@ class ObservabilityExecutionEngine:
             }
 
         # Health check handler
-        def _health_check_handler(context: Dict[str, Any]) -> Dict[str, Any]:
+        def _health_check_handler(context: dict[str, Any]) -> dict[str, Any]:
             return {
                 "status": "healthy",
                 "checks": [
@@ -541,12 +542,12 @@ def create_observability_execution_engine(
 # Convenience function for direct usage
 def use_observability_execution(
     operation_type: str,
-    parameters: Dict[str, Any],
-    request_id: Optional[str] = None,
+    parameters: dict[str, Any],
+    request_id: str | None = None,
     strategy: str = "immediate",
     priority: str = "normal",
     timeout: float = 30.0
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Execute observability operation.
 
     Args:

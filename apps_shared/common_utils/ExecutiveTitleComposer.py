@@ -8,11 +8,10 @@ Legacy K-Node: K.4
 """
 
 import logging
-import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
-from runtime.shared.agent_base import Agent, ReasoningConfig
+from typing import Any
 
+from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +26,8 @@ class HeadlineOutput:
     word_count: int
     char_count: int
     industry_first_compliant: bool
-    technology_keywords_in_segment_1: List[str]
-    metadata: Dict[str, Any]
+    technology_keywords_in_segment_1: list[str]
+    metadata: dict[str, Any]
 
 
 # Technology keywords that MUST NOT appear in Segment 1 (Industry-First violation)
@@ -85,7 +84,7 @@ class Executive_Title_Composer(Agent):
             f"words={word_count_min}-{word_count_max}, charsâ‰¤{char_limit}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> HeadlineOutput:
+    async def execute(self, context: dict[str, Any]) -> HeadlineOutput:
         """Execute headline generation with Industry-First positioning.
 
         Args:
@@ -166,7 +165,7 @@ class Executive_Title_Composer(Agent):
         self,
         target_industry: str,
         target_role: str,
-        value_propositions: List[str],
+        value_propositions: list[str],
         job_description: str,
     ) -> str:
         """Build initial generation prompt with Industry-First enforcement.
@@ -223,7 +222,7 @@ Generate the headline now ({self.word_count_min}-{self.word_count_max} words, â‰
 
     def _build_regeneration_prompt(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         feedback: str,
     ) -> str:
         """Build regeneration prompt with validation feedback.
@@ -258,7 +257,7 @@ Generate the corrected headline:
 
         return prompt
 
-    def _parse_segments(self, headline: str) -> List[str]:
+    def _parse_segments(self, headline: str) -> list[str]:
         """Parse headline into 3 segments.
 
         Args:
@@ -276,7 +275,7 @@ Generate the corrected headline:
 
         return segments[:3]
 
-    def _check_technology_keywords(self, segment: str) -> List[str]:
+    def _check_technology_keywords(self, segment: str) -> list[str]:
         """Check for technology keywords in segment.
 
         Args:

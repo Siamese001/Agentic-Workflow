@@ -18,13 +18,12 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / "archives" / "legacy_orchestrators"
 
 # Legacy orchestrators to archive - these were consolidated into CoreOrchestrationAgent
-LEGACY_L3_ORCHESTRATORS: List[str] = [
+LEGACY_L3_ORCHESTRATORS: list[str] = [
     # Merged into CoreOrchestrationAgent
     "CachedOrchestratorAgent.py",
     "SelfRecoveringOrchestratorAgent.py",
@@ -42,7 +41,7 @@ LEGACY_L3_ORCHESTRATORS: List[str] = [
 ]
 
 # Apps layer orchestrators merged into AppWorkflowOrchestratorAgent
-LEGACY_APPS_ORCHESTRATORS: List[str] = [
+LEGACY_APPS_ORCHESTRATORS: list[str] = [
     "LicWorkflowOrchestratorAgent.py",
     "OutreachPhase5OrchestratorAgent.py",
     "Phase4OrchestratorAgent.py",
@@ -75,7 +74,7 @@ def find_orchestrator(filename: str) -> Path | None:
     return None
 
 
-def archive_file(source: Path, dry_run: bool = False) -> Tuple[bool, str]:
+def archive_file(source: Path, dry_run: bool = False) -> tuple[bool, str]:
     """Archive a single file."""
     target = ARCHIVE_DIR / source.name
 

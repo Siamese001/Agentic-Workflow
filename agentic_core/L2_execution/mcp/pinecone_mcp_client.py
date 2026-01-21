@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign Pinecone MCP Client – Phase 13C (Dec 26, 2025)
 Replaces all custom Pinecone wrappers with official MCP integration.
@@ -7,19 +8,18 @@ L3 routed, L5 shielded vector operations.
 [HARDENING] Added MCPHardenedMixin for retry, timeout, and observability (Jan 1, 2026)
 """
 import logging
-from typing import Optional, List, Dict, Any
+from typing import Any
+
 # ARCHIVED IMPORT REMOVED - dependency no longer available
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
+from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import (
+    L4SubatomicTestingMixin,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
             Logger.error(f'[L4 PINECONE MCP] Initialization failed: {e}')
             raise
 
-    async def search(self, query_text: str, top_k: int=10, namespace: Optional[str]=None, rerank: bool=True, filters: Optional[Dict]=None) -> Dict[str, Any]:
+    async def search(self, query_text: str, top_k: int=10, namespace: str | None=None, rerank: bool=True, filters: dict | None=None) -> dict[str, Any]:
         """
         Execute semantic search with optional server-side reranking.
 
@@ -88,7 +88,7 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
             Logger.error(f'[L4 PINECONE MCP] Search failed: {e}')
             return {'matches': [], 'error': str(e)}
 
-    async def upsert(self, vectors: List[Dict], namespace: Optional[str]=None) -> Dict[str, Any]:
+    async def upsert(self, vectors: list[dict], namespace: str | None=None) -> dict[str, Any]:
         """
         Upsert vectors to the index.
 
@@ -114,7 +114,7 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
             Logger.error(f'[L4 PINECONE MCP] Upsert failed: {e}')
             return {'upserted_count': 0, 'error': str(e)}
 
-    async def inference_embed(self, texts: List[str]) -> Dict[str, Any]:
+    async def inference_embed(self, texts: list[str]) -> dict[str, Any]:
         """
         Generate embeddings via the Inference MCP tool.
 
@@ -139,7 +139,7 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
             Logger.error(f'[L4 PINECONE MCP] Inference failed: {e}')
             return {'data': [], 'error': str(e)}
 
-    async def delete(self, ids: List[str], namespace: Optional[str]=None) -> Dict[str, Any]:
+    async def delete(self, ids: list[str], namespace: str | None=None) -> dict[str, Any]:
         """
         Delete vectors by ID.
 
@@ -153,13 +153,13 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
         if not self.initialized:
             await self.initialize()
         try:
-            Logger.warning(f'[L4 PINECONE MCP] Delete not directly supported via MCP')
+            Logger.warning('[L4 PINECONE MCP] Delete not directly supported via MCP')
             return {'deleted_count': 0, 'note': 'Delete operation not available via MCP'}
         except Exception as e:
             Logger.error(f'[L4 PINECONE MCP] Delete failed: {e}')
             return {'deleted_count': 0, 'error': str(e)}
 
-    async def describe_index_stats(self) -> Dict[str, Any]:
+    async def describe_index_stats(self) -> dict[str, Any]:
         """
         Get index statistics.
 
@@ -175,13 +175,13 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
                 'mcp8_describe-index-stats',
                 {'name': config.PINECONE_INDEX_NAME if hasattr(config, 'PINECONE_INDEX_NAME') else 'default'}
             )
-            Logger.info(f'[L4 PINECONE MCP] Index stats retrieved')
+            Logger.info('[L4 PINECONE MCP] Index stats retrieved')
             return result
         except Exception as e:
             Logger.error(f'[L4 PINECONE MCP] Stats retrieval failed: {e}')
             return {'error': str(e)}
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """
         Perform health check on Pinecone connection.
 
@@ -201,7 +201,7 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
-_pinecone_mcp_client: Optional[SovereignPineconeMCPClient] = None
+_pinecone_mcp_client: SovereignPineconeMCPClient | None = None
 
 def get_pinecone_mcp_client() -> SovereignPineconeMCPClient:
     """Get or create the global Pinecone MCP client."""

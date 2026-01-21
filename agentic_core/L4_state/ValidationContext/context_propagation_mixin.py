@@ -1,8 +1,7 @@
+import contextvars
 import logging
 import uuid
 import weakref
-import contextvars
-from typing import Any, Dict, Optional
 from functools import wraps
 
 # Context variables to hold trace and span IDs across async tasks
@@ -24,14 +23,14 @@ class ContextPropagationMixin:
         super().__init__(**kwargs)
         self._cp_logger = logging.getLogger(self.__class__.__name__)
 
-    def set_context(self, trace_id: str, span_id: Optional[str] = None):
+    def set_context(self, trace_id: str, span_id: str | None = None):
         """Manually sets the tracing context for the current execution flow."""
         trace_id_var.set(trace_id)
         if span_id:
             span_id_var.set(span_id)
         self._cp_logger.debug(f"Context set: trace_id={trace_id}")
 
-    def get_context(self) -> Dict[str, Optional[str]]:
+    def get_context(self) -> dict[str, str | None]:
         """Retrieves the current trace and span IDs."""
         return {
             "trace_id": trace_id_var.get(),

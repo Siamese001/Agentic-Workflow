@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 prompt_governance/meta_prompts – Sovereign Territory
 

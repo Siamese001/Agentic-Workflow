@@ -18,7 +18,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L4_state/ValidationContext/GravityStateAgent.py
     line: 85
     method: heal_repository
@@ -31,7 +31,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/guardrails/InputValidationGuardrail.py
     line: 196
     method: heal_repository
@@ -40,7 +40,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/red_teaming/AdversarialProbeAgent.py
     line: 212
     method: heal_repository
@@ -49,7 +49,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/red_teaming/BoundaryTestingAgent.py
     line: 257
     method: heal_repository
@@ -58,7 +58,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/red_teaming/ChaosEngineeringAgent.py
     line: 231
     method: heal_repository
@@ -67,7 +67,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/red_teaming/PromptInjectionAgent.py
     line: 229
     method: heal_repository
@@ -76,7 +76,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/validators/CompositeGuardrailAgent.py
     line: 368
     method: heal_repository
@@ -85,7 +85,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/validators/ConfigurationSecurityGuardrail.py
     line: 167
     method: heal_repository
@@ -94,7 +94,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/validators/InterfaceBoundaryAgent.py
     line: 71
     method: heal_repository
@@ -107,7 +107,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/validators/L5SafetyBaseAgent.py
     line: 299
     method: heal_repository
@@ -116,7 +116,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/validators/S2_SupervisorAgent.py
     line: 40
     method: heal_repository
@@ -129,7 +129,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L5_safety/validators/SemanticDebuggerAgent.py
     line: 124
     method: heal_repository
@@ -142,7 +142,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L6_observability/BenchmarkingAgent.py
     line: 160
     method: heal_repository
@@ -155,7 +155,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L6_observability/agents/PerformanceAnalystAgentSimple.py
     line: 76
     method: heal_repository
@@ -168,7 +168,7 @@ violations:
         canonical: violations_found
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L6_observability/agents/RuntimeTelemetryAgent.py
     line: 51
     method: heal_repository
@@ -181,7 +181,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L6_observability/agents/SovereignObservabilityAgent.py
     line: 46
     method: heal_repository
@@ -194,7 +194,7 @@ violations:
         canonical: violations_fixed
         status: pending
         priority: medium
-  
+
   - file: agentic_core/L6_observability/agents/StrategicObservationAgent.py
     line: 78
     method: heal_repository

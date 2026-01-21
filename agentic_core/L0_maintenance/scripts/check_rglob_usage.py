@@ -20,7 +20,6 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 # Configuration
 MAX_ALLOWED_RGLOB = 260  # Phase 6: Temporary ceiling, target is 50
@@ -54,7 +53,7 @@ def count_rglob_in_file(file_path: Path) -> int:
     """
     try:
         content = file_path.read_text(encoding='utf-8')
-    except (IOError, UnicodeDecodeError):
+    except (OSError, UnicodeDecodeError):
         return 0
 
     # Pattern to match .rglob( and .glob( calls
@@ -81,7 +80,7 @@ def should_exclude_path(file_path: Path) -> bool:
     return False
 
 
-def scan_for_rglob_usage(root_dir: Path) -> Tuple[int, List[Dict]]:
+def scan_for_rglob_usage(root_dir: Path) -> tuple[int, list[dict]]:
     """
     Scan directory for rglob/glob usage.
 

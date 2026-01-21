@@ -11,7 +11,6 @@ These tests ensure the SRP fission is complete and stable.
 """
 import sys
 from pathlib import Path
-from typing import Set
 
 import pytest
 
@@ -81,7 +80,9 @@ class TestL5ImportCycles:
     def test_validator_imports_cleanly(self):
         """Verify LocationValidatorAgent imports without circular import errors."""
         try:
-            from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
+            from agentic_core.L5_safety.validators.LocationValidatorAgent import (
+                LocationValidatorAgent,
+            )
             assert LocationValidatorAgent is not None
         except ImportError as e:
             pytest.fail(f"Circular import detected in LocationValidatorAgent: {e}")
@@ -117,10 +118,12 @@ class TestL5ImportCycles:
     def test_all_specialists_import_together(self):
         """Verify all specialist agents can be imported in same module."""
         try:
-            from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-            from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
             from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
             from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+            from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+            from agentic_core.L5_safety.validators.LocationValidatorAgent import (
+                LocationValidatorAgent,
+            )
 
             # All should be importable together
             assert LocationValidatorAgent is not None
@@ -200,15 +203,20 @@ class TestL1CognitionHardening:
     def test_l1_base_imports_cleanly(self):
         """Verify L1CognitionBaseAgent imports without errors."""
         try:
-            from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
+            from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
+                L1CognitionBaseAgent,
+            )
             assert L1CognitionBaseAgent is not None
         except ImportError as e:
             pytest.fail(f"L1CognitionBaseAgent import failed: {e}")
 
     def test_verification_registry_is_dict(self):
         """Verify VERIFICATION_REGISTRY has correct type annotation."""
-        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
         import dataclasses
+
+        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
+            L1CognitionBaseAgent,
+        )
 
         # Get field info
         fields = {f.name: f for f in dataclasses.fields(L1CognitionBaseAgent)}

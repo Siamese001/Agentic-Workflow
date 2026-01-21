@@ -7,8 +7,9 @@ Verifies that:
 2. Weighted averages are computed correctly (agent-count weighted)
 3. Health score formula matches documented weights
 """
-from pathlib import Path
 import json
+from pathlib import Path
+
 
 def validate_totals():
     """Validate dashboard TOTAL row calculations"""
@@ -80,7 +81,7 @@ def validate_totals():
         if not match:
             all_valid = False
             # Show breakdown for debugging
-            print(f"      Breakdown:")
+            print("      Breakdown:")
             for r in territory_rows[:5]:  # Show first 5
                 contrib = r[metric_key] * r['Total'] / expected_total
                 print(f"        {r['Territory']:30s}: {r[metric_key]:5.1f}% × {r['Total']:3d} agents = {contrib:5.2f}% contribution")

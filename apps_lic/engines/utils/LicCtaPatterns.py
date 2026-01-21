@@ -7,7 +7,6 @@ Ported from: archives/LIC_capabilities/reconstructed_capabilities.py
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional
 
 
 class RecipientArchetype(Enum):
@@ -33,7 +32,7 @@ class CTAPattern:
     """Pattern for call-to-action generation."""
 
     style: CTAStyle
-    verbs: List[str]
+    verbs: list[str]
     focus: str
     tone: str
     formality: str
@@ -41,7 +40,7 @@ class CTAPattern:
 
 
 # CTA patterns by Archetype
-CTA_PATTERNS: Dict[RecipientArchetype, CTAPattern] = {
+CTA_PATTERNS: dict[RecipientArchetype, CTAPattern] = {
     RecipientArchetype.C_LEVEL: CTAPattern(
         style=CTAStyle.STRATEGIC_ALIGNMENT,
         verbs=["discuss", "align", "explore", "advance"],
@@ -84,13 +83,13 @@ class CTATemplate:
     """Template for CTA generation by Route."""
 
     template: str
-    word_limit: Optional[int] = None
-    examples: List[str] = field(default_factory=list)
-    variables: Dict[str, str] = field(default_factory=dict)
+    word_limit: int | None = None
+    examples: list[str] = field(default_factory=list)
+    variables: dict[str, str] = field(default_factory=dict)
 
 
 # CTA templates by Route
-CTA_TEMPLATES: Dict[str, CTATemplate] = {
+CTA_TEMPLATES: dict[str, CTATemplate] = {
     "CONNECTION_REQ": CTATemplate(
         template="Would you be open to a brief chat about {topic}?",
         word_limit=5,
@@ -138,7 +137,7 @@ class DayBufferConfig:
 
 
 # Business day buffer map
-DAY_BUFFER_MAP: Dict[str, DayBufferConfig] = {
+DAY_BUFFER_MAP: dict[str, DayBufferConfig] = {
     "Monday": DayBufferConfig(
         min_buffer_days=2,
         suggested_pattern="Wed-Thu same week",
@@ -182,7 +181,7 @@ class DateWindowEngine:
 
     def __init__(
         self,
-        config: Optional[DateWindowConfig] = None,
+        config: DateWindowConfig | None = None,
     ) -> None:
         """Initialize the date window engine."""
         self.config = config or DateWindowConfig()
@@ -190,9 +189,9 @@ class DateWindowEngine:
 
     def generate_date_window(
         self,
-        from_date: Optional[datetime] = None,
+        from_date: datetime | None = None,
         num_dates: int = 3,
-    ) -> List[datetime]:
+    ) -> list[datetime]:
         """
         Generate a window of available dates.
 
@@ -216,7 +215,7 @@ class DateWindowEngine:
         # Start from buffer days ahead
         current_date = from_date + timedelta(days=buffer_config.min_buffer_days)
 
-        available_dates: List[datetime] = []
+        available_dates: list[datetime] = []
         max_attempts = 14  # Look up to 2 weeks ahead
 
         attempts = 0
@@ -230,7 +229,7 @@ class DateWindowEngine:
 
     def format_date_window(
         self,
-        dates: List[datetime],
+        dates: list[datetime],
         format_style: str = "natural",
     ) -> str:
         """
@@ -296,7 +295,7 @@ class CTAGenerator:
 
     def generate_date_window(
         self,
-        from_date: Optional[datetime] = None,
+        from_date: datetime | None = None,
         num_dates: int = 3,
     ) -> str:
         """Generate a formatted date window."""
@@ -307,9 +306,9 @@ class CTAGenerator:
         self,
         Route: str,
         Archetype: RecipientArchetype,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         include_date_window: bool = True,
-    ) -> Dict[str, object]:
+    ) -> dict[str, object]:
         """
         Generate a CTA based on Route and Archetype.
 
@@ -325,7 +324,7 @@ class CTAGenerator:
         template = self.get_template(Route)
         pattern = self.get_pattern(Archetype)
 
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "template": template.template,
             "pattern": pattern,
             "verbs": pattern.verbs,
@@ -351,7 +350,7 @@ class CTAGenerator:
         self,
         cta_text: str,
         Route: str,
-    ) -> Dict[str, object]:
+    ) -> dict[str, object]:
         """
         Validate a CTA against Route requirements.
 
@@ -363,7 +362,7 @@ class CTAGenerator:
             Validation result dictionary
         """
         template = self.get_template(Route)
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "word_count": len(cta_text.split()),
@@ -391,7 +390,7 @@ def create_cta_generator() -> CTAGenerator:
 
 
 def create_date_window_engine(
-    config: Optional[DateWindowConfig] = None,
+    config: DateWindowConfig | None = None,
 ) -> DateWindowEngine:
     """builder function to create a date window engine."""
     return DateWindowEngine(config)

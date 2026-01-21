@@ -4,13 +4,12 @@ Dynamic Prompt Loader for Canon Validator Agents
 Loads prompts from modularized markdown files based on agent role.
 """
 from pathlib import Path
-from typing import Dict, Optional
 
 
 class PromptLoader:
     """Loads and caches prompts from markdown files."""
 
-    def __init__(self, prompts_dir: Optional[str] = None):
+    def __init__(self, prompts_dir: str | None = None):
         """Initialize prompt loader with base directory."""
         if prompts_dir is None:
             # Default to prompts/ directory at project root
@@ -20,8 +19,8 @@ class PromptLoader:
         else:
             self.prompts_dir = Path(prompts_dir)
 
-        self._cache: Dict[str, str] = {}
-        self._global_constraints: Optional[str] = None
+        self._cache: dict[str, str] = {}
+        self._global_constraints: str | None = None
 
     def load_global_constraints(self) -> str:
         """Load global constraints that apply to all agents."""

@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 System Architect Agent - Core Architecture Validation
 CANONICAL: True - Consolidated 2026-01-06 (removed system_architect.py duplicate)
@@ -15,16 +17,16 @@ Responsible for:
 - Import dependencies, module structure
 - Architectural patterns and design
 """
-import ast
 import os
-import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from typing import Any
+
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
@@ -39,7 +41,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
     - Import structure, dependencies, architecture
     """
 
-    def get_validation_keys(self) -> List[int]:
+    def get_validation_keys(self) -> list[int]:
         """Return canon keys validated by this agent."""
         return list(range(40, 51))
 
@@ -73,7 +75,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         else:
             print(f'   [{self.name}] ✅ File Size: PASS - All files within size limits')
 
-    async def _check_file_headers(self) -> List[str]:
+    async def _check_file_headers(self) -> list[str]:
         """
         Documentation Sovereignty Pass.
         Checks for high-signal headers and specialized Test Protocols.
@@ -81,7 +83,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         violations = []
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = f.read(500)
                 if not content.strip().startswith('"""'):
                     violations.append(f'{file_path}: Missing Canonical Header Docstring')
@@ -91,7 +93,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                 continue
         return violations
 
-    def check_core_architecture(self) -> Tuple[bool, List[str]]:
+    def check_core_architecture(self) -> tuple[bool, list[str]]:
         """
         [L6 HARDENING] Core Hierarchy SSOT Verification.
         Reuses centralized hierarchy validation to prevent drift.
@@ -121,7 +123,9 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                     if not (l1_path / '__init__.py').exists():
                         violations.append(f'{root_folder}/{l1_name}: Missing __init__.py')
                     if config['depth'] == 4:
-                        from agentic_core.L5_safety.validators.structure_blueprint import CORE_SUBFOLDER_MAP
+                        from agentic_core.L5_safety.validators.structure_blueprint import (
+                            CORE_SUBFOLDER_MAP,
+                        )
                         l2_list: Any = CORE_SUBFOLDER_MAP.get(l1_name, [])
                         for l2_name in l2_list:
                             l2_path: Any = l1_path / l2_name
@@ -129,7 +133,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                                 violations.append(f'{root_folder}/{l1_name}/{l2_name}: Missing __init__.py')
         return (len(violations) == 0, violations)
 
-    def check_no_deep_nesting(self) -> Tuple[bool, List[str]]:
+    def check_no_deep_nesting(self) -> tuple[bool, list[str]]:
         """
         Enforce Physical Folder Nesting (Min 3, Max 5).
         Validates the physical directory depth relative to project root.
@@ -156,7 +160,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                 continue
         return (len(violations) == 0, violations)
 
-    def check_no_large_files(self) -> Tuple[bool, List[str]]:
+    def check_no_large_files(self) -> tuple[bool, list[str]]:
         """
         Check for files exceeding 1000 lines.
 
@@ -169,7 +173,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         for file_path in self.ctx.python_files:
             try:
                 resolved_path: Any = Path(file_path).resolve()
-                with open(resolved_path, 'r', encoding='utf-8') as f:
+                with open(resolved_path, encoding='utf-8') as f:
                     line_count: Any = len(f.readlines())
                 if line_count > max_lines:
                     violations.append(f'{file_path}: {line_count} lines exceeds max {max_lines}')
@@ -177,7 +181,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
                 continue
         return (len(violations) == 0, violations)
 
-    async def _heal_violations(self, check_type: str, violations: List[str]):
+    async def _heal_violations(self, check_type: str, violations: list[str]):
         """
         Structural & Strategy Healing.
         Handles both physical package initialization and logic mutation.
@@ -212,7 +216,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         for file_path, file_viols in file_violations.items():
             await self._smart_fix(file_path, check_type, file_viols)
 
-    async def _smart_fix(self, file_path: str, check_type: str, violations: List[str]):
+    async def _smart_fix(self, file_path: str, check_type: str, violations: list[str]):
         """
         Sovereign Header & Strategy Repair.
         Injects specialized Test Protocols and high-signal headers.
@@ -220,12 +224,12 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         from pathlib import Path
         try:
             resolved_path = Path(file_path).resolve()
-            with open(resolved_path, 'r', encoding='utf-8') as f:
+            with open(resolved_path, encoding='utf-8') as f:
                 original_code = f.read()
         except Exception as e:
             print(f'      [!] Cannot read {file_path}: {e}')
             return
-        if any((marker in v for marker in ['Missing Canonical Header', 'Missing Test Protocol'] for v in violations)):
+        if any(marker in v for marker in ['Missing Canonical Header', 'Missing Test Protocol'] for v in violations):
             Task = f"### ROLE: ARCHITECTURAL_SURGEON\n### TASK: Inject Standard Sovereign Header.\nFILE: {os.path.basename(file_path)}\n\nINSTRUCTIONS:\n1. Create a high-signal docstring at the VERY TOP of the file.\n2. The header must describe the file's purpose based on its content.\n3. Include 'Responsible for:' section with bullet points.\n4. IF THIS IS A TEST FILE: You MUST include a 'Test Protocol' section explaining exactly which functional behavior this file verifies.\n5. Preserve all existing code exactly as-is.\n\nReturn ONLY the full code with the new header injected."
         else:
             violation_details = '\n'.join(violations)
@@ -253,7 +257,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         print(f'      [X] Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds')
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()

@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 """Sync dashboard agent count with agent_discovery_full.json."""
 import json
-import re
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
 DASHBOARD_PATH = PROJECT_ROOT / 'agentic_core' / 'L6_observability' / 'dashboards' / 'autonomy_dashboard.html'
 
 # Load agent discovery
-with open(DISCOVERY_PATH, 'r', encoding='utf-8') as f:
+with open(DISCOVERY_PATH, encoding='utf-8') as f:
     agents = json.load(f)
 
 actual_count = len(agents)

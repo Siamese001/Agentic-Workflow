@@ -5,10 +5,9 @@ Pytest Configuration for Dashboard Tests
 Shared fixtures and configuration for all dashboard tests.
 """
 import json
-import os
 import sys
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any
 
 import pytest
 
@@ -49,17 +48,17 @@ def html_content(html_file) -> str:
 
 
 @pytest.fixture(scope="session")
-def agent_discovery_data(project_root) -> List[Dict[str, Any]]:
+def agent_discovery_data(project_root) -> list[dict[str, Any]]:
     """Load agent discovery data."""
     discovery_file = project_root / "agent_discovery_full.json"
     if not discovery_file.exists():
         pytest.skip(f"Agent discovery file not found: {discovery_file}")
-    with open(discovery_file, 'r', encoding='utf-8') as f:
+    with open(discovery_file, encoding='utf-8') as f:
         return json.load(f)
 
 
 @pytest.fixture(scope="session")
-def dashboard_data(dashboard_dir) -> List[Dict[str, Any]]:
+def dashboard_data(dashboard_dir) -> list[dict[str, Any]]:
     """Load dashboard data from dashboard_data.js."""
     data_file = dashboard_dir / "data" / "dashboard_data.js"
     if not data_file.exists():

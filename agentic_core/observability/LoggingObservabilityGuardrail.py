@@ -11,12 +11,13 @@ Composable Rules:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
-from enum import Enum
+
+import hashlib
 import re
 import time
-import hashlib
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 
 class LogLevel(Enum):
@@ -36,8 +37,8 @@ class LogEntry:
     message: str
     timestamp: float
     source: str
-    correlation_id: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    correlation_id: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
     sanitized: bool = False
 
 
@@ -50,7 +51,7 @@ class AuditEntry:
     target: str
     timestamp: float
     outcome: str  # "success", "failure", "blocked"
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 class LoggingObservabilityGuardrail:
@@ -66,7 +67,7 @@ class LoggingObservabilityGuardrail:
 
     def __init__(self):
         """Initialize logging guardrail."""
-        self.enabled_rules: List[str] = [
+        self.enabled_rules: list[str] = [
             "secure_logging",
             "audit_trails",
         ]
@@ -81,8 +82,8 @@ class LoggingObservabilityGuardrail:
         }
 
         # Log storage
-        self.logs: List[LogEntry] = []
-        self.audit_trail: List[AuditEntry] = []
+        self.logs: list[LogEntry] = []
+        self.audit_trail: list[AuditEntry] = []
         self.max_log_size = 10000
         self.max_audit_size = 5000
 
@@ -96,8 +97,8 @@ class LoggingObservabilityGuardrail:
         level: LogLevel,
         message: str,
         source: str,
-        correlation_id: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        correlation_id: str | None = None,
+        metadata: dict[str, Any] | None = None
     ) -> LogEntry:
         """
         Create secure log entry.
@@ -145,7 +146,7 @@ class LoggingObservabilityGuardrail:
         actor: str,
         target: str,
         outcome: str,
-        details: Optional[Dict[str, Any]] = None
+        details: dict[str, Any] | None = None
     ) -> AuditEntry:
         """
         Create audit trail entry.
@@ -208,10 +209,10 @@ class LoggingObservabilityGuardrail:
 
     def get_logs(
         self,
-        level: Optional[LogLevel] = None,
-        source: Optional[str] = None,
+        level: LogLevel | None = None,
+        source: str | None = None,
         limit: int = 100
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get logs with optional filtering.
 
@@ -245,10 +246,10 @@ class LoggingObservabilityGuardrail:
 
     def get_audit_trail(
         self,
-        action: Optional[str] = None,
-        actor: Optional[str] = None,
+        action: str | None = None,
+        actor: str | None = None,
         limit: int = 100
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get audit trail with optional filtering.
 
@@ -280,7 +281,7 @@ class LoggingObservabilityGuardrail:
             for a in filtered[-limit:]
         ]
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get logging statistics."""
         return {
             "logs_written": self.logs_written,

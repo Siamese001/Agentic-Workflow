@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Simple script to clean up shim chains by manually specifying the patterns.
 import logging
@@ -9,7 +10,7 @@ Logger = logging.getLogger(__name__)
 """
 from pathlib import Path
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
+
 
 def clean_prompt_governance() -> Any:
     """Clean up shim chains in prompt_governance."""

@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 Semantic Territory Mapper Agent - Intelligent Brain
@@ -16,22 +18,24 @@ This agent replaces mock logic with actual SubAtomicEngine integration.
 import hashlib
 import json
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Any
 
 import redis
 
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 from agentic_core.L5_safety.validators.structure_blueprint import TERRITORY_EXAMPLES
 from agentic_core.utils.ssot_discovery import get_python_files
+
 try:
     from agentic_core.L2_execution.ToolRegistry.PineconeSovereignAgent import PineconeSovereignAgent
 except ImportError:
     PineconeSovereignAgent = None
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 
 @dataclass
 class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
@@ -40,7 +44,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
     using real Gemini embeddings and vector similarity search.
     """
 
-    def __init__(self, project_root: Path, ctx: Optional[Any] = None) -> None:
+    def __init__(self, project_root: Path, ctx: Any | None = None) -> None:
         """
         Initialize semantic territory mapper.
 
@@ -49,7 +53,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
             ctx: Optional validation context
         """
         self.project_root: Path = project_root
-        self.ctx: Optional[Any] = ctx
+        self.ctx: Any | None = ctx
 
         # [ETERNAL GATEWAY] Use the dedicated vector agent
         self.pinecone = PineconeSovereignAgent(project_root)
@@ -76,7 +80,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
 
     def _seed_territory_examples(self) -> Any:
         """Seed the index with known territory examples for reference."""
-        print(f"   [*] Seeding territory examples...")
+        print("   [*] Seeding territory examples...")
         vectors = []
 
         for territory, example in TERRITORY_EXAMPLES.items():
@@ -97,7 +101,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
             self.index.upsert(vectors)
             print(f"   [✓] Seeded {len(vectors)} territory examples")
 
-    def get_embedding(self, text: str) -> List[float]:
+    def get_embedding(self, text: str) -> list[float]:
         """
         Sovereign embedding — delegated to PineconeSovereignAgent.
         Uses Redis cache for performance.
@@ -114,14 +118,14 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         self.redis.set(cache_key, json.dumps(embedding), ex=604800)
         return embedding
 
-    def map_file_to_territory(self, file_path: Path, content: str = None) -> Tuple[str, float]:
+    def map_file_to_territory(self, file_path: Path, content: str = None) -> tuple[str, float]:
         """
         Map a file to its most appropriate semantic territory.
         Returns (territory_path, confidence_score).
         """
         if not content:
             try:
-                with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                with open(file_path, encoding='utf-8', errors='ignore') as f:
                     content = f.read()
             except:
                 return "unknown", 0.0
@@ -164,7 +168,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
 
         return "unknown", 0.0
 
-    def suggest_territory_move(self, file_path: Path, current_location: str) -> Optional[str]:
+    def suggest_territory_move(self, file_path: Path, current_location: str) -> str | None:
         """
         Suggest a better territory for a file if it's misplaced.
         Returns suggested path or None if current location is appropriate.
@@ -183,7 +187,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
 
         return None
 
-    def analyze_territory_coverage(self) -> Dict[str, any]:
+    def analyze_territory_coverage(self) -> dict[str, any]:
         """
         Analyze the coverage of territories across the codebase.
         Returns statistics about territory distribution.
@@ -211,7 +215,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         return stats
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -236,16 +240,16 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         Main execution entry point.
         Analyzes and reports on territory mapping across the codebase.
         """
-        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] SemanticTerritoryMapperAgent: Analyzing territory coverage...")
+        print("\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] SemanticTerritoryMapperAgent: Analyzing territory coverage...")
 
         stats = self.analyze_territory_coverage()
 
-        print(f"   [✓] Analysis complete:")
+        print("   [✓] Analysis complete:")
         print(f"      - Total files: {stats['total_files']}")
         print(f"      - Mapped files: {stats['mapped_files']}")
         print(f"      - Coverage: {stats['mapped_files']/stats['total_files']*100:.1f}%")
 
-        print(f"\n   Territory Distribution:")
+        print("\n   Territory Distribution:")
         for territory, count in sorted(stats['territory_distribution'].items()):
             print(f"      - {territory}: {count} files")
 

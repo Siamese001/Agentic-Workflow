@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from difflib import SequenceMatcher
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -44,12 +44,12 @@ class ContentViolation:
     """Represents a content violation."""
     violation_type: ContentViolationType
     message: str
-    field_name: Optional[str] = None
-    value: Optional[str] = None
+    field_name: str | None = None
+    value: str | None = None
     severity: str = "error"
-    rule_id: Optional[str] = None
-    suggestion: Optional[str] = None
-    similarity_score: Optional[float] = None
+    rule_id: str | None = None
+    suggestion: str | None = None
+    similarity_score: float | None = None
 
     def __str__(self) -> str:
         field_info = f" [{self.field_name}]" if self.field_name else ""
@@ -59,7 +59,7 @@ class ContentViolation:
 @dataclass
 class ContentValidationReport:
     """Report of content validation results."""
-    violations: List[ContentViolation] = field(default_factory=list)
+    violations: list[ContentViolation] = field(default_factory=list)
     items_validated: int = 0
     items_passed: int = 0
     items_failed: int = 0
@@ -104,9 +104,9 @@ class ContentConfig:
     max_length: int = 2000
 
     # Custom patterns
-    profanity_patterns: List[str] = field(default_factory=list)
-    spam_patterns: List[str] = field(default_factory=list)
-    placeholder_patterns: List[str] = field(default_factory=lambda: [
+    profanity_patterns: list[str] = field(default_factory=list)
+    spam_patterns: list[str] = field(default_factory=list)
+    placeholder_patterns: list[str] = field(default_factory=lambda: [
         r"\[.*?\]",
         r"\{.*?\}",
         r"<.*?>",
@@ -169,7 +169,7 @@ class AppContentValidatorAgent:
         )
         Logger.info("AppContentValidatorAgent initialized")
 
-    def validate_email(self, email: str) -> List[ContentViolation]:
+    def validate_email(self, email: str) -> list[ContentViolation]:
         """Validate an email address."""
         violations = []
 
@@ -197,7 +197,7 @@ class AppContentValidatorAgent:
 
         return violations
 
-    def validate_linkedin(self, url: str) -> List[ContentViolation]:
+    def validate_linkedin(self, url: str) -> list[ContentViolation]:
         """Validate a LinkedIn URL."""
         violations = []
 
@@ -217,7 +217,7 @@ class AppContentValidatorAgent:
 
         return violations
 
-    def validate_content_cleanliness(self, content: str) -> List[ContentViolation]:
+    def validate_content_cleanliness(self, content: str) -> list[ContentViolation]:
         """Check content for profanity, spam, and placeholders."""
         violations = []
 
@@ -278,8 +278,8 @@ class AppContentValidatorAgent:
 
     def validate_diversity(
         self,
-        messages: List[str],
-        threshold: Optional[float] = None,
+        messages: list[str],
+        threshold: float | None = None,
     ) -> ContentValidationReport:
         """
         Validate message diversity (check for too-similar messages).
@@ -328,8 +328,8 @@ class AppContentValidatorAgent:
 
     def validate_message(
         self,
-        message_data: Dict[str, Any],
-        config: Optional[ContentConfig] = None,
+        message_data: dict[str, Any],
+        config: ContentConfig | None = None,
     ) -> ContentValidationReport:
         """
         Validate a single outreach message.
@@ -370,7 +370,7 @@ class AppContentValidatorAgent:
 
     def validate_messages(
         self,
-        messages: List[Dict[str, Any]],
+        messages: list[dict[str, Any]],
         check_diversity: bool = True,
     ) -> ContentValidationReport:
         """

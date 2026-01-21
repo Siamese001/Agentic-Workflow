@@ -13,25 +13,6 @@ Excludes examples/ and utils/ directories.
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 # All renames grouped by package
 RENAMES = {
@@ -174,14 +155,13 @@ def should_process_file(file_path: Path) -> bool:
     return True
 
 
-def rename_in_file(file_path: Path, renames: Dict[str, str], dry_run: bool = True) -> List[Tuple[str, str]]:
+def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool = True) -> list[tuple[str, str]]:
     """Rename classes in a file."""
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
-    except Exception as e:
+    except Exception:
         return []
 
-    original_content = content
     changes = []
 
     for old_name, new_name in renames.items():

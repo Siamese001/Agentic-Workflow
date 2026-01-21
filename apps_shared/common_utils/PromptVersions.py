@@ -15,7 +15,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from prompt_governance.registry.prompt_registry import PromptTemplate
 
@@ -40,9 +40,9 @@ class PromptVersion:
     created_at: float
     created_by: str
     change_notes: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "version_id": self.version_id,
@@ -57,7 +57,7 @@ class PromptVersion:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "PromptVersion":
+    def from_dict(cls, data: dict[str, Any]) -> "PromptVersion":
         """Create from dictionary."""
         return cls(
             version_id=data["version_id"],
@@ -91,8 +91,8 @@ class PromptVersionManager:
         """
         self.enable_logging = enable_logging
 
-        self._versions: Dict[str, List[PromptVersion]] = {}
-        self._tagged_versions: Dict[str, Dict[VersionTag, PromptVersion]] = {}
+        self._versions: dict[str, list[PromptVersion]] = {}
+        self._tagged_versions: dict[str, dict[VersionTag, PromptVersion]] = {}
 
         if self.enable_logging:
             logger.info("prompt_version_manager_initialized")
@@ -160,7 +160,7 @@ class PromptVersionManager:
         template_id: str,
         version: str,
         to_tag: VersionTag,
-    ) -> Optional[PromptVersion]:
+    ) -> PromptVersion | None:
         """Promote a version to a different environment.
 
         Args:
@@ -206,7 +206,7 @@ class PromptVersionManager:
         template_id: str,
         tag: VersionTag,
         to_version: str,
-    ) -> Optional[PromptVersion]:
+    ) -> PromptVersion | None:
         """Rollback to a previous version.
 
         Args:
@@ -251,7 +251,7 @@ class PromptVersionManager:
         self,
         template_id: str,
         tag: VersionTag,
-    ) -> Optional[PromptVersion]:
+    ) -> PromptVersion | None:
         """Get current version for an environment.
 
         Args:
@@ -267,7 +267,7 @@ class PromptVersionManager:
     def get_version_history(
         self,
         template_id: str,
-    ) -> List[PromptVersion]:
+    ) -> list[PromptVersion]:
         """Get version history for a template.
 
         Args:
@@ -284,7 +284,7 @@ class PromptVersionManager:
         template_id: str,
         version1: str,
         version2: str,
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Compare two versions.
 
         Args:

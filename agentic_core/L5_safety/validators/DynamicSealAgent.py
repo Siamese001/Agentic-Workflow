@@ -17,15 +17,17 @@ Purpose: Automated remediation of import violations using Dynamic Seal pattern
 
 
 from __future__ import annotations
-import re
-from pathlib import Path
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
 
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTValidator
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -35,7 +37,7 @@ class SealResult:
     violations_found: int
     violations_sealed: int
     success: bool
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
@@ -54,7 +56,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
 
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -75,13 +77,13 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         self.root = Path(root_dir).resolve()
         self.validator = UnifiedSSOTValidator(self.root)
         self.refactor_count = 0
-        self.sealed_files: List[str] = []
+        self.sealed_files: list[str] = []
 
     def execute_sprint(
         self,
-        target_pattern: Optional[str] = None,
+        target_pattern: str | None = None,
         dry_run: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute a sprint to seal import violations.
 
@@ -182,7 +184,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
     def _apply_seal(
         self,
         file_path: Path,
-        violations: List[Any],
+        violations: list[Any],
         dry_run: bool
     ) -> SealResult:
         """
@@ -344,7 +346,7 @@ def main() -> Any:
     )
 
     print()
-    print(f"✅ Dynamic Seal Agent completed")
+    print("✅ Dynamic Seal Agent completed")
     print(f"   Sealed {results['violations_sealed']} violations in {len(results['modified'])} files")
 
 

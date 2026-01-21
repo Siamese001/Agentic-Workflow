@@ -5,11 +5,10 @@
 __version__ = "13.0"
 
 import re
-import json
-from typing import Dict, List, Any, Tuple, Optional, Callable
+from typing import Any
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 
 
 class CodeInterpreterTool:
@@ -102,10 +101,10 @@ class CodeInterpreterTool:
 
     def run_scoring_competition(
         self,
-        candidates: List[str],
+        candidates: list[str],
         strategic_brief: str,
-        criteria: Optional[Dict[str, float]] = None
-    ) -> List[Dict[str, Any]]:
+        criteria: dict[str, float] | None = None
+    ) -> list[dict[str, Any]]:
         """
         Score N candidate messages against strategic brief
 
@@ -178,7 +177,7 @@ class CodeInterpreterTool:
         text: str,
         top_n: int = 10,
         min_length: int = 4
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Extract top keywords from text using TF-IDF
 
@@ -208,9 +207,9 @@ class CodeInterpreterTool:
     def calculate_overlap(
         self,
         text: str,
-        keyword_set: List[str],
+        keyword_set: list[str],
         min_word_length: int = 4
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Calculate keyword overlap between text and keyword set
 
@@ -249,10 +248,10 @@ class CodeInterpreterTool:
 
     def rank_by_metric(
         self,
-        items: List[Dict[str, Any]],
+        items: list[dict[str, Any]],
         metric_key: str,
         descending: bool = True
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Rank items by a metric value
 
@@ -275,9 +274,9 @@ class CodeInterpreterTool:
     def validate_structure(
         self,
         text: str,
-        expected_sections: List[str],
-        section_patterns: Optional[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
+        expected_sections: list[str],
+        section_patterns: dict[str, str] | None = None
+    ) -> dict[str, Any]:
         """
         Validate message structure against expected sections
 
@@ -391,11 +390,11 @@ class CodeInterpreterTool:
         return {
             'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
             'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
-            'to', 'was', 'will', 'with', 'the', 'this', 'but', 'they', 'have',
+            'to', 'was', 'will', 'with', 'this', 'but', 'they', 'have',
             'had', 'what', 'when', 'where', 'who', 'which', 'why', 'how'
         }
 
-    def _get_default_section_patterns(self) -> Dict[str, str]:
+    def _get_default_section_patterns(self) -> dict[str, str]:
         """Get default regex patterns for message sections"""
         return {
             "greeting": r'^(Hi|Hello|Dear|Good morning|Good afternoon)',
@@ -417,7 +416,7 @@ class ValidationToolkit:
         text: str,
         target: int,
         tolerance: float = 0.15
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Check if text is within word count range
 
@@ -451,8 +450,8 @@ class ValidationToolkit:
     @staticmethod
     def check_forbidden_patterns(
         text: str,
-        forbidden_patterns: List[str]
-    ) -> Tuple[bool, List[str]]:
+        forbidden_patterns: list[str]
+    ) -> tuple[bool, list[str]]:
         """
         Check for forbidden patterns in text
 
@@ -477,9 +476,9 @@ class ValidationToolkit:
     @staticmethod
     def check_required_keywords(
         text: str,
-        required_keywords: List[str],
+        required_keywords: list[str],
         min_count: int = 1
-    ) -> Tuple[bool, Dict[str, int]]:
+    ) -> tuple[bool, dict[str, int]]:
         """
         Check if required keywords appear in text
 
@@ -504,7 +503,7 @@ class ValidationToolkit:
         return all_present, keyword_counts
 
     @staticmethod
-    def check_ascii_only(text: str) -> Tuple[bool, List[Tuple[int, str]]]:
+    def check_ascii_only(text: str) -> tuple[bool, list[tuple[int, str]]]:
         """
         Check if text contains only ASCII characters
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Micro-Runtime & Execution Schemas
 =================================
@@ -7,7 +8,7 @@ for the Sovereign runtime.
 """
 
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -33,7 +34,7 @@ class RetryPolicy(BaseModel):
     max_retries: int = Field(default=3, ge=0, le=10)
     retry_delay: float = Field(default=1.0, ge=0.0)
     exponential_backoff: bool = Field(default=True)
-    retryable_stages: List[MicroStage] = Field(
+    retryable_stages: list[MicroStage] = Field(
         default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
     )
 
@@ -43,12 +44,12 @@ class MicroCheckpoint(BaseModel):
     stage: MicroStage
     timestamp: float
     state: HopState
-    data: Dict[str, Any] = Field(default_factory=dict)
-    error: Optional[str] = None
+    data: dict[str, Any] = Field(default_factory=dict)
+    error: str | None = None
 
 class StageTransition(BaseModel):
     """Record of a stage transition within a hop."""
-    from_stage: Optional[MicroStage] = None
+    from_stage: MicroStage | None = None
     to_stage: MicroStage
     timestamp: float
-    reason: Optional[str] = None
+    reason: str | None = None

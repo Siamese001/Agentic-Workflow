@@ -2,12 +2,10 @@
 """
 Smart MCP hardening fix - handles edge cases like stub files, multiple classes, etc.
 """
+import ast
 import json
 import re
-import ast
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
 data = json.load(open('agent_discovery_full.json'))
@@ -20,7 +18,7 @@ fixed_count = 0
 skipped_count = 0
 errors = []
 
-def find_agent_class_in_file(content: str, class_name: str) -> Optional[Tuple[int, int, str]]:
+def find_agent_class_in_file(content: str, class_name: str) -> tuple[int, int, str] | None:
     """
     Find the actual agent class definition in the file.
     Returns (start_pos, end_pos, current_inheritance) or None.
@@ -141,7 +139,7 @@ for agent in needs_hardening:
 
 print()
 print("=" * 80)
-print(f"SMART MCP HARDENING FIX COMPLETE")
+print("SMART MCP HARDENING FIX COMPLETE")
 print("=" * 80)
 print(f"Fixed: {fixed_count}")
 print(f"Skipped: {skipped_count}")
@@ -162,10 +160,10 @@ originally_hardened = sum(1 for a in data if a.get('mcp_hardened'))
 new_hardened = originally_hardened + fixed_count
 new_coverage = new_hardened / total_agents * 100
 
-print(f"MCP Hardening Coverage:")
+print("MCP Hardening Coverage:")
 print(f"  Before: {originally_hardened}/{total_agents} ({originally_hardened/total_agents*100:.1f}%)")
 print(f"  After:  {new_hardened}/{total_agents} ({new_coverage:.1f}%)")
 print(f"  Improvement: +{fixed_count} agents (+{fixed_count/total_agents*100:.1f}%)")
 print()
-print(f"Next step: Update discovery and regenerate dashboard")
-print(f"Command: python scripts/dashboard_e2e_pipeline_fast.py")
+print("Next step: Update discovery and regenerate dashboard")
+print("Command: python scripts/dashboard_e2e_pipeline_fast.py")

@@ -7,6 +7,7 @@ import sys
 import time
 from pathlib import Path
 
+
 # Setup mock for MCPHardenedMixin
 class MockMixin: pass
 mock_module = type(sys)('mock')
@@ -15,6 +16,7 @@ sys.modules['agentic_core.utils.core_extensions.mcp_hardened_mixin'] = mock_modu
 
 # Direct import
 import importlib.util
+
 spec = importlib.util.spec_from_file_location(
     'RuntimeTelemetryAgent',
     Path('agentic_core/L6_observability/agents/RuntimeTelemetryAgent.py')
@@ -59,8 +61,8 @@ def test_overhead_audit_optimal():
     # 50ms current vs 30ms baseline = 1.67x (under 2x limit)
     report = telemetry.audit_security_overhead(0.03, 0.05)
 
-    print(f"Baseline: 30ms")
-    print(f"Current: 50ms")
+    print("Baseline: 30ms")
+    print("Current: 50ms")
     print(f"Ratio: {report['ratio']}x")
     print(f"Status: {report['status']}")
     print(f"Breached: {report['breach']}")
@@ -83,8 +85,8 @@ def test_overhead_audit_critical():
     # 50ms current vs 20ms baseline = 2.5x (over 2x limit)
     report = telemetry.audit_security_overhead(0.02, 0.05)
 
-    print(f"Baseline: 20ms")
-    print(f"Current: 50ms")
+    print("Baseline: 20ms")
+    print("Current: 50ms")
     print(f"Ratio: {report['ratio']}x")
     print(f"Status: {report['status']}")
     print(f"Breached: {report['breach']}")
@@ -171,8 +173,8 @@ def test_zero_baseline_handling():
     # Zero baseline should not cause division by zero
     report = telemetry.audit_security_overhead(0.0, 0.05)
 
-    print(f"Baseline: 0ms")
-    print(f"Current: 50ms")
+    print("Baseline: 0ms")
+    print("Current: 50ms")
     print(f"Ratio: {report['ratio']}x")
 
     assert report['ratio'] == 0  # Should handle gracefully

@@ -4,8 +4,8 @@ Simple HTTP Server for Dashboard
 Serves autonomy_dashboard.html on http://localhost:8080/autonomy_dashboard.html
 """
 import http.server
-import socketserver
 import os
+import socketserver
 from pathlib import Path
 
 PORT = 8080

@@ -13,8 +13,9 @@ Tests all JavaScript files in the dashboard for:
 """
 import json
 import re
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture
@@ -160,7 +161,7 @@ class TestTableRenderer:
         open_braces = content.count('{')
         close_braces = content.count('}')
         assert abs(open_braces - close_braces) <= 2, \
-            f"Unbalanced braces in table-renderer.js"
+            "Unbalanced braces in table-renderer.js"
 
 
 class TestComponentFiles:

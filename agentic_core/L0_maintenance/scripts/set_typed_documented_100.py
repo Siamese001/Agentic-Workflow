@@ -5,10 +5,8 @@ Set Typed % and Documented % to 100% for all agents.
 Updates both agent_discovery_full.json and the dashboard.
 """
 import json
-import re
 import sys
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
@@ -19,7 +17,7 @@ def update_agent_discovery():
     """Update agent_discovery_full.json to set typed_pct and documented_pct to 100."""
     print("Updating agent_discovery_full.json...")
 
-    with open(DISCOVERY_PATH, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_PATH, encoding='utf-8') as f:
         agents = json.load(f)
 
     typed_fixed = 0
@@ -76,7 +74,7 @@ def update_dashboard():
     DASHBOARD_PATH.write_text(new_content, encoding='utf-8')
 
     print(f"  Updated {changes} territory values")
-    print(f"  Set Code Quality Score to 100% for all territories")
+    print("  Set Code Quality Score to 100% for all territories")
 
 
 def main():

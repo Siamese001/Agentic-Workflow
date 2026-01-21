@@ -6,7 +6,7 @@ Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 
 import logging
 from enum import Enum
-from typing import Optional, Dict, Any
+from typing import Any
 
 from .react_engine import ReasoningMode
 
@@ -55,7 +55,7 @@ class ReasoningRouter:
             TaskType.UNKNOWN: self.default_mode,
         }
 
-    def classify_task(self, task: str, context: Optional[Dict[str, Any]] = None) -> TaskType:
+    def classify_task(self, task: str, context: dict[str, Any] | None = None) -> TaskType:
         """Classify task type based on content and context.
 
         Args:
@@ -136,7 +136,7 @@ class ReasoningRouter:
     def select_strategy(
         self,
         task: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> ReasoningMode:
         """Select appropriate reasoning strategy for task.
 
@@ -182,8 +182,8 @@ class ReasoningRouter:
 
 def select_reasoning_strategy(
     task: str,
-    context: Optional[Dict[str, Any]] = None,
-    router: Optional[ReasoningRouter] = None,
+    context: dict[str, Any] | None = None,
+    router: ReasoningRouter | None = None,
 ) -> ReasoningMode:
     """Convenience function to select reasoning strategy.
 

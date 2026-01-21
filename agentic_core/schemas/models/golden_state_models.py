@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -17,7 +17,7 @@ class GoldenStateTestCase:
     id: str
     input_text: str
     expected_behavior: str
-    metadata: Dict[str, object] = field(default_factory=dict)
+    metadata: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -40,21 +40,21 @@ class EvalResult:
     test_id: str
     Verdict: JudgeVerdict
     raw_output: str
-    reasoning_trace: List[Dict[str, object]] = field(default_factory=list)
+    reasoning_trace: list[dict[str, object]] = field(default_factory=list)
 
 
 class GoldenCase(BaseModel):
     id: str
     input_text: str
-    agent_sequence: List[str]
-    expected_keypoints: List[str]
-    correctness_criteria: Dict[str, object]
+    agent_sequence: list[str]
+    expected_keypoints: list[str]
+    correctness_criteria: dict[str, object]
 
 
 class GoldenOutput(BaseModel):
     case_id: str
-    produced_keypoints: List[str]
-    correctness_map: Dict[str, bool]
-    safety_decisions: Dict[str, object]
-    metacognition_summary: Dict[str, object]
+    produced_keypoints: list[str]
+    correctness_map: dict[str, bool]
+    safety_decisions: dict[str, object]
+    metacognition_summary: dict[str, object]
     final_verdict: Literal["pass", "fail", "borderline"]

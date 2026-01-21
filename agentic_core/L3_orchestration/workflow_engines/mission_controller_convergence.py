@@ -7,8 +7,6 @@ This engine provides the 'Skeptical' verification logic for L3 Orchestration.
 
 import hashlib
 from pathlib import Path
-from typing import Dict, List
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 class ConvergenceEngine:
@@ -33,7 +31,7 @@ class ConvergenceEngine:
         # Fission occurs if file is > 10KB and hashes are identical after repair attempt
         return pre_hash == post_hash and file_size > 10240
 
-    async def run_convergence(self, validator, healer, initial_violations: List):
+    async def run_convergence(self, validator, healer, initial_violations: list):
         """
         RECURSIVE LOOP: Iterates until violations reach zero or max rounds.
         """

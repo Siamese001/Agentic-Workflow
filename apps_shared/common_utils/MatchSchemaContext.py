@@ -5,12 +5,11 @@ including context-aware matching, semantic field alignment, and compatibility sc
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Set
 import logging
-import numpy as np
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -28,22 +27,22 @@ class ContextMatchType(Enum):
 class SchemaContext:
     """Context information for a schema."""
     schema_id: str
-    domain: Optional[str] = None
-    purpose: Optional[str] = None
-    tags: List[str] = field(default_factory=list)
-    usage_patterns: List[str] = field(default_factory=list)
-    related_schemas: List[str] = field(default_factory=list)
-    business_context: Optional[str] = None
-    technical_context: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    domain: str | None = None
+    purpose: str | None = None
+    tags: list[str] = field(default_factory=list)
+    usage_patterns: list[str] = field(default_factory=list)
+    related_schemas: list[str] = field(default_factory=list)
+    business_context: str | None = None
+    technical_context: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ContextMatchRequest:
     """Request for context-based schema matching."""
     query_context: SchemaContext
-    candidate_schemas: List[Tuple[str, Dict[str, Any], SchemaContext]]
-    match_types: List[ContextMatchType] = field(default_factory=lambda: list(ContextMatchType))
+    candidate_schemas: list[tuple[str, dict[str, Any], SchemaContext]]
+    match_types: list[ContextMatchType] = field(default_factory=lambda: list(ContextMatchType))
     min_score: float = 0.5
     top_k: int = 10
     include_explanations: bool = False
@@ -54,8 +53,8 @@ class ContextMatchResult:
     """Result of context matching."""
     schema_id: str
     match_score: float
-    match_details: Dict[str, float] = field(default_factory=dict)
-    explanation: Optional[str] = None
+    match_details: dict[str, float] = field(default_factory=dict)
+    explanation: str | None = None
     compatibility_score: float = 0.0
 
 
@@ -63,9 +62,9 @@ class ContextMatchResult:
 class SchemaContextMatchResult:
     """Complete context match results."""
     query_context: SchemaContext
-    matches: List[ContextMatchResult]
+    matches: list[ContextMatchResult]
     total_candidates: int
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -82,7 +81,7 @@ class SchemaContextConfig:
 class SchemaContextMatcher:
     """Main class for schema context matching operations."""
 
-    def __init__(self, config: Optional[SchemaContextConfig] = None):
+    def __init__(self, config: SchemaContextConfig | None = None):
         self.config = config or SchemaContextConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
 
@@ -155,8 +154,8 @@ class SchemaContextMatcher:
             )
 
     def find_similar_contexts(self, schema_context: SchemaContext,
-                            context_database: List[SchemaContext],
-                            top_k: int = 10) -> List[Tuple[str, float]]:
+                            context_database: list[SchemaContext],
+                            top_k: int = 10) -> list[tuple[str, float]]:
         """Find schemas with similar contexts.
 
         Args:
@@ -194,9 +193,9 @@ class SchemaContextMatcher:
         return True
 
     def _compute_match_score(self, query_context: SchemaContext,
-                           schema_def: Dict[str, Any],
+                           schema_def: dict[str, Any],
                            schema_context: SchemaContext,
-                           match_types: List[ContextMatchType]) -> ContextMatchResult:
+                           match_types: list[ContextMatchType]) -> ContextMatchResult:
         """Compute match score between query and candidate."""
         match_details = {}
         total_score = 0.0
@@ -335,7 +334,7 @@ class SchemaContextMatcher:
 
         return sum(scores) / len(scores) if scores else 0.0
 
-    def _match_tags(self, tags1: List[str], tags2: List[str]) -> float:
+    def _match_tags(self, tags1: list[str], tags2: list[str]) -> float:
         """Match tag lists."""
         set1 = set(tag.lower() for tag in tags1)
         set2 = set(tag.lower() for tag in tags2)
@@ -348,7 +347,7 @@ class SchemaContextMatcher:
 
         return len(intersection) / len(union)
 
-    def _match_structure(self, schema_def: Dict[str, Any]) -> float:
+    def _match_structure(self, schema_def: dict[str, Any]) -> float:
         """Evaluate structural compatibility."""
         # Simple heuristic based on schema complexity
         field_count = len(self._extract_field_names(schema_def))
@@ -356,7 +355,7 @@ class SchemaContextMatcher:
         # Normalize to 0-1 range (assuming reasonable max of 100 fields)
         return min(1.0, field_count / 100.0)
 
-    def _match_usage_patterns(self, patterns1: List[str], patterns2: List[str]) -> float:
+    def _match_usage_patterns(self, patterns1: list[str], patterns2: list[str]) -> float:
         """Match usage patterns."""
         if not patterns1 or not patterns2:
             return 0.0
@@ -389,7 +388,7 @@ class SchemaContextMatcher:
 
         return sum(factors) if factors else 0.0
 
-    def _extract_field_names(self, schema_def: Dict[str, Any]) -> List[str]:
+    def _extract_field_names(self, schema_def: dict[str, Any]) -> list[str]:
         """Extract field names from schema definition."""
         fields = []
 
@@ -409,7 +408,7 @@ class SchemaContextMatcher:
 
     def _generate_explanation(self, query_context: SchemaContext,
                             match_result: ContextMatchResult,
-                            match_types: List[ContextMatchType]) -> str:
+                            match_types: list[ContextMatchType]) -> str:
         """Generate explanation for the match."""
         explanations = []
 
@@ -450,14 +449,14 @@ def create_schema_context_matcher(
 
 # Convenience function for direct usage
 def match_schema_context(
-    query_context: Dict[str, Any],
-    candidate_schemas: List[Tuple[str, Dict[str, Any], Dict[str, Any]]],
-    match_types: List[str] = None,
+    query_context: dict[str, Any],
+    candidate_schemas: list[tuple[str, dict[str, Any], dict[str, Any]]],
+    match_types: list[str] = None,
     min_score: float = 0.5,
     top_k: int = 10,
     include_explanations: bool = False,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Match schema context.
 
     Args:

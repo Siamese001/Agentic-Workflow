@@ -14,10 +14,9 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6 - Legacy Key Cleanup & Discovery Expansion
 """
-import sys
 import re
+import sys
 from pathlib import Path
-from typing import Dict, Any, List
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -36,17 +35,15 @@ def test_tc25_data_discovery_accuracy():
     print("="*60)
 
     from agentic_core.utils.ssot_discovery import (
-        get_data_files,
+        compare_data_files_with_rglob,
         get_json_files,
         get_markdown_files,
-        compare_data_files_with_rglob,
-        DEFAULT_EXCLUDE_DIRS
     )
 
     # Test JSON file discovery
     json_result = compare_data_files_with_rglob(PROJECT_ROOT, ".json")
 
-    print(f"   JSON Files:")
+    print("   JSON Files:")
     print(f"      SSOT Discovery: {json_result['ssot_count']} files")
     print(f"      rglob (filtered): {json_result['rglob_count']} files")
     print(f"      Delta: {json_result['delta']}")
@@ -55,26 +52,26 @@ def test_tc25_data_discovery_accuracy():
         print(f"⚠️  INFO: JSON delta is {json_result['delta']} (may be due to test file filtering)")
         # Allow small delta due to test file filtering differences
         if json_result['delta'] > 10:
-            print(f"❌ FAIL: JSON delta too large")
+            print("❌ FAIL: JSON delta too large")
             return False
 
     # Test Markdown file discovery
     md_result = compare_data_files_with_rglob(PROJECT_ROOT, ".md")
 
-    print(f"   Markdown Files:")
+    print("   Markdown Files:")
     print(f"      SSOT Discovery: {md_result['ssot_count']} files")
     print(f"      rglob (filtered): {md_result['rglob_count']} files")
     print(f"      Delta: {md_result['delta']}")
 
     if md_result['delta'] > 10:
-        print(f"❌ FAIL: Markdown delta too large")
+        print("❌ FAIL: Markdown delta too large")
         return False
 
     # Verify convenience functions work
     json_files = get_json_files(PROJECT_ROOT)
     md_files = get_markdown_files(PROJECT_ROOT)
 
-    print(f"   Convenience functions:")
+    print("   Convenience functions:")
     print(f"      get_json_files(): {len(json_files)} files")
     print(f"      get_markdown_files(): {len(md_files)} files")
 
@@ -92,7 +89,7 @@ def test_tc26_maintenance_script_integrity():
     print("TC-26: Maintenance Script Integrity")
     print("="*60)
 
-    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
+    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
     # Create a test agent
     class TestHealerAgent(HealerMixin):
@@ -124,16 +121,16 @@ def test_tc26_maintenance_script_integrity():
     normalized = agent._normalize_result(legacy_result)
 
     if normalized['violations_found'] != 5:
-        print(f"❌ FAIL: _normalize_result didn't map 'violations' to 'violations_found'")
+        print("❌ FAIL: _normalize_result didn't map 'violations' to 'violations_found'")
         return False
 
     # 'fixed' and 'renamed' should both contribute to violations_fixed
     # The implementation uses: fixed = result.get('violations_fixed') or result.get('fixed') or result.get('renamed') or 0
     if normalized['violations_fixed'] != 3:  # 'fixed' takes precedence
-        print(f"❌ FAIL: _normalize_result didn't map 'fixed' to 'violations_fixed'")
+        print("❌ FAIL: _normalize_result didn't map 'fixed' to 'violations_fixed'")
         return False
 
-    print(f"   Legacy key mapping: violations→violations_found, fixed→violations_fixed ✓")
+    print("   Legacy key mapping: violations→violations_found, fixed→violations_fixed ✓")
 
     print("✅ PASS: Maintenance scripts use standardized HealResult keys")
     return True
@@ -191,14 +188,14 @@ def test_tc27_key_exhaustion():
     print(f"   Files with legacy 'violations' key in logic: {len(files_with_legacy)}")
 
     if files_with_legacy:
-        print(f"   Sample files found:")
+        print("   Sample files found:")
         for f in files_with_legacy[:5]:
             print(f"      - {f}")
 
         # Phase 6: Legacy keys are handled by _normalize_result() for backward compatibility
         # This test verifies the count is tracked, not that all are eliminated
         print(f"⚠️  INFO: {len(files_with_legacy)} files still use legacy keys")
-        print(f"   Note: _normalize_result() handles backward compatibility for these")
+        print("   Note: _normalize_result() handles backward compatibility for these")
     else:
         print("   No legacy 'violations' keys found in active logic")
 
@@ -218,10 +215,10 @@ def test_tc27_key_exhaustion():
     normalized = agent._normalize_result(legacy_input)
 
     if normalized['violations_found'] != 10:
-        print(f"❌ FAIL: _normalize_result failed to map 'violations' -> 'violations_found'")
+        print("❌ FAIL: _normalize_result failed to map 'violations' -> 'violations_found'")
         return False
 
-    print(f"   _normalize_result correctly maps legacy keys ✓")
+    print("   _normalize_result correctly maps legacy keys ✓")
     print("✅ PASS: Legacy key handling is verified")
     return True
 
@@ -238,7 +235,7 @@ def test_tc28_ci_threshold_hardening():
 
     # Import the CI check functions
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from check_rglob_usage import scan_for_rglob_usage, MAX_ALLOWED_RGLOB
+    from check_rglob_usage import MAX_ALLOWED_RGLOB, scan_for_rglob_usage
 
     agentic_core = PROJECT_ROOT / "agentic_core"
 
@@ -255,7 +252,7 @@ def test_tc28_ci_threshold_hardening():
 
     # Show top offenders for reference
     if offenders:
-        print(f"   Top 5 offenders:")
+        print("   Top 5 offenders:")
         for offender in offenders[:5]:
             print(f"      - {offender['file']}: {offender['count']} calls")
 
@@ -271,12 +268,7 @@ def test_data_file_functions():
     print("BONUS: Data File Discovery Functions")
     print("="*60)
 
-    from agentic_core.utils.ssot_discovery import (
-        get_data_files,
-        get_json_files,
-        get_markdown_files,
-        DEFAULT_EXCLUDE_DIRS
-    )
+    from agentic_core.utils.ssot_discovery import get_data_files
 
     # Test get_data_files with various extensions
     json_files = get_data_files(PROJECT_ROOT, extensions=[".json"])
@@ -306,10 +298,10 @@ def test_data_file_functions():
             print(f"      - {lf}")
         # This is informational - some patterns like 'dist' may appear in valid paths
         if any(".sovereign_healing_backup" in str(f) for f in leaked_files):
-            print(f"❌ FAIL: Found files from .sovereign_healing_backup")
+            print("❌ FAIL: Found files from .sovereign_healing_backup")
             return False
 
-    print(f"   No backup files in results ✓")
+    print("   No backup files in results ✓")
     print("✅ PASS: All data file discovery functions work correctly")
     return True
 

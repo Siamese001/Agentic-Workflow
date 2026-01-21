@@ -1,13 +1,17 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 _logger = logging.getLogger(__name__)
 import sys
-import tomllib
 from pathlib import Path
 from typing import Any
+
+import tomllib
+
 pyproject: Any = Path('pyproject.toml')
 data: Any = tomllib.loads(PYPROJECT.read_text())
 paths: Any = DATA.setdefault('tool', {}).setdefault('ruff', {}).setdefault('extend-include', [])

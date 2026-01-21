@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 GOSPEL SYNC AGENT
@@ -18,11 +19,10 @@ VIOLATION JUSTIFICATION: None. Standard L0 Infrastructure mapping.
 
 import os
 from pathlib import Path
-from typing import Dict, List, Set, Any
+from typing import Any
+
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.ssot_discovery import get_python_files
 
 
@@ -37,7 +37,7 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
     """
 
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -58,10 +58,10 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
         """
         self.root = Path(root_dir)
         self.blueprint = STRUCTURE_BLUEPRINT
-        self.heresy: List[str] = []
-        self.missing: List[str] = []
+        self.heresy: list[str] = []
+        self.missing: list[str] = []
 
-    def perform_sync_audit(self) -> Dict[str, Any]:
+    def perform_sync_audit(self) -> dict[str, Any]:
         """
         VERBOSE HUNK: Scans the filesystem and compares against the STRUCTURE_BLUEPRINT.
         Identifies drift violations in real-time.
@@ -70,9 +70,9 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
         actual_files = self._get_actual_files()
 
         # Heresy = Files on disk NOT in Blueprint
-        self.heresy = sorted(list(actual_files - canonical_files))
+        self.heresy = sorted(actual_files - canonical_files)
         # Missing = Files in Blueprint NOT on disk
-        self.missing = sorted(list(canonical_files - actual_files))
+        self.missing = sorted(canonical_files - actual_files)
 
         return {
             "heresy": self.heresy,
@@ -80,12 +80,12 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
             "synchronized": len(self.heresy) == 0 and len(self.missing) == 0
         }
 
-    def _get_canonical_files(self) -> Set[str]:
+    def _get_canonical_files(self) -> set[str]:
         """
         SUB-LINE PRECISION: Recursively extracts all expected file paths from the Gospel.
         """
         paths = set()
-        for layer, config in self.blueprint.items():
+        for _layer, config in self.blueprint.items():
             layer_path = config.get("path", "")
             if not layer_path:
                 continue
@@ -95,7 +95,7 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
                 paths.add(rel_path.replace("\\", "/"))
         return paths
 
-    def _get_actual_files(self) -> Set[str]:
+    def _get_actual_files(self) -> set[str]:
         """
         Scans the physical agentic_core directory for .py files, ignoring __init__.
         """
@@ -116,7 +116,7 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
             return
 
         print(f"\n{'='*60}")
-        print(f" SOVEREIGN SSOT SYNC REPORT")
+        print(" SOVEREIGN SSOT SYNC REPORT")
         print(f"{'='*60}")
 
         if self.missing:

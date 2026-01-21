@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 ArchitectureGovernor - L3 Orchestration Framework Agent
 Validates and enforces architectural patterns across the codebase.
@@ -13,13 +15,15 @@ Validates and enforces architectural patterns across the codebase.
 """
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+from typing import Any
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 Logger: Any = logging.getLogger(__name__)
 layer_dirs: Any = set(SOVEREIGN_REGISTRY['agentic_core']['subfolders'])
 
@@ -42,7 +46,7 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -59,7 +63,7 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         finally:
             _call_path.discard(agent_name)
 
-    def validate_layer_boundaries(self, file_path: Path) -> Tuple[bool, str]:
+    def validate_layer_boundaries(self, file_path: Path) -> tuple[bool, str]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -82,7 +86,7 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         except ValueError:
             return (False, 'File outside project root')
 
-    def validate_architectural_patterns(self, file_path: Path) -> Dict[str, Any]:
+    def validate_architectural_patterns(self, file_path: Path) -> dict[str, Any]:
         """
         Validate architectural patterns in a file.
 
@@ -95,7 +99,7 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         is_valid, reason = self.validate_layer_boundaries(file_path)
         return {'file': str(file_path), 'valid': is_valid, 'reason': reason, 'violations': self.violations}
 
-    def run_validation(self, files: List[Path]) -> Dict[str, Any]:
+    def run_validation(self, files: list[Path]) -> dict[str, Any]:
         """
         Run architecture validation on multiple files.
 

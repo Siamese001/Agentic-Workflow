@@ -6,15 +6,13 @@ and the Titanium RAG Pipeline, ensuring all agents benefit from SOTA retrieval.
 
 import asyncio
 import logging
-from typing import Dict, Any, Optional, List, Callable
-from functools import wraps
+from typing import Any
 
 from runtime.shared.titanium_search_tool import (
+    clear_cache,
+    get_pipeline_stats,
     get_titanium_search_tool,
     get_titanium_search_with_sources,
-    get_pipeline_stats,
-    clear_cache,
-    TOOL_REGISTRY
 )
 
 Logger = logging.getLogger(__name__)
@@ -33,7 +31,7 @@ class TitaniumSearchWrapper:
             self._loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self._loop)
 
-    def search(self, query: str, context: Optional[str] = None,
+    def search(self, query: str, context: str | None = None,
                max_results: int = 5, include_metadata: bool = False) -> str:
         """Synchronous search wrapper.
 
@@ -51,7 +49,7 @@ class TitaniumSearchWrapper:
             get_titanium_search_tool(query, context, max_results, include_metadata)
         )
 
-    def search_with_sources(self, query: str, context: Optional[str] = None) -> Dict[str, Any]:
+    def search_with_sources(self, query: str, context: str | None = None) -> dict[str, Any]:
         """Synchronous search with sources wrapper.
 
         Args:
@@ -66,7 +64,7 @@ class TitaniumSearchWrapper:
             get_titanium_search_with_sources(query, context)
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get pipeline statistics."""
         return get_pipeline_stats()
 
@@ -85,7 +83,7 @@ def get_titanium_wrapper() -> TitaniumSearchWrapper:
     return _titanium_wrapper
 
 
-def inject_titanium_tools(context: Dict[str, Any]) -> Dict[str, Any]:
+def inject_titanium_tools(context: dict[str, Any]) -> dict[str, Any]:
     """Inject Titanium search tools into agent context.
 
     Args:
@@ -134,7 +132,7 @@ class TitaniumAwareAgent:
         super().__init__(*args, **kwargs)
         self.titanium = _titanium_wrapper
 
-    def search_knowledge(self, query: str, context: Optional[str] = None) -> str:
+    def search_knowledge(self, query: str, context: str | None = None) -> str:
         """Search knowledge base using Titanium pipeline.
 
         Args:
@@ -146,7 +144,7 @@ class TitaniumAwareAgent:
         """
         return self.titanium.search(query, context)
 
-    def get_relevant_sources(self, query: str, context: Optional[str] = None) -> List[Dict[str, Any]]:
+    def get_relevant_sources(self, query: str, context: str | None = None) -> list[dict[str, Any]]:
         """Get relevant sources with full metadata.
 
         Args:
@@ -212,7 +210,7 @@ def enhance_system_prompt(system_prompt: str) -> str:
 
 
 # Async utilities for orchestrator
-async def prepare_titanium_context(context: Dict[str, Any]) -> Dict[str, Any]:
+async def prepare_titanium_context(context: dict[str, Any]) -> dict[str, Any]:
     """Prepare context with Titanium search for async execution.
 
     Args:
@@ -231,7 +229,7 @@ async def prepare_titanium_context(context: Dict[str, Any]) -> Dict[str, Any]:
     return context
 
 
-def log_titanium_usage(hop_id: str, query: str, results: Dict[str, Any]):
+def log_titanium_usage(hop_id: str, query: str, results: dict[str, Any]):
     """Log Titanium search usage for monitoring.
 
     Args:

@@ -7,9 +7,9 @@ This test validates:
 """
 
 import asyncio
-import tempfile
 import os
-from pathlib import Path
+import tempfile
+
 from mission_controller_convergence import ConvergenceEngine
 
 

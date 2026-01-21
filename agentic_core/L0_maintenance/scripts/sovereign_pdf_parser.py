@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign PDF Parser - L0 Document Ingestion
 Enhanced PDF parsing with OCR fallback, metadata extraction, and async processing
@@ -7,7 +8,8 @@ import asyncio
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 try:
     import pdfplumber
     PDF_PLUMBER_AVAILABLE: Any = True
@@ -61,25 +63,25 @@ class SovereignPdfParser:
         cleaned: Any = []
         for line in lines:
             line: Any = line.strip()
-            if not line or any((p.match(line) for p in self.footer_patterns)):
+            if not line or any(p.match(line) for p in self.footer_patterns):
                 continue
             if len(line) < 3 and (not re.match('^[•\\-\\*\\d]', line)):
                 continue
             cleaned.append(line)
         return '\n'.join(cleaned)
 
-    def extract_metadata(self, pdf_path: Path, text: str) -> Dict:
+    def extract_metadata(self, pdf_path: Path, text: str) -> dict:
         """Extract metadata with internal fallback"""
         metadata: Any = {'source_file': str(pdf_path), 'ingested_at': datetime.utcnow().isoformat(), 'file_type': 'pdf', 'title': self.internal_metadata.get('Title') or pdf_path.stem, 'author': self.internal_metadata.get('Author') or 'unknown', 'date': self.internal_metadata.get('CreationDate') or 'unknown'}
         lines: Any = text.splitlines()[:20]
         for line in lines:
             if metadata['author'] == 'unknown' and 'author' in line.lower():
                 metadata['author'] = line.split(':', 1)[1].strip() if ':' in line else line
-            if metadata['date'] == 'unknown' and any((m in line.lower() for m in ['2024', '2025'])):
+            if metadata['date'] == 'unknown' and any(m in line.lower() for m in ['2024', '2025']):
                 metadata['date'] = line.strip()
         return metadata
 
-    async def parse_pdf(self, pdf_path: Path) -> List[Dict]:
+    async def parse_pdf(self, pdf_path: Path) -> list[dict]:
         """
         Main parsing pipeline with async support
         Returns list of chunks with text, embeddings, and metadata
@@ -93,7 +95,7 @@ class SovereignPdfParser:
         chunks: Any = self._chunk_text(cleaned_text, metadata)
         return chunks
 
-    def _chunk_text(self, text: str, metadata: Dict, chunk_size: int=1000) -> List[Dict]:
+    def _chunk_text(self, text: str, metadata: dict, chunk_size: int=1000) -> list[dict]:
         """Split text into chunks for vector storage"""
         chunks = []
         paragraphs = text.split('\n\n')

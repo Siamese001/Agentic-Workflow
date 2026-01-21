@@ -5,15 +5,19 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-from dataclasses import dataclass, field
+
+from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 'Gap Closure Architect - Leadership Competencies with Gap Filling (K.9).\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n\nThis agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,\nenforcing Industry-First ranking and 24-30 word descriptions.\n\nSub-Atomic Agent Name: GapClosureArchitect\nLegacy K-Node: K.9 (K.8 in some versions)\n'
 import logging
-from typing import Any, Dict, List, Optional, Protocol, Set
+from typing import Any
+
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -22,20 +26,20 @@ class CompetencyItem:
     title: str
     description: str
     word_count: int
-    _gap_keywords_covered: List[str]
+    _gap_keywords_covered: list[str]
     _industry_first_ranking: int
 
 @dataclass
 class CompetenciesOutput:
     """Gap Closure Architect output."""
-    competencies: List[CompetencyItem]
+    competencies: list[CompetencyItem]
     _total_count: int
     _gap_coverage_percentage: float
     _total_gap_keywords: int
     _covered_gap_keywords: int
-    _missing_gap_keywords: List[str]
+    _missing_gap_keywords: list[str]
     industry_first_compliant: bool
-    _metadata: Dict[str, Any]
+    _metadata: dict[str, Any]
 
 class GapClosureArchitectAgent(L0MaintenanceBaseAgent):
     """Gap Closure Architect agent for leadership competencies.
@@ -66,19 +70,19 @@ class GapClosureArchitectAgent(L0MaintenanceBaseAgent):
         self.k_node_id = 'K.9'
         Logger.info(f'GapClosureArchitect initialized: COUNT={competency_count}, words={word_count_min}-{word_count_max}, gap_coverage≥{gap_coverage_minimum:.0%}')
 
-    def _build_initial_prompt(self, jd_keyword_gap: List[str], authentic_phrasing: List[str], base_competency_pool: List[str], target_industry: str) -> str:
+    def _build_initial_prompt(self, jd_keyword_gap: list[str], authentic_phrasing: list[str], base_competency_pool: list[str], target_industry: str) -> str:
         """Build initial generation prompt with gap coverage enforcement."""
         return f"Generate exactly {self.competency_count} competencies with gap coverage."
 
-    def _build_regeneration_prompt(self, context: Dict[str, Any], feedback: str) -> str:
+    def _build_regeneration_prompt(self, context: dict[str, Any], feedback: str) -> str:
         """Build regeneration prompt with validation feedback."""
         return f"Regenerate competencies based on feedback: {feedback}"
 
-    def _parse_competencies(self, response: str) -> List[CompetencyItem]:
+    def _parse_competencies(self, response: str) -> list[CompetencyItem]:
         """Parse competencies from LLM response."""
         return []
 
-    def _extract_gap_keywords(self, text: str) -> List[str]:
+    def _extract_gap_keywords(self, text: str) -> list[str]:
         """Extract gap keywords from text."""
         keywords = []
         common_keywords = ['machine learning', 'AI', 'cloud', 'scalability']
@@ -88,18 +92,18 @@ class GapClosureArchitectAgent(L0MaintenanceBaseAgent):
                 keywords.append(keyword)
         return keywords
 
-    def _calculate_gap_coverage(self, competencies: List[CompetencyItem], jd_keyword_gap: List[str]) -> Set[str]:
+    def _calculate_gap_coverage(self, competencies: list[CompetencyItem], jd_keyword_gap: list[str]) -> set[str]:
         """Calculate gap coverage."""
-        covered: Set[str] = set()
+        covered: set[str] = set()
         if not competencies:
             return covered
-        all_text = ' '.join((f'{c.title} {c.description}' for c in competencies)).lower()
+        all_text = ' '.join(f'{c.title} {c.description}' for c in competencies).lower()
         for keyword in jd_keyword_gap:
             if keyword.lower() in all_text:
                 covered.add(keyword)
         return covered
 
-    def _check_industry_first_ranking(self, competencies: List[CompetencyItem], target_industry: str) -> bool:
+    def _check_industry_first_ranking(self, competencies: list[CompetencyItem], target_industry: str) -> bool:
         """Check if competencies follow Industry-First ranking."""
         if competencies:
             first_comp_text = f'{competencies[0].title} {competencies[0].description}'.lower()

@@ -1,17 +1,20 @@
 from __future__ import annotations
+
 """
 Sovereign Audit Engine – Phase 16H (Dec 27, 2025)
 Scans for compliance with Phases 16A-16G.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 Enhanced in Phase 17 with autonomous healing integration.
 """
+import logging
 import os
 import re
-import logging
-from typing import List, Dict, Any
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+from typing import Any
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
 Logger: Any = logging.getLogger(__name__)
 banned_imports: Any = {'Redis': ['import\\s+redis', 'from\\s+redis'], 'LLM SDKs': ['import\\s+openai', 'import\\s+anthropic', 'google\\.generativeai'], 'Vector SDKs': ['from\\s+pinecone', 'Pinecone\\s*\\('], 'HTTP Clients': ['import\\s+requests', 'import\\s+httpx', 'urllib\\.request'], 'Filesystem': ['open\\(', '\\.read_text\\(', '\\.write_text\\('], 'Git Operations': ['subprocess\\..*?git', 'os\\.system\\(.*?git', 'import\\s+git\\s', 'from\\s+git\\s+import'], 'MCP Manager': ['from\\s+.*L2_execution.*mcp_manager', 'from\\s+.*P1_core.*mcp_manager', 'from\\s+\\.mcp_manager\\s+import']}
@@ -36,7 +39,7 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
             root_dir: Root directory to audit
         """
         self.root_dir = root_dir
-        self.violations: List[Dict[str, Any]] = []
+        self.violations: list[dict[str, Any]] = []
         self.stats = {'files_scanned': 0, 'violations_found': 0, 'depth_violations': 0, 'import_violations': 0, 'path_violations': 0}
 
     async def run_audit(self) -> bool:
@@ -61,7 +64,9 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
         if self.violations:
             Logger.warning('[L0 AUDIT] Violations found. Handing over to Healing Engine.')
             try:
-                from agentic_core.L0_maintenance.P1_core.healing_engine import run_autonomous_healing
+                from agentic_core.L0_maintenance.P1_core.healing_engine import (
+                    run_autonomous_healing,
+                )
                 healing_result: Any = await run_autonomous_healing(self.violations)
                 Logger.info(f"[L0 AUDIT] Healing result: {healing_result.get('status', 'unknown')}")
             except Exception as e:
@@ -91,7 +96,7 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
             file_path: Path to file to audit
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
                 for category, patterns in BANNED_IMPORTS.items():
                     for pattern in patterns:
@@ -125,7 +130,7 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
             True if no violations, False otherwise
         """
         print(f"\n{'=' * 80}")
-        print(f'SOVEREIGNTY AUDIT REPORT')
+        print('SOVEREIGNTY AUDIT REPORT')
         print(f"{'=' * 80}")
         print(f'Root Directory: {self.root_dir}')
         print(f"Files Scanned: {self.stats['files_scanned']}")
@@ -135,7 +140,7 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
         print(f"  - Path Violations: {self.stats['path_violations']}")
         if self.violations:
             print(f"\n{'=' * 80}")
-            print(f'VIOLATION DETAILS')
+            print('VIOLATION DETAILS')
             print(f"{'=' * 80}")
             by_type = {}
             for v in self.violations:
@@ -160,11 +165,11 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
             print(f"{'=' * 80}\n")
             return False
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get audit statistics."""
         return self.stats.copy()
 
-    def get_violations(self) -> List[Dict[str, Any]]:
+    def get_violations(self) -> list[dict[str, Any]]:
         """Get list of violations."""
         return self.violations.copy()
 

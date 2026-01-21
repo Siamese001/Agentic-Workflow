@@ -5,8 +5,10 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import ast
-from typing import Any, Dict, Optional
+from typing import Any
+
 '''Brief description of functionality and purpose.'''
 
 import asyncio
@@ -15,9 +17,9 @@ import os
 import re
 import time
 from collections import defaultdict
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 # NAMING FIXED: MemoryLeakDetectorAgent → MemoryLeakDetectorAgent
@@ -96,7 +98,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
     async def _scan_and_fix(self, file_path):
         """Scan file for leaks and apply fixes."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             # Pass 1: Fast regex scanning
@@ -333,14 +335,14 @@ class MemoryLeakDetectorAgent(HealerMixin):
         timestamp = int(time.time())
         report_path = f"observability/audit/resource_safety_{timestamp}.md"
 
-        report_content = f"# Resource Safety Report\n\n"
+        report_content = "# Resource Safety Report\n\n"
         report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
-        report_content += f"## Summary\n\n"
+        report_content += "## Summary\n\n"
         report_content += f"- Files scanned: {len(log_entries)}\n"
         report_content += f"- Files secured: {len(fixed_files)}\n\n"
 
         if log_entries:
-            report_content += f"## Resource Fixes\n\n"
+            report_content += "## Resource Fixes\n\n"
             for entry in log_entries:
                 if 'error' in entry:
                     report_content += f"### [X] {entry['file']}\n\n"
@@ -349,19 +351,19 @@ class MemoryLeakDetectorAgent(HealerMixin):
                     report_content += f"### [OK] {entry['file']}\n\n"
 
                     leaks = entry['leaks']
-                    report_content += f"**Leaks Fixed:**\n"
+                    report_content += "**Leaks Fixed:**\n"
                     for Severity, leak_list in leaks.items():
                         for leak in leak_list:
                             report_content += f"- {leak['type']} ({Severity}): line {leak['line']}\n"
 
                     context = entry['context']
                     if context.get('global_containers'):
-                        report_content += f"\n**Global Containers:**\n"
+                        report_content += "\n**Global Containers:**\n"
                         for container in context['global_containers']:
                             report_content += f"- {container['variable']} (line {container['line']})\n"
 
                     if context.get('naked_opens'):
-                        report_content += f"\n**Naked Resources:**\n"
+                        report_content += "\n**Naked Resources:**\n"
                         for naked in context['naked_opens']:
                             report_content += f"- {naked['function']} (line {naked['line']})\n"
 
@@ -376,8 +378,8 @@ class MemoryLeakDetectorAgent(HealerMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Memory Leak Healing - Scans for resource leaks and applies fixes.
 
@@ -737,7 +739,7 @@ class RaceAnalyzer(ast.NodeVisitor):
             # Check if it's a mutable method on shared state
             mutable_methods = {'append', 'extend', 'insert', 'pop', 'remove', 'clear',
                               'update', 'popitem', 'setdefault', 'add', 'discard',
-                              'update', 'intersection_update', 'difference_update'}
+                              'intersection_update', 'difference_update'}
 
             if node.func.attr in mutable_methods:
                 if isinstance(node.func.value, ast.Name):

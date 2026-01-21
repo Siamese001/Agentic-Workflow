@@ -1,26 +1,8 @@
 #!/usr/bin/env python3
 """Quick test scanner with built-in progress indicator."""
-from pathlib import Path
 import re
 import sys
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
+from pathlib import Path
 
 # ANSI colors
 G = '\033[92m'  # Green
@@ -42,6 +24,7 @@ def progress_bar(current, total, width=40):
 # Scan tests
 # Phase 6.7: Use ssot_discovery instead of rglob
 from agentic_core.utils.ssot_discovery import get_python_files
+
 test_files = list(get_python_files(Path(TESTS_UNIT_DIR)))
 
 skip_pattern = re.compile(r'@pytest\.mark\.skip')

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Action Call Generator Agent - CTA Generator (K.5)
 
 
@@ -19,16 +20,11 @@ Non-responsibilities:
 - Message body composition
 - Final assembly
 """
-import logging
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 class RouteType(Enum):
@@ -52,8 +48,8 @@ class CtaResult:
     char_count: int
     is_time_bound: bool
     is_specific: bool
-    validation_results: List[Any]
-    temperature_log: List[Dict[str, Any]]
+    validation_results: list[Any]
+    temperature_log: list[dict[str, Any]]
     success: bool
     attempts: int
 
@@ -71,12 +67,12 @@ class ActionCallGenerator:
     TIME_BOUND_PATTERNS: Any = ['\\b(?:next|this)\\s+(?:week|tuesday|wednesday|thursday|friday|monday)\\b', '\\b(?:tomorrow|today)\\b', '\\b\\d{1,2}(?:am|pm)\\b', '\\b(?:january|february|march|april|may|june)' + '|(july|august|september|october|november|december)' + '\\s+\\d{1,2}\\b']
     SPECIFIC_ACTION_PATTERNS: Any = ['\\b(?:connect|call|meet|discuss|schedule|chat|talk|explore)\\b', '\\b(?:coffee|conversation|meeting|discussion|call)\\b']
 
-    def __init__(self, config: Optional[CTAConfig]=None, gate_executor: Optional[Any]=None, recovery_loop: Optional[Any]=None):
+    def __init__(self, config: CTAConfig | None=None, gate_executor: Any | None=None, recovery_loop: Any | None=None):
         self.config = config or CTAConfig()
         self.gate_executor = gate_executor or Any()
         self.recovery_loop = recovery_loop or Any(initial_temperature=self.config.TEMPERATURE)
 
-    def generate_cta(self, RouteType: RouteType, message_body: str, context: Dict[str, Any]) -> CTAResult:
+    def generate_cta(self, RouteType: RouteType, message_body: str, context: dict[str, Any]) -> CTAResult:
         """Docstring.
         Generate CTA with Route-specific validation.
 
@@ -121,7 +117,7 @@ class ActionCallGenerator:
             return CTAResult(cta=cta, RouteType=RouteType, char_count=char_count, is_time_bound=is_time_bound, is_specific=is_specific, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), success=True, attempts=attempt)
         return CTAResult(cta='', RouteType=RouteType, char_count=0, is_time_bound=False, is_specific=False, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), success=False, attempts=self.config.max_attempts)
 
-    def _generate_content(self, RouteType: RouteType, context: Dict[str, Any], temperature: float, attempt: int) -> str:
+    def _generate_content(self, RouteType: RouteType, context: dict[str, Any], temperature: float, attempt: int) -> str:
         """
         Generate CTA content using LLM.
         Placeholder for actual LLM integration.
@@ -179,10 +175,10 @@ class ActionCallGenerator:
                 clarity_type.append('time-bound')
             if is_specific:
                 clarity_type.append('specific action')
-            return Any(gate_id='VG_CTA_CLARITY', passed=True, Severity='INFO', message=f"CTA clarity satisfied: {' and '.join(clarity_type)}", signature=f'CLARITY:OK', details={'time_bound': is_time_bound, 'specific': is_specific})
+            return Any(gate_id='VG_CTA_CLARITY', passed=True, Severity='INFO', message=f"CTA clarity satisfied: {' and '.join(clarity_type)}", signature='CLARITY:OK', details={'time_bound': is_time_bound, 'specific': is_specific})
         return Any(gate_id='VG_CTA_CLARITY', passed=False, Severity='BLOCK', message='BLOCKED: CTA lacks clarity - must be time-bound or specific', details={'time_bound': is_time_bound, 'specific': is_specific, 'cta_preview': cta[:100]})
 
-def create_action_call_generator(config: Optional[CTAConfig]=None) -> ActionCallGenerator:
+def create_action_call_generator(config: CTAConfig | None=None) -> ActionCallGenerator:
     """Docstring.
     Factory function to create ActionCallGenerator instance"""
     return ActionCallGenerator(config=config)

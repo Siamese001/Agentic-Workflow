@@ -10,24 +10,13 @@ Address remaining structural violations:
 Target: 100% compliance
 """
 
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 REPO = Path(__file__).parent.parent
@@ -59,7 +48,7 @@ def fix_hierarchy_violations():
         # Remove empty directory
         if not any(test_dir_rg.iterdir()):
             test_dir_rg.rmdir()
-            print(f"✅ Flattened: apps_rg/engines/resume_engine/autonomous/tests")
+            print("✅ Flattened: apps_rg/engines/resume_engine/autonomous/tests")
             violations_fixed += 1
 
     # apps_lic/engines/outreach_engine/autonomous/tests (depth 4 > max 3)
@@ -81,7 +70,7 @@ def fix_hierarchy_violations():
         # Remove empty directory
         if not any(test_dir_lic.iterdir()):
             test_dir_lic.rmdir()
-            print(f"✅ Flattened: apps_lic/engines/outreach_engine/autonomous/tests")
+            print("✅ Flattened: apps_lic/engines/outreach_engine/autonomous/tests")
             violations_fixed += 1
 
     return violations_fixed
@@ -105,13 +94,13 @@ def fix_drift_violation():
 
         if not target_dir.exists():
             shutil.move(str(mixins_dir), str(target_dir))
-            print(f"✅ Moved: L0_maintenance/mixins → L0_maintenance/scripts/mixins")
+            print("✅ Moved: L0_maintenance/mixins → L0_maintenance/scripts/mixins")
             return 1
         else:
             print(f"ℹ️  Target already exists: {target_dir}")
             return 0
     else:
-        print(f"ℹ️  Mixins folder not found")
+        print("ℹ️  Mixins folder not found")
         return 0
 
 def annotate_dynamic_imports():
@@ -144,7 +133,7 @@ def annotate_dynamic_imports():
 
             new_content = '\n'.join(new_lines)
             nervous_system.write_text(new_content, encoding='utf-8')
-            print(f"✅ Annotated: NervousSystemAgent.py")
+            print("✅ Annotated: NervousSystemAgent.py")
             files_annotated += 1
 
     # L3OrchestrationBaseAgent.py - already has dynamic import in method
@@ -165,7 +154,7 @@ def annotate_dynamic_imports():
 
             new_content = '\n'.join(new_lines)
             orchestration_base.write_text(new_content, encoding='utf-8')
-            print(f"✅ Annotated: L3OrchestrationBaseAgent.py")
+            print("✅ Annotated: L3OrchestrationBaseAgent.py")
             files_annotated += 1
 
     return files_annotated

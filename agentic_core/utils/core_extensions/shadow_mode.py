@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 """
 P10 Shadow Mode Engine for Outreach Engine
 Provides pre-flight refinement for outreach pitches
 """
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
+
 from agentic_core.PitchGenerator import PitchGenerator, PitchResult
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -20,7 +23,7 @@ class ShadowModeResult:
 class ShadowModeEngine:
     """P10 Shadow Mode for pitch refinement before sending."""
 
-    def __init__(self, PitchGenerator: Optional[PitchGenerator]=None):
+    def __init__(self, PitchGenerator: PitchGenerator | None=None):
         """
         Initialize shadow mode engine.
 
@@ -49,7 +52,7 @@ class ShadowModeEngine:
         Logger.info(f'P10_SHADOW_COMPLETE: {len(improvements)} improvements, confidence={confidence}')
         return result
 
-    def _load_refinement_rules(self) -> Dict[str, Any]:
+    def _load_refinement_rules(self) -> dict[str, Any]:
         """Load refinement rules for different error types."""
         return {'brand_compliance': {'keywords_to_remove': ['amazing', 'incredible', 'revolutionary', 'game-changing'], 'tone_adjustments': {'salesy': 'professional', 'hype': 'informative', 'urgent': 'considerate'}}, 'spam_detection': {'remove_patterns': ['!!', 'FREE', 'ACT NOW', 'LIMITED TIME'], 'replace_words': {'guarantee': 'confident', 'promise': 'commitment', 'win': 'succeed'}}, 'length_issues': {'max_words': 200, 'min_words': 100, 'truncate_sections': ['intro', 'closing']}, 'personalization': {'required_elements': ['recipient_name', 'company_reference', 'mutual_connection'], 'boost_signals': ['recent_news', 'shared_interest', 'referral']}}
 

@@ -7,9 +7,8 @@ __version__ = "13.0"
 import asyncio
 import json
 import os
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Tuple
-from pathlib import Path
+from datetime import datetime
+from typing import Any
 
 # PDF parsing
 try:
@@ -21,12 +20,10 @@ except ImportError:
 
 # Embedding and vector store
 import google.generativeai as genai
-
-from models_LIC import RAGResult
-from retrieval_clients import GoogleSearchClient
 from llm_clients import GeminiLLMClient
-from utils_LIC import CircuitBreaker
 from memory_LIC import VectorMemoryStore
+from retrieval_clients import GoogleSearchClient
+from utils_LIC import CircuitBreaker
 
 
 class IntelligenceLibrarian:
@@ -71,7 +68,7 @@ class IntelligenceLibrarian:
         include_strategic_brief: bool = True,
         include_news: bool = True,
         include_blog: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Deep research on a company - runs offline
 
@@ -127,7 +124,7 @@ class IntelligenceLibrarian:
         include_linkedin: bool = True,
         include_recent_posts: bool = True,
         include_presentations: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Deep research on an executive - runs offline
 
@@ -178,7 +175,7 @@ class IntelligenceLibrarian:
 
         return findings
 
-    async def _research_strategic_brief(self, company_name: str) -> List[Dict[str, Any]]:
+    async def _research_strategic_brief(self, company_name: str) -> list[dict[str, Any]]:
         """
         Research company strategic priorities (highest signal)
         """
@@ -224,7 +221,7 @@ class IntelligenceLibrarian:
         print(f"[Librarian] Found {len(results)} strategic brief sources")
         return results
 
-    async def _research_company_news(self, company_name: str) -> List[Dict[str, Any]]:
+    async def _research_company_news(self, company_name: str) -> list[dict[str, Any]]:
         """
         Research recent company news and announcements
         """
@@ -262,7 +259,7 @@ class IntelligenceLibrarian:
         print(f"[Librarian] Found {len(results)} news sources")
         return results
 
-    async def _research_company_blog(self, company_name: str) -> List[Dict[str, Any]]:
+    async def _research_company_blog(self, company_name: str) -> list[dict[str, Any]]:
         """
         Research company blog and announcements
         """
@@ -304,7 +301,7 @@ class IntelligenceLibrarian:
         self,
         executive_name: str,
         company_name: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Research executive LinkedIn profile
         """
@@ -341,7 +338,7 @@ class IntelligenceLibrarian:
         self,
         executive_name: str,
         company_name: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Research executive recent posts and articles
         """
@@ -383,7 +380,7 @@ class IntelligenceLibrarian:
         self,
         executive_name: str,
         company_name: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Research executive conference talks and presentations
         """
@@ -419,7 +416,7 @@ class IntelligenceLibrarian:
         self,
         content: str,
         company_name: str
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Use LLM to extract strategic priorities from content
         """
@@ -448,7 +445,7 @@ Output ONLY the JSON array, no explanation."""
 
         return []
 
-    def _extract_search_result_content(self, item: Dict[str, Any]) -> str:
+    def _extract_search_result_content(self, item: dict[str, Any]) -> str:
         """
         Extract meaningful content from search result
         """
@@ -476,7 +473,7 @@ Output ONLY the JSON array, no explanation."""
         else:
             return 60  # Default to 60 days if no clear indicator
 
-    async def _embed_and_store(self, findings: Dict[str, Any]):
+    async def _embed_and_store(self, findings: dict[str, Any]):
         """
         Embed findings and store in vector database
         """
@@ -522,7 +519,7 @@ Output ONLY the JSON array, no explanation."""
             except Exception as e:
                 print(f"[Librarian] Error embedding source: {e}")
 
-        print(f"[Librarian] Storage complete")
+        print("[Librarian] Storage complete")
 
 
 async def run_intelligence_service(target_list_file: str = "research_targets.json"):
@@ -536,7 +533,7 @@ async def run_intelligence_service(target_list_file: str = "research_targets.jso
         target_list_file: JSON file with list of targets to research
     """
     print(f"\n{'='*80}")
-    print(f"INTELLIGENCE SERVICE v13.0 - The Librarian")
+    print("INTELLIGENCE SERVICE v13.0 - The Librarian")
     print(f"{'='*80}\n")
 
     # Load target list
@@ -557,7 +554,7 @@ async def run_intelligence_service(target_list_file: str = "research_targets.jso
 """)
         return
 
-    with open(target_list_file, 'r') as f:
+    with open(target_list_file) as f:
         targets = json.load(f)
 
     # Initialize components
@@ -586,7 +583,7 @@ async def run_intelligence_service(target_list_file: str = "research_targets.jso
             print(f"[ERROR] Failed to research {exec_info['name']}: {e}")
 
     print(f"\n{'='*80}")
-    print(f"Intelligence service complete")
+    print("Intelligence service complete")
     print(f"{'='*80}\n")
 
 

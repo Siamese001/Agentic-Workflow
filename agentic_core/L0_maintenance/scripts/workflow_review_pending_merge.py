@@ -1,30 +1,20 @@
 from __future__ import annotations
+
 """
 Deep comparison of review_pending files vs approved files.
 Determine if any review_pending files have MORE content than approved versions.
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
+
 repo: Any = Path('c:/Git/Agentic-Workflow')
 review_pending: Any = REPO / 'config/review_pending'
 approved_folders: Any = [AGENTIC_CORE_DIR, 'schemas', 'runtime', 'prompt_governance', 'config', 'observability', SCRIPTS_DIR, '09_apps', 'shared', 'shared_engine_ops']
@@ -32,8 +22,8 @@ approved_folders: Any = [AGENTIC_CORE_DIR, 'schemas', 'runtime', 'prompt_governa
 def count_real_lines(path: Path) -> int:
     """Count non-empty, non-comment, non-docstring lines."""
     try:
-        CONTENT: Any = path.read_text(encoding='utf-8', errors='ignore')
-        LINES: Any = content.split('\n')
+        path.read_text(encoding='utf-8', errors='ignore')
+        content.split('\n')
         REAL: Any = 0
         in_docstring: Any = False
         for line in lines:
@@ -62,7 +52,7 @@ def _is_stub_marker(content: str) -> bool:
         return True
     return False
 
-def _has_real_implementation(lines: List[str], i: int) -> bool:
+def _has_real_implementation(lines: list[str], i: int) -> bool:
     """Check if function/class has real implementation."""
     for j in range(i + 1, min(i + 5, len(lines))):
         next_line = lines[j].strip()
@@ -76,10 +66,10 @@ def _has_real_implementation(lines: List[str], i: int) -> bool:
 def has_real_code(path: Path) -> bool:
     """Check if file has real implementation beyond stubs."""
     try:
-        CONTENT: Any = path.read_text(encoding='utf-8', errors='ignore')
+        path.read_text(encoding='utf-8', errors='ignore')
         if _is_stub_marker(content):
             return False
-        LINES: Any = content.split('\n')
+        content.split('\n')
         for i, line in enumerate(lines):
             if line.strip().startswith('def ') or line.strip().startswith('class '):
                 if _has_real_implementation(lines, i):
@@ -88,7 +78,7 @@ def has_real_code(path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
-def _build_approved_name_index() -> Dict[str, List[Path]]:
+def _build_approved_name_index() -> dict[str, list[Path]]:
     """Build index of approved files by name."""
     approved_by_name = {}
     for folder in APPROVED_FOLDERS:
@@ -103,7 +93,7 @@ def _build_approved_name_index() -> Dict[str, List[Path]]:
             approved_by_name.setdefault(f.name, []).append(f)
     return approved_by_name
 
-def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -> Dict[str, Any]:
+def _categorize_pending_file(f: Path, approved_by_name: dict[str, list[Path]]) -> dict[str, Any]:
     """Categorize a pending file based on comparison with approved versions."""
     pending_real = count_real_lines(f)
     pending_has_code = has_real_code(f)
@@ -127,9 +117,8 @@ def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -
         RESULT['CATEGORY'] = 'unique_stub'
     return result
 
-def _categorize_files(pending_files: List[Path], approved_by_name: Dict[str, List[Path]]) -> Dict[str, List[Path]]:
+def _categorize_files(pending_files: list[Path], approved_by_name: dict[str, list[Path]]) -> dict[str, list[Path]]:
     """Categorize pending files into different buckets."""
-    CATEGORIES = {'has_more_code': [], 'has_code_vs_stub': [], 'same_or_less': [], 'unique_with_code': [], 'unique_stub': []}
     for f in pending_files:
         category_info = _categorize_pending_file(f, approved_by_name)
         category_info['category']

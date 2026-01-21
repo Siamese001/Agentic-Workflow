@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-import sys
 import os
+import sys
+
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -27,9 +27,9 @@ GUARDRAILS (RCA 2026-01-20):
 import json
 import re
 import sys
-from pathlib import Path
 from collections import defaultdict
-from typing import Dict, List, Any, Tuple
+from pathlib import Path
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent  # agentic_core/L0_maintenance/scripts -> project root
 DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
@@ -40,15 +40,32 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import SSOT definitions
 from agentic_core.L5_safety.validators.dashboard_ssot_definitions import (
-    FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS, FIELD_MCP_HARDENED,
-    FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
-    FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
-    calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
-    calc_typed_pct, calc_documented_pct, calc_schema_strictness_pct,
-    calc_canonical_inheritance_pct, calc_avg_cc, calc_complexity_health,
-    calc_health_score, calc_code_quality_score, is_l0_territory,
-    get_heal_cap_display, get_invocation_display, sort_dashboard_data,
-    get_territory_sort_key
+    FIELD_CYCLOMATIC_COMPLEXITY,
+    FIELD_DOCUMENTED_PCT,
+    FIELD_HAS_HEALING,
+    FIELD_HAS_TESTS,
+    FIELD_INVOCATION,
+    FIELD_MCP_HARDENED,
+    FIELD_PROPER_BASE_CLASS,
+    FIELD_SCHEMA_STRICTNESS,
+    FIELD_TYPED_PCT,
+    calc_avg_cc,
+    calc_canonical_inheritance_pct,
+    calc_code_quality_score,
+    calc_complexity_health,
+    calc_documented_pct,
+    calc_hardened_pct,
+    calc_heal_cap_pct,
+    calc_health_score,
+    calc_invocation_pct,
+    calc_schema_strictness_pct,
+    calc_test_pct,
+    calc_typed_pct,
+    get_heal_cap_display,
+    get_invocation_display,
+    get_territory_sort_key,
+    is_l0_territory,
+    sort_dashboard_data,
 )
 
 # Territory name mapping (discovery -> dashboard)
@@ -73,7 +90,7 @@ def calculate_code_quality(typed: float, documented: float, schema: float, base:
     return calc_code_quality_score(typed, documented, schema, base)
 
 
-def build_real_agent_data(agents: List[Dict], territory_mapping: Dict[str, str]) -> Dict[str, Any]:
+def build_real_agent_data(agents: list[dict], territory_mapping: dict[str, str]) -> dict[str, Any]:
     """Build realAgentData structure from discovery data."""
     # Group agents by normalized territory
     territory_agents = defaultdict(list)
@@ -194,7 +211,7 @@ def build_real_agent_data(agents: List[Dict], territory_mapping: Dict[str, str])
     return real_agent_data
 
 
-def build_dashboard_data(agents: List[Dict], territory_mapping: Dict[str, str]) -> List[Dict]:
+def build_dashboard_data(agents: list[dict], territory_mapping: dict[str, str]) -> list[dict]:
     """Build dashboardData structure from discovery data."""
     # Group agents by normalized territory
     territory_agents = defaultdict(list)
@@ -313,7 +330,7 @@ def build_dashboard_data(agents: List[Dict], territory_mapping: Dict[str, str]) 
     return sort_dashboard_data(dashboard_data)
 
 
-def generate_strategic_recommendations(dashboard_data: List[Dict]) -> Dict[str, Any]:
+def generate_strategic_recommendations(dashboard_data: list[dict]) -> dict[str, Any]:
     """
     Generate strategic recommendations using StrategicRecommendationAgent.
 
@@ -325,7 +342,9 @@ def generate_strategic_recommendations(dashboard_data: List[Dict]) -> Dict[str, 
     """
     try:
         # Correct import path: L1_cognition/thought_engine/
-        from agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent import StrategicRecommendationAgent
+        from agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent import (
+            StrategicRecommendationAgent,
+        )
 
         agent = StrategicRecommendationAgent(project_root=PROJECT_ROOT)
         result = agent.run(dashboard_data)
@@ -345,7 +364,7 @@ def generate_strategic_recommendations(dashboard_data: List[Dict]) -> Dict[str, 
         }
 
 
-def inject_strategic_observations(content: str, recommendations: Dict[str, Any]) -> str:
+def inject_strategic_observations(content: str, recommendations: dict[str, Any]) -> str:
     """
     Inject strategic observations and recommendations into dashboard HTML.
 
@@ -449,7 +468,7 @@ def inject_strategic_observations(content: str, recommendations: Dict[str, Any])
 # GUARDRAILS - Post-regeneration validation (RCA 2026-01-20)
 # =============================================================================
 
-def validate_html_integrity(content: str) -> Tuple[bool, List[str]]:
+def validate_html_integrity(content: str) -> tuple[bool, list[str]]:
     """
     Validate HTML integrity after regeneration.
 
@@ -503,7 +522,7 @@ def validate_html_integrity(content: str) -> Tuple[bool, List[str]]:
     return is_valid, errors
 
 
-def validate_pre_regeneration(content: str) -> Tuple[str, List[str]]:
+def validate_pre_regeneration(content: str) -> tuple[str, list[str]]:
     """
     Validate and potentially fix HTML before regeneration.
 
@@ -534,7 +553,7 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_PATH, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_PATH, encoding='utf-8') as f:
         agents = json.load(f)
 
     print(f"\nLoaded {len(agents)} agents from discovery")

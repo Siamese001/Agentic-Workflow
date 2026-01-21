@@ -3,29 +3,13 @@
 Generate functionality metrics and unified diffs for blueprint duplicate pairs.
 Phase 1 of duplicate cleanup workflow.
 """
-import subprocess
-import json
-from pathlib import Path
 from datetime import datetime
-from agentic_core.utils.security import safe_git_execute
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.security import safe_git_execute
 
 
 def count_methods(file_path: Path) -> int:
@@ -100,7 +84,7 @@ def main():
 
         f.write("## Summary\n")
         f.write(f"- **Blueprint files found:** {len(blueprint_agents)}\n")
-        f.write(f"- **Diff output directory:** `reports/blueprint_diffs/`\n\n")
+        f.write("- **Diff output directory:** `reports/blueprint_diffs/`\n\n")
 
         f.write("## Metrics Comparison\n\n")
         f.write("| Agent | Canonical Lines | Dup Lines | Can Methods | Dup Methods | Can Heal | Dup Heal | Recommendation |\n")
@@ -147,7 +131,7 @@ def main():
             diff_file = diff_dir / f"{agent_name}_diff.patch"
             diff_file.write_text(diff_content, encoding='utf-8')
 
-        f.write(f"\n## Diff Files\n\n")
+        f.write("\n## Diff Files\n\n")
         f.write(f"Generated {pairs_found} diff files in `reports/blueprint_diffs/`\n\n")
         f.write("```bash\n")
         f.write("# Open all diffs in Windsurf\n")

@@ -11,9 +11,9 @@ import logging
 import time
 import uuid
 from abc import ABC, abstractmethod
-from datetime import datetime
+from collections.abc import Awaitable, Callable
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set, Awaitable
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -61,15 +61,15 @@ class SystemEvent(BaseModel):
     trace_id: str
     type: EventType
     source_component: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: float = Field(default_factory=time.time)
-    correlation_id: Optional[str] = None  # Links related events
-    causation_id: Optional[str] = None   # The event that caused this one
+    correlation_id: str | None = None  # Links related events
+    causation_id: str | None = None   # The event that caused this one
 
     class Config:
         frozen = True  # Events are immutable
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization.
 
         Returns:
@@ -87,7 +87,7 @@ class SystemEvent(BaseModel):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "SystemEvent":
+    def from_dict(cls, data: dict[str, Any]) -> "SystemEvent":
         """Create from dictionary.
 
         Args:
@@ -155,7 +155,7 @@ class EventBus(ABC):
         pass
 
     @abstractmethod
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of event bus.
 
         Returns:
@@ -169,9 +169,9 @@ class MemoryEventBus(EventBus):
 
     def __init__(self):
         """Initialize memory event bus."""
-        self._queues: Dict[str, asyncio.Queue] = {}
-        self._subscribers: Dict[str, List[Callable]] = {}
-        self._workers: Dict[str, asyncio.Task] = {}
+        self._queues: dict[str, asyncio.Queue] = {}
+        self._subscribers: dict[str, list[Callable]] = {}
+        self._workers: dict[str, asyncio.Task] = {}
         self._running = False
         self._stats = {
             "events_published": 0,
@@ -265,7 +265,7 @@ class MemoryEventBus(EventBus):
 
         logger.info("MemoryEventBus closed")
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of event bus.
 
         Returns:
@@ -309,7 +309,7 @@ class MemoryEventBus(EventBus):
     async def _notify_subscribers(
         self,
         event: SystemEvent,
-        subscribers: List[Callable]
+        subscribers: list[Callable]
     ) -> None:
         """Notify all subscribers of an event.
 
@@ -352,7 +352,7 @@ class RedisEventBus(EventBus):
         self,
         connection_string: str,
         consumer_group: str = "agentic_workflow",
-        consumer_name: Optional[str] = None
+        consumer_name: str | None = None
     ):
         """Initialize Redis event bus.
 
@@ -365,10 +365,10 @@ class RedisEventBus(EventBus):
         self.consumer_group = consumer_group
         self.consumer_name = consumer_name or f"consumer_{uuid.uuid4().hex[:8]}"
 
-        self.redis: Optional[Any] = None
+        self.redis: Any | None = None
         self._running = False
-        self._subscribers: Dict[str, List[Callable]] = {}
-        self._readers: Dict[str, asyncio.Task] = {}
+        self._subscribers: dict[str, list[Callable]] = {}
+        self._readers: dict[str, asyncio.Task] = {}
         self._stats = {
             "events_published": 0,
             "events_processed": 0,
@@ -510,7 +510,7 @@ class RedisEventBus(EventBus):
 
         logger.info("RedisEventBus closed")
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of Redis event bus.
 
         Returns:
@@ -588,7 +588,7 @@ class RedisEventBus(EventBus):
     async def _notify_subscribers(
         self,
         event: SystemEvent,
-        subscribers: List[Callable]
+        subscribers: list[Callable]
     ) -> None:
         """Notify all subscribers of an event.
 
@@ -643,7 +643,7 @@ class RedisEventBus(EventBus):
                 logger.error(f"Reconnection attempt {attempt + 1} failed: {e}")
 
 
-def create_event_bus(connection_string: Optional[str] = None) -> EventBus:
+def create_event_bus(connection_string: str | None = None) -> EventBus:
     """Create an event bus instance.
 
     Args:
@@ -659,7 +659,7 @@ def create_event_bus(connection_string: Optional[str] = None) -> EventBus:
 
 
 # Global event bus
-_event_bus: Optional[EventBus] = None
+_event_bus: EventBus | None = None
 _bus_lock = asyncio.Lock()
 
 
@@ -681,10 +681,10 @@ async def get_event_bus() -> EventBus:
 async def publish_event(
     event_type: EventType,
     source_component: str,
-    payload: Dict[str, Any],
-    trace_id: Optional[str] = None,
-    correlation_id: Optional[str] = None,
-    causation_id: Optional[str] = None
+    payload: dict[str, Any],
+    trace_id: str | None = None,
+    correlation_id: str | None = None,
+    causation_id: str | None = None
 ) -> None:
     """Publish a system event.
 
@@ -713,7 +713,7 @@ async def publish_event(
 # Decorator for event publishing
 def event_publisher(
     event_type: EventType,
-    channel: Optional[str] = None
+    channel: str | None = None
 ):
     """Decorator to automatically publish events.
 

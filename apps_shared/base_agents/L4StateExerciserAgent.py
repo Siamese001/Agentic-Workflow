@@ -5,21 +5,21 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-from dataclasses import dataclass
-
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import tempfile
-from pathlib import Path
-from typing import List, Any
-import uuid
 import time
+import uuid
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
-    safe_path_join,
 )
-from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+
 
 # Lazy imports — gravity-safe (same L4 territory)
 def _get_validation_context() -> Any:
@@ -87,7 +87,7 @@ class L4StateExerciserAgent(SovereignBaseAgent):
     @layer_entry("L4_state", subterritory="ValidationContext")
     def act(self) -> str:
         """Primary entrypoint — called by orchestrator on synthetic task."""
-        report: List[str] = [f"{self.name}: Starting state exercise cycle"]
+        report: list[str] = [f"{self.name}: Starting state exercise cycle"]
 
         for strategy_name, strategy_func in self.exercise_strategies.items():
             try:

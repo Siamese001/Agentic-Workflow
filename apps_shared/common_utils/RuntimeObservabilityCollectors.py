@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import Dict, List
-
 # from archives.legacy_root_folders.core.models.models import TelemetryEvent  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
-_telemetry_buffer: List[TelemetryEvent] = []
-_span_stack: List[Dict[str, object]] = []
+_telemetry_buffer: list[TelemetryEvent] = []
+_span_stack: list[dict[str, object]] = []
 
 
 def append_event(evt: TelemetryEvent) -> None:
@@ -15,7 +13,7 @@ def append_event(evt: TelemetryEvent) -> None:
     _telemetry_buffer.append(evt)
 
 
-def get_events() -> List[TelemetryEvent]:
+def get_events() -> list[TelemetryEvent]:
     """Return a shallow copy of the telemetry buffer."""
 
     return list(_telemetry_buffer)
@@ -28,20 +26,20 @@ def clear_events() -> None:
     _span_stack.clear()
 
 
-def push_span(record: Dict[str, object]) -> None:
+def push_span(record: dict[str, object]) -> None:
     """Push a span record onto the span stack."""
 
     _span_stack.append(record)
 
 
-def pop_span(record: Dict[str, object]) -> None:
+def pop_span(record: dict[str, object]) -> None:
     """Remove a span record from the span stack if present."""
 
     if record in _span_stack:
         _span_stack.remove(record)
 
 
-def span_stack() -> List[Dict[str, object]]:
+def span_stack() -> list[dict[str, object]]:
     """Return the internal span stack (for inspection-only)."""
 
     return _span_stack

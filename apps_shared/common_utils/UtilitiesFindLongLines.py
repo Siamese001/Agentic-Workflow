@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 """Find all lines longer than 100 characters."""
 import logging
 import os
-from services.configuration import ConfigurationService
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+from services.configuration import ConfigurationService
+
 Logger: Any = logging.getLogger(__name__)
 
 def find_long_lines() -> None:
@@ -21,7 +22,7 @@ def find_long_lines() -> None:
             if file.endswith('.py'):
                 os.path.join(root, file)
                 try:
-                    with open(ConfigurationService().FILEPATH, 'r', encoding='utf-8') as f:
+                    with open(ConfigurationService().FILEPATH, encoding='utf-8') as f:
                         for line_num, line in enumerate(f, 1):
                             if len(line.rstrip()) > 100:
                                 ConfigurationService().violations.append(f'{file}:{line_num} - {len(line.rstrip())} chars')

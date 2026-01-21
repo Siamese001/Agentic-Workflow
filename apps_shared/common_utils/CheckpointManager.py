@@ -8,20 +8,18 @@ enabling recovery from failures without losing progress.
 import asyncio
 import json
 import logging
-import os
-import time
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any
 
 import aiofiles
 import aiofiles.os
 from pydantic import BaseModel
 from redis import asyncio as aioredis
 
-from .envelope import SignalEnvelope, StageResult
+from .envelope import SignalEnvelope
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +59,7 @@ class CheckpointStorageBackend(ABC):
         pass
 
     @abstractmethod
-    async def load(self, trace_id: str) -> Optional[SignalEnvelope]:
+    async def load(self, trace_id: str) -> SignalEnvelope | None:
         """Load envelope checkpoint.
 
         Args:
@@ -85,7 +83,7 @@ class CheckpointStorageBackend(ABC):
         pass
 
     @abstractmethod
-    async def list_checkpoints(self, limit: int = 100) -> List[str]:
+    async def list_checkpoints(self, limit: int = 100) -> list[str]:
         """List available checkpoint trace IDs.
 
         Args:
@@ -181,7 +179,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             logger.error(f"Failed to save checkpoint: {e}")
             return False
 
-    async def load(self, trace_id: str) -> Optional[SignalEnvelope]:
+    async def load(self, trace_id: str) -> SignalEnvelope | None:
         """Load envelope from file.
 
         Args:
@@ -196,7 +194,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             if not path.exists():
                 return None
 
-            async with aiofiles.open(path, 'r') as f:
+            async with aiofiles.open(path) as f:
                 content = await f.read()
 
             data = json.loads(content)
@@ -233,7 +231,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             logger.error(f"Failed to delete checkpoint {trace_id}: {e}")
             return False
 
-    async def list_checkpoints(self, limit: int = 100) -> List[str]:
+    async def list_checkpoints(self, limit: int = 100) -> list[str]:
         """List available checkpoints.
 
         Args:
@@ -305,7 +303,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
         self.redis_url = redis_url
         self.prefix = prefix
         self.ttl_seconds = ttl_seconds
-        self._redis: Optional[aioredis.Redis] = None
+        self._redis: aioredis.Redis | None = None
 
     async def _get_redis(self) -> aioredis.Redis:
         """Get Redis connection.
@@ -361,7 +359,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             logger.error(f"Failed to save checkpoint to Redis: {e}")
             return False
 
-    async def load(self, trace_id: str) -> Optional[SignalEnvelope]:
+    async def load(self, trace_id: str) -> SignalEnvelope | None:
         """Load envelope from Redis.
 
         Args:
@@ -414,7 +412,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             logger.error(f"Failed to delete checkpoint {trace_id} from Redis: {e}")
             return False
 
-    async def list_checkpoints(self, limit: int = 100) -> List[str]:
+    async def list_checkpoints(self, limit: int = 100) -> list[str]:
         """List available checkpoints in Redis.
 
         Args:
@@ -465,7 +463,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
         Args:
             max_size: Maximum number of checkpoints to store
         """
-        self.checkpoints: Dict[str, SignalEnvelope] = {}
+        self.checkpoints: dict[str, SignalEnvelope] = {}
         self.max_size = max_size
         self._lock = asyncio.Lock()
 
@@ -488,7 +486,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
             self.checkpoints[envelope.trace_id] = envelope
             return True
 
-    async def load(self, trace_id: str) -> Optional[SignalEnvelope]:
+    async def load(self, trace_id: str) -> SignalEnvelope | None:
         """Load envelope from memory.
 
         Args:
@@ -515,7 +513,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
                 return True
             return False
 
-    async def list_checkpoints(self, limit: int = 100) -> List[str]:
+    async def list_checkpoints(self, limit: int = 100) -> list[str]:
         """List checkpoints in memory.
 
         Args:
@@ -612,7 +610,7 @@ class CheckpointManager:
             self._stats["errors"] += 1
             return False
 
-    async def load_checkpoint(self, trace_id: str) -> Optional[SignalEnvelope]:
+    async def load_checkpoint(self, trace_id: str) -> SignalEnvelope | None:
         """Load envelope checkpoint.
 
         Args:
@@ -655,8 +653,8 @@ class CheckpointManager:
     async def resume_from_checkpoint(
         self,
         trace_id: str,
-        stages: List[str]
-    ) -> Optional[SignalEnvelope]:
+        stages: list[str]
+    ) -> SignalEnvelope | None:
         """Resume pipeline from checkpoint.
 
         Args:
@@ -677,7 +675,7 @@ class CheckpointManager:
 
         return envelope
 
-    async def cleanup_old_checkpoints(self, older_than: Optional[timedelta] = None) -> int:
+    async def cleanup_old_checkpoints(self, older_than: timedelta | None = None) -> int:
         """Clean up old checkpoints.
 
         Args:
@@ -691,7 +689,7 @@ class CheckpointManager:
 
         return await self.storage.cleanup(older_than)
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> dict[str, int]:
         """Get checkpoint statistics.
 
         Returns:
@@ -699,7 +697,7 @@ class CheckpointManager:
         """
         return self._stats.copy()
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of checkpoint system.
 
         Returns:
@@ -732,11 +730,11 @@ class CheckpointManager:
 
 
 # Global checkpoint manager
-_checkpoint_manager: Optional[CheckpointManager] = None
+_checkpoint_manager: CheckpointManager | None = None
 _manager_lock = asyncio.Lock()
 
 
-async def get_checkpoint_manager(config: Optional[CheckpointConfig] = None) -> CheckpointManager:
+async def get_checkpoint_manager(config: CheckpointConfig | None = None) -> CheckpointManager:
     """Get global checkpoint manager instance.
 
     Args:

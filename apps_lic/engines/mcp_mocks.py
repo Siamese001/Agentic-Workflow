@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 MCP Mock Tool Wrappers
 
@@ -7,11 +8,11 @@ Lines: 41-252 from core_utils.py
 """
 import json
 import logging
-import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger('CanonValidator')
 
-def get_current_time(timezone: Optional[str]=None) -> str:
+def get_current_time(timezone: str | None=None) -> str:
     """Mock for Time MCP: Returns current time or converts timezone."""
     if timezone == 'Europe/London':
         return '{"datetime": "2025-12-15T10:45:00+00:00"}'
@@ -34,7 +35,7 @@ def browser_type(element: str, ref: str, text: str) -> None:
 def browser_click(element: str, ref: str) -> None:
     """Mock for Playwright MCP: Click element."""
 
-def string_get(key: str) -> Optional[str]:
+def string_get(key: str) -> str | None:
     """Mock for Redis MCP: Get string value."""
     return None
 
@@ -72,7 +73,7 @@ def brave_search(query: str, count: int=5) -> str:
     results: Any = [{'title': f'Result 1 for {query}', 'url': 'https://example.com/1', 'snippet': f'Mock snippet about {query}'}, {'title': f'Result 2 for {query}', 'url': 'https://example.com/2', 'snippet': f'Another result about {query}'}, {'title': f'Result 3 for {query}', 'url': 'https://example.com/3', 'snippet': f'Third result about {query}'}]
     return json.dumps(results[:count])
 
-def execute_cost_controlled_search(query: str, Logger: Optional[Any]=None) -> Optional[str]:
+def execute_cost_controlled_search(query: str, Logger: Any | None=None) -> str | None:
     """
     Mock for Brave Search wrapper with rate limiting.
     Returns search results 70% of the time to simulate rate limiting.
@@ -88,7 +89,7 @@ def execute_cost_controlled_search(query: str, Logger: Optional[Any]=None) -> Op
             Logger.info('Brave Search rate limit reached - returning None')
         return None
 
-def get_from_langcache(key: str) -> Optional[str]:
+def get_from_langcache(key: str) -> str | None:
     """Mock: Retrieves final result from LangCache."""
     return None
 
@@ -99,7 +100,7 @@ def search_nodes(query: str) -> str:
     """Mock for MEMemory MCP: Search knowledge graph."""
     return json.dumps({'entityName': 'user', 'skills': ['Python', 'JavaScript', 'Machine Learning'], 'projects': ['E-commerce Platform', 'ML Pipeline'], 'experience': '5 years'})
 
-def add_observations(observations: List[Dict[str, Any]]) -> None:
+def add_observations(observations: list[dict[str, Any]]) -> None:
     """Mock for MEMemory MCP: Add observations."""
 
 def search_records(query: str, index: str, top_k: int=5) -> str:
@@ -136,7 +137,7 @@ def semantic_score_draft(draft_content: str, JobDescription: str) -> float:
     else:
         return 0.6
 
-def generate_draft_llm(draft_type: str, user_data: Dict, job_desc: str, current_draft: Optional[str]=None, required_keywords: Optional[list]=None) -> str:
+def generate_draft_llm(draft_type: str, user_data: dict, job_desc: str, current_draft: str | None=None, required_keywords: list | None=None) -> str:
     """Mock for LLM/Thinking Node: Generates or refines draft based on input context."""
     iteration: Any = current_draft.count('Iteration') + 1 if current_draft else 1
     draft_lines: Any = [f'{draft_type} Draft - Iteration {iteration}', '', 'Dear Hiring Manager,', '', f'Generated for job description: {job_desc[:50]}...', '', 'Skills: Python, AWS, Docker, Kubernetes', '', f"User projects: {', '.join(user_data.get('projects', []))}", '', 'Sincerely,', 'Matthew Wallace']
@@ -144,7 +145,7 @@ def generate_draft_llm(draft_type: str, user_data: Dict, job_desc: str, current_
         draft_lines.insert(6, f"Target keywords: {', '.join(required_keywords[:3])}")
     return '\n'.join(draft_lines)
 
-def get_variable_defs(node_id: str, version: Optional[str]=None) -> str:
+def get_variable_defs(node_id: str, version: str | None=None) -> str:
     """Mock for Figma MCP: Get variable definitions."""
     return json.dumps({'colors': {'primary': '#007ACC', 'secondary': '#6C757D'}, 'fonts': {'primary': 'Arial', 'secondary': 'Helvetica'}, 'spacing': {'small': '8px', 'medium': '16px', 'large': '24px'}, 'version': version or 'latest'})
 

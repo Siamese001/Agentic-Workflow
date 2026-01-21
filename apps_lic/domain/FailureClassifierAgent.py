@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 # File: models_LIC.py
 # Description: Data models, enumerations, and custom exceptions for the LIC workflow.
 # REFACTOR: v13.0 - Slimmed down to support HOP-based architecture.
@@ -8,9 +9,7 @@ from __future__ import annotations
 __version__ = "13.0"
 
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Union, Set, Tuple, Callable
 
 # ============================================================================
 # ENUMS & CONSTANTS
@@ -97,13 +96,13 @@ class CircuitBreakerOpenError(Exception):
 class OutreachMission:
     """Complete mission specification (Input)"""
     mission_id: str
-    sender_profile: Dict[str, object]
-    recipient_profile: Dict[str, object]
-    JobDescription: Dict[str, object]
+    sender_profile: dict[str, object]
+    recipient_profile: dict[str, object]
+    JobDescription: dict[str, object]
     connection_status: str = "not_connected"
     prior_message_count: int = 0
-    route_override: Optional[Route] = None
-    context: Dict[str, object] = field(default_factory=dict)
+    route_override: Route | None = None
+    context: dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class ProfileAnalysis:
@@ -115,7 +114,7 @@ class ProfileAnalysis:
     Archetype: Archetype
     confidence: float
     reasoning: str
-    key_indicators: List[str]
+    key_indicators: list[str]
     needs_manual_override: bool = False
 
 @dataclass
@@ -123,15 +122,15 @@ class MessageClaim:
     """NEW v11.6: Individual Claim with confidence (FEATURE 1.2)"""
     text: str
     confidence: float
-    supporting_sources: List[str]
-    source_weights: List[float]
+    supporting_sources: list[str]
+    source_weights: list[float]
 
 @dataclass
 class RAGCritique:
     """NEW v11.6: RAG quality critique (FEATURE 1.4)"""
     confidence_score: float
-    gaps_identified: List[str]
-    refinement_tasks: List[str]
+    gaps_identified: list[str]
+    refinement_tasks: list[str]
     reasoning: str
     is_sufficient: bool = False
 
@@ -144,7 +143,7 @@ class RAGResult:
     source: str
     SourceType: str
     text: str
-    extracted_keywords: List[str]
+    extracted_keywords: list[str]
     source_weight: float
     age_days: int
     recipient_specific: bool
@@ -156,11 +155,11 @@ class SenderGroundingWhitelists:
     Output of HOP-3 SenderGroundingAgent.
     Used to validate "my team" / "our product" claims in HOP-6.
     """
-    team_members: List[str] = field(default_factory=list)
-    products: List[str] = field(default_factory=list)
-    case_studies: List[str] = field(default_factory=list)
-    quantifiable_achievements: List[str] = field(default_factory=list)
-    raw_evidence: Dict[str, List[str]] = field(default_factory=dict)
+    team_members: list[str] = field(default_factory=list)
+    products: list[str] = field(default_factory=list)
+    case_studies: list[str] = field(default_factory=list)
+    quantifiable_achievements: list[str] = field(default_factory=list)
+    raw_evidence: dict[str, list[str]] = field(default_factory=dict)
 
 @dataclass
 class ResearchContext:
@@ -169,12 +168,12 @@ class ResearchContext:
     Output is now state/2_research_context.json
     This class is kept for type hinting in legacy models if needed.
     """
-    recipient_insights: List[str]
-    company_context: List[str]
-    recent_activity: List[str]
-    rag_results: List[RAGResult]
-    sender_grounding: Optional[SenderGroundingWhitelists] = None
-    adversarial_findings: List[str] = field(default_factory=list)
+    recipient_insights: list[str]
+    company_context: list[str]
+    recent_activity: list[str]
+    rag_results: list[RAGResult]
+    sender_grounding: SenderGroundingWhitelists | None = None
+    adversarial_findings: list[str] = field(default_factory=list)
 
 @dataclass
 class MessageScaffold:
@@ -185,9 +184,9 @@ class MessageScaffold:
     """
     Route: Route
     Archetype: Archetype
-    sections: Dict[str, Dict[str, object]]
-    constraints: Dict[str, object]
-    locked_sections: Set[str] = field(default_factory=set)
+    sections: dict[str, dict[str, object]]
+    constraints: dict[str, object]
+    locked_sections: set[str] = field(default_factory=set)
 
 @dataclass
 class GeneratedMessage:
@@ -214,7 +213,7 @@ class ValidationResult:
     Severity: ValidationSeverity
     rule_id: str
     message: str
-    details: Optional[Dict[str, object]] = None
+    details: dict[str, object] | None = None
 
 @dataclass
 class QAReport:
@@ -224,11 +223,11 @@ class QAReport:
     This class is kept for type hinting in legacy models if needed.
     """
     mission_id: str
-    validation_results: List[ValidationResult]
+    validation_results: list[ValidationResult]
     passed: bool
     timestamp: str
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

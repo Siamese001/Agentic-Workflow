@@ -5,13 +5,14 @@ with proper error handling, context management, and result aggregation.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Callable
+import json
 import logging
+import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import time
-import json
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -41,21 +42,21 @@ class OperationContext:
     category: OperationCategory
     scope: OperationScope
     target: str
-    correlation_id: Optional[str] = None
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    correlation_id: str | None = None
+    user_id: str | None = None
+    session_id: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class OperationParameters:
     """Parameters for observability operation."""
     operation_type: str
-    config: Dict[str, Any] = field(default_factory=dict)
-    filters: Dict[str, Any] = field(default_factory=dict)
-    aggregation: Optional[str] = None
-    time_range: Optional[Tuple[datetime, datetime]] = None
-    limit: Optional[int] = None
+    config: dict[str, Any] = field(default_factory=dict)
+    filters: dict[str, Any] = field(default_factory=dict)
+    aggregation: str | None = None
+    time_range: tuple[datetime, datetime] | None = None
+    limit: int | None = None
 
 
 @dataclass
@@ -73,22 +74,22 @@ class OperationOutcome:
     """Outcome of observability operation."""
     operation_id: str
     success: bool
-    data: Optional[Union[Dict[str, Any], List[Any]]] = None
+    data: dict[str, Any] | list[Any] | None = None
     count: int = 0
-    aggregated_values: Dict[str, float] = field(default_factory=dict)
-    error: Optional[str] = None
-    warnings: List[str] = field(default_factory=list)
+    aggregated_values: dict[str, float] = field(default_factory=dict)
+    error: str | None = None
+    warnings: list[str] = field(default_factory=list)
     execution_time: float = 0.0
 
 
 class ObservabilityOperationAdapter:
     """Main adapter for performing observability operations."""
 
-    def __init__(self, config: Optional[OperationConfig] = None):
+    def __init__(self, config: OperationConfig | None = None):
         self.config = config or OperationConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._operation_handlers: Dict[str, Callable] = {}
-        self._cache: Dict[str, Tuple[Any, float]] = {}
+        self._operation_handlers: dict[str, Callable] = {}
+        self._cache: dict[str, tuple[Any, float]] = {}
         self._initialize_handlers()
 
     def register_handler(self, operation_type: str, handler: Callable) -> None:
@@ -151,8 +152,8 @@ class ObservabilityOperationAdapter:
             return self._create_error_outcome(context.operation_id, str(e), start_time)
 
     def perform_batch_operations(self,
-                                contexts: List[OperationContext],
-                                parameters_list: List[OperationParameters]) -> List[OperationOutcome]:
+                                contexts: list[OperationContext],
+                                parameters_list: list[OperationParameters]) -> list[OperationOutcome]:
         """Perform multiple operations.
 
         Args:
@@ -174,7 +175,7 @@ class ObservabilityOperationAdapter:
         return results
 
     def perform_aggregated_operation(self,
-                                   contexts: List[OperationContext],
+                                   contexts: list[OperationContext],
                                    parameters: OperationParameters) -> OperationOutcome:
         """Perform operation with aggregation across multiple contexts.
 
@@ -225,8 +226,8 @@ class ObservabilityOperationAdapter:
 
         return outcome
 
-    def get_operation_history(self, operation_id: Optional[str] = None,
-                            time_range: Optional[Tuple[datetime, datetime]] = None) -> List[Dict[str, Any]]:
+    def get_operation_history(self, operation_id: str | None = None,
+                            time_range: tuple[datetime, datetime] | None = None) -> list[dict[str, Any]]:
         """Get history of operations.
 
         Args:
@@ -239,7 +240,7 @@ class ObservabilityOperationAdapter:
         # Placeholder implementation - would query persistent storage
         return []
 
-    def clear_cache(self, pattern: Optional[str] = None) -> int:
+    def clear_cache(self, pattern: str | None = None) -> int:
         """Clear operation cache.
 
         Args:
@@ -308,7 +309,7 @@ class ObservabilityOperationAdapter:
         return self._create_error_outcome(context.operation_id, last_error, time.time())
 
     def _get_from_cache(self, context: OperationContext,
-                       parameters: OperationParameters) -> Optional[OperationOutcome]:
+                       parameters: OperationParameters) -> OperationOutcome | None:
         """Get result from cache."""
         cache_key = self._generate_cache_key(context, parameters)
 
@@ -342,7 +343,7 @@ class ObservabilityOperationAdapter:
         }
         return f"obs_op_{hash(json.dumps(key_data, sort_keys=True))}"
 
-    def _group_by_type(self, data: List[Any]) -> Dict[str, List[Any]]:
+    def _group_by_type(self, data: list[Any]) -> dict[str, list[Any]]:
         """Group data items by their type."""
         groups = {}
         for item in data:
@@ -352,7 +353,7 @@ class ObservabilityOperationAdapter:
             groups[item_type].append(item)
         return groups
 
-    def _aggregate_numeric(self, data: List[Any], method: str) -> Optional[Dict[str, float]]:
+    def _aggregate_numeric(self, data: list[Any], method: str) -> dict[str, float] | None:
         """Aggregate numeric data."""
         if not data or not all(isinstance(d, (int, float)) for d in data):
             return None
@@ -363,7 +364,7 @@ class ObservabilityOperationAdapter:
             return {"average": sum(data) / len(data)}
         return None
 
-    def _aggregate_by_method(self, data: List[Any], aggregation: str) -> Union[Dict[str, Any], List[Any]]:
+    def _aggregate_by_method(self, data: list[Any], aggregation: str) -> dict[str, Any] | list[Any]:
         """Perform specific aggregation method on data."""
         if aggregation == "count":
             return {"total": len(data)}
@@ -381,14 +382,14 @@ class ObservabilityOperationAdapter:
 
         return data
 
-    def _aggregate_data(self, data: List[Any], aggregation: Optional[str]) -> Union[Dict[str, Any], List[Any]]:
+    def _aggregate_data(self, data: list[Any], aggregation: str | None) -> dict[str, Any] | list[Any]:
         """Aggregate data based on aggregation method."""
         if not aggregation:
             return data
 
         return self._aggregate_by_method(data, aggregation)
 
-    def _calculate_aggregated_values(self, data: List[Any]) -> Dict[str, float]:
+    def _calculate_aggregated_values(self, data: list[Any]) -> dict[str, float]:
         """Calculate aggregated values from data."""
         values = {}
 
@@ -419,7 +420,7 @@ class ObservabilityOperationAdapter:
     def _initialize_handlers(self) -> None:
         """Initialize default operation handlers."""
         # Health check handler
-        def _health_check_handler(exec_data: Dict[str, Any]) -> Dict[str, Any]:
+        def _health_check_handler(exec_data: dict[str, Any]) -> dict[str, Any]:
             context = exec_data["context"]
             return {
                 "data": {
@@ -431,7 +432,7 @@ class ObservabilityOperationAdapter:
             }
 
         # Metrics collection handler
-        def _metrics_handler(exec_data: Dict[str, Any]) -> Dict[str, Any]:
+        def _metrics_handler(exec_data: dict[str, Any]) -> dict[str, Any]:
             parameters = exec_data["parameters"]
             metric_names = parameters.config.get("metrics", [])
 
@@ -445,7 +446,7 @@ class ObservabilityOperationAdapter:
             }
 
         # Log query handler
-        def _log_query_handler(exec_data: Dict[str, Any]) -> Dict[str, Any]:
+        def _log_query_handler(exec_data: dict[str, Any]) -> dict[str, Any]:
             parameters = exec_data["parameters"]
             level = parameters.config.get("level", "info")
             limit = parameters.limit or 100
@@ -459,7 +460,7 @@ class ObservabilityOperationAdapter:
             }
 
         # Trace query handler
-        def _trace_query_handler(exec_data: Dict[str, Any]) -> Dict[str, Any]:
+        def _trace_query_handler(exec_data: dict[str, Any]) -> dict[str, Any]:
             context = exec_data["context"]
             trace_id = context.correlation_id
 
@@ -505,8 +506,8 @@ def perform_observability_operation(
     scope: str,
     target: str,
     operation_type: str,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Perform observability operation.
 
     Args:

@@ -1,17 +1,13 @@
 from __future__ import annotations
+
 """
 agentic_core/domain/prompts.py
 Depth: 3
 Role: Static storage for LLM few-shot prompts to keep Context clean.
 """
-import re
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 few_shot_global_refactor: Any = '\nFEW-SHOT REFACTORING PATTERNS:\n\nEXAMPLE 1: Monolith Function → Atomic Split\nBAD: def handle_order(order): # 250 lines\nGOOD: Split into orders/validate.py, orders/charge.py\n\nEXAMPLE 2: Incorrect Depth\nBAD: apps/payment/helpers.py (depth 3)\nGOOD: agentic_core/shared/payments/domain/charge_service.py (depth 5)\n'
 few_shot_import_fixes: Any = "\nFEW-SHOT IMPORT RESOLUTION:\n\nEXAMPLE 1: Relative Import\nBAD: from utils import validate\nGOOD: from agentic_core.shared.validation.common import validate\n\nEXAMPLE 2: Missing Schema\nBAD: ImportError: cannot import name 'OrderSchema'\nGOOD: from agentic_core.L1_cognition.P2_domain.models import DomainSchema\n"

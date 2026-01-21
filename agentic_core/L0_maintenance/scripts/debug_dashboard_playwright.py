@@ -3,11 +3,10 @@
 Deep RCA using Playwright to diagnose dashboard data load error.
 Captures console errors, network requests, and JavaScript state.
 """
-import sys
-import time
-import threading
 import http.server
 import socketserver
+import threading
+import time
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
@@ -78,13 +77,13 @@ def debug_dashboard():
         """)
 
         if dashboard_data_check['exists']:
-            print(f"   ✅ dashboardData exists")
+            print("   ✅ dashboardData exists")
             print(f"   ✅ Type: {dashboard_data_check['type']}")
             print(f"   ✅ Length: {dashboard_data_check['length']} territories")
             if dashboard_data_check['sample']:
                 print(f"   ✅ Sample: {dashboard_data_check['sample'].get('Territory', 'N/A')}")
         else:
-            print(f"   ❌ dashboardData does NOT exist")
+            print("   ❌ dashboardData does NOT exist")
             print(f"   Type: {dashboard_data_check['type']}")
 
         # Check other data files
@@ -111,7 +110,7 @@ def debug_dashboard():
             error_content = page.locator(".error-message").text_content() if page.locator(".error-message").count() > 0 else "N/A"
             print(f"   Error content: {error_content}")
         else:
-            print(f"   ✅ No 'Data Load Error' message found")
+            print("   ✅ No 'Data Load Error' message found")
 
         # Console messages
         print(f"\n4. Console Messages ({len(console_messages)}):")

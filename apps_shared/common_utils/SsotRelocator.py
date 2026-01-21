@@ -14,12 +14,13 @@ Provides automated remediation for:
 """
 
 from __future__ import annotations
-import shutil
+
 import logging
-from pathlib import Path
-from typing import List, Dict, Any, Optional
-from datetime import datetime
+import shutil
 from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -33,7 +34,7 @@ class RelocationResult:
     target: str
     success: bool
     action: str  # 'MOVED', 'ARCHIVED', 'FLATTENED', 'SKIPPED'
-    error: Optional[str] = None
+    error: str | None = None
     timestamp: str = ""
 
     def __post_init__(self):
@@ -48,7 +49,7 @@ class EnforcementReport:
     successful: int = 0
     failed: int = 0
     skipped: int = 0
-    results: List[RelocationResult] = None
+    results: list[RelocationResult] = None
 
     def __post_init__(self):
         if self.results is None:
@@ -76,7 +77,7 @@ class SSOTRelocator:
         self,
         project_root: Path,
         dry_run: bool = True,
-        log_file: Optional[Path] = None
+        log_file: Path | None = None
     ):
         """
         Initialize SSOT relocator.
@@ -110,7 +111,7 @@ class SSOTRelocator:
         if not dry_run:
             self.archive_root.mkdir(parents=True, exist_ok=True)
 
-    def relocate_orphans(self, drift_violations: List[Any]) -> EnforcementReport:
+    def relocate_orphans(self, drift_violations: list[Any]) -> EnforcementReport:
         """
         Move orphaned folders (drift violations) to archives.
 
@@ -155,7 +156,7 @@ class SSOTRelocator:
 
         return report
 
-    def enforce_hierarchy(self, hierarchy_violations: List[Any]) -> EnforcementReport:
+    def enforce_hierarchy(self, hierarchy_violations: list[Any]) -> EnforcementReport:
         """
         Flatten folders exceeding depth limits.
 
@@ -219,7 +220,7 @@ class SSOTRelocator:
 
     def relocate_agents(
         self,
-        gravity_violations: List[Any]
+        gravity_violations: list[Any]
     ) -> EnforcementReport:
         """
         Move agents to their correct layers (gravity violation remediation).

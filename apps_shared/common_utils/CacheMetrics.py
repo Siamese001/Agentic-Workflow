@@ -9,10 +9,11 @@ Tracks:
 Integrates with dashboard for visibility.
 """
 from __future__ import annotations
-import time
+
 import threading
+import time
 from collections import defaultdict
-from typing import Dict, Any
+from typing import Any
 
 
 class CacheMetrics:
@@ -40,7 +41,7 @@ class CacheMetrics:
             return
         self._initialized = True
         self._stats_lock = threading.Lock()
-        self.stats: Dict[str, Dict[str, Any]] = defaultdict(
+        self.stats: dict[str, dict[str, Any]] = defaultdict(
             lambda: {"hits": 0, "misses": 0, "latency_sum": 0.0, "ops": 0, "errors": 0}
         )
         self._start_time = time.time()
@@ -60,7 +61,7 @@ class CacheMetrics:
         with self._stats_lock:
             self.stats[operation]["errors"] += 1
 
-    def get_stats(self) -> Dict[str, Dict[str, Any]]:
+    def get_stats(self) -> dict[str, dict[str, Any]]:
         """Get aggregated statistics for all operations."""
         with self._stats_lock:
             result = {}
@@ -77,7 +78,7 @@ class CacheMetrics:
                 }
             return result
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get high-level summary for dashboard."""
         stats = self.get_stats()
         total_hits = sum(s["hits"] for s in stats.values())

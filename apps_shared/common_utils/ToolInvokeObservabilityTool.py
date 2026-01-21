@@ -5,13 +5,13 @@ with standardized tool interfaces, protocol compliance, and error handling.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Callable
 import logging
-from datetime import datetime
-from enum import Enum
 import time
 import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +42,10 @@ class ToolSpecification:
     category: ToolCategory
     protocol: ToolProtocol
     endpoint: str
-    methods: List[str]
-    parameters_schema: Dict[str, Dict[str, Any]]
-    authentication: Optional[Dict[str, Any]] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    methods: list[str]
+    parameters_schema: dict[str, dict[str, Any]]
+    authentication: dict[str, Any] | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -54,11 +54,11 @@ class ToolInvocationContext:
     invocation_id: str
     tool_id: str
     method: str
-    caller_id: Optional[str] = None
-    session_id: Optional[str] = None
-    correlation_id: Optional[str] = None
+    caller_id: str | None = None
+    session_id: str | None = None
+    correlation_id: str | None = None
     timeout: float = 30.0
-    retry_policy: Dict[str, Any] = field(default_factory=dict)
+    retry_policy: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -79,28 +79,28 @@ class ToolInvocationResult:
     tool_id: str
     method: str
     success: bool
-    response: Optional[Any] = None
-    response_code: Optional[int] = None
-    headers: Dict[str, str] = field(default_factory=dict)
-    metrics: Dict[str, float] = field(default_factory=dict)
-    error: Optional[str] = None
-    warnings: List[str] = field(default_factory=list)
+    response: Any | None = None
+    response_code: int | None = None
+    headers: dict[str, str] = field(default_factory=dict)
+    metrics: dict[str, float] = field(default_factory=dict)
+    error: str | None = None
+    warnings: list[str] = field(default_factory=list)
     execution_time: float = 0.0
 
 
 class ObservabilityToolInvoker:
     """Main invoker for observability tools."""
 
-    def __init__(self, config: Optional[ToolInvocationConfig] = None):
+    def __init__(self, config: ToolInvocationConfig | None = None):
         self.config = config or ToolInvocationConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._registered_tools: Dict[str, ToolSpecification] = {}
-        self._tool_clients: Dict[str, Any] = {}
-        self._circuit_breakers: Dict[str, Dict[str, Any]] = {}
+        self._registered_tools: dict[str, ToolSpecification] = {}
+        self._tool_clients: dict[str, Any] = {}
+        self._circuit_breakers: dict[str, dict[str, Any]] = {}
         self._initialize_tools()
 
     def register_tool(self, tool_spec: ToolSpecification,
-                     client: Optional[Any] = None) -> None:
+                     client: Any | None = None) -> None:
         """Register an observability tool.
 
         Args:
@@ -121,7 +121,7 @@ class ObservabilityToolInvoker:
         self.logger.info(f"Registered tool: {tool_spec.tool_id}")
 
     def invoke_tool(self, context: ToolInvocationContext,
-                   parameters: Dict[str, Any]) -> ToolInvocationResult:
+                   parameters: dict[str, Any]) -> ToolInvocationResult:
         """Invoke an observability tool.
 
         Args:
@@ -197,8 +197,8 @@ class ObservabilityToolInvoker:
                 start_time
             )
 
-    def invoke_tool_batch(self, contexts: List[ToolInvocationContext],
-                          parameters_list: List[Dict[str, Any]]) -> List[ToolInvocationResult]:
+    def invoke_tool_batch(self, contexts: list[ToolInvocationContext],
+                          parameters_list: list[dict[str, Any]]) -> list[ToolInvocationResult]:
         """Invoke multiple tools.
 
         Args:
@@ -220,7 +220,7 @@ class ObservabilityToolInvoker:
         return results
 
     def invoke_tool_stream(self, context: ToolInvocationContext,
-                          parameters: Dict[str, Any]) -> Dict[str, object]:
+                          parameters: dict[str, Any]) -> dict[str, object]:
         """Invoke tool with streaming response.
 
         Args:
@@ -239,7 +239,7 @@ class ObservabilityToolInvoker:
         for chunk in client.invoke_stream(context.method, parameters):
             yield chunk
 
-    def list_tools(self, category: Optional[ToolCategory] = None) -> List[ToolSpecification]:
+    def list_tools(self, category: ToolCategory | None = None) -> list[ToolSpecification]:
         """List registered tools.
 
         Args:
@@ -255,7 +255,7 @@ class ObservabilityToolInvoker:
 
         return tools
 
-    def get_tool_specification(self, tool_id: str) -> Optional[ToolSpecification]:
+    def get_tool_specification(self, tool_id: str) -> ToolSpecification | None:
         """Get tool specification.
 
         Args:
@@ -277,7 +277,7 @@ class ObservabilityToolInvoker:
             self.logger.info(f"Reset circuit breaker for tool: {tool_id}")
 
     def _execute_with_retry(self, context: ToolInvocationContext,
-                           parameters: Dict[str, Any]) -> ToolInvocationResult:
+                           parameters: dict[str, Any]) -> ToolInvocationResult:
         """Execute tool invocation with retry logic."""
         last_error = None
         max_retries = context.retry_policy.get("max_retries", self.config.max_retries)
@@ -322,7 +322,7 @@ class ObservabilityToolInvoker:
         )
 
     def _simulate_invocation(self, context: ToolInvocationContext,
-                            parameters: Dict[str, Any]) -> ToolInvocationResult:
+                            parameters: dict[str, Any]) -> ToolInvocationResult:
         """Simulate tool invocation."""
         tool_spec = self._registered_tools[context.tool_id]
 
@@ -349,7 +349,7 @@ class ObservabilityToolInvoker:
             response = {
                 "logs": [
                     {"message": f"Log entry for {context.method}", "level": "info"},
-                    {"message": f"Another log entry", "level": "warning"}
+                    {"message": "Another log entry", "level": "warning"}
                 ]
             }
         elif tool_spec.category == ToolCategory.MONITORING:
@@ -374,9 +374,9 @@ class ObservabilityToolInvoker:
             metrics={"processing_time": 0.1}
         )
 
-    def _validate_parameters(self, parameters: Dict[str, Any],
+    def _validate_parameters(self, parameters: dict[str, Any],
                             tool_spec: ToolSpecification,
-                            method: str) -> List[str]:
+                            method: str) -> list[str]:
         """Validate tool parameters."""
         errors = []
 
@@ -562,11 +562,11 @@ def create_observability_tool_invoker(
 def tool_invoke_observability_tool(
     tool_id: str,
     method: str,
-    parameters: Dict[str, Any],
-    invocation_id: Optional[str] = None,
-    caller_id: Optional[str] = None,
+    parameters: dict[str, Any],
+    invocation_id: str | None = None,
+    caller_id: str | None = None,
     timeout: float = 30.0
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Invoke observability tool.
 
     Args:

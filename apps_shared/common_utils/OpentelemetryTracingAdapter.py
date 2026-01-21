@@ -10,13 +10,13 @@ import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any
 
 try:
     from opentelemetry import trace
+    from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
-    from opentelemetry.sdk.resources import Resource
     from opentelemetry.trace import Status, StatusCode
     OTEL_AVAILABLE = True
 except ImportError:
@@ -41,9 +41,9 @@ class SpanMetadata:
     span_type: SpanType
     component: str
     layer: str
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for span attributes."""
         return {
             "span.type": self.span_type.value,
@@ -63,7 +63,7 @@ class CostMetrics:
     model: str = "unknown"
     latency_ms: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "tokens.prompt": self.prompt_tokens,
@@ -84,7 +84,7 @@ class ResilienceMetrics:
     backoff_ms: float = 0.0
     success: bool = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "resilience.retry_attempts": self.retry_attempts,
@@ -160,7 +160,7 @@ class OpenTelemetryTracingAdapter:
     def trace_orchestrator(
         self,
         mission: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """Trace orchestrator execution (L3 - Root span).
 
@@ -192,8 +192,8 @@ class OpenTelemetryTracingAdapter:
         self,
         task: str,
         reasoning_mode: str = "react",
-        cost_metrics: Optional[CostMetrics] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        cost_metrics: CostMetrics | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """Trace cognitive plane execution (L1 - Think phase).
 
@@ -233,8 +233,8 @@ class OpenTelemetryTracingAdapter:
     def trace_action(
         self,
         action_count: int,
-        resilience_metrics: Optional[ResilienceMetrics] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        resilience_metrics: ResilienceMetrics | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """Trace action plane execution (L2 - Act phase).
 
@@ -272,9 +272,9 @@ class OpenTelemetryTracingAdapter:
     def trace_tool(
         self,
         tool_name: str,
-        parameters: Optional[Dict[str, Any]] = None,
-        resilience_metrics: Optional[ResilienceMetrics] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        parameters: dict[str, Any] | None = None,
+        resilience_metrics: ResilienceMetrics | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """Trace individual tool execution (L2 - Leaf span).
 
@@ -315,8 +315,8 @@ class OpenTelemetryTracingAdapter:
         self,
         task_id: str,
         task_type: str,
-        dependencies: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        dependencies: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """Trace DAG node execution (Pillar 4).
 
@@ -352,7 +352,7 @@ class OpenTelemetryTracingAdapter:
         self,
         step_number: int,
         step_type: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """Trace reasoning step (ReAct integration).
 
@@ -441,7 +441,7 @@ class OpenTelemetryTracingAdapter:
 
                 raise
 
-    def add_event(self, span: Any, name: str, attributes: Optional[Dict[str, Any]] = None):
+    def add_event(self, span: Any, name: str, attributes: dict[str, Any] | None = None):
         """Add an event to a span.
 
         Args:
@@ -473,7 +473,7 @@ class OpenTelemetryTracingAdapter:
 
 
 # Global tracer instance
-_global_tracer: Optional[OpenTelemetryTracingAdapter] = None
+_global_tracer: OpenTelemetryTracingAdapter | None = None
 
 
 def get_tracer(

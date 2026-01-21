@@ -8,15 +8,12 @@ Run with: python -m asyncio runtime.shared.test_reasoning_layer.py
 
 import asyncio
 import time
-from typing import List, Dict, Any
 
 # Import the reasoning layer components
 from runtime.shared import (
-    QueryDecomposer,
-    DecomposedQuery,
-    decompose_query,
     HybridScorer,
-    HybridScoreResult,
+    QueryDecomposer,
+    decompose_query,
 )
 
 
@@ -126,12 +123,12 @@ class ReasoningLayerTestSuite:
 
             # Verify expectations
             if len(result.sub_queries) == test_case['expected_sub_queries']:
-                print(f"   ✅ Correct number of sub-queries")
+                print("   ✅ Correct number of sub-queries")
             else:
                 print(f"   ⚠️  Expected {test_case['expected_sub_queries']}, got {len(result.sub_queries)}")
 
             if test_case['complexity_min'] <= result.complexity_score <= test_case['complexity_max']:
-                print(f"   ✅ Complexity within expected range")
+                print("   ✅ Complexity within expected range")
             else:
                 print(f"   ⚠️  Complexity {result.complexity_score} outside range "
                       f"({test_case['complexity_min']}-{test_case['complexity_max']})")
@@ -161,7 +158,7 @@ class ReasoningLayerTestSuite:
             print(f"   ✅ Dynamic alpha used: {self.scorer.alpha}")
 
             if self.scorer.alpha == test_case['expected_alpha']:
-                print(f"   ✅ Alpha matches expectation")
+                print("   ✅ Alpha matches expectation")
             else:
                 print(f"   ⚠️  Expected {test_case['expected_alpha']}, got {self.scorer.alpha}")
 

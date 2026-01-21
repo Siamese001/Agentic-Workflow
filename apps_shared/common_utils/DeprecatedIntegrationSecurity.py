@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Integration Tests for Security and Injection Detection
 
 
@@ -7,9 +8,10 @@ Logger = logging.getLogger(__name__)
 Tests integration between injection detection, dependency injection,
 and V6 prompt systems to ensure end-to-end security flows work correctly.
 """
-import logging
-import pytest
 from typing import Any
+
+import pytest
+
 
 class TestBasicSecurityIntegration:
     """Test basic integration between security components."""

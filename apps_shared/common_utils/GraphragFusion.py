@@ -7,11 +7,11 @@ traversal to enable multi-hop reasoning and relationship-based queries.
 import asyncio
 import logging
 import re
-from typing import Dict, List, Optional, Tuple, Any, Union
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
-from .knowledge_graph_agent import KnowledgeGraphAgent, GraphContext
+from .knowledge_graph_agent import GraphContext, KnowledgeGraphAgent
 
 logger = logging.getLogger(__name__)
 
@@ -29,12 +29,12 @@ class FusionResult:
     """Result of GraphRAG fusion query."""
     query: str
     query_type: QueryType
-    vector_results: List[Dict[str, Any]] = None
+    vector_results: list[dict[str, Any]] = None
     graph_results: GraphContext = None
     fused_context: str = ""
-    sources: List[str] = None
+    sources: list[str] = None
     confidence: float = 0.0
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self):
         if self.vector_results is None:
@@ -167,7 +167,7 @@ class CypherQueryGenerator:
             """
         }
 
-    def generate_query(self, natural_query: str) -> Tuple[str, Dict[str, Any], str]:
+    def generate_query(self, natural_query: str) -> tuple[str, dict[str, Any], str]:
         """Generate Cypher query from natural language.
 
         Args:
@@ -234,8 +234,8 @@ class GraphRAGFusion:
 
     def __init__(
         self,
-        knowledge_graph: Optional[KnowledgeGraphAgent] = None,
-        vector_retriever: Optional[callable] = None,
+        knowledge_graph: KnowledgeGraphAgent | None = None,
+        vector_retriever: callable | None = None,
         enable_fusion: bool = True,
         confidence_threshold: float = 0.6
     ):
@@ -268,7 +268,7 @@ class GraphRAGFusion:
     async def query(
         self,
         natural_query: str,
-        query_type: Optional[QueryType] = None,
+        query_type: QueryType | None = None,
         max_results: int = 5
     ) -> FusionResult:
         """Execute a GraphRAG fusion query.
@@ -489,7 +489,7 @@ class GraphRAGFusion:
 
     def _fuse_results(
         self,
-        vector_results: List[Dict[str, Any]],
+        vector_results: list[dict[str, Any]],
         graph_context: GraphContext,
         query_type: QueryType
     ) -> str:
@@ -539,7 +539,7 @@ class GraphRAGFusion:
 
         return "\n".join(context_parts)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get fusion statistics.
 
         Returns:
@@ -554,7 +554,7 @@ class GraphRAGFusion:
 
 
 # Global instance
-_graphrag_fusion: Optional[GraphRAGFusion] = None
+_graphrag_fusion: GraphRAGFusion | None = None
 
 
 def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
@@ -577,7 +577,7 @@ def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
 # Convenience function
 async def graphrag_query(
     query: str,
-    query_type: Optional[QueryType] = None,
+    query_type: QueryType | None = None,
     max_results: int = 5,
     **kwargs
 ) -> FusionResult:

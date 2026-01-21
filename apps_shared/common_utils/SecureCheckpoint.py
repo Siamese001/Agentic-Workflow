@@ -4,17 +4,15 @@ This module provides a secure checkpoint implementation that encrypts data at re
 validates integrity on load, and prevents tampering or unauthorized access.
 """
 
+import base64
 import hashlib
 import hmac
 import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
+
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-import base64
 
 from ..shared_models import MicroCheckpoint
 
@@ -33,8 +31,8 @@ class SecureCheckpointManager:
         self,
         hop_id: str,
         checkpoint_dir: Path,
-        encryption_key: Optional[bytes] = None,
-        integrity_key: Optional[bytes] = None
+        encryption_key: bytes | None = None,
+        integrity_key: bytes | None = None
     ):
         """Initialize the secure checkpoint manager.
 
@@ -153,9 +151,9 @@ class SecureCheckpointManager:
 
         except Exception as e:
             logger.error(f"Failed to save secure checkpoint: {e}")
-            raise IOError(f"Checkpoint save failed: {e}")
+            raise OSError(f"Checkpoint save failed: {e}")
 
-    async def load_latest_checkpoint(self) -> Optional[MicroCheckpoint]:
+    async def load_latest_checkpoint(self) -> MicroCheckpoint | None:
         """Load the most recent checkpoint with integrity validation.
 
         Returns:
@@ -192,7 +190,7 @@ class SecureCheckpointManager:
 
         return None
 
-    async def _load_checkpoint_file(self, checkpoint_file: Path) -> Optional[MicroCheckpoint]:
+    async def _load_checkpoint_file(self, checkpoint_file: Path) -> MicroCheckpoint | None:
         """Load and validate a single checkpoint file.
 
         Args:
@@ -204,7 +202,7 @@ class SecureCheckpointManager:
         Raises:
             CheckpointIntegrityError: If integrity validation fails
         """
-        with open(checkpoint_file, 'r') as f:
+        with open(checkpoint_file) as f:
             secure_data = json.load(f)
 
         # Verify basic structure
@@ -268,8 +266,8 @@ class SecureCheckpointManager:
 class CheckpointManagerFactory:
     """Factory for creating and managing secure checkpoint managers."""
 
-    _managers: Dict[str, SecureCheckpointManager] = {}
-    _global_key: Optional[bytes] = None
+    _managers: dict[str, SecureCheckpointManager] = {}
+    _global_key: bytes | None = None
 
     @classmethod
     def get_manager(

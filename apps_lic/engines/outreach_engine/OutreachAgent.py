@@ -1,20 +1,21 @@
 from __future__ import annotations
+
 """
 Base Agent for Outreach Engine
 
 Provides the abstract base class for all outreach agents.
 """
-from typing import Any, Optional, Protocol, Dict, List
 
 
 from abc import ABC, abstractmethod
-from typing import Optional
+
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from .context import OutreachEngineContext
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
@@ -59,7 +60,7 @@ class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             return "\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(f"- {i}" for i in instructions)
         return ""
 
-    async def call_llm(self, prompt: str) -> Optional[str]:
+    async def call_llm(self, prompt: str) -> str | None:
         """Call the LLM if available."""
         if not self.ctx.intelligence_enabled or not self.ctx.gemini_model:
             return None
@@ -73,7 +74,7 @@ class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             return None
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Apps/outreach base agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

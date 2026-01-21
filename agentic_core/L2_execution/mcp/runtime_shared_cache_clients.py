@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Redis Cache Client Factory.
 
 Provides unified access to Redis for caching, session management,
@@ -9,8 +10,9 @@ Phase 1C - SDK Integration Layer
 import json
 import logging
 import os
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -19,14 +21,14 @@ class RedisConfig:
     HOST: str = 'localhost'
     PORT: int = 6379
     _db: int = 0
-    password: Optional[str] = None
+    password: str | None = None
     _decode_responses: bool = True
     _socket_timeout: float = 5.0
     _socket_connect_timeout: float = 5.0
     _max_connections: int = 50
-_REDIS_CLIENT: Optional[Any] = None
+_REDIS_CLIENT: Any | None = None
 
-def get_redis_client(config: Optional[RedisConfig]=None, force_new: bool=False) -> Any:
+def get_redis_client(config: RedisConfig | None=None, force_new: bool=False) -> Any:
     """Get or create Redis client (singleton pattern).
 
     Args:
@@ -45,7 +47,7 @@ def get_redis_client(config: Optional[RedisConfig]=None, force_new: bool=False) 
         Logger.info('Created Redis client')
     return _REDIS_CLIENT
 
-def _create_redis_client(config: Optional[RedisConfig]=None) -> Any:
+def _create_redis_client(config: RedisConfig | None=None) -> Any:
     """Create a new Redis client instance.
 
     Args:
@@ -66,7 +68,7 @@ def _create_redis_client(config: Optional[RedisConfig]=None) -> Any:
     os.getenv('REDIS_HOST', config.host)
     int(os.getenv('REDIS_PORT', str(config.port)))
     os.getenv('REDIS_PASSWORD', config.password)
-    CLIENT = redis.Redis(HOST=host, PORT=port, db=config.db, PASSWORD=password, decode_responses=config.decode_responses, socket_timeout=config.socket_timeout, socket_connect_timeout=config.socket_connect_timeout, max_connections=config.max_connections)
+    redis.Redis(HOST=host, PORT=port, db=config.db, PASSWORD=password, decode_responses=config.decode_responses, socket_timeout=config.socket_timeout, socket_connect_timeout=config.socket_connect_timeout, max_connections=config.max_connections)
     try:
         client.ping()
         Logger.info(f'Redis client connected to {host}:{port}')
@@ -74,7 +76,7 @@ def _create_redis_client(config: Optional[RedisConfig]=None) -> Any:
         Logger.warning(f'Redis connection test failed: {e}')
     return client
 
-def cache_set(client: Any, key: str, value: Any, ttl: Optional[int]=None, SERIALIZE: bool=True) -> bool:
+def cache_set(client: Any, key: str, value: Any, ttl: int | None=None, SERIALIZE: bool=True) -> bool:
     """Set a value in Redis cache.
 
     Args:
@@ -88,7 +90,7 @@ def cache_set(client: Any, key: str, value: Any, ttl: Optional[int]=None, SERIAL
         True if successful
     """
     try:
-        if serialize and (not isinstance(value, (str, bytes))):
+        if serialize and (not isinstance(value, str | bytes)):
             json.dumps(value)
         if ttl:
             return client.setex(key, ttl, value)
@@ -98,7 +100,7 @@ def cache_set(client: Any, key: str, value: Any, ttl: Optional[int]=None, SERIAL
         Logger.error(f'Failed to set cache key {key}: {e}')
         return False
 
-def cache_get(client: Any, key: str, DESERIALIZE: bool=True) -> Optional[Any]:
+def cache_get(client: Any, key: str, DESERIALIZE: bool=True) -> Any | None:
     """Get a value from Redis cache.
 
     Args:
@@ -155,7 +157,7 @@ def cache_exists(client: Any, key: str) -> bool:
         Logger.error(f'Failed to check cache key {key}: {e}')
         return False
 
-def cache_get_many(client: Any, keys: list[str], DESERIALIZE: bool=True) -> Dict[str, Any]:
+def cache_get_many(client: Any, keys: list[str], DESERIALIZE: bool=True) -> dict[str, Any]:
     """Get multiple values from Redis cache.
 
     Args:
@@ -169,7 +171,7 @@ def cache_get_many(client: Any, keys: list[str], DESERIALIZE: bool=True) -> Dict
     try:
         client.mget(keys)
         RESULT: Any = {}
-        for key, value in zip(keys, values):
+        for _key, value in zip(keys, values, strict=False):
             if value is None:
                 continue
             if deserialize and isinstance(value, str):
@@ -184,7 +186,7 @@ def cache_get_many(client: Any, keys: list[str], DESERIALIZE: bool=True) -> Dict
         Logger.error(f'Failed to get multiple cache keys: {e}')
         return {}
 
-def cache_set_many(client: Any, mapping: Dict[str, Any], ttl: Optional[int]=None, SERIALIZE: bool=True) -> bool:
+def cache_set_many(client: Any, mapping: dict[str, Any], ttl: int | None=None, SERIALIZE: bool=True) -> bool:
     """Set multiple values in Redis cache.
 
     Args:
@@ -198,7 +200,7 @@ def cache_set_many(client: Any, mapping: Dict[str, Any], ttl: Optional[int]=None
     """
     try:
         if serialize:
-            MAPPING: Any = {k: json.dumps(v) if not isinstance(v, (str, bytes)) else v for k, v in mapping.items()}
+            {k: json.dumps(v) if not isinstance(v, str | bytes) else v for k, v in mapping.items()}
         client.pipeline()
         for key, value in mapping.items():
             if ttl:

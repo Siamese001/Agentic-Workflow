@@ -8,17 +8,16 @@ SSOT Consolidation (Jan 20, 2026):
 All file I/O operations should use these utilities instead of
 raw open()/write() calls.
 """
+import logging
 import os
 import shutil
 from pathlib import Path
-from typing import Optional, Union, Any
-import logging
 
 # Configure logger
 logger = logging.getLogger(__name__)
 
 
-def ensure_directory(path: Union[str, Path]) -> bool:
+def ensure_directory(path: str | Path) -> bool:
     """
     Ensure a directory exists, creating it if necessary.
 
@@ -36,7 +35,7 @@ def ensure_directory(path: Union[str, Path]) -> bool:
         return False
 
 
-def safe_read_file(path: Union[str, Path], encoding: str = "utf-8") -> Optional[str]:
+def safe_read_file(path: str | Path, encoding: str = "utf-8") -> str | None:
     """
     Safely read a file's content.
 
@@ -61,7 +60,7 @@ def safe_read_file(path: Union[str, Path], encoding: str = "utf-8") -> Optional[
 
 
 def safe_write_file(
-    path: Union[str, Path],
+    path: str | Path,
     content: str,
     encoding: str = "utf-8",
     make_dirs: bool = True
@@ -106,7 +105,7 @@ def safe_write_file(
         return False
 
 
-def safe_delete_file(path: Union[str, Path]) -> bool:
+def safe_delete_file(path: str | Path) -> bool:
     """
     Safely delete a file if it exists.
 
@@ -127,8 +126,8 @@ def safe_delete_file(path: Union[str, Path]) -> bool:
 
 
 def safe_copy_file(
-    src: Union[str, Path],
-    dst: Union[str, Path],
+    src: str | Path,
+    dst: str | Path,
     make_dirs: bool = True
 ) -> bool:
     """
@@ -161,8 +160,8 @@ def safe_copy_file(
 
 
 def safe_move_file(
-    src: Union[str, Path],
-    dst: Union[str, Path],
+    src: str | Path,
+    dst: str | Path,
     make_dirs: bool = True
 ) -> bool:
     """

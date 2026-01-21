@@ -22,7 +22,7 @@ import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class SafetyThreat:
     severity: ThreatSeverity
     message: str
     source: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.utcnow)
     blocked: bool = False
 
@@ -123,16 +123,16 @@ class UnifiedSafetyDetectorAgent:
         r"according\s+to\s+my\s+training\s+data",
     ]
 
-    def __init__(self, config: Optional[SafetyConfig] = None):
+    def __init__(self, config: SafetyConfig | None = None):
         self.config = config or SafetyConfig()
         self._lock = threading.RLock()
-        self._threats: List[SafetyThreat] = []
+        self._threats: list[SafetyThreat] = []
         self._compiled_injection = [re.compile(p, re.IGNORECASE) for p in self.INJECTION_PATTERNS]
         self._compiled_bias = [re.compile(p, re.IGNORECASE) for p in self.BIAS_PATTERNS]
 
         Logger.info("UnifiedSafetyDetectorAgent initialized")
 
-    def detect_all(self, text: str, source: str = "unknown") -> List[SafetyThreat]:
+    def detect_all(self, text: str, source: str = "unknown") -> list[SafetyThreat]:
         """Run all enabled detections on text."""
         threats = []
 
@@ -147,7 +147,7 @@ class UnifiedSafetyDetectorAgent:
 
         return threats
 
-    def detect_injection(self, text: str, source: str = "user_input") -> List[SafetyThreat]:
+    def detect_injection(self, text: str, source: str = "user_input") -> list[SafetyThreat]:
         """Detect prompt injection attacks."""
         threats = []
         text_lower = text.lower()
@@ -182,7 +182,7 @@ class UnifiedSafetyDetectorAgent:
 
         return threats
 
-    def detect_bias(self, text: str, source: str = "model_output") -> List[SafetyThreat]:
+    def detect_bias(self, text: str, source: str = "model_output") -> list[SafetyThreat]:
         """Detect bias patterns in text."""
         threats = []
 
@@ -204,7 +204,7 @@ class UnifiedSafetyDetectorAgent:
 
         return threats
 
-    def detect_hallucination(self, text: str, source: str = "model_output") -> List[SafetyThreat]:
+    def detect_hallucination(self, text: str, source: str = "model_output") -> list[SafetyThreat]:
         """Detect hallucination indicators in text."""
         threats = []
 
@@ -241,7 +241,7 @@ class UnifiedSafetyDetectorAgent:
 
         return score
 
-    def get_threats(self) -> List[SafetyThreat]:
+    def get_threats(self) -> list[SafetyThreat]:
         """Get all recorded threats."""
         return self._threats.copy()
 

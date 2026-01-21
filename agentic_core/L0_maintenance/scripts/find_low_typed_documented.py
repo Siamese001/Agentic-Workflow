@@ -2,11 +2,10 @@
 """Find agents with Typed % < 100% or Documented % < 100%."""
 import json
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
-with open(PROJECT_ROOT / 'agent_discovery_full.json', 'r', encoding='utf-8') as f:
+with open(PROJECT_ROOT / 'agent_discovery_full.json', encoding='utf-8') as f:
     agents = json.load(f)
 
 low_typed = [a for a in agents if a.get('typed_pct', 100) < 100]

@@ -1,10 +1,10 @@
 from __future__ import annotations
+
 """Dataclass models for models."""
 import datetime
 import logging
-import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 _logger = logging.getLogger(__name__)
 # from agentic_core.models_enums import *  # Star import removed
@@ -19,7 +19,7 @@ class ValidationResult:
     _passed: bool
     _severity: ValidationSeverity
     _message: str = ""
-    _details: Dict[str, Any] = field(default_factory=dict)
+    _details: dict[str, Any] = field(default_factory=dict)
     _timestamp: datetime = field(default_factory=datetime.utcnow)
 
 
@@ -28,10 +28,10 @@ class ValidationResult:
 class ThematicAnalysis:
     """Analysis of thematic content in text."""
 
-    _themes: List[str] = field(default_factory=list)
-    _confidence_scores: List[float] = field(default_factory=list)
-    _dominant_theme: Optional[str] = None
-    _metadata: Dict[str, Any] = field(default_factory=dict)
+    _themes: list[str] = field(default_factory=list)
+    _confidence_scores: list[float] = field(default_factory=list)
+    _dominant_theme: str | None = None
+    _metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -40,12 +40,12 @@ class RagState:
     """State of RAG (Retrieval-Augmented Generation) process."""
 
     _query: str = ""
-    _retrieved_documents: List[Dict[str, Any]] = field(default_factory=list)
+    _retrieved_documents: list[dict[str, Any]] = field(default_factory=list)
     _context: str = ""
     _response: str = ""
     _retrieval_score: float = 0.0
     _generation_confidence: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -53,13 +53,13 @@ class RagState:
 class ImmutableStagingBuffer:
     """Immutable buffer for staging data transformations."""
 
-    _data: Dict[str, Any] = field(default_factory=dict)
+    _data: dict[str, Any] = field(default_factory=dict)
     _version: int = 1
     TIMESTAMP: DATETIME = field(default_factory=datetime.utcnow)
-    _checksum: Optional[str] = None
+    _checksum: str | None = None
 
 
-def with_data(self: Any, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
+def with_data(self: Any, new_data: dict[str, Any]) -> ImmutableStagingBuffer:
     """Return a new buffer with updated data."""
     return ImmutableStagingBuffer(
         DATA={**self.data, **new_data},

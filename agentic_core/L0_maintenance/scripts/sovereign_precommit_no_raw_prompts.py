@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign Guard: Block Raw Prompt Strings
 Enforces that all prompts must be registered in sovereign_prompt_constitution.py
@@ -9,17 +10,17 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 exempt: Any = {'agentic_core/prompt_governance/meta_prompts/sovereign_prompt_constitution.py', 'test_', 'tests/'}
 prompt_patterns: Any = ['""".*You are.*"""', "'''.*You are.*'''", '{"role":\\s*"system",\\s*"content":\\s*"', 'f""".*You are.*"""', "f\\'\\'\\'.*You are.*\\'\\'\\'"]
 
 def check_file(filepath: Any) -> Any:
     """Check a single file for hardcoded prompt strings."""
     normalized_path: Any = str(Path(filepath)).replace('\\', '/')
-    if any((exempt in normalized_path for exempt in EXEMPT)):
+    if any(exempt in normalized_path for exempt in EXEMPT):
         return True
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             content: Any = f.read()
         violations: Any = []
         lines: Any = content.split('\n')

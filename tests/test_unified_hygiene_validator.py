@@ -21,28 +21,32 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def run_self_tests() -> Dict[str, Any]:
+def run_self_tests() -> dict[str, Any]:
     """Run the UnifiedStructureValidatorAgent's internal self-tests."""
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+        UnifiedStructureValidatorAgent,
+    )
     validator = UnifiedStructureValidatorAgent(project_root=PROJECT_ROOT)
     return validator._run_self_tests()
 
 
-def test_gap4_duplicate_detection() -> Dict[str, Any]:
+def test_gap4_duplicate_detection() -> dict[str, Any]:
     """
     GAP-4 Verification: Test duplicate file detection.
 
     Creates two identical files in different directories and verifies
     the validator detects them as duplicates via MD5 hash.
     """
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+        UnifiedStructureValidatorAgent,
+    )
 
     # Use the test fixtures directory
     fixtures_dir = PROJECT_ROOT / "tests" / "hygiene_test_fixtures"
@@ -73,13 +77,15 @@ def test_gap4_duplicate_detection() -> Dict[str, Any]:
     }
 
 
-def test_orphan_detection() -> Dict[str, Any]:
+def test_orphan_detection() -> dict[str, Any]:
     """
     Orphan Logic Test: Test dead code detection.
 
     Verifies the validator identifies files not imported anywhere.
     """
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+        UnifiedStructureValidatorAgent,
+    )
 
     # Use the test fixtures directory
     fixtures_dir = PROJECT_ROOT / "tests" / "hygiene_test_fixtures"
@@ -105,13 +111,15 @@ def test_orphan_detection() -> Dict[str, Any]:
     }
 
 
-def test_marker_scanning() -> Dict[str, Any]:
+def test_marker_scanning() -> dict[str, Any]:
     """
     Marker Scanning Test: Test technical debt marker detection.
 
     Verifies the validator finds TODO, FIXME, HACK, XXX, BUG markers.
     """
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+        UnifiedStructureValidatorAgent,
+    )
 
     # Use the test fixtures directory
     fixtures_dir = PROJECT_ROOT / "tests" / "hygiene_test_fixtures"
@@ -146,11 +154,13 @@ def test_marker_scanning() -> Dict[str, Any]:
     }
 
 
-def test_full_validation() -> Dict[str, Any]:
+def test_full_validation() -> dict[str, Any]:
     """
     Full Validation Test: Run complete repository validation.
     """
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+        UnifiedStructureValidatorAgent,
+    )
 
     # Use the test fixtures directory for controlled testing
     fixtures_dir = PROJECT_ROOT / "tests" / "hygiene_test_fixtures"
@@ -227,7 +237,7 @@ def main():
             elif dup_results.get('status') == 'SKIP':
                 print(f"  ⊘ GAP-4 SKIPPED: {dup_results.get('reason')}")
             else:
-                print(f"  ✗ GAP-4 FAILED: Test duplicates not detected")
+                print("  ✗ GAP-4 FAILED: Test duplicates not detected")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ GAP-4 test failed: {e}")
@@ -246,7 +256,7 @@ def main():
             elif orphan_results.get('status') == 'SKIP':
                 print(f"  ⊘ Orphan detection SKIPPED: {orphan_results.get('reason')}")
             else:
-                print(f"  ✗ Orphan detection FAILED: Test orphan not detected")
+                print("  ✗ Orphan detection FAILED: Test orphan not detected")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Orphan detection test failed: {e}")
@@ -266,7 +276,7 @@ def main():
             elif marker_results.get('status') == 'SKIP':
                 print(f"  ⊘ Marker scanning SKIPPED: {marker_results.get('reason')}")
             else:
-                print(f"  ✗ Marker scanning FAILED: Not all expected markers found")
+                print("  ✗ Marker scanning FAILED: Not all expected markers found")
                 print(f"    Expected: {marker_results.get('expected_markers')}")
                 print(f"    Found: {marker_results.get('marker_types_found')}")
                 all_passed = False
@@ -282,7 +292,7 @@ def main():
             full_results = test_full_validation()
             results['tests']['full_validation'] = full_results
 
-            print(f"  ✓ Full validation completed")
+            print("  ✓ Full validation completed")
             print(f"    Status: {full_results.get('status')}")
             print(f"    Total violations: {full_results.get('total_violations')}")
             summary = full_results.get('summary', {})

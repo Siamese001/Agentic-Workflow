@@ -16,9 +16,10 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from typing import Dict, List, Any
+from typing import Any
+
+from agentic_core.L3_orchestration.interfaces import ExecutionContext, IOrchestratorAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L3_orchestration.interfaces import IOrchestratorAgent, ExecutionContext
 
 
 def test_healer_mixin_has_heal_repository():
@@ -128,22 +129,22 @@ def test_orchestrator_inherits_heal_repository():
 
     # Create concrete implementation
     class MockOrchestrator(IOrchestratorAgent):
-        def execute(self, context: ExecutionContext) -> Dict[str, Any]:
+        def execute(self, context: ExecutionContext) -> dict[str, Any]:
             return {"status": "executed"}
 
-        def think(self, context: ExecutionContext) -> Dict[str, Any]:
+        def think(self, context: ExecutionContext) -> dict[str, Any]:
             return {"thoughts": []}
 
-        def act(self, actions: List[Dict[str, Any]], context: ExecutionContext) -> List[Dict[str, Any]]:
+        def act(self, actions: list[dict[str, Any]], context: ExecutionContext) -> list[dict[str, Any]]:
             return []
 
-        def observe(self, action_results: List[Dict[str, Any]], context: ExecutionContext) -> Dict[str, Any]:
+        def observe(self, action_results: list[dict[str, Any]], context: ExecutionContext) -> dict[str, Any]:
             return {}
 
         def should_continue(self, context: ExecutionContext) -> bool:
             return False
 
-        def get_state(self) -> Dict[str, Any]:
+        def get_state(self) -> dict[str, Any]:
             return {}
 
     orchestrator = MockOrchestrator()
@@ -153,7 +154,7 @@ def test_orchestrator_inherits_heal_repository():
         "Orchestrator must have heal_repository"
 
     # Check that it comes from HealerMixin (not overridden)
-    method = getattr(orchestrator.__class__, 'heal_repository')
+    method = orchestrator.__class__.heal_repository
 
     # Call it and verify it works
     result = orchestrator.heal_repository(dry_run=True)

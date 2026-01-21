@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Extract potential JavaScript errors from dashboard HTML."""
-from pathlib import Path
 import re
+from pathlib import Path
 
 dashboard_path = Path("reports/autonomy_dashboard.html")
 html = dashboard_path.read_text(encoding='utf-8')

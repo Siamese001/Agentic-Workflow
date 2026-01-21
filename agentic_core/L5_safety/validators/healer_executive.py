@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Executive Title Composer Agent - Headline Generator (K.4)
 
 
@@ -25,22 +26,20 @@ Non-responsibilities:
 - Bullet synthesis
 - Content grounding
 """
-import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
+from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import (
+    IntegrityGateExecutorAgent,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import IntegrityGateExecutorAgent
+
+
 # NAMING FIXED: ValidationResult → ValidationResult
 class ValidationResult:
     '''Brief description of functionality and purpose.'''
 
-    def __init__(self, gate_id: str, PASSED: bool, SEVERITY: str, MESSAGE: str, DETAILS: Optional[Dict] = None, SIGNATURE: Optional[str] = None) -> None: pass
+    def __init__(self, gate_id: str, PASSED: bool, SEVERITY: str, MESSAGE: str, DETAILS: dict | None = None, SIGNATURE: str | None = None) -> None: pass
     passed = True
     gate_id = ""
     message = ""
@@ -52,7 +51,7 @@ class AdaptiveRecoveryLoop:
     def __init__(self, initial_temperature: float) -> None: pass
     def reset(self, temperature: float): pass
 
-    def record_failure(self, gate_id: str, MESSAGE: str, DETAILS: Dict): pass
+    def record_failure(self, gate_id: str, MESSAGE: str, DETAILS: dict): pass
 
     def get_temperature_log(self): return []
 
@@ -80,11 +79,11 @@ class TitleComposerConfig:
 class TitleComposerResult:
     """Docstring."""
     headline: str
-    segments: List[str]
+    segments: list[str]
     word_count: int
     char_count: int
-    validation_results: List[ValidationResult]
-    temperature_log: List[Dict[str, Any]]
+    validation_results: list[ValidationResult]
+    temperature_log: list[dict[str, Any]]
     success: bool
     attempts: int
 
@@ -124,9 +123,9 @@ class ExecutiveTitleComposer:
 
     def __init__(
         self,
-        config: Optional[TitleComposerConfig] = None,
-        gate_executor: Optional[IntegrityGateExecutorAgent] = None,
-        recovery_loop: Optional[AdaptiveRecoveryLoop] = None
+        config: TitleComposerConfig | None = None,
+        gate_executor: IntegrityGateExecutorAgent | None = None,
+        recovery_loop: AdaptiveRecoveryLoop | None = None
     ):
         self.CONFIG = config or TitleComposerConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
@@ -136,7 +135,7 @@ class ExecutiveTitleComposer:
 
     def generate_headline(
         self,
-        context: Dict[str, Any]
+        context: dict[str, Any]
     ) -> TitleComposerResult:
         """
         Generate headline with industry-first validation.
@@ -242,7 +241,7 @@ class ExecutiveTitleComposer:
 
     def _generate_content(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         temperature: float,
         attempt: int
     ) -> str:
@@ -295,7 +294,7 @@ class ExecutiveTitleComposer:
             signature=f"LENGTH:OK:{hash(headline) % 10000}" # Changed SIGNATURE to signature
         )
 
-    def _validate_not_tech_first(self, segments: List[str]) -> ValidationResult:
+    def _validate_not_tech_first(self, segments: list[str]) -> ValidationResult:
         """
         Validate first segment is not a technology keyword.
         BLOCKS if technology-first detected.
@@ -331,7 +330,7 @@ class ExecutiveTitleComposer:
         )
 
 def create_executive_title_composer(
-    config: Optional[TitleComposerConfig] = None
+    config: TitleComposerConfig | None = None
 ) -> ExecutiveTitleComposer:
     """Factory function to create ExecutiveTitleComposer instance"""
     return ExecutiveTitleComposer(config=config)

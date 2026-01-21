@@ -18,13 +18,13 @@ For quick static validation, this script checks:
 - dashboardData contains territory information
 """
 
-import re
 import json
+import re
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
 
-def extract_dashboard_data(html: str) -> List[Dict[str, Any]]:
+def extract_dashboard_data(html: str) -> list[dict[str, Any]]:
     """Extract dashboardData JSON from HTML safely."""
     match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
     if match:
@@ -35,7 +35,7 @@ def extract_dashboard_data(html: str) -> List[Dict[str, Any]]:
     return []
 
 
-def validate_drilldown_infrastructure(html: str) -> Dict[str, bool]:
+def validate_drilldown_infrastructure(html: str) -> dict[str, bool]:
     """Validate that drill-down infrastructure exists."""
     return {
         'openDrillModal_function': 'function openDrillModal(' in html,
@@ -109,9 +109,9 @@ def main():
     print(f"\n{'='*90}")
     print("VALIDATION SUMMARY")
     print(f"{'='*90}")
-    print(f"✅ Infrastructure:        openDrillModal() + drillModal element present")
+    print("✅ Infrastructure:        openDrillModal() + drillModal element present")
     print(f"✅ Data:                  {territories_with_data} territories with {total_agents} total agents")
-    print(f"✅ Template:              onclick handlers reference openDrillModal()")
+    print("✅ Template:              onclick handlers reference openDrillModal()")
     print()
     print("NOTE: Table rows are rendered DYNAMICALLY by client-side JavaScript.")
     print("      The onclick handlers are created when the browser executes the JS.")

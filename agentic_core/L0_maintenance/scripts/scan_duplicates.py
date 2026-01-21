@@ -11,6 +11,7 @@ Scan for duplicate files across the codebase and generate deletion review table.
 import asyncio
 import sys
 from pathlib import Path
+
 from tabulate import tabulate
 
 # Add project root to path
@@ -36,7 +37,7 @@ async def main():
     whole_file_dupes = results["whole_file_duplicates"]
     recommendations = results["deletion_recommendations"]
 
-    print(f"\n✅ Scan complete!")
+    print("\n✅ Scan complete!")
     print(f"   Found {len(whole_file_dupes)} sets of duplicate files")
     print(f"   Generated {len(recommendations)} deletion recommendations")
     print()

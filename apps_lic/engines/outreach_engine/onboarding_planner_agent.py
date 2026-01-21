@@ -6,9 +6,8 @@ description analysis and company maturity.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
 
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +17,7 @@ class PlanPhase(BaseModel):
 
     phase_name: str = Field(..., description="Phase title and timeline")
     primary_objective: str = Field(..., description="Main goal for this phase")
-    key_deliverables: List[str] = Field(..., description="Specific outputs to achieve")
+    key_deliverables: list[str] = Field(..., description="Specific outputs to achieve")
     stakeholder_focus: str = Field(..., description="Key stakeholders to engage")
 
     @validator('key_deliverables')
@@ -32,9 +31,9 @@ class PlanPhase(BaseModel):
 class OnboardingPlan(BaseModel):
     """Complete 30-60-90 day onboarding plan."""
 
-    phases: List[PlanPhase] = Field(..., description="Three phases of the plan")
+    phases: list[PlanPhase] = Field(..., description="Three phases of the plan")
     risk_assessment: str = Field(..., description="Potential risks and mitigations")
-    resource_requirements: List[str] = Field(..., description="Resources needed for success")
+    resource_requirements: list[str] = Field(..., description="Resources needed for success")
 
     @validator('phases')
     def validate_three_phases(cls, v):
@@ -176,7 +175,7 @@ class OnboardingPlannerAgent:
                 "# Operational Roadmap: Q1 Objectives",
                 "",
                 "## Overview",
-                f"This 90-day roadmap focuses on strategic value delivery while ensuring smooth integration and team alignment.",
+                "This 90-day roadmap focuses on strategic value delivery while ensuring smooth integration and team alignment.",
                 "",
                 "---",
                 ""
@@ -217,7 +216,7 @@ class OnboardingPlannerAgent:
                 "",
                 "---",
                 "",
-                f"*This roadmap demonstrates operational readiness and strategic thinking for the role.*"
+                "*This roadmap demonstrates operational readiness and strategic thinking for the role.*"
             ])
 
             return "\n".join(lines)
@@ -226,7 +225,7 @@ class OnboardingPlannerAgent:
             logger.error(f"Error rendering roadmap: {str(e)}")
             return "# Onboarding Roadmap\n\nError rendering plan."
 
-    def _extract_priorities(self, job_description: str, company_maturity: str) -> Dict[str, str]:
+    def _extract_priorities(self, job_description: str, company_maturity: str) -> dict[str, str]:
         """Extract priorities from job description.
 
         Args:
@@ -265,11 +264,11 @@ class OnboardingPlannerAgent:
 
     def _generate_phases(
         self,
-        priorities: Dict[str, str],
+        priorities: dict[str, str],
         job_description: str,
         company_maturity: str,
         role_title: str
-    ) -> List[PlanPhase]:
+    ) -> list[PlanPhase]:
         """Generate the three phases of the plan.
 
         Args:
@@ -363,7 +362,7 @@ class OnboardingPlannerAgent:
             logger.error(f"Error generating phases: {str(e)}")
             return self._generate_fallback_phases()
 
-    def _extract_tech_keywords(self, job_description: str) -> List[str]:
+    def _extract_tech_keywords(self, job_description: str) -> list[str]:
         """Extract technology keywords from job description.
 
         Args:
@@ -414,7 +413,7 @@ class OnboardingPlannerAgent:
             logger.error(f"Error assessing risks: {str(e)}")
             return "Standard onboarding risks apply with appropriate mitigations."
 
-    def _identify_resources(self, phases: List[PlanPhase], company_maturity: str) -> List[str]:
+    def _identify_resources(self, phases: list[PlanPhase], company_maturity: str) -> list[str]:
         """Identify resources needed for the plan.
 
         Args:
@@ -463,7 +462,7 @@ class OnboardingPlannerAgent:
             resource_requirements=["Basic onboarding resources"]
         )
 
-    def _generate_fallback_phases(self) -> List[PlanPhase]:
+    def _generate_fallback_phases(self) -> list[PlanPhase]:
         """Generate fallback phases.
 
         Returns:

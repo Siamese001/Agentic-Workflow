@@ -5,13 +5,13 @@ including lookup, filtering, versioning, and metadata retrieval.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
-import logging
 import json
-from datetime import datetime, timedelta
+import logging
+from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +43,10 @@ class SchemaMetadata:
     status: SchemaStatus
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[str] = None
-    description: Optional[str] = None
-    tags: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
+    created_by: str | None = None
+    description: str | None = None
+    tags: list[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
     size_bytes: int = 0
 
 
@@ -54,22 +54,22 @@ class SchemaMetadata:
 class SchemaEntry:
     """Complete schema entry with metadata and content."""
     metadata: SchemaMetadata
-    content: Dict[str, Any]
-    validation_rules: Optional[Dict[str, Any]] = None
-    examples: Optional[List[Dict[str, Any]]] = None
+    content: dict[str, Any]
+    validation_rules: dict[str, Any] | None = None
+    examples: list[dict[str, Any]] | None = None
 
 
 @dataclass
 class SchemaQuery:
     """Query configuration for schema retrieval."""
-    name_pattern: Optional[str] = None
-    schema_type: Optional[SchemaType] = None
-    status: Optional[SchemaStatus] = None
-    tags: List[str] = field(default_factory=list)
-    version_range: Optional[str] = None
-    created_by: Optional[str] = None
-    date_from: Optional[datetime] = None
-    date_to: Optional[datetime] = None
+    name_pattern: str | None = None
+    schema_type: SchemaType | None = None
+    status: SchemaStatus | None = None
+    tags: list[str] = field(default_factory=list)
+    version_range: str | None = None
+    created_by: str | None = None
+    date_from: datetime | None = None
+    date_to: datetime | None = None
     include_content: bool = True
     include_validation: bool = False
     include_examples: bool = False
@@ -80,10 +80,10 @@ class SchemaQuery:
 @dataclass
 class SchemaQueryResult:
     """Result of schema query."""
-    entries: List[SchemaEntry]
+    entries: list[SchemaEntry]
     total_count: int
     query: SchemaQuery
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -100,13 +100,13 @@ class SchemaStoreConfig:
 class SchemaStoreQuerier:
     """Main class for querying schema store."""
 
-    def __init__(self, config: Optional[SchemaStoreConfig] = None):
+    def __init__(self, config: SchemaStoreConfig | None = None):
         self.config = config or SchemaStoreConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._schema_cache: Dict[str, SchemaEntry] = {}
-        self._name_index: Dict[str, List[str]] = {}
-        self._type_index: Dict[SchemaType, List[str]] = {}
-        self._tag_index: Dict[str, List[str]] = {}
+        self._schema_cache: dict[str, SchemaEntry] = {}
+        self._name_index: dict[str, list[str]] = {}
+        self._type_index: dict[SchemaType, list[str]] = {}
+        self._tag_index: dict[str, list[str]] = {}
         self._load_schemas()
 
     def query_schemas(self, query: SchemaQuery) -> SchemaQueryResult:
@@ -172,7 +172,7 @@ class SchemaStoreQuerier:
                 metadata={"error": str(e)}
             )
 
-    def get_schema(self, schema_id: str) -> Optional[SchemaEntry]:
+    def get_schema(self, schema_id: str) -> SchemaEntry | None:
         """Get a specific schema by ID.
 
         Args:
@@ -183,7 +183,7 @@ class SchemaStoreQuerier:
         """
         return self._schema_cache.get(schema_id)
 
-    def get_schema_by_name(self, name: str, version: Optional[str] = None) -> Optional[SchemaEntry]:
+    def get_schema_by_name(self, name: str, version: str | None = None) -> SchemaEntry | None:
         """Get schema by name and optionally version.
 
         Args:
@@ -211,7 +211,7 @@ class SchemaStoreQuerier:
 
         return None
 
-    def get_schema_versions(self, name: str) -> List[SchemaMetadata]:
+    def get_schema_versions(self, name: str) -> list[SchemaMetadata]:
         """Get all versions of a schema.
 
         Args:
@@ -294,7 +294,7 @@ class SchemaStoreQuerier:
             self.logger.error(f"Failed to delete schema: {str(e)}")
             return False
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get schema store statistics.
 
         Returns:
@@ -356,7 +356,7 @@ class SchemaStoreQuerier:
             # Load each schema file
             for schema_file in storage_path.glob("*.json"):
                 try:
-                    with open(schema_file, 'r', encoding='utf-8') as f:
+                    with open(schema_file, encoding='utf-8') as f:
                         data = json.load(f)
 
                     # Convert to SchemaEntry
@@ -373,7 +373,7 @@ class SchemaStoreQuerier:
         except Exception as e:
             self.logger.error(f"Failed to load schemas: {str(e)}")
 
-    def _apply_filters(self, query: SchemaQuery) -> List[str]:
+    def _apply_filters(self, query: SchemaQuery) -> list[str]:
         """Apply filters to schema IDs."""
         filtered_ids = list(self._schema_cache.keys())
 
@@ -505,7 +505,7 @@ class SchemaStoreQuerier:
         except Exception as e:
             self.logger.error(f"Failed to delete schema file: {str(e)}")
 
-    def _schema_entry_to_json(self, entry: SchemaEntry) -> Dict[str, Any]:
+    def _schema_entry_to_json(self, entry: SchemaEntry) -> dict[str, Any]:
         """Convert SchemaEntry to JSON-serializable dict."""
         return {
             "metadata": {
@@ -527,7 +527,7 @@ class SchemaStoreQuerier:
             "examples": entry.examples
         }
 
-    def _json_to_schema_entry(self, data: Dict[str, Any]) -> Optional[SchemaEntry]:
+    def _json_to_schema_entry(self, data: dict[str, Any]) -> SchemaEntry | None:
         """Convert JSON dict to SchemaEntry."""
         try:
             metadata = SchemaMetadata(
@@ -576,15 +576,15 @@ def create_schema_store_querier(
 
 # Convenience function for direct usage
 def query_schema_store(
-    name_pattern: Optional[str] = None,
-    schema_type: Optional[str] = None,
-    status: Optional[str] = None,
-    tags: List[str] = None,
+    name_pattern: str | None = None,
+    schema_type: str | None = None,
+    status: str | None = None,
+    tags: list[str] = None,
     include_content: bool = True,
     limit: int = 100,
     offset: int = 0,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Query schema store.
 
     Args:

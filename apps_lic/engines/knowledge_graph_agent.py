@@ -4,14 +4,12 @@ This module provides Neo4j integration patterns for augmenting agent capabilitie
 with graph-based reasoning, context retrieval, and state management.
 """
 
-import logging
-from typing import Dict, List, Optional, Any, Union
-from pydantic import BaseModel, Field
-from neo4j import GraphDatabase
 import json
-import numpy as np
-from datetime import datetime, timedelta
+import logging
+from typing import Any
 
+from neo4j import GraphDatabase
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -19,9 +17,9 @@ logger = logging.getLogger(__name__)
 class GraphContext(BaseModel):
     """Context retrieved from knowledge graph."""
 
-    entities: List[Dict[str, Any]] = Field(default_factory=list)
-    relationships: List[Dict[str, Any]] = Field(default_factory=list)
-    paths: List[List[Dict[str, Any]]] = Field(default_factory=list)
+    entities: list[dict[str, Any]] = Field(default_factory=list)
+    relationships: list[dict[str, Any]] = Field(default_factory=list)
+    paths: list[list[dict[str, Any]]] = Field(default_factory=list)
     confidence: float = Field(default=0.0, ge=0.0, le=1.0)
 
 
@@ -338,8 +336,8 @@ class KnowledgeGraphAgent:
         self,
         agent_id: str,
         step_id: str,
-        step_data: Dict[str, Any],
-        state_embedding: Optional[List[float]] = None
+        step_data: dict[str, Any],
+        state_embedding: list[float] | None = None
     ) -> bool:
         """Create a reasoning step in the agent's decision chain.
 
@@ -399,9 +397,9 @@ class KnowledgeGraphAgent:
 
     def find_similar_decisions(
         self,
-        current_state_embedding: List[float],
+        current_state_embedding: list[float],
         limit: int = 3
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Find past decisions made in similar contexts.
 
         Args:
@@ -453,7 +451,7 @@ class KnowledgeGraphAgent:
 
     def semantic_search(
         self,
-        query_embedding: List[float],
+        query_embedding: list[float],
         top_k: int = 5
     ) -> GraphContext:
         """Perform semantic search using Neo4j vector index.
@@ -598,9 +596,9 @@ class KnowledgeGraphAgent:
     def find_semantic_match(
         self,
         entity: str,
-        embedding: List[float],
-        threshold: Optional[float] = None
-    ) -> Optional[str]:
+        embedding: list[float],
+        threshold: float | None = None
+    ) -> str | None:
         """Find semantically similar existing entities.
 
         Args:
@@ -637,7 +635,7 @@ class KnowledgeGraphAgent:
             logger.error(f"Error finding semantic match: {str(e)}")
             return None
 
-    def _get_embedding(self, text: str) -> List[float]:
+    def _get_embedding(self, text: str) -> list[float]:
         """Generate embedding for text (simplified implementation).
 
         Args:
@@ -668,7 +666,7 @@ class KnowledgeGraphAgent:
         self,
         confidence_threshold: float = 0.3,
         days_old: int = 30
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """Remove low-confidence and stale relationships.
 
         Args:

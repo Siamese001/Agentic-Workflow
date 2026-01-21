@@ -5,14 +5,14 @@ the RAG pipeline, protecting against prompt injection, jailbreaks,
 PII leakage, Unicode attacks, and encoded payloads.
 """
 
+import base64
 import logging
 import re
 import time
-import base64
 import unicodedata
-from typing import Dict, List, Optional, Tuple, Any, Set
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +31,9 @@ class GuardResult:
     action: GuardAction
     reason: str
     confidence: float
-    pii_detected: List[str] = None
-    injection_patterns: List[str] = None
-    sanitized_input: Optional[str] = None
+    pii_detected: list[str] = None
+    injection_patterns: list[str] = None
+    sanitized_input: str | None = None
 
     def __post_init__(self):
         if self.pii_detected is None:
@@ -76,7 +76,7 @@ class InputGuardrail:
         self.rate_limit_per_minute = rate_limit_per_minute
 
         # Rate limiting storage (in production, use Redis)
-        self._rate_limit_store: Dict[str, List[float]] = {}
+        self._rate_limit_store: dict[str, list[float]] = {}
 
         # Compile regex patterns for performance
         self._compile_patterns()
@@ -173,7 +173,7 @@ class InputGuardrail:
         # In production, this could use a lightweight model
         self.semantic_threshold = 0.7 if not self.strict_mode else 0.5
 
-    def scan(self, input_text: str, user_id: Optional[str] = None) -> GuardResult:
+    def scan(self, input_text: str, user_id: str | None = None) -> GuardResult:
         """Scan input text for security issues.
 
         Args:
@@ -266,7 +266,7 @@ class InputGuardrail:
                 confidence=0.0
             )
 
-    def _check_injection(self, text: str) -> Tuple[bool, List[str]]:
+    def _check_injection(self, text: str) -> tuple[bool, list[str]]:
         """Check for prompt injection patterns.
 
         Args:
@@ -284,7 +284,7 @@ class InputGuardrail:
 
         return (len(found_patterns) > 0, found_patterns)
 
-    def _check_pii(self, text: str) -> Tuple[bool, List[str]]:
+    def _check_pii(self, text: str) -> tuple[bool, list[str]]:
         """Check for PII in the text.
 
         Args:
@@ -302,7 +302,7 @@ class InputGuardrail:
 
         return (len(found_types) > 0, found_types)
 
-    def _redact_pii(self, text: str, pii_types: List[str]) -> str:
+    def _redact_pii(self, text: str, pii_types: list[str]) -> str:
         """Redact PII from text.
 
         Args:
@@ -386,7 +386,7 @@ class InputGuardrail:
         self._rate_limit_store[user_id].append(now)
         return False
 
-    def _check_unicode_attacks(self, text: str) -> Tuple[bool, str]:
+    def _check_unicode_attacks(self, text: str) -> tuple[bool, str]:
         """Check for Unicode homoglyph attacks.
 
         Args:
@@ -412,7 +412,7 @@ class InputGuardrail:
 
         return (len(suspicious_chars) > 0, ', '.join(suspicious_chars[:5]))
 
-    def _check_encoded_payloads(self, text: str) -> Tuple[bool, str]:
+    def _check_encoded_payloads(self, text: str) -> tuple[bool, str]:
         """Check for base64 or other encoded payloads.
 
         Args:
@@ -452,13 +452,13 @@ class InputGuardrail:
                 # Try to decode as hex
                 decoded = bytes.fromhex(match).decode('utf-8', errors='ignore')
                 if any(keyword in decoded.lower() for keyword in self.malicious_keywords):
-                    return (True, f"Hex encoded payload with malicious content")
+                    return (True, "Hex encoded payload with malicious content")
             except Exception:
                 pass
 
         return (False, "")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get guardrail statistics.
 
         Returns:
@@ -484,7 +484,7 @@ class InputGuardrail:
 
 
 # Global guardrail instance
-_input_guardrail: Optional[InputGuardrail] = None
+_input_guardrail: InputGuardrail | None = None
 
 
 def get_input_guardrail(**kwargs) -> InputGuardrail:

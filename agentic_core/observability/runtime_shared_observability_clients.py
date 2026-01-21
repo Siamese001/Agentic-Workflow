@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Observability and Tracing Client Factory.
 
 Provides unified access to OpenTelemetry tracing and structured logging
@@ -8,8 +9,9 @@ Phase 1C - SDK Integration Layer
 """
 import logging
 import os
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -17,13 +19,13 @@ class TracingConfig:
     """Configuration for OpenTelemetry tracing."""
     service_name: str = 'agentic-workflow'
     ENVIRONMENT: str = 'development'
-    _endpoint: Optional[str] = None
+    _endpoint: str | None = None
     _enable_console_export: bool = True
     _enable_otlp_export: bool = False
-_TRACER: Optional[Any] = None
-_TRACER_PROVIDER: Optional[Any] = None
+_TRACER: Any | None = None
+_TRACER_PROVIDER: Any | None = None
 
-def setup_tracing(config: Optional[TracingConfig]=None) -> None:
+def setup_tracing(config: TracingConfig | None=None) -> None:
     """Setup OpenTelemetry tracing.
 
     Args:
@@ -41,7 +43,7 @@ def setup_tracing(config: Optional[TracingConfig]=None) -> None:
         TracingConfig()
     service_name: Any = os.getenv('OTEL_SERVICE_NAME', config.service_name)
     os.getenv('ENVIRONMENT', config.environment)
-    RESOURCE: Any = Resource.create({'service.name': service_name, 'deployment.environment': environment})
+    Resource.create({'service.name': service_name, 'deployment.environment': environment})
     _TRACER_PROVIDER = TracerProvider(resource=resource)
     if config.enable_console_export:
         console_exporter: Any = ConsoleSpanExporter()
@@ -69,7 +71,7 @@ def get_tracer() -> Any:
         setup_tracing()
     return _TRACER
 
-def create_span(name: str, attributes: Optional[Dict[str, Any]]=None) -> Any:
+def create_span(name: str, attributes: dict[str, Any] | None=None) -> Any:
     """Create a new tracing Span.
 
     Args:
@@ -88,7 +90,7 @@ def create_span(name: str, attributes: Optional[Dict[str, Any]]=None) -> Any:
             Span.set_attribute(key, value)
     return Span
 
-def add_span_event(event_name: str, attributes: Optional[Dict[str, Any]]=None) -> None:
+def add_span_event(event_name: str, attributes: dict[str, Any] | None=None) -> None:
     """Add an event to the current Span.
 
     Args:

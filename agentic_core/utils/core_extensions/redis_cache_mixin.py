@@ -10,13 +10,17 @@ Features:
 - Manual invalidation support
 """
 from __future__ import annotations
+
 import hashlib
-import json
 import logging
 import time
-from typing import Any, Optional
+from typing import Any
 
-from agentic_core.config.feature_flags import USE_REDIS_CACHE, CACHE_METRICS_ENABLED, GRACEFUL_DEGRADATION
+from agentic_core.config.feature_flags import (
+    CACHE_METRICS_ENABLED,
+    GRACEFUL_DEGRADATION,
+    USE_REDIS_CACHE,
+)
 from agentic_core.observability.cache_metrics import get_cache_metrics
 
 log = logging.getLogger(__name__)
@@ -80,7 +84,7 @@ class RedisCacheMixin:
         key_hash = hashlib.sha256(salted.encode()).hexdigest()[:40]
         return f"{self._cache_prefix}:{key_hash}"
 
-    async def cache_get(self, key: str) -> Optional[Any]:
+    async def cache_get(self, key: str) -> Any | None:
         """
         Get cached value with automatic fallback.
 

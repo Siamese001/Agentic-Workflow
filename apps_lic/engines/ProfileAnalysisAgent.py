@@ -71,17 +71,18 @@ import asyncio
 import hashlib
 import json
 import re
-from collections import defaultdict, Counter
-from dataclasses import dataclass, field, asdict
+from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple, Set, Callable
+from typing import Any, Optional
 from uuid import uuid4
+
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
 
 # ============================================================================
 # ENUMS & CONSTANTS
@@ -255,7 +256,7 @@ class ErrorCodeRegistry:
     }
 
     @classmethod
-    def get_error(cls, code: str) -> Dict[str, str]:
+    def get_error(cls, code: str) -> dict[str, str]:
         return cls.CODES.get(code, {"severity": "UNKNOWN", "description": "Unknown error", "remediation": "Contact support"})
 
 
@@ -282,7 +283,7 @@ class CircuitBreaker:
         self.failure_threshold = failure_threshold
         self.timeout_seconds = timeout_seconds
         self.failure_count = 0
-        self.last_failure_time: Optional[datetime] = None
+        self.last_failure_time: datetime | None = None
         self.state = CircuitState.CLOSED
 
     def call(self, func: Callable, *args, **kwargs):
@@ -307,7 +308,7 @@ class CircuitBreaker:
 
             return result
 
-        except Exception as e:
+        except Exception:
             self.failure_count += 1
             self.last_failure_time = datetime.now()
 
@@ -342,9 +343,9 @@ class ContextManager:
     @classmethod
     def truncate_intelligently(
         cls,
-        context_sections: Dict[str, str],
+        context_sections: dict[str, str],
         max_tokens: int = MAX_CONTEXT_TOKENS
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """
         Truncate context sections by priority if exceeding token limit
         """
@@ -385,7 +386,7 @@ class ContextManager:
         return truncated
 
     @classmethod
-    def detect_overflow(cls, context_text: str) -> Tuple[bool, int]:
+    def detect_overflow(cls, context_text: str) -> tuple[bool, int]:
         """
         Detect if context exceeds safe limits
 
@@ -654,7 +655,7 @@ AVOID: Generic qualifications, vague interest statements, over-selling unrelated
         return cls.ARCHETYPE_TONE_MAPPINGS.get(archetype, {}).get(param_name)
 
     @classmethod
-    def get_route_constraints(cls, route: Route, archetype: Optional[Archetype] = None) -> Dict[str, Any]:
+    def get_route_constraints(cls, route: Route, archetype: Archetype | None = None) -> dict[str, Any]:
         """Get route constraints with optional archetype override"""
         constraints = cls.ROUTE_CONSTRAINTS[route].copy()
 
@@ -674,13 +675,13 @@ AVOID: Generic qualifications, vague interest statements, over-selling unrelated
 class OutreachMission:
     """Complete mission specification"""
     mission_id: str
-    sender_profile: Dict[str, Any]
-    recipient_profile: Dict[str, Any]
-    job_description: Dict[str, Any]
+    sender_profile: dict[str, Any]
+    recipient_profile: dict[str, Any]
+    job_description: dict[str, Any]
     connection_status: str = "not_connected"
     prior_message_count: int = 0
-    route_override: Optional[Route] = None
-    context: Dict[str, Any] = field(default_factory=dict)
+    route_override: Route | None = None
+    context: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -689,9 +690,9 @@ class ProfileAnalysis:
     archetype: Archetype
     confidence: float
     reasoning: str
-    key_indicators: List[str]
+    key_indicators: list[str]
     needs_manual_override: bool = False  # NEW v11.6
-    critique_history: List[str] = field(default_factory=list)  # NEW v11.6
+    critique_history: list[str] = field(default_factory=list)  # NEW v11.6
 
 
 @dataclass
@@ -700,7 +701,7 @@ class RAGResult:
     source: str
     source_type: str
     text: str
-    extracted_keywords: List[str]
+    extracted_keywords: list[str]
     source_weight: float
     age_days: int
     recipient_specific: bool
@@ -710,17 +711,17 @@ class RAGResult:
 @dataclass
 class ResearchContext:
     """Aggregated research findings"""
-    recipient_insights: List[str]
-    company_context: List[str]
-    recent_activity: List[str]
-    rag_results: List[RAGResult]
+    recipient_insights: list[str]
+    company_context: list[str]
+    recent_activity: list[str]
+    rag_results: list[RAGResult]
     signal_score: float = 0.0  # NEW v11.6
     reflexion_iterations: int = 0  # NEW v11.6
-    prior_applications: List[Dict[str, Any]] = field(default_factory=list)  # NEW v11.6
-    mission_context: Dict[str, Any] = field(default_factory=dict)  # NEW v11.7 - for validation context
-    sender_context: List[str] = field(default_factory=list)  # NEW v11.7
+    prior_applications: list[dict[str, Any]] = field(default_factory=list)  # NEW v11.6
+    mission_context: dict[str, Any] = field(default_factory=dict)  # NEW v11.7 - for validation context
+    sender_context: list[str] = field(default_factory=list)  # NEW v11.7
     sender_grounding: Optional['SenderGroundingWhitelists'] = None  # NEW v11.9
-    adversarial_findings: List[str] = field(default_factory=list) # NEW v11.10
+    adversarial_findings: list[str] = field(default_factory=list) # NEW v11.10
 
 
 @dataclass
@@ -728,9 +729,9 @@ class MessageScaffold:
     """Structural scaffold for message generation"""
     route: Route
     archetype: Archetype
-    sections: Dict[str, Dict[str, Any]]
-    constraints: Dict[str, Any]
-    locked_sections: Set[str] = field(default_factory=set)
+    sections: dict[str, dict[str, Any]]
+    constraints: dict[str, Any]
+    locked_sections: set[str] = field(default_factory=set)
     context_aware_cta: bool = False  # NEW v11.9 - controls CTA generation logic
 
 
@@ -744,7 +745,7 @@ class GeneratedMessage:
     archetype: Archetype
     generation_temperature: float
     generation_attempts: int
-    locked_sections: Set[str]
+    locked_sections: set[str]
     checksum: str
 
 
@@ -755,14 +756,14 @@ class ValidationResult:
     severity: ValidationSeverity
     rule_id: str
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
 
 
 @dataclass
 class QAReport:
     """Comprehensive QA report"""
     mission_id: str
-    validation_results: List[ValidationResult]
+    validation_results: list[ValidationResult]
     critical_issues: int
     high_issues: int  # NEW v11.6
     errors: int
@@ -777,10 +778,10 @@ class SenderGroundingWhitelists:
     NEW v11.9: Extracted sender grounding facts from RAG
     Used to validate "my team" / "our product" claims in generation
     """
-    team_members: List[str] = field(default_factory=list)  # Names extracted from RAG
-    products: List[str] = field(default_factory=list)      # Product names from RAG
-    case_studies: List[str] = field(default_factory=list)  # Client/case study names
-    raw_evidence: Dict[str, List[str]] = field(default_factory=dict)  # Category → source snippets
+    team_members: list[str] = field(default_factory=list)  # Names extracted from RAG
+    products: list[str] = field(default_factory=list)      # Product names from RAG
+    case_studies: list[str] = field(default_factory=list)  # Client/case study names
+    raw_evidence: dict[str, list[str]] = field(default_factory=dict)  # Category → source snippets
 
 
 
@@ -789,16 +790,16 @@ class MessageClaim:
     """NEW v11.6: Individual claim with confidence (FEATURE 1.2)"""
     text: str
     confidence: float
-    supporting_sources: List[str]
-    source_weights: List[float]
+    supporting_sources: list[str]
+    source_weights: list[float]
 
 
 @dataclass
 class RAGCritique:
     """NEW v11.6: RAG quality critique (FEATURE 1.4)"""
     confidence_score: float
-    gaps_identified: List[str]
-    refinement_tasks: List[str]
+    gaps_identified: list[str]
+    refinement_tasks: list[str]
     reasoning: str
     is_sufficient: bool
 
@@ -828,9 +829,9 @@ class SignalQualityScorer:
 
     def calculate_signal_score(
         self,
-        rag_results: List[RAGResult],
+        rag_results: list[RAGResult],
         message_content: str
-    ) -> Tuple[float, Dict[str, int]]:
+    ) -> tuple[float, dict[str, int]]:
         """
         Calculate weighted signal quality score for generated message
         """
@@ -870,7 +871,7 @@ class ClaimConfidenceScorer:
     def score_claim(
         self,
         claim_text: str,
-        rag_results: List[RAGResult],
+        rag_results: list[RAGResult],
         embedding_similarity_threshold: float = 0.75
     ) -> MessageClaim:
         """
@@ -906,8 +907,8 @@ class ClaimConfidenceScorer:
     def score_message_claims(
         self,
         message: str,
-        rag_results: List[RAGResult]
-    ) -> Tuple[List[MessageClaim], float]:
+        rag_results: list[RAGResult]
+    ) -> tuple[list[MessageClaim], float]:
         """
         Score all claims in message
         """
@@ -927,9 +928,9 @@ class ClaimConfidenceScorer:
 
     def validate_claims(
         self,
-        claims: List[MessageClaim],
+        claims: list[MessageClaim],
         aggregate_confidence: float
-    ) -> Tuple[bool, str]:
+    ) -> tuple[bool, str]:
         """
         Validate claims meet minimum thresholds
         """
@@ -959,7 +960,7 @@ class RAGReflexionSystem:
 
     def critique_rag_sufficiency(
         self,
-        rag_results: List[RAGResult],
+        rag_results: list[RAGResult],
         recipient_archetype: Archetype,
         iteration: int
     ) -> RAGCritique:
@@ -1005,7 +1006,7 @@ class RAGReflexionSystem:
             is_sufficient=is_sufficient
         )
 
-    def _calculate_confidence(self, rag_results: List[RAGResult], gaps: List[str]) -> float:
+    def _calculate_confidence(self, rag_results: list[RAGResult], gaps: list[str]) -> float:
         """
         Calculate confidence score
         Updated v11.6.1: Less conservative calculation for better usability
@@ -1026,7 +1027,7 @@ class RAGReflexionSystem:
         confidence = base_score + diversity_bonus - gap_penalty
         return max(0.0, min(1.0, confidence))
 
-    def _generate_refinement_tasks(self, gaps: List[str]) -> List[str]:
+    def _generate_refinement_tasks(self, gaps: list[str]) -> list[str]:
         """Generate refinement search tasks from gaps"""
         tasks = []
         for gap in gaps:
@@ -1061,8 +1062,8 @@ class AdaptiveTemperatureController:
     MAX_TEMPERATURE = 0.95
 
     def __init__(self):
-        self.attempt_history: Dict[str, List[float]] = defaultdict(list)
-        self.success_temperatures: Dict[str, float] = {}
+        self.attempt_history: dict[str, list[float]] = defaultdict(list)
+        self.success_temperatures: dict[str, float] = {}
 
     def get_temperature(
         self,
@@ -1106,8 +1107,8 @@ class ConstraintFeasibilityChecker:
         self,
         route: Route,
         archetype: Archetype,
-        required_elements: List[str]
-    ) -> Tuple[bool, str]:
+        required_elements: list[str]
+    ) -> tuple[bool, str]:
         """
         Pre-flight check: can we satisfy these constraints?
         (Simplified version - full implementation would use LLM)
@@ -1155,7 +1156,7 @@ class ContentCleanlinessValidator:
         r"(?i)\bjust (wanted|reaching|following)",
     ]
 
-    def detect_forbidden_verbs(self, text: str) -> List[str]:
+    def detect_forbidden_verbs(self, text: str) -> list[str]:
         """Find forbidden verbs in message text"""
         text_lower = text.lower()
         found = []
@@ -1166,7 +1167,7 @@ class ContentCleanlinessValidator:
 
         return found
 
-    def detect_fillers(self, text: str) -> List[Tuple[str, str]]:
+    def detect_fillers(self, text: str) -> list[tuple[str, str]]:
         """Find filler phrases in message"""
         found = []
 
@@ -1179,7 +1180,7 @@ class ContentCleanlinessValidator:
 
         return found
 
-    def validate_verbs(self, message: str) -> Tuple[bool, str]:
+    def validate_verbs(self, message: str) -> tuple[bool, str]:
         """Validate no excessive forbidden verbs"""
         forbidden = self.detect_forbidden_verbs(message)
 
@@ -1188,7 +1189,7 @@ class ContentCleanlinessValidator:
 
         return True, ""
 
-    def validate_fillers(self, message: str) -> Tuple[bool, str]:
+    def validate_fillers(self, message: str) -> tuple[bool, str]:
         """Validate message is direct and confident"""
         fillers = self.detect_fillers(message)
 
@@ -1221,7 +1222,7 @@ class PlaceholderDetector:
         r'\[unserializable\]',
     ]
 
-    def detect_placeholders(self, text: str) -> List[str]:
+    def detect_placeholders(self, text: str) -> list[str]:
         """Detect ALL placeholder patterns"""
         found = []
 
@@ -1232,7 +1233,7 @@ class PlaceholderDetector:
 
         return found
 
-    def validate(self, message: str) -> Tuple[bool, str]:
+    def validate(self, message: str) -> tuple[bool, str]:
         """CRITICAL: Zero tolerance for placeholders"""
         placeholders = self.detect_placeholders(message)
 
@@ -1255,10 +1256,10 @@ class MessageDiversityValidator:
     MIN_DIVERSITY_THRESHOLD = 0.85  # Messages must be <85% similar
 
     def __init__(self):
-        self.message_history: List[str] = []
+        self.message_history: list[str] = []
         self.vectorizer = TfidfVectorizer()
 
-    def check_diversity(self, new_message: str) -> Tuple[bool, float, str]:
+    def check_diversity(self, new_message: str) -> tuple[bool, float, str]:
         """
         Check if new message is sufficiently different from history
 
@@ -1324,12 +1325,12 @@ class ASCIIEnforcer:
 
         return text
 
-    def validate(self, text: str) -> Tuple[bool, str]:
+    def validate(self, text: str) -> tuple[bool, str]:
         """Validate text is ASCII-only"""
         try:
             text.encode("ascii")
             return True, ""
-        except UnicodeEncodeError as e:
+        except UnicodeEncodeError:
             non_ascii_chars = [c for c in text if ord(c) > 127]
             return False, f"Non-ASCII characters: {set(non_ascii_chars[:5])}"
 
@@ -1419,7 +1420,7 @@ class RecipientAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    async def get_profile(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def get_profile(self, mission: OutreachMission) -> dict[str, Any]:
         """Mock: Perform RAG on recipient's public footprint."""
         print("     S2.RecipientAgent: Retrieving profile (LinkedIn, GitHub)...")
         await asyncio.sleep(0.1) # Simulate async RAG
@@ -1437,7 +1438,7 @@ class RecipientAgent:
             ]
         }
 
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def run_refinement_task(self, task: str, mission: OutreachMission) -> dict[str, Any]:
         """Mock: Perform a targeted refinement RAG task."""
         print(f"     S2.RecipientAgent: Running refinement task: '{task[:50]}...'")
         await asyncio.sleep(0.1)
@@ -1464,7 +1465,7 @@ class OrganizationAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    async def get_organization_context(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def get_organization_context(self, mission: OutreachMission) -> dict[str, Any]:
         """Mock: Perform RAG on organization's public footprint."""
         print("     S2.OrganizationAgent: Retrieving org context (Blog, News)...")
         await asyncio.sleep(0.15) # Simulate async RAG
@@ -1482,7 +1483,7 @@ class OrganizationAgent:
             ]
         }
 
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def run_refinement_task(self, task: str, mission: OutreachMission) -> dict[str, Any]:
         """Mock: Perform a targeted refinement RAG task."""
         print(f"     S2.OrganizationAgent: Running refinement task: '{task[:50]}...'")
         await asyncio.sleep(0.1)
@@ -1526,7 +1527,7 @@ class InternalAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    def get_internal_context(self, mission: OutreachMission) -> Dict[str, Any]:
+    def get_internal_context(self, mission: OutreachMission) -> dict[str, Any]:
         """Mock: Perform internal data lookups."""
         print("     S2.InternalAgent: Checking job tracker for prior applications...")
         prior_applications = self._search_job_tracker(mission)
@@ -1535,7 +1536,7 @@ class InternalAgent:
             "rag_results": [] # Internal agent doesn't produce RAG results directly
         }
 
-    def _search_job_tracker(self, mission: OutreachMission) -> List[Dict[str, Any]]:
+    def _search_job_tracker(self, mission: OutreachMission) -> list[dict[str, Any]]:
         """
         NEW v11.6: Search for prior applications to same company (GAP 4.1)
         (Moved to InternalAgent in v11.10)
@@ -1570,8 +1571,8 @@ class S2_SupervisorAgent:
         self,
         mission: OutreachMission,
         profile_analysis: ProfileAnalysis,
-        refinement_context: List[ValidationResult] = None # NEW v11.10: For S6->S2 loop
-    ) -> Tuple[ResearchContext, ProfileAnalysis]:
+        refinement_context: list[ValidationResult] = None # NEW v11.10: For S6->S2 loop
+    ) -> tuple[ResearchContext, ProfileAnalysis]:
         """
         NEW v11.10: Agentic planner/delegator workflow.
         """
@@ -1689,7 +1690,7 @@ class S2_SupervisorAgent:
 
         return context, corrected_profile_analysis
 
-    async def _run_adversarial_check(self, context: ResearchContext) -> List[str]:
+    async def _run_adversarial_check(self, context: ResearchContext) -> list[str]:
         """
         NEW v11.10: Mocked "Red Team" adversarial check (Enhancement 3).
         Issues a final prompt to find flaws in the synthesized research.
@@ -1703,7 +1704,7 @@ class S2_SupervisorAgent:
 
     def _extract_sender_grounding(
         self,
-        rag_results: List[RAGResult],
+        rag_results: list[RAGResult],
         mission: OutreachMission
     ) -> SenderGroundingWhitelists:
         """
@@ -1744,7 +1745,7 @@ class S2_SupervisorAgent:
 
         return grounding
 
-    def _extract_names_from_text(self, text: str) -> List[str]:
+    def _extract_names_from_text(self, text: str) -> list[str]:
         """Extract person names from text (simplified - production would use NER)"""
         words = text.split()
         names = []
@@ -1755,7 +1756,7 @@ class S2_SupervisorAgent:
                     names.append(full_name)
         return names
 
-    def _extract_capitalized_phrases(self, text: str) -> List[str]:
+    def _extract_capitalized_phrases(self, text: str) -> list[str]:
         """Extract capitalized phrases (product/company names)"""
         words = text.split()
         phrases = []
@@ -1812,7 +1813,7 @@ class RoutingAgent:
         self,
         mission: OutreachMission,
         profile_analysis: ProfileAnalysis
-    ) -> Tuple[Route, str]:
+    ) -> tuple[Route, str]:
         """
         NEW v11.6: 5-node deterministic routing tree from v10.22
         """
@@ -1981,7 +1982,7 @@ class SelfConsistencySynthesizer:
 
         return content
 
-    def _synthesize_candidates(self, candidates: List[str], context: ResearchContext) -> str:
+    def _synthesize_candidates(self, candidates: list[str], context: ResearchContext) -> str:
         """
         Synthesize the best elements from N candidates
         Uses heuristics to select strongest opening, body, close
@@ -2086,20 +2087,20 @@ class GenerationOrchestrator:
 
             if failure_type == FailureClassifier.FACTUAL_FAILURE:
                 print(f"     S5 REASON: Factual failure detected. {failure_report}")
-                print(f"     S5 ACTION: Halting generation retry. Triggering S6->S2 re-planning loop.")
+                print("     S5 ACTION: Halting generation retry. Triggering S6->S2 re-planning loop.")
                 # Raise error to be caught by Orchestrator's meta-loop
                 raise FactualGapError(critical_failures)
             else:
                 # CREATIVE_FAILURE
                 print(f"     S5 REASON: Creative failure detected. {failure_report}")
-                print(f"     S5 ACTION: Retrying with escalated temperature.")
+                print("     S5 ACTION: Retrying with escalated temperature.")
                 # Loop continues to next attempt
 
         # Failed after max attempts
         self.status = AgentStatus.FAILED
         raise ValueError(f"Failed to generate valid message after {max_attempts} creative attempts")
 
-    def _classify_failure(self, failures: List[ValidationResult]) -> Tuple[FailureClassifier, str]:
+    def _classify_failure(self, failures: list[ValidationResult]) -> tuple[FailureClassifier, str]:
         """
         NEW v11.10: Classify S6 failures to decide retry strategy.
         """
@@ -2183,7 +2184,7 @@ class ValidationAgent:
         self,
         message: GeneratedMessage,
         context: ResearchContext
-    ) -> List[ValidationResult]:
+    ) -> list[ValidationResult]:
         """
         NEW v11.6: Run all validation rules
         Returns list of validation results (empty if all passed)
@@ -2412,7 +2413,7 @@ class QAAgent:
     def generate_qa_report(
         self,
         mission: OutreachMission,
-        validation_results: List[ValidationResult]
+        validation_results: list[ValidationResult]
     ) -> QAReport:
         """
         NEW v11.6: Generate comprehensive QA report grouped by severity (GAP 1.11)
@@ -2462,9 +2463,9 @@ class WorkflowOrchestrator:
         self.validation_agent = ValidationAgent(self.circuit_breaker)
         self.qa_agent = QAAgent(self.circuit_breaker)
 
-        self.events: List[Dict[str, Any]] = []
+        self.events: list[dict[str, Any]] = []
 
-    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def execute_workflow(self, mission: OutreachMission) -> dict[str, Any]:
         """
         Execute complete workflow
         NEW v11.10: Now contains the S6->S2 "Meta-Loop" (Enhancement 4)
@@ -2475,13 +2476,13 @@ class WorkflowOrchestrator:
         MAX_META_LOOPS = 3
 
         # Initialize state variables outside the loop
-        profile_analysis: Optional[ProfileAnalysis] = None
-        corrected_profile_analysis: Optional[ProfileAnalysis] = None
-        context: Optional[ResearchContext] = None
-        route: Optional[Route] = None
-        scaffold: Optional[MessageScaffold] = None
-        message: Optional[GeneratedMessage] = None
-        qa_report: Optional[QAReport] = None
+        profile_analysis: ProfileAnalysis | None = None
+        corrected_profile_analysis: ProfileAnalysis | None = None
+        context: ResearchContext | None = None
+        route: Route | None = None
+        scaffold: MessageScaffold | None = None
+        message: GeneratedMessage | None = None
+        qa_report: QAReport | None = None
 
         try:
             # Stage 1: Profile Analysis (Runs once)
@@ -2511,7 +2512,7 @@ class WorkflowOrchestrator:
             # ---
             # NEW v11.10: S6 -> S2 META-LOOP (Enhancement 4)
             # ---
-            refinement_context_from_s6: List[ValidationResult] = None
+            refinement_context_from_s6: list[ValidationResult] = None
 
             for meta_attempt in range(1, MAX_META_LOOPS + 1):
                 print(f"\n{'='*40}")
@@ -2674,7 +2675,7 @@ class WorkflowOrchestrator:
         self,
         mission: OutreachMission,
         message: GeneratedMessage,
-        result: Dict[str, Any]
+        result: dict[str, Any]
     ):
         """
         NEW v11.6: Post-send tracking and app tracker generation (GAP 10.1, 10.2)
@@ -2727,7 +2728,7 @@ def create_orchestrator() -> WorkflowOrchestrator:
     return WorkflowOrchestrator()
 
 
-def collect_sender_profile() -> Dict[str, Any]:
+def collect_sender_profile() -> dict[str, Any]:
     """Collect sender profile information interactively"""
     print("\n" + "="*80)
     print("SENDER PROFILE COLLECTION")
@@ -2754,7 +2755,7 @@ def collect_sender_profile() -> Dict[str, Any]:
     }
 
 
-def collect_recipient_profile() -> Dict[str, Any]:
+def collect_recipient_profile() -> dict[str, Any]:
     """Collect recipient profile information interactively"""
     print("\n" + "="*80)
     print("RECIPIENT PROFILE COLLECTION")
@@ -2786,7 +2787,7 @@ def collect_recipient_profile() -> Dict[str, Any]:
     }
 
 
-def collect_job_description() -> Dict[str, Any]:
+def collect_job_description() -> dict[str, Any]:
     """Collect job description information interactively"""
     print("\n" + "="*80)
     print("JOB DESCRIPTION COLLECTION")
@@ -2892,7 +2893,7 @@ async def main():
         print("-" * 80)
         print(result['message'])
         print("-" * 80)
-        print(f"\nQA Summary:")
+        print("\nQA Summary:")
         print(f"  Critical: {result['qa_summary']['critical_issues']}")
         print(f"  High: {result['qa_summary']['high_issues']}")
         print(f"  Medium: {result['qa_summary']['errors']}")

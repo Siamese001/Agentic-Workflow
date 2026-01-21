@@ -6,9 +6,7 @@ the resume "feels" right to the specific human reading it.
 """
 
 import logging
-import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -29,7 +27,7 @@ class PsychometricProfile(BaseModel):
     technical_depth: float = Field(..., description="0.0 (Generalist) to 1.0 (Deep Tech)")
     bureaucracy_level: float = Field(..., description="0.0 (Flat/Startup) to 1.0 (Corp)")
     dominant_archetype: ArchetypeBase
-    keywords_detected: List[str] = Field(default_factory=list)
+    keywords_detected: list[str] = Field(default_factory=list)
     confidence_score: float = Field(default=0.0, description="Confidence in profile accuracy")
 
 
@@ -37,9 +35,9 @@ class ReaderPersona(BaseModel):
     """Generated reader persona for resume customization."""
     title: str  # e.g. "The Risk-Averse Enterprise Gatekeeper"
     tone_instruction: str  # "Use formal language. Emphasize governance."
-    highlight_focus: List[str]  # ["Compliance", "Uptime", "Budget"]
-    avoid_topics: List[str] = Field(default_factory=list)
-    formatting_preferences: Dict[str, str] = Field(default_factory=dict)
+    highlight_focus: list[str]  # ["Compliance", "Uptime", "Budget"]
+    avoid_topics: list[str] = Field(default_factory=list)
+    formatting_preferences: dict[str, str] = Field(default_factory=dict)
     archetype: ArchetypeBase
     profile: PsychometricProfile
 
@@ -167,8 +165,8 @@ class PersonaRouter:
     def _calculate_dimension_score(
         self,
         text: str,
-        high_keywords: List[str],
-        low_keywords: List[str]
+        high_keywords: list[str],
+        low_keywords: list[str]
     ) -> float:
         """Calculate a 0.0-1.0 score for a dimension.
 
@@ -190,7 +188,7 @@ class PersonaRouter:
 
         return high_count / total
 
-    def _determine_archetype(self, text: str) -> Tuple[ArchetypeBase, List[str]]:
+    def _determine_archetype(self, text: str) -> tuple[ArchetypeBase, list[str]]:
         """Determine dominant archetype from text.
 
         Args:
@@ -448,7 +446,7 @@ Tailor the resume accordingly.
 
 
 # Global router instance
-_persona_router: Optional[PersonaRouter] = None
+_persona_router: PersonaRouter | None = None
 
 
 def get_persona_router() -> PersonaRouter:

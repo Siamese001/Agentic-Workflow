@@ -9,7 +9,6 @@ Integrated with: apps_rg/L3_orchestration/kx_nodes_resume.py
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
 
 from runtime.shared.routing import RoutingTier
 
@@ -38,8 +37,8 @@ class ValidationSeverity(str, Enum):
 @dataclass
 class WordCountConstraint:
     """Word count constraint for a section."""
-    min: Optional[int] = None
-    max: Optional[int] = None
+    min: int | None = None
+    max: int | None = None
     scope: str = "total"  # "total", "per_bullet", "per_segment", "per_competency", "per_paragraph"
     unit: str = "words"
 
@@ -55,8 +54,8 @@ class WordCountConstraint:
 @dataclass
 class CharCountConstraint:
     """Character count constraint for a section."""
-    min: Optional[int] = None
-    max: Optional[int] = None
+    min: int | None = None
+    max: int | None = None
 
     def validate(self, count: int) -> bool:
         """Validate character count against constraints."""
@@ -76,12 +75,12 @@ class ReasoningConfig:
     rag_hops: int = 2
     ClaimVerificationMode: ClaimVerificationMode = ClaimVerificationMode.BALANCED
     hybrid_cot_tot: bool = True
-    cot_min_paths: Optional[int] = 1
-    tot_branches: Optional[int] = 3
-    min_tot_depth: Optional[int] = 2
+    cot_min_paths: int | None = 1
+    tot_branches: int | None = 3
+    min_tot_depth: int | None = 2
     self_consistency: int = 3
     reflexion: bool = True
-    routing_tier: Optional[RoutingTier] = None  # Auto-determined if None
+    routing_tier: RoutingTier | None = None  # Auto-determined if None
 
 
 @dataclass
@@ -109,9 +108,9 @@ class ValidationGate:
     execution_point: str
     blocking: bool
     Severity: ValidationSeverity
-    checks: List[str] = field(default_factory=list)
+    checks: list[str] = field(default_factory=list)
     on_fail: str = "HALT"
-    halt_message: Optional[str] = None
+    halt_message: str | None = None
 
 
 # Global Enforcement Specification (from v1.9.2)
@@ -614,7 +613,7 @@ OVERVIEW_CUSTOMIZATION_RULES = {
 }
 
 
-def get_word_count_constraint(k_node: str) -> Optional[WordCountConstraint]:
+def get_word_count_constraint(k_node: str) -> WordCountConstraint | None:
     """Get word count constraint for a K-node.
 
     Args:
@@ -626,7 +625,7 @@ def get_word_count_constraint(k_node: str) -> Optional[WordCountConstraint]:
     return GLOBAL_WORD_COUNTS.get(k_node)
 
 
-def get_char_count_constraint(k_node: str) -> Optional[CharCountConstraint]:
+def get_char_count_constraint(k_node: str) -> CharCountConstraint | None:
     """Get character count constraint for a K-node.
 
     Args:
@@ -638,7 +637,7 @@ def get_char_count_constraint(k_node: str) -> Optional[CharCountConstraint]:
     return GLOBAL_CHAR_COUNTS.get(k_node)
 
 
-def get_reasoning_config(k_node: str) -> Optional[ReasoningConfig]:
+def get_reasoning_config(k_node: str) -> ReasoningConfig | None:
     """Get reasoning configuration for a K-node.
 
     Args:
@@ -650,7 +649,7 @@ def get_reasoning_config(k_node: str) -> Optional[ReasoningConfig]:
     return K_NODE_REASONING_CONFIGS.get(k_node)
 
 
-def get_validation_gates(execution_point: str) -> List[ValidationGate]:
+def get_validation_gates(execution_point: str) -> list[ValidationGate]:
     """Get validation gates for a specific execution point.
 
     Args:

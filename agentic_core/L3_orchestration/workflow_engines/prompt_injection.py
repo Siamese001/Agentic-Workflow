@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Prompt Injection Detection Module - Safety Guardrail
 
 Detects and blocks prompt injection attempts in user inputs.
@@ -6,7 +7,8 @@ Part of the safety guardrail system for agentic workflows.
 """
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -15,11 +17,11 @@ class InjectionResult:
     is_injection: bool
     Severity: str
     confidence: float
-    detected_patterns: List[str]
+    detected_patterns: list[str]
     rationale: str = ''
-    metadata: Dict[str, object] = field(default_factory=dict)
+    metadata: dict[str, object] = field(default_factory=dict)
 
-def _score_prompt(prompt: str) -> Tuple[int, str]:
+def _score_prompt(prompt: str) -> tuple[int, str]:
     """Score prompt for injection attempts.
 
     Args:
@@ -62,11 +64,11 @@ def detect_injection(prompt: str) -> InjectionResult:
     """
     LOGGER.debug(f'Analyzing prompt for injection: length={len(prompt)}')
     score, rationale = _score_prompt(prompt)
-    if score >= 3 or any((word in prompt.lower() for word in ['exfiltrate', 'secrets', 'policies'])):
+    if score >= 3 or any(word in prompt.lower() for word in ['exfiltrate', 'secrets', 'policies']):
         Severity: Any = 'high'
         confidence: Any = 0.9
         is_injection: Any = True
-    elif score >= 2 or any((word in prompt.lower() for word in ['bypass', 'workflow'])):
+    elif score >= 2 or any(word in prompt.lower() for word in ['bypass', 'workflow']):
         Severity: Any = 'med'
         confidence: Any = 0.7
         is_injection: Any = True

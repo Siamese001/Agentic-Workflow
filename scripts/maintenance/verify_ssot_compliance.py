@@ -26,14 +26,14 @@ def test_ssot_import():
     try:
         from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
         from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR
-        
+
         # Verify ARCHIVES_DIR value
         assert ARCHIVES_DIR == "archives", f"Expected 'archives', got '{ARCHIVES_DIR}'"
-        
+
         # Verify ArchivalGatekeeper uses correct name
         assert ArchivalGatekeeper.ARCHIVE_ROOT_NAME == "archives", \
             f"Expected 'archives', got '{ArchivalGatekeeper.ARCHIVE_ROOT_NAME}'"
-        
+
         print("  ✅ PASS: ARCHIVES_DIR imported successfully")
         print(f"     ARCHIVES_DIR = '{ARCHIVES_DIR}'")
         print(f"     ArchivalGatekeeper.ARCHIVE_ROOT_NAME = '{ArchivalGatekeeper.ARCHIVE_ROOT_NAME}'")
@@ -48,25 +48,25 @@ def test_path_resolution():
     print("\n[TEST 2] Path Resolution Test")
     try:
         from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
-        
+
         project_root = Path.cwd()
         ArchivalGatekeeper.reset_instance()
         gatekeeper = ArchivalGatekeeper.get_instance(project_root)
-        
+
         # Verify path contains 'archives' not '.archive'
         archive_path = str(gatekeeper.archive_root)
-        
+
         assert 'archives' in archive_path, f"'archives' not in path: {archive_path}"
         assert '.archive' not in archive_path, f"'.archive' found in path: {archive_path}"
         assert 'gatekeeper' in archive_path, f"'gatekeeper' not in path: {archive_path}"
-        
+
         expected = project_root / "archives" / "gatekeeper"
         assert gatekeeper.archive_root == expected, \
             f"Expected {expected}, got {gatekeeper.archive_root}"
-        
+
         print("  ✅ PASS: Archive root resolves correctly")
         print(f"     archive_root = {gatekeeper.archive_root}")
-        
+
         ArchivalGatekeeper.reset_instance()
         return True
     except Exception as e:
@@ -79,10 +79,10 @@ def test_exclusion_logic():
     print("\n[TEST 3] Exclusion Logic Test")
     try:
         from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_EXCLUDED_FOLDERS
-        
+
         assert 'archives' in SOVEREIGN_EXCLUDED_FOLDERS, \
             "'archives' not in SOVEREIGN_EXCLUDED_FOLDERS"
-        
+
         print("  ✅ PASS: 'archives' is in SOVEREIGN_EXCLUDED_FOLDERS")
         print(f"     SOVEREIGN_EXCLUDED_FOLDERS = {sorted(SOVEREIGN_EXCLUDED_FOLDERS)}")
         return True
@@ -95,17 +95,18 @@ def test_no_hardcoded_paths():
     """Test 4: Verify no hardcoded .archive paths remain."""
     print("\n[TEST 4] Hardcoded Path Check")
     try:
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
         import inspect
-        
+
+        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+
         # Get source code
         source = inspect.getsource(ArchivalGatekeeper)
-        
+
         # Check for hardcoded .archive
         if '".archive"' in source or "'.archive'" in source:
             print("  ❌ FAIL: Found hardcoded '.archive' in ArchivalGatekeeper")
             return False
-        
+
         print("  ✅ PASS: No hardcoded '.archive' paths found")
         return True
     except Exception as e:
@@ -117,26 +118,26 @@ def main():
     print("="*70)
     print("SSOT Compliance Verification")
     print("="*70)
-    
+
     results = []
     results.append(("SSOT Import", test_ssot_import()))
     results.append(("Path Resolution", test_path_resolution()))
     results.append(("Exclusion Logic", test_exclusion_logic()))
     results.append(("No Hardcoded Paths", test_no_hardcoded_paths()))
-    
+
     print("\n" + "="*70)
     print("SUMMARY")
     print("="*70)
-    
+
     passed = sum(1 for _, result in results if result)
     total = len(results)
-    
+
     for name, result in results:
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"  {status}: {name}")
-    
+
     print(f"\nTotal: {passed}/{total} tests passed")
-    
+
     if passed == total:
         print("\n✅ ALL TESTS PASSED - SSOT COMPLIANT")
         return 0

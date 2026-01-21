@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """HOP-6: Validation Agent - Rule-based validation from config."""
 
 __version__ = "13.1"
@@ -14,14 +16,14 @@ import json
 import logging
 import os
 import re
-from typing import Dict, List, Any
+from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-
-from apps_shared.utils.state_manager import StateManager
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from apps_lic.engines.outreach_engine.tools.code_interpreter import ValidationToolkit
+from apps_shared.utils.state_manager import StateManager
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -37,7 +39,7 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     Output: state/6_validation_report.json
     """
 
-    def __init__(self, config: Dict[str, Any], toolkit: ValidationToolkit = None) -> None:
+    def __init__(self, config: dict[str, Any], toolkit: ValidationToolkit = None) -> None:
         """
         Initialize HOP-6 validation agent.
 
@@ -52,7 +54,7 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         self.config = config["validation_agent"]
         self.toolkit = toolkit
 
-        with open("config/validator_rules_LIC.json", 'r') as f:
+        with open("config/validator_rules_LIC.json") as f:
             self.rules = json.load(f)
 
     async def execute(self, state_mgr: StateManager) -> str:
@@ -101,9 +103,9 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         output_path = state_mgr.write_state("HOP-6", output_state)
 
         if passed:
-            print(f"\n✓ Validation PASSED")
+            print("\n✓ Validation PASSED")
         else:
-            print(f"\n✗ Validation FAILED")
+            print("\n✗ Validation FAILED")
 
         print(f"  Critical: {critical_issues}")
         print(f"  High: {high_issues}")
@@ -111,7 +113,7 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return output_path
 
-    def _validate_draft(self, text: str, draft: Dict[str, Any], research: Dict[str, Any], grounding: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _validate_draft(self, text: str, draft: dict[str, Any], research: dict[str, Any], grounding: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Run all validation rules from config.
 
@@ -260,7 +262,7 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             if not isinstance(self.rules, dict):
                 Logger.warning("Validation rules corrupted — reloading from file")
                 if os.path.exists("config/validator_rules_LIC.json"):
-                    with open("config/validator_rules_LIC.json", 'r') as f:
+                    with open("config/validator_rules_LIC.json") as f:
                         self.rules = json.load(f)
                 else:
                     Logger.error("Rules file missing — using empty rules")

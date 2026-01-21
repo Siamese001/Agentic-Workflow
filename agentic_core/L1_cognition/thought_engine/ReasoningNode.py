@@ -6,9 +6,10 @@ Integrates Phase 1-3 optimizations (caching, pruning, adaptive planning).
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+
 import asyncio
 import time
+from typing import Any
 
 
 class ReasoningNode:
@@ -28,7 +29,7 @@ class ReasoningNode:
         self.plans_created = 0
         self.total_reasoning_time = 0.0
 
-    def reason(self, perceived: Dict[str, Any]) -> Dict[str, Any]:
+    def reason(self, perceived: dict[str, Any]) -> dict[str, Any]:
         """
         Generate reasoning from perceived state.
 
@@ -62,7 +63,7 @@ class ReasoningNode:
 
         return reasoning
 
-    async def reason_async(self, perceived: Dict[str, Any]) -> Dict[str, Any]:
+    async def reason_async(self, perceived: dict[str, Any]) -> dict[str, Any]:
         """
         Asynchronous reasoning generation.
 
@@ -127,8 +128,8 @@ class ReasoningNode:
         self,
         query: str,
         strategy: str,
-        perceived: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        perceived: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """
         Generate prioritized thoughts using strategy.
 
@@ -184,9 +185,9 @@ class ReasoningNode:
 
     def _generate_plan(
         self,
-        thoughts: List[Dict[str, Any]],
-        perceived: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        thoughts: list[dict[str, Any]],
+        perceived: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Generate execution plan from thoughts.
 
@@ -227,7 +228,7 @@ class ReasoningNode:
 
         return plan
 
-    def _score_plan(self, steps: List[Dict[str, Any]], perceived: Dict[str, Any]) -> float:
+    def _score_plan(self, steps: list[dict[str, Any]], perceived: dict[str, Any]) -> float:
         """
         Score plan quality (Phase 2 integration).
 
@@ -254,7 +255,7 @@ class ReasoningNode:
 
         return min(1.0, max(0.0, score))
 
-    def _validate_plan(self, steps: List[Dict[str, Any]], perceived: Dict[str, Any]) -> bool:
+    def _validate_plan(self, steps: list[dict[str, Any]], perceived: dict[str, Any]) -> bool:
         """
         Validate plan feasibility (Phase 2 integration).
 
@@ -275,7 +276,7 @@ class ReasoningNode:
 
         return True
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get reasoning statistics."""
         avg_reasoning_time = (
             self.total_reasoning_time / self.thoughts_generated

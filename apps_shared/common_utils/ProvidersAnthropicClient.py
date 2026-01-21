@@ -7,7 +7,7 @@ It exposes a narrow run_llm interface used by runtime_utils.
 from __future__ import annotations
 
 import os
-from typing import Any, List
+from typing import Any
 
 
 def run_llm_anthropic(
@@ -39,7 +39,7 @@ def run_llm_anthropic(
         timeout=timeout_s,
     )
 
-    parts: List[str] = []
+    parts: list[str] = []
     for block in getattr(resp, "content", []) or []:
         if getattr(block, "type", None) == "text":
             parts.append(getattr(block, "text", ""))

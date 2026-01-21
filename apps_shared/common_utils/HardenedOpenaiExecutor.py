@@ -13,11 +13,10 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
 
-from shared.resilience.mixin import HardeningMixin, TokenLimitError
-from shared.resilience.telemetry import SystemTelemetry, get_telemetry
 from runtime.shared.agent_executor import AgentMessage, AgentResponse
+from shared.resilience.mixin import HardeningMixin
+from shared.resilience.telemetry import SystemTelemetry
 
 logger = logging.getLogger(__name__)
 
@@ -76,8 +75,8 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
     def __init__(
         self,
-        config: Optional[HardenedOpenAIConfig] = None,
-        telemetry: Optional[SystemTelemetry] = None,
+        config: HardenedOpenAIConfig | None = None,
+        telemetry: SystemTelemetry | None = None,
     ):
         """Initialize hardened OpenAI executor.
 
@@ -134,9 +133,9 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
     def _build_messages(
         self,
-        messages: List[AgentMessage],
-        system_prompt: Optional[str] = None,
-    ) -> List[Dict[str, str]]:
+        messages: list[AgentMessage],
+        system_prompt: str | None = None,
+    ) -> list[dict[str, str]]:
         """Build OpenAI message format.
 
         Args:
@@ -168,10 +167,10 @@ class HardenedOpenAIExecutor(HardeningMixin):
         self,
         prompt: str,
         *,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
-        messages: Optional[List[AgentMessage]] = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
+        messages: list[AgentMessage] | None = None,
     ) -> str:
         """Run OpenAI completion with hardening.
 
@@ -226,10 +225,10 @@ class HardenedOpenAIExecutor(HardeningMixin):
         self,
         prompt: str,
         *,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
-        messages: Optional[List[AgentMessage]] = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
+        messages: list[AgentMessage] | None = None,
     ) -> AgentResponse:
         """Run OpenAI completion with full response metadata.
 
@@ -302,10 +301,10 @@ class HardenedOpenAIExecutor(HardeningMixin):
         self,
         prompt: str,
         *,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
-        messages: Optional[List[AgentMessage]] = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
+        messages: list[AgentMessage] | None = None,
     ) -> str:
         """Synchronous version of run_llm.
 

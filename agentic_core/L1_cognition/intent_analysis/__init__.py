@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L1_cognition/intent_analysis – Sovereign Territory
 

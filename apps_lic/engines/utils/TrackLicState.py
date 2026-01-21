@@ -10,7 +10,6 @@ import shutil
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
 
 @dataclass
@@ -29,8 +28,8 @@ class StateValidationResult:
     """Result of state validation."""
 
     is_valid: bool
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
 
 class LICStateManager:
@@ -63,7 +62,7 @@ class LICStateManager:
         self.mission_id = mission_id
         self.base_dir = Path(state_directory)
         self.mission_dir = self.base_dir / mission_id
-        self._checkpoints: Dict[str, StateCheckpoint] = {}
+        self._checkpoints: dict[str, StateCheckpoint] = {}
 
         if create_if_missing:
             self.mission_dir.mkdir(parents=True, exist_ok=True)
@@ -71,7 +70,7 @@ class LICStateManager:
     def write_state(
         self,
         hop_id: str,
-        data: Dict[str, object],
+        data: dict[str, object],
         atomic: bool = True,
     ) -> str:
         """
@@ -130,7 +129,7 @@ class LICStateManager:
         self,
         hop_id: str,
         validate_checksum: bool = False,
-    ) -> Dict[str, object]:
+    ) -> dict[str, object]:
         """
         Read state file for a HOP.
 
@@ -164,7 +163,7 @@ class LICStateManager:
                         f"Checksum mismatch for {filename}: file may be corrupted"
                     )
 
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             data = json.load(f)
 
         return data
@@ -178,7 +177,7 @@ class LICStateManager:
         filepath = self.mission_dir / filename
         return filepath.exists()
 
-    def list_states(self) -> List[str]:
+    def list_states(self) -> list[str]:
         """List all state files for this mission."""
         if not self.mission_dir.exists():
             return []
@@ -215,11 +214,11 @@ class LICStateManager:
         self._checkpoints.clear()
         return count
 
-    def get_checkpoint(self, hop_id: str) -> Optional[StateCheckpoint]:
+    def get_checkpoint(self, hop_id: str) -> StateCheckpoint | None:
         """Get Checkpoint for a HOP."""
         return self._checkpoints.get(hop_id)
 
-    def get_all_checkpoints(self) -> Dict[str, StateCheckpoint]:
+    def get_all_checkpoints(self) -> dict[str, StateCheckpoint]:
         """Get all checkpoints."""
         return self._checkpoints.copy()
 
@@ -294,7 +293,7 @@ class StateValidator:
         """Initialize with a state coordinator."""
         self.state_manager = state_manager
 
-    def validate_hop_chain(self, hop_ids: List[str]) -> StateValidationResult:
+    def validate_hop_chain(self, hop_ids: list[str]) -> StateValidationResult:
         """Validate a chain of HOPs for consistency."""
         result = StateValidationResult(is_valid=True)
 
@@ -310,7 +309,7 @@ class StateValidator:
     def validate_dependencies(
         self,
         hop_id: str,
-        required_hops: List[str],
+        required_hops: list[str],
     ) -> StateValidationResult:
         """Validate that required HOPs have completed before this HOP."""
         result = StateValidationResult(is_valid=True)

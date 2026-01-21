@@ -13,10 +13,10 @@ Composable Rules:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+
+from dataclasses import dataclass
 from enum import Enum
-import time
+from typing import Any
 
 
 class ResourceType(Enum):
@@ -68,14 +68,14 @@ class ResourceManagementGuardrail:
 
     def __init__(self):
         """Initialize resource management guardrail."""
-        self.enabled_rules: List[str] = [
+        self.enabled_rules: list[str] = [
             "cost_limits",
             "resource_quotas",
             "control_plane",
         ]
 
         # Default quotas
-        self.quotas: Dict[ResourceType, ResourceQuota] = {
+        self.quotas: dict[ResourceType, ResourceQuota] = {
             ResourceType.TOKENS: ResourceQuota(
                 resource_type=ResourceType.TOKENS,
                 limit=1_000_000,
@@ -240,7 +240,7 @@ class ResourceManagementGuardrail:
         for quota in self.quotas.values():
             quota.used = 0.0
 
-    def get_quota_status(self) -> Dict[str, Any]:
+    def get_quota_status(self) -> dict[str, Any]:
         """Get status of all quotas."""
         return {
             rt.value: {
@@ -253,7 +253,7 @@ class ResourceManagementGuardrail:
             for rt, q in self.quotas.items()
         }
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get resource management statistics."""
         return {
             "checks_performed": self.checks_performed,

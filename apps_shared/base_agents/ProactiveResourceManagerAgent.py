@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 Proactive Resource Manager - L2 Execution Enhancement
 
@@ -15,14 +16,16 @@ import asyncio
 import logging
 import os
 from collections import deque
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -58,16 +61,16 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     - Resource exhaustion prevention
     """
 
-    def __init__(self, thresholds: Optional[ResourceThreshold]=None) -> None:
+    def __init__(self, thresholds: ResourceThreshold | None=None) -> None:
         """Initialize the resource manager."""
         self.thresholds = thresholds or ResourceThreshold()
-        self.file_healing_counts: Dict[str, int] = {}
+        self.file_healing_counts: dict[str, int] = {}
         self.global_healing_count: int = 0
         self.active_healings: int = 0
         self.healing_queue: deque = deque()
         self.metrics_history: deque = deque(maxlen=100)
         self.success_history: deque = deque(maxlen=50)
-        self.priority_weights: Dict[int, float] = self._initialize_priority_weights()
+        self.priority_weights: dict[int, float] = self._initialize_priority_weights()
         self._last_adjustment: datetime = datetime.now()
         self.base_global_budget = self.thresholds.global_healing_budget
         self.current_global_budget = self.base_global_budget
@@ -84,11 +87,11 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             self._mutation_task = asyncio.create_task(self.l1_guided_mutation_cycle())
             Logger.info('L2: Resource-aware mutation engine awakened with L1 guidance')
 
-    def _initialize_priority_weights(self) -> Dict[int, float]:
+    def _initialize_priority_weights(self) -> dict[int, float]:
         """Initialize priority weights for different Violation keys."""
         return {0: 1.0, 6: 1.0, 40: 0.9, 42: 0.8, 49: 0.9, 50: 0.95}
 
-    def can_attempt_healing(self, file_path: str, violation_key: int) -> Tuple[bool, str]:
+    def can_attempt_healing(self, file_path: str, violation_key: int) -> tuple[bool, str]:
         """
         Check if healing can be attempted for a file.
 
@@ -110,7 +113,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
 
         return (True, 'OK')
 
-    def _check_budget_constraints(self, file_path: str) -> Tuple[bool, str]:
+    def _check_budget_constraints(self, file_path: str) -> tuple[bool, str]:
         """Check budget constraints for healing."""
         if self.global_healing_count >= self.thresholds.global_healing_budget:
             return (False, f'Global healing budget exhausted ({self.global_healing_count}/{self.thresholds.global_healing_budget})')
@@ -121,7 +124,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             return (False, f'Max concurrent healings reached ({self.active_healings}/{self.thresholds.max_concurrent_heals})')
         return (True, 'OK')
 
-    def _check_priority_and_success_rate(self, violation_key: int) -> Tuple[bool, str]:
+    def _check_priority_and_success_rate(self, violation_key: int) -> tuple[bool, str]:
         """Check priority and success rate constraints."""
         budget_utilization: Any = self.global_healing_count / self.thresholds.global_healing_budget
         if budget_utilization >= self.thresholds.budget_critical_threshold:
@@ -234,7 +237,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             self.healing_queue.append(Task)
         Logger.debug(f'Added to queue: {os.path.basename(file_path)} (Key {violation_key}, Priority {priority:.2f})')
 
-    def get_next_task(self) -> Optional[Dict[str, Any]]:
+    def get_next_task(self) -> dict[str, Any] | None:
         """Get the next healing Task from the queue."""
         while self.healing_queue:
             Task: Any = self.healing_queue.popleft()
@@ -245,7 +248,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
                 Logger.debug(f'Skipping Task: {reason}')
         return None
 
-    def get_resource_status(self) -> Dict[str, Any]:
+    def get_resource_status(self) -> dict[str, Any]:
         """Get current resource status."""
         budget_utilization: Any = self.global_healing_count / self.thresholds.global_healing_budget
         status: Any = 'HEALTHY'
@@ -330,7 +333,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         except Exception as e:
             Logger.error(f'L2: Failed to persist resource state: {e}')
 
-    def get_recommendations(self) -> List[str]:
+    def get_recommendations(self) -> list[str]:
         """Get resource management recommendations."""
         recommendations: Any = []
         status: Any = self.get_resource_status()
@@ -345,7 +348,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         return recommendations
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -362,6 +365,6 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         finally:
             _call_path.discard(agent_name)
 
-def create_proactive_resource_manager(thresholds: Optional[ResourceThreshold]=None) -> ProactiveResourceManagerAgent:
+def create_proactive_resource_manager(thresholds: ResourceThreshold | None=None) -> ProactiveResourceManagerAgent:
     """Factory function to create proactive resource manager."""
     return ProactiveResourceManagerAgent(thresholds=thresholds)

@@ -14,10 +14,10 @@ SSOT PRINCIPLE:
 """
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-import logging
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class RLStrategy:
         """Return the strategy name."""
         return f"RLStrategy({self.algorithm})"
 
-    def get_tiers(self) -> Dict[str, List[str]]:
+    def get_tiers(self) -> dict[str, list[str]]:
         """
         Return the tiered execution plan for RL missions.
 
@@ -80,7 +80,7 @@ class RLStrategy:
         }
         return algorithm_map.get(self.algorithm, "ActorCriticOptimizerAgent")
 
-    def get_agent(self, agent_name: str) -> Optional[Any]:
+    def get_agent(self, agent_name: str) -> Any | None:
         """
         Get or create an agent instance by name.
 
@@ -101,7 +101,7 @@ class RLStrategy:
         dry_run: bool = True,
         execute: bool = False,
         **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute a single agent and return results.
 
@@ -160,7 +160,7 @@ class RLStrategy:
     def should_abort_tier(
         self,
         tier_name: str,
-        tier_results: List[Dict[str, Any]],
+        tier_results: list[dict[str, Any]],
         execute: bool
     ) -> bool:
         """

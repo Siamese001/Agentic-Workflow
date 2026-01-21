@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Storage adapters for different backend types.
 
@@ -9,7 +10,8 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Protocol
+
 Logger: Any = logging.getLogger(__name__)
 
 class BlobStorageProvider(Protocol):
@@ -18,7 +20,7 @@ class BlobStorageProvider(Protocol):
     Standardizes 'open', 'write', 'read' across Local FS and Cloud.
     """
 
-    async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
+    async def write_blob(self: Any, key: str, data: bytes, metadata: dict[str, str] | None) -> str:
         """Writes data atomically. Returns a version ID or checksum."""
         ...
 
@@ -68,7 +70,7 @@ class LocalDiskAdapter:
             raise ValueError(f'Invalid key: {key} (directory traversal attempt)')
         return full_path
 
-    async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
+    async def write_blob(self: Any, key: str, data: bytes, metadata: dict[str, str] | None) -> str:
         """
         Write data atomically using temp-file-then-move pattern.
 
@@ -158,10 +160,10 @@ class LocalDiskAdapter:
             List of blob keys
         """
         blobs: Any = []
-        from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+        from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
         all_files = list(get_python_files(self.base_path)) + list(get_data_files(self.base_path))
         for path in all_files:
-            if path.is_file() and (not path.suffix in ['.tmp', '.meta.json']):
+            if path.is_file() and (path.suffix not in ['.tmp', '.meta.json']):
                 relative: Any = path.relative_to(self.base_path)
                 key: Any = str(relative)
                 if not prefix or key.startswith(prefix):
@@ -191,7 +193,7 @@ class S3Adapter:
         except ImportError:
             raise ImportError('boto3 not installed. Run: pip install boto3')
 
-    async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
+    async def write_blob(self: Any, key: str, data: bytes, metadata: dict[str, str] | None) -> str:
         """
         Write data to S3 (atomic by default).
 
@@ -298,25 +300,11 @@ def create_storage_adapter(adapter_type: str='local', **kwargs) -> BlobStoragePr
         raise ValueError(f'Unknown adapter type: {adapter_type}')
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 class RedisDistributedLock(MCPHardenedMixin, HealerMixin):
     """
@@ -335,7 +323,7 @@ class RedisDistributedLock(MCPHardenedMixin, HealerMixin):
         self.lock_timeout = lock_timeout
         self._local_cache = {}
 
-    async def acquire_lock(self, key: str, timeout: Optional[int]=None) -> bool:
+    async def acquire_lock(self, key: str, timeout: int | None=None) -> bool:
         """
         Acquire a distributed lock.
 
@@ -448,7 +436,7 @@ class RedisHotCache(MCPHardenedMixin, HealerMixin):
         self._local_cache_times = {}
         self._mcp_audit('init')
 
-    async def set_cache(self, key: str, value: Any, ttl: Optional[int]=None) -> bool:
+    async def set_cache(self, key: str, value: Any, ttl: int | None=None) -> bool:
         """
         Set a value in cache.
 
@@ -483,7 +471,7 @@ class RedisHotCache(MCPHardenedMixin, HealerMixin):
             self._local_cache_times[key] = time.time() + (ttl or self.default_ttl)
             return True
 
-    async def get_cache(self, key: str) -> Optional[Any]:
+    async def get_cache(self, key: str) -> Any | None:
         """
         Get a value from cache.
 
@@ -564,8 +552,8 @@ class RedisHotCache(MCPHardenedMixin, HealerMixin):
         if expired_keys:
             LOGGER.debug(f'Cleared {len(expired_keys)} expired local cache entries')
 _redis_client = None
-_distributed_lock: Optional[RedisDistributedLock] = None
-_hot_cache: Optional[RedisHotCache] = None
+_distributed_lock: RedisDistributedLock | None = None
+_hot_cache: RedisHotCache | None = None
 
 async def initialize_redis(redis_url: str='redis://localhost:6379') -> Any:
     """
@@ -605,7 +593,7 @@ def get_hot_cache() -> RedisHotCache:
         _hot_cache = RedisHotCache()
     return _hot_cache
 
-async def acquire_lock(key: str, timeout: Optional[int]=None) -> bool:
+async def acquire_lock(key: str, timeout: int | None=None) -> bool:
     """Acquire a distributed lock."""
     lock: Any = get_distributed_lock()
     return await lock.acquire_lock(key, timeout)
@@ -615,12 +603,12 @@ async def release_lock(key: str) -> bool:
     lock: Any = get_distributed_lock()
     return await lock.release_lock(key)
 
-async def set_cache(key: str, value: Any, ttl: Optional[int]=None) -> bool:
+async def set_cache(key: str, value: Any, ttl: int | None=None) -> bool:
     """Set a value in cache."""
     cache: Any = get_hot_cache()
     return await cache.set_cache(key, value, ttl)
 
-async def get_cache(key: str) -> Optional[Any]:
+async def get_cache(key: str) -> Any | None:
     """Get a value from cache."""
     cache: Any = get_hot_cache()
     return await cache.get_cache(key)
@@ -684,7 +672,7 @@ class SignalLedger:
         except FileNotFoundError:
             return []
 
-    async def get_phase_summary(self, phase_name: Optional[str]=None) -> Dict[str, Any]:
+    async def get_phase_summary(self, phase_name: str | None=None) -> dict[str, Any]:
         """
         Get a summary of signals from a specific phase or the most recent phase.
 
@@ -708,7 +696,7 @@ class SignalLedger:
                     phase_results: Any = [r for r in results if r.get('phase') == latest_phase]
         if not phase_results:
             return {}
-        summary: Any = {'phase': phase_results[0].get('phase', 'unknown'), 'timestamp': phase_results[0].get('timestamp'), 'total_results': len(phase_results), 'passed_count': sum((1 for r in phase_results if r.get('passed', False))), 'failed_count': sum((1 for r in phase_results if not r.get('passed', False))), 'signals': [], 'failed_agents': [], 'recommendations': []}
+        summary: Any = {'phase': phase_results[0].get('phase', 'unknown'), 'timestamp': phase_results[0].get('timestamp'), 'total_results': len(phase_results), 'passed_count': sum(1 for r in phase_results if r.get('passed', False)), 'failed_count': sum(1 for r in phase_results if not r.get('passed', False)), 'signals': [], 'failed_agents': [], 'recommendations': []}
         for result in phase_results:
             if 'result' in result and isinstance(result['result'], dict):
                 signals: Any = result['result'].get('signals', [])
@@ -733,7 +721,7 @@ class HotBrainCache:
     when Redis is unavailable.
     """
 
-    def __init__(self, redis_url: Optional[str]=None):
+    def __init__(self, redis_url: str | None=None):
         """
         Initialize hot brain cache.
 
@@ -799,7 +787,7 @@ class HotBrainCache:
             return True
         return False
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from cache."""
         if self.redis_client:
             try:
@@ -810,7 +798,7 @@ class HotBrainCache:
                 LOGGER.error(f'Redis get failed: {e}')
         return self._local_cache.get(key)
 
-    async def set(self, key: str, value: Any, ttl: Optional[float]=None) -> bool:
+    async def set(self, key: str, value: Any, ttl: float | None=None) -> bool:
         """Set value in cache."""
         serialized: Any = json.dumps(value)
         if self.redis_client:
@@ -836,9 +824,9 @@ class HotBrainCache:
             del self._local_cache[key]
             return True
         return False
-_hot_brain: Optional[HotBrainCache] = None
+_hot_brain: HotBrainCache | None = None
 
-def get_hot_brain(redis_url: Optional[str]=None) -> HotBrainCache:
+def get_hot_brain(redis_url: str | None=None) -> HotBrainCache:
     """Get or create the global hot brain cache instance."""
     global _hot_brain
     if _hot_brain is None:

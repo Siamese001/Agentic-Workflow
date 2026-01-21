@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 HARDENED Dashboard End-to-End Test Suite
 =========================================
@@ -30,15 +29,12 @@ import argparse
 import atexit
 import json
 import os
-import signal
 import socket
 import subprocess
 import sys
 import time
-from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 # Windows UTF-8 support
 if sys.platform.startswith("win"):
@@ -55,7 +51,7 @@ DASHBOARD_URL = "http://localhost:8765/autonomy_dashboard.html"
 SERVER_PORT = 8765
 
 # Global server process for cleanup
-_server_process: Optional[subprocess.Popen] = None
+_server_process: subprocess.Popen | None = None
 
 
 def cleanup_server():
@@ -163,7 +159,7 @@ def check_playwright_installed() -> bool:
         return False
 
 
-def run_data_tests() -> Tuple[int, int, List[str]]:
+def run_data_tests() -> tuple[int, int, list[str]]:
     """Run data validation tests. Returns (passed, failed, errors)."""
     passed = 0
     failed = 0
@@ -177,7 +173,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
     discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
     if discovery_path.exists():
         try:
-            with open(discovery_path, 'r', encoding='utf-8') as f:
+            with open(discovery_path, encoding='utf-8') as f:
                 agents = json.load(f)
             if len(agents) > 0:
                 print(f"   ✅ Test 1: agent_discovery_full.json has {len(agents)} agents")
@@ -274,10 +270,10 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
             js_func_errors.append(f"{js_path}: file not found")
 
     if not js_func_errors:
-        print(f"   ✅ Test 5: All required JS functions found in JS files (NOT HTML)")
+        print("   ✅ Test 5: All required JS functions found in JS files (NOT HTML)")
         passed += 1
     else:
-        print(f"   ❌ Test 5: Missing JS functions:")
+        print("   ❌ Test 5: Missing JS functions:")
         for err in js_func_errors[:3]:
             print(f"      - {err}")
         failed += 1
@@ -286,7 +282,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
     return passed, failed, errors
 
 
-def verify_playwright_functional() -> Tuple[bool, str]:
+def verify_playwright_functional() -> tuple[bool, str]:
     """
     Verify Playwright is installed AND functional.
     This is MANDATORY - if Playwright doesn't work, the test FAILS.
@@ -312,7 +308,7 @@ def verify_playwright_functional() -> Tuple[bool, str]:
         return False, f"Playwright launch failed: {error_msg[:100]}"
 
 
-def run_playwright_tests(headless: bool = True) -> Tuple[int, int, List[str]]:
+def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
     """
     Run Playwright visual tests. Returns (passed, failed, errors).
 

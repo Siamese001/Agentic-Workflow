@@ -14,25 +14,28 @@
 # - FIXED: All v10_5 imports and class names updated to v10_7.
 # - FIXED: State object 'MetaGraphState' (from core) now used.
 
+import asyncio
 import json
 import logging
 import os
 import uuid
-import asyncio
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 # v10.7: Import from new core
 from core_v10_7 import (
-    ConfigV10_7, WorkflowContext, BaseAgent, MetaGraphState,
-    FileIOError, WorkflowError,
-    create_workflow_context,
+    BaseAgent,
+    ConfigV10_7,
+    MetaGraphState,
     PydanticSchemaError,
+    WorkflowContext,
+    WorkflowError,
+    _format_prompt_with_defaults,  # v10.7: Import async formatter
+    create_workflow_context,
+    get_checkpointer,
     track_metrics,
-    _format_prompt_with_defaults, # v10.7: Import async formatter
-    get_checkpointer
 )
-from langgraph.graph import StateGraph, END
+from langgraph.graph import END, StateGraph
 
 # v10.7: Logger name updated
 logger = logging.getLogger("meta_learner_v10_7")
@@ -48,7 +51,7 @@ class HotReloadRuleManager:
         self.rules_path = rules_path
         self.auto_approve_threshold = auto_approve_threshold
 
-    def write_proposed_rule(self, rule: Dict[str, Any], confidence: float) -> bool:
+    def write_proposed_rule(self, rule: dict[str, Any], confidence: float) -> bool:
         try:
             status = "APPROVED" if confidence >= self.auto_approve_threshold else "PROPOSED"
             log_entry = {
@@ -72,7 +75,7 @@ class HotReloadRuleManager:
 class LogReaderAgent(BaseAgent):
     """Reads raw logs from disk"""
     @track_metrics('meta_read_logs')
-    def run(self) -> Dict[str, str]:
+    def run(self) -> dict[str, str]:
         self.log_info("Reading feedback and preference logs...")
         logs = {"feedback_log": "", "preference_log": ""}
         feedback_log_path = self.config.meta_loop_config.feedback_log_path
@@ -80,12 +83,12 @@ class LogReaderAgent(BaseAgent):
 
         try:
             if os.path.exists(feedback_log_path):
-                with open(feedback_log_path, 'r') as f:
+                with open(feedback_log_path) as f:
                     logs["feedback_log"] = "\n".join(f.readlines()[-50:])
         except Exception: pass
         try:
             if os.path.exists(preference_log_path):
-                with open(preference_log_path, 'r') as f:
+                with open(preference_log_path) as f:
                     logs["preference_log"] = "\n".join(f.readlines()[-50:])
         except Exception: pass
 
@@ -94,7 +97,7 @@ class LogReaderAgent(BaseAgent):
 class AsyncLogSummarizerAgent(BaseAgent):
     """Async LLM-based log summarizer"""
     @track_metrics('meta_summarize_logs')
-    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, raw_logs: dict[str, str], workflow_id: str) -> dict[str, Any]:
         self.log_info("Summarizing logs with LLM (v10.7)...")
         client = self.get_model_client("qa_model")
 
@@ -127,7 +130,7 @@ class AsyncLogSummarizerAgent(BaseAgent):
 class AsyncPatternFinderAgent(BaseAgent):
     """Async pattern detection"""
     @track_metrics('meta_find_patterns')
-    async def run_async(self, log_summary: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, log_summary: dict[str, Any], workflow_id: str) -> list[dict]:
         self.log_info("Finding patterns in logs (v10.7)...")
         client = self.get_model_client("strategy_model")
 
@@ -158,7 +161,7 @@ class AsyncPatternFinderAgent(BaseAgent):
 class AsyncHypothesisGeneratorAgent(BaseAgent):
     """Async hypothesis generation"""
     @track_metrics('meta_gen_hypotheses')
-    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, patterns: list[dict], previous_critique: dict[str, Any], workflow_id: str) -> list[dict]:
         self.log_info("Generating hypotheses (v10.7)...")
         client = self.get_model_client("strategy_model")
 
@@ -192,8 +195,8 @@ class AsyncHypothesisGeneratorAgent(BaseAgent):
 class AsyncProposalDrafterAgent(BaseAgent):
     """Async proposal drafting"""
     @track_metrics('meta_draft_proposal')
-    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        self.log_info(f"Drafting proposal for hypothesis (v10.7)...")
+    async def run_async(self, hypothesis: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+        self.log_info("Drafting proposal for hypothesis (v10.7)...")
         client = self.get_model_client("prompt_engineer_model")
 
         prompt_template = self.prompt_manager.get_template("meta_proposal_drafter")
@@ -225,7 +228,7 @@ class AsyncProposalDrafterAgent(BaseAgent):
 class AsyncProposalCritiqueAgent(BaseAgent):
     """Async proposal critique"""
     @track_metrics('meta_critique_proposal')
-    async def run_async(self, proposal: Dict[str, Any], patterns: List[Dict], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, proposal: dict[str, Any], patterns: list[dict], workflow_id: str) -> dict[str, Any]:
         self.log_info("Critiquing proposal (v10.7)...")
         client = self.get_model_client("critique_model")
 
@@ -258,7 +261,7 @@ class AsyncProposalCritiqueAgent(BaseAgent):
 class AsyncToolGeneratorAgent(BaseAgent):
     """Async LLM-based tool code generator."""
     @track_metrics('meta_generate_tool')
-    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, hypothesis: dict[str, Any], workflow_id: str) -> dict[str, Any]:
         self.log_info("Generating new tool code from hypothesis (v10.7)...")
         client = self.get_model_client("meta_tool_generator_model")
 
@@ -291,7 +294,7 @@ class AsyncToolGeneratorAgent(BaseAgent):
 class AsyncToolCritiqueAgent(BaseAgent):
     """Async LLM-based tool code critique."""
     @track_metrics('meta_critique_tool')
-    async def run_async(self, tool_code: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_code: str, workflow_id: str) -> dict[str, Any]:
         self.log_info("Critiquing generated tool code (v10.7)...")
         client = self.get_model_client("meta_tool_critique_model")
 
@@ -321,7 +324,7 @@ class AsyncToolCritiqueAgent(BaseAgent):
 class GeneratedToolWriterAgent(BaseAgent):
     """Local agent to write generated tool code to disk."""
     @track_metrics('meta_write_tool')
-    def run(self, tool_name: str, tool_code: str, workflow_id: str) -> Dict[str, Any]:
+    def run(self, tool_name: str, tool_code: str, workflow_id: str) -> dict[str, Any]:
         self.log_info(f"Writing generated tool '{tool_name}' to disk...")
 
         try:
@@ -529,7 +532,7 @@ async def run_meta_learning(config: ConfigV10_7):
     v10.7: Runs async meta-learning graph.
     """
 
-    logger.info(f"===== Starting v10.7 Meta-Learning =====")
+    logger.info("===== Starting v10.7 Meta-Learning =====")
 
     if not config.meta_loop_config.enable_meta_learning:
         logger.info("Meta-learning disabled in config. Exiting.")
@@ -569,13 +572,13 @@ async def run_meta_learning(config: ConfigV10_7):
         patterns_found = len(final_state.patterns)
         critique_passed = final_state.critique.get("critique_passed", False)
 
-        logger.info(f"META-LEARNING RESULTS (v10.7):")
+        logger.info("META-LEARNING RESULTS (v10.7):")
         logger.info(f"  Patterns Found: {patterns_found}")
         logger.info(f"  Critique Passed: {critique_passed}")
 
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
         logger.info(f"Meta-learning cost: ${cost_summary['total_workflow_cost']:.4f}")
-        logger.info(f"===== v10.7 Meta-Learning Complete =====")
+        logger.info("===== v10.7 Meta-Learning Complete =====")
 
     except Exception as e:
         logger.error(f"Meta-Learning failed: {e}", exc_info=True)

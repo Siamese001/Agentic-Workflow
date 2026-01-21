@@ -7,7 +7,7 @@ golden patterns from Pinecone to Redis.
 
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from connection_manager import ConnectionFactory
 from schemas_connectivity import CanonEntry, generate_ast_structure
@@ -40,8 +40,8 @@ class ETLPipeline:
         self,
         min_success_count: int = 10,
         max_patterns: int = 50,
-        project_filter: Optional[str] = None
-    ) -> Dict[str, Any]:
+        project_filter: str | None = None
+    ) -> dict[str, Any]:
         """
         Hydrate Redis cache with golden patterns from Pinecone.
 
@@ -81,8 +81,8 @@ class ETLPipeline:
         self,
         min_success_count: int,
         max_patterns: int,
-        project_filter: Optional[str]
-    ) -> List[CanonEntry]:
+        project_filter: str | None
+    ) -> list[CanonEntry]:
         """Fetch golden patterns from Pinecone."""
         try:
             # Get index
@@ -132,7 +132,7 @@ class ETLPipeline:
             logger.error(f"Failed to fetch golden patterns: {e}")
             return []
 
-    def _load_to_redis(self, patterns: List[CanonEntry]) -> int:
+    def _load_to_redis(self, patterns: list[CanonEntry]) -> int:
         """Load patterns into Redis."""
         loaded_count = 0
 
@@ -177,10 +177,10 @@ class ETLPipeline:
 
     def backfill_from_code(
         self,
-        code_files: List[str],
+        code_files: list[str],
         project_context: str = "backfill",
         batch_size: int = 100
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Backfill Pinecone with code files.
 
@@ -205,7 +205,7 @@ class ETLPipeline:
             for file_path in batch:
                 try:
                     # Read file
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, encoding='utf-8') as f:
                         code = f.read()
 
                     # Generate entry
@@ -264,7 +264,7 @@ class ETLPipeline:
 
         return entry
 
-    def _upsert_to_pinecone(self, entries: List[CanonEntry]):
+    def _upsert_to_pinecone(self, entries: list[CanonEntry]):
         """Upsert entries to Pinecone."""
         try:
             index = self.pinecone.Index(self.index_name)
@@ -280,7 +280,7 @@ class ETLPipeline:
             logger.error(f"Failed to upsert to Pinecone: {e}")
             raise
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get statistics for both caches."""
         stats = {
             "redis": {},
@@ -314,7 +314,7 @@ class ETLPipeline:
         return stats
 
 
-def hydrate_cache() -> Dict[str, Any]:
+def hydrate_cache() -> dict[str, Any]:
     """
     Convenience function to hydrate the cache.
 

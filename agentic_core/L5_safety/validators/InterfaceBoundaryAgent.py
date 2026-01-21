@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 INTERFACE BOUNDARY AGENT
@@ -20,30 +21,15 @@ Mechanism:
 """
 
 import ast
-import os
 from pathlib import Path
-from typing import Dict, List, Set, Any
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.ssot_discovery import get_python_files
+from typing import Any
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.ssot_discovery import get_python_files
 
 
 @dataclass
@@ -55,7 +41,7 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
 
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -74,9 +60,9 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
         """Initialize the instance."""
         self.root = Path(root_dir)
         self.threshold = complexity_threshold
-        self.violations: List[Dict] = []
+        self.violations: list[dict] = []
 
-    def audit_boundaries(self) -> List[Dict]:
+    def audit_boundaries(self) -> list[dict]:
         """Scans L0 for complexity violations and upward leakage potential."""
         l0_path = self.root / AGENTIC_CORE_DIR / "L0_maintenance"
         all_py = get_python_files(self.root)
@@ -90,7 +76,7 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
                 })
         return self.violations
 
-    def _analyze_file_complexity(self, file_path: Path) -> Dict:
+    def _analyze_file_complexity(self, file_path: Path) -> dict:
         """Uses AST to count classes and methods within a utility file."""
         try:
             tree = ast.parse(file_path.read_text(encoding='utf-8'))
@@ -104,14 +90,14 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
         except Exception:
             return {'method_count': 0, 'class_count': 0, 'loc': 0}
 
-    def generate_interface_stub(self, violation: Dict) -> str:
+    def generate_interface_stub(self, violation: dict) -> str:
         """Creates a proposed abstract base class for a 'Heavy' L0 utility."""
         source_path = Path(violation['file'])
         interface_name = f"I{source_path.stem}"
 
         content = [
-            f'from abc import ABC, abstractmethod',
-            f'',
+            'from abc import ABC, abstractmethod',
+            '',
             f'class {interface_name}(ABC):',
             f'    """Automatically extracted interface for {source_path.name}"""'
         ]

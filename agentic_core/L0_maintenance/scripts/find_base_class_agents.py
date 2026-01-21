@@ -2,12 +2,11 @@
 """Find all agents with 'Base Class' in their territory field."""
 import json
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 discovery_file = project_root / "agent_discovery_full.json"
 
-with open(discovery_file, 'r', encoding='utf-8') as f:
+with open(discovery_file, encoding='utf-8') as f:
     agents = json.load(f)
 
 base_class_agents = [a for a in agents if 'Base Class' in a.get('territory', '')]

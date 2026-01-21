@@ -19,23 +19,9 @@ Expected: +3.7% compliance (96.3% → 100%)
 """
 
 from pathlib import Path
-import re
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 REPO = Path(__file__).parent.parent
@@ -75,7 +61,7 @@ def refactor_l1_cognition_files():
 
         if content != original:
             file_path.write_text(content, encoding='utf-8')
-            print(f"✅ Fixed: query_planner.py")
+            print("✅ Fixed: query_planner.py")
             files_modified += 1
 
     # ReasoningMemory.py - L1→L4
@@ -88,7 +74,7 @@ def refactor_l1_cognition_files():
 
         if content != original:
             file_path.write_text(content, encoding='utf-8')
-            print(f"✅ Fixed: ReasoningMemory.py")
+            print("✅ Fixed: ReasoningMemory.py")
             files_modified += 1
 
     # reasoning_memory.py - L1→L5
@@ -101,7 +87,7 @@ def refactor_l1_cognition_files():
 
         if content != original:
             file_path.write_text(content, encoding='utf-8')
-            print(f"✅ Fixed: reasoning_memory.py")
+            print("✅ Fixed: reasoning_memory.py")
             files_modified += 1
 
     # _LegacyNamingAgent.py - L1→L5
@@ -114,7 +100,7 @@ def refactor_l1_cognition_files():
 
         if content != original:
             file_path.write_text(content, encoding='utf-8')
-            print(f"✅ Fixed: _LegacyNamingAgent.py")
+            print("✅ Fixed: _LegacyNamingAgent.py")
             files_modified += 1
 
     return files_modified
@@ -169,7 +155,7 @@ def refactor_l2_execution_files():
 
         if content != original:
             file_path.write_text(content, encoding='utf-8')
-            print(f"✅ Fixed: SubAtomicAgent.py")
+            print("✅ Fixed: SubAtomicAgent.py")
             files_modified += 1
 
     # L2→L5 violations

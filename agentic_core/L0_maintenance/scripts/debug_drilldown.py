@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Debug drill-down data structure"""
-from pathlib import Path
 import json
+from pathlib import Path
 
 html = Path('reports/autonomy_dashboard.html').read_text(encoding='utf-8')
 

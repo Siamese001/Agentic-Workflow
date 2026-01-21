@@ -13,30 +13,14 @@ import ast
 import hashlib
 import json
 import logging
-import re
-from pathlib import Path
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, List, Set, Tuple
 from difflib import SequenceMatcher
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -54,7 +38,7 @@ class AgentInfo:
     layer: str
     line_number: int
     method_count: int
-    method_names: List[str] = field(default_factory=list)
+    method_names: list[str] = field(default_factory=list)
     fingerprint: str = ""
     normalized_source: str = ""
 
@@ -65,7 +49,7 @@ class UltraASTNormalizer(ast.NodeTransformer):
     def __init__(self):
         self.param_counter = 0
         self.var_counter = 0
-        self.var_map: Dict[str, str] = {}
+        self.var_map: dict[str, str] = {}
 
     def reset_counters(self):
         self.param_counter = 0
@@ -78,8 +62,8 @@ class UltraASTNormalizer(ast.NodeTransformer):
             node.body = node.body[1:]
 
         # Sort methods alphabetically
-        methods = [n for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-        non_methods = [n for n in node.body if not isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+        methods = [n for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
+        non_methods = [n for n in node.body if not isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
         methods.sort(key=lambda m: m.name)
         node.body = non_methods + methods
 
@@ -154,7 +138,7 @@ def extract_layer(file_path: Path) -> str:
     return "OTHER"
 
 
-def find_agents() -> List[AgentInfo]:
+def find_agents() -> list[AgentInfo]:
     agents = []
     # Operation Zero: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_agent_files
@@ -170,8 +154,8 @@ def find_agents() -> List[AgentInfo]:
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef) and node.name.endswith("Agent") and node.name[0].isupper():
-                method_count = sum(1 for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)))
-                method_names = [n.name for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                method_count = sum(1 for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef))
+                method_names = [n.name for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
                 agents.append(AgentInfo(
                     name=node.name,
                     file_path=py_file,
@@ -183,7 +167,7 @@ def find_agents() -> List[AgentInfo]:
     return sorted(agents, key=lambda a: (a.layer, a.name))
 
 
-def generate_ultra_fingerprint(agent: AgentInfo) -> Tuple[str, str]:
+def generate_ultra_fingerprint(agent: AgentInfo) -> tuple[str, str]:
     try:
         content = agent.file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
@@ -278,7 +262,7 @@ def main():
             # Sovereign recommendation
             keep = max(group, key=lambda x: ("L5" in x.layer, "L4" in x.layer, x.method_count))
             delete = [a for a in group if a != keep]
-            print(f"\n  RECOMMENDATION:")
+            print("\n  RECOMMENDATION:")
             print(f"    KEEP:   {keep.name} ({keep.layer})")
             for d in delete:
                 print(f"    DELETE: {d.name} ({d.layer})")
@@ -308,7 +292,7 @@ def main():
             print(f"  {sim:.1%} similarity:")
             print(f"    • {a1.name} ({a1.layer})")
             print(f"    • {a2.name} ({a2.layer})")
-            print(f"    → Consider merging or refactoring\n")
+            print("    → Consider merging or refactoring\n")
     else:
         print("✅ [OK] No near-duplicates found!")
 
@@ -323,9 +307,7 @@ def main():
 
     for agent in agents:
         fp_display = agent.fingerprint[:16] if len(agent.fingerprint) >= 16 else agent.fingerprint
-        print("│ {:40} │ {:^6} │ {:^6} │ {:16} │".format(
-            agent.name[:40], agent.layer, agent.method_count, fp_display
-        ))
+        print(f"│ {agent.name[:40]:40} │ {agent.layer:^6} │ {agent.method_count:^6} │ {fp_display:16} │")
 
     print("└" + "─" * 42 + "┴" + "─" * 8 + "┴" + "─" * 8 + "┴" + "─" * 18 + "┘")
 

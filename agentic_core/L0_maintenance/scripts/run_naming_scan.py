@@ -9,7 +9,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.NamingAgent import NamingAgent, get_naming_agent
+from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent
 
 print("=" * 80)
 print("NAMING AGENT SCAN - Duplicate Detection")
@@ -39,19 +39,6 @@ from collections import defaultdict
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 discovery_path = project_root / AGENT_DISCOVERY_JSON

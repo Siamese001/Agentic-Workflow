@@ -1,21 +1,21 @@
 from __future__ import annotations
+
 import asyncio
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import sys
 from pathlib import Path
+
 repo_root: Any = Path(__file__).parent.parent
 sys.path.append(str(REPO_ROOT))
-from agentic_core.L0_maintenance.P1_core.sovereign_auditor_v3 import main as run_audit
-from canon_validator_agentic_v2 import run_mission as run_healing
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
+
+from canon_validator_agentic_v2 import run_mission as run_healing
+
+from agentic_core.L0_maintenance.P1_core.sovereign_auditor_v3 import main as run_audit
 
 
 async def execute_unified_mission(target: Any='agentic_core') -> Any:
@@ -33,7 +33,7 @@ async def execute_unified_mission(target: Any='agentic_core') -> Any:
         return
     print(f'\n[VERDICT] Health threshold breach ({overall_health}% < 98%). Unleashing Healers.')
     issues: Any = report.get_all_issues()
-    target_files: Any = list(set([issue['file'] for issue in issues if issue.get('file')]))
+    target_files: Any = list({issue['file'] for issue in issues if issue.get('file')})
     print(f'[*] PHASE 2: Surgical Healing initiated for {len(target_files)} targeted files...')
     await run_healing(target_scope=target)
     print('\n[*] PHASE 3: Final Compliance Sealing...')

@@ -8,9 +8,8 @@ voice to match, preventing the "Generic AI" voice.
 import logging
 import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator, confloat
 
+from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +44,8 @@ class GenerationConfig(BaseModel):
 
     system_prompt_fragment: str = Field(..., description="Instruction to inject into prompts")
     temperature_setting: confloat(ge=0.1, le=1.0) = Field(..., description="LLM temperature")
-    banned_phrases: List[str] = Field(default_factory=list, description="Phrases to avoid")
-    preferred_transitions: List[str] = Field(default_factory=list, description="Preferred transition words")
+    banned_phrases: list[str] = Field(default_factory=list, description="Phrases to avoid")
+    preferred_transitions: list[str] = Field(default_factory=list, description="Preferred transition words")
     max_sentence_length: int = Field(default=25, ge=5, le=100, description="Max words per sentence")
 
     @validator('temperature_setting')
@@ -96,7 +95,7 @@ class ToneAnalyzer:
 
         logger.info(f"Initialized ToneAnalyzer with min_sample_length={min_sample_length}")
 
-    def analyze_style(self, content_samples: List[str]) -> StyleProfile:
+    def analyze_style(self, content_samples: list[str]) -> StyleProfile:
         """Analyze communication style from content samples.
 
         Args:
@@ -166,7 +165,7 @@ class ToneAnalyzer:
             confidence_level=0.3
         )
 
-    def _calculate_metrics(self, text: str) -> Dict[str, float]:
+    def _calculate_metrics(self, text: str) -> dict[str, float]:
         """Calculate basic text metrics.
 
         Args:
@@ -208,7 +207,7 @@ class ToneAnalyzer:
             logger.error(f"Error calculating metrics: {str(e)}")
             return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "confidence": 0.0}
 
-    def _detect_primary_tone(self, text: str, metrics: Dict[str, float]) -> ToneType:
+    def _detect_primary_tone(self, text: str, metrics: dict[str, float]) -> ToneType:
         """Detect the primary tone from text and metrics.
 
         Args:
@@ -249,7 +248,7 @@ class ToneAnalyzer:
             logger.error(f"Error detecting primary tone: {str(e)}")
             return ToneType.AUTHORITATIVE
 
-    def _calculate_formality(self, text: str, metrics: Dict[str, float]) -> float:
+    def _calculate_formality(self, text: str, metrics: dict[str, float]) -> float:
         """Calculate formality level (0.0 = casual, 1.0 = academic).
 
         Args:
@@ -540,7 +539,7 @@ class ToneModel:
 
         logger.info("Initialized ToneModel with all components")
 
-    def analyze_and_configure(self, content_samples: List[str], archetype: Optional[str] = None) -> Tuple[StyleProfile, GenerationConfig]:
+    def analyze_and_configure(self, content_samples: list[str], archetype: str | None = None) -> tuple[StyleProfile, GenerationConfig]:
         """Analyze content and generate configuration.
 
         Args:
@@ -617,7 +616,7 @@ def create_tone_model() -> ToneModel:
     return ToneModel()
 
 
-def analyze_tone(content_samples: List[str]) -> StyleProfile:
+def analyze_tone(content_samples: list[str]) -> StyleProfile:
     """Quickly analyze tone from content samples."""
     analyzer = ToneAnalyzer()
     return analyzer.analyze_style(content_samples)

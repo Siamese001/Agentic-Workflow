@@ -12,10 +12,10 @@ SSOT PRINCIPLE:
 """
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
-import logging
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class SafetyStrategy:
         """Return the strategy name."""
         return "SafetyStrategy"
 
-    def get_tiers(self) -> Dict[str, List[str]]:
+    def get_tiers(self) -> dict[str, list[str]]:
         """
         Return the tiered execution plan for safety missions.
 
@@ -67,7 +67,7 @@ class SafetyStrategy:
             ],
         }
 
-    def get_agent(self, agent_name: str) -> Optional[Any]:
+    def get_agent(self, agent_name: str) -> Any | None:
         """
         Get or create an agent instance by name.
 
@@ -80,10 +80,14 @@ class SafetyStrategy:
         try:
             # Dynamic import based on agent name
             if agent_name == "UnifiedCodeValidatorAgent":
-                from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
+                from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
+                    UnifiedCodeValidatorAgent,
+                )
                 return UnifiedCodeValidatorAgent(project_root=self.project_root)
             elif agent_name == "HygieneGuardianAgent":
-                from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
+                from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
+                    HygieneGuardianAgent,
+                )
                 return HygieneGuardianAgent(project_root=self.project_root)
             elif agent_name == "NamingAgent":
                 from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
@@ -92,10 +96,14 @@ class SafetyStrategy:
                 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
                 return LocationAgent(project_root=self.project_root)
             elif agent_name == "UnifiedStructureEnforcerAgent":
-                from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
+                from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
+                    UnifiedStructureEnforcerAgent,
+                )
                 return UnifiedStructureEnforcerAgent(project_root=self.project_root)
             elif agent_name == "StructuralHealerAgent":
-                from agentic_core.L5_safety.validators.StructuralHealerAgent import StructuralHealerAgent
+                from agentic_core.L5_safety.validators.StructuralHealerAgent import (
+                    StructuralHealerAgent,
+                )
                 return StructuralHealerAgent(project_root=self.project_root)
             else:
                 Logger.warning(f"[SafetyStrategy] Unknown agent: {agent_name}")
@@ -111,7 +119,7 @@ class SafetyStrategy:
         dry_run: bool = True,
         execute: bool = False,
         **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute a single agent and return results.
 
@@ -161,7 +169,7 @@ class SafetyStrategy:
     def should_abort_tier(
         self,
         tier_name: str,
-        tier_results: List[Dict[str, Any]],
+        tier_results: list[dict[str, Any]],
         execute: bool
     ) -> bool:
         """

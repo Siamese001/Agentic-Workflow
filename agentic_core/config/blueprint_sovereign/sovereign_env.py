@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SovereignEnv.py - Eternal Single Source of Truth Gateway to .env
 
@@ -8,14 +9,16 @@ Zero drift, fail-fast, type-safe enforcement of .env SSOT integrity.
 """
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 from dotenv import load_dotenv
+
 
 class SovereignEnv:
     """Sovereign .env loader — fail-fast, type-safe, zero-drift."""
     _instance = None
 
-    def __new__(cls, project_root: Optional[Path]=None):
+    def __new__(cls, project_root: Path | None=None):
         if cls._instance is None:
             if project_root is None:
                 raise ValueError('[L6 CRITICAL] SovereignEnv requires project_root on first init')
@@ -58,9 +61,9 @@ class SovereignEnv:
         if not value or not value.strip():
             raise ValueError(f'[L6 CRITICAL] Missing mandatory .env key: {key}')
         return value.strip()
-_config: Optional[SovereignEnv] = None
+_config: SovereignEnv | None = None
 
-def get_env(project_root: Optional[Path]=None) -> SovereignEnv:
+def get_env(project_root: Path | None=None) -> SovereignEnv:
     """
     Get the singleton SovereignEnv instance.
 

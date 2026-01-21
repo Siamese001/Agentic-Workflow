@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 DependencySentinelAgent - L1 Guardian for Import Dependencies
 
@@ -8,7 +9,7 @@ Uses AST parsing to analyze and validate import structures.
 import ast
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
@@ -23,8 +24,8 @@ class ImportAnalyzer(ast.NodeVisitor):
 
     def __init__(self, file_path: Path) -> None:
         self.file_path = file_path
-        self.imports: List[Dict] = []
-        self.from_imports: List[Dict] = []
+        self.imports: list[dict] = []
+        self.from_imports: list[dict] = []
         self.layer = self._determine_layer()
 
     def _determine_layer(self) -> str:
@@ -51,20 +52,22 @@ class ImportAnalyzer(ast.NodeVisitor):
 class DependencyViolation:
     """Represents a dependency rule Violation."""
 
-    def __init__(self, ViolationType: str, file_path: Path, line: int, message: str, details: Dict=None) -> None:
+    def __init__(self, ViolationType: str, file_path: Path, line: int, message: str, details: dict=None) -> None:
         self.type = ViolationType
         self.file_path = file_path
         self.line = line
         self.message = message
         self.details = details or {}
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary."""
         return {'type': self.type, 'file': str(self.file_path), 'line': self.line, 'message': self.message, 'details': self.details}
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L2_execution.ToolRegistry.governance import DependencySentinelAgent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 # Legacy L1 version - use L2 canonical (dependency management is execution-level)
 class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -86,12 +89,12 @@ class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHard
             root_dir: Root directory of the codebase
         """
         self.root_dir = root_dir or Path.cwd()
-        self.violations: List[DependencyViolation] = []
+        self.violations: list[DependencyViolation] = []
         self.layer_hierarchy = {'L1': 1, 'L2': 2, 'L3': 3, 'L4': 4, 'L5': 5}
         self.allowed_cross_layers = {('L2', 'L1'), ('L3', 'L1'), ('L3', 'L2'), ('L4', 'L1'), ('L5', 'L1'), ('L5', 'L2'), ('L5', 'L3'), ('L5', 'L4')}
         LOGGER.info('DependencySentinelAgent initialized')
 
-    def check_file(self, file_path: Path) -> List[DependencyViolation]:
+    def check_file(self, file_path: Path) -> list[DependencyViolation]:
         """
         Check a single file for dependency violations.
 
@@ -103,7 +106,7 @@ class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         """
         violations: Any = []
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content: Any = f.read()
             tree: Any = ast.parse(content)
             analyzer: Any = ImportAnalyzer(file_path)
@@ -123,7 +126,7 @@ class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHard
             LOGGER.error(f'Error checking {file_path}: {e}')
         return violations
 
-    def _check_import(self, analyzer: ImportAnalyzer, module: str, line: int, name: str=None) -> Optional[DependencyViolation]:
+    def _check_import(self, analyzer: ImportAnalyzer, module: str, line: int, name: str=None) -> DependencyViolation | None:
         """
         Check if an import violates rules.
 
@@ -150,7 +153,7 @@ class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHard
     def _is_external_import(self, module: str) -> bool:
         """Check if module is external (stdlib or third-party)."""
         external_prefixes = ['os', 'sys', 'json', 'logging', 'datetime', 'pathlib', 'asyncio', 'collections', 'itertools', 'functools', 'typing', 'dataclasses', 'enum', 'contextlib', 'google', 'openai', 'anthropic', 'pinecone', 'redis']
-        return any((module.startswith(prefix) for prefix in external_prefixes))
+        return any(module.startswith(prefix) for prefix in external_prefixes)
 
     def _is_circular_import(self, file_path: Path, module: str) -> bool:
         """
@@ -166,7 +169,7 @@ class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHard
             return False
         return False
 
-    def _check_cross_layer_violation(self, analyzer: ImportAnalyzer, module: str, line: int) -> Optional[DependencyViolation]:
+    def _check_cross_layer_violation(self, analyzer: ImportAnalyzer, module: str, line: int) -> DependencyViolation | None:
         """Check for cross-layer import violations."""
         imported_layer = None
         if 'L1_cognition' in module:
@@ -202,7 +205,7 @@ class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         except (ValueError, OSError):
             return False
 
-    def check_directory(self, directory: Path) -> List[DependencyViolation]:
+    def check_directory(self, directory: Path) -> list[DependencyViolation]:
         """
         Check all Python files in a directory.
 
@@ -220,7 +223,7 @@ class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHard
             violations.extend(file_violations)
         return violations
 
-    def get_violation_summary(self) -> Dict:
+    def get_violation_summary(self) -> dict:
         """Get summary of all violations."""
         summary: Any = {'total_violations': len(self.violations), 'by_type': {}, 'by_file': {}}
         for Violation in self.violations:
@@ -231,7 +234,7 @@ class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         return summary
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -248,7 +251,7 @@ class _LegacyDependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         finally:
             _call_path.discard(agent_name)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -283,7 +286,7 @@ def initialize_dependency_sentinel(root_dir: Path=None) -> Any:
     _dependency_sentinel = DependencySentinelAgent(root_dir)
     LOGGER.info('DependencySentinelAgent system initialized')
 
-def check_dependencies(file_path: Path=None, directory: Path=None) -> List[DependencyViolation]:
+def check_dependencies(file_path: Path=None, directory: Path=None) -> list[DependencyViolation]:
     """
     Check dependencies for a file or directory.
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Action Plane Interface - The Hands.
 
 Phase 2 - Pillar 1: Layering Model
@@ -9,7 +10,7 @@ L2 Execution: Side effects allowed, but controlled and observable.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class ActionCapability(Enum):
@@ -28,12 +29,12 @@ class ActionRequest:
     """Request for action execution."""
     action_type: str
     tool_name: str
-    parameters: Dict[str, Any] = field(default_factory=dict)
-    context: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     timeout_ms: int = 30000
-    retry_policy: Optional[Dict[str, Any]] = None
+    retry_policy: dict[str, Any] | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "action_type": self.action_type,
@@ -50,12 +51,12 @@ class ActionResult:
     """Result from action execution."""
     success: bool
     output: Any = None
-    error: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    error: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
     execution_time_ms: float = 0.0
     retries: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "success": self.success,
@@ -97,9 +98,9 @@ class IActionPlane(ABC):
     @abstractmethod
     async def execute_batch(
         self,
-        requests: List[ActionRequest],
+        requests: list[ActionRequest],
         parallel: bool = False,
-    ) -> List[ActionResult]:
+    ) -> list[ActionResult]:
         """Execute multiple actions.
 
         Args:
@@ -115,7 +116,7 @@ class IActionPlane(ABC):
     async def validate_action(
         self,
         request: ActionRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate an action before execution.
 
         Args:
@@ -127,7 +128,7 @@ class IActionPlane(ABC):
         pass
 
     @abstractmethod
-    def get_available_tools(self) -> List[str]:
+    def get_available_tools(self) -> list[str]:
         """Get list of available tools.
 
         Returns:
@@ -136,7 +137,7 @@ class IActionPlane(ABC):
         pass
 
     @abstractmethod
-    def get_tool_schema(self, tool_name: str) -> Dict[str, Any]:
+    def get_tool_schema(self, tool_name: str) -> dict[str, Any]:
         """Get schema for a specific tool.
 
         Args:
@@ -148,7 +149,7 @@ class IActionPlane(ABC):
         pass
 
     @abstractmethod
-    def get_capabilities(self) -> List[ActionCapability]:
+    def get_capabilities(self) -> list[ActionCapability]:
         """Get list of supported action capabilities.
 
         Returns:

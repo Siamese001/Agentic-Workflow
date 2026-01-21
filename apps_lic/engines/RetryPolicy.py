@@ -8,11 +8,11 @@ import asyncio
 import logging
 import random
 import time
-from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Type, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -44,13 +44,13 @@ class RetryConfig:
     max_delay: float = 60.0  # seconds
     multiplier: float = 2.0  # for exponential backoff
     jitter: bool = True  # Add randomness to prevent thundering herd
-    retryable_exceptions: List[Type[Exception]] = field(default_factory=lambda: [
+    retryable_exceptions: list[type[Exception]] = field(default_factory=lambda: [
         ConnectionError,
         TimeoutError,
         asyncio.TimeoutError,
         RetryableError
     ])
-    non_retryable_exceptions: List[Type[Exception]] = field(default_factory=lambda: [
+    non_retryable_exceptions: list[type[Exception]] = field(default_factory=lambda: [
         ValueError,
         TypeError,
         KeyError,
@@ -91,7 +91,7 @@ class RetryAttempt:
     """Information about a retry attempt."""
     attempt: int
     delay: float
-    exception: Optional[Exception]
+    exception: Exception | None
     timestamp: datetime
     success: bool
 
@@ -103,8 +103,8 @@ class RetryResult:
     result: Any = None
     attempts: int = 0
     total_delay: float = 0.0
-    attempts_history: List[RetryAttempt] = field(default_factory=list)
-    final_exception: Optional[Exception] = None
+    attempts_history: list[RetryAttempt] = field(default_factory=list)
+    final_exception: Exception | None = None
 
 
 class DelayCalculator:
@@ -114,7 +114,7 @@ class DelayCalculator:
     def calculate_delay(
         config: RetryConfig,
         attempt: int,
-        base_delay: Optional[float] = None
+        base_delay: float | None = None
     ) -> float:
         """Calculate delay for next attempt.
 
@@ -155,7 +155,7 @@ class DelayCalculator:
 class RetryPolicy:
     """Implements retry policy with configurable strategies."""
 
-    def __init__(self, config: Optional[RetryConfig] = None):
+    def __init__(self, config: RetryConfig | None = None):
         """Initialize retry policy.
 
         Args:
@@ -175,8 +175,8 @@ class RetryPolicy:
         self,
         func: Callable,
         *args,
-        config: Optional[RetryConfig] = None,
-        on_retry: Optional[Callable[[RetryAttempt], None]] = None,
+        config: RetryConfig | None = None,
+        on_retry: Callable[[RetryAttempt], None] | None = None,
         **kwargs
     ) -> RetryResult:
         """Execute function with retry policy.
@@ -300,7 +300,7 @@ class RetryPolicy:
                 (current_avg * (total - 1) + attempts) / total
             )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get retry statistics.
 
         Returns:
@@ -317,14 +317,14 @@ class RetryPolicy:
 class RetryableExecutor:
     """Executor with built-in retry capabilities."""
 
-    def __init__(self, default_config: Optional[RetryConfig] = None):
+    def __init__(self, default_config: RetryConfig | None = None):
         """Initialize retryable executor.
 
         Args:
             default_config: Default retry configuration
         """
         self.default_config = default_config or RetryConfig()
-        self.policies: Dict[str, RetryPolicy] = {}
+        self.policies: dict[str, RetryPolicy] = {}
 
     def register_policy(self, name: str, config: RetryConfig) -> None:
         """Register a named retry policy.
@@ -340,8 +340,8 @@ class RetryableExecutor:
         self,
         func: Callable,
         *args,
-        policy: Optional[str] = None,
-        config: Optional[RetryConfig] = None,
+        policy: str | None = None,
+        config: RetryConfig | None = None,
         **kwargs
     ) -> Any:
         """Execute function with retry policy.
@@ -375,7 +375,7 @@ class RetryableExecutor:
 
 
 # Global retry executor
-_retry_executor: Optional[RetryableExecutor] = None
+_retry_executor: RetryableExecutor | None = None
 _executor_lock = asyncio.Lock()
 
 
@@ -398,7 +398,7 @@ def retry(
     strategy: RetryStrategy = RetryStrategy.EXPONENTIAL_BACKOFF,
     base_delay: float = 1.0,
     max_delay: float = 60.0,
-    retryable_exceptions: Optional[List[Type[Exception]]] = None
+    retryable_exceptions: list[type[Exception]] | None = None
 ):
     """Decorator to add retry to functions.
 

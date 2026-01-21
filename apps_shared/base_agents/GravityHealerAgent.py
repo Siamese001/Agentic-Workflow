@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 GravityHealerAgent - Unified Gravity Law Repair
 Territory: agentic_core/L2_execution/ToolRegistry/
@@ -25,15 +27,16 @@ HEALING STRATEGIES:
 2. Upstream→Downstream → Comment out forbidden import
 3. Upward leaks → Convert to dynamic importlib call
 """
-import re
 import logging
+import re
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 
@@ -49,7 +52,7 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
 
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -81,7 +84,7 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
         self.root = project_root.resolve()
         self.logger = Logger
 
-    async def heal(self, violations: List[Any]) -> Dict[str, Any]:
+    async def heal(self, violations: list[Any]) -> dict[str, Any]:
         """
         Apply healing strategies to gravity violations.
 
@@ -153,7 +156,7 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
             "results": results,
         }
 
-    def _apply_dynamic_import_fix(self, file_path: Path, import_line: str) -> Dict[str, Any]:
+    def _apply_dynamic_import_fix(self, file_path: Path, import_line: str) -> dict[str, Any]:
         """
         Convert static import to dynamic importlib call without destructive overwrites.
 
@@ -213,7 +216,7 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def _apply_comment_fix(self, file_path: Path, import_line: str) -> Dict[str, Any]:
+    def _apply_comment_fix(self, file_path: Path, import_line: str) -> dict[str, Any]:
         """
         Seal gravity leaks by commenting out forbidden downstream imports.
 
@@ -238,7 +241,7 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def _suggest_relocation(self, violation: Any) -> Dict[str, Any]:
+    def _suggest_relocation(self, violation: Any) -> dict[str, Any]:
         """
         Suggest file relocation for intra-core violations.
 
@@ -259,7 +262,7 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
         self.logger.info(f"Relocation suggested for {violation.file_path.name}")
         return suggestion
 
-    async def heal_file(self, file_path: Path, violations: List[Any]) -> Dict[str, Any]:
+    async def heal_file(self, file_path: Path, violations: list[Any]) -> dict[str, Any]:
         """
         Heal all gravity violations in a single file.
 

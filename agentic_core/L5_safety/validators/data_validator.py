@@ -24,10 +24,8 @@ This is integrated into the dashboard e2e pipeline to catch data issues early.
 
 import json
 import sys
-from pathlib import Path
 from collections import defaultdict
-from typing import Dict, List, Tuple, Set
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
 
 # Load agent discovery
 discovery_path = Path('agent_discovery_full.json')
@@ -51,7 +49,7 @@ CANONICAL_BASE_AGENTS = {
 class DataValidator:
     """Comprehensive data validator."""
 
-    def __init__(self, data: List[Dict]):
+    def __init__(self, data: list[dict]):
         self.data = data
         self.errors = []
         self.warnings = []
@@ -204,7 +202,7 @@ class DataValidator:
                 self.errors.append(f"... and {len(metric_issues) - 5} more metric issues")
             print(f"   ❌ {len(metric_issues)} metric anomalies found")
         else:
-            print(f"   ✅ All metrics within reasonable ranges")
+            print("   ✅ All metrics within reasonable ranges")
         print()
 
     def check_inheritance_patterns(self):
@@ -234,7 +232,7 @@ class DataValidator:
             self.warnings.extend(inheritance_issues[:3])
             print(f"   ⚠️  {len(inheritance_issues)} inheritance pattern issues")
         else:
-            print(f"   ✅ Inheritance patterns look reasonable")
+            print("   ✅ Inheritance patterns look reasonable")
         print()
 
     def check_naming_conventions(self):
@@ -265,7 +263,7 @@ class DataValidator:
                 self.errors.append(f"... and {len(naming_issues) - 3} more naming issues")
             print(f"   ⚠️  {len(naming_issues)} naming convention issues")
         else:
-            print(f"   ✅ All agents follow naming conventions")
+            print("   ✅ All agents follow naming conventions")
         print()
 
     def check_data_completeness(self):

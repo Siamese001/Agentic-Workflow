@@ -1,12 +1,21 @@
 from __future__ import annotations
+
 """
 SOVEREIGN STRUCTURE VALIDATOR
 Enforces the 3-level depth law for agentic architecture.
 """
 import os
 import sys
-from agentic_core.L5_safety.validators.structure_blueprint import APPS_LIC_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP, CORE_SUBFOLDER_MAP, TESTS_L2_SUBFOLDER_MAP
 from typing import Any
+
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    APPS_LIC_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
+    APPS_SHARED_SUBFOLDER_MAP,
+    CORE_SUBFOLDER_MAP,
+    TESTS_L2_SUBFOLDER_MAP,
+)
+
 
 def check_sovereign_law(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""

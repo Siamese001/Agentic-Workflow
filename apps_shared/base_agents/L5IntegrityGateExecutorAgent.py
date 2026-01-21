@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 L5+ Integrity Gate Executor with Two-Pass Validation.
 
@@ -19,8 +20,9 @@ import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from enum import Enum
+from typing import Any, Protocol
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
@@ -93,7 +95,7 @@ class ValidationResult:
     """Result of validation with all issues."""
 
     passed: bool = True
-    issues: List[ValidationIssue] = field(default_factory=list)
+    issues: list[ValidationIssue] = field(default_factory=list)
     depth_score: float = 0.0
     quality_score: float = 0.0
     pass1_duration_ms: float = 0.0
@@ -123,11 +125,11 @@ class ValidationResult:
         if Severity in [ValidationSeverity.CRITICAL, ValidationSeverity.HIGH]:
             self.passed = False
 
-    def get_issues_by_severity(self, Severity: ValidationSeverity) -> List[ValidationIssue]:
+    def get_issues_by_severity(self, Severity: ValidationSeverity) -> list[ValidationIssue]:
         """Get all issues of a specific Severity."""
         return [i for i in self.issues if i.Severity == Severity]
 
-    def get_issues_by_category(self, category: ValidationCategory) -> List[ValidationIssue]:
+    def get_issues_by_category(self, category: ValidationCategory) -> list[ValidationIssue]:
         """Get all issues of a specific category."""
         return [i for i in self.issues if i.category == category]
 
@@ -135,7 +137,7 @@ class ValidationResult:
         """Check if there are any critical issues."""
         return any(i.Severity == ValidationSeverity.CRITICAL for i in self.issues)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "passed": self.passed,
@@ -161,27 +163,11 @@ class ValidationResult:
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
@@ -246,7 +232,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         min_quality_score: float = 0.7,
         skip_pass2_on_critical: bool = True,
         emit_signals: bool = True,
-        signal_bus_emitter: Optional[SignalBusInterface] = None,
+        signal_bus_emitter: SignalBusInterface | None = None,
     ) -> None:
         """
         Initialize the L5+ integrity gate executor.
@@ -274,7 +260,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
             f", signal_emission_enabled={self._signal_bus is not None}"
         )
 
-    def execute(self, content: Dict[str, Any]) -> ValidationResult:
+    def execute(self, content: dict[str, Any]) -> ValidationResult:
         """
         Execute two-pass validation on content.
 
@@ -333,7 +319,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         self._emit_validation_signal(result)
 
         return result
-    def _run_fast_checks(self, content: Dict[str, Any], result: ValidationResult) -> None:
+    def _run_fast_checks(self, content: dict[str, Any], result: ValidationResult) -> None:
         """
         Pass 1: Fast regex-based checks.
         These are cheap to run and can detect obvious issues quickly.
@@ -343,7 +329,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         # Run all fast validation checks
         self._execute_fast_validation_checks(content, text_content, result)
 
-    def _execute_fast_validation_checks(self, content: Dict[str, Any], text_content: str, result: ValidationResult) -> None:
+    def _execute_fast_validation_checks(self, content: dict[str, Any], text_content: str, result: ValidationResult) -> None:
         """Execute all fast validation checks."""
         self._check_required_fields(content, result)
         self._check_fluff_language_fast(text_content, result)
@@ -351,7 +337,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         self._check_metric_format_fast(content, result)
         self._check_structure_fast(content, result)
 
-    def _run_deep_checks(self, content: Dict[str, Any], result: ValidationResult) -> None:
+    def _run_deep_checks(self, content: dict[str, Any], result: ValidationResult) -> None:
         """
         Pass 2: Deep semantic checks.
 
@@ -368,7 +354,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
         # Check for orphaned claims
         self._check_orphaned_claims_deep(content, result)
-    def _extract_text_content(self, content: Dict[str, Any]) -> str:
+    def _extract_text_content(self, content: dict[str, Any]) -> str:
         """Extract all text content for analysis."""
 
         text_parts = []
@@ -390,7 +376,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         extract_recursive(content)
         return " ".join(text_parts)
 
-    def _check_required_fields(self, content: Dict[str, Any], result: ValidationResult) -> None:
+    def _check_required_fields(self, content: dict[str, Any], result: ValidationResult) -> None:
         """Check for required fields."""
 
         # Define required fields based on content type
@@ -455,7 +441,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                         suggestion="Add specific numbers, percentages, or dollar amounts",
                     )
 
-    def _check_metric_format_fast(self, content: Dict[str, Any], result: ValidationResult) -> None:
+    def _check_metric_format_fast(self, content: dict[str, Any], result: ValidationResult) -> None:
         """Fast check for Metric format issues."""
 
         metrics = content.get("metrics", [])
@@ -474,7 +460,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                             suggestion="Add specific numeric value with units",
                         )
 
-    def _check_structure_fast(self, content: Dict[str, Any], result: ValidationResult) -> None:
+    def _check_structure_fast(self, content: dict[str, Any], result: ValidationResult) -> None:
         """Fast structural checks."""
 
         # Check for minimum content length
@@ -504,7 +490,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                             location=section,
                         )
 
-    def _check_metric_binding_deep(self, content: Dict[str, Any], result: ValidationResult) -> None:
+    def _check_metric_binding_deep(self, content: dict[str, Any], result: ValidationResult) -> None:
         """Deep check for Metric-evidence binding."""
 
         metrics = content.get("metrics", [])
@@ -533,7 +519,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                             pass_detected=2,
                         )
 
-    def _check_citation_coverage_deep(self, content: Dict[str, Any], result: ValidationResult) -> None:
+    def _check_citation_coverage_deep(self, content: dict[str, Any], result: ValidationResult) -> None:
         """Deep check for citation coverage."""
 
         content.get("citations", [])
@@ -552,7 +538,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                     pass_detected=2,
                 )
 
-    def _check_consistency_deep(self, content: Dict[str, Any], result: ValidationResult) -> None:
+    def _check_consistency_deep(self, content: dict[str, Any], result: ValidationResult) -> None:
         """Deep check for consistency across sections."""
 
         # Check for Metric consistency
@@ -571,7 +557,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
             # Check if same Metric appears with different values
             # (simplified check - real implementation would be more sophisticated)
 
-    def _check_orphaned_claims_deep(self, content: Dict[str, Any], result: ValidationResult) -> None:
+    def _check_orphaned_claims_deep(self, content: dict[str, Any], result: ValidationResult) -> None:
         """Deep check for orphaned claims."""
 
         claims = content.get("claims", [])
@@ -592,7 +578,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                             pass_detected=2,
                         )
 
-    def _calculate_depth_score(self, content: Dict[str, Any]) -> float:
+    def _calculate_depth_score(self, content: dict[str, Any]) -> float:
         """Calculate content depth score."""
 
         scores = []
@@ -619,7 +605,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
         return sum(scores) / len(scores) if scores else 0.0
 
-    def _calculate_quality_score(self, content: Dict[str, Any], result: ValidationResult) -> float:
+    def _calculate_quality_score(self, content: dict[str, Any], result: ValidationResult) -> float:
         """Calculate overall quality score based on issues found."""
 
         # Start with perfect score
@@ -662,7 +648,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -684,7 +670,7 @@ def create_l5_integrity_executor(
     min_depth_score: float = 0.7,
     min_quality_score: float = 0.7,
     emit_signals: bool = True,
-    signal_bus_emitter: Optional[SignalBusInterface] = None,
+    signal_bus_emitter: SignalBusInterface | None = None,
 ) -> L5IntegrityGateExecutor:
     """
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

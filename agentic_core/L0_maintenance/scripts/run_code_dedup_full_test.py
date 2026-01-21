@@ -2,31 +2,14 @@
 Comprehensive test runner for CodeDeduplicationAgent with healing and validation.
 Runs all phases: self-tests, duplicate detection, filename checks, and validation.
 """
-from pathlib import Path
 import sys
+from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # ARCHIVED IMPORT REMOVED - dependency no longer available
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 class TestContext:
     """Mock context for agent execution."""
@@ -101,7 +84,7 @@ def run_comprehensive_tests():
     print("DETAILED RESULTS")
     print("=" * 80)
 
-    print(f"\n📊 Code Block Duplicates:")
+    print("\n📊 Code Block Duplicates:")
     if agent.duplicate_groups:
         for key, members in list(agent.duplicate_groups.items())[:3]:
             print(f"  Group: {key}")
@@ -113,7 +96,7 @@ def run_comprehensive_tests():
     else:
         print("  ✓ No code block duplicates detected")
 
-    print(f"\n📁 Whole-File Duplicates:")
+    print("\n📁 Whole-File Duplicates:")
     if agent.file_duplicate_groups:
         for hash_key, paths in list(agent.file_duplicate_groups.items())[:3]:
             print(f"  Hash: {hash_key[:16]}...")
@@ -125,7 +108,7 @@ def run_comprehensive_tests():
     else:
         print("  ✓ No whole-file duplicates detected")
 
-    print(f"\n🏷️  Filename Duplicates:")
+    print("\n🏷️  Filename Duplicates:")
     if agent.filename_duplicates:
         for basename, entries in list(agent.filename_duplicates.items())[:3]:
             hashes = {h for _, h in entries}
@@ -138,7 +121,7 @@ def run_comprehensive_tests():
     else:
         print("  ✓ No filename duplicates detected")
 
-    print(f"\n⚠️  Errors:")
+    print("\n⚠️  Errors:")
     if agent.errors:
         for error in agent.errors[:5]:
             print(f"  - {error}")

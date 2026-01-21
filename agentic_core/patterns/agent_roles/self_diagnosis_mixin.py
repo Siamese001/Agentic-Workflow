@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SelfDiagnosisMixin – Sovereign Agent Role Mixin (Phase 31 – Dec 30, 2025)
 
@@ -17,8 +18,8 @@ Constitutional Alignment:
 """
 
 import logging
-from typing import Dict, List, Any, Awaitable
 from datetime import datetime
+from typing import Any
 
 
 class SelfDiagnosisMixin:
@@ -28,7 +29,7 @@ class SelfDiagnosisMixin:
     """
 
     # === Override in concrete agents ===
-    MANDATORY_COMPONENTS: List[str] = []
+    MANDATORY_COMPONENTS: list[str] = []
     """
     List of attribute names that must exist and be healthy.
     Example:
@@ -44,7 +45,7 @@ class SelfDiagnosisMixin:
         super().__init__(*args, **kwargs)
         self.Logger = logging.getLogger(f"{self.__class__.__name__}.Diagnosis")
 
-    async def self_diagnose(self) -> Dict[str, Any]:
+    async def self_diagnose(self) -> dict[str, Any]:
         """
         Perform full self-diagnostic cycle.
         Returns structured report for L6 observability and proactive healing.
@@ -131,7 +132,7 @@ class SelfDiagnosisMixin:
         self.Logger.info(f"No repair logic defined for {component_name} — manual intervention required")
         return False
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """
         Standard health_check interface — called by parent orchestrators or self.
         Uses self_diagnose() for consistency.

@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 Import Healer - Fixes broken imports after file relocations
@@ -14,15 +16,17 @@ Prevents import breakage when enforcing strict depth policies
 import ast
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 
 @dataclass
@@ -35,13 +39,13 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
         self.project_root = project_root
-        self.relocation_map: Dict[str, str] = {}  # old_path -> new_path
+        self.relocation_map: dict[str, str] = {}  # old_path -> new_path
 
     def register_relocation(self, old_path: str, new_path: str) -> Any:
         """Track a file relocation for import healing."""
         self.relocation_map[old_path] = new_path
 
-    def heal_imports_in_file(self, file_path: Path, dry_run: bool = False) -> Tuple[bool, str]:
+    def heal_imports_in_file(self, file_path: Path, dry_run: bool = False) -> tuple[bool, str]:
         """
         Fix all imports in a file that reference relocated modules.
 
@@ -159,7 +163,7 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return content
 
-    def heal_all_imports_in_directory(self, directory: Path, dry_run: bool = False) -> Dict[str, str]:
+    def heal_all_imports_in_directory(self, directory: Path, dry_run: bool = False) -> dict[str, str]:
         """
         Heal imports in all Python files in a directory.
 
@@ -188,8 +192,8 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Import Healing - Fixes broken imports after file relocations.
 
@@ -225,7 +229,7 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return metrics
 
 
-def get_sovereign_ignore_list() -> Set[str]:
+def get_sovereign_ignore_list() -> set[str]:
     """
     Helper for all agents to respect the .gitignore boundaries.
     Provides a unified source of truth for protected patterns.

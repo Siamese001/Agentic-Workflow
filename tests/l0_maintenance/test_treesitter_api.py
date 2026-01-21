@@ -1,6 +1,6 @@
 """Test tree-sitter-languages API to find correct usage."""
-from tree_sitter_languages import get_language
 from tree_sitter import Parser
+from tree_sitter_languages import get_language
 
 # Get language
 lang = get_language('python')
@@ -29,5 +29,5 @@ except Exception as e:
 if p.language:
     code = b"def foo():\n    return 42"
     tree = p.parse(code)
-    print(f"\n✓ Parsing successful!")
+    print("\n✓ Parsing successful!")
     print(f"Root node type: {tree.root_node.type}")

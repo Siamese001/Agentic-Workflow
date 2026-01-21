@@ -5,17 +5,17 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Lightweight Bias Detection for Content Quality.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
 Migrated from archives/engines/legacy_engines/safety_enhancements.py
 """
 
-import re
 import logging
+import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Set
 
 Logger = logging.getLogger(__name__)
 
@@ -44,20 +44,21 @@ class BiasMatch:
 class BiasResult:
     """Bias detection result."""
     has_bias: bool
-    bias_types: List[BiasType]
-    flagged_phrases: List[str]
-    matches: List[BiasMatch]
+    bias_types: list[BiasType]
+    flagged_phrases: list[str]
+    matches: list[BiasMatch]
     confidence_score: float
-    recommendations: List[str]
+    recommendations: list[str]
 
-    def get_critical_biases(self) -> List[BiasMatch]:
+    def get_critical_biases(self) -> list[BiasMatch]:
         """Get high-Severity bias matches."""
         return [m for m in self.matches if m.Severity > 0.7]
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Lightweight Bias Detection for Content Quality.
@@ -127,9 +128,9 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                 recommendations=["Content appears neutral and inclusive"],
             )
 
-        flagged_phrases: List[str] = []
-        detected_bias_types: Set[BiasType] = set()
-        matches: List[BiasMatch] = []
+        flagged_phrases: list[str] = []
+        detected_bias_types: set[BiasType] = set()
+        matches: list[BiasMatch] = []
 
         for BiasType, patterns in self.bias_patterns.items():
             for pattern in patterns:
@@ -214,7 +215,7 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
         return 0.3
 
-    def _generate_recommendations(self, bias_types: List[BiasType]) -> List[str]:
+    def _generate_recommendations(self, bias_types: list[BiasType]) -> list[str]:
         """Generate recommendations based on detected bias types.
 
         Args:

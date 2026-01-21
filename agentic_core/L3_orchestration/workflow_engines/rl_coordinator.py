@@ -13,8 +13,8 @@ Consolidates:
 """
 from __future__ import annotations
 
-from typing import Any, Dict
 import logging
+from typing import Any
 
 from .base_coordinator import WorkflowCoordinator
 
@@ -33,7 +33,7 @@ class RLCoordinator(WorkflowCoordinator):
 
     def __init__(self, project_root=None):
         super().__init__(project_root)
-        self.strategies: Dict[str, Any] = {}
+        self.strategies: dict[str, Any] = {}
 
     def _lazy_load_strategy(self, name: str) -> Any:
         """Lazy load RL strategy implementation."""
@@ -56,11 +56,11 @@ class RLCoordinator(WorkflowCoordinator):
     def _create_default_strategy(self) -> Any:
         """Create a default strategy object."""
         class DefaultStrategy:
-            async def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
+            async def execute(self, task: dict[str, Any]) -> dict[str, Any]:
                 return {"status": "success", "message": "RL strategy executed"}
         return DefaultStrategy()
 
-    async def coordinate(self, task: Dict[str, Any]) -> Dict[str, Any]:
+    async def coordinate(self, task: dict[str, Any]) -> dict[str, Any]:
         """Execute RL coordination."""
         self._lazy_init()
         strategy_name = task.get('rl_strategy', 'ppo').lower()

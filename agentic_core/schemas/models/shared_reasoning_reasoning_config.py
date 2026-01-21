@@ -1,18 +1,16 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
 
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, ClassVar, Dict, List, Optional, Protocol
+from enum import Enum
+from typing import ClassVar
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 _logger = logging.getLogger(__name__)
@@ -77,7 +75,7 @@ class GovernorConfig:
     _bias_detection_enabled: bool = True
     _audit_logging_enabled: bool = True
     _max_requests_per_minute: int = 100
-    _allowed_models: List[str] = field(
+    _allowed_models: list[str] = field(
         default_factory=lambda: ["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"]
     )
 
@@ -95,19 +93,19 @@ class ReasoningConfig:
     _max_reflexion_loops: int = 2
 
     # Section-specific configurations (ClassVars set after class definition)
-    _K0_HEADLINE_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K5_UNIFY_BULLETS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K5_UNIFY_OVERVIEW_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K6_IBM_BULLETS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K6_IBM_OVERVIEW_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K8_EY_BULLETS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K8_EY_OVERVIEW_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K9_EARLY_CAREER_BULLETS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K9_EARLY_CAREER_OVERVIEW_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K2_SKILLS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _K10_COMPETENCIES_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    _DEFAULT: ClassVar[Optional[ReasoningConfig]] = None
+    _K0_HEADLINE_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K5_UNIFY_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K5_UNIFY_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K6_IBM_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K6_IBM_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K8_EY_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K8_EY_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K9_EARLY_CAREER_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K9_EARLY_CAREER_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K2_SKILLS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _K10_COMPETENCIES_CONFIG: ClassVar[ReasoningConfig | None] = None
+    _DEFAULT: ClassVar[ReasoningConfig | None] = None
 
 
 # Initialize default config

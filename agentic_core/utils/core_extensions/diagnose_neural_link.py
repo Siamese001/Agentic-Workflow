@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Diagnostic Script: Neural Link & Fission Verification
 Responsible for:
@@ -29,7 +30,7 @@ except ImportError as e:
 async def diagnose_engine():
     '''Brief description of functionality and purpose.'''
 
-    print(f"[*] Starting Neural Link Diagnostic...")
+    print("[*] Starting Neural Link Diagnostic...")
     print(f"    Target Model: {os.getenv('GEMINI_MODEL', 'Not Set')}")
 
     # Initialize Engine

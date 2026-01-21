@@ -4,9 +4,8 @@ LIC Code Interpreter Tool - Fast loop for deterministic evaluation.
 Ported from: archives/legacy_lic/Agentic LIC/tools_LIC.py
 """
 
-import scripts.validation.check_canonical_structure
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -15,7 +14,7 @@ class ScoredCandidate:
 
     candidate_index: int
     candidate_text: str
-    scores: Dict[str, float]
+    scores: dict[str, float]
     total_score: float
 
 
@@ -42,7 +41,7 @@ class SimilarityResult:
 class KeywordExtractionResult:
     """Result of keyword extraction."""
 
-    keywords: List[str]
+    keywords: list[str]
     source_text_length: int
     top_n: int
 
@@ -74,7 +73,7 @@ class LICCodeInterpreter:
 
     def __init__(self) -> None:
         """Initialize code interpreter with safe function registry."""
-        self.functions: Dict[str, Callable[..., Any]] = {
+        self.functions: dict[str, Callable[..., Any]] = {
             "run_similarity_check": self.run_similarity_check,
             "run_scoring_competition": self.run_scoring_competition,
             "extract_keywords": self.extract_keywords,
@@ -139,10 +138,10 @@ class LICCodeInterpreter:
 
     def run_scoring_competition(
         self,
-        candidates: List[str],
+        candidates: list[str],
         strategic_brief: str,
-        criteria: Optional[ScoringCriteria] = None,
-    ) -> List[ScoredCandidate]:
+        criteria: ScoringCriteria | None = None,
+    ) -> list[ScoredCandidate]:
         """
         Score N candidate messages against strategic brief.
 
@@ -161,10 +160,10 @@ class LICCodeInterpreter:
         if criteria is None:
             criteria = ScoringCriteria()
 
-        scored: List[ScoredCandidate] = []
+        scored: list[ScoredCandidate] = []
 
         for i, candidate in enumerate(candidates):
-            scores: Dict[str, float] = {}
+            scores: dict[str, float] = {}
 
             # 1. Strategic alignment (cosine similarity to brief)
             alignment_result = self.run_similarity_check(
@@ -241,7 +240,7 @@ class LICCodeInterpreter:
             )
 
         # Count word frequencies
-        word_counts: Dict[str, int] = {}
+        word_counts: dict[str, int] = {}
         for word in words:
             word_counts[word] = word_counts.get(word, 0) + 1
 
@@ -260,7 +259,7 @@ class LICCodeInterpreter:
         text1: str,
         text2: str,
         min_word_length: int = 4,
-    ) -> Dict[str, object]:
+    ) -> dict[str, object]:
         """
         Calculate word overlap between two texts.
 
@@ -296,10 +295,10 @@ class LICCodeInterpreter:
 
     def rank_by_metric(
         self,
-        items: List[Dict[str, object]],
+        items: list[dict[str, object]],
         metric_key: str,
         descending: bool = True,
-    ) -> List[Dict[str, object]]:
+    ) -> list[dict[str, object]]:
         """
         Rank items by a specific Metric.
 
@@ -320,8 +319,8 @@ class LICCodeInterpreter:
     def validate_structure(
         self,
         text: str,
-        requirements: Dict[str, object],
-    ) -> Dict[str, object]:
+        requirements: dict[str, object],
+    ) -> dict[str, object]:
         """
         Validate text structure against requirements.
 
@@ -332,7 +331,7 @@ class LICCodeInterpreter:
         Returns:
             Validation result dictionary
         """
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},

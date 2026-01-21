@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 DEPRECATED (2026-01-07): Use GravityHealerAgent in L2_execution/ToolRegistry/ instead.
@@ -15,12 +16,12 @@ This agent doesn't just flag violations; it actively stops the bleeding.
 import re
 import warnings
 from pathlib import Path
-from typing import Dict, Set, Optional
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+
 from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, CachedSafetyShield):
@@ -62,14 +63,14 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
         Execute the gravity enforcement pass.
         Scans agentic_core files and comments out any forbidden downstream imports.
         """
-        print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] GravityEnforcerAgent: Scanning for neural leaks...")
+        print("\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] GravityEnforcerAgent: Scanning for neural leaks...")
         self.healed_count = 0
         self.healed_files = []
 
         # Only scan sovereign upstream code (agentic_core)
         agentic_core_path = self.root / "agentic_core"
         if not agentic_core_path.exists():
-            print(f"   [!] GravityEnforcerAgent: agentic_core not found")
+            print("   [!] GravityEnforcerAgent: agentic_core not found")
             return
 
         for py_file in agentic_core_path.rglob("*.py"):
@@ -94,12 +95,12 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
             if len(self.healed_files) > 5:
                 print(f"      ... and {len(self.healed_files) - 5} more files")
         else:
-            print(f"   [✓] GravityEnforcerAgent: No neural leaks detected.")
+            print("   [✓] GravityEnforcerAgent: No neural leaks detected.")
 
     def _has_gravity_violations(self, file_path: Path) -> bool:
         """Check if file already has commented gravity violations."""
         try:
-            with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+            with open(file_path, encoding="utf-8", errors="replace") as f:
                 content = f.read()
                 return "# GRAVITY VIOLATION:" in content
         except:
@@ -117,7 +118,7 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
             return cached.get('had_violations', False)
 
         try:
-            with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+            with open(file_path, encoding="utf-8", errors="replace") as f:
                 content = f.read()
         except Exception as e:
             print(f"   [!] Could not read {file_path}: {e}")
@@ -148,7 +149,7 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
         self.store_verdict("gravity", str(file_path), Verdict)
         return False
 
-    def get_summary(self) -> Dict:
+    def get_summary(self) -> dict:
         """Return a summary of the enforcement pass."""
         return {
             "agent": "GravityEnforcerAgent",
@@ -159,7 +160,7 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

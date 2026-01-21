@@ -5,13 +5,13 @@ Provides high-performance cache key generation for LLM requests.
 
 import hashlib
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Version for cache key format to ensure compatibility
 CACHE_KEY_VERSION = "v1.0"
 
 
-def generate_llm_cache_key(model: str, messages: List[Dict[str, Any]]) -> str:
+def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
     """Generate a cache key for LLM requests.
 
     Args:
@@ -36,7 +36,7 @@ def generate_llm_cache_key(model: str, messages: List[Dict[str, Any]]) -> str:
 
 def generate_llm_cache_key_with_fingerprint(
     model: str,
-    messages: List[Dict[str, Any]],
+    messages: list[dict[str, Any]],
     fingerprint: str
 ) -> str:
     """Generate a cache key with additional fingerprint.
@@ -65,9 +65,9 @@ def generate_llm_cache_key_with_fingerprint(
 
 def should_invalidate_cache(
     cache_key: str,
-    current_version: Optional[str] = None,
-    model: Optional[str] = None,
-    messages: Optional[List[Dict[str, Any]]] = None,
+    current_version: str | None = None,
+    model: str | None = None,
+    messages: list[dict[str, Any]] | None = None,
     ttl_seconds: int = 3600
 ) -> bool:
     """Check if a cache entry should be invalidated.

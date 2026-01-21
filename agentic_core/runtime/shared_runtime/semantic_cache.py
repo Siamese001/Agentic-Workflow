@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+
 """Semantic Cache for LLM response caching.
 
 Phase 1 - Pillar 11: Cost & Optimization (Semantic Caching)
@@ -9,7 +11,8 @@ import hashlib
 import json
 import logging
 import time
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
+
 import numpy as np
 
 try:
@@ -19,7 +22,7 @@ except ImportError:
     def get_embedding(text: str, model: str = None, dimensions: int = None):
         """Stub embedding function - returns zero vector if real embedder unavailable."""
         import warnings
-        warnings.warn("get_embedding not available, semantic matching disabled")
+        warnings.warn("get_embedding not available, semantic matching disabled", stacklevel=2)
         return [0.0] * 1536
 
 Logger: Any = logging.getLogger(__name__)
@@ -37,8 +40,8 @@ class CacheEntry:
     created_at: float
     accessed_at: float
     hit_count: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    embedding: Optional[np.ndarray] = None  # Normalized embedding vector for semantic matching
+    metadata: dict[str, Any] = field(default_factory=dict)
+    embedding: np.ndarray | None = None  # Normalized embedding vector for semantic matching
 
     def is_expired(self, ttl: int) -> bool:
         """Check if entry is expired.
@@ -94,8 +97,8 @@ class SemanticCache:
         self.enable_semantic_matching = enable_semantic_matching
         self.similarity_threshold = similarity_threshold
         self.embedding_model = embedding_model
-        self._cache: Dict[str, CacheEntry] = {}
-        self._embedding_index: Dict[str, np.ndarray] = {}  # key -> normalized embedding
+        self._cache: dict[str, CacheEntry] = {}
+        self._embedding_index: dict[str, np.ndarray] = {}  # key -> normalized embedding
         self._hit_count = 0
         self._miss_count = 0
         self._semantic_hit_count = 0
@@ -107,7 +110,7 @@ class SemanticCache:
         norm = np.linalg.norm(vec)
         return vec / norm if norm != 0 else vec
 
-    def _find_semantic_match(self, query_embedding: np.ndarray) -> Optional[Tuple[str, float]]:
+    def _find_semantic_match(self, query_embedding: np.ndarray) -> tuple[str, float] | None:
         """Linear search for best semantic match above threshold."""
         best_key = None
         best_score = 0.0
@@ -118,7 +121,7 @@ class SemanticCache:
                 best_key = key
         return (best_key, best_score) if best_key else None
 
-    def _hash_prompt(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> str:
+    def _hash_prompt(self, prompt: str, context: dict[str, Any] | None = None) -> str:
         """Generate cache key from prompt and context."""
         cache_input = prompt
         if context:
@@ -126,7 +129,7 @@ class SemanticCache:
             cache_input = f'{prompt}::{context_str}'
         return hashlib.sha256(cache_input.encode()).hexdigest()
 
-    def get(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> SemanticCacheHit | CacheMiss:
+    def get(self, prompt: str, context: dict[str, Any] | None = None) -> SemanticCacheHit | CacheMiss:
         """Get cached response, falling back to semantic similarity if enabled."""
         key = self._hash_prompt(prompt, context)
         entry = self._cache.get(key)
@@ -178,7 +181,7 @@ class SemanticCache:
         self._miss_count += 1
         return CacheMiss(prompt=prompt, reason='not_found')
 
-    def set(self, prompt: str, response: Any, context: Optional[Dict[str, Any]] = None, metadata: Optional[Dict[str, Any]] = None) -> None:
+    def set(self, prompt: str, response: Any, context: dict[str, Any] | None = None, metadata: dict[str, Any] | None = None) -> None:
         """Set cache entry, computing embedding if semantic matching enabled."""
         if len(self._cache) >= self.max_entries:
             self._evict_oldest()
@@ -224,7 +227,7 @@ class SemanticCache:
         if self.enable_logging:
             Logger.info('cache_cleared')
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get detailed cache statistics."""
         total_hits = self._hit_count + self._semantic_hit_count
         total_requests = total_hits + self._miss_count

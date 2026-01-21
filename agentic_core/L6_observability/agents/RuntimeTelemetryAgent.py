@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 RUNTIME TELEMETRY AGENT
@@ -16,13 +17,13 @@ CANONICAL PATH: agentic_core/L6_observability/RuntimeTelemetryAgent.py
 VIOLATION JUSTIFICATION: None. Strictly L6 Observability.
 """
 
-import time
-import sys
 import logging
-from pathlib import Path
-from typing import Dict, List, Any, Callable, Tuple
-from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
+import time
+from collections.abc import Callable
+from typing import Any
+
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
 
 
 @dataclass
@@ -35,7 +36,7 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
 
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -55,10 +56,10 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
         Initialize with the Gospel-mandated 2x overhead limit.
         """
         self.limit_multiplier = limit_multiplier
-        self.metrics: Dict[str, float] = {}
+        self.metrics: dict[str, float] = {}
         self.logger = logging.getLogger("SovereignTelemetry")
 
-    def benchmark_startup(self, agent_init_func: Callable, *args: Any, **kwargs: Any) -> Tuple[Any, float]:
+    def benchmark_startup(self, agent_init_func: Callable, *args: Any, **kwargs: Any) -> tuple[Any, float]:
         """
         Measures the initialization time of a specific agent with high precision.
         Returns the agent instance and the duration in seconds.
@@ -76,7 +77,7 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
 
         return agent_instance, duration
 
-    def audit_security_overhead(self, baseline_time: float, current_time: float) -> Dict[str, Any]:
+    def audit_security_overhead(self, baseline_time: float, current_time: float) -> dict[str, Any]:
         """
         Compares current startup time against a known-compliant baseline.
         Alerts if the 2x Gospel limit is breached by security enforcers.
@@ -106,7 +107,7 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
             return
 
         print(f"\n{'='*40}")
-        print(f" SOVEREIGN RUNTIME TELEMETRY REPORT")
+        print(" SOVEREIGN RUNTIME TELEMETRY REPORT")
         print(f"{'='*40}")
         for agent, duration in self.metrics.items():
             print(f"Agent: {agent}")

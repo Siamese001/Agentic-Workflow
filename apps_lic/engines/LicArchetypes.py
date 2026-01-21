@@ -6,7 +6,6 @@ Ported from: archives/LIC_capabilities/reconstructed_capabilities.py
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional
 
 
 class RecipientArchetype(Enum):
@@ -24,7 +23,7 @@ class SubjectLineBrief:
 
     word_count: tuple[int, int]
     tone: str
-    forbidden_phrases: List[str] = field(default_factory=list)
+    forbidden_phrases: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -42,7 +41,7 @@ class CTABrief:
 
     word_count: tuple[int, int]
     tone: str
-    strategy: Optional[str] = None
+    strategy: str | None = None
 
 
 @dataclass
@@ -67,7 +66,7 @@ class ArchetypeTemplate:
 
 
 # Archetype generation templates
-ARCHETYPE_TEMPLATES: Dict[RecipientArchetype, ArchetypeTemplate] = {
+ARCHETYPE_TEMPLATES: dict[RecipientArchetype, ArchetypeTemplate] = {
     RecipientArchetype.C_LEVEL: ArchetypeTemplate(
         Archetype=RecipientArchetype.C_LEVEL,
         system_instructions=(
@@ -214,12 +213,12 @@ class SignatureTemplate:
     """Template for message signature."""
 
     template: str
-    use_for: List[str]
+    use_for: list[str]
     line_count: int
 
 
 # Signature format templates
-SIGNATURE_TEMPLATES: Dict[str, SignatureTemplate] = {
+SIGNATURE_TEMPLATES: dict[str, SignatureTemplate] = {
     "standard": SignatureTemplate(
         template="Best regards,\n{first_name} {last_name}\n{title}\n{linkedin_url}",
         use_for=["INMAIL", "LONG_NEW"],
@@ -252,7 +251,7 @@ class GreetingTemplate:
 
 
 # Greeting templates by Route
-GREETING_TEMPLATES: Dict[str, GreetingTemplate] = {
+GREETING_TEMPLATES: dict[str, GreetingTemplate] = {
     "CONNECTION_REQ": GreetingTemplate(
         template="Hi {first_name},",
         note="Simple, direct greeting",
@@ -276,7 +275,7 @@ GREETING_TEMPLATES: Dict[str, GreetingTemplate] = {
 }
 
 # Forbidden greeting patterns
-FORBIDDEN_GREETINGS: List[str] = [
+FORBIDDEN_GREETINGS: list[str] = [
     "Dear {first_name}",
     "Hey {first_name}",
     "Greetings",
@@ -352,9 +351,9 @@ class ArchetypeTemplateManager:
         template = self.get_greeting_template(Route)
         return template.template.format(first_name=first_name)
 
-    def validate_greeting(self, greeting: str) -> Dict[str, object]:
+    def validate_greeting(self, greeting: str) -> dict[str, object]:
         """Validate a greeting against forbidden patterns."""
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "is_valid": True,
             "violations": [],
         }

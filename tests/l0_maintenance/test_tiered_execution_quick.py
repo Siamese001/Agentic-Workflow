@@ -82,7 +82,7 @@ def test_tier_structure():
     print("\n   Expected Tier Structure:")
     print(f"   Tier 1 (Structural): {tier1_agents}")
     print(f"   Tier 2 (Architectural): {tier2_agents}")
-    print(f"   Tier 3 (Discovery): [Dynamic roster from build_healing_roster]")
+    print("   Tier 3 (Discovery): [Dynamic roster from build_healing_roster]")
     print(f"   Tier 4 (Safety): {tier4_agents}")
 
     # Verify tier 1 agents are defined
@@ -96,11 +96,11 @@ def test_tier_structure():
     else:
         print("\n   ❌ Some mandatory tier agents are missing")
         if not tier1_found:
-            print(f"      Missing Tier 1 agents")
+            print("      Missing Tier 1 agents")
         if not tier2_found:
-            print(f"      Missing Tier 2 agents")
+            print("      Missing Tier 2 agents")
         if not tier4_found:
-            print(f"      Missing Tier 4 agents")
+            print("      Missing Tier 4 agents")
         return False
 
 

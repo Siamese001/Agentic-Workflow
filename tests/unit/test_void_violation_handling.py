@@ -9,9 +9,10 @@ Verifies that VOID VIOLATION is handled properly:
 This test ensures archiving is NOT the default behavior for void violations.
 """
 
-import pytest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
+
+import pytest
 
 
 def get_project_root() -> Path:

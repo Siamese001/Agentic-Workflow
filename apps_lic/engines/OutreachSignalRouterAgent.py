@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Outreach Engine Self-Healing Loop
 
@@ -7,24 +8,23 @@ Provides self-healing capabilities for outreach campaigns:
 - Healing cycles with convergence detection
 - Automatic rollback on critical failures
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-
-
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
+
+from agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent import (
+    AppWorkflowOrchestratorAgent,
+)
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .agents import (
     LeadQualityAgent,
     OutreachTestPilot,
 )
-from agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent import AppWorkflowOrchestratorAgent
 from .context import OutreachEngineContext
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 
 class OutreachHealingStrategy(Enum):
@@ -41,11 +41,11 @@ class OutreachCycleResult:
     """Result of a single healing cycle."""
     cycle_number: int
     strategy: OutreachHealingStrategy
-    agents_executed: List[str]
-    signals_before: Set[str]
-    signals_after: Set[str]
-    passed_agents: List[str]
-    failed_agents: List[str]
+    agents_executed: list[str]
+    signals_before: set[str]
+    signals_after: set[str]
+    passed_agents: list[str]
+    failed_agents: list[str]
     rollback_triggered: bool
     converged: bool
     duration_ms: float
@@ -57,12 +57,12 @@ class OutreachHealingResult:
     """Result of the complete healing process."""
     success: bool
     total_cycles: int
-    final_signals: Set[str]
-    cycle_results: List[OutreachCycleResult]
-    convergence_cycle: Optional[int]
+    final_signals: set[str]
+    cycle_results: list[OutreachCycleResult]
+    convergence_cycle: int | None
     budget_exhausted: bool
     total_duration_ms: float
-    final_campaign: Dict[str, Any]
+    final_campaign: dict[str, Any]
 
 
 class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
@@ -81,7 +81,7 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
     CRITICAL_SIGNALS = {"COMPLIANCE_ISSUE", "DELIVERABILITY_ISSUE"}
 
     @classmethod
-    def get_agents_for_signals(cls, signals: Set[str]) -> List[str]:
+    def get_agents_for_signals(cls, signals: set[str]) -> list[str]:
         """
         Get agents needed for the given signals.
 
@@ -91,14 +91,14 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
         Returns:
             List of agent names that should handle these signals
         """
-        agents: Set[str] = set()
+        agents: set[str] = set()
         for signal in signals:
             if signal in cls.SIGNAL_TO_AGENTS:
                 agents.update(cls.SIGNAL_TO_AGENTS[signal])
         return list(agents)
 
     @classmethod
-    def has_critical_signal(cls, signals: Set[str]) -> bool:
+    def has_critical_signal(cls, signals: set[str]) -> bool:
         """
         Check if any critical signals are present.
 
@@ -114,8 +114,8 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
     def determine_strategy(
         cls,
         cycle_number: int,
-        signals: Set[str],
-        modified_sections: Set[str],
+        signals: set[str],
+        modified_sections: set[str],
     ) -> OutreachHealingStrategy:
         """
         Determine healing strategy based on context.
@@ -151,7 +151,7 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
     """Factory for creating outreach agents."""
 
     @staticmethod
-    def create_all_agents(ctx: OutreachEngineContext) -> List[Any]:
+    def create_all_agents(ctx: OutreachEngineContext) -> list[Any]:
         """
         Create all agents for full diagnostic.
 
@@ -172,7 +172,7 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
         ]
 
     @staticmethod
-    def create_quality_agents(ctx: OutreachEngineContext) -> List[Any]:
+    def create_quality_agents(ctx: OutreachEngineContext) -> list[Any]:
         """
         Create quality-focused agents.
 
@@ -190,7 +190,7 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
         ]
 
     @staticmethod
-    def create_compliance_agents(ctx: OutreachEngineContext) -> List[Any]:
+    def create_compliance_agents(ctx: OutreachEngineContext) -> list[Any]:
         """
         Create compliance-focused agents.
 
@@ -207,7 +207,7 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
         ]
 
     @staticmethod
-    def create_agents_by_name(ctx: OutreachEngineContext, names: List[str]) -> List[Any]:
+    def create_agents_by_name(ctx: OutreachEngineContext, names: list[str]) -> list[Any]:
         """
         Create specific agents by name.
 
@@ -255,8 +255,8 @@ class OutreachHealingCycle:
         """
         self.ctx: OutreachEngineContext = ctx
         self.cycle_number: int = cycle_number
-        self.start_time: Optional[float] = None
-        self.end_time: Optional[float] = None
+        self.start_time: float | None = None
+        self.end_time: float | None = None
 
     async def execute(self, strategy: OutreachHealingStrategy) -> OutreachCycleResult:
         """
@@ -277,9 +277,9 @@ class OutreachHealingCycle:
         agents = self._build_agenda(strategy)
 
         # Execute agents
-        agents_executed: List[str] = []
-        passed_agents: List[str] = []
-        failed_agents: List[str] = []
+        agents_executed: list[str] = []
+        passed_agents: list[str] = []
+        failed_agents: list[str] = []
 
         for agent in agents:
             try:
@@ -322,7 +322,7 @@ class OutreachHealingCycle:
             duration_ms=duration_ms,
         )
 
-    def _build_agenda(self, strategy: OutreachHealingStrategy) -> List[Any]:
+    def _build_agenda(self, strategy: OutreachHealingStrategy) -> list[Any]:
         """
         Build the agent agenda based on strategy.
 
@@ -387,10 +387,10 @@ class OutreachHealingCycle:
 
 
 async def run_outreach_healing_mission(
-    campaign: Dict[str, Any],
-    leads: List[Dict[str, Any]] = None,
-    contacts: List[Dict[str, Any]] = None,
-    messages: List[Dict[str, Any]] = None,
+    campaign: dict[str, Any],
+    leads: list[dict[str, Any]] = None,
+    contacts: list[dict[str, Any]] = None,
+    messages: list[dict[str, Any]] = None,
     max_cycles: int = 5,
 ) -> OutreachHealingResult:
     """

@@ -5,7 +5,6 @@ Run this as pre-commit hook or CI check.
 """
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -72,7 +71,7 @@ def should_exclude_path(path: Path) -> bool:
         return True
     return False
 
-def validate_file(file_path: Path) -> List[Tuple[int, str, str]]:
+def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
     """Validate a single file for hardcoded paths.
 
     Returns:
@@ -103,12 +102,12 @@ def validate_file(file_path: Path) -> List[Tuple[int, str, str]]:
                 if re.search(pattern, line):
                     violations.append((line_num, description, line.strip()))
 
-    except Exception as e:
+    except Exception:
         pass
 
     return violations
 
-def validate_repository() -> Tuple[bool, Dict]:
+def validate_repository() -> tuple[bool, dict]:
     """Validate entire repository.
 
     Returns:
@@ -118,7 +117,7 @@ def validate_repository() -> Tuple[bool, Dict]:
     print("PATH SSOT VALIDATION")
     print("=" * 80)
     print(f"\n📂 Project: {PROJECT_ROOT}")
-    print(f"🔍 Scanning for hardcoded paths...\n")
+    print("🔍 Scanning for hardcoded paths...\n")
 
     violations_by_file = {}
     files_scanned = 0
@@ -186,7 +185,6 @@ def validate_repository() -> Tuple[bool, Dict]:
         return False, violations_by_file
 
 def main():
-    import sys
     is_compliant, violations = validate_repository()
 
     if is_compliant:

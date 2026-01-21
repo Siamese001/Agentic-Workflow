@@ -3,9 +3,8 @@ Dependency Graph - Code structure analysis and impact tracking.
 Extracted from BudgetManagerAgent.py for single responsibility.
 """
 from __future__ import annotations
+
 import ast
-from typing import Dict, List, Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 class DependencyGraph:
@@ -13,10 +12,10 @@ class DependencyGraph:
 
     def __init__(self):
         """Initialize empty dependency graph."""
-        self.graph: Dict[str, Dict[str, List[str]]] = {}
-        self.reverse_graph: Dict[str, List[str]] = {}
+        self.graph: dict[str, dict[str, list[str]]] = {}
+        self.reverse_graph: dict[str, list[str]] = {}
 
-    def build(self, files: List[str]) -> None:
+    def build(self, files: list[str]) -> None:
         """Build the dependency graph from a list of Python files.
 
         Args:
@@ -28,7 +27,7 @@ class DependencyGraph:
             self.graph[file_path] = {'imports': [], 'classes': []}
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     tree = ast.parse(f.read())
 
                 for node in ast.walk(tree):
@@ -51,7 +50,7 @@ class DependencyGraph:
                     self.reverse_graph[imp] = []
                 self.reverse_graph[imp].append(file)
 
-    def get_impact_radius(self, file_path: str) -> List[str]:
+    def get_impact_radius(self, file_path: str) -> list[str]:
         """Returns files that import modules defined in file_path.
 
         Args:
@@ -68,7 +67,7 @@ class DependencyGraph:
 
         return list(impacted)
 
-    def get_imports(self, file_path: str) -> List[str]:
+    def get_imports(self, file_path: str) -> list[str]:
         """Get all imports for a specific file.
 
         Args:
@@ -79,7 +78,7 @@ class DependencyGraph:
         """
         return self.graph.get(file_path, {}).get('imports', [])
 
-    def get_classes(self, file_path: str) -> List[str]:
+    def get_classes(self, file_path: str) -> list[str]:
         """Get all class definitions in a specific file.
 
         Args:
@@ -90,7 +89,7 @@ class DependencyGraph:
         """
         return self.graph.get(file_path, {}).get('classes', [])
 
-    def get_all_files(self) -> List[str]:
+    def get_all_files(self) -> list[str]:
         """Get all files in the dependency graph.
 
         Returns:

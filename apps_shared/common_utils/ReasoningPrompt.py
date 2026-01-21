@@ -11,10 +11,8 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 
 from __future__ import annotations
 
-from typing import Dict
 
-
-def build_reasoning_prompt_addendum(params: Dict) -> str:
+def build_reasoning_prompt_addendum(params: dict) -> str:
     """Construct system prompt addendum based on reasoning parameters."""
     p = params
     addendum = "\n\n**REASONING IMPLEMENTATION DIRECTIVES (v5.71):**\n"

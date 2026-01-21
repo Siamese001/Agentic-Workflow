@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """L1 Cognition: Sovereign Reasoning Memory — ULTRA-HARDENED
 Eternal thought history, scratchpad, and Redis persistence with L5 shielding.
 Zero tolerance for corruption or overflow.
@@ -9,16 +10,10 @@ import os
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import redis
 
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 Logger = logging.getLogger(__name__)
@@ -55,8 +50,8 @@ class SovereignReasoningMemory:
             return
 
         self.mission_id = mission_id
-        self.thought_history: List[Dict] = []
-        self.scratchpad: Dict[str, str] = {}
+        self.thought_history: list[dict] = []
+        self.scratchpad: dict[str, str] = {}
         self.history_lock = threading.RLock()
         self.redis_pool = None
         self.redis_reasoning_key = f"reasoning_steps:{mission_id}"
@@ -141,7 +136,7 @@ class SovereignReasoningMemory:
         """Get Redis client from pool."""
         return redis.Redis(connection_pool=self.redis_pool)
 
-    def get_thought_history(self, file_path: Optional[str] = None, key_id: Optional[int] = None) -> List[Dict]:
+    def get_thought_history(self, file_path: str | None = None, key_id: int | None = None) -> list[dict]:
         """Fast local recall from Redis with in-memory fallback."""
         try:
             r = self._get_redis()

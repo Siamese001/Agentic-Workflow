@@ -17,17 +17,18 @@ Tests the HierarchyAgent's ability to heal root directory SSOT violations:
 
 Run: python scripts/test_hierarchy_agent_root_healing.py
 """
-import sys
 import os
+import sys
+
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
-from pathlib import Path
-from typing import Dict, Any, Tuple
-import tempfile
 import shutil
+import tempfile
+from pathlib import Path
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
@@ -89,7 +90,7 @@ def cleanup_test_environment(temp_dir: Path) -> None:
 # TEST FUNCTIONS
 # ============================================================================
 
-def test_1_hierarchy_agent_has_root_healing_methods() -> Tuple[bool, str]:
+def test_1_hierarchy_agent_has_root_healing_methods() -> tuple[bool, str]:
     """Test 1: Verify HierarchyAgent has required root healing methods."""
     try:
         from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
@@ -115,7 +116,7 @@ def test_1_hierarchy_agent_has_root_healing_methods() -> Tuple[bool, str]:
         return False, f"Could not import HierarchyAgent: {e}"
 
 
-def test_2_hierarchy_agent_has_ssot_targets() -> Tuple[bool, str]:
+def test_2_hierarchy_agent_has_ssot_targets() -> tuple[bool, str]:
     """Test 2: Verify HierarchyAgent has ROOT_FOLDER_SSOT_TARGETS mapping."""
     try:
         from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
@@ -136,7 +137,7 @@ def test_2_hierarchy_agent_has_ssot_targets() -> Tuple[bool, str]:
         return False, f"Could not import HierarchyAgent: {e}"
 
 
-def test_3_scan_root_violations_detects_archived_files() -> Tuple[bool, str]:
+def test_3_scan_root_violations_detects_archived_files() -> tuple[bool, str]:
     """Test 3: Verify scan_root_violations detects .archived files at root."""
     temp_dir = None
     try:
@@ -160,7 +161,7 @@ def test_3_scan_root_violations_detects_archived_files() -> Tuple[bool, str]:
             cleanup_test_environment(temp_dir)
 
 
-def test_4_scan_root_violations_detects_forbidden_folders() -> Tuple[bool, str]:
+def test_4_scan_root_violations_detects_forbidden_folders() -> tuple[bool, str]:
     """Test 4: Verify scan_root_violations detects forbidden folders."""
     temp_dir = None
     try:
@@ -187,7 +188,7 @@ def test_4_scan_root_violations_detects_forbidden_folders() -> Tuple[bool, str]:
             cleanup_test_environment(temp_dir)
 
 
-def test_5_heal_root_violations_moves_archived_files() -> Tuple[bool, str]:
+def test_5_heal_root_violations_moves_archived_files() -> tuple[bool, str]:
     """Test 5: Verify heal_root_violations moves .archived files to archives/."""
     temp_dir = None
     try:
@@ -226,7 +227,7 @@ def test_5_heal_root_violations_moves_archived_files() -> Tuple[bool, str]:
             cleanup_test_environment(temp_dir)
 
 
-def test_6_heal_root_violations_merges_scripts() -> Tuple[bool, str]:
+def test_6_heal_root_violations_merges_scripts() -> tuple[bool, str]:
     """Test 6: Verify heal_root_violations merges scripts/ to SSOT location."""
     temp_dir = None
     try:
@@ -259,7 +260,7 @@ def test_6_heal_root_violations_merges_scripts() -> Tuple[bool, str]:
             cleanup_test_environment(temp_dir)
 
 
-def test_7_heal_root_violations_merges_logs() -> Tuple[bool, str]:
+def test_7_heal_root_violations_merges_logs() -> tuple[bool, str]:
     """Test 7: Verify heal_root_violations merges logs/ to SSOT location."""
     temp_dir = None
     try:
@@ -292,7 +293,7 @@ def test_7_heal_root_violations_merges_logs() -> Tuple[bool, str]:
             cleanup_test_environment(temp_dir)
 
 
-def test_8_heal_root_violations_handles_coverage_html() -> Tuple[bool, str]:
+def test_8_heal_root_violations_handles_coverage_html() -> tuple[bool, str]:
     """Test 8: Verify heal_root_violations adds coverage_html/ to .gitignore."""
     temp_dir = None
     try:
@@ -325,7 +326,7 @@ def test_8_heal_root_violations_handles_coverage_html() -> Tuple[bool, str]:
             cleanup_test_environment(temp_dir)
 
 
-def test_9_heal_root_violations_dry_run_no_changes() -> Tuple[bool, str]:
+def test_9_heal_root_violations_dry_run_no_changes() -> tuple[bool, str]:
     """Test 9: Verify dry_run=True makes no actual changes."""
     temp_dir = None
     try:
@@ -365,7 +366,7 @@ def test_9_heal_root_violations_dry_run_no_changes() -> Tuple[bool, str]:
             cleanup_test_environment(temp_dir)
 
 
-def test_10_heal_repository_includes_root_healing() -> Tuple[bool, str]:
+def test_10_heal_repository_includes_root_healing() -> tuple[bool, str]:
     """Test 10: Verify heal_repository() includes root healing."""
     temp_dir = None
     try:
@@ -395,7 +396,7 @@ def test_10_heal_repository_includes_root_healing() -> Tuple[bool, str]:
             cleanup_test_environment(temp_dir)
 
 
-def test_11_merge_handles_existing_files() -> Tuple[bool, str]:
+def test_11_merge_handles_existing_files() -> tuple[bool, str]:
     """Test 11: Verify merge skips files that already exist in SSOT location."""
     temp_dir = None
     try:
@@ -433,7 +434,7 @@ def test_11_merge_handles_existing_files() -> Tuple[bool, str]:
             cleanup_test_environment(temp_dir)
 
 
-def test_12_heal_removes_empty_folders() -> Tuple[bool, str]:
+def test_12_heal_removes_empty_folders() -> tuple[bool, str]:
     """Test 12: Verify healing removes empty folders after merge."""
     temp_dir = None
     try:
@@ -475,7 +476,7 @@ def test_12_heal_removes_empty_folders() -> Tuple[bool, str]:
 # TEST RUNNER
 # ============================================================================
 
-def run_all_tests() -> Dict[str, Any]:
+def run_all_tests() -> dict[str, Any]:
     """Run all tests and return results."""
     tests = [
         ("Test 1: HierarchyAgent has root healing methods", test_1_hierarchy_agent_has_root_healing_methods),

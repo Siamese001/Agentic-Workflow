@@ -5,11 +5,11 @@ including environment configs, feature flags, and deployment configurations.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -50,9 +50,9 @@ class ConfigSource:
     format: ConfigFormat
     location: str
     scope: ConfigScope
-    version: Optional[str] = None
+    version: str | None = None
     encryption: bool = False
-    credentials: Dict[str, Any] = field(default_factory=dict)
+    credentials: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -61,7 +61,7 @@ class ConfigValidationRule:
     id: str
     field_path: str  # e.g., "database.host", "features.*.enabled"
     rule_type: str  # required, type, range, regex
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     error_message: str = ""
 
 
@@ -71,9 +71,9 @@ class ConfigTransformation:
     id: str
     name: str
     transformation_type: str  # template, substitution, merge, override
-    source_fields: List[str] = field(default_factory=list)
+    source_fields: list[str] = field(default_factory=list)
     target_field: str = ""
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -81,14 +81,14 @@ class ConfigLoadPlan:
     """Complete plan for configuration data loading."""
     id: str
     name: str
-    sources: List[ConfigSource]
-    validation_rules: List[ConfigValidationRule] = field(default_factory=list)
-    transformations: List[ConfigTransformation] = field(default_factory=list)
+    sources: list[ConfigSource]
+    validation_rules: list[ConfigValidationRule] = field(default_factory=list)
+    transformations: list[ConfigTransformation] = field(default_factory=list)
     merge_strategy: str = "override"  # override, merge, keep_existing
     enable_validation: bool = True
     enable_encryption: bool = False
     cache_ttl: int = 300  # seconds
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -107,26 +107,26 @@ class ConfigLoadConfig:
 class ConfigLoadResult:
     """Result of config load planning."""
     success: bool
-    load_plan: Optional[ConfigLoadPlan] = None
+    load_plan: ConfigLoadPlan | None = None
     estimated_config_size: int = 0
     validation_count: int = 0
     transformation_count: int = 0
     load_time_estimate: int = 0
-    security_requirements: Dict[str, bool] = field(default_factory=dict)
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    security_requirements: dict[str, bool] = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ConfigLoadPlanner:
     """Planner for configuration data loading operations."""
 
-    def __init__(self, config: Optional[ConfigLoadConfig] = None):
+    def __init__(self, config: ConfigLoadConfig | None = None):
         self.config = config or ConfigLoadConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
-    def plan_load(self, load_request: Dict[str, Any]) -> ConfigLoadResult:
+    def plan_load(self, load_request: dict[str, Any]) -> ConfigLoadResult:
         """Plan configuration data loading operations.
 
         Args:
@@ -200,7 +200,7 @@ class ConfigLoadPlanner:
                 }
             )
 
-    def _validate_request(self, request: Dict[str, Any]) -> None:
+    def _validate_request(self, request: dict[str, Any]) -> None:
         """Validate config load planning request."""
         if not request:
             raise ValueError("Config load planning request cannot be empty")
@@ -211,7 +211,7 @@ class ConfigLoadPlanner:
         if "sources" not in request:
             raise ValueError("Sources are required in config load planning request")
 
-    def _parse_sources(self, request: Dict[str, Any]) -> List[ConfigSource]:
+    def _parse_sources(self, request: dict[str, Any]) -> list[ConfigSource]:
         """Parse config sources from request."""
         sources = []
         raw_sources = request.get("sources", [])
@@ -274,7 +274,7 @@ class ConfigLoadPlanner:
 
         return sources
 
-    def _parse_validation_rules(self, request: Dict[str, Any]) -> List[ConfigValidationRule]:
+    def _parse_validation_rules(self, request: dict[str, Any]) -> list[ConfigValidationRule]:
         """Parse validation rules from request."""
         rules = []
         raw_rules = request.get("validation_rules", [])
@@ -292,7 +292,7 @@ class ConfigLoadPlanner:
 
         return rules
 
-    def _parse_transformations(self, request: Dict[str, Any]) -> List[ConfigTransformation]:
+    def _parse_transformations(self, request: dict[str, Any]) -> list[ConfigTransformation]:
         """Parse transformations from request."""
         transformations = []
         raw_transforms = request.get("transformations", [])
@@ -313,10 +313,10 @@ class ConfigLoadPlanner:
 
     def _create_load_plan(
         self,
-        request: Dict[str, Any],
-        sources: List[ConfigSource],
-        validation_rules: List[ConfigValidationRule],
-        transformations: List[ConfigTransformation]
+        request: dict[str, Any],
+        sources: list[ConfigSource],
+        validation_rules: list[ConfigValidationRule],
+        transformations: list[ConfigTransformation]
     ) -> ConfigLoadPlan:
         """Create config load plan from parsed components."""
         return ConfigLoadPlan(
@@ -381,7 +381,7 @@ class ConfigLoadPlanner:
 
         return int(total_time)
 
-    def _calculate_security_requirements(self, plan: ConfigLoadPlan) -> Dict[str, bool]:
+    def _calculate_security_requirements(self, plan: ConfigLoadPlan) -> dict[str, bool]:
         """Calculate security requirements for the load plan."""
         requirements = {
             "encryption_needed": False,
@@ -430,12 +430,12 @@ def create_config_load_planner(
 # Convenience function for direct usage
 def plan_config_load(
     plan_name: str,
-    sources: List[Dict[str, Any]],
-    validation_rules: Optional[List[Dict[str, Any]]] = None,
-    transformations: Optional[List[Dict[str, Any]]] = None,
+    sources: list[dict[str, Any]],
+    validation_rules: list[dict[str, Any]] | None = None,
+    transformations: list[dict[str, Any]] | None = None,
     merge_strategy: str = "override",
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Plan config data load from simple parameters.
 
     Args:

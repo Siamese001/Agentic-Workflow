@@ -1,6 +1,6 @@
 """Dataclass models for constitutional_ai."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # TODO: Replace 'from .constitutional_ai_enums import *' with explicit imports
 # # from .constitutional_ai_enums import *  # Star import removed
@@ -13,9 +13,9 @@ class ConstitutionalPrinciple:
     description: str = ''
     category: str = 'general'
     priority: int = 0
-    examples: List[str] = None
-    definition: Optional[str] = None
-    evaluation_prompt: Optional[str] = None
+    examples: list[str] = None
+    definition: str | None = None
+    evaluation_prompt: str | None = None
 
     def __post_init__(self):
         if self.examples is None:
@@ -30,7 +30,7 @@ class LLMJudgment:
     is_compliant: bool
     confidence: float
     reasoning: str
-    timestamp: Optional[str] = None
+    timestamp: str | None = None
 
     def __post_init__(self):
         if not self.timestamp:
@@ -49,8 +49,8 @@ class ConstitutionalRule:
     type: RuleType
     severity: RuleSeverity
     description: str
-    pattern: Optional[str] = None
-    keywords: List[str] = None
+    pattern: str | None = None
+    keywords: list[str] = None
     action: RuleAction = RuleAction.WARN
 
     def __post_init__(self):
@@ -65,16 +65,16 @@ class ViolationReport:
     violation_type: ViolationType
     severity: RuleSeverity
     message: str
-    matched_text: Optional[str] = None
+    matched_text: str | None = None
     confidence: float = 0.0
 
 @dataclass
 class ConstitutionalReviewResult:
     """Result of constitutional review."""
     approved: bool
-    violations: List[ViolationReport]
+    violations: list[ViolationReport]
     score: float
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self):
         if self.metadata is None:
@@ -86,6 +86,6 @@ class ConstitutionalReviewResult:
         return len(self.violations) > 0
 
     @property
-    def critical_violations(self) -> List[ViolationReport]:
+    def critical_violations(self) -> list[ViolationReport]:
         """Get only critical violations."""
         return [v for v in self.violations if v.severity == RuleSeverity.CRITICAL]

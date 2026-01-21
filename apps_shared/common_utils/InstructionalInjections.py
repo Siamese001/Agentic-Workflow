@@ -6,13 +6,12 @@ covering Framing, Context, Reasoning, Tooling, Safety, and Output layers.
 
 import json
 import logging
+from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass, field
 from pathlib import Path
 
-from .subatomic_hop import MicroStage
 from .prompt_injection_loader import InjectionPattern, InjectionScope
+from .subatomic_hop import MicroStage
 
 logger = logging.getLogger(__name__)
 
@@ -77,13 +76,13 @@ class InstructionalInjectionType(Enum):
 class StageMapping:
     """Maps injection types to applicable stages."""
     injection_type: InstructionalInjectionType
-    applicable_stages: List[MicroStage]
+    applicable_stages: list[MicroStage]
     priority: int = 5
     required: bool = False
 
 
 # Stage mappings for all 30 injection types
-STAGE_MAPPINGS: List[StageMapping] = [
+STAGE_MAPPINGS: list[StageMapping] = [
     # Framing Layer - Apply in PRE_CHECK
     StageMapping(InstructionalInjectionType.GLOBAL_GOAL_STATE, [MicroStage.PRE_CHECK], priority=10, required=True),
     StageMapping(InstructionalInjectionType.SUCCESS_CRITERIA, [MicroStage.PRE_CHECK], priority=9, required=True),
@@ -128,7 +127,7 @@ STAGE_MAPPINGS: List[StageMapping] = [
 ]
 
 
-def get_instructional_injections() -> List[InjectionPattern]:
+def get_instructional_injections() -> list[InjectionPattern]:
     """Get all 30 instructional injection patterns."""
     injections = []
 
@@ -741,7 +740,7 @@ Be concise and minimal within constraints.""",
     return injections
 
 
-def get_stage_applicable_injections(stage: MicroStage) -> List[str]:
+def get_stage_applicable_injections(stage: MicroStage) -> list[str]:
     """Get injection IDs applicable to a specific stage.
 
     Args:
@@ -763,7 +762,7 @@ def get_stage_applicable_injections(stage: MicroStage) -> List[str]:
     return applicable
 
 
-def get_required_injections(stage: MicroStage) -> List[str]:
+def get_required_injections(stage: MicroStage) -> list[str]:
     """Get required injection IDs for a stage.
 
     Args:

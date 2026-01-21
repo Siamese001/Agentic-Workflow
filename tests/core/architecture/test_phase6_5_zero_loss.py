@@ -44,7 +44,7 @@ def test_tc38_hierarchy_agent_integrity():
     # Scan for hierarchy violations (dry run)
     results = agent.scan_hierarchy()
 
-    print(f"   Hierarchy scan results:")
+    print("   Hierarchy scan results:")
     print(f"      Forbidden folders: {len(results.get('forbidden_folders', []))}")
     print(f"      Depth violations: {results.get('depth_violations', 0)}")
 
@@ -83,7 +83,7 @@ def test_tc39_checkpoint_manager_recovery():
     checkpoint_manager = PROJECT_ROOT / "agentic_core" / "L4_state" / "ValidationContext" / "CheckpointManagerAgent.py"
 
     if not checkpoint_manager.exists():
-        print(f"⚠️  WARNING: CheckpointManagerAgent.py not found")
+        print("⚠️  WARNING: CheckpointManagerAgent.py not found")
         return True
 
     try:
@@ -98,13 +98,13 @@ def test_tc39_checkpoint_manager_recovery():
         # Check that _validate_checkpoints uses get_data_files
         uses_get_data_files = 'get_data_files(self.checkpoint_dir' in content
 
-        print(f"   CheckpointManagerAgent.py:")
+        print("   CheckpointManagerAgent.py:")
         print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
         print(f"      glob calls: {glob_count}")
         print(f"      Uses get_data_files: {'✓' if uses_get_data_files else '✗'}")
 
         if not has_ssot_import:
-            print(f"❌ FAIL: Missing ssot_discovery import")
+            print("❌ FAIL: Missing ssot_discovery import")
             return False
 
         if glob_count > 0:
@@ -112,7 +112,7 @@ def test_tc39_checkpoint_manager_recovery():
             return False
 
         if not uses_get_data_files:
-            print(f"❌ FAIL: Not using get_data_files for checkpoint discovery")
+            print("❌ FAIL: Not using get_data_files for checkpoint discovery")
             return False
 
         print("✅ PASS: CheckpointManager uses ssot_discovery correctly")
@@ -137,7 +137,7 @@ def test_tc40_unified_validator_compliance():
     unified_validator = PROJECT_ROOT / "agentic_core" / "L5_safety" / "gravity" / "unified_validator.py"
 
     if not unified_validator.exists():
-        print(f"⚠️  WARNING: unified_validator.py not found")
+        print("⚠️  WARNING: unified_validator.py not found")
         return True
 
     try:
@@ -150,13 +150,13 @@ def test_tc40_unified_validator_compliance():
         rglob_count = content.count('.rglob(')
         glob_count = content.count('.glob(')
 
-        print(f"   unified_validator.py:")
+        print("   unified_validator.py:")
         print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
         print(f"      rglob calls: {rglob_count}")
         print(f"      glob calls: {glob_count}")
 
         if not has_ssot_import:
-            print(f"❌ FAIL: Missing ssot_discovery import")
+            print("❌ FAIL: Missing ssot_discovery import")
             return False
 
         if rglob_count > 0:
@@ -186,7 +186,7 @@ def test_phase6_5_reduction():
     total_count, offenders = scan_for_rglob_usage(agentic_core)
 
     print(f"   Current rglob/glob count: {total_count}")
-    print(f"   Target: < 170")
+    print("   Target: < 170")
 
     # Phase 6.4 baseline was 199
     baseline = 199
@@ -275,8 +275,8 @@ def main():
     if core_passed == 3:
         print("✅ 100% PASS - All Phase 6.5 Zero-Loss tests passed!")
         print("\nPhase 6.5 Core Guardian Refactoring is verified.")
-        print(f"\n🎯 ACHIEVEMENT: rglob count reduced from 199 to 184 (15 calls, 7.5% reduction)")
-        print(f"🏆 SUB-170 TARGET EXCEEDED!")
+        print("\n🎯 ACHIEVEMENT: rglob count reduced from 199 to 184 (15 calls, 7.5% reduction)")
+        print("🏆 SUB-170 TARGET EXCEEDED!")
         return 0
     else:
         print(f"❌ FAIL - {3 - core_passed} core test(s) failed")

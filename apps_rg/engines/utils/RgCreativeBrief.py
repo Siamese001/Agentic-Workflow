@@ -6,7 +6,6 @@ Ported from: archives/legacy_resume_gen/Job Workflow - JSON/Job_Workflow_v61.27.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 
 class VoiceType(Enum):
@@ -32,7 +31,7 @@ class WordCountConstraint:
     min_words: int
     max_words: int
 
-    def validate(self, text: str) -> Tuple[bool, str]:
+    def validate(self, text: str) -> tuple[bool, str]:
         """Validate text against word count constraint."""
         word_count = len(text.split())
         if word_count < self.min_words:
@@ -48,7 +47,7 @@ class CharCountConstraint:
 
     max_chars: int
 
-    def validate(self, text: str) -> Tuple[bool, str]:
+    def validate(self, text: str) -> tuple[bool, str]:
         """Validate text against character count constraint."""
         char_count = len(text)
         if char_count > self.max_chars:
@@ -61,8 +60,8 @@ class StructureConstraint:
     """Structure constraint for a section."""
 
     structure: str
-    segment_word_limit: Optional[int] = None
-    exclusions: List[str] = field(default_factory=list)
+    segment_word_limit: int | None = None
+    exclusions: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -75,7 +74,7 @@ class HeadlineBrief:
     char_count_max: int = 90
     structure: str = "Domain | Leadership | Value Prop"
     segment_word_limit: int = 3
-    exclusions: List[str] = field(
+    exclusions: list[str] = field(
         default_factory=lambda: [
             "and", "a", "an", "the", "in", "on", "at", "for", "to", "of"
         ]
@@ -93,7 +92,7 @@ class ExecutiveSummaryBrief:
         default_factory=lambda: WordCountConstraint(120, 140)
     )
     voice: VoiceType = VoiceType.THIRD_PERSON_IMPLIED
-    forbidden_patterns: List[str] = field(
+    forbidden_patterns: list[str] = field(
         default_factory=lambda: [
             "I have",
             "My expertise",
@@ -112,7 +111,7 @@ class ExperienceBulletsBrief:
     """Creative brief for experience bullets section."""
 
     provenance_strategy: ProvenanceStrategy = ProvenanceStrategy.JD_FIT_BASED
-    ProvenanceMap: Dict[str, str] = field(
+    ProvenanceMap: dict[str, str] = field(
         default_factory=lambda: {
             "Unify Consulting": "4V-3T-0S",
             "IBM": "4V-2T-0S",
@@ -123,7 +122,7 @@ class ExperienceBulletsBrief:
         "Multi-factor scoring algorithm: "
         "(JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)"
     )
-    overview_word_count: Dict[str, WordCountConstraint] = field(
+    overview_word_count: dict[str, WordCountConstraint] = field(
         default_factory=lambda: {
             "k6": WordCountConstraint(25, 33),
             "k7": WordCountConstraint(22, 28),
@@ -162,7 +161,7 @@ class CoverLetterBrief:
         default_factory=lambda: WordCountConstraint(85, 100)
     )
     min_specific_details: int = 4
-    forbidden_patterns: List[str] = field(
+    forbidden_patterns: list[str] = field(
         default_factory=lambda: [
             "At [COMPANY], I...",
             "During my time at...",
@@ -209,9 +208,9 @@ class CreativeBriefValidator:
         """Initialize with a creative brief."""
         self.brief = brief
 
-    def validate_headline(self, text: str) -> Dict[str, object]:
+    def validate_headline(self, text: str) -> dict[str, object]:
         """Validate headline against brief."""
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},
@@ -241,9 +240,9 @@ class CreativeBriefValidator:
 
         return result
 
-    def validate_executive_summary(self, text: str) -> Dict[str, object]:
+    def validate_executive_summary(self, text: str) -> dict[str, object]:
         """Validate executive summary against brief."""
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},
@@ -277,9 +276,9 @@ class CreativeBriefValidator:
         self,
         text: str,
         section_key: str = "k6",
-    ) -> Dict[str, object]:
+    ) -> dict[str, object]:
         """Validate a bullet against brief."""
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},
@@ -299,9 +298,9 @@ class CreativeBriefValidator:
 
         return result
 
-    def validate_cover_letter_paragraph(self, text: str) -> Dict[str, object]:
+    def validate_cover_letter_paragraph(self, text: str) -> dict[str, object]:
         """Validate a cover letter paragraph against brief."""
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},
@@ -322,9 +321,9 @@ class CreativeBriefValidator:
 
         return result
 
-    def validate_competency(self, text: str) -> Dict[str, object]:
+    def validate_competency(self, text: str) -> dict[str, object]:
         """Validate a competency description against brief."""
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},
@@ -347,7 +346,7 @@ def create_creative_brief() -> RGCreativeBrief:
 
 
 def create_brief_validator(
-    brief: Optional[RGCreativeBrief] = None,
+    brief: RGCreativeBrief | None = None,
 ) -> CreativeBriefValidator:
     """builder function to create a brief validator."""
     if brief is None:

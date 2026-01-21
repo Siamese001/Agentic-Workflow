@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 """Request and result types for inter-plane communication.
 
 Defines ActionRequest, PlanningRequest, and related types for
 communication between the orchestrator and planes.
 """
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 
 @dataclass
@@ -22,12 +23,12 @@ class ActionRequest:
     """
     action_type: str = "tool_call"
     tool_name: str = ""
-    parameters: Dict[str, Any] = field(default_factory=dict)
-    context: Dict[str, Any] = field(default_factory=dict)
-    timeout: Optional[float] = None
+    parameters: dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
+    timeout: float | None = None
     retry_count: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "action_type": self.action_type,
@@ -52,12 +53,12 @@ class ActionResult:
         metadata: Additional result metadata
     """
     success: bool = False
-    output: Optional[Any] = None
-    error: Optional[str] = None
+    output: Any | None = None
+    error: str | None = None
     execution_time: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "success": self.success,
@@ -80,11 +81,11 @@ class PlanningRequest:
         constraints: Any constraints on the plan
     """
     Task: str = ""
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     max_steps: int = 10
-    constraints: List[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "Task": self.Task,
@@ -107,12 +108,12 @@ class PlanningResult:
         alternatives: Alternative plans considered
     """
     success: bool = False
-    plan: List[Dict[str, Any]] = field(default_factory=list)
-    reasoning_trace: List[str] = field(default_factory=list)
+    plan: list[dict[str, Any]] = field(default_factory=list)
+    reasoning_trace: list[str] = field(default_factory=list)
     confidence: float = 0.0
-    alternatives: List[List[Dict[str, Any]]] = field(default_factory=list)
+    alternatives: list[list[dict[str, Any]]] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "success": self.success,

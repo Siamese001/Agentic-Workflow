@@ -9,6 +9,7 @@ sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.BaseClassEnforcerAgent import get_base_class_enforcer
 
+
 def main():
     enforcer = get_base_class_enforcer(project_root)
     result = enforcer.scan_violations()
@@ -20,7 +21,7 @@ def main():
     print(f"Compliance Rate: {result.get('compliance_rate', 0)}%")
 
     if result.get('violations'):
-        print(f"\nSample Violations (first 10):")
+        print("\nSample Violations (first 10):")
         for v in result['violations'][:10]:
             print(f"  {v['class_name']} ({v['layer']}): expected {v['expected_base']}")
             print(f"    current: {v['current_bases']}")

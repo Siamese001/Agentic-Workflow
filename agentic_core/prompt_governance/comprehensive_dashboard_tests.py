@@ -2,26 +2,13 @@
 Comprehensive Dashboard Test Suite
 All tests must pass before deployment.
 """
-import re
 import json
+import re
 import sys
 from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 project_root = Path(__file__).parent.parent
@@ -389,7 +376,7 @@ class DashboardTestSuite:
         for row in non_total_rows:
             for field in target_fields:
                 val = row.get(field)
-                if val is not None and not isinstance(val, (int, float)) and val != 'N/A':
+                if val is not None and not isinstance(val, int | float) and val != 'N/A':
                     valid_target_values = False
                     invalid_examples.append((row.get('Territory'), field, val))
 
@@ -398,7 +385,7 @@ class DashboardTestSuite:
 
         # Verify targets are populated from autonomy_targets.py config
         # Check that targets vary by territory (not all 100)
-        target_values = set(row.get('Target Invocation') for row in non_total_rows)
+        target_values = {row.get('Target Invocation') for row in non_total_rows}
         self.test("Target Invocation values vary by territory",
                  len(target_values) > 1,
                  f"All targets are the same: {target_values}")
@@ -482,7 +469,7 @@ class DashboardTestSuite:
         territory_names = [r.get('Territory') for r in non_total_rows]
         unique_names = len(set(territory_names)) == len(territory_names)
         self.test("Territory names are unique", unique_names,
-                 f"Duplicate territories found")
+                 "Duplicate territories found")
 
     def test_template_features(self):
         """Tests for template features: getContextualBg, getTargetTooltip, formatPctCell."""
@@ -589,7 +576,7 @@ class DashboardTestSuite:
         if total_row:
             inv_pct = total_row.get('Invocation %')
             self.test("Invocation % is numeric",
-                     isinstance(inv_pct, (int, float)),
+                     isinstance(inv_pct, int | float),
                      f"Invocation % is not numeric: {type(inv_pct)}")
 
             self.test("Invocation % in valid range",
@@ -619,7 +606,7 @@ class DashboardTestSuite:
 
         # Check that invocation values are reasonable
         inv_values = [r.get('Invocation %') for r in non_total_rows if 'Invocation %' in r]
-        valid_inv_values = all(isinstance(v, (int, float)) and 0 <= v <= 100 for v in inv_values)
+        valid_inv_values = all(isinstance(v, int | float) and 0 <= v <= 100 for v in inv_values)
         self.test("All Invocation % values valid", valid_inv_values,
                  "Some invocation values are invalid")
 
@@ -647,7 +634,7 @@ class DashboardTestSuite:
                         l0_targets_correct = False
             self.test("L0 Maintenance targets correct (20 or 70 for Infra)",
                      l0_targets_correct,
-                     f"L0 targets incorrect")
+                     "L0 targets incorrect")
 
         # Verify Infrastructure targets are 70
         infra_rows = [r for r in non_total_rows if 'Infrastructure' in r.get('Territory', '') or 'Infrast' in r.get('Territory', '')]

@@ -4,11 +4,11 @@
 __version__ = "12.0"
 
 import re
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Callable, Tuple
 from collections import defaultdict
+from collections.abc import Callable
+from datetime import datetime, timedelta
 
-from models_LIC import CircuitState, Archetype, CircuitBreakerOpenError
+from models_LIC import Archetype, CircuitBreakerOpenError, CircuitState
 
 # ============================================================================
 # NEW v11.6: CIRCUIT BREAKER (FEATURE 4.1)
@@ -44,7 +44,7 @@ class CircuitBreaker:
         self.failure_threshold = failure_threshold
         self.timeout_seconds = timeout_seconds
         self.failure_count = 0
-        self.last_failure_time: Optional[datetime] = None
+        self.last_failure_time: datetime | None = None
         self.state = CircuitState.CLOSED
 
     def call(self, func: Callable, *args, **kwargs):
@@ -68,7 +68,7 @@ class CircuitBreaker:
             if self.last_failure_time and datetime.now() - self.last_failure_time > timedelta(seconds=self.timeout_seconds):
                 self.state = CircuitState.HALF_OPEN
                 self.failure_count = 0
-                print(f"[CircuitBreaker] Transitioning to HALF_OPEN for recovery test")
+                print("[CircuitBreaker] Transitioning to HALF_OPEN for recovery test")
             else:
                 raise CircuitBreakerOpenError(
                     f"API circuit breaker is OPEN - waiting for recovery "
@@ -82,11 +82,11 @@ class CircuitBreaker:
                 # Test request succeeded, close circuit
                 self.state = CircuitState.CLOSED
                 self.failure_count = 0
-                print(f"[CircuitBreaker] Recovery successful, circuit CLOSED")
+                print("[CircuitBreaker] Recovery successful, circuit CLOSED")
 
             return result
 
-        except Exception as e:
+        except Exception:
             self.failure_count += 1
             self.last_failure_time = datetime.now()
 
@@ -132,9 +132,9 @@ class ContextManager:
     @classmethod
     def truncate_intelligently(
         cls,
-        context_sections: Dict[str, str],
+        context_sections: dict[str, str],
         max_tokens: int = MAX_CONTEXT_TOKENS
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """
         Truncate context sections by priority if exceeding token limit.
 
@@ -189,7 +189,7 @@ class ContextManager:
         return truncated
 
     @classmethod
-    def detect_overflow(cls, context_text: str) -> Tuple[bool, int]:
+    def detect_overflow(cls, context_text: str) -> tuple[bool, int]:
         """
         Detect if context exceeds safe limits.
 
@@ -238,8 +238,8 @@ class AdaptiveTemperatureController:
 
     def __init__(self):
         """Initialize temperature controller with history tracking"""
-        self.attempt_history: Dict[str, List[float]] = defaultdict(list)
-        self.success_temperatures: Dict[str, float] = {}
+        self.attempt_history: dict[str, list[float]] = defaultdict(list)
+        self.success_temperatures: dict[str, float] = {}
 
     def get_temperature(
         self,
@@ -291,7 +291,7 @@ class AdaptiveTemperatureController:
         self.success_temperatures[key] = temperature
         print(f"[TempController] Success recorded for {component} at temp {temperature:.2f}")
 
-    def get_success_rate(self, component: str, archetype: Archetype) -> Optional[float]:
+    def get_success_rate(self, component: str, archetype: Archetype) -> float | None:
         """
         Get average success temperature for component+archetype.
 
@@ -341,7 +341,7 @@ class TextProcessor:
         return len(text)
 
     @staticmethod
-    def extract_sentences(text: str) -> List[str]:
+    def extract_sentences(text: str) -> list[str]:
         """
         Extract sentences from text.
 
@@ -356,7 +356,7 @@ class TextProcessor:
         return [s.strip() for s in sentences if s.strip()]
 
     @staticmethod
-    def extract_metrics(text: str) -> List[str]:
+    def extract_metrics(text: str) -> list[str]:
         """
         Extract quantitative metrics from text.
 
@@ -410,7 +410,7 @@ class ValidationHelper:
     """Helper functions for validation logic"""
 
     @staticmethod
-    def check_word_count_range(text: str, min_words: int, max_words: int) -> Tuple[bool, str]:
+    def check_word_count_range(text: str, min_words: int, max_words: int) -> tuple[bool, str]:
         """
         Check if text is within word count range.
 
@@ -432,7 +432,7 @@ class ValidationHelper:
         return True, f"Word count {word_count} within range [{min_words}, {max_words}]"
 
     @staticmethod
-    def check_char_limit(text: str, max_chars: int) -> Tuple[bool, str]:
+    def check_char_limit(text: str, max_chars: int) -> tuple[bool, str]:
         """
         Check if text exceeds character limit.
 
@@ -451,7 +451,7 @@ class ValidationHelper:
         return True, f"Character count {char_count} within limit {max_chars}"
 
     @staticmethod
-    def find_placeholders(text: str) -> List[str]:
+    def find_placeholders(text: str) -> list[str]:
         """
         Find placeholder patterns in text.
 
@@ -501,8 +501,8 @@ class Timer:
 
     def __init__(self):
         """Initialize timer"""
-        self.start_time: Optional[datetime] = None
-        self.end_time: Optional[datetime] = None
+        self.start_time: datetime | None = None
+        self.end_time: datetime | None = None
 
     def start(self):
         """Start timer"""

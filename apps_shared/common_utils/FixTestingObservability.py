@@ -8,29 +8,13 @@ This script:
 3. For each agent without observability: adds logging import and logger
 4. This maximizes testing % and observable % in the dashboard
 """
-import ast
 import json
 import re
 from pathlib import Path
-from typing import List, Dict, Set
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
@@ -40,9 +24,9 @@ LOGGER_INIT = "logger = logging.getLogger(__name__)"
 TESTING_IMPORT = "from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin"
 
 
-def load_agents() -> List[Dict]:
+def load_agents() -> list[dict]:
     """Load all agents from discovery JSON."""
-    with open(DISCOVERY_JSON, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_JSON, encoding='utf-8') as f:
         return json.load(f)
 
 
@@ -171,7 +155,7 @@ def main():
     print(f"\nProcessing {len(agents)} agents...\n")
 
     # Group by file
-    by_file: Dict[str, List[str]] = {}
+    by_file: dict[str, list[str]] = {}
     for agent in agents:
         path = agent.get('path', '')
         class_name = agent.get('class_name', '')

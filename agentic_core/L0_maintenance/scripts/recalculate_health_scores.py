@@ -5,7 +5,6 @@ Recalculate Health Scores based on new Complexity Health values.
 Uses the canonical health calculation formula:
 Health = (Heal Cap × 0.30) + (Invocation × 0.10) + (Test × 0.25) + (Obs × 0.20) + (Complexity × 0.15)
 """
-import re
 import json
 import sys
 from pathlib import Path

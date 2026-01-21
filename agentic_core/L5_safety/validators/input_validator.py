@@ -9,9 +9,9 @@ Provides input validation utilities for safety checks.
 # Suggested keywords to add in docstring/code: agent, engine, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from typing import Any, Dict, List, Optional, Union
-import re
 import logging
+import re
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class InputValidator:
     """Validator for input sanitization and validation."""
 
     def __init__(self):
-        self._rules: List[callable] = []
+        self._rules: list[callable] = []
 
     def add_rule(self, rule: callable) -> None:
         """Add a validation rule."""
@@ -43,7 +43,7 @@ class InputValidator:
         """Validate that value is of expected type."""
         return isinstance(value, expected_type)
 
-    def validate_range(self, value: Union[int, float], min_val: Optional[float] = None, max_val: Optional[float] = None) -> bool:
+    def validate_range(self, value: int | float, min_val: float | None = None, max_val: float | None = None) -> bool:
         """Validate that value is within range."""
         if min_val is not None and value < min_val:
             return False
@@ -51,7 +51,7 @@ class InputValidator:
             return False
         return True
 
-    def validate_length(self, value: Union[str, list], min_len: Optional[int] = None, max_len: Optional[int] = None) -> bool:
+    def validate_length(self, value: str | list, min_len: int | None = None, max_len: int | None = None) -> bool:
         """Validate that value length is within bounds."""
         length = len(value)
         if min_len is not None and length < min_len:
@@ -61,7 +61,7 @@ class InputValidator:
         return True
 
 
-def validate_input(data: Any, schema: Dict[str, Any]) -> bool:
+def validate_input(data: Any, schema: dict[str, Any]) -> bool:
     """Validate input data against a schema."""
     validator = InputValidator()
     return validator.validate(data)

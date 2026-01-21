@@ -17,10 +17,11 @@ Composable Rules:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional, Set
-from dataclasses import dataclass, field
-import re
+
 import hashlib
+import re
+from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -29,17 +30,17 @@ class CodeIssue:
     rule: str
     severity: str  # "info", "warning", "error"
     message: str
-    file_path: Optional[str] = None
-    line_number: Optional[int] = None
-    suggestion: Optional[str] = None
+    file_path: str | None = None
+    line_number: int | None = None
+    suggestion: str | None = None
 
 
 @dataclass
 class QualityResult:
     """Result of code quality check."""
     valid: bool
-    issues: List[CodeIssue] = field(default_factory=list)
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    issues: list[CodeIssue] = field(default_factory=list)
+    metrics: dict[str, Any] = field(default_factory=dict)
 
 
 class CodeQualityGuardrail:
@@ -56,7 +57,7 @@ class CodeQualityGuardrail:
 
     def __init__(self):
         """Initialize code quality guardrail."""
-        self.enabled_rules: List[str] = [
+        self.enabled_rules: list[str] = [
             "formatting",
             "duplication",
             "unused_code",
@@ -71,7 +72,7 @@ class CodeQualityGuardrail:
 
         # Duplicate detection
         self.min_duplicate_lines = 5
-        self.code_hashes: Dict[str, List[str]] = {}
+        self.code_hashes: dict[str, list[str]] = {}
 
         # Unused code patterns
         self.unused_patterns = [
@@ -92,7 +93,7 @@ class CodeQualityGuardrail:
         self.checks_performed = 0
         self.issues_found = 0
 
-    async def validate(self, code: str, file_path: Optional[str] = None) -> QualityResult:
+    async def validate(self, code: str, file_path: str | None = None) -> QualityResult:
         """
         Validate code quality.
 
@@ -127,7 +128,7 @@ class CodeQualityGuardrail:
             }
         )
 
-    def _check_formatting(self, code: str, file_path: Optional[str]) -> List[CodeIssue]:
+    def _check_formatting(self, code: str, file_path: str | None) -> list[CodeIssue]:
         """Check code formatting."""
         issues = []
         lines = code.splitlines()
@@ -141,7 +142,7 @@ class CodeQualityGuardrail:
                     message=f"Line exceeds {self.max_line_length} characters ({len(line)})",
                     file_path=file_path,
                     line_number=i,
-                    suggestion=f"Consider breaking this line"
+                    suggestion="Consider breaking this line"
                 ))
 
         # Check file length
@@ -167,7 +168,7 @@ class CodeQualityGuardrail:
 
         return issues
 
-    def _check_duplication(self, code: str, file_path: Optional[str]) -> List[CodeIssue]:
+    def _check_duplication(self, code: str, file_path: str | None) -> list[CodeIssue]:
         """Check for duplicate code."""
         issues = []
         lines = code.splitlines()
@@ -182,7 +183,7 @@ class CodeQualityGuardrail:
                     issues.append(CodeIssue(
                         rule="duplication",
                         severity="warning",
-                        message=f"Duplicate code block detected",
+                        message="Duplicate code block detected",
                         file_path=file_path,
                         line_number=i + 1,
                         suggestion="Consider extracting to shared function"
@@ -195,7 +196,7 @@ class CodeQualityGuardrail:
 
         return issues
 
-    def _check_unused(self, code: str, file_path: Optional[str]) -> List[CodeIssue]:
+    def _check_unused(self, code: str, file_path: str | None) -> list[CodeIssue]:
         """Check for unused code patterns."""
         issues = []
         lines = code.splitlines()
@@ -232,7 +233,7 @@ class CodeQualityGuardrail:
                 issues.append(CodeIssue(
                     rule="git_hygiene",
                     severity="error",
-                    message=f"Commit message too short or unclear",
+                    message="Commit message too short or unclear",
                     suggestion="Use descriptive commit messages"
                 ))
 
@@ -250,7 +251,7 @@ class CodeQualityGuardrail:
             issues=issues
         )
 
-    def validate_dependencies(self, dependencies: List[str], used: Set[str]) -> QualityResult:
+    def validate_dependencies(self, dependencies: list[str], used: set[str]) -> QualityResult:
         """
         Validate dependencies.
 
@@ -281,7 +282,7 @@ class CodeQualityGuardrail:
             }
         )
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get code quality statistics."""
         return {
             "checks_performed": self.checks_performed,

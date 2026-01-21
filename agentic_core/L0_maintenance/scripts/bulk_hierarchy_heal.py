@@ -1,13 +1,13 @@
 from __future__ import annotations
+
 """
 One-Off Bulk Hierarchy Healer - Eternal Depth 4 Alignment
 """
 import shutil
-import os
-import shutil
 import sys
 from datetime import datetime
 from typing import Any
+
 dry_run: Any = False
 target_root: Any = 'agentic_core'
 primary_partition_only: Any = True
@@ -42,7 +42,7 @@ def main() -> Any:
     print(f"Mode: {('DRY RUN' if DRY_RUN else 'EXECUTION')}")
     output_file: Any = project_root / 'hierarchy_heal_dry_run.txt'
     with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(f'=== BULK HIERARCHY HEAL ===\n')
+        f.write('=== BULK HIERARCHY HEAL ===\n')
         f.write(f'Target: {TARGET_ROOT}\n')
         f.write(f'Timestamp: {datetime.now().isoformat()}\n')
         f.write(f'Configuration: DRY_RUN = {DRY_RUN}\n\n')
@@ -73,13 +73,13 @@ def main() -> Any:
                     dest_dir.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(file_path), str(dest_path))
                     log_move(file_path.name, '/'.join(parts[:-1]), f'{layer}/{primary}')
-        f.write(f'\n=== SUMMARY ===\n')
+        f.write('\n=== SUMMARY ===\n')
         f.write(f'Total Python files scanned: {len(python_files)}\n')
         f.write(f'Output file: {output_file}\n')
         f.write(f'DRY_RUN = {DRY_RUN}\n')
     if DRY_RUN:
         print(f'\n[DRY RUN COMPLETE] Output saved to: {output_file}')
-        print(f'Set DRY_RUN = False in the script to execute moves')
+        print('Set DRY_RUN = False in the script to execute moves')
     else:
         print(f'\n[EXECUTION COMPLETE] All moves executed. Output saved to: {output_file}')
     if not dry_run:

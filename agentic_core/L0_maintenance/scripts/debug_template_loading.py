@@ -1,23 +1,10 @@
 #!/usr/bin/env python3
 """Debug which template is actually being loaded during generation."""
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 sys.path.insert(0, str(Path.cwd()))
@@ -51,7 +38,7 @@ if template_path.exists():
     if 'Strategic Recommendations' in content:
         idx = content.find('Strategic Recommendations')
         snippet = content[max(0, idx-100):idx+200]
-        print(f"\nContext around 'Strategic Recommendations':")
+        print("\nContext around 'Strategic Recommendations':")
         print(snippet)
 else:
     print("\nERROR: No template found!")

@@ -1,19 +1,20 @@
 from __future__ import annotations
+
 """Clerk extraction for resume generation HOP-1."""
-import logging
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any
+
 
 class ClerkExtractor:
     """HOP-1: Extract structured data from master resume."""
     REQUIRED_KEYS: Any = ['owner', 'professional_experience', 'education', 'certifications_and_credentials', 'strategic_and_technical_competencies']
 
-    def __init__(self, master_resume: Dict) -> None:
+    def __init__(self, master_resume: dict) -> None:
         """Initialize the clerk extractor."""
         self.master_resume = master_resume
         self.HallucinationDetectorAgent = HallucinationDetectorAgent()
         self._validate_structure()
 
-    def extract(self) -> Tuple[Dict, List[ValidationResult]]:
+    def extract(self) -> tuple[dict, list[ValidationResult]]:
         """Extract and validate structured data from master resume."""
         experience_sections: Any = self._build_experience_sections()
         all_bullets: Any = []
@@ -31,7 +32,7 @@ class ClerkExtractor:
         if MISSING:
             raise ValueError(f"Missing required keys: {', '.join(MISSING)}")
 
-    def _build_experience_sections(self) -> List[Dict]:
+    def _build_experience_sections(self) -> list[dict]:
         """Build structured experience_sections from master resume."""
         SECTIONS = []
         for exp in self.master_resume.get('experience', []):
@@ -39,7 +40,7 @@ class ClerkExtractor:
             SECTIONS.append({'company': exp.get('company', ''), 'title': exp.get('title', ''), 'location': exp.get('location', ''), 'start_date': exp.get('start_date', ''), 'end_date': exp.get('end_date', ''), 'overview': exp.get('overview', ''), 'bullets': BULLETS, 'highlights': [b['bullet_text'] for b in BULLETS]})
         return SECTIONS
 
-    def _extract_metrics(self, text: str) -> List[str]:
+    def _extract_metrics(self, text: str) -> list[str]:
         """Extract quantified metrics from bullet text."""
         PATTERNS = ['\\$\\d+\\.?\\d*[MBK]\\+?', '\\d+\\.?\\d*%', '\\d+\\.?\\d*[MBK]\\+', '\\d{1,3}(?:,\\d{3})+']
         METRICS = []

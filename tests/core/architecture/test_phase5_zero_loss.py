@@ -14,10 +14,9 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 5 - Healing Method Standardization
 """
-import sys
 import inspect
+import sys
 from pathlib import Path
-from typing import Dict, Any, List, get_type_hints
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -38,9 +37,12 @@ def test_tc21_signature_compliance():
     print("TC-21: Signature Compliance")
     print("="*60)
 
+    from agentic_core.L5_safety.validators.MethodChangeDetectorAgent import (
+        MethodChangeDetectorAgent,
+    )
+
     from agentic_core.L5_safety.validators.BiasAuditorAgent import BiasAuditorAgent
     from agentic_core.L5_safety.validators.L5Agent import L5Agent
-    from agentic_core.L5_safety.validators.MethodChangeDetectorAgent import MethodChangeDetectorAgent
 
     agents_to_check = [
         ("BiasAuditorAgent", BiasAuditorAgent),
@@ -57,7 +59,7 @@ def test_tc21_signature_compliance():
             all_compliant = False
             continue
 
-        method = getattr(agent_class, 'heal_repository')
+        method = agent_class.heal_repository
         sig = inspect.signature(method)
         params = list(sig.parameters.keys())
 
@@ -105,7 +107,7 @@ def test_tc22_result_aggregation():
     print("TC-22: Result Aggregation")
     print("="*60)
 
-    from agentic_core.L3_orchestration.interfaces import AgentResult, MissionResult
+    from agentic_core.L3_orchestration.interfaces import AgentResult
 
     # Simulate two agent results with 5 violations each
     agent1_result = AgentResult(
@@ -220,7 +222,7 @@ def test_tc24_status_consistency():
     print("TC-24: Status Consistency")
     print("="*60)
 
-    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
+    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
     # Create test agent
     class TestHealerAgent(HealerMixin):
@@ -291,6 +293,7 @@ def test_legacy_key_elimination():
     print("="*60)
 
     import re
+
     from agentic_core.utils.ssot_discovery import get_python_files
 
     # Scan for legacy 'violations' key usage (without _found suffix)

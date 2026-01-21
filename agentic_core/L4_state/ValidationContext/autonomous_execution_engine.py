@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 L3 Orchestration: Autonomous Execution Engine
 The eternal heart that continuously validates and heals the Canon territory.
@@ -17,21 +18,16 @@ import os
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
 # L2 Resource awareness - Use UnifiedResourceManagerAgent (consolidates ProactiveResourceManagerAgent)
 from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
-    UnifiedResourceManagerAgent,
     create_proactive_resource_manager,
 )
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 # L4 Checkpoint integration
 # GRAVITY FIXED: Dynamic import for Checkpoint manager
@@ -63,7 +59,7 @@ class autonomous_execution_engine:
         self.CheckpointManager = create_autonomous_checkpoint_manager()
 
         # Execution state
-        self.last_mission_result: Optional[Dict[str, Any]] = None
+        self.last_mission_result: dict[str, Any] | None = None
         self.execution_interval = 3600  # 1 hour
         self.priority_threshold = 50
 
@@ -190,7 +186,7 @@ class autonomous_execution_engine:
 
         Logger.warning("L3: Eternal execution cycle stopped (Safe Mode)")
 
-    def get_execution_status(self) -> Dict[str, Any]:
+    def get_execution_status(self) -> dict[str, Any]:
         """Get current execution status"""
         return {
             "running": self.running,

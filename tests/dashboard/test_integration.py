@@ -6,9 +6,10 @@ Tests for dashboard integration.
 
 Migrated from: agentic_core/L2_execution/ToolRegistry/test_phase6_integration.py
 """
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))

@@ -7,22 +7,11 @@
 from __future__ import annotations
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint_2 import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+
 from agentic_core.L5_safety.validators.decorators import standard_heal
+
 """Lightweight Bias Detection for Content Quality - Blueprint Reference.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)

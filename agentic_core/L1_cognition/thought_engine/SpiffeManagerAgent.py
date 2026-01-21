@@ -5,21 +5,25 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import hashlib
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import logging
 import secrets
 import time
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType, IdentityVerificationResult, TrustDomain
+from typing import Any
+
+from agentic_core.L1_cognition.identity.spiffe_manager_types import (
+    AgentIdentity,
+    IdentityType,
+    IdentityVerificationResult,
+    TrustDomain,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
@@ -48,12 +52,12 @@ class SpiffeManager:
         self.TrustDomain = TrustDomain
         self.default_ttl_seconds = default_ttl_seconds
         self.enable_logging = enable_logging
-        self._identities: Dict[str, AgentIdentity] = {}
+        self._identities: dict[str, AgentIdentity] = {}
         self._revoked_ids: set = set()
         if self.enable_logging:
             LOGGER.info('spiffe_manager_initialized', extra={'TrustDomain': TrustDomain.value, 'default_ttl': default_ttl_seconds})
 
-    def create_identity(self, agent_name: str, agent_type: IdentityType, namespace: str='default', capabilities: Optional[List[str]]=None, ttl_seconds: Optional[int]=None, metadata: Optional[Dict[str, Any]]=None) -> AgentIdentity:
+    def create_identity(self, agent_name: str, agent_type: IdentityType, namespace: str='default', capabilities: list[str] | None=None, ttl_seconds: int | None=None, metadata: dict[str, Any] | None=None) -> AgentIdentity:
         """Create a new agent identity.
 
         Args:
@@ -100,7 +104,7 @@ class SpiffeManager:
             LOGGER.debug('identity_verified', extra={'spiffe_id': spiffe_id})
         return IdentityVerificationResult(valid=True, identity=identity, reason='Identity verified successfully')
 
-    def rotate_credentials(self, spiffe_id: str, ttl_seconds: Optional[int]=None) -> Optional[AgentIdentity]:
+    def rotate_credentials(self, spiffe_id: str, ttl_seconds: int | None=None) -> AgentIdentity | None:
         """Rotate credentials for an existing identity.
 
         Args:
@@ -140,7 +144,7 @@ class SpiffeManager:
             return True
         return False
 
-    def get_identity(self, spiffe_id: str) -> Optional[AgentIdentity]:
+    def get_identity(self, spiffe_id: str) -> AgentIdentity | None:
         """Get an identity by SPIFFE ID.
 
         Args:
@@ -151,7 +155,7 @@ class SpiffeManager:
         """
         return self._identities.get(spiffe_id)
 
-    def list_identities(self, agent_type: Optional[IdentityType]=None, namespace: Optional[str]=None) -> List[AgentIdentity]:
+    def list_identities(self, agent_type: IdentityType | None=None, namespace: str | None=None) -> list[AgentIdentity]:
         """List all identities.
 
         Args:
@@ -210,7 +214,7 @@ class SpiffeManager:
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

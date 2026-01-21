@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Supreme Court - Zero Trust Multi-Model Consensus Engine
 
@@ -9,10 +10,12 @@ import asyncio
 import json
 import logging
 import re
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any
+
 from openai import AsyncOpenAI
 
 from agentic_core.schemas.models.core_contracts import ConsensusVerdict, ModelOpinion
+
 Logger: Any = logging.getLogger(__name__)
 
 class SupremeCourt:
@@ -23,7 +26,7 @@ class SupremeCourt:
     proceeding with potentially dangerous actions.
     """
 
-    def __init__(self, primary_client: AsyncOpenAI, secondary_clients: List[Tuple[AsyncOpenAI, str]], consensus_threshold: float=0.7):
+    def __init__(self, primary_client: AsyncOpenAI, secondary_clients: list[tuple[AsyncOpenAI, str]], consensus_threshold: float=0.7):
         """
         Initialize the Supreme Court.
 
@@ -64,7 +67,7 @@ class SupremeCourt:
         LOGGER.info(f'Consensus reached with score {Verdict.consensus_score:.2f}')
         return Verdict
 
-    async def _gather_opinions(self, context: str, goal: str, risk_level: str) -> List[ModelOpinion]:
+    async def _gather_opinions(self, context: str, goal: str, risk_level: str) -> list[ModelOpinion]:
         """Get opinions from all models in parallel."""
         tasks = []
         tasks.append(self._get_opinion(self.primary, 'gpt-4', context, goal, risk_level, 'You are a Senior Software Architect. Provide a balanced, technical solution.'))
@@ -100,11 +103,11 @@ class SupremeCourt:
             risk = 'LOW'
         return ModelOpinion(model_name=model_name, plan=plan or 'No clear plan provided', reasoning=reasoning or 'No reasoning provided', risk_assessment=risk, confidence=confidence)
 
-    async def _analyze_consensus(self, opinions: List[ModelOpinion], context: str, goal: str) -> ConsensusVerdict:
+    async def _analyze_consensus(self, opinions: list[ModelOpinion], context: str, goal: str) -> ConsensusVerdict:
         """Analyze opinions to determine consensus."""
         if not opinions:
             raise ValueError('No valid opinions received')
-        high_risk_count = sum((1 for o in opinions if o.risk_assessment in ['HIGH', 'CRITICAL']))
+        high_risk_count = sum(1 for o in opinions if o.risk_assessment in ['HIGH', 'CRITICAL'])
         if high_risk_count > len(opinions) / 2:
             return ConsensusVerdict(chosen_plan='CONSENSUS_BLOCKED', consensus_score=0.0, dissenting_opinions=[f'High risk assessed by {high_risk_count}/{len(opinions)} models'], reasoning='Multiple models assessed high risk', safe_to_proceed=False)
         judge_prompt = f'\nCompare these {len(opinions)} proposed plans for the goal: {goal}\n\nPlans:\n{json.dumps([{o.model_name: o.plan} for o in opinions], indent=2)}\n\nDetermine:\n1. Are the plans essentially proposing the same approach? (0.0-1.0)\n2. Is it safe to proceed based on these opinions? (YES/NO)\n3. What is the consensus plan? (Combine the best elements)\n\nProvide a JSON response:\n{{\n    "similarity_score": 0.0-1.0,\n    "safe_to_proceed": true/false,\n    "consensus_plan": "Combined plan",\n    "reasoning": "Explanation"\n}}\n'
@@ -120,7 +123,7 @@ class SupremeCourt:
             LOGGER.error(f'Judge analysis failed: {e}')
             return self._simple_consensus(opinions)
 
-    def _simple_consensus(self, opinions: List[ModelOpinion]) -> ConsensusVerdict:
+    def _simple_consensus(self, opinions: list[ModelOpinion]) -> ConsensusVerdict:
         """Simple fallback consensus method."""
         risk_counts = {}
         for o in opinions:
@@ -130,7 +133,7 @@ class SupremeCourt:
         best_opinion = max(opinions, key=lambda o: o.confidence)
         return ConsensusVerdict(chosen_plan=best_opinion.plan, consensus_score=0.6, dissenting_opinions=[], reasoning='Selected highest confidence plan', safe_to_proceed=True)
 
-    def _extract_section(self, text: str, markers: List[str]) -> str:
+    def _extract_section(self, text: str, markers: list[str]) -> str:
         """Extract a section from model response."""
         for marker in markers:
             if marker in text:

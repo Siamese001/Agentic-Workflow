@@ -1,14 +1,14 @@
 from __future__ import annotations
+
 """
 Sovereign Report Agent – Phase 13+ (Dec 30, 2025)
 Pure canonical audit report structure and builder.
 Zero side effects. Import-safe for L6 consumption and all orchestration agents.
 """
 
-from datetime import datetime
-from typing import List, Dict
 import logging
 import re
+from datetime import datetime
 
 
 class SovereignReport:
@@ -18,8 +18,8 @@ class SovereignReport:
     """
 
     def __init__(self):
-        self.scores: Dict[str, float] = {}
-        self.issues: Dict[str, List[str]] = {}
+        self.scores: dict[str, float] = {}
+        self.issues: dict[str, list[str]] = {}
         self.report_id: str = ""
         self.timestamp = None
 
@@ -55,8 +55,8 @@ class SovereignReport:
             self._report_id = f"audit-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
 
         def with_dimension(
-            self, name: str, score: float, issues: List[str] = None
-        ) -> 'SovereignReport.Builder':
+            self, name: str, score: float, issues: list[str] = None
+        ) -> SovereignReport.Builder:
             """Sets a validated dimension score."""
             if name not in self._dimensions:
                 raise ValueError(f"Sovereignty Violation: Unknown dimension: {name}")
@@ -66,7 +66,7 @@ class SovereignReport:
             self._dimensions[name]["issues"] = issues or []
             return self
 
-        def build(self) -> 'SovereignReport':
+        def build(self) -> SovereignReport:
             """Constructs the sealed report and emits L6 observability event."""
             Logger = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ class SovereignReport:
             report.timestamp = datetime.utcnow()
             return report
 
-    def get_all_issues(self) -> List[Dict]:
+    def get_all_issues(self) -> list[dict]:
         """
         Parse raw guardian issues into structured format expected by Healing Strategies (Phase 10+).
         Input format example: "path/to/file.py: message text (line XX if present)"

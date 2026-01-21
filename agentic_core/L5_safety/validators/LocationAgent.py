@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 LocationAgent: Sovereign territorial gatekeeper (Canon Key 6 territory)
 
@@ -18,25 +19,17 @@ Replaces logic previously in void_compliance.py:
 Placed in L5_safety/validators per semantic_l2_registry purpose:
   "Canon constitution validators, structural policy enforcement..."
 """
-from pathlib import Path
-from typing import List, Tuple, Dict, Any, Optional, Union
-from dataclasses import dataclass
-from datetime import datetime
+import ast
+import logging
 import re
 import shutil
-import logging
-import ast
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 # Shared infrastructure imports (SRP fission)
-from agentic_core.L5_safety.validators.location_constants import (
-    ARCHIVE_SUBFOLDERS,
-    DEFAULT_ARCHIVE_SUBFOLDER,
-    HEALING_STRATEGY_MAP,
-    DEFAULT_APP_HEALING_TARGET,
-)
 from agentic_core.L5_safety.validators.location_utils import (
     compute_module_path,
-    is_path_compliant as is_path_compliant_util,
 )
 
 Logger = logging.getLogger(__name__)
@@ -50,7 +43,7 @@ except ImportError:
     SovereignIndex = None
 
 
-def _get_python_files(project_root: Path) -> List[Path]:
+def _get_python_files(project_root: Path) -> list[Path]:
     """
     Get all Python files using ssot_discovery (Phase 6.1 standardization).
 
@@ -69,10 +62,10 @@ def _get_python_files(project_root: Path) -> List[Path]:
 # ============================================================================
 
 def is_path_compliant(
-    file_path: Union[str, Path],
-    project_root: Optional[Path] = None
+    file_path: str | Path,
+    project_root: Path | None = None
 ) -> bool:
-    """
+    r"""
     L5 Sovereign Structural SSOT - Hard-enforcement of path validity.
 
     This is the Supreme Court for structural compliance. All L3 and L2 agents
@@ -102,10 +95,6 @@ def is_path_compliant(
         False
     """
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        ROOT_WHITELIST,
-        FORBIDDEN_ROOT_FOLDERS,
-        FORBIDDEN_FOLDER_PATTERN,
-        SOVEREIGN_REGISTRY,
         get_validated_project_root,
     )
 
@@ -154,40 +143,12 @@ def is_path_compliant(
 
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    ROOT_WHITELIST,                    # = set(sovereign_registry.keys())
-    FORBIDDEN_ROOT_FOLDERS,
-    FORBIDDEN_FOLDER_PATTERN,          # ^\\d+_
-    SOVEREIGN_REGISTRY,
-    ROOT_PROTECTED_FILES,
-    TESTS_ROOT_FILE_WHITELIST,
     APP_SPECIFIC_TARGET_SUBFOLDER,
-    is_app_specific_file,
-    get_correct_app_path,
-    has_forbidden_layer_prefix,
-    is_broken_backup_file,
-    validate_path_within_project,
+    AST_DOMAIN_HIT_THRESHOLD,  # Flexible depth exemptions (Option A)
+    ROOT_PROTECTED_FILES,
     get_validated_project_root,
-    safe_path_join,
-    APP_RG_AST_TERMS,
-    APP_LIC_AST_TERMS,
-    APP_RG_VARIABLE_TERMS,
-    APP_LIC_VARIABLE_TERMS,
-    APP_RG_STRING_TERMS,
-    APP_LIC_STRING_TERMS,
-    VARIABLE_HIT_WEIGHT,
-    STRING_HIT_WEIGHT,
-    AST_DOMAIN_HIT_THRESHOLD,
-    FORBIDDEN_APP_MODULES,
-    CORE_TERRITORY_KEYWORDS,
-    LAYER_FORBIDDEN_IMPORTS,
-    TERRITORY_MISMATCH_THRESHOLD,
-    MIN_ALIGNMENT_SCORE,
-    DEFAULT_APP_HEALING_TARGET,
-    DEFAULT_CORE_HEALING_TERRITORY,
-    GLOBAL_EXCLUDED_DIRS,              # Production Lens SSOT
-    is_path_allowed,                   # SSOT path validation helper
-    VARIABLE_DEPTH_SUBFOLDERS,         # Flexible depth exemptions (Option A)
 )
+
 # Optional prompt registry for meta-learning
 try:
     from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
@@ -198,13 +159,15 @@ except ImportError:
             return cls
         return decorator
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool:
     """Check if file/line is excepted from key validation."""
     import fnmatch
     import re
+
     from agentic_core.L5_safety.validators.structure_blueprint import CANON_KEY_EXCEPTIONS
     exceptions = CANON_KEY_EXCEPTIONS.get(key_id, {})
     if not exceptions:
@@ -225,8 +188,9 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
     return False
 
 
-from agentic_core.L5_safety.validators.L5Agent import L5Agent
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.L5Agent import L5Agent
+
 
 @registers_prompt(
     template_name="file_placement.jinja",
@@ -234,7 +198,7 @@ from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
     territory="templates"
 )
 class LocationAgent(L5Agent, MCPHardenedMixin):
-    """
+    r"""
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.
 
@@ -307,8 +271,8 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         """Structured violation output for deterministic healing."""
         is_valid: bool
         message: str
-        file_path: Optional[Path] = None
-        suggested_path: Optional[str] = None  # Full relative path for healing (e.g., 'apps_rg/engines')
+        file_path: Path | None = None
+        suggested_path: str | None = None  # Full relative path for healing (e.g., 'apps_rg/engines')
         severity: int = 5
 
     def __init__(self, project_root: Path) -> None:
@@ -346,7 +310,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
     def _validate_project_root(self) -> None:
         """
         Validate that project_root is the actual project root, not a parent directory.
-        RCA: Folders were created at C:\Git\ instead of C:\Git\Agentic-Workflow\
+        RCA: Folders were created at C:\\Git\\ instead of C:\\Git\\Agentic-Workflow\
         """
         validated_root = get_validated_project_root()
         if self.project_root != validated_root:
@@ -362,37 +326,37 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer.safe_create_directory(relative_path)
 
-    def validate_sovereign_roots(self) -> List[Tuple[Path, str]]:
+    def validate_sovereign_roots(self) -> list[tuple[Path, str]]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator.validate_sovereign_roots()
 
-    def validate_file_location(self, file_path: Path) -> Tuple[bool, str]:
+    def validate_file_location(self, file_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator.validate_file_location(file_path)
 
-    def _validate_ast_violations(self, root_folder: str, file_path: Path, rel_path: Path) -> Tuple[bool, str]:
+    def _validate_ast_violations(self, root_folder: str, file_path: Path, rel_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._validate_ast_violations(root_folder, file_path, rel_path)
 
-    def _check_forbidden_imports(self, tree: ast.AST, current_l1: str, rel_path: Path) -> Tuple[bool, str]:
+    def _check_forbidden_imports(self, tree: ast.AST, current_l1: str, rel_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._check_forbidden_imports(tree, current_l1, rel_path)
 
-    def _scan_imports_for_violations(self, tree: ast.AST, current_l1: str) -> Tuple[bool, Optional[str]]:
+    def _scan_imports_for_violations(self, tree: ast.AST, current_l1: str) -> tuple[bool, str | None]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._scan_imports_for_violations(tree, current_l1)
 
-    def _extract_modules_from_node(self, node: ast.AST) -> List[str]:
+    def _extract_modules_from_node(self, node: ast.AST) -> list[str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
@@ -404,37 +368,37 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._is_forbidden_app_import(module)
 
-    def _check_layer_import_violation(self, module: str, current_l1: str) -> Optional[str]:
+    def _check_layer_import_violation(self, module: str, current_l1: str) -> str | None:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._check_layer_import_violation(module, current_l1)
 
-    def _check_semantic_alignment(self, tree: ast.AST, current_territory: str, rel_path: Path) -> Tuple[bool, str]:
+    def _check_semantic_alignment(self, tree: ast.AST, current_territory: str, rel_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._check_semantic_alignment(tree, current_territory, rel_path)
 
-    def _calculate_semantic_scores(self, tree: ast.AST) -> Tuple[float, float, Dict[str, float]]:
+    def _calculate_semantic_scores(self, tree: ast.AST) -> tuple[float, float, dict[str, float]]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._calculate_semantic_scores(tree)
 
-    def _check_app_domain_violation(self, app_rg_score: float, app_lic_score: float, rel_path: Path) -> Tuple[bool, str]:
+    def _check_app_domain_violation(self, app_rg_score: float, app_lic_score: float, rel_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._check_app_domain_violation(app_rg_score, app_lic_score, rel_path)
 
-    def _check_territory_alignment(self, current_territory: str, territory_scores: Dict[str, float], rel_path: Path) -> Tuple[bool, str]:
+    def _check_territory_alignment(self, current_territory: str, territory_scores: dict[str, float], rel_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._check_territory_alignment(current_territory, territory_scores, rel_path)
 
-    def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> Tuple[bool, str]:
+    def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
@@ -453,14 +417,14 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
     def _apply_healing_strategy(
         self, file_path: Path, msg: str, archives_root: Path, dry_run: bool,
-        affected_paths: List[Path], import_touched_paths: List[Path]
-    ) -> Dict[str, Any]:
+        affected_paths: list[Path], import_touched_paths: list[Path]
+    ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer._apply_healing_strategy(file_path, msg, archives_root, dry_run, affected_paths, import_touched_paths)
 
-    def _heal_broken_backup(self, file_path: Path, dry_run: bool, affected_paths: List[Path]) -> Dict[str, Any]:
+    def _heal_broken_backup(self, file_path: Path, dry_run: bool, affected_paths: list[Path]) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
@@ -468,8 +432,8 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
     def _heal_app_specific_violation(
         self, file_path: Path, msg: str, dry_run: bool,
-        affected_paths: List[Path], import_touched_paths: List[Path]
-    ) -> Dict[str, Any]:
+        affected_paths: list[Path], import_touched_paths: list[Path]
+    ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
@@ -477,8 +441,8 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
     def _heal_territory_mismatch(
         self, file_path: Path, msg: str, dry_run: bool,
-        affected_paths: List[Path], import_touched_paths: List[Path]
-    ) -> Dict[str, Any]:
+        affected_paths: list[Path], import_touched_paths: list[Path]
+    ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
@@ -486,8 +450,8 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
     def _heal_depth_violation(
         self, file_path: Path, msg: str, dry_run: bool,
-        affected_paths: List[Path], import_touched_paths: List[Path]
-    ) -> Dict[str, Any]:
+        affected_paths: list[Path], import_touched_paths: list[Path]
+    ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
@@ -497,20 +461,20 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
     def _heal_via_archiving(
         self, file_path: Path, msg: str, archives_root: Path,
-        dry_run: bool, affected_paths: List[Path]
-    ) -> Dict[str, Any]:
+        dry_run: bool, affected_paths: list[Path]
+    ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
-    def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> Tuple[bool, str]:
+    def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._validate_forbidden_patterns(parts, root_folder)
 
-    def _validate_root_whitelist(self, root_folder: str, rel_path: Path = None) -> Tuple[bool, str]:
+    def _validate_root_whitelist(self, root_folder: str, rel_path: Path = None) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
@@ -519,28 +483,28 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
     # Subfolders that legitimately have variable depth (not fixed at depth 3)
     # [SSOT] VARIABLE_DEPTH_SUBFOLDERS imported at module level from structure_blueprint.py
 
-    def _validate_depth_requirements(self, parts: tuple, root_folder: str, rel_path: Path) -> Tuple[bool, str]:
+    def _validate_depth_requirements(self, parts: tuple, root_folder: str, rel_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._validate_depth_requirements(parts, root_folder, rel_path)
 
-    def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> Tuple[bool, str]:
+    def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._validate_app_specific_files(root_folder, file_path)
 
-    def _validate_filename_patterns(self, file_path: Path) -> Tuple[bool, str]:
+    def _validate_filename_patterns(self, file_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._validate_filename_patterns(file_path)
 
-    def enforce_void_compliance(self, files: List[Path]) -> Tuple[List[Path], List[Tuple[Path, str]]]:
+    def enforce_void_compliance(self, files: list[Path]) -> tuple[list[Path], list[tuple[Path, str]]]:
         """Filter files and collect all location-based violations."""
-        valid_files: List[Path] = []
-        violations: List[Tuple[Path, str]] = []
+        valid_files: list[Path] = []
+        violations: list[tuple[Path, str]] = []
 
         for file_path in files:
             is_valid, reason = self.validate_file_location(file_path)
@@ -551,13 +515,13 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
         return valid_files, violations
 
-    def run(self, files: List[Path] = None) -> List[Tuple[Path, str]]:
+    def run(self, files: list[Path] = None) -> list[tuple[Path, str]]:
         """
         Full location compliance scan.
         Returns all violations (Missing roots + per-file).
         Suitable as first-stage gatekeeper in orchestrator.
         """
-        all_violations: List[Tuple[Path, str]] = []
+        all_violations: list[tuple[Path, str]] = []
 
         # 1. Check sovereign root existence
         all_violations.extend(self.validate_sovereign_roots())
@@ -587,7 +551,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer._backup_file(file_path, backup_dir)
 
-    def post_heal_validation(self, original_path: Path, new_path: Optional[Path] = None, dry_run: bool = True) -> Dict[str, Any]:
+    def post_heal_validation(self, original_path: Path, new_path: Path | None = None, dry_run: bool = True) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
@@ -610,25 +574,25 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         except ValueError:
             return ""
 
-    def fix_imports_after_move(self, old_path: Path, new_path: Path, dry_run: bool = True) -> Dict[str, Any]:
+    def fix_imports_after_move(self, old_path: Path, new_path: Path, dry_run: bool = True) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer.fix_imports_after_move(old_path, new_path, dry_run)
 
-    def safe_move(self, src_path: Path, dst_path: Path, dry_run: bool = True) -> Dict[str, Any]:
+    def safe_move(self, src_path: Path, dst_path: Path, dry_run: bool = True) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer.safe_move(src_path, dst_path, dry_run)
 
-    def safe_delete(self, file_path: Path, dry_run: bool = True) -> Dict[str, Any]:
+    def safe_delete(self, file_path: Path, dry_run: bool = True) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer.safe_delete(file_path, dry_run)
 
-    def post_naming_validation(self, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+    def post_naming_validation(self, affected_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """
         Post-healing NamingAgent validation on affected paths.
         Focuses on:
@@ -689,7 +653,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
         return naming_report
 
-    def auto_heal_naming_issues(self, naming_report: Dict[str, Any], dry_run: bool = True) -> Dict[str, Any]:
+    def auto_heal_naming_issues(self, naming_report: dict[str, Any], dry_run: bool = True) -> dict[str, Any]:
         """
         Autonomous naming healing triggered when post-naming validation finds issues.
         Prioritizes duplicates (common post-move), then prefix mismatches.
@@ -710,7 +674,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         try:
             # 1. Heal duplicates (highest priority — breaks imports/runtime)
             duplicates = naming_report.get("naming_duplicate_violations", {})
-            for dup_name, paths in duplicates.items():
+            for _dup_name, paths in duplicates.items():
                 # Heal all but one (keep original, resolve others)
                 for path_str in paths[1:]:  # Skip first occurrence
                     path = self.project_root / path_str
@@ -759,7 +723,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         return heal_report
 
     # Refactored: Phase-based — orchestrator low CC (~10–15)
-    def _recompute_ast_scores(self, tree: ast.AST) -> Tuple[float, float, Dict[str, float]]:
+    def _recompute_ast_scores(self, tree: ast.AST) -> tuple[float, float, dict[str, float]]:
         """FACADE: Delegates to GravityLeakDetector."""
         from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
         detector = GravityLeakDetector(project_root=self.project_root)
@@ -807,7 +771,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         detector = GravityLeakDetector(project_root=self.project_root)
         return detector._aggregate_ast_increments(initial_scores, increments)
 
-    def post_import_validation_and_heal(self, affected_paths: List[Path], import_touched_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+    def post_import_validation_and_heal(self, affected_paths: list[Path], import_touched_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """
         Combined ImportAgent validation + auto-healing on affected files.
         Focuses on convention fixes (ordering, unused, star/relative).
@@ -859,7 +823,6 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
                 full_report["import_validation_status"] = "FULL_SUCCESS"
                 return full_report
 
-            heal_actions = []
 
             # === GRAVITY LIMITED AUTO-HEAL (Safe removal + TODO) ===
             gravity_heal_actions = []
@@ -898,25 +861,25 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
         return full_report
 
-    def _heal_gravity_violations(self, gravity_issues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _heal_gravity_violations(self, gravity_issues: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """FACADE: Delegates to GravityLeakDetector."""
         from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
         detector = GravityLeakDetector(project_root=self.project_root)
         return detector._heal_gravity_violations(gravity_issues)
 
-    def _extract_downstream_roots(self, msg: str) -> List[str]:
+    def _extract_downstream_roots(self, msg: str) -> list[str]:
         """FACADE: Delegates to GravityLeakDetector."""
         from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
         detector = GravityLeakDetector(project_root=self.project_root)
         return detector._extract_downstream_roots(msg)
 
-    def _insert_gravity_heal_todo(self, lines: List[str], msg: str, removed_modules: List[str]) -> str:
+    def _insert_gravity_heal_todo(self, lines: list[str], msg: str, removed_modules: list[str]) -> str:
         """FACADE: Delegates to GravityLeakDetector."""
         from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
         detector = GravityLeakDetector(project_root=self.project_root)
         return detector._insert_gravity_heal_todo(lines, msg, removed_modules)
 
-    def _find_todo_insert_position(self, lines: List[str]) -> int:
+    def _find_todo_insert_position(self, lines: list[str]) -> int:
         """FACADE: Delegates to GravityLeakDetector."""
         from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
         detector = GravityLeakDetector(project_root=self.project_root)
@@ -931,7 +894,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         shutil.copy2(path, backup_path)
         path.write_text(content, encoding="utf-8")
 
-    def post_naming_conventions_validation_and_heal(self, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+    def post_naming_conventions_validation_and_heal(self, affected_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """
         Full NamingAgent convention validation + auto-healing for fixable issues.
         Focuses on filename conventions (snake_case, forbidden patterns).
@@ -1026,7 +989,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
         return conventions_report
 
-    def deep_import_validation_and_heal(self, affected_paths: List[Path], import_touched_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+    def deep_import_validation_and_heal(self, affected_paths: list[Path], import_touched_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """
         Deep ImportAgent integration: full validation + advanced auto-heal.
         Uses ImportAgent's precise AST analysis for convention fixes.
@@ -1124,7 +1087,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         return deep_report
 
     # Refactored: Phase-based decomposition — orchestrator low CC (~12)
-    def deep_naming_validation_and_heal(self, affected_paths: List[Path], import_touched_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+    def deep_naming_validation_and_heal(self, affected_paths: list[Path], import_touched_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """Deep naming validation orchestrator — linear phase chain."""
         deep_naming_report = {
             "naming_deep_status": "SKIPPED",
@@ -1151,7 +1114,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         heal_actions, semantic_issues = self._collect_naming_violations(py_files, affected_paths)
 
         # Phase 2: Apply targeted healing
-        healed_count = self._apply_naming_heals(heal_actions, affected_paths)
+        self._apply_naming_heals(heal_actions, affected_paths)
 
         # Phase 3: Determine final status
         deep_naming_report["naming_semantic_issues"] = semantic_issues
@@ -1161,7 +1124,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
         return deep_naming_report
 
-    def _collect_naming_violations(self, py_files: List[Path], affected_paths: List[Path]) -> Tuple[list, list]:
+    def _collect_naming_violations(self, py_files: list[Path], affected_paths: list[Path]) -> tuple[list, list]:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
@@ -1198,7 +1161,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         except ValueError:
             pass
 
-    def _apply_naming_heals(self, heal_actions: list, affected_paths: List[Path]) -> int:
+    def _apply_naming_heals(self, heal_actions: list, affected_paths: list[Path]) -> int:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
@@ -1222,7 +1185,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer._insert_sovereign_marker(path)
 
-    def _apply_convention_fixes(self, path: Path, action: dict, affected_paths: List[Path]) -> None:
+    def _apply_convention_fixes(self, path: Path, action: dict, affected_paths: list[Path]) -> None:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
         healer = LocationHealerAgent(project_root=self.project_root)
@@ -1236,10 +1199,10 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
     def cleanup_violations(
         self,
-        violations: List[Tuple[Path, str]],
+        violations: list[tuple[Path, str]],
         dry_run: bool = True,
         max_actions: int = 50
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         ULTRA HEALING ENGINE — Full FilesystemAgent integration (2026-01-02)
 
@@ -1266,8 +1229,8 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
         """
         actions = []
         archives_root = self.project_root / "archives"
-        affected_paths: List[Path] = []  # Track original + new paths for batch validation
-        import_touched_paths: List[Path] = []  # Collect from import fixes for naming validation
+        affected_paths: list[Path] = []  # Track original + new paths for batch validation
+        import_touched_paths: list[Path] = []  # Collect from import fixes for naming validation
 
         for i, violation in enumerate(violations):
             if i >= max_actions:
@@ -1415,7 +1378,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
                 duplicates = self.naming_agent.scan_repository_duplicates()
 
                 duplicate_actions = []
-                for dup_name, paths in duplicates.items():
+                for _dup_name, paths in duplicates.items():
                     if len(paths) <= 1:
                         continue
 
@@ -1494,7 +1457,7 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
         return actions
 
-    def run_with_cleanup(self, files: List[Path] = None, dry_run: bool = True) -> Dict[str, Any]:
+    def run_with_cleanup(self, files: list[Path] = None, dry_run: bool = True) -> dict[str, Any]:
         """
         ULTRA HEALING WORKFLOW — Full location compliance with autonomous cleanup (2026-01-02)
 
@@ -1538,8 +1501,8 @@ from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None,
-    ) -> Dict[str, int]:
+        _call_path: Set[str] | None = None,
+    ) -> dict[str, int]:
         """
         Autonomous full-repository location law healing.
         Canon Key 51 compliance - fully self-orchestrating.

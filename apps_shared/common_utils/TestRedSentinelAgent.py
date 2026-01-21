@@ -1,13 +1,15 @@
 import pytest
+
 pytestmark = pytest.mark.skip(reason='DEPRECATED: Test requires external modules or complex import chains')
 
 # New file: tests/unit/test_red_sentinel_agent.py
-import pytest
-import sys
-from pathlib import Path
-from unittest.mock import Mock, patch, AsyncMock
 import json
 import os
+import sys
+from pathlib import Path
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))

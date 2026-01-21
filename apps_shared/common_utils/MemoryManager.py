@@ -7,14 +7,15 @@ monitoring to prevent memory leaks and OOM errors.
 import gc
 import logging
 import sys
+import threading
 import time
 import tracemalloc
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
+from typing import Any
+
 import psutil
-import threading
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ class ContextItem:
 class MemoryManager:
     """Manages memory usage and enforces limits."""
 
-    def __init__(self, name: str = "default", limits: Optional[MemoryLimits] = None):
+    def __init__(self, name: str = "default", limits: MemoryLimits | None = None):
         """Initialize the memory manager.
 
         Args:
@@ -78,7 +79,7 @@ class MemoryManager:
 
         # Memory monitoring
         self._monitoring = False
-        self._monitor_thread: Optional[threading.Thread] = None
+        self._monitor_thread: threading.Thread | None = None
 
         # Start memory tracing if available
         if tracemalloc.is_tracing():
@@ -117,7 +118,7 @@ class MemoryManager:
         key: str,
         value: Any,
         priority: int = 0,
-        max_size: Optional[int] = None
+        max_size: int | None = None
     ) -> bool:
         """Add an item to context with size limits.
 
@@ -205,7 +206,7 @@ class MemoryManager:
     def prune_context(
         self,
         strategy: PruningStrategy = PruningStrategy.LRU,
-        target_size: Optional[int] = None
+        target_size: int | None = None
     ) -> int:
         """Prune context items based on strategy.
 
@@ -274,7 +275,7 @@ class MemoryManager:
             self._stats["item_count"] = 0
             logger.debug("Cleared all context data")
 
-    def _sanitize_value(self, value: Any, max_size: Optional[int] = None) -> Any:
+    def _sanitize_value(self, value: Any, max_size: int | None = None) -> Any:
         """Sanitize a value to prevent memory issues.
 
         Args:
@@ -381,7 +382,7 @@ class MemoryManager:
             except Exception as e:
                 logger.error(f"Memory monitoring error: {e}")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get memory manager statistics.
 
         Returns:
@@ -435,11 +436,11 @@ Memory Percent: {stats.get('process_memory_percent', 0):.1f}%
 
 
 # Global memory manager registry
-_managers: Dict[str, MemoryManager] = {}
+_managers: dict[str, MemoryManager] = {}
 _manager_lock = threading.Lock()
 
 
-def get_memory_manager(name: str = "default", limits: Optional[MemoryLimits] = None) -> MemoryManager:
+def get_memory_manager(name: str = "default", limits: MemoryLimits | None = None) -> MemoryManager:
     """Get or create a memory manager.
 
     Args:

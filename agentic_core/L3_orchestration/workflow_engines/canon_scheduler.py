@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Canon Validator Swarm Scheduler
 
@@ -7,15 +8,11 @@ Canon Validator system. Manages mission execution, convergence checking,
 and human-in-the-loop intervention.
 """
 import asyncio
-import re
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
+from typing import TYPE_CHECKING, Any
+
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 if TYPE_CHECKING:
     from agentic_core.InterventionServer import approval_event, start_intervention_server
@@ -57,13 +54,34 @@ class CanonSwarmScheduler:
         """Build default phase configuration using agent classes."""
         if not self._agent_classes:
             raise ValueError('No agent classes provided. Call set_phases() or provide agent_classes in constructor.')
-        from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent, StructuralEngineer
-        from agentic_core.L2_execution.ToolRegistry.governance import ArchitectureGovernorAgent, DependencySentinelAgent
-        from agentic_core.L2_execution.ToolRegistry.infrastructure import BenchmarkingAgent, Historian
-        from agentic_core.L2_execution.ToolRegistry.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
+        from agentic_core.L2_execution.ToolRegistry.governance import DependencySentinelAgent
+        from agentic_core.L2_execution.ToolRegistry.infrastructure import (
+            BenchmarkingAgent,
+            Historian,
+        )
+        from agentic_core.L2_execution.ToolRegistry.quality import (
+            CodeStyleGuardian,
+            HygieneGuardian,
+            PerformanceEnforcer,
+        )
         from agentic_core.L2_execution.ToolRegistry.repair import TestPilot, ToolsmithAgent
-        from agentic_core.L2_execution.ToolRegistry.security import ConcurrencyGuardianAgent, SafetyInspectorAgent, SecurityEnforcer
-        from agentic_core.L2_execution.ToolRegistry.specialized import DocEnforcer, NamingEnforcer, TheCartographer, TheOmniContext, TheStrategist, TypeEnforcer
+        from agentic_core.L2_execution.ToolRegistry.security import (
+            ConcurrencyGuardianAgent,
+            SafetyInspectorAgent,
+            SecurityEnforcer,
+        )
+        from agentic_core.L2_execution.ToolRegistry.specialized import (
+            DocEnforcer,
+            NamingEnforcer,
+            TheCartographer,
+            TheOmniContext,
+            TheStrategist,
+            TypeEnforcer,
+        )
+        from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
+            StructuralEngineer,
+            UnifiedCodeEnforcerAgent,
+        )
         self.phases = {'integrity_seq': [Historian(self.ctx), ArchitectureGovernor(self.ctx), DependencySentinelAgent(self.ctx)], 'curation_seq': [HygieneGuardian(self.ctx), CodeStyleGuardian(self.ctx)], 'test_seq': [TestPilot(self.ctx)], 'memory_parallel': [TheCartographer(self.ctx), TheOmniContext(self.ctx)], 'resilience_parallel': [SafetyInspectorAgent(self.ctx), SecurityEnforcer(self.ctx), PerformanceEnforcer(self.ctx)], 'resource_safety_parallel': [ConcurrencyGuardianAgent(self.ctx)], 'engineering_parallel': [StructuralEngineer(self.ctx), UnifiedCodeEnforcerAgent(self.ctx), ToolsmithAgent(self.ctx)], 'refinement_parallel': [NamingEnforcer(self.ctx), DocEnforcer(self.ctx), TypeEnforcer(self.ctx)], 'benchmarking_seq': [BenchmarkingAgent(self.ctx)], 'optimization_conditional': [TheStrategist(self.ctx)]}
 
     async def run_mission(self, target_scope: str=None) -> Any:
@@ -78,11 +96,11 @@ class CanonSwarmScheduler:
             print(f'🎯 SURGICAL MISSION: Targeting {target_scope}')
             if not self.ctx.code_graph.graph:
                 self.ctx.code_graph.build(self.ctx.python_files)
-            BlastRadius: Any = set([target_scope])
+            BlastRadius: Any = {target_scope}
             dependents: Any = self.ctx.code_graph.get_impact_radius(target_scope)
             BlastRadius.update(dependents)
             original_files: Any = self.ctx.python_files.copy()
-            self.ctx.python_files = [f for f in self.ctx.python_files if f in BlastRadius or any((f.endswith(b.lstrip('./')) for b in BlastRadius))]
+            self.ctx.python_files = [f for f in self.ctx.python_files if f in BlastRadius or any(f.endswith(b.lstrip('./')) for b in BlastRadius)]
             print(f'   ☢️ BLAST RADIUS: {len(self.ctx.python_files)} files in scope')
             for f in self.ctx.python_files[:5]:
                 print(f'      - {f}')
@@ -121,10 +139,10 @@ class CanonSwarmScheduler:
         many_modifications = len(self.ctx.modified_files) > 3
         strategic_plan = getattr(self.ctx, 'strategic_plan', None)
         if high_risk or (many_modifications and strategic_plan):
-            print(f'\n[ALERT] INTERVENTION REQUIRED')
+            print('\n[ALERT] INTERVENTION REQUIRED')
             print(f"   Risk Level: {('HIGH' if high_risk else 'ELEVATED')}")
             print(f'   Modified Files: {len(self.ctx.modified_files)}')
-            print(f'   Approval URL: http://127.0.0.1:8080')
+            print('   Approval URL: http://127.0.0.1:8080')
             start_intervention_server(self.ctx)
             print('   ⏳ Waiting for human approval...')
             await approval_event.wait()
@@ -195,7 +213,7 @@ class CanonSwarmScheduler:
         """Check if all agents have passed."""
         if not self.ctx.results:
             return False
-        return all((r.get('passed', False) for r in self.ctx.results.values()))
+        return all(r.get('passed', False) for r in self.ctx.results.values())
 
     def _generate_mission_report(self):
         """Generate final mission report."""
@@ -203,8 +221,8 @@ class CanonSwarmScheduler:
         print('MISSION REPORT')
         print('=' * 60)
         total_keys = len(self.ctx.results)
-        passed_keys = sum((1 for r in self.ctx.results.values() if r.get('passed', False)))
-        print(f'\n[STATS] SUMMARY:')
+        passed_keys = sum(1 for r in self.ctx.results.values() if r.get('passed', False))
+        print('\n[STATS] SUMMARY:')
         print(f'   Total Keys Checked: {total_keys}')
         print(f'   Keys Passed: {passed_keys}')
         print(f'   Keys Failed: {total_keys - passed_keys}')

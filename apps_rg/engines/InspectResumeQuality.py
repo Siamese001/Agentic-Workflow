@@ -6,7 +6,7 @@ Generated: 2025-12-07T13:28:54.215610
 """
 
 import logging
-from typing import Union, Dict, Optional
+
 from shared.result_types import DiagnosticReport
 
 Logger = logging.getLogger(__name__)
@@ -18,11 +18,11 @@ Logger = logging.getLogger(__name__)
 class InspectResumeQuality:
     """Diagnostics for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: dict[str, object] | None = None):
         self.config = config or {}
         Logger.info(f"Initialized {self.__class__.__name__}")
 
-    def diagnose(self, target: Union[str, Dict]) -> DiagnosticReport:
+    def diagnose(self, target: str | dict) -> DiagnosticReport:
         """Run diagnostics."""
         issues = []
         metrics = {}
@@ -38,6 +38,6 @@ class InspectResumeQuality:
         return DiagnosticReport(healthy=len(issues) == 0, issues=issues, metrics=metrics)
 
 
-def diagnose(target: Union[str, Dict], config: Optional[Dict] = None) -> DiagnosticReport:
+def diagnose(target: str | dict, config: dict | None = None) -> DiagnosticReport:
     """Run diagnostics."""
     return InspectResumeQuality(config).diagnose(target)

@@ -19,14 +19,12 @@ Usage:
 """
 
 import warnings
-from typing import Dict, Optional, Type
 
-from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
 from agentic_core.L3_orchestration.interfaces import IOrchestratorAgent
-
+from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
 
 # Singleton instance
-_unified_orchestrator: Optional[UnifiedOrchestratorAgent] = None
+_unified_orchestrator: UnifiedOrchestratorAgent | None = None
 
 
 def get_orchestrator(mode: str = "unified", **kwargs) -> IOrchestratorAgent:

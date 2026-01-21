@@ -2,10 +2,12 @@
 """
 Inspect dashboard in browser by fetching and analyzing the rendered HTML
 """
-import requests
-from bs4 import BeautifulSoup
 import json
 import re
+
+import requests
+from bs4 import BeautifulSoup
+
 
 def inspect_dashboard():
     """Fetch dashboard from localhost and inspect what's rendering."""
@@ -34,23 +36,23 @@ def inspect_dashboard():
         code_quality_grid = soup.find(id='codeQualityGrid')
 
         if kpi_grid:
-            print(f"   ✅ #kpiGrid exists")
+            print("   ✅ #kpiGrid exists")
             # Check if it has content
             if kpi_grid.get_text(strip=True):
                 print(f"      Content length: {len(kpi_grid.get_text())} chars")
             else:
-                print(f"      ⚠️  #kpiGrid is EMPTY")
+                print("      ⚠️  #kpiGrid is EMPTY")
         else:
-            print(f"   ❌ #kpiGrid NOT FOUND")
+            print("   ❌ #kpiGrid NOT FOUND")
 
         if code_quality_grid:
-            print(f"   ✅ #codeQualityGrid exists")
+            print("   ✅ #codeQualityGrid exists")
             if code_quality_grid.get_text(strip=True):
                 print(f"      Content length: {len(code_quality_grid.get_text())} chars")
             else:
-                print(f"      ⚠️  #codeQualityGrid is EMPTY")
+                print("      ⚠️  #codeQualityGrid is EMPTY")
         else:
-            print(f"   ❌ #codeQualityGrid NOT FOUND")
+            print("   ❌ #codeQualityGrid NOT FOUND")
 
         # Check for dashboardData
         print("\n3. Checking embedded data:")

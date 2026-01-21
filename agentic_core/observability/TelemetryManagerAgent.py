@@ -9,9 +9,8 @@ Replaces legacy file-based 'runtime_state.json' polling.
 # This boosts alignment detection — review and integrate appropriately
 
 import json
-import os
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class TelemetryManager:
@@ -23,7 +22,7 @@ class TelemetryManager:
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(TelemetryManager, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
             cls._instance.redis = None
             cls._instance.stream_key = "runtime:events"
             cls._instance.state_key = "runtime:live_state"
@@ -38,7 +37,7 @@ class TelemetryManager:
             except ImportError:
                 pass  # Graceful degradation if core isn't loaded
 
-    def push_state(self, updates: Dict[str, Any]):
+    def push_state(self, updates: dict[str, Any]):
         """
         Push state updates (merged client-side) and publish change event.
         Used for persistent values like 'strategy_weights' or 'current_agent'.
@@ -57,7 +56,7 @@ class TelemetryManager:
         msg = json.dumps({"type": "state_update", "data": updates, "timestamp": datetime.now().isoformat()})
         self.redis._get_client().publish(self.stream_key, msg)
 
-    def log_event(self, event_type: str, payload: Dict[str, Any]):
+    def log_event(self, event_type: str, payload: dict[str, Any]):
         """
         Publish a discrete event (fire-and-forget).
         Used for 'cache_hit', 'experience_stored', 'error'.

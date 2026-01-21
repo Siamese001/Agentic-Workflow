@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 TheOmniContext - L6 Semantic Context Buffer
 
@@ -6,13 +7,9 @@ Concatenates all source code from mapped repositories into a single context buff
 for complex architectural queries and RAG-based agent retrieval.
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -41,7 +38,7 @@ class TheOmniContext:
         self.file_contents = {}
         self.content_exclude_patterns = {'.min.js', '.map', '.lock', '__pycache__', '.pyc', 'test_', '_test.py', 'conftest.py'}
 
-    async def build_context(self, file_summaries: Dict[str, Any]) -> Dict[str, Any]:
+    async def build_context(self, file_summaries: dict[str, Any]) -> dict[str, Any]:
         """
         Build the omniscient context buffer from file summaries.
 
@@ -66,7 +63,7 @@ class TheOmniContext:
                 stats['skipped'] += 1
                 continue
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content: Any = f.read()
                 if len(content) > 5000:
                     content: Any = content[:5000] + '\n...[truncated]...'
@@ -106,11 +103,11 @@ class TheOmniContext:
         for pattern in self.content_exclude_patterns:
             if pattern in file_path:
                 return True
-        if any((file_path.endswith(ext) for ext in ['.png', '.jpg', '.jpeg', '.gif', '.zip'])):
+        if any(file_path.endswith(ext) for ext in ['.png', '.jpg', '.jpeg', '.gif', '.zip']):
             return True
         return False
 
-    def query_context(self, query: str, ContextWindow: int=10000) -> Dict[str, Any]:
+    def query_context(self, query: str, ContextWindow: int=10000) -> dict[str, Any]:
         """
         Query the omniscient context buffer.
 
@@ -143,7 +140,7 @@ class TheOmniContext:
                             context_start: Any = max(0, pos - 500)
                             context_end: Any = min(len(self.context_buffer), pos + 500)
                             context: Any = self.context_buffer[context_start:context_end]
-                            if not any((m['file'] == file_key for m in matches)):
+                            if not any(m['file'] == file_key for m in matches):
                                 matches.append({'file': file_key, 'repository': index_data['repository'], 'path': index_data['path'], 'summary': index_data['summary'], 'content': context})
                             break
                     start: Any = pos + 1
@@ -151,7 +148,7 @@ class TheOmniContext:
             matches: Any = matches[:10]
         return {'query': query, 'matches_found': len(matches), 'results': matches}
 
-    def get_file_content(self, file_key: str) -> Optional[str]:
+    def get_file_content(self, file_key: str) -> str | None:
         """
         Get content for a specific file.
 
@@ -163,7 +160,7 @@ class TheOmniContext:
         """
         return self.file_contents.get(file_key)
 
-    def get_context_window(self, file_key: str, window_size: int=2000) -> Optional[str]:
+    def get_context_window(self, file_key: str, window_size: int=2000) -> str | None:
         """
         Get a context window around a file.
 
@@ -181,7 +178,7 @@ class TheOmniContext:
         end: Any = min(len(self.context_buffer), index['end'] + window_size // 2)
         return self.context_buffer[start:end]
 
-    async def sync_to_pinecone(self, file_summaries: Dict[str, Any]) -> Dict[str, Any]:
+    async def sync_to_pinecone(self, file_summaries: dict[str, Any]) -> dict[str, Any]:
         """
         Sync file summaries to Pinecone for RAG retrieval.
 
@@ -195,7 +192,6 @@ class TheOmniContext:
             LOGGER.warning('Pinecone client not available - skipping sync')
             return {'synced': 0, 'error': 'Pinecone not available'}
         try:
-            from agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent import AppWorkflowOrchestratorAgent
             reflection: Any = RgReflectionAgent(pinecone_client=self.pinecone_client)
             synced: Any = 0
             for file_key, data in file_summaries.items():
@@ -210,7 +206,7 @@ class TheOmniContext:
             LOGGER.error(f'Failed to sync to Pinecone: {e}')
             return {'synced': 0, 'error': str(e)}
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """
         Get statistics about the context buffer.
 
@@ -224,7 +220,7 @@ class TheOmniContext:
             repo: Any = index_data['repository']
             repo_counts[repo] = repo_counts.get(repo, 0) + 1
         return {'built': True, 'total_files': len(self.file_index), 'buffer_size': len(self.context_buffer), 'repositories': repo_counts, 'average_file_size': len(self.context_buffer) // len(self.file_index) if self.file_index else 0}
-_the_omni_context: Optional[TheOmniContext] = None
+_the_omni_context: TheOmniContext | None = None
 
 def get_omni_context() -> TheOmniContext:
     """Get or create the global TheOmniContext instance."""
@@ -233,7 +229,7 @@ def get_omni_context() -> TheOmniContext:
         _the_omni_context = TheOmniContext()
     return _the_omni_context
 
-async def initialize_omni_context(pinecone_client: Any=None, file_summaries: Dict[str, Any]=None) -> Any:
+async def initialize_omni_context(pinecone_client: Any=None, file_summaries: dict[str, Any]=None) -> Any:
     """
     Initialize TheOmniContext and build buffer.
 
@@ -249,7 +245,7 @@ async def initialize_omni_context(pinecone_client: Any=None, file_summaries: Dic
     else:
         LOGGER.info('TheOmniContext initialized (no summaries provided)')
 
-async def query_omni_context(query: str) -> Dict[str, Any]:
+async def query_omni_context(query: str) -> dict[str, Any]:
     """Query the omniscient context."""
     omni: Any = get_omni_context()
     return omni.query_context(query)

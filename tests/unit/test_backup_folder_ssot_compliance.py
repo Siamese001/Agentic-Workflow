@@ -8,11 +8,10 @@ RCA: ImportAgent was creating .import_healer_backups instead of using
      .sovereign_healing_backup/import_fixes/ as defined in SOVEREIGN_REGISTRY.
 """
 
-import ast
 import re
 from pathlib import Path
-import pytest
 
+import pytest
 
 # SSOT-approved backup root
 APPROVED_BACKUP_ROOT = ".sovereign_healing_backup"
@@ -126,7 +125,7 @@ class TestBackupFolderSSOTCompliance:
                     })
 
         assert not violations, (
-            f"Found forbidden backup folder patterns:\n"
+            "Found forbidden backup folder patterns:\n"
             + "\n".join(f"  - {v['file']}: {v['matches']}" for v in violations)
         )
 
@@ -156,7 +155,7 @@ class TestBackupFolderSSOTCompliance:
                     })
 
         assert not violations, (
-            f"Found unapproved backup folder assignments:\n"
+            "Found unapproved backup folder assignments:\n"
             + "\n".join(f"  - {v['file']}: {v['backup_path']}" for v in violations)
         )
 

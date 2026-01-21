@@ -1,10 +1,14 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 import docker
+
 Logger: Any = logging.getLogger(__name__)
 
 class DockerSandbox:
@@ -16,10 +20,10 @@ class DockerSandbox:
 
 def run_code(self: Any, code: str, timeout: int) -> str:
     """Runs python code in an ephemeral container."""
-    WRAPPED: Any = f'try:\n{self._indent(code)}\nexcept Exception as e:\n    Logger.info(e)'
+    f'try:\n{self._indent(code)}\nexcept Exception as e:\n    Logger.info(e)'
     try:
-        CONTAINER: Any = self.client.containers.run(self.image, COMMAND=['python', '-c', wrapped], mem_limit='512m', network_disabled=True, DETACH=True)
-        exit_code: Any = container.wait(timeout=timeout)
+        self.client.containers.run(self.image, COMMAND=['python', '-c', wrapped], mem_limit='512m', network_disabled=True, DETACH=True)
+        container.wait(timeout=timeout)
         container.logs().decode('utf-8')
         container.remove()
         return logs
@@ -27,4 +31,4 @@ def run_code(self: Any, code: str, timeout: int) -> str:
         return f'Sandbox Error: {str(e)}'
 
 def _indent(self: Any, text: str) -> str:
-    return '\n'.join(('    ' + line for line in text.splitlines()))
+    return '\n'.join('    ' + line for line in text.splitlines())

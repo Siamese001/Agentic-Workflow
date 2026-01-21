@@ -6,13 +6,13 @@ Each coordinator owns a specific orchestration domain with clear responsibilitie
 """
 
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
-import time
-import asyncio
 
-from .execution_strategy import WorkflowContext, WorkflowResult, ExecutionStatus
+import time
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Any
+
+from .execution_strategy import ExecutionStatus, WorkflowContext, WorkflowResult
 
 
 @dataclass
@@ -20,7 +20,7 @@ class CoordinatorCapability:
     """Describes a coordinator capability."""
     name: str
     description: str
-    workflow_types: List[str]
+    workflow_types: list[str]
     priority: int = 0
 
 
@@ -58,7 +58,7 @@ class WorkflowCoordinator(ABC):
         pass
 
     @abstractmethod
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         """
         Return coordinator capabilities.
 
@@ -112,7 +112,7 @@ class WorkflowCoordinator(ABC):
         finally:
             self.total_time += time.time() - start_time
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get coordinator statistics."""
         return {
             "name": self.name,
@@ -139,7 +139,7 @@ class CoordinatorRegistry:
 
     def __init__(self):
         """Initialize registry."""
-        self.coordinators: Dict[str, WorkflowCoordinator] = {}
+        self.coordinators: dict[str, WorkflowCoordinator] = {}
 
     def register(self, coordinator: WorkflowCoordinator) -> None:
         """Register coordinator."""
@@ -150,26 +150,26 @@ class CoordinatorRegistry:
         if name in self.coordinators:
             del self.coordinators[name]
 
-    def get(self, name: str) -> Optional[WorkflowCoordinator]:
+    def get(self, name: str) -> WorkflowCoordinator | None:
         """Get coordinator by name."""
         return self.coordinators.get(name)
 
-    def get_for_workflow(self, workflow_type: str) -> Optional[WorkflowCoordinator]:
+    def get_for_workflow(self, workflow_type: str) -> WorkflowCoordinator | None:
         """Get coordinator that can handle workflow type."""
         for coordinator in self.coordinators.values():
             if coordinator.enabled and coordinator.can_handle(workflow_type):
                 return coordinator
         return None
 
-    def get_all(self) -> List[WorkflowCoordinator]:
+    def get_all(self) -> list[WorkflowCoordinator]:
         """Get all coordinators."""
         return list(self.coordinators.values())
 
-    def get_enabled(self) -> List[WorkflowCoordinator]:
+    def get_enabled(self) -> list[WorkflowCoordinator]:
         """Get enabled coordinators."""
         return [c for c in self.coordinators.values() if c.enabled]
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get registry statistics."""
         return {
             "total_coordinators": len(self.coordinators),

@@ -7,6 +7,7 @@ Validates the complete dashboard generation pipeline from source data to HTML ou
 import json
 import re
 from pathlib import Path
+
 import pytest
 
 
@@ -111,7 +112,7 @@ def test_no_hardcoded_health_scores_in_code():
             failures.append(f"Line {line_num}: {match.group(0)}")
 
     assert not failures, (
-        f"Found hardcoded health = 100 in source code:\n" + "\n".join(failures) +
+        "Found hardcoded health = 100 in source code:\n" + "\n".join(failures) +
         "\n\nHealth score should be calculated from actual metrics, not hardcoded!"
     )
 

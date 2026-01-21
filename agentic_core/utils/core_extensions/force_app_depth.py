@@ -1,20 +1,17 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import shutil
-from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
+
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
     get_validated_project_root,
     safe_path_join,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 # FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations
 PROJECT_ROOT = get_validated_project_root()
@@ -32,7 +29,6 @@ def force_app_depth() -> Any:
             continue
         print(f'\n[HARDENING] {app_path.name}...')
         # Phase 6.6: Use os.walk instead of glob for directory traversal
-        import os
         for item in app_path.iterdir():
             if item.is_dir() and item.name.endswith('_engine'):
                 engine_folder = item

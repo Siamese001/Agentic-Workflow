@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import warnings
 
 # Hardening Action: Deprecation warning for fragmented mixin locations
@@ -32,12 +33,13 @@ Usage:
             )
 """
 import asyncio
+import hashlib
 import logging
 import re
 import time
-import hashlib
-from typing import Any, Callable, Dict, List, Optional, Set
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Any
 
 # Import instructional injection patterns for all agents
 try:
@@ -61,14 +63,14 @@ class MCPAuditEntry:
     result_status: str
     duration_ms: float
     caller: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class MCPValidationResult:
     """Result of MCP response validation."""
     valid: bool
-    reasons: List[str] = field(default_factory=list)
+    reasons: list[str] = field(default_factory=list)
     sanitized_output: Any = None
 
 
@@ -102,7 +104,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
     MAX_RESPONSE_DEPTH: int = 50
 
     # Tool whitelist - tools allowed to be called
-    TOOL_WHITELIST: Set[str] = {
+    TOOL_WHITELIST: set[str] = {
         "read_file", "write_file", "edit", "run_command",
         "grep_search", "find_by_name", "list_dir",
         "git_status", "git_commit", "git_push", "git_pull",
@@ -113,7 +115,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
     }
 
     # Dangerous patterns to detect in responses
-    CODE_INJECTION_PATTERNS: List[str] = [
+    CODE_INJECTION_PATTERNS: list[str] = [
         r"__import__\s*\(",
         r"eval\s*\(",
         r"exec\s*\(",
@@ -142,7 +144,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         """
         super().__init__(**kwargs)
         # Private prefix _mcp_ to avoid attribute collisions
-        self._mcp_audit_log: List[MCPAuditEntry] = []
+        self._mcp_audit_log: list[MCPAuditEntry] = []
         self._mcp_call_count: int = 0
         self._mcp_success_count: int = 0
         self._mcp_failure_count: int = 0
@@ -152,7 +154,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         operation: str,
         call_func: Callable,
         *args: Any,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         **kwargs: Any,
     ) -> Any:
         """
@@ -172,7 +174,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
             RuntimeError: If all retries are exhausted
         """
         timeout = timeout or self.DEFAULT_TIMEOUT
-        last_error: Optional[str] = None
+        last_error: str | None = None
 
         for attempt in range(self.MAX_RETRIES):
             try:
@@ -230,7 +232,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         )
 
     def _emit_sovereign_event(
-        self, event_type: str, data: Dict[str, Any]
+        self, event_type: str, data: dict[str, Any]
     ) -> None:
         """
         Emit telemetry event for observability.
@@ -273,7 +275,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         except ImportError:
             pass
 
-    def get_redis_connection(self, url: Optional[str] = None):
+    def get_redis_connection(self, url: str | None = None):
         """
         Get hardened Redis connection with SSL enforcement and pooling.
 
@@ -284,6 +286,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
             Redis client with connection pool
         """
         import os
+
         from redis import ConnectionPool, Redis
 
         redis_url = url or os.getenv("MCP_REDIS_URL") or os.getenv("REDIS_URL")
@@ -322,9 +325,9 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
 
     def get_neo4j_driver(
         self,
-        uri: Optional[str] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None
+        uri: str | None = None,
+        username: str | None = None,
+        password: str | None = None
     ):
         """
         Get hardened Neo4j driver with SSL enforcement and connection pooling.
@@ -338,6 +341,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
             Neo4j driver with connection pool
         """
         import os
+
         from neo4j import GraphDatabase
 
         neo4j_uri = uri or os.getenv("NEO4J_URI", "bolt://localhost:7687")
@@ -363,10 +367,10 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
     async def safe_mcp_call(
         self,
         tool_name: str,
-        args: Dict[str, Any],
+        args: dict[str, Any],
         validate_response: bool = True,
-        timeout: Optional[float] = None,
-        caller: Optional[str] = None,
+        timeout: float | None = None,
+        caller: str | None = None,
     ) -> Any:
         """
         Execute MCP call with full validation and sandboxing.
@@ -464,7 +468,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
 
         return False
 
-    def _validate_args(self, tool_name: str, args: Dict[str, Any]) -> List[str]:
+    def _validate_args(self, tool_name: str, args: dict[str, Any]) -> list[str]:
         """
         Validate arguments for tool call.
 
@@ -499,8 +503,8 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
     async def _execute_sandboxed(
         self,
         tool_name: str,
-        args: Dict[str, Any],
-        timeout: Optional[float] = None
+        args: dict[str, Any],
+        timeout: float | None = None
     ) -> Any:
         """
         Execute tool call in sandboxed environment.
@@ -586,7 +590,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
             if not obj:
                 return current_depth + 1
             return max(self._get_depth(v, current_depth + 1) for v in obj.values())
-        elif isinstance(obj, (list, tuple)):
+        elif isinstance(obj, list | tuple):
             if not obj:
                 return current_depth + 1
             return max(self._get_depth(v, current_depth + 1) for v in obj)
@@ -618,10 +622,10 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
     def audit_mcp_call(
         self,
         tool_name: str,
-        args: Dict[str, Any],
+        args: dict[str, Any],
         result_status: str,
         caller: str,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ) -> None:
         """
         Log MCP call for audit trail.
@@ -661,11 +665,11 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         if result_status in ("BLOCKED", "INVALID_RESPONSE"):
             Logger.warning(f"[MCP AUDIT] Anomaly: {tool_name} - {result_status} by {caller}")
 
-    def get_audit_log(self, limit: int = 100) -> List[MCPAuditEntry]:
+    def get_audit_log(self, limit: int = 100) -> list[MCPAuditEntry]:
         """Get recent audit log entries."""
         return self._mcp_audit_log[-limit:]
 
-    def get_mcp_statistics(self) -> Dict[str, Any]:
+    def get_mcp_statistics(self) -> dict[str, Any]:
         """Get MCP call statistics."""
         return {
             "total_calls": self._mcp_call_count,

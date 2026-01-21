@@ -14,11 +14,9 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 
 from __future__ import annotations
 
-import os
-from pathlib import Path
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import Dict, Any, Optional, List
+from enum import Enum
+from pathlib import Path
 
 # =============================================================================
 # CORE CONSTANTS
@@ -61,7 +59,7 @@ class ModelProvider(Enum):
 class ModelConfig:
     Provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = "gpt-4-turbo"
-    api_key: Optional[str] = None
+    api_key: str | None = None
     temperature: float = DEFAULT_GENERATION_TEMPERATURE
     max_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS
 
@@ -75,7 +73,7 @@ class RAGConfig:
 @dataclass
 class GovernorConfig:
     strict_mode: bool = True
-    constraints: 'ContentConstraintsConfig' = field(default_factory=lambda: ContentConstraintsConfig())
+    constraints: ContentConstraintsConfig = field(default_factory=lambda: ContentConstraintsConfig())
 
 @dataclass
 class WorkflowConfig:

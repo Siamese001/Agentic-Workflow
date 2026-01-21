@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 # [L6 HARDENING] Filesystem MCP Package Stub
 # Rationale: Eliminates log error "Filesystem MCP failed: No module named 'agentic_core.L4_state.validation_context'"
 # → Prevents fallback to unsafe direct writes

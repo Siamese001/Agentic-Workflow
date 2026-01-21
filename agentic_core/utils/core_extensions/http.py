@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SovereignHttpClient - Audited HTTP Operations
 
@@ -9,33 +10,19 @@ Routes all HTTP operations through controlled plane with:
 - Error handling
 """
 import logging
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 from urllib.parse import urlparse
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
 # Approved domains for external HTTP (sovereignty enforcement)
-ALLOWED_DOMAINS: Set[str] = {
+ALLOWED_DOMAINS: set[str] = {
     'python.org', 'docs.python.org',
     'github.com', 'raw.githubusercontent.com', 'api.github.com',
     'readthedocs.io',
@@ -63,7 +50,7 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
         """
         self.timeout = timeout
         self.allow_internal = allow_internal
-        self.audit_log: List[Dict[str, Any]] = []
+        self.audit_log: list[dict[str, Any]] = []
         self._session = None
 
     def _get_session(self):
@@ -112,7 +99,7 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
             'success': result.get('success', False) if isinstance(result, dict) else True
         })
 
-    def execute(self, operation: str, **payload) -> Dict[str, Any]:
+    def execute(self, operation: str, **payload) -> dict[str, Any]:
         """
         Route HTTP operations safely.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-import sys
 import os
+import sys
+
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -26,10 +26,10 @@ This should be run:
 
 Last Updated: 2026-01-16
 """
-import yaml
-from pathlib import Path
 from datetime import datetime
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
+
+import yaml
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -42,7 +42,7 @@ def load_yaml_config():
     """Load the YAML configuration file with path validation."""
     if not YAML_CONFIG.exists():
         raise FileNotFoundError(f"❌ CRITICAL: SSOT YAML not found at {YAML_CONFIG}")
-    with open(YAML_CONFIG, 'r', encoding='utf-8') as f:
+    with open(YAML_CONFIG, encoding='utf-8') as f:
         config = yaml.safe_load(f)
     if not config:
         raise ValueError(f"❌ CRITICAL: SSOT YAML at {YAML_CONFIG} is empty")
@@ -55,7 +55,7 @@ def generate_python_constants(config):
     # Read existing file to preserve calculation functions
     existing_content = ""
     if PYTHON_OUTPUT.exists():
-        with open(PYTHON_OUTPUT, 'r', encoding='utf-8') as f:
+        with open(PYTHON_OUTPUT, encoding='utf-8') as f:
             lines = f.readlines()
 
         # Find where calculation functions start (after column definitions)

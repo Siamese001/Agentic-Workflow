@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 PolicyNeuralAutoImmuneAgent - Policy-Specific Extension
@@ -15,16 +17,18 @@ Simplified policy-focused variant that extends the base NeuralAutoImmuneAgent.
 """
 
 from pathlib import Path
-from typing import Dict, Optional, Any
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
 from agentic_core.L5_safety.guardrails.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
@@ -43,7 +47,7 @@ class PolicyNeuralAutoImmuneAgent(SubatomicTestingMixin, NeuralAutoImmuneAgent, 
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

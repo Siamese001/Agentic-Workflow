@@ -1,27 +1,28 @@
 from __future__ import annotations
+
 import hashlib
+
 '''Brief description of functionality and purpose.'''
 
 import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Protocol
 
 
 # NAMING FIXED: IValidationContext → IValidationContext
 class IValidationContext(Protocol):
     '''Brief description of functionality and purpose.'''
 
-    cycle_id: Optional[int]
+    cycle_id: int | None
     status: str
     start_time: datetime
-    end_time: Optional[datetime]
+    end_time: datetime | None
     files_scanned: int
     files_skipped: int
     violations_found: int
-    flapping_files: Dict[str, int]
+    flapping_files: dict[str, int]
 
     def update_file_hash(self, file_path: str, file_hash: str): ...
 
@@ -32,11 +33,11 @@ class IValidationContext(Protocol):
 class IValidationContextManager(Protocol):
     '''Brief description of functionality and purpose.'''
 
-    current_context: Optional[IValidationContext]
+    current_context: IValidationContext | None
 
-    def get_last_file_hashes(self) -> Dict[str, str]: ...
+    def get_last_file_hashes(self) -> dict[str, str]: ...
 
-    def get_flapping_files(self) -> Dict[str, int]: ...
+    def get_flapping_files(self) -> dict[str, int]: ...
 
     def start_new_cycle(self, cycle_id: int = None) -> IValidationContext: ...
 
@@ -80,8 +81,8 @@ class Historian:
         self.file_history_file = self.memory_dir / "file_history.json"
 
         # In-memory caches
-        self.last_hashes: Dict[str, str] = {}
-        self.file_history: Dict[str, List[Dict]] = {}
+        self.last_hashes: dict[str, str] = {}
+        self.file_history: dict[str, list[dict]] = {}
 
         # Load existing memory
         self._load_memory()
@@ -93,7 +94,7 @@ class Historian:
         # Load file history
         if self.file_history_file.exists():
             try:
-                with open(self.file_history_file, 'r') as f:
+                with open(self.file_history_file) as f:
                     self.file_history = json.load(f)
                 LOGGER.info(f"Loaded history for {len(self.file_history)} files")
             except Exception as e:
@@ -176,7 +177,7 @@ class Historian:
         flapping_files = self.context_manager.get_flapping_files()
         return flapping_files.get(file_path, 0) >= 3
 
-    def record_file_result(self, file_path: Path, status: str, violations: List = None):
+    def record_file_result(self, file_path: Path, status: str, violations: list = None):
         """
         Record validation result for a file.
 
@@ -218,7 +219,7 @@ class Historian:
         if len(self.file_history[rel_path]) > 10:
             self.file_history[rel_path] = self.file_history[rel_path][-10:]
 
-    def get_unchanged_files(self, file_list: List[Path]) -> Tuple[Set[Path], Set[Path]]:
+    def get_unchanged_files(self, file_list: list[Path]) -> tuple[set[Path], set[Path]]:
         """
         Separate files into unchanged and modified sets.
 
@@ -274,7 +275,7 @@ class Historian:
         self.context_manager.complete_cycle(status)
         self._save_memory()
 
-    def get_file_statistics(self, file_path: Path) -> Dict:
+    def get_file_statistics(self, file_path: Path) -> dict:
         """
         Get validation statistics for a file.
 
@@ -305,7 +306,7 @@ class Historian:
             "is_flapping": self._is_flapping(rel_path)
         }
 
-    def get_cycle_summary(self) -> Dict:
+    def get_cycle_summary(self) -> dict:
         """
         Get summary of the current cycle.
 
@@ -334,7 +335,7 @@ class Historian:
 
 
 # Global instance
-_historian: Optional[Historian] = None
+_historian: Historian | None = None
 
 
 def get_historian() -> Historian:
@@ -370,7 +371,7 @@ def should_skip_file(file_path: Path) -> bool:
     return Historian.should_skip_file(file_path)
 
 
-def record_validation_result(file_path: Path, status: str, violations: List = None):
+def record_validation_result(file_path: Path, status: str, violations: list = None):
     """Record validation result for a file."""
     Historian = get_historian()
     Historian.record_file_result(file_path, status, violations)

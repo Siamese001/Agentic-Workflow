@@ -24,11 +24,10 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.config.core_hygiene_agents import (
     CORE_HYGIENE_AGENTS,
-    MANDATORY_PREFLIGHT,
 )
 
 Logger = logging.getLogger(__name__)
@@ -42,7 +41,7 @@ class HealingStrategy:
     Encapsulates the 5-tier healing execution flow from SSOTOrchestratorAgent.
     """
 
-    def __init__(self, project_root: Optional[Path] = None, target_tier: Optional[int] = None) -> None:
+    def __init__(self, project_root: Path | None = None, target_tier: int | None = None) -> None:
         """
         Initialize the healing strategy.
 
@@ -52,11 +51,11 @@ class HealingStrategy:
         """
         self.project_root = Path(project_root) if project_root else Path.cwd()
         self.target_tier = target_tier
-        self._agents: Dict[str, Any] = {}
-        self._dedup_agent: Optional[Any] = None
+        self._agents: dict[str, Any] = {}
+        self._dedup_agent: Any | None = None
 
         # Define the 5-tier execution plan using core registry
-        self._tiers: Dict[str, List[str]] = {
+        self._tiers: dict[str, list[str]] = {
             "Tier 0: Pre-Flight": CORE_HYGIENE_AGENTS["tier_0_preflight"],
             "Tier 1: Structural": [
                 "TwoPhaseDeduplicationAgent_PhaseA",  # Identity collisions (early)
@@ -79,7 +78,7 @@ class HealingStrategy:
         """Return the strategy name."""
         return "HealingStrategy"
 
-    def get_tiers(self) -> Dict[str, List[str]]:
+    def get_tiers(self) -> dict[str, list[str]]:
         """
         Return the tiered execution plan.
 
@@ -122,7 +121,7 @@ class HealingStrategy:
         """
         return f"⏭️  SKIPPING {tier_name} (target_tier={self.target_tier})"
 
-    def get_agent(self, agent_name: str) -> Optional[Any]:
+    def get_agent(self, agent_name: str) -> Any | None:
         """
         Get or create an agent instance by name.
 
@@ -150,18 +149,20 @@ class HealingStrategy:
             Logger.error(f"[HealingStrategy] Failed to load {agent_name}: {e}")
             return None
 
-    def _get_dedup_agent(self) -> Optional[Any]:
+    def _get_dedup_agent(self) -> Any | None:
         """Get or create the shared TwoPhaseDeduplicationAgent instance."""
         if self._dedup_agent is None:
             try:
-                from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+                from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+                    TwoPhaseDeduplicationAgent,
+                )
                 self._dedup_agent = TwoPhaseDeduplicationAgent(project_root=self.project_root)
             except Exception as e:
                 Logger.error(f"[HealingStrategy] Failed to load TwoPhaseDeduplicationAgent: {e}")
                 return None
         return self._dedup_agent
 
-    def _load_agent(self, agent_name: str) -> Optional[Any]:
+    def _load_agent(self, agent_name: str) -> Any | None:
         """
         Load an agent by name.
 
@@ -173,15 +174,21 @@ class HealingStrategy:
         """
         try:
             if agent_name == "UnifiedCodeValidatorAgent":
-                from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
+                from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
+                    UnifiedCodeValidatorAgent,
+                )
                 return UnifiedCodeValidatorAgent()
 
             elif agent_name == "HygieneGuardianAgent":
-                from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
+                from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
+                    HygieneGuardianAgent,
+                )
                 return HygieneGuardianAgent(project_root=self.project_root)
 
             elif agent_name == "UnifiedStructureEnforcerAgent":
-                from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
+                from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
+                    UnifiedStructureEnforcerAgent,
+                )
                 return UnifiedStructureEnforcerAgent(project_root=self.project_root)
 
             elif agent_name == "NamingAgent":
@@ -193,11 +200,15 @@ class HealingStrategy:
                 return LocationAgent(project_root=self.project_root)
 
             elif agent_name == "UnifiedCodeEnforcerAgent":
-                from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
+                from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
+                    UnifiedCodeEnforcerAgent,
+                )
                 return UnifiedCodeEnforcerAgent()
 
             elif agent_name == "StructuralHealerAgent":
-                from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
+                from agentic_core.L5_safety.guardrails.StructuralHealerAgent import (
+                    StructuralHealerAgent,
+                )
                 return StructuralHealerAgent(project_root=self.project_root)
 
             # Core Hygiene Agents
@@ -210,11 +221,15 @@ class HealingStrategy:
                 return HierarchyAgent(project_root=self.project_root)
 
             elif agent_name == "CodeDeduplicationAgent":
-                from agentic_core.L5_safety.validators.CodeDeduplicationAgent import CodeDeduplicationAgent
+                from agentic_core.L5_safety.validators.CodeDeduplicationAgent import (
+                    CodeDeduplicationAgent,
+                )
                 return CodeDeduplicationAgent()
 
             elif agent_name == "FilesystemSSOTReconcilerAgent":
-                from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+                from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
+                    FilesystemSSOTReconcilerAgent,
+                )
                 return FilesystemSSOTReconcilerAgent(project_root=self.project_root)
 
             elif agent_name == "GitHygieneAgent":
@@ -226,7 +241,9 @@ class HealingStrategy:
                 return FileCleanupAgent(project_root=self.project_root, ctx=None)
 
             elif agent_name == "AutonomyGuardianAgent":
-                from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
+                from agentic_core.L5_safety.validators.AutonomyGuardianAgent import (
+                    AutonomyGuardianAgent,
+                )
                 return AutonomyGuardianAgent(project_root=self.project_root)
 
             elif agent_name == "CodeJanitorAgent":
@@ -248,7 +265,7 @@ class HealingStrategy:
         dry_run: bool = True,
         execute: bool = False,
         **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute a single agent and return results.
 
@@ -298,7 +315,7 @@ class HealingStrategy:
                 "error_message": str(e),
             }
 
-    def _normalize_result(self, result: Dict[str, Any], execution_time_ms: float) -> Dict[str, Any]:
+    def _normalize_result(self, result: dict[str, Any], execution_time_ms: float) -> dict[str, Any]:
         """
         Normalize agent result to standard format.
 
@@ -347,7 +364,7 @@ class HealingStrategy:
     def should_abort_tier(
         self,
         tier_name: str,
-        tier_results: List[Dict[str, Any]],
+        tier_results: list[dict[str, Any]],
         execute: bool
     ) -> bool:
         """

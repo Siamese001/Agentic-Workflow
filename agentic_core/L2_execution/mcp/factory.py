@@ -5,15 +5,15 @@ Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 
 import importlib
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
-from .client import MCPClientSpec, MCPClientStub, MCPClientRegistry
+from .client import MCPClientRegistry, MCPClientSpec, MCPClientStub
 from .exceptions import MCPClientInitializationError
 
 logger = logging.getLogger(__name__)
 
 
-def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpec]:
+def parse_mcp_client_specs(raw_specs: list[dict[str, Any]]) -> list[MCPClientSpec]:
     """Validate and normalize MCP client specifications.
 
     Args:
@@ -25,7 +25,7 @@ def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpe
     Raises:
         ValueError: If specs are invalid
     """
-    specs: List[MCPClientSpec] = []
+    specs: list[MCPClientSpec] = []
 
     for raw in raw_specs:
         if not isinstance(raw, dict):
@@ -161,7 +161,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
 
 
 def create_mcp_registry(
-    specs: List[MCPClientSpec],
+    specs: list[MCPClientSpec],
     fail_on_error: bool = False,
 ) -> MCPClientRegistry:
     """Create an MCP client registry from specifications.

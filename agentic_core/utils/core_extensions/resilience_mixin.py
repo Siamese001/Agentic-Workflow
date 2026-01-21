@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Hardening mixin for resilient execution.
 
 Provides a unified way to add circuit breaking, retries, and telemetry
@@ -9,11 +10,12 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import asyncio
 import time
-from typing import Any, Callable, Awaitable, Dict, Optional
+from collections.abc import Awaitable, Callable
+from typing import Any
 
-from .circuit_breaker import CircuitBreaker, get_breaker, CircuitBreakerOpenError
+from .circuit_breaker import CircuitBreakerOpenError, get_breaker
 from .error_recovery import ErrorRecoveryManager
-from .telemetry import SystemTelemetry, get_telemetry, OperationStatus
+from .telemetry import SystemTelemetry, get_telemetry
 
 
 class TokenLimitError(Exception):
@@ -38,7 +40,7 @@ class HardeningMixin:
         max_retries: int = 3,
         base_backoff_ms: int = 200,
         jitter_ms: int = 100,
-        telemetry: Optional[SystemTelemetry] = None,
+        telemetry: SystemTelemetry | None = None,
     ):
         """Initialize hardening components.
 
@@ -70,8 +72,8 @@ class HardeningMixin:
         operation: str,
         fn: Callable[[], Awaitable[Any]],
         *,
-        validate_token_budget: Optional[Callable[[], None]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        validate_token_budget: Callable[[], None] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> Any:
         """Execute an async function with full hardening applied.
 
@@ -165,7 +167,7 @@ class HardeningMixin:
         self,
         prompt: str,
         model: str,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> None:
         """Validate token budget using tiktoken.
 
@@ -179,7 +181,7 @@ class HardeningMixin:
         """
         try:
             import tiktoken
-        except ImportError as exc:
+        except ImportError:
             # tiktoken not available - skip validation
             return
 

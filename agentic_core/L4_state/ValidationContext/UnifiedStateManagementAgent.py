@@ -23,22 +23,17 @@ import asyncio
 import hashlib
 import json
 import logging
-import os
 import shutil
 import threading
-import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 from agentic_core.L4_state.ValidationContext.L4StateBaseAgent import L4StateBaseAgent
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENTIC_CORE_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.ssot_discovery import get_data_files
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.ssot_discovery import get_data_files
 
 Logger = logging.getLogger(__name__)
 
@@ -51,9 +46,9 @@ class StateEntry:
     file_hash: str
     created_at: datetime
     updated_at: datetime
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             'key': self.key,
@@ -65,7 +60,7 @@ class StateEntry:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'StateEntry':
+    def from_dict(cls, data: dict[str, Any]) -> StateEntry:
         """Create from dictionary."""
         return cls(
             key=data['key'],
@@ -81,12 +76,12 @@ class StateEntry:
 class IntegrityReport:
     """Report from integrity check."""
     timestamp: datetime
-    ghost_files: List[str]  # Files on disk but not in manifest
-    orphan_entries: List[str]  # Manifest entries without files
-    hash_mismatches: List[str]  # Files with changed content
+    ghost_files: list[str]  # Files on disk but not in manifest
+    orphan_entries: list[str]  # Manifest entries without files
+    hash_mismatches: list[str]  # Files with changed content
     is_healthy: bool
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             'timestamp': self.timestamp.isoformat(),
             'ghost_files': self.ghost_files,
@@ -128,12 +123,12 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
     max_entries: int = 1000
 
     # Internal state
-    _manifest: Dict[str, StateEntry] = field(default_factory=dict)
+    _manifest: dict[str, StateEntry] = field(default_factory=dict)
     _lock: threading.RLock = field(default_factory=threading.RLock)
-    _heartbeat_task: Optional[asyncio.Task] = None
+    _heartbeat_task: asyncio.Task | None = None
     _last_integrity_check: datetime = field(default_factory=datetime.now)
     _is_recovering: bool = False
-    _registry_callbacks: List[Callable] = field(default_factory=list)
+    _registry_callbacks: list[Callable] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Initialize the unified state management agent."""
@@ -217,7 +212,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
                 return
 
             try:
-                with open(self.manifest_path, 'r', encoding='utf-8') as f:
+                with open(self.manifest_path, encoding='utf-8') as f:
                     data = json.load(f)
 
                 self._manifest = {}
@@ -257,14 +252,14 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
 
             self._write_manifest_raw(data)
 
-    def _write_manifest_raw(self, data: Dict[str, Any]) -> None:
+    def _write_manifest_raw(self, data: dict[str, Any]) -> None:
         """Write raw manifest data to disk."""
         with open(self.manifest_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, default=str)
 
-    def _read_manifest_raw(self) -> Dict[str, Any]:
+    def _read_manifest_raw(self) -> dict[str, Any]:
         """Read raw manifest data from disk."""
-        with open(self.manifest_path, 'r', encoding='utf-8') as f:
+        with open(self.manifest_path, encoding='utf-8') as f:
             return json.load(f)
 
     # =========================================================================
@@ -275,7 +270,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
         self,
         key: str,
         data: Any,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ) -> str:
         """
         Atomically set state data with manifest tracking.
@@ -328,7 +323,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             Logger.debug(f"State set: {key}")
             return str(file_path)
 
-    def get_state(self, key: str) -> Optional[Any]:
+    def get_state(self, key: str) -> Any | None:
         """
         Get state data by key.
 
@@ -350,7 +345,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
                 return None
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     return json.load(f)
             except Exception as e:
                 Logger.error(f"Failed to read state {key}: {e}")
@@ -387,7 +382,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             Logger.debug(f"State deleted: {key}")
             return True
 
-    def list_states(self, prefix: Optional[str] = None) -> List[str]:
+    def list_states(self, prefix: str | None = None) -> list[str]:
         """
         List all state keys, optionally filtered by prefix.
 
@@ -419,7 +414,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             self._last_integrity_check = datetime.now()
 
             # Get physical files
-            physical_files: Set[str] = set()
+            physical_files: set[str] = set()
             for subdir in ["state", "conversations", "results", "checkpoints"]:
                 subdir_path = self.memory_root / subdir
                 if subdir_path.exists():
@@ -480,7 +475,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
 
             return report
 
-    def repair_integrity(self, report: Optional[IntegrityReport] = None) -> Dict[str, int]:
+    def repair_integrity(self, report: IntegrityReport | None = None) -> dict[str, int]:
         """
         Repair integrity issues found in validation.
 
@@ -555,7 +550,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
     # CLEANUP (Memory Management)
     # =========================================================================
 
-    def perform_cleanup(self, retention_days: Optional[int] = None) -> Dict[str, int]:
+    def perform_cleanup(self, retention_days: int | None = None) -> dict[str, int]:
         """
         Prune old state data based on retention policy.
 
@@ -682,8 +677,8 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, Any]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, Any]:
         """
         Repository-wide state healing.
 
@@ -743,7 +738,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
     # SELF-TESTS
     # =========================================================================
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """Run internal self-tests for the unified state management agent."""
         results = {"passed": 0, "failed": 0, "tests": []}
 
@@ -793,7 +788,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
         try:
             assert self.manifest_path.exists()
 
-            with open(self.manifest_path, 'r') as f:
+            with open(self.manifest_path) as f:
                 manifest_data = json.load(f)
 
             assert "version" in manifest_data
@@ -812,7 +807,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
 # FACTORY FUNCTIONS
 # =========================================================================
 
-def get_state_manager(memory_root: Optional[Path] = None) -> UnifiedStateManagementAgent:
+def get_state_manager(memory_root: Path | None = None) -> UnifiedStateManagementAgent:
     """
     Factory function to get UnifiedStateManagementAgent instance.
 
@@ -829,17 +824,17 @@ def get_state_manager(memory_root: Optional[Path] = None) -> UnifiedStateManagem
 
 
 # Backward compatibility aliases
-def get_manifest_manager(memory_root: Optional[Path] = None) -> UnifiedStateManagementAgent:
+def get_manifest_manager(memory_root: Path | None = None) -> UnifiedStateManagementAgent:
     """Get state manager (legacy ManifestManager compatibility)."""
     return get_state_manager(memory_root)
 
 
-def get_memory_manager(memory_root: Optional[Path] = None) -> UnifiedStateManagementAgent:
+def get_memory_manager(memory_root: Path | None = None) -> UnifiedStateManagementAgent:
     """Get state manager (legacy MemoryManager compatibility)."""
     return get_state_manager(memory_root)
 
 
-def get_state_guardian(memory_root: Optional[Path] = None) -> UnifiedStateManagementAgent:
+def get_state_guardian(memory_root: Path | None = None) -> UnifiedStateManagementAgent:
     """Get state manager (legacy StateGuardian compatibility)."""
     return get_state_manager(memory_root)
 
@@ -874,7 +869,7 @@ if __name__ == "__main__":
         if args.json:
             print(json.dumps(report.to_dict(), indent=2))
         else:
-            print(f"\nIntegrity Report:")
+            print("\nIntegrity Report:")
             print(f"  Healthy: {report.is_healthy}")
             print(f"  Ghost files: {len(report.ghost_files)}")
             print(f"  Orphan entries: {len(report.orphan_entries)}")
@@ -895,4 +890,4 @@ if __name__ == "__main__":
     else:
         print(f"State manager initialized at {manager.memory_root}")
         print(f"  Entries: {len(manager._manifest)}")
-        print(f"  Use --validate, --repair, --cleanup, or --self-test")
+        print("  Use --validate, --repair, --cleanup, or --self-test")

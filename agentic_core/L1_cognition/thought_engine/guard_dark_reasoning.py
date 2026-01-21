@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign Guard: Prevent Dark Reasoning (Phase 10 – Dec 26, 2025)
 Ensures every reasoning/action in L1-L5 emits observability to L6.
@@ -9,7 +10,8 @@ operations that don't leave an L6 observability footprint.
 import ast
 import sys
 from pathlib import Path
-from typing import Any, List, Dict
+from typing import Any
+
 reasoning_signals: Any = {'think', 'plan', 'reason', 'decide', 'analyze', 'generate', 'synthesize'}
 observability_signals: Any = {'Logger.', 'logging.', 'self.Logger.', 'trace(', 'Metric('}
 
@@ -27,7 +29,7 @@ class DarkReasoningVisitor(ast.NodeVisitor):
         """Visit function definitions and check for dark reasoning."""
         func_name: Any = node.name.lower()
         was_reasoning: Any = self.in_reasoning_function
-        if any((sig in func_name for sig in REASONING_SIGNALS)):
+        if any(sig in func_name for sig in REASONING_SIGNALS):
             self.in_reasoning_function = True
             self.current_function = node.name
             self.has_observability = False
@@ -44,7 +46,7 @@ class DarkReasoningVisitor(ast.NodeVisitor):
 
     def _check_observability(self, node_str: str):
         """Centralized observability signal detection"""
-        if any((obs in node_str for obs in OBSERVABILITY_SIGNALS)):
+        if any(obs in node_str for obs in OBSERVABILITY_SIGNALS):
             self.has_observability = True
 
     def visit_Call(self, node: Any) -> Any:
@@ -68,7 +70,7 @@ class DarkReasoningVisitor(ast.NodeVisitor):
             self._check_observability(expr_str.lower())
         self.generic_visit(node)
 
-def check_dark_reasoning(filepath: Path) -> List[Dict]:
+def check_dark_reasoning(filepath: Path) -> list[dict]:
     """
     Check a Python file for dark reasoning violations.
 

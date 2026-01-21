@@ -6,15 +6,14 @@ with the L3 orchestrator and various agents.
 
 import asyncio
 import logging
-from typing import Dict, Any, List
 
 # Test imports
 from titanium_search_tool import (
+    clear_cache,
+    get_pipeline_stats,
     get_titanium_search_tool,
     get_titanium_search_with_sources,
-    get_pipeline_stats,
-    clear_cache,
-    sync_search
+    sync_search,
 )
 
 logger = logging.getLogger(__name__)
@@ -132,9 +131,9 @@ async def test_hardened_orchestrator_integration():
 
     try:
         from apps_rg.L3_orchestration.titanium_integration import (
+            enhance_system_prompt,
             inject_titanium_tools,
             prepare_titanium_context,
-            enhance_system_prompt
         )
 
         # Test context injection

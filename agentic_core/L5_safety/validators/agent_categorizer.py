@@ -5,10 +5,8 @@ Creates non-overlapping categories based on agent class patterns and docstrings.
 
 import ast
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 from collections import defaultdict
-from agentic_core.utils.sovereign_index import SovereignIndex
+from pathlib import Path
 
 
 class AgentCategorizer:
@@ -112,10 +110,10 @@ class AgentCategorizer:
 
     def __init__(self, folder_path: Path):
         self.folder_path = folder_path
-        self.agents: Dict[str, Dict] = {}
-        self.categories: Dict[str, List[str]] = defaultdict(list)
+        self.agents: dict[str, dict] = {}
+        self.categories: dict[str, list[str]] = defaultdict(list)
 
-    def scan_folder(self) -> Dict[str, List[str]]:
+    def scan_folder(self) -> dict[str, list[str]]:
         """Scan folder and categorize all agents."""
         # Sub-20: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_python_files
@@ -171,16 +169,16 @@ class AgentCategorizer:
 
         return "Specialized Agents"
 
-    def get_category_summary(self) -> Dict[str, int]:
+    def get_category_summary(self) -> dict[str, int]:
         """Get count of agents per category."""
         return {cat: len(agents) for cat, agents in self.categories.items()}
 
-    def get_agents_by_category(self, category: str) -> List[str]:
+    def get_agents_by_category(self, category: str) -> list[str]:
         """Get list of agents in a specific category."""
         return self.categories.get(category, [])
 
 
-def categorize_agents_for_dashboard(folder_path: Path) -> Dict[str, List[str]]:
+def categorize_agents_for_dashboard(folder_path: Path) -> dict[str, list[str]]:
     """Main entry point for dashboard categorization."""
     categorizer = AgentCategorizer(folder_path)
     return categorizer.scan_folder()

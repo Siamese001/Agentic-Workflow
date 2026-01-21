@@ -6,17 +6,17 @@ connection pooling, and prevention of resource leaks.
 
 import asyncio
 import logging
-import shutil
-import weakref
-from contextlib import asynccontextmanager, contextmanager
-from typing import Any, Dict, List, Optional, Set, Union, Callable
-from dataclasses import dataclass, field
-from enum import Enum
 import threading
 import time
+from collections.abc import Callable
+from contextlib import asynccontextmanager, contextmanager
+from dataclasses import dataclass, field
+from enum import Enum
+from pathlib import Path
+from typing import Any
+
 import aiofiles
 import aiofiles.os
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +37,8 @@ class ResourceInfo:
     resource_type: ResourceType
     created_at: float
     last_used: float
-    cleanup_callback: Optional[Callable] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    cleanup_callback: Callable | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ResourceManager:
@@ -55,15 +55,15 @@ class ResourceManager:
         self.max_resources = max_resources
 
         # Resource tracking
-        self._resources: Dict[str, ResourceInfo] = {}
+        self._resources: dict[str, ResourceInfo] = {}
         self._resource_counter = 0
         self._lock = threading.Lock()
 
         # Connection pools
-        self._connection_pools: Dict[str, Any] = {}
+        self._connection_pools: dict[str, Any] = {}
 
         # Background cleanup task
-        self._cleanup_task: Optional[asyncio.Task] = None
+        self._cleanup_task: asyncio.Task | None = None
         self._running = False
 
         logger.debug(f"Initialized ResourceManager: {name}")
@@ -109,8 +109,8 @@ class ResourceManager:
     def register_resource(
         self,
         resource_type: ResourceType,
-        cleanup_callback: Optional[Callable] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        cleanup_callback: Callable | None = None,
+        metadata: dict[str, Any] | None = None
     ) -> str:
         """Register a resource for tracking.
 
@@ -237,7 +237,7 @@ class ResourceManager:
                 logger.error(f"Error in cleanup loop: {e}")
 
     @contextmanager
-    def managed_file(self, file_path: Union[str, Path], mode: str = 'r'):
+    def managed_file(self, file_path: str | Path, mode: str = 'r'):
         """Context manager for managed file operations.
 
         Args:
@@ -260,7 +260,7 @@ class ResourceManager:
             self.unregister_resource(resource_id)
 
     @asynccontextmanager
-    async def managed_async_file(self, file_path: Union[str, Path], mode: str = 'r'):
+    async def managed_async_file(self, file_path: str | Path, mode: str = 'r'):
         """Context manager for managed async file operations.
 
         Args:
@@ -283,7 +283,7 @@ class ResourceManager:
             self.unregister_resource(resource_id)
 
     @asynccontextmanager
-    async def atomic_write(self, file_path: Union[str, Path], temp_suffix: str = ".tmp"):
+    async def atomic_write(self, file_path: str | Path, temp_suffix: str = ".tmp"):
         """Context manager for atomic file writes.
 
         Args:
@@ -307,10 +307,10 @@ class ResourceManager:
 
             # Verify file exists and is not empty
             if not temp_path.exists():
-                raise IOError(f"Temporary file was not created: {temp_path}")
+                raise OSError(f"Temporary file was not created: {temp_path}")
 
             if temp_path.stat().st_size == 0 and file_path.exists():
-                raise IOError("Refusing to overwrite with empty file")
+                raise OSError("Refusing to overwrite with empty file")
 
             # Atomic move
             await aiofiles.os.replace(str(temp_path), str(file_path))
@@ -327,7 +327,7 @@ class ResourceManager:
         finally:
             self.unregister_resource(resource_id)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get resource manager statistics.
 
         Returns:
@@ -351,7 +351,7 @@ class ResourceManager:
 
 
 # Global resource manager registry
-_managers: Dict[str, ResourceManager] = {}
+_managers: dict[str, ResourceManager] = {}
 _manager_lock = threading.Lock()
 
 
@@ -394,7 +394,7 @@ class ConnectionPool:
         """
         self.name = name
         self.max_connections = max_connections
-        self._connections: List[Any] = []
+        self._connections: list[Any] = []
         self._available = asyncio.Queue(maxsize=max_connections)
         self._semaphore = asyncio.Semaphore(max_connections)
         self._lock = asyncio.Lock()

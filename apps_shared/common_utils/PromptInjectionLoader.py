@@ -7,29 +7,17 @@ and messages.
 
 import json
 import logging
-import re
-from enum import Enum
+from typing import Any
+
+from .instructional_injections import get_instructional_injections, get_required_injections
 from .shared_models import (
-    InjectionType,
-    InjectionScope,
-    InjectionPattern,
-    InjectionMatch,
     InjectionConfig,
-    MicroStage
+    InjectionMatch,
+    InjectionPattern,
+    InjectionScope,
+    InjectionType,
+    MicroStage,
 )
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Union
-from .subatomic_hop import SubatomicHop
-from .shared_models import HopState
-from .instructional_injections import (
-    get_instructional_injections,
-    get_stage_applicable_injections,
-    get_required_injections,
-    InstructionalInjectionType,
-    STAGE_MAPPINGS
-)
-from dataclasses import dataclass, field
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -37,15 +25,15 @@ logger = logging.getLogger(__name__)
 class PromptInjectionLoader:
     """Loads and applies prompt injection patterns."""
 
-    def __init__(self, config: Optional[InjectionConfig] = None):
+    def __init__(self, config: InjectionConfig | None = None):
         """Initialize the injection loader.
 
         Args:
             config: Optional configuration
         """
         self.config = config or InjectionConfig()
-        self.injections: Dict[str, InjectionPattern] = {}
-        self.cache: Dict[str, List[InjectionMatch]] = {}
+        self.injections: dict[str, InjectionPattern] = {}
+        self.cache: dict[str, list[InjectionMatch]] = {}
 
         # Load injections
         self._load_injections()
@@ -66,7 +54,7 @@ class PromptInjectionLoader:
         # Load all JSON files
         for file_path in injection_dir.glob("*.json"):
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     data = json.load(f)
 
                 if isinstance(data, list):
@@ -224,9 +212,9 @@ class PromptInjectionLoader:
         self,
         hop_type: str,
         stage: str,
-        context: Dict[str, Any],
-        content: Optional[str] = None
-    ) -> List[InjectionMatch]:
+        context: dict[str, Any],
+        content: str | None = None
+    ) -> list[InjectionMatch]:
         """Find injections matching the given context.
 
         Args:
@@ -317,8 +305,8 @@ class PromptInjectionLoader:
         injection: InjectionPattern,
         hop_type: str,
         stage: str,
-        context: Dict[str, Any],
-        content: Optional[str],
+        context: dict[str, Any],
+        content: str | None,
         base_score: float = 0.0
     ) -> float:
         """Calculate relevance score for an injection."""
@@ -366,9 +354,9 @@ class PromptInjectionLoader:
     def _extract_variables(
         self,
         injection: InjectionPattern,
-        context: Dict[str, Any],
-        content: Optional[str]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        content: str | None
+    ) -> dict[str, Any]:
         """Extract variable values from context."""
         values = {}
 
@@ -404,7 +392,7 @@ class PromptInjectionLoader:
     def apply_injections(
         self,
         base_prompt: str,
-        matches: List[InjectionMatch]
+        matches: list[InjectionMatch]
     ) -> str:
         """Apply injection patterns to a base prompt.
 
@@ -461,10 +449,10 @@ class PromptInjectionLoader:
         self,
         role: str,
         objective: str,
-        context_data: Union[Dict[str, Any], str],
+        context_data: dict[str, Any] | str,
         stage: str,
         hop_type: str,
-        additional_constraints: Optional[List[str]] = None
+        additional_constraints: list[str] | None = None
     ) -> str:
         """Apply injections using semantic fencing (new recommended method).
 
@@ -508,7 +496,7 @@ class PromptInjectionLoader:
             negative_constraints=negative_constraints
         )
 
-    def get_injection_stats(self) -> Dict[str, Any]:
+    def get_injection_stats(self) -> dict[str, Any]:
         """Get statistics about loaded injections."""
         type_counts = {}
         for injection in self.injections.values():
@@ -528,7 +516,7 @@ class PromptInjectionLoader:
 
 
 # Global instance
-_injection_loader: Optional[PromptInjectionLoader] = None
+_injection_loader: PromptInjectionLoader | None = None
 
 
 def get_injection_loader(**kwargs) -> PromptInjectionLoader:
@@ -554,8 +542,8 @@ def enhance_prompt(
     base_prompt: str,
     hop_type: str,
     stage: str,
-    context: Dict[str, Any],
-    content: Optional[str] = None,
+    context: dict[str, Any],
+    content: str | None = None,
     **kwargs
 ) -> str:
     """Enhance a prompt with relevant injections.

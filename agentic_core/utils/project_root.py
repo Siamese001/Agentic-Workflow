@@ -8,12 +8,11 @@ SSOT Consolidation (Jan 20, 2026):
 All scripts should import get_project_root from here instead of
 computing paths manually.
 """
-from pathlib import Path
 from functools import lru_cache
-from typing import Optional, List
+from pathlib import Path
 
 # Markers that indicate the root of the project
-ROOT_MARKERS: List[str] = [
+ROOT_MARKERS: list[str] = [
     "pyproject.toml",
     ".git",
     "agentic_core",  # The core package directory itself
@@ -22,7 +21,7 @@ ROOT_MARKERS: List[str] = [
 
 
 @lru_cache(maxsize=1)
-def get_project_root(start_path: Optional[str] = None) -> Path:
+def get_project_root(start_path: str | None = None) -> Path:
     """
     Detect the project root directory by searching upward for markers.
 

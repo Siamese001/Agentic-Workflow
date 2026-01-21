@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Trace what territory names are used in onclick handlers"""
-from pathlib import Path
 import re
+from pathlib import Path
 
 html = Path('reports/autonomy_dashboard.html').read_text(encoding='utf-8')
 
@@ -21,6 +21,7 @@ print(f"Unique territories in onclick: {len(territories_clicked)}")
 
 # Now check if these match dashboardData territories
 import json
+
 data_start = html.find('const dashboardData = ')
 data_end = html.find('];', data_start)
 data_str = html[data_start+22:data_end+1]
@@ -35,12 +36,12 @@ onclick_only = territories_clicked - data_territories
 data_only = data_territories - territories_clicked
 
 if onclick_only:
-    print(f"\n❌ In onclick but NOT in dashboardData:")
+    print("\n❌ In onclick but NOT in dashboardData:")
     for t in onclick_only:
         print(f"   '{t}'")
 
 if data_only:
-    print(f"\n⚠️  In dashboardData but NOT in onclick:")
+    print("\n⚠️  In dashboardData but NOT in onclick:")
     for t in data_only:
         print(f"   '{t}'")
 

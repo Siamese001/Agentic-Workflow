@@ -17,9 +17,9 @@ import argparse
 import json
 import os
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -37,7 +37,7 @@ def get_windsurf_config_path() -> Path:
         return Path.home() / ".config" / "windsurf" / "mcp_config.json"
 
 
-def load_sovereign_registry() -> Dict[str, Any]:
+def load_sovereign_registry() -> dict[str, Any]:
     """Load the SOVEREIGN_MCP_REGISTRY from mcp_registry.py."""
     try:
         from agentic_core.L2_execution.mcp.mcp_registry import SOVEREIGN_MCP_REGISTRY
@@ -50,7 +50,7 @@ def load_sovereign_registry() -> Dict[str, Any]:
         sys.exit(1)
 
 
-def load_windsurf_config(config_path: Path) -> Dict[str, Any]:
+def load_windsurf_config(config_path: Path) -> dict[str, Any]:
     """Load the current Windsurf MCP config."""
     if not config_path.exists():
         return {"mcpServers": {}}
@@ -62,7 +62,7 @@ def load_windsurf_config(config_path: Path) -> Dict[str, Any]:
         sys.exit(1)
 
 
-def convert_registry_to_windsurf_format(registry: Dict[str, Any]) -> Dict[str, Any]:
+def convert_registry_to_windsurf_format(registry: dict[str, Any]) -> dict[str, Any]:
     """Convert SOVEREIGN_MCP_REGISTRY entries to Windsurf mcp_config.json format."""
     # Mapping for normalization (Registry Key -> Config Key)
     # This allows the Python registry to use clean keys while the JSON uses specific names
@@ -95,7 +95,7 @@ def convert_registry_to_windsurf_format(registry: Dict[str, Any]) -> Dict[str, A
     return mcp_servers
 
 
-def get_reverse_name_map() -> Dict[str, str]:
+def get_reverse_name_map() -> dict[str, str]:
     """Get reverse mapping from config names to registry names for verification."""
     return {
         "mcp-playwright": "playwright",
@@ -105,7 +105,7 @@ def get_reverse_name_map() -> Dict[str, str]:
     }
 
 
-def get_preserved_servers() -> List[str]:
+def get_preserved_servers() -> list[str]:
     """
     Return list of server names that should be preserved even if not in registry.
     These are servers with local-specific configurations (e.g., filesystem paths).
@@ -114,10 +114,10 @@ def get_preserved_servers() -> List[str]:
 
 
 def merge_configs(
-    current_config: Dict[str, Any],
-    registry_servers: Dict[str, Any],
+    current_config: dict[str, Any],
+    registry_servers: dict[str, Any],
     preserve_local: bool = True
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Merge registry servers into current config.
 
@@ -146,9 +146,9 @@ def merge_configs(
 
 
 def compute_diff(
-    current_config: Dict[str, Any],
-    new_config: Dict[str, Any]
-) -> Dict[str, List[str]]:
+    current_config: dict[str, Any],
+    new_config: dict[str, Any]
+) -> dict[str, list[str]]:
     """Compute the difference between current and new configs."""
     current_servers = set(current_config.get("mcpServers", {}).keys())
     new_servers = set(new_config.get("mcpServers", {}).keys())
@@ -172,7 +172,7 @@ def compute_diff(
     }
 
 
-def print_diff(diff: Dict[str, List[str]], new_config: Dict[str, Any]) -> None:
+def print_diff(diff: dict[str, list[str]], new_config: dict[str, Any]) -> None:
     """Print a human-readable diff."""
     print("\n" + "="*60)
     print("MCP CONFIGURATION SYNC DIFF")
@@ -208,7 +208,7 @@ def print_diff(diff: Dict[str, List[str]], new_config: Dict[str, Any]) -> None:
     print("="*60)
 
 
-def backup_config(config_path: Path) -> Optional[Path]:
+def backup_config(config_path: Path) -> Path | None:
     """Create a backup of the current config."""
     if not config_path.exists():
         return None
@@ -224,7 +224,7 @@ def backup_config(config_path: Path) -> Optional[Path]:
         return None
 
 
-def apply_config(config_path: Path, new_config: Dict[str, Any]) -> bool:
+def apply_config(config_path: Path, new_config: dict[str, Any]) -> bool:
     """Apply the new configuration."""
     try:
         # Ensure parent directory exists
@@ -241,7 +241,7 @@ def apply_config(config_path: Path, new_config: Dict[str, Any]) -> bool:
         return False
 
 
-def verify_sync(config_path: Path, registry: Dict[str, Any]) -> bool:
+def verify_sync(config_path: Path, registry: dict[str, Any]) -> bool:
     """Verify that Windsurf config is in sync with registry."""
     current_config = load_windsurf_config(config_path)
     registry_servers = convert_registry_to_windsurf_format(registry)

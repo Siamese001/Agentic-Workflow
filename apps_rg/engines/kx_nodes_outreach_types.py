@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 """Types and models for kx_nodes_outreach."""
 import logging
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from enum import Enum
+from typing import Any
 
 _logger = logging.getLogger(__name__)
 
@@ -50,13 +51,13 @@ class OutreachKNode:
     _element: str
     _node_type: OutreachKNodeType
     _reasoning_strategy: ReasoningStrategy = ReasoningStrategy.COT
-    _rag_config: Optional[RAGConfig] = None
-    _decoding_params: Optional[DecodingParams] = None
+    _rag_config: RAGConfig | None = None
+    _decoding_params: DecodingParams | None = None
     _tot_branches: int = 3
     _self_consistency_runs: int = 1
-    _max_chars: Optional[int] = None
-    _max_words: Optional[int] = None
-    _structure_template: Optional[str] = None
-    _validation_rules: List[str] = field(default_factory=list)
-    _dependencies: List[str] = field(default_factory=list)
-    _metadata: Dict[str, Any] = field(default_factory=dict)
+    _max_chars: int | None = None
+    _max_words: int | None = None
+    _structure_template: str | None = None
+    _validation_rules: list[str] = field(default_factory=list)
+    _dependencies: list[str] = field(default_factory=list)
+    _metadata: dict[str, Any] = field(default_factory=dict)

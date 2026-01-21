@@ -10,7 +10,6 @@ Executes comprehensive safety validation to ensure resume content
 meets security standards for job alignment.
 """
 
-from typing import Optional
 # from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.core.routing import RoutingPolicy  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.core.models.models import ComplexityLevel  # DEPRECATED: Archive import removed to protect archives from validation edits
@@ -25,7 +24,7 @@ class SafetyExecutor:
     processing workflows and job alignment.
     """
 
-    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
+    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: MetaProfileSnapshot | None = None):
         self.routing_policy = routing_policy
         self.sandbox = sandbox
         self.meta_profile = meta_profile

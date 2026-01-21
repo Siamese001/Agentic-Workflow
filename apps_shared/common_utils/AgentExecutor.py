@@ -8,7 +8,7 @@ Phase 1C - SDK Integration Layer
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .multi_provider_clients import (
     Provider,
@@ -25,9 +25,9 @@ logger = logging.getLogger(__name__)
 class AgentConfig:
     """Configuration for agent execution."""
     provider: Provider = Provider.OPENAI
-    model: Optional[str] = None
+    model: str | None = None
     temperature: float = 0.7
-    max_tokens: Optional[int] = None
+    max_tokens: int | None = None
     max_retries: int = 3
     timeout: float = 60.0
     enable_tracing: bool = True
@@ -38,9 +38,9 @@ class AgentMessage:
     """Message in agent conversation."""
     role: str
     content: str
-    name: Optional[str] = None
-    tool_calls: Optional[List[Dict[str, Any]]] = None
-    tool_call_id: Optional[str] = None
+    name: str | None = None
+    tool_calls: list[dict[str, Any]] | None = None
+    tool_call_id: str | None = None
 
 
 @dataclass
@@ -48,17 +48,17 @@ class AgentResponse:
     """Response from agent execution."""
     content: str
     finish_reason: str
-    usage: Dict[str, int] = field(default_factory=dict)
-    tool_calls: Optional[List[Dict[str, Any]]] = None
-    raw_response: Optional[Any] = None
-    interaction_id: Optional[str] = None  # For Google GenAI stateful continuations
-    metadata: Dict[str, Any] = field(default_factory=dict)  # Additional response metadata
+    usage: dict[str, int] = field(default_factory=dict)
+    tool_calls: list[dict[str, Any]] | None = None
+    raw_response: Any | None = None
+    interaction_id: str | None = None  # For Google GenAI stateful continuations
+    metadata: dict[str, Any] = field(default_factory=dict)  # Additional response metadata
 
 
 class AgentExecutor:
     """Agent executor with LLM provider integration."""
 
-    def __init__(self, config: Optional[AgentConfig] = None):
+    def __init__(self, config: AgentConfig | None = None):
         """Initialize agent executor.
 
         Args:
@@ -75,9 +75,9 @@ class AgentExecutor:
 
     def execute(
         self,
-        messages: List[AgentMessage],
-        system_prompt: Optional[str] = None,
-        tools: Optional[List[Dict[str, Any]]] = None,
+        messages: list[AgentMessage],
+        system_prompt: str | None = None,
+        tools: list[dict[str, Any]] | None = None,
         **kwargs,
     ) -> AgentResponse:
         """Execute agent with messages.
@@ -109,9 +109,9 @@ class AgentExecutor:
 
     def _execute_internal(
         self,
-        messages: List[AgentMessage],
-        system_prompt: Optional[str],
-        tools: Optional[List[Dict[str, Any]]],
+        messages: list[AgentMessage],
+        system_prompt: str | None,
+        tools: list[dict[str, Any]] | None,
         **kwargs,
     ) -> AgentResponse:
         """Internal execution logic."""
@@ -134,9 +134,9 @@ class AgentExecutor:
 
     def _format_messages(
         self,
-        messages: List[AgentMessage],
-        system_prompt: Optional[str],
-    ) -> List[Dict[str, str]]:
+        messages: list[AgentMessage],
+        system_prompt: str | None,
+    ) -> list[dict[str, str]]:
         """Format messages for provider."""
         formatted = []
 
@@ -159,9 +159,9 @@ class AgentExecutor:
 
     def _execute_openai(
         self,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         model: str,
-        tools: Optional[List[Dict[str, Any]]],
+        tools: list[dict[str, Any]] | None,
         **kwargs,
     ) -> AgentResponse:
         """Execute using OpenAI client."""
@@ -196,9 +196,9 @@ class AgentExecutor:
 
     def _execute_anthropic(
         self,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         model: str,
-        tools: Optional[List[Dict[str, Any]]],
+        tools: list[dict[str, Any]] | None,
         **kwargs,
     ) -> AgentResponse:
         """Execute using Anthropic client."""
@@ -255,14 +255,13 @@ class AgentExecutor:
 
     def _execute_google(
         self,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         model: str,
-        tools: Optional[List[Dict[str, Any]]],
-        previous_interaction_id: Optional[str] = None,
+        tools: list[dict[str, Any]] | None,
+        previous_interaction_id: str | None = None,
         **kwargs,
     ) -> AgentResponse:
         """Execute using Google GenAI client with Interactions API."""
-        from tenacity import retry, stop_after_attempt, wait_exponential
 
         client = self._get_client()
 
@@ -279,10 +278,10 @@ class AgentExecutor:
     def _execute_google_interactions(
         self,
         client,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         model: str,
-        tools: Optional[List[Dict[str, Any]]],
-        previous_interaction_id: Optional[str],
+        tools: list[dict[str, Any]] | None,
+        previous_interaction_id: str | None,
         **kwargs,
     ) -> AgentResponse:
         """Execute using Google GenAI v1beta Interactions API with retry."""
@@ -353,7 +352,7 @@ class AgentExecutor:
     def _execute_google_legacy(
         self,
         genai_module,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         model: str,
         **kwargs,
     ) -> AgentResponse:
@@ -381,9 +380,9 @@ class AgentExecutor:
 
     def _execute_litellm(
         self,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         model: str,
-        tools: Optional[List[Dict[str, Any]]],
+        tools: list[dict[str, Any]] | None,
         **kwargs,
     ) -> AgentResponse:
         """Execute using LiteLLM."""
@@ -423,9 +422,9 @@ class AgentExecutor:
 
     def execute_structured(
         self,
-        messages: List[AgentMessage],
+        messages: list[AgentMessage],
         response_model: Any,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         **kwargs,
     ) -> Any:
         """Execute agent with structured output using Instructor.
@@ -462,13 +461,14 @@ class AgentExecutor:
 
     def _execute_google_structured(
         self,
-        messages: List[AgentMessage],
+        messages: list[AgentMessage],
         response_model: Any,
-        system_prompt: Optional[str],
+        system_prompt: str | None,
         **kwargs,
     ) -> Any:
         """Execute Google GenAI with structured JSON output using Interactions API."""
         import json
+
         from pydantic import BaseModel
 
         client = self._get_client()
@@ -558,7 +558,7 @@ class AgentExecutor:
 
 def create_agent_executor(
     provider: Provider = Provider.OPENAI,
-    model: Optional[str] = None,
+    model: str | None = None,
     temperature: float = 0.7,
     **kwargs,
 ) -> AgentExecutor:

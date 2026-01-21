@@ -13,6 +13,7 @@ Migration:
     )
 """
 import warnings
+
 warnings.warn(
     "TypeHintEnforcementAgent is deprecated. Use CodeStandardsEnforcerAgent instead.",
     DeprecationWarning,
@@ -31,24 +32,21 @@ warnings.warn(
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 # TypeHintEnforcementAgent - Atomic Validator (Ungated Healing)
 # Territory: agentic_core/L2_execution/ToolRegistry
 # Canon Alignment: Enforces complete type hints for public functions/methods/variables
 # Surgery Scope: Single file — adds basic Any / inferred hints where Missing
-
 import ast
+
 '''Brief description of functionality and purpose.'''
 
 from pathlib import Path
-from typing import Dict, Any, Optional
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NAMING CANON COMPLIANCE — renamed to TypeHintEnforcementAgent for discovery and sovereignty — 2025-12-30
@@ -80,11 +78,11 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         self.ctx = ctx
         self.project_root = project_root
 
-    async def execute(self, file_path: str) -> Dict[str, Any]:
+    async def execute(self, file_path: str) -> dict[str, Any]:
         """Execute method for validator compatibility."""
         return await self.heal_violation(Path(file_path), self.ctx)
 
-    async def heal_violation(self, file_path: Path, ctx=None) -> Dict[str, Any]:
+    async def heal_violation(self, file_path: Path, ctx=None) -> dict[str, Any]:
         """
         Per-file healing: add Missing type hints via AST transformation.
         """
@@ -123,8 +121,8 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             return {"healed": False}
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: TypeHintFixerAgent → TypeHintFixerAgent
 
@@ -141,7 +139,7 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety/validators - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

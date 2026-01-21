@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 BootstrapAgent: Sovereign Boot Integrity & Neural Link Verifier.
 
@@ -24,7 +25,7 @@ import os
 import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import redis
 from dotenv import load_dotenv
@@ -32,20 +33,16 @@ from dotenv import load_dotenv
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        SOVEREIGN_REGISTRY,
         CORE_SUBFOLDER_MAP,
+        SOVEREIGN_REGISTRY,
     )
 except ImportError:
-    from agentic_core.config.blueprint_sovereign.registry import (
-        SOVEREIGN_REGISTRY,
-        CORE_SUBFOLDER_MAP,
-    )
+    pass
 
 # PHASE 2.1: L0 Structural Standardization - inherit from L0MaintenanceBaseAgent
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -97,7 +94,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
                 conn_kwargs.update({"ssl": True, "ssl_cert_reqs": None})
             r = redis.Redis(**conn_kwargs)
             r.ping()
-            print(f"   [OK] Redis State Active: Langcache connected.")
+            print("   [OK] Redis State Active: Langcache connected.")
             return True
         except Exception as e:
             print(f"   [!] [L4 STATE WARNING] Redis offline: {e}")
@@ -143,7 +140,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
 
 
     # SUPPLEMENTED FROM OrganicTerritorySeederAgent — sovereign project initialization — merged 2025-12-30
-    async def seed_initial_territory(self, project_root: Path = None) -> Dict[str, Any]:
+    async def seed_initial_territory(self, project_root: Path = None) -> dict[str, Any]:
         """
         Seed critical sovereign directories and starter files on first boot.
         Ported from OrganicTerritorySeederAgent.execute().
@@ -199,7 +196,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
                 continue
         return False
 
-    def _report_registry_status(self, missing: List[str], found_count: int) -> None:
+    def _report_registry_status(self, missing: list[str], found_count: int) -> None:
         """Report registry validation status."""
         if missing:
             Logger.critical(f"[SOVEREIGN BREACH] Missing mandatory agents: {missing}")
@@ -208,7 +205,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
             Logger.info("[OK] All mandatory agents present — registry sovereign")
             print(f"   [OK] All {found_count} mandatory agents present — registry sovereign")
 
-    def validate_sovereign_registry(self) -> List[str]:
+    def validate_sovereign_registry(self) -> list[str]:
         """Ensure all mandatory agents exist and are discoverable."""
         missing = []
         found = []
@@ -222,7 +219,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         self._report_registry_status(missing, len(found))
         return missing
 
-    async def run_full_bootstrap(self) -> Dict[str, Any]:
+    async def run_full_bootstrap(self) -> dict[str, Any]:
         """
         Execute full bootstrap with territory seeding and registry validation.
         """
@@ -267,8 +264,8 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """
         Execute L0 maintenance healing operations.
 

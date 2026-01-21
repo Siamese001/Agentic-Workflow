@@ -6,7 +6,7 @@ Catalogs: tabs, cards, tables, footnotes, filters, modals, KPIs
 
 import re
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 def extract_components(html_content, name):
     """Extract UI components from HTML content"""
@@ -76,7 +76,7 @@ def compare_components():
         print(f"❌ Monolithic backup not found: {mono_path}")
         return
 
-    with open(mono_path, 'r', encoding='utf-8') as f:
+    with open(mono_path, encoding='utf-8') as f:
         mono_html = f.read()
 
     # Load modular dashboard
@@ -85,7 +85,7 @@ def compare_components():
         print(f"❌ Modular dashboard not found: {mod_path}")
         return
 
-    with open(mod_path, 'r', encoding='utf-8') as f:
+    with open(mod_path, encoding='utf-8') as f:
         mod_html = f.read()
 
     # Also check JS renderers for modular
@@ -97,7 +97,7 @@ def compare_components():
     for js_file in js_files:
         js_path = Path(js_file)
         if js_path.exists():
-            with open(js_path, 'r', encoding='utf-8') as f:
+            with open(js_path, encoding='utf-8') as f:
                 js_content += f.read()
 
     mod_html += js_content  # Include JS for component detection
@@ -120,8 +120,8 @@ def compare_components():
     all_issues = []
 
     for key, label in categories:
-        mono_items = set(mono_components[key]) if isinstance(mono_components[key][0] if mono_components[key] else '', str) else set(str(x) for x in mono_components[key])
-        mod_items = set(mod_components[key]) if isinstance(mod_components[key][0] if mod_components[key] else '', str) else set(str(x) for x in mod_components[key])
+        set(mono_components[key]) if isinstance(mono_components[key][0] if mono_components[key] else '', str) else {str(x) for x in mono_components[key]}
+        set(mod_components[key]) if isinstance(mod_components[key][0] if mod_components[key] else '', str) else {str(x) for x in mod_components[key]}
 
         print(f"\n{'='*50}")
         print(f"📦 {label}")
@@ -132,20 +132,20 @@ def compare_components():
         # Find missing in modular
         if isinstance(mono_components[key], list) and mono_components[key]:
             if isinstance(mono_components[key][0], dict):
-                mono_set = set(str(x) for x in mono_components[key])
-                mod_set = set(str(x) for x in mod_components[key])
+                mono_set = {str(x) for x in mono_components[key]}
+                mod_set = {str(x) for x in mod_components[key]}
             else:
                 mono_set = set(mono_components[key])
                 mod_set = set(mod_components[key])
 
             missing = mono_set - mod_set
             if missing:
-                print(f"  ❌ Missing in modular:")
+                print("  ❌ Missing in modular:")
                 for item in list(missing)[:10]:
                     print(f"     - {item}")
                     all_issues.append(f"{label}: {item}")
             else:
-                print(f"  ✅ All items present")
+                print("  ✅ All items present")
 
     # Detailed tab comparison
     print(f"\n{'='*50}")

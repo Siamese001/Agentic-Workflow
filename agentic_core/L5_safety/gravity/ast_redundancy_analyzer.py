@@ -10,31 +10,11 @@ Performs comprehensive AST-based fingerprinting to detect:
 
 import ast
 import hashlib
-import os
+import json
 import re
-from pathlib import Path
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, List, Set, Tuple, Optional
-import json
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
+from pathlib import Path
 
 
 @dataclass
@@ -47,7 +27,7 @@ class AgentInfo:
     method_count: int
     fingerprint: str = ""
     normalized_ast: str = ""
-    method_names: List[str] = field(default_factory=list)
+    method_names: list[str] = field(default_factory=list)
 
 
 class ASTNormalizer(ast.NodeTransformer):
@@ -66,7 +46,7 @@ class ASTNormalizer(ast.NodeTransformer):
     def __init__(self):
         self.param_counter = 0
         self.var_counter = 0
-        self.var_map: Dict[str, str] = {}
+        self.var_map: dict[str, str] = {}
 
     def reset(self):
         self.param_counter = 0
@@ -84,8 +64,8 @@ class ASTNormalizer(ast.NodeTransformer):
             new_body.append(item)
 
         # Sort methods alphabetically
-        methods = [n for n in new_body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-        non_methods = [n for n in new_body if not isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+        methods = [n for n in new_body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
+        non_methods = [n for n in new_body if not isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
 
         methods.sort(key=lambda m: m.name)
 
@@ -169,15 +149,15 @@ class ASTNormalizer(ast.NodeTransformer):
         """Replace long constants."""
         if isinstance(node.value, str) and len(node.value) > 50:
             node.value = "LONG_STRING"
-        elif isinstance(node.value, (int, float)) and abs(node.value) > 1000000:
+        elif isinstance(node.value, int | float) and abs(node.value) > 1000000:
             node.value = 999999
         return node
 
-    def visit_Import(self, node: ast.Import) -> Optional[ast.Import]:
+    def visit_Import(self, node: ast.Import) -> ast.Import | None:
         """Remove imports."""
         return None
 
-    def visit_ImportFrom(self, node: ast.ImportFrom) -> Optional[ast.ImportFrom]:
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> ast.ImportFrom | None:
         """Remove imports."""
         return None
 
@@ -204,7 +184,7 @@ def extract_layer(file_path: str) -> str:
     return 'UNKNOWN'
 
 
-def find_agent_classes(base_path: str) -> List[AgentInfo]:
+def find_agent_classes(base_path: str) -> list[AgentInfo]:
     """Find all PascalCase *Agent classes in the codebase."""
     agents = []
     base = Path(base_path)
@@ -252,7 +232,7 @@ def find_agent_classes(base_path: str) -> List[AgentInfo]:
                         for node in ast.walk(tree):
                             if isinstance(node, ast.ClassDef) and node.name == class_name:
                                 for item in node.body:
-                                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                                    if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                                         method_count += 1
                                         method_names.append(item.name)
 
@@ -280,7 +260,7 @@ def find_agent_classes(base_path: str) -> List[AgentInfo]:
     return agents
 
 
-def generate_fingerprint(file_path: str, class_name: str) -> Tuple[str, str]:
+def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
     """Generate SHA256 fingerprint for a class using normalized AST."""
     try:
         content = Path(file_path).read_text(encoding='utf-8', errors='ignore')
@@ -317,9 +297,9 @@ def generate_fingerprint(file_path: str, class_name: str) -> Tuple[str, str]:
         return (fingerprint, normalized_code)
 
     except SyntaxError as e:
-        return (f"SYNTAX_ERROR", str(e))
+        return ("SYNTAX_ERROR", str(e))
     except Exception as e:
-        return (f"ERROR", str(e))
+        return ("ERROR", str(e))
 
 
 def calculate_similarity(code1: str, code2: str) -> float:
@@ -340,7 +320,7 @@ def calculate_similarity(code1: str, code2: str) -> float:
     return len(intersection) / len(union) if union else 0.0
 
 
-def analyze_redundancy(base_path: str) -> Dict:
+def analyze_redundancy(base_path: str) -> dict:
     """Main analysis function."""
     print("=" * 80)
     print("AST REDUNDANCY ANALYZER - SOVEREIGN STRUCTURAL DEDUPLICATION")
@@ -365,7 +345,7 @@ def analyze_redundancy(base_path: str) -> Dict:
 
     # Phase 3: Group by fingerprint
     print("PHASE 3: Detecting Exact Duplicates...")
-    fingerprint_groups: Dict[str, List[AgentInfo]] = defaultdict(list)
+    fingerprint_groups: dict[str, list[AgentInfo]] = defaultdict(list)
     for agent in agents:
         if not agent.fingerprint.startswith("ERROR") and not agent.fingerprint.startswith("SYNTAX"):
             fingerprint_groups[agent.fingerprint].append(agent)
@@ -398,7 +378,7 @@ def analyze_redundancy(base_path: str) -> Dict:
     }
 
 
-def print_report(results: Dict):
+def print_report(results: dict):
     """Print formatted report."""
     print("=" * 80)
     print("COMPREHENSIVE AST REDUNDANCY REPORT")
@@ -414,9 +394,7 @@ def print_report(results: Dict):
 
     for agent in sorted(results["agents"], key=lambda a: (a.layer, a.name)):
         fp_display = agent.fingerprint[:16] if len(agent.fingerprint) >= 16 else agent.fingerprint
-        print("│ {:38} │ {:^4} │ {:^6} │ {:18} │".format(
-            agent.name[:38], agent.layer, agent.method_count, fp_display
-        ))
+        print(f"│ {agent.name[:38]:38} │ {agent.layer:^4} │ {agent.method_count:^6} │ {fp_display:18} │")
 
     print("└" + "─" * 40 + "┴" + "─" * 6 + "┴" + "─" * 8 + "┴" + "─" * 20 + "┘")
     print()
@@ -444,7 +422,7 @@ def print_report(results: Dict):
                 keep = sorted(agents, key=lambda a: a.layer)[0]
             delete = [a for a in agents if a != keep]
 
-            print(f"\n  RECOMMENDATION:")
+            print("\n  RECOMMENDATION:")
             print(f"    KEEP:   {keep.name} ({keep.layer})")
             for d in delete:
                 print(f"    DELETE: {d.name} ({d.layer})")
@@ -463,7 +441,7 @@ def print_report(results: Dict):
             print(f"\n[NEAR-DUP] Similarity: {similarity:.1%}")
             print(f"  1. {agent1.name} ({agent1.layer})")
             print(f"  2. {agent2.name} ({agent2.layer})")
-            print(f"  → Consider merging or refactoring")
+            print("  → Consider merging or refactoring")
     else:
         print("\n[OK] No near-duplicates found!")
 

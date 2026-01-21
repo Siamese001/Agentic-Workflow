@@ -22,7 +22,6 @@ This audit verifies:
 import json
 import sys
 from pathlib import Path
-from collections import defaultdict
 
 project_root = Path(__file__).parent.parent
 
@@ -65,16 +64,27 @@ print("="*70)
 # Import SSOT definitions
 sys.path.insert(0, str(project_root / "scripts"))
 from dashboard_ssot_definitions import (
-    COL_HEAL_CAP, COL_INVOCATION, COL_TEST,
-    COL_HARDENED, COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED,
-    COL_SCHEMA, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH,
-    FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS,
-    FIELD_MCP_HARDENED, FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT,
-    FIELD_SCHEMA_STRICTNESS, FIELD_PROPER_BASE_CLASS,
-    calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_avg_cc,
-    calc_complexity_health, calc_code_quality_score, calc_health_score
+    COL_CANONICAL_INHERITANCE,
+    COL_CODE_QUALITY,
+    COL_COMPLEXITY_HEALTH,
+    COL_DOCUMENTED,
+    COL_HARDENED,
+    COL_HEAL_CAP,
+    COL_HEALTH,
+    COL_INVOCATION,
+    COL_SCHEMA,
+    COL_TEST,
+    COL_TYPED,
+    FIELD_DOCUMENTED_PCT,
+    FIELD_HAS_HEALING,
+    FIELD_HAS_TESTS,
+    FIELD_INVOCATION,
+    FIELD_MCP_HARDENED,
+    FIELD_PROPER_BASE_CLASS,
+    FIELD_SCHEMA_STRICTNESS,
+    FIELD_TYPED_PCT,
+    calc_heal_cap_pct,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Verify all column names are defined
 required_columns = [
@@ -117,7 +127,7 @@ print("AUDIT 3: Territory Name Consistency")
 print("="*70)
 
 # Load discovery data
-with open(discovery_file, 'r', encoding='utf-8') as f:
+with open(discovery_file, encoding='utf-8') as f:
     discovery_data = json.load(f)
 
 # Load dashboard data
@@ -158,7 +168,7 @@ dashboard_territories = [r['Territory'] for r in dashboard_data if r['Territory'
 missing_canonical = [t for t in canonical_territories if t not in dashboard_territories]
 
 if missing_canonical:
-    print(f"\n❌ SSOT VIOLATION: Missing canonical territories:")
+    print("\n❌ SSOT VIOLATION: Missing canonical territories:")
     for t in missing_canonical:
         print(f"  - {t}")
 else:
@@ -195,7 +205,7 @@ for row in sample_rows:
         )
 
 if calculation_mismatches:
-    print(f"❌ SSOT VIOLATION: Calculation mismatches:")
+    print("❌ SSOT VIOLATION: Calculation mismatches:")
     for mismatch in calculation_mismatches:
         print(f"  - {mismatch}")
 else:
@@ -235,7 +245,7 @@ for prefix in layer_prefixes:
             )
 
 if sort_violations:
-    print(f"❌ SSOT VIOLATION: Sort order violations:")
+    print("❌ SSOT VIOLATION: Sort order violations:")
     for violation in sort_violations:
         print(f"  - {violation}")
 else:
@@ -258,7 +268,7 @@ if dashboard_total_row:
     if discovery_agent_count == dashboard_agent_count:
         print(f"✅ Agent count matches: {discovery_agent_count} agents")
     else:
-        print(f"❌ SSOT VIOLATION: Agent count mismatch")
+        print("❌ SSOT VIOLATION: Agent count mismatch")
         print(f"  Discovery: {discovery_agent_count} agents")
         print(f"  Dashboard: {dashboard_agent_count} agents")
 else:

@@ -10,9 +10,10 @@ project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
+    SOVEREIGN_REGISTRY,
 )
+
 
 class MockContext:
     """Mock context for dry-run mode."""
@@ -59,7 +60,7 @@ def validate_depth_precision(project_root: Path) -> dict:
     violations = []
 
     # Phase 6.5: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
     all_files = list(get_python_files(project_root)) + list(get_data_files(project_root, extensions=['.json', '.md', '.yaml', '.yml']))
     for file_path in all_files:
         if file_path.is_dir():
@@ -86,7 +87,7 @@ def validate_tests_depth(project_root: Path) -> dict:
     violations = []
 
     # Phase 6.5: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
     all_files = list(get_python_files(project_root)) + list(get_data_files(project_root, extensions=['.json', '.md', '.yaml', '.yml']))
     for file_path in all_files:
         if file_path.is_dir():
@@ -152,7 +153,7 @@ def main():
         print("  ✅ L2/L3 structure is compliant")
     else:
         print(f"  ⚠️  Found {len(l2_l3_result['violations'])} L2/L3 structure violations")
-        print(f"\n  Missing directories that would be created:")
+        print("\n  Missing directories that would be created:")
         for missing_dir in l2_l3_result["missing_dirs"][:10]:
             print(f"    - {missing_dir}")
         if len(l2_l3_result["missing_dirs"]) > 10:
@@ -166,7 +167,7 @@ def main():
         print("  ✅ apps_* depth is compliant")
     else:
         print(f"  ⚠️  Found {len(apps_violations)} apps_* depth violations")
-        print(f"\n  Files that would be archived:")
+        print("\n  Files that would be archived:")
         for violation in apps_violations[:5]:
             print(f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})")
         if len(apps_violations) > 5:
@@ -180,7 +181,7 @@ def main():
         print("  ✅ tests depth is compliant")
     else:
         print(f"  ⚠️  Found {len(tests_violations)} tests depth violations")
-        print(f"\n  Files that would be archived:")
+        print("\n  Files that would be archived:")
         for violation in tests_violations[:5]:
             print(f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})")
         if len(tests_violations) > 5:
@@ -194,7 +195,7 @@ def main():
         print("  ✅ Universal depth is compliant")
     else:
         print(f"  ⚠️  Found {len(universal_violations)} universal depth violations")
-        print(f"\n  Files that would be archived:")
+        print("\n  Files that would be archived:")
         for violation in universal_violations[:5]:
             print(f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})")
         if len(universal_violations) > 5:

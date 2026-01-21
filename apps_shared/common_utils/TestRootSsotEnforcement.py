@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Test Suite: Root Directory SSOT Enforcement Hardening
 
@@ -15,7 +14,7 @@ RCA Gaps Being Tested:
 Run: python scripts/test_root_ssot_enforcement.py
 """
 import sys
-import os
+
 if sys.platform.startswith("win"):
     from agentic_core.utils.security import safe_execute
     # Replace os.system with safe_execute for security
@@ -24,31 +23,27 @@ if sys.platform.startswith("win"):
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 from pathlib import Path
-from typing import Dict, List, Any, Set, Tuple
-import tempfile
-import shutil
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
     ROOT_WHITELIST,
-    CORE_SUBFOLDER_MAP,
+    SOVEREIGN_REGISTRY,
     get_validated_project_root,
 )
-
 
 # ============================================================================
 # TEST CONFIGURATION
 # ============================================================================
 
 # Approved root folders per SOVEREIGN_REGISTRY
-APPROVED_ROOT_FOLDERS: Set[str] = set(SOVEREIGN_REGISTRY.keys())
+APPROVED_ROOT_FOLDERS: set[str] = set(SOVEREIGN_REGISTRY.keys())
 
 # Standard project files/folders that are always allowed at root
-STANDARD_ROOT_ITEMS: Set[str] = {
+STANDARD_ROOT_ITEMS: set[str] = {
     # Git/IDE
     '.git', '.github', '.vscode', '.venv', '__pycache__', '.pytest_cache',
     # Config files
@@ -64,7 +59,7 @@ STANDARD_ROOT_ITEMS: Set[str] = {
 }
 
 # Folders that should NOT exist at root (they have SSOT locations)
-FORBIDDEN_ROOT_FOLDERS: Set[str] = {
+FORBIDDEN_ROOT_FOLDERS: set[str] = {
     'scripts',       # Should be agentic_core/L0_maintenance/scripts/
     'logs',          # Should be agentic_core/L0_maintenance/logs/
     'coverage_html', # Should be reports/coverage_html/ or gitignored
@@ -72,7 +67,7 @@ FORBIDDEN_ROOT_FOLDERS: Set[str] = {
 }
 
 # File patterns that should be in archives/, not root
-ARCHIVE_PATTERNS: List[str] = [
+ARCHIVE_PATTERNS: list[str] = [
     '.archived',
     '.backup',
     '.old',
@@ -83,7 +78,7 @@ ARCHIVE_PATTERNS: List[str] = [
 # TEST FUNCTIONS
 # ============================================================================
 
-def test_1_root_folder_whitelist() -> Tuple[bool, str]:
+def test_1_root_folder_whitelist() -> tuple[bool, str]:
     """
     Test 1: Verify ROOT_WHITELIST matches SOVEREIGN_REGISTRY keys.
 
@@ -101,7 +96,7 @@ def test_1_root_folder_whitelist() -> Tuple[bool, str]:
     return False, msg
 
 
-def test_2_no_forbidden_folders_at_root() -> Tuple[bool, str]:
+def test_2_no_forbidden_folders_at_root() -> tuple[bool, str]:
     """
     Test 2: Verify no forbidden folders exist at project root.
 
@@ -120,7 +115,7 @@ def test_2_no_forbidden_folders_at_root() -> Tuple[bool, str]:
     return False, f"Forbidden folders at root: {violations}"
 
 
-def test_3_no_archived_files_at_root() -> Tuple[bool, str]:
+def test_3_no_archived_files_at_root() -> tuple[bool, str]:
     """
     Test 3: Verify no .archived files exist at project root.
 
@@ -142,7 +137,7 @@ def test_3_no_archived_files_at_root() -> Tuple[bool, str]:
     return False, f"Found {len(archived_files)} archived files at root (should be in archives/)"
 
 
-def test_4_scripts_folder_ssot_location() -> Tuple[bool, str]:
+def test_4_scripts_folder_ssot_location() -> tuple[bool, str]:
     """
     Test 4: Verify scripts/ at root doesn't duplicate L0_maintenance/scripts/.
 
@@ -167,7 +162,7 @@ def test_4_scripts_folder_ssot_location() -> Tuple[bool, str]:
     return False, f"DUPLICATE: scripts/ at root ({root_count} files) AND L0_maintenance/scripts/ ({ssot_count} files)"
 
 
-def test_5_logs_folder_ssot_location() -> Tuple[bool, str]:
+def test_5_logs_folder_ssot_location() -> tuple[bool, str]:
     """
     Test 5: Verify logs/ at root doesn't duplicate L0_maintenance/logs/.
 
@@ -181,10 +176,10 @@ def test_5_logs_folder_ssot_location() -> Tuple[bool, str]:
         return True, "No logs/ at root (correct)"
 
     # logs/ at root is a violation regardless
-    return False, f"logs/ exists at root - should be in agentic_core/L0_maintenance/logs/"
+    return False, "logs/ exists at root - should be in agentic_core/L0_maintenance/logs/"
 
 
-def test_6_coverage_html_handling() -> Tuple[bool, str]:
+def test_6_coverage_html_handling() -> tuple[bool, str]:
     """
     Test 6: Verify coverage_html/ is either in reports/ or gitignored.
 
@@ -207,7 +202,7 @@ def test_6_coverage_html_handling() -> Tuple[bool, str]:
     return False, "coverage_html/ at root - should be in reports/ or gitignored"
 
 
-def test_7_location_agent_root_validation() -> Tuple[bool, str]:
+def test_7_location_agent_root_validation() -> tuple[bool, str]:
     """
     Test 7: Verify LocationAgent validates root-level paths.
 
@@ -234,7 +229,7 @@ def test_7_location_agent_root_validation() -> Tuple[bool, str]:
         return False, f"Could not import LocationAgent: {e}"
 
 
-def test_8_hierarchy_agent_root_scan() -> Tuple[bool, str]:
+def test_8_hierarchy_agent_root_scan() -> tuple[bool, str]:
     """
     Test 8: Verify HierarchyAgent can detect root-level violations.
 
@@ -258,14 +253,16 @@ def test_8_hierarchy_agent_root_scan() -> Tuple[bool, str]:
         return False, f"Could not import HierarchyAgent: {e}"
 
 
-def test_9_filesystem_reconciler_root_handling() -> Tuple[bool, str]:
+def test_9_filesystem_reconciler_root_handling() -> tuple[bool, str]:
     """
     Test 9: Verify FilesystemSSOTReconcilerAgent handles root-level drift.
 
     Gap: Only handles subfolders within sovereign roots, not root-level folders.
     """
     try:
-        from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+        from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
+            FilesystemSSOTReconcilerAgent,
+        )
 
         root = get_validated_project_root()
         agent = FilesystemSSOTReconcilerAgent(root, enforcement_mode=False)
@@ -282,7 +279,7 @@ def test_9_filesystem_reconciler_root_handling() -> Tuple[bool, str]:
         return False, f"Could not import FilesystemSSOTReconcilerAgent: {e}"
 
 
-def test_10_archived_file_relocation_logic() -> Tuple[bool, str]:
+def test_10_archived_file_relocation_logic() -> tuple[bool, str]:
     """
     Test 10: Verify archiving logic moves files to archives/ folder.
 
@@ -310,7 +307,7 @@ def test_10_archived_file_relocation_logic() -> Tuple[bool, str]:
         return False, f"Could not import LocationAgent: {e}"
 
 
-def test_11_root_whitelist_enforcement() -> Tuple[bool, str]:
+def test_11_root_whitelist_enforcement() -> tuple[bool, str]:
     """
     Test 11: Verify ROOT_WHITELIST is actually enforced.
 
@@ -337,7 +334,7 @@ def test_11_root_whitelist_enforcement() -> Tuple[bool, str]:
     return False, f"Root folders not in whitelist: {violations}"
 
 
-def test_12_sovereign_registry_completeness() -> Tuple[bool, str]:
+def test_12_sovereign_registry_completeness() -> tuple[bool, str]:
     """
     Test 12: Verify SOVEREIGN_REGISTRY has all required roots.
 
@@ -358,7 +355,7 @@ def test_12_sovereign_registry_completeness() -> Tuple[bool, str]:
 # TEST RUNNER
 # ============================================================================
 
-def run_all_tests(category: str = "all") -> Dict[str, Any]:
+def run_all_tests(category: str = "all") -> dict[str, Any]:
     """Run all tests and return results.
 
     Args:

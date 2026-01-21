@@ -16,12 +16,12 @@ architectural governance as a first-class citizen of your workflow.
 """
 
 from __future__ import annotations
-import sys
-import json
+
 import argparse
-from pathlib import Path
+import json
+import sys
 from datetime import datetime
-from typing import Optional
+from pathlib import Path
 
 # Add project root to path
 REPO = Path(__file__).parent.parent.resolve()
@@ -29,6 +29,7 @@ sys.path.insert(0, str(REPO))
 
 from agentic_core.utils.core_extensions.ssot_scanner import SSOTScanner
 from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTValidator
+
 # ARCHIVED: ssot_relocator import removed # SSOTRelocator
 
 
@@ -467,7 +468,7 @@ def main():
     )
 
     # Status command
-    status_parser = subparsers.add_parser(
+    subparsers.add_parser(
         'status',
         help='Show compliance dashboard'
     )

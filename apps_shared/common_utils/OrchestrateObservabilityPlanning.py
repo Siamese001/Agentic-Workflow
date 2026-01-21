@@ -5,11 +5,11 @@ including metric collection, log aggregation, trace management, and alert config
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +41,9 @@ class MetricDefinition:
     name: str
     metric_type: MetricType
     description: str
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
     sampling_rate: float = 1.0
-    aggregation: Optional[str] = None
+    aggregation: str | None = None
 
 @dataclass
 class LogConfiguration:
@@ -53,7 +53,7 @@ class LogConfiguration:
     format: str = "json"
     include_timestamp: bool = True
     include_trace_id: bool = True
-    filters: List[str] = field(default_factory=list)
+    filters: list[str] = field(default_factory=list)
 
 @dataclass
 class TraceConfiguration:
@@ -72,7 +72,7 @@ class AlertRule:
     severity: AlertSeverity
     threshold: float
     duration: int  # seconds
-    notification_channels: List[str] = field(default_factory=list)
+    notification_channels: list[str] = field(default_factory=list)
 
 @dataclass
 class ObservabilityPlanningConfig:
@@ -90,24 +90,24 @@ class ObservabilityPlanningConfig:
 class ObservabilityPlanningResult:
     """Result of observability planning orchestration."""
     success: bool
-    metric_definitions: List[MetricDefinition] = field(default_factory=list)
-    log_configuration: Optional[LogConfiguration] = None
-    trace_configuration: Optional[TraceConfiguration] = None
-    alert_rules: List[AlertRule] = field(default_factory=list)
-    resource_estimates: Dict[str, Any] = field(default_factory=dict)
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metric_definitions: list[MetricDefinition] = field(default_factory=list)
+    log_configuration: LogConfiguration | None = None
+    trace_configuration: TraceConfiguration | None = None
+    alert_rules: list[AlertRule] = field(default_factory=list)
+    resource_estimates: dict[str, Any] = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 class ObservabilityPlanningOrchestrator:
     """Orchestrator for planning observability operations."""
 
-    def __init__(self, config: Optional[ObservabilityPlanningConfig] = None):
+    def __init__(self, config: ObservabilityPlanningConfig | None = None):
         self.config = config or ObservabilityPlanningConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
-    def execute(self, observability_request: Dict[str, Any]) -> ObservabilityPlanningResult:
+    def execute(self, observability_request: dict[str, Any]) -> ObservabilityPlanningResult:
         """Execute the observability planning orchestration.
 
         Args:
@@ -177,7 +177,7 @@ class ObservabilityPlanningOrchestrator:
                 }
             )
 
-    def _validate_request(self, request: Dict[str, Any]) -> None:
+    def _validate_request(self, request: dict[str, Any]) -> None:
         """Validate observability planning request."""
         if not request:
             raise ValueError("Observability request cannot be empty")
@@ -188,7 +188,7 @@ class ObservabilityPlanningOrchestrator:
         if "service_type" not in request:
             raise ValueError("Service type is required in observability request")
 
-    def _plan_metrics(self, request: Dict[str, Any]) -> List[MetricDefinition]:
+    def _plan_metrics(self, request: dict[str, Any]) -> list[MetricDefinition]:
         """Plan metrics for the service."""
         service_name = request.get("service_name")
         service_type = request.get("service_type")
@@ -235,7 +235,7 @@ class ObservabilityPlanningOrchestrator:
 
         return metrics
 
-    def _plan_logging(self, request: Dict[str, Any]) -> LogConfiguration:
+    def _plan_logging(self, request: dict[str, Any]) -> LogConfiguration:
         """Plan logging configuration for the service."""
         service_name = request.get("service_name")
         log_level_str = request.get("log_level", "info")
@@ -260,7 +260,7 @@ class ObservabilityPlanningOrchestrator:
             filters=["password", "token", "secret"]
         )
 
-    def _plan_tracing(self, request: Dict[str, Any]) -> TraceConfiguration:
+    def _plan_tracing(self, request: dict[str, Any]) -> TraceConfiguration:
         """Plan tracing configuration for the service."""
         service_name = request.get("service_name")
         sampling_rate = request.get("tracing_sampling_rate", self.config.default_sampling_rate)
@@ -273,7 +273,7 @@ class ObservabilityPlanningOrchestrator:
             export_batch_size=100
         )
 
-    def _plan_alerts(self, request: Dict[str, Any]) -> List[AlertRule]:
+    def _plan_alerts(self, request: dict[str, Any]) -> list[AlertRule]:
         """Plan alert rules for the service."""
         service_name = request.get("service_name")
         service_type = request.get("service_type")
@@ -323,10 +323,10 @@ class ObservabilityPlanningOrchestrator:
 
     def _estimate_resources(
         self,
-        metrics: List[MetricDefinition],
-        logs: Optional[LogConfiguration],
-        traces: Optional[TraceConfiguration]
-    ) -> Dict[str, Any]:
+        metrics: list[MetricDefinition],
+        logs: LogConfiguration | None,
+        traces: TraceConfiguration | None
+    ) -> dict[str, Any]:
         """Estimate resource requirements for observability."""
         estimates = {
             "storage_gb_per_day": 0.0,
@@ -381,8 +381,8 @@ def create_observability_planning_orchestrator(
 def plan_observability(
     service_name: str,
     service_type: str,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Plan observability setup from simple parameters.
 
     Args:
@@ -464,12 +464,12 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
     """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
+    def process(self, input_data: dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
 
     @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
+    def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
         ...
 
@@ -479,11 +479,11 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
     Pure planning functionality with no side effects
     """
 
-    def __init__(self, constraints: Optional[OrchestrateObservabilityPlanningOrchestratorConstraints] = None):
+    def __init__(self, constraints: OrchestrateObservabilityPlanningOrchestratorConstraints | None = None):
         self.constraints = constraints or OrchestrateObservabilityPlanningOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: Dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
+    def process(self, input_data: dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
 
@@ -505,7 +505,7 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
         self.logger.info(f"Successfully processed: {result.success}")
         return result
 
-    def validate_safety(self, data: Dict[str, object]) -> bool:
+    def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
@@ -527,7 +527,7 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
+    def _validate_input(self, input_data: dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(input_data, dict):
             raise ValueError("Input must be a dictionary")
@@ -550,7 +550,7 @@ class OrchestrateObservabilityPlanningOrchestratorInterface:
     def __init__(self, engine: OrchestrateObservabilityPlanningOrchestratorProcessor):
         self._processor = engine
 
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
+    def execute(self, input_data: dict[str, object]) -> dict[str, object]:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
@@ -574,7 +574,7 @@ class OrchestrateObservabilityPlanningOrchestratorFactory:
         engine = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
         return OrchestrateObservabilityPlanningOrchestratorInterface(engine)
 
-def orchestrate_observability_planning(input_data: Dict[str, object]) -> Dict[str, object]:
+def orchestrate_observability_planning(input_data: dict[str, object]) -> dict[str, object]:
     """
     L5 Main function - orchestrate observability planning operations
 

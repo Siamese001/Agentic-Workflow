@@ -15,7 +15,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
 from data.sdks_mcps.client_wrappers.anthropic_client import (
     AnthropicClient,
@@ -40,12 +40,12 @@ class ProviderConfig:
     weight: float = 1.0  # For load balancing
     max_retries: int = 2
     timeout: int = 60
-    config: Dict[str, object] = field(default_factory=dict)
+    config: dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class RouterConfig:
     """Configuration for the multi-provider router."""
-    providers: List[ProviderConfig] = field(default_factory=list)
+    providers: list[ProviderConfig] = field(default_factory=list)
     default_strategy: str = "priority"  # priority, round_robin, weighted, fastest
     enable_failover: bool = True
     enable_caching: bool = True
@@ -55,7 +55,7 @@ class RouterConfig:
 class MultiProviderRouterAgent(MCPHardenedMixin):
     """Production router with intelligent provider selection and failover."""
 
-    def __init__(self, config: Optional[RouterConfig] = None) -> None:
+    def __init__(self, config: RouterConfig | None = None) -> None:
         """
         Initialize multi-provider router.
 
@@ -63,10 +63,10 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             config: Optional router configuration (uses defaults if not provided)
         """
         self.config: RouterConfig = config or self._default_config()
-        self.clients: Dict[Provider, Any] = {}
-        self.health_status: Dict[Provider, bool] = {}
-        self.circuit_breakers: Dict[Provider, int] = {}
-        self.usage_stats: Dict[Provider, Dict[str, Any]] = {}
+        self.clients: dict[Provider, Any] = {}
+        self.health_status: dict[Provider, bool] = {}
+        self.circuit_breakers: dict[Provider, int] = {}
+        self.usage_stats: dict[Provider, dict[str, Any]] = {}
         self.request_count: int = 0
         self._lock: threading.Lock = threading.Lock()
 
@@ -156,10 +156,10 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
     def chat_completion(
         self,
-        messages: List[Dict[str, object]],
-        strategy: Optional[str] = None,
-        providers: Optional[List[Provider]] = None,
-        **kwargs: Dict[str, object]) -> Dict[str, object]:
+        messages: list[dict[str, object]],
+        strategy: str | None = None,
+        providers: list[Provider] | None = None,
+        **kwargs: dict[str, object]) -> dict[str, object]:
         """Route chat completion request to optimal provider.
 
         Args:
@@ -225,9 +225,9 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
     def structured_completion(
         self,
-        messages: List[Dict[str, object]],
-        schema: Dict[str, object],
-        **kwargs: Dict[str, object]) -> Dict[str, object]:
+        messages: list[dict[str, object]],
+        schema: dict[str, object],
+        **kwargs: dict[str, object]) -> dict[str, object]:
         """Route structured output completion to optimal provider."""
         # Prefer OpenAI for structured output (best JSON schema support)
         preferred_providers = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GOOGLE_VERTEX]
@@ -248,7 +248,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
         return result
 
-    def _parse_structured_output(self, provider: Provider, response: Any, result: Dict[str, object]) -> None:
+    def _parse_structured_output(self, provider: Provider, response: Any, result: dict[str, object]) -> None:
         """Parse structured output based on provider."""
         if provider == Provider.OPENAI:
             # OpenAI already returns structured data
@@ -258,7 +258,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         elif provider == Provider.GOOGLE_VERTEX:
             self._parse_vertex_structured(response, result)
 
-    def _parse_anthropic_structured(self, response: Any, result: Dict[str, object]) -> None:
+    def _parse_anthropic_structured(self, response: Any, result: dict[str, object]) -> None:
         """Parse JSON from Anthropic response."""
         try:
             if hasattr(response, 'content') and response.content:
@@ -269,7 +269,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             result["success"] = False
             result["error"] = f"Failed to parse structured output: {e}"
 
-    def _parse_vertex_structured(self, response: Any, result: Dict[str, object]) -> None:
+    def _parse_vertex_structured(self, response: Any, result: dict[str, object]) -> None:
         """Parse JSON from Vertex response."""
         try:
             content = response.text
@@ -281,9 +281,9 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
     def batch_completion(
         self,
-        batch_requests: List[Dict[str, object]],
+        batch_requests: list[dict[str, object]],
         strategy: str = "weighted",
-        **kwargs: Dict[str, object]) -> List[Dict[str, object]]:
+        **kwargs: dict[str, object]) -> list[dict[str, object]]:
         """Route batch requests across multiple providers."""
         # Distribute requests across providers
         provider_distribution = self._distribute_batch_requests(batch_requests, strategy)
@@ -339,8 +339,8 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         return results
 
     def _select_providers(self,
-         providers: Optional[List[Provider]],
-         strategy: str) -> List[Provider]:
+         providers: list[Provider] | None,
+         strategy: str) -> list[Provider]:
         """Select providers based on strategy and health."""
         candidate_providers = [p for p in providers if p in self.clients] if providers else list(self.clients.keys())
         healthy_providers = [p for p in candidate_providers if self._is_provider_available(p)]
@@ -348,7 +348,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             return candidate_providers
         return self._apply_strategy(healthy_providers, strategy)
 
-    def _apply_strategy(self, providers: List[Provider], strategy: str) -> List[Provider]:
+    def _apply_strategy(self, providers: list[Provider], strategy: str) -> list[Provider]:
         """Apply selection strategy using dispatch table."""
         strategy_dispatch = {
             "priority": lambda ps: sorted(ps, key=lambda p: self._get_provider_config(p).priority),
@@ -359,10 +359,10 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         return strategy_dispatch.get(strategy, lambda ps: ps)(providers)
 
     def _distribute_batch_requests(self,
-         requests: List[Dict[str,
+         requests: list[dict[str,
          object]],
-         strategy: str) -> Dict[Provider,
-         List[Dict[str,
+         strategy: str) -> dict[Provider,
+         list[dict[str,
          object]]]:
         """Distribute batch requests across providers."""
         available_providers = self._select_providers(None, strategy)
@@ -398,7 +398,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
     # Role prefixes for Vertex prompt conversion
     VERTEX_ROLE_PREFIX = {"system": "System", "user": "User", "assistant": "Assistant"}
 
-    def _call_provider(self, provider: Provider, messages: List[Dict[str, object]], **kwargs: Dict[str, object]) -> Any:
+    def _call_provider(self, provider: Provider, messages: list[dict[str, object]], **kwargs: dict[str, object]) -> Any:
         """Call the specific provider with appropriate format using dispatch."""
         dispatch = {
             Provider.OPENAI: self._call_openai,
@@ -407,16 +407,16 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         }
         return dispatch[provider](messages, **kwargs)
 
-    def _call_openai(self, messages: List[Dict[str, object]], **kwargs) -> Any:
+    def _call_openai(self, messages: list[dict[str, object]], **kwargs) -> Any:
         """Call OpenAI provider."""
         return self.clients[Provider.OPENAI].chat_completion(messages=messages, **kwargs)
 
-    def _call_anthropic(self, messages: List[Dict[str, object]], **kwargs) -> Any:
+    def _call_anthropic(self, messages: list[dict[str, object]], **kwargs) -> Any:
         """Call Anthropic provider with message format conversion."""
         anthropic_messages = [{"role": m["role"], "content": [{"type": "text", "text": m["content"]}]} for m in messages]
         return self.clients[Provider.ANTHROPIC].message(messages=anthropic_messages, **kwargs)
 
-    def _call_vertex(self, messages: List[Dict[str, object]], **kwargs) -> Any:
+    def _call_vertex(self, messages: list[dict[str, object]], **kwargs) -> Any:
         """Call Google Vertex provider with prompt conversion."""
         prompt = "\n\n".join(f"{self.VERTEX_ROLE_PREFIX.get(m['role'], 'User')}: {m['content']}" for m in messages)
         return self.clients[Provider.GOOGLE_VERTEX].generate_content(prompt=prompt.strip(), **kwargs)
@@ -533,7 +533,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
                 if self.health_status[provider]["consecutive_failures"] >= 3:
                     self.health_status[provider]["healthy"] = False
 
-    def get_router_stats(self) -> Dict[str, object]:
+    def get_router_stats(self) -> dict[str, object]:
         """Get comprehensive router statistics."""
         total_requests = sum(stats["requests"] for stats in self.usage_stats.values())
         total_successes = sum(stats["successes"] for stats in self.usage_stats.values())
@@ -556,7 +556,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety/guardrails - operational only."""
         if _call_path is None:
             _call_path = set()
@@ -580,7 +580,7 @@ def create_multi_provider_router(
     enable_openai: bool = None,
     enable_anthropic: bool = None,
     enable_vertex: bool = None,
-    **kwargs: Dict[str, object]) -> MultiProviderRouterAgent:
+    **kwargs: dict[str, object]) -> MultiProviderRouterAgent:
     """Create configured multi-provider router.
 
     Args:
@@ -660,23 +660,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from typing import Dict, Optional
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.core_extensions.decorators import standard_heal

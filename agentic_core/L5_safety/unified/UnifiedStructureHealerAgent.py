@@ -26,7 +26,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
 
 Logger = logging.getLogger(__name__)
 
@@ -61,7 +60,7 @@ class StructureHealerConfig:
     enable_territory: bool = True
     dry_run: bool = True
     backup_before_heal: bool = True
-    backup_dir: Optional[Path] = None
+    backup_dir: Path | None = None
     agent_suffix: str = "Agent"
 
 
@@ -91,20 +90,20 @@ class UnifiedStructureHealerAgent:
 
     def __init__(
         self,
-        project_root: Optional[Path] = None,
-        config: Optional[StructureHealerConfig] = None,
+        project_root: Path | None = None,
+        config: StructureHealerConfig | None = None,
     ):
         self.project_root = project_root or Path.cwd()
         self.config = config or StructureHealerConfig()
         self._lock = threading.RLock()
-        self._actions: List[StructureHealingAction] = []
+        self._actions: list[StructureHealingAction] = []
 
         if self.config.backup_dir is None:
             self.config.backup_dir = self.project_root / "archives" / "healing_backups" / "structure"
 
         Logger.info("UnifiedStructureHealerAgent initialized")
 
-    def heal_all(self, file_path: Path) -> List[StructureHealingAction]:
+    def heal_all(self, file_path: Path) -> list[StructureHealingAction]:
         """Run all enabled healing on a file."""
         actions = []
 
@@ -122,7 +121,7 @@ class UnifiedStructureHealerAgent:
 
         return actions
 
-    def heal_naming(self, file_path: Path) -> List[StructureHealingAction]:
+    def heal_naming(self, file_path: Path) -> list[StructureHealingAction]:
         """Heal naming convention violations."""
         actions = []
 
@@ -169,7 +168,7 @@ class UnifiedStructureHealerAgent:
         self._actions.extend(actions)
         return actions
 
-    def heal_gravity(self, file_path: Path) -> List[StructureHealingAction]:
+    def heal_gravity(self, file_path: Path) -> list[StructureHealingAction]:
         """Heal gravity (layer import) violations."""
         actions = []
 
@@ -217,7 +216,7 @@ class UnifiedStructureHealerAgent:
         self._actions.extend(actions)
         return actions
 
-    def heal_territory(self, file_path: Path) -> List[StructureHealingAction]:
+    def heal_territory(self, file_path: Path) -> list[StructureHealingAction]:
         """Heal territory/location violations."""
         actions = []
 
@@ -247,7 +246,7 @@ class UnifiedStructureHealerAgent:
         self._actions.extend(actions)
         return actions
 
-    def _extract_layer(self, path: Path) -> Optional[str]:
+    def _extract_layer(self, path: Path) -> str | None:
         """Extract layer from file path."""
         path_str = str(path)
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
@@ -255,7 +254,7 @@ class UnifiedStructureHealerAgent:
                 return layer
         return None
 
-    def _extract_layer_from_module(self, module: str) -> Optional[str]:
+    def _extract_layer_from_module(self, module: str) -> str | None:
         """Extract layer from module name."""
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
             if f".{layer}_" in module or module.startswith(f"{layer}_"):
@@ -270,7 +269,7 @@ class UnifiedStructureHealerAgent:
         # Higher layers can import from lower layers
         return source_level >= target_level
 
-    def _backup_file(self, file_path: Path) -> Optional[Path]:
+    def _backup_file(self, file_path: Path) -> Path | None:
         """Create backup before healing."""
         if not self.config.backup_before_heal:
             return None
@@ -286,7 +285,7 @@ class UnifiedStructureHealerAgent:
 
         return backup_path
 
-    def get_actions(self) -> List[StructureHealingAction]:
+    def get_actions(self) -> list[StructureHealingAction]:
         """Get all recorded healing actions."""
         return self._actions.copy()
 

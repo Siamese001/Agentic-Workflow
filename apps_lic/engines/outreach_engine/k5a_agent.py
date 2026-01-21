@@ -8,9 +8,9 @@ constraints (28-33 words per bullet).
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
-from runtime.shared.agent_base import Agent, ReasoningConfig
+from typing import Any
 
+from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -36,10 +36,10 @@ class ProvenanceRule:
 @dataclass
 class K5AOutput:
     """K.5A generation output."""
-    bullets: List[str]
-    provenance: List[str]  # "V", "T", or "S" for each bullet
-    word_counts: List[int]
-    metadata: Dict[str, Any]
+    bullets: list[str]
+    provenance: list[str]  # "V", "T", or "S" for each bullet
+    word_counts: list[int]
+    metadata: dict[str, Any]
 
 
 class K5A_GenerationAgent(Agent):
@@ -79,7 +79,7 @@ class K5A_GenerationAgent(Agent):
             f"word_count={word_count_min}-{word_count_max}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> K5AOutput:
+    async def execute(self, context: dict[str, Any]) -> K5AOutput:
         """Execute K.5A bullet generation.
 
         Args:
@@ -159,8 +159,8 @@ class K5A_GenerationAgent(Agent):
 
     def _build_initial_prompt(
         self,
-        master_bullets: List[str],
-        differentiators: List[str],
+        master_bullets: list[str],
+        differentiators: list[str],
         job_description: str,
     ) -> str:
         """Build initial generation prompt.
@@ -204,7 +204,7 @@ Generate the {self.provenance_rule.total} bullets now:
 
     def _build_regeneration_prompt(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         feedback: str,
     ) -> str:
         """Build regeneration prompt with validation feedback.
@@ -240,7 +240,7 @@ Generate the corrected bullets:
 
         return prompt
 
-    def _parse_bullets(self, response: str) -> List[str]:
+    def _parse_bullets(self, response: str) -> list[str]:
         """Parse bullets from LLM response.
 
         Args:
@@ -263,9 +263,9 @@ Generate the corrected bullets:
 
     def _assign_provenance(
         self,
-        bullets: List[str],
-        master_bullets: List[str],
-    ) -> List[str]:
+        bullets: list[str],
+        master_bullets: list[str],
+    ) -> list[str]:
         """Assign provenance to bullets.
 
         This is a simplified implementation. A production version would use

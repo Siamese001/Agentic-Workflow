@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Utility modules for apps_shared.
 
 Migrated from archives/Reachout Engine Archive/Agentic LIC/:

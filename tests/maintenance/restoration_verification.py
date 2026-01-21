@@ -11,18 +11,17 @@ RCA Context:
 - This test catches those issues before they hit production
 """
 
-import sys
 import importlib
 import inspect
+import sys
 from pathlib import Path
-from typing import List, Tuple
 
 # Setup path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Mapping of restored files to their expected module paths
-RESTORED_AGENTS: List[Tuple[str, str]] = [
+RESTORED_AGENTS: list[tuple[str, str]] = [
     # (Agent Name, Full Module Path)
     ("MetaLearningAgent", "agentic_core.L1_cognition.thought_engine.MetaLearningAgent"),
     ("StrategicRecommendationAgent", "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent"),
@@ -52,7 +51,7 @@ def test_fail(agent_name: str, msg: str):
     print(f"  ❌ {agent_name.ljust(30)} | {msg}")
 
 
-def check_file_exists(module_path: str) -> Tuple[bool, str, Path]:
+def check_file_exists(module_path: str) -> tuple[bool, str, Path]:
     """Check if the file exists at the expected location."""
     # Convert module path to file path
     parts = module_path.split(".")
@@ -63,7 +62,7 @@ def check_file_exists(module_path: str) -> Tuple[bool, str, Path]:
     return False, f"File not found: {file_path}", file_path
 
 
-def check_syntax(file_path: Path) -> Tuple[bool, str]:
+def check_syntax(file_path: Path) -> tuple[bool, str]:
     """Check if the file has valid Python syntax."""
     import ast
     try:
@@ -74,7 +73,7 @@ def check_syntax(file_path: Path) -> Tuple[bool, str]:
         return False, f"SyntaxError: {e}"
 
 
-def check_class_defined(file_path: Path, class_name: str) -> Tuple[bool, str]:
+def check_class_defined(file_path: Path, class_name: str) -> tuple[bool, str]:
     """Check if the class is defined in the file."""
     import ast
     try:
@@ -90,7 +89,7 @@ def check_class_defined(file_path: Path, class_name: str) -> Tuple[bool, str]:
         return False, f"Error parsing: {e}"
 
 
-def check_imports(file_path: Path) -> Tuple[bool, str, List[str]]:
+def check_imports(file_path: Path) -> tuple[bool, str, list[str]]:
     """Check for potentially broken imports."""
     import ast
     issues = []
@@ -121,7 +120,7 @@ def check_imports(file_path: Path) -> Tuple[bool, str, List[str]]:
         return False, f"Error checking imports: {e}", []
 
 
-def check_import_safety(module_path: str, class_name: str) -> Tuple[bool, str]:
+def check_import_safety(module_path: str, class_name: str) -> tuple[bool, str]:
     """
     Attempts to import the module and inspect the class.
     Catches ImportError, SyntaxError, and AttributeError.

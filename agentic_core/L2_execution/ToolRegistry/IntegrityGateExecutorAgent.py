@@ -5,13 +5,15 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-import logging
+
 from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 import re
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Tuple
+from enum import Enum
+from typing import Any
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -73,7 +75,7 @@ class IntegrityGateResult:
         """
         self.passed: bool = passed
         self.depth_score: float = depth_score
-        self.violations: List[Violation] = []
+        self.violations: list[Violation] = []
 
     def add_violation(self, reason: ValidationRejectionReason, message: str) -> None:
         """
@@ -98,7 +100,7 @@ class FinancialProofPoint:
         source_citation: Optional source citation
     """
 
-    def __init__(self, metric_name: str, value: str, source_citation: Optional[str] = None) -> None:
+    def __init__(self, metric_name: str, value: str, source_citation: str | None = None) -> None:
         """
         Initialize financial proof point.
 
@@ -109,7 +111,7 @@ class FinancialProofPoint:
         """
         self.metric_name: str = metric_name
         self.value: str = value
-        self.source_citation: Optional[str] = source_citation
+        self.source_citation: str | None = source_citation
 
 # NAMING FIXED: KeyTechnology → KeyTechnology
 class KeyTechnology:
@@ -122,7 +124,7 @@ class KeyTechnology:
         source_citation: Optional source citation
     """
 
-    def __init__(self, technology_name: str, implementation_details: str, source_citation: Optional[str] = None) -> None:
+    def __init__(self, technology_name: str, implementation_details: str, source_citation: str | None = None) -> None:
         """
         Initialize key technology.
 
@@ -133,7 +135,7 @@ class KeyTechnology:
         """
         self.technology_name: str = technology_name
         self.implementation_details: str = implementation_details
-        self.source_citation: Optional[str] = source_citation
+        self.source_citation: str | None = source_citation
 
 # NAMING FIXED: KeyExecutive → KeyExecutive
 class KeyExecutive:
@@ -164,7 +166,7 @@ class StrategicLayer:
         financial_proof_points: List of financial proof points
     """
 
-    def __init__(self, core_thesis: str, strategic_initiatives: List[str], financial_proof_points: List[FinancialProofPoint]) -> None:
+    def __init__(self, core_thesis: str, strategic_initiatives: list[str], financial_proof_points: list[FinancialProofPoint]) -> None:
         """
         Initialize strategic layer.
 
@@ -187,7 +189,7 @@ class TechnicalLayer:
         key_technologies: List of key technologies used
     """
 
-    def __init__(self, implementation_summary: str, key_technologies: List[KeyTechnology]) -> None:
+    def __init__(self, implementation_summary: str, key_technologies: list[KeyTechnology]) -> None:
         """
         Initialize technical layer.
 
@@ -207,7 +209,7 @@ class LeadershipLayer:
         key_executives: List of key executives
     """
 
-    def __init__(self, key_executives: List[KeyExecutive]) -> None:
+    def __init__(self, key_executives: list[KeyExecutive]) -> None:
         """
         Initialize leadership layer.
 
@@ -225,7 +227,7 @@ class CitationMap:
         citations: List of source citations
     """
 
-    def __init__(self, citations: List[Any]) -> None:
+    def __init__(self, citations: list[Any]) -> None:
         """
         Initialize citation map.
 
@@ -270,9 +272,9 @@ class DeepResearchOutput:
 # --- End Inlined Type Definitions ---
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
@@ -471,7 +473,7 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

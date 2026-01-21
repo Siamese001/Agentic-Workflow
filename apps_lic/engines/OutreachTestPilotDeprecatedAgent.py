@@ -1,14 +1,14 @@
 from dataclasses import dataclass
+
 """
 OutreachTestPilotDeprecatedAgent - Extracted for 1:1 sovereign file structure.
 Deprecated agent preserved for backward compatibility.
 """
 from __future__ import annotations
-import re
-from OutreachAgent import OutreachAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from OutreachAgent import OutreachAgent
+
 
 # Legacy class - use OutreachTestPilotAgent instead
 @dataclass

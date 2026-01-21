@@ -6,14 +6,12 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, object
+from typing import object
 
 import jsonschema
 
-import observability.runtime.synthesis.use_tools.invoke_observability_tool
 
-
-def validate_json_schema(schema: Dict[str, object]) -> List[str]:
+def validate_json_schema(schema: dict[str, object]) -> list[str]:
     """Validate a JSON schema against Draft 07 specification.
 
     Args:
@@ -32,7 +30,7 @@ def validate_json_schema(schema: Dict[str, object]) -> List[str]:
             errors.append(f"Invalid schema version: {schema.get('$schema')}")
 
         # Validate against meta-schema
-        with open("draft-07.json", "r") as f:
+        with open("draft-07.json") as f:
             meta_schema = json.load(f)
 
         jsonschema.validate(schema, meta_schema)
@@ -46,7 +44,7 @@ def validate_json_schema(schema: Dict[str, object]) -> List[str]:
 
     return errors
 
-def validate_mcp_catalogs() -> Dict[str, object]:
+def validate_mcp_catalogs() -> dict[str, object]:
     """Validate all MCP catalog files."""
     results = {
         "valid": True,
@@ -70,7 +68,7 @@ def validate_mcp_catalogs() -> Dict[str, object]:
             continue
 
         try:
-            with open(catalog_path, 'r') as f:
+            with open(catalog_path) as f:
                 catalog = json.load(f)
 
             # Validate catalog structure
@@ -128,7 +126,7 @@ def validate_mcp_catalogs() -> Dict[str, object]:
 
     return results
 
-def validate_python_files() -> Dict[str, object]:
+def validate_python_files() -> dict[str, object]:
     """Validate all Python files for syntax and imports."""
     results = {
         "valid": True,
@@ -148,7 +146,7 @@ def validate_python_files() -> Dict[str, object]:
         for py_file in Path(python_dir).rglob("*.py"):
             try:
                 # Check syntax
-                with open(py_file, 'r') as f:
+                with open(py_file) as f:
                     code = f.read()
 
                 compile(code, str(py_file), 'exec')
@@ -188,7 +186,7 @@ def validate_python_files() -> Dict[str, object]:
 
     return results
 
-def validate_schemas() -> Dict[str, object]:
+def validate_schemas() -> dict[str, object]:
     """Validate all JSON schema files."""
     results = {
         "valid": True,
@@ -213,7 +211,7 @@ def validate_schemas() -> Dict[str, object]:
             continue
 
         try:
-            with open(schema_path, 'r') as f:
+            with open(schema_path) as f:
                 schema = json.load(f)
 
             # Validate schema structure
@@ -237,7 +235,7 @@ def validate_schemas() -> Dict[str, object]:
 
     return results
 
-def check_environment_variables() -> Dict[str, object]:
+def check_environment_variables() -> dict[str, object]:
     """Check for required environment variables."""
     results = {
         "valid": True,

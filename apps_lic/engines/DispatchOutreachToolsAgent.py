@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 dispatch_outreach_tools.py - Execution Module
 
@@ -17,18 +19,20 @@ Generated: 2025-12-07T13:28:54.137995
 """
 import logging
 import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 @dataclass
 class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
     """Executor for outreach domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
+    def __init__(self, config: dict[str, object] | None=None) -> None:
         """
         Initialize dispatch outreach tools agent.
 
@@ -44,7 +48,7 @@ class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
         assert hasattr(self, 'CONFIG'), "Missing CONFIG"
         return True
 
-    def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
+    def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """
         Execute action with parameters.
 
@@ -62,7 +66,7 @@ class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - start) * 1000)
 
-    def _perform_action(self, action: str, params: Dict[str, object]) -> object:
+    def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""
         Logger.info(f'Executing {action} with {params}')
         return {'action': action, 'params': params, 'status': 'completed'}
@@ -110,6 +114,6 @@ class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
         except Exception as e:
             Logger.error(f"Diagnostics exception: {e}")
 
-def execute(action: str, params: Dict[str, object], config: Optional[Dict]=None) -> ExecutionResult:
+def execute(action: str, params: dict[str, object], config: dict | None=None) -> ExecutionResult:
     """Execute action."""
     return DispatchOutreachToolsAgent(config).execute(action, params)

@@ -6,14 +6,12 @@ Detects hardcoded dashboard paths and reports violations.
 """
 import re
 from pathlib import Path
-from typing import List, Tuple
 
 # Import SSOT
 from agentic_core.L5_safety.validators.structure_blueprint import (
     DASHBOARD_DIR,
-    get_validated_project_root
+    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 # Patterns that indicate hardcoded dashboard paths
 HARDCODED_PATTERNS = [
@@ -42,7 +40,7 @@ def should_exclude(file_path: Path) -> bool:
     path_str = str(file_path)
     return any(pattern in path_str for pattern in EXCLUDE_PATTERNS)
 
-def check_file_for_hardcoded_paths(file_path: Path) -> List[Tuple[int, str]]:
+def check_file_for_hardcoded_paths(file_path: Path) -> list[tuple[int, str]]:
     """
     Check a single file for hardcoded dashboard paths.
     Returns list of (line_number, matched_pattern) tuples.
@@ -71,7 +69,7 @@ def check_file_for_hardcoded_paths(file_path: Path) -> List[Tuple[int, str]]:
 
     return violations
 
-def validate_dashboard_ssot() -> Tuple[bool, List[str]]:
+def validate_dashboard_ssot() -> tuple[bool, list[str]]:
     """
     Validate that all files use DASHBOARD_DIR SSOT.
     Returns (is_valid, list_of_violations).
@@ -83,7 +81,7 @@ def validate_dashboard_ssot() -> Tuple[bool, List[str]]:
     print("=" * 80)
     print("DASHBOARD SSOT VALIDATION")
     print("=" * 80)
-    print(f"\n📍 SSOT Location: structure_blueprint.py")
+    print("\n📍 SSOT Location: structure_blueprint.py")
     print(f"📂 SSOT Value: {DASHBOARD_DIR}")
     print(f"🔍 Scanning project: {project_root}\n")
 
@@ -105,7 +103,7 @@ def validate_dashboard_ssot() -> Tuple[bool, List[str]]:
     # Print results
     if total_violations == 0:
         print("✅ ALL FILES COMPLIANT - No hardcoded dashboard paths found!")
-        print(f"✅ All files correctly use DASHBOARD_DIR from structure_blueprint.py")
+        print("✅ All files correctly use DASHBOARD_DIR from structure_blueprint.py")
         return True, []
     else:
         print(f"❌ FOUND {total_violations} VIOLATIONS\n")

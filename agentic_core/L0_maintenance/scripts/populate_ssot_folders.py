@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 # scripts/populate_ssot_folders.py
 """
 Intelligent sovereign population of all approved SSOT subfolders.
@@ -18,7 +19,8 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP
+    CORE_SUBFOLDER_MAP,
+    SOVEREIGN_REGISTRY,
 )
 
 core_root = project_root / "agentic_core"
@@ -105,7 +107,7 @@ __all__ = []
     return template.strip() + "\n"
 
 def main():
-    print(f"[*] Starting Intelligent Sovereign Population...")
+    print("[*] Starting Intelligent Sovereign Population...")
     populated = 0
 
     # Ensure core root exists

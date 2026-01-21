@@ -22,21 +22,21 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
+    GLOBAL_EXCLUDED_DIRS,
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
     L5_SAFETY_DIR,
-    GLOBAL_EXCLUDED_DIRS,
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -60,10 +60,10 @@ class DuplicateFile:
     """Represents a duplicate file with metadata."""
     hash: str
     size: int
-    paths: List[Path]
+    paths: list[Path]
     file_type: str
-    keep_path: Optional[Path] = None
-    delete_paths: List[Path] = None
+    keep_path: Path | None = None
+    delete_paths: list[Path] = None
     rationale: str = ""
 
 
@@ -114,7 +114,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
     # Directories to exclude from scanning - Use SSOT from structure_blueprint
     EXCLUDE_DIRS = set(GLOBAL_EXCLUDED_DIRS)
 
-    def __init__(self, project_root: Optional[Path] = None, ctx: Optional[Any] = None) -> None:
+    def __init__(self, project_root: Path | None = None, ctx: Any | None = None) -> None:
         """
         Initialize duplicate code detector.
 
@@ -126,13 +126,13 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         super().__init__()
 
         self.project_root: Path = Path(project_root) if project_root else Path.cwd()
-        self.ctx: Optional[Any] = ctx
+        self.ctx: Any | None = ctx
         self.min_lines: int = 10  # Minimum block size to flag
         self.max_report: int = 100  # Limit detailed reporting
         self.auto_deduplicate = False
 
         # Initialize tree-sitter parser if available
-        self.ts_parser: Optional[Parser] = None
+        self.ts_parser: Parser | None = None
         if TREE_SITTER_AVAILABLE:
             try:
                 self.ts_parser = Parser()
@@ -140,7 +140,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             except Exception:
                 self.ts_parser = None
 
-    async def execute(self, file_types: Set[str] = None, scan_whole_files: bool = True) -> Dict:
+    async def execute(self, file_types: set[str] = None, scan_whole_files: bool = True) -> dict:
         """Scan files for duplicates.
 
         Args:
@@ -173,7 +173,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
 
         return results
 
-    def _scan_whole_files(self, file_types: Set[str]) -> List[DuplicateFile]:
+    def _scan_whole_files(self, file_types: set[str]) -> list[DuplicateFile]:
         """Scan for exact duplicate files by content hash."""
         file_hashes = defaultdict(list)  # hash -> [paths]
 
@@ -207,7 +207,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         Logger.info(f"[DUPE SCAN] Found {len(duplicates)} sets of duplicate files")
         return duplicates
 
-    async def _scan_code_blocks(self) -> List[Dict]:
+    async def _scan_code_blocks(self) -> list[dict]:
         """Scan Python files for duplicate code blocks."""
         code_blocks = defaultdict(list)  # hash -> [(path, start_line)]
 
@@ -242,7 +242,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         Logger.info(f"[DUPE SCAN] Found {len(duplicates)} duplicate code blocks")
         return duplicates[:self.max_report]
 
-    def _iter_files(self, file_types: Set[str]) -> Any:
+    def _iter_files(self, file_types: set[str]) -> Any:
         """Iterate over files matching the given extensions."""
         for file_path in self.project_root.rglob('*'):
             # Skip excluded directories
@@ -253,7 +253,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             if file_path.suffix in file_types and file_path.is_file():
                 yield file_path
 
-    def _generate_deletion_plan(self, duplicates: List[DuplicateFile]) -> List[Dict]:
+    def _generate_deletion_plan(self, duplicates: list[DuplicateFile]) -> list[dict]:
         """Generate deletion recommendations with rationale."""
         recommendations = []
 
@@ -280,7 +280,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
 
         return recommendations
 
-    def _choose_canonical_path(self, paths: List[Path]) -> Path:
+    def _choose_canonical_path(self, paths: list[Path]) -> Path:
         """Choose the canonical path to keep based on location priority."""
         # Prefer canonical layer locations
         for prefix in self.CANONICAL_PREFIXES:
@@ -292,7 +292,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         paths_sorted = sorted(paths, key=lambda p: len(p.parts))
         return paths_sorted[0]
 
-    def _generate_rationale(self, keep_path: Path, delete_paths: List[Path], dup: DuplicateFile) -> str:
+    def _generate_rationale(self, keep_path: Path, delete_paths: list[Path], dup: DuplicateFile) -> str:
         """Generate human-readable rationale for deletion."""
         keep_str = str(keep_path.relative_to(self.project_root))
 
@@ -304,7 +304,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         else:
             return f"Keep shortest path: {len(keep_path.parts)} levels deep"
 
-    def archive_duplicates(self, recommendations: List[Dict], dry_run: bool = True) -> Dict:
+    def archive_duplicates(self, recommendations: list[dict], dry_run: bool = True) -> dict:
         """Archive duplicate files to archives/ directory (Phase 2.2).
 
         Args:
@@ -360,7 +360,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             "dry_run": dry_run
         }
 
-    def delete_duplicates(self, recommendations: List[Dict], dry_run: bool = True) -> Dict:
+    def delete_duplicates(self, recommendations: list[dict], dry_run: bool = True) -> dict:
         """Delete duplicate files based on recommendations.
 
         Args:
@@ -440,8 +440,8 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational agent - no repository healing required.

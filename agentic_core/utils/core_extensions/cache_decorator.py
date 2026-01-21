@@ -17,11 +17,13 @@ Usage:
             return await self._compute(key)
 """
 from __future__ import annotations
+
 import functools
 import hashlib
 import logging
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from agentic_core.config.feature_flags import CACHE_METRICS_ENABLED
 from agentic_core.observability.cache_metrics import get_cache_metrics

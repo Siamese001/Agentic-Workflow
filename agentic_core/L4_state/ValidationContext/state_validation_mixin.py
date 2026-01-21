@@ -1,10 +1,12 @@
-import logging
-import inspect
 import asyncio
 import hashlib
+import inspect
 import json
+import logging
+from collections.abc import Callable
 from functools import wraps
-from typing import Callable, Any, Optional, Dict, List
+from typing import Any
+
 
 class StateValidationError(Exception):
     """Raised when a pre-condition or post-condition fails."""
@@ -24,9 +26,9 @@ class StateValidationMixin:
         super().__init__(**kwargs)
         self._sv_logger = logging.getLogger(self.__class__.__name__)
         # Simple in-memory ledger for idempotency (could be backed by Redis in future)
-        self._operation_ledger: Dict[str, Any] = {}
+        self._operation_ledger: dict[str, Any] = {}
 
-    def _run_conditions(self, conditions: List[Callable[..., bool]], result: Any = None) -> None:
+    def _run_conditions(self, conditions: list[Callable[..., bool]], result: Any = None) -> None:
         for condition in conditions:
             sig = inspect.signature(condition)
             if len(sig.parameters) == 1:
@@ -54,8 +56,8 @@ class StateValidationMixin:
             return None
 
     @staticmethod
-    def validate_state(pre: Optional[Callable[[Any], bool]] = None,
-                       post: Optional[Callable[[Any, Any], bool]] = None,
+    def validate_state(pre: Callable[[Any], bool] | None = None,
+                       post: Callable[[Any, Any], bool] | None = None,
                        idempotent: bool = False):
         """
         Decorator to enforce state validity.

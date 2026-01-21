@@ -4,16 +4,15 @@ This module collects feedback on signal quality, analyzes patterns,
 and adjusts validation thresholds dynamically for optimal outputs.
 """
 
-import json
 import logging
-import time
-from collections import defaultdict, deque
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple, Union
-from dataclasses import dataclass, field
-from enum import Enum
 import statistics
 import threading
+import time
+from collections import defaultdict, deque
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any
 
 from .signal_enhancer import SignalAssessment, SignalQuality
 
@@ -36,20 +35,20 @@ class QualityFeedback:
     timestamp: datetime
 
     # Quality ratings (1-5 scale)
-    accuracy_rating: Optional[int] = None
-    relevance_rating: Optional[int] = None
-    clarity_rating: Optional[int] = None
-    completeness_rating: Optional[int] = None
+    accuracy_rating: int | None = None
+    relevance_rating: int | None = None
+    clarity_rating: int | None = None
+    completeness_rating: int | None = None
 
     # Feedback text
-    positive_aspects: List[str] = field(default_factory=list)
-    improvement_areas: List[str] = field(default_factory=list)
-    user_comments: Optional[str] = None
+    positive_aspects: list[str] = field(default_factory=list)
+    improvement_areas: list[str] = field(default_factory=list)
+    user_comments: str | None = None
 
     # Context
-    hop_id: Optional[str] = None
-    stage: Optional[str] = None
-    user_id: Optional[str] = None
+    hop_id: str | None = None
+    stage: str | None = None
+    user_id: str | None = None
 
 
 @dataclass
@@ -63,21 +62,21 @@ class QualityTrend:
     confidence: float  # Statistical confidence in trend
 
     # Recent values for calculation
-    recent_values: List[float] = field(default_factory=list)
-    baseline_value: Optional[float] = None
+    recent_values: list[float] = field(default_factory=list)
+    baseline_value: float | None = None
 
 
 class AdaptiveThresholds:
     """Dynamically adjusting quality thresholds."""
 
-    def __init__(self, initial_thresholds: Dict[str, float]):
+    def __init__(self, initial_thresholds: dict[str, float]):
         """Initialize adaptive thresholds.
 
         Args:
             initial_thresholds: Starting threshold values
         """
         self.thresholds = initial_thresholds.copy()
-        self.adjustment_history: List[Dict[str, Any]] = []
+        self.adjustment_history: list[dict[str, Any]] = []
         self.min_thresholds = {
             "excellent": 0.85,
             "high": 0.70,
@@ -93,10 +92,10 @@ class AdaptiveThresholds:
 
     def adjust_thresholds(
         self,
-        quality_scores: List[float],
+        quality_scores: list[float],
         acceptance_rate: float,
         target_acceptance: float = 0.75
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Adjust thresholds based on performance.
 
         Args:
@@ -161,12 +160,12 @@ class FeedbackLoop:
         # Data storage
         self.assessments: deque = deque(maxlen=history_size)
         self.feedback: deque = deque(maxlen=history_size)
-        self.quality_history: Dict[str, deque] = defaultdict(
+        self.quality_history: dict[str, deque] = defaultdict(
             lambda: deque(maxlen=100)
         )
 
         # Analysis cache
-        self._trends_cache: Dict[str, QualityTrend] = {}
+        self._trends_cache: dict[str, QualityTrend] = {}
         self._cache_timestamp = 0
         self._cache_ttl = 300  # 5 minutes
 
@@ -222,7 +221,7 @@ class FeedbackLoop:
 
             logger.debug(f"Added {feedback.feedback_type.value} feedback")
 
-    def analyze_trends(self, force_refresh: bool = False) -> Dict[str, QualityTrend]:
+    def analyze_trends(self, force_refresh: bool = False) -> dict[str, QualityTrend]:
         """Analyze quality trends.
 
         Args:
@@ -253,7 +252,7 @@ class FeedbackLoop:
 
             return trends
 
-    def _calculate_trend(self, metric_name: str, values: List[float]) -> QualityTrend:
+    def _calculate_trend(self, metric_name: str, values: list[float]) -> QualityTrend:
         """Calculate trend for a metric.
 
         Args:
@@ -317,7 +316,7 @@ class FeedbackLoop:
             baseline_value=statistics.mean(values[:10]) if len(values) >= 10 else None
         )
 
-    def get_quality_insights(self) -> Dict[str, Any]:
+    def get_quality_insights(self) -> dict[str, Any]:
         """Get insights about quality patterns.
 
         Returns:
@@ -365,7 +364,7 @@ class FeedbackLoop:
                 "trends": self.analyze_trends()
             }
 
-    def recommend_improvements(self) -> List[str]:
+    def recommend_improvements(self) -> list[str]:
         """Recommend improvements based on feedback.
 
         Returns:
@@ -437,7 +436,7 @@ class FeedbackLoop:
 
         return recommendations
 
-    def adjust_thresholds_automatically(self) -> Dict[str, float]:
+    def adjust_thresholds_automatically(self) -> dict[str, float]:
         """Automatically adjust thresholds based on performance.
 
         Returns:
@@ -465,7 +464,7 @@ class FeedbackLoop:
 
             return new_thresholds
 
-    def export_feedback_data(self) -> Dict[str, Any]:
+    def export_feedback_data(self) -> dict[str, Any]:
         """Export feedback data for analysis.
 
         Returns:
@@ -505,7 +504,7 @@ class FeedbackLoop:
 
 
 # Global feedback loop registry
-_feedback_loops: Dict[str, FeedbackLoop] = {}
+_feedback_loops: dict[str, FeedbackLoop] = {}
 _loop_lock = threading.Lock()
 
 

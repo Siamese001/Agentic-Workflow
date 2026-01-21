@@ -1,22 +1,20 @@
 from __future__ import annotations
+
 """
 Sovereign L6 Audit Healing Strategy – Phase 17F (Dec 27, 2025)
 Detects and autonomously corrects gaps in observability audit trail.
 Ensures eternal constitutional transparency.
 """
-import logging
 import json
+import logging
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Dict, Any
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+from typing import Any
+
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -40,7 +38,7 @@ class L6AuditHealingStrategy:
         self.audit_log_path = Path('agentic_core/L6_observability/logs/healing_audit.jsonl')
         Logger.info('[L0 L6 AUDIT HEALING] Strategy initialized')
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
         """
         Diagnose Missing audit events using cross-reference logic.
 
@@ -60,7 +58,7 @@ class L6AuditHealingStrategy:
         Logger.info(f'[L0 L6 AUDIT HEALING] Diagnosed {len(fixes)} audit trail gaps')
         return fixes
 
-    async def _find_missing_audit_events(self) -> List[Dict]:
+    async def _find_missing_audit_events(self) -> list[dict]:
         """
         Scans recent healing transactions to ensure L6 registration.
 
@@ -97,7 +95,7 @@ class L6AuditHealingStrategy:
                 continue
         return [{'event_type': 'HEALING_ACTION_APPLIED', 'Severity': 'CRITICAL', 'metadata': {'reconstructed': True, 'original_action': g.get('fix_id', 'unknown'), 'healing_cycle': 'phase_17f'}, 'payload': g} for g in gaps[:config.L6_AUDIT_HEALING_MAX_DAILY]]
 
-    async def apply(self, fix: Dict, ctx: Any=None) -> bool:
+    async def apply(self, fix: dict, ctx: Any=None) -> bool:
         """
         Apply corrective audit entry via Sovereign L6 Client.
 
@@ -126,13 +124,13 @@ class L6AuditHealingStrategy:
                 Logger.info(f"[L0 L6 AUDIT HEALING] Reconstructed Audit Event: {event_data.get('event_type')}")
                 return True
             else:
-                Logger.error(f'[L0 L6 AUDIT HEALING] Failed to emit corrective event')
+                Logger.error('[L0 L6 AUDIT HEALING] Failed to emit corrective event')
                 return False
         except Exception as e:
             Logger.error(f'[L0 L6 AUDIT HEALING] Audit reconstruction failed: {e}')
             return False
 
-    async def _emit_corrective_event(self, event_data: Dict) -> bool:
+    async def _emit_corrective_event(self, event_data: dict) -> bool:
         """
         Emit corrective audit event to L6 observability layer.
 

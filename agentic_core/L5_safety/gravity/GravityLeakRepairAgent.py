@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 GravityLeakRepairAgent - Automated Gravity Violation Healer (Phase 2.3)
 Territory: agentic_core/L5_safety/gravity/
@@ -29,15 +30,16 @@ HEALING STRATEGIES:
 
 Canon Key 51 Compliance: Includes heal_repository() method
 """
-import ast
 import logging
-from pathlib import Path
-from typing import List, Dict, Any, Optional, Set, Tuple
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -153,7 +155,7 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
 
         return import_statement
 
-    def generate_fix_report(self, violations: List[Dict[str, Any]]) -> List[GravityFix]:
+    def generate_fix_report(self, violations: list[dict[str, Any]]) -> list[GravityFix]:
         """
         Generate fix recommendations for all violations.
 
@@ -180,7 +182,7 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
         self,
         fix: GravityFix,
         dry_run: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Apply a gravity fix to a file.
 
@@ -225,8 +227,8 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        _call_path: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Canon Key 51 compliance: Detect and fix gravity violations.
 
@@ -249,7 +251,9 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
 
         # Get violations from UnifiedStructureEnforcerAgent
         try:
-            from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
+            from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
+                UnifiedStructureEnforcerAgent,
+            )
             enforcer = UnifiedStructureEnforcerAgent(project_root=self.project_root)
             results = enforcer.validate_repository()
             violations = results.get('violations', [])
@@ -306,10 +310,10 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
                 self.apply_fix(fix, dry_run=True)
 
         # Report summary
-        self.logger.info(f"\nGravity Leak Repair Summary:")
+        self.logger.info("\nGravity Leak Repair Summary:")
         self.logger.info(f"  Total violations: {len(violations)}")
         self.logger.info(f"  Analyzed: {min(10, len(violations))}")
-        self.logger.info(f"  Fix types:")
+        self.logger.info("  Fix types:")
         for fix_type, count in fix_summary.items():
             if count > 0:
                 self.logger.info(f"    {fix_type}: {count}")

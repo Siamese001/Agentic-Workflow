@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Test Suite: Two-Phase Deduplication System
 
@@ -10,17 +9,17 @@ Tests the two-phase duplicate detection system:
 
 Run: python scripts/test_two_phase_deduplication.py
 """
-import sys
 import os
+import sys
+
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
-from typing import Tuple
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
@@ -106,18 +105,22 @@ def cleanup_test_environment(temp_dir: Path):
 # TEST FUNCTIONS
 # ============================================================================
 
-def test_1_agent_exists() -> Tuple[bool, str]:
+def test_1_agent_exists() -> tuple[bool, str]:
     """Test 1: Verify TwoPhaseDeduplicationAgent exists."""
     try:
-        from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+        from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+            TwoPhaseDeduplicationAgent,
+        )
         return True, "TwoPhaseDeduplicationAgent module exists"
     except ImportError as e:
         return False, f"Import failed: {e}"
 
 
-def test_2_agent_has_required_methods() -> Tuple[bool, str]:
+def test_2_agent_has_required_methods() -> tuple[bool, str]:
     """Test 2: Verify agent has required methods."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     agent = TwoPhaseDeduplicationAgent(project_root=project_root)
 
@@ -130,9 +133,11 @@ def test_2_agent_has_required_methods() -> Tuple[bool, str]:
     return True, f"All {len(required_methods)} required methods present"
 
 
-def test_3_phase_a_detects_identity_collisions() -> Tuple[bool, str]:
+def test_3_phase_a_detects_identity_collisions() -> tuple[bool, str]:
     """Test 3: Phase A detects exact duplicate files."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     temp_dir = create_test_environment()
     try:
@@ -154,9 +159,11 @@ def test_3_phase_a_detects_identity_collisions() -> Tuple[bool, str]:
         cleanup_test_environment(temp_dir)
 
 
-def test_4_phase_a_selects_canonical_path() -> Tuple[bool, str]:
+def test_4_phase_a_selects_canonical_path() -> tuple[bool, str]:
     """Test 4: Phase A correctly selects canonical path."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     temp_dir = create_test_environment()
     try:
@@ -182,9 +189,11 @@ def test_4_phase_a_selects_canonical_path() -> Tuple[bool, str]:
         cleanup_test_environment(temp_dir)
 
 
-def test_5_phase_b_detects_logic_duplicates() -> Tuple[bool, str]:
+def test_5_phase_b_detects_logic_duplicates() -> tuple[bool, str]:
     """Test 5: Phase B detects structurally similar code."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     temp_dir = create_test_environment()
     try:
@@ -202,9 +211,11 @@ def test_5_phase_b_detects_logic_duplicates() -> Tuple[bool, str]:
         cleanup_test_environment(temp_dir)
 
 
-def test_6_heal_repository_supports_phase_parameter() -> Tuple[bool, str]:
+def test_6_heal_repository_supports_phase_parameter() -> tuple[bool, str]:
     """Test 6: heal_repository accepts phase parameter."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     temp_dir = create_test_environment()
     try:
@@ -231,9 +242,11 @@ def test_6_heal_repository_supports_phase_parameter() -> Tuple[bool, str]:
         cleanup_test_environment(temp_dir)
 
 
-def test_7_dry_run_makes_no_changes() -> Tuple[bool, str]:
+def test_7_dry_run_makes_no_changes() -> tuple[bool, str]:
     """Test 7: Dry run mode makes no file changes."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     temp_dir = create_test_environment()
     try:
@@ -257,9 +270,11 @@ def test_7_dry_run_makes_no_changes() -> Tuple[bool, str]:
         cleanup_test_environment(temp_dir)
 
 
-def test_8_execute_mode_archives_duplicates() -> Tuple[bool, str]:
+def test_8_execute_mode_archives_duplicates() -> tuple[bool, str]:
     """Test 8: Execute mode archives duplicate files."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     temp_dir = create_test_environment()
     try:
@@ -284,9 +299,11 @@ def test_8_execute_mode_archives_duplicates() -> Tuple[bool, str]:
         cleanup_test_environment(temp_dir)
 
 
-def test_9_ssot_orchestrator_has_two_phase_order() -> Tuple[bool, str]:
+def test_9_ssot_orchestrator_has_two_phase_order() -> tuple[bool, str]:
     """Test 9: SSOTOrchestratorAgent has two-phase execution order."""
-    from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import SSOTOrchestratorAgent
+    from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import (
+        SSOTOrchestratorAgent,
+    )
 
     agent = SSOTOrchestratorAgent(project_root=project_root)
 
@@ -311,9 +328,11 @@ def test_9_ssot_orchestrator_has_two_phase_order() -> Tuple[bool, str]:
     return True, f"Two-phase order correct: Phase A at {idx_a}, Phase B at {idx_b}"
 
 
-def test_10_phase_a_runs_early() -> Tuple[bool, str]:
+def test_10_phase_a_runs_early() -> tuple[bool, str]:
     """Test 10: Phase A runs immediately after SyntaxValidator."""
-    from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import SSOTOrchestratorAgent
+    from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import (
+        SSOTOrchestratorAgent,
+    )
 
     agent = SSOTOrchestratorAgent(project_root=project_root)
     order = agent._execution_order
@@ -328,9 +347,11 @@ def test_10_phase_a_runs_early() -> Tuple[bool, str]:
     return True, "Phase A correctly positioned after SyntaxValidator"
 
 
-def test_11_phase_b_runs_after_structural_healing() -> Tuple[bool, str]:
+def test_11_phase_b_runs_after_structural_healing() -> tuple[bool, str]:
     """Test 11: Phase B runs after LocationAgent (structural healing)."""
-    from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import SSOTOrchestratorAgent
+    from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import (
+        SSOTOrchestratorAgent,
+    )
 
     agent = SSOTOrchestratorAgent(project_root=project_root)
     order = agent._execution_order
@@ -348,9 +369,11 @@ def test_11_phase_b_runs_after_structural_healing() -> Tuple[bool, str]:
     return True, f"Phase B correctly after LocationAgent: Location at {idx_location}, Phase B at {idx_phase_b}"
 
 
-def test_12_shared_dedup_agent_instance() -> Tuple[bool, str]:
+def test_12_shared_dedup_agent_instance() -> tuple[bool, str]:
     """Test 12: SSOTOrchestratorAgent uses shared dedup agent instance."""
-    from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import SSOTOrchestratorAgent
+    from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import (
+        SSOTOrchestratorAgent,
+    )
 
     agent = SSOTOrchestratorAgent(project_root=project_root)
 
@@ -367,9 +390,11 @@ def test_12_shared_dedup_agent_instance() -> Tuple[bool, str]:
     return True, "Shared TwoPhaseDeduplicationAgent instance for both phases"
 
 
-def test_13_report_structure() -> Tuple[bool, str]:
+def test_13_report_structure() -> tuple[bool, str]:
     """Test 13: Deduplication report has correct structure."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     temp_dir = create_test_environment()
     try:
@@ -401,9 +426,11 @@ def test_13_report_structure() -> Tuple[bool, str]:
         cleanup_test_environment(temp_dir)
 
 
-def test_14_excludes_archives_directory() -> Tuple[bool, str]:
+def test_14_excludes_archives_directory() -> tuple[bool, str]:
     """Test 14: Scanner excludes archives directory."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     temp_dir = create_test_environment()
     try:
@@ -428,9 +455,11 @@ def test_14_excludes_archives_directory() -> Tuple[bool, str]:
         cleanup_test_environment(temp_dir)
 
 
-def test_15_canonical_priority_order() -> Tuple[bool, str]:
+def test_15_canonical_priority_order() -> tuple[bool, str]:
     """Test 15: Canonical priority follows SSOT layer order."""
-    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+    from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+        TwoPhaseDeduplicationAgent,
+    )
 
     agent = TwoPhaseDeduplicationAgent(project_root=project_root)
 

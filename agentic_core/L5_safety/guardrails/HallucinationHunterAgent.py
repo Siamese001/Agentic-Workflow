@@ -5,30 +5,29 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import datetime
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import json
 import logging
 import re
-import time
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 try:
     NUMPY_AVAILABLE: Any = True
 except ImportError:
     NUMPY_AVAILABLE: Any = False
-from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 try:
     from google import genai
@@ -45,7 +44,7 @@ class AtomicClaim:
     """Represents an atomic Claim (proposition) from text."""
     text: str
     line_number: int
-    embedding: Optional[List[float]] = None
+    embedding: list[float] | None = None
 
 @dataclass
 class VerificationResult:
@@ -53,8 +52,8 @@ class VerificationResult:
     Claim: AtomicClaim
     is_supported: bool
     similarity_score: float
-    source_citation: Optional[str]
-    source_line: Optional[int]
+    source_citation: str | None
+    source_line: int | None
 
 @dataclass
 class IntegrityReport:
@@ -65,9 +64,9 @@ class IntegrityReport:
     integrity_score: float
     hallucination_percentage: float
     risk_level: str
-    unsupported_details: List[VerificationResult]
+    unsupported_details: list[VerificationResult]
     requires_rollback: bool
-    audit_trail: Dict[str, str]
+    audit_trail: dict[str, str]
 
 class ClaimExtractor:
     """Handles extraction of atomic claims from text."""
@@ -76,7 +75,7 @@ class ClaimExtractor:
         self.genai_client = genai_client
         self.genai_available = genai_available
 
-    async def extract_claims(self, text: str) -> List[AtomicClaim]:
+    async def extract_claims(self, text: str) -> list[AtomicClaim]:
         """
         Extract atomic claims (propositions) from text using Gemini or fallback.
         """
@@ -87,7 +86,7 @@ class ClaimExtractor:
                 Logger.warning(f'Gemini Claim extraction failed: {e}, falling back to simple extraction')
         return self._extract_claims_simple(text)
 
-    async def _extract_claims_with_gemini(self, text: str) -> List[AtomicClaim]:
+    async def _extract_claims_with_gemini(self, text: str) -> list[AtomicClaim]:
         """Use Gemini to extract atomic claims from text."""
         prompt = f'Extract atomic claims from this text. Each Claim should be a single, verifiable fact.\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n\nTEXT:\n{text}\n\nREQUIREMENTS:\n1. Break the text into individual atomic claims (propositions)\n2. Each Claim should be independently verifiable\n3. Focus on factual statements (skills, experience, achievements)\n4. Ignore filler words and formatting\n5. Number each Claim\n\nOUTPUT FORMAT:\nReturn a numbered list of atomic claims, one per line:\n1. [First atomic Claim]\n2. [Second atomic Claim]\n...\n\nExample for "John has 5 years of Python experience and led 3 projects":\n1. John has 5 years of Python experience\n2. John led 3 projects\n'
         response = self.genai_client.models.generate_content(model='gemini-2.5-flash', contents=prompt, config=types.GenerateContentConfig(temperature=0.1, max_output_tokens=2048))
@@ -102,7 +101,7 @@ class ClaimExtractor:
                     claims.append(AtomicClaim(text=claim_text, line_number=len(claims) + 1))
         return claims
 
-    def _extract_claims_simple(self, text: str) -> List[AtomicClaim]:
+    def _extract_claims_simple(self, text: str) -> list[AtomicClaim]:
         """Fallback simple Claim extraction."""
         claims = []
         sentences = re.split('[.!?]+', text)
@@ -121,13 +120,13 @@ class ClaimEmbedder:
     def __init__(self) -> None:
         pass
 
-    async def embed_claims(self, claims: List[AtomicClaim]) -> List[AtomicClaim]:
+    async def embed_claims(self, claims: list[AtomicClaim]) -> list[AtomicClaim]:
         """Generate embeddings for claims."""
         for Claim in claims:
             Claim.embedding = self._simple_embedding(Claim.text)
         return claims
 
-    def _simple_embedding(self, text: str) -> List[float]:
+    def _simple_embedding(self, text: str) -> list[float]:
         """Simple word-based embedding (placeholder)."""
         words = text.lower().split()
         return [float(len(words))]
@@ -138,7 +137,7 @@ class ClaimVerifier:
     def __init__(self, similarity_threshold: float) -> None:
         self.SIMILARITY_THRESHOLD = similarity_threshold
 
-    def verify_claim(self, generated_claim: AtomicClaim, source_claims: List[AtomicClaim]) -> VerificationResult:
+    def verify_claim(self, generated_claim: AtomicClaim, source_claims: list[AtomicClaim]) -> VerificationResult:
         """
         Verify a generated Claim against source claims.
 
@@ -240,7 +239,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
             else:
                 Logger.info('   No PIPELINE_OUTPUT signals detected')
         elif hasattr(self.ctx, 'pipeline_data'):
-            Logger.info(f'   Processing pipeline data from context')
+            Logger.info('   Processing pipeline data from context')
             for stage_name, stage_data in self.ctx.pipeline_data.items():
                 if 'source_truth' in stage_data and 'generated_artifact' in stage_data:
                     report: Any = await self._audit_integrity(stage_name, stage_data['source_truth'], stage_data['generated_artifact'])
@@ -270,7 +269,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
             return 'high'
         return 'critical'
 
-    def _build_audit_trail(self, verification_results: List[VerificationResult]) -> Dict[str, str]:
+    def _build_audit_trail(self, verification_results: list[VerificationResult]) -> dict[str, str]:
         """Build audit trail from verification results.
 
         Args:
@@ -340,15 +339,15 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
         Logger.info(f'Hallucination Rate: {report.hallucination_percentage:.1%}')
         Logger.info(f'Risk Level: {report.risk_level.upper()}')
         if report.hallucination_percentage > self.HALLUCINATION_THRESHOLD:
-            Logger.error(f'\n[ALERT] HALLUCINATION THRESHOLD EXCEEDED')
+            Logger.error('\n[ALERT] HALLUCINATION THRESHOLD EXCEEDED')
             Logger.error(f'   Threshold: {self.HALLUCINATION_THRESHOLD:.1%}')
             Logger.error(f'   Actual: {report.hallucination_percentage:.1%}')
-            Logger.error(f'   FACTUAL_INTEGRITY_FAIL signal will be emitted')
+            Logger.error('   FACTUAL_INTEGRITY_FAIL signal will be emitted')
         if report.risk_level in ['high', 'critical']:
             Logger.error(f'\n[!]  {report.risk_level.upper()} RISK DETECTED')
             Logger.error(f'Rollback Required: {report.requires_rollback}')
         if report.unsupported_details:
-            Logger.warning(f'\n[!]  UNSUPPORTED CLAIMS (showing first 10):')
+            Logger.warning('\n[!]  UNSUPPORTED CLAIMS (showing first 10):')
             for i, result in enumerate(report.unsupported_details, 1):
                 Logger.warning(f'  {i}. {result.Claim.text[:80]}...')
                 Logger.warning(f'     Similarity: {result.similarity_score:.2f} (threshold: {self.SIMILARITY_THRESHOLD})')
@@ -362,7 +361,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
         """Trigger rollback to previous stage."""
         Logger.error(f'[ALERT] TRIGGERING ROLLBACK for {stage_name}')
         Logger.error(f'   Reason: Integrity score {report.integrity_score:.1%} below threshold')
-        Logger.error(f'   Action: Rolling back to previous stage with higher temperature')
+        Logger.error('   Action: Rolling back to previous stage with higher temperature')
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals.add(f'FACTUAL_RISK:{stage_name}:ROLLBACK_REQUIRED')
 
@@ -376,7 +375,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
         Logger.error(f'   Hallucination rate: {report.hallucination_percentage:.1%}')
         Logger.error(f'   Threshold: {self.HALLUCINATION_THRESHOLD:.1%}')
         Logger.error(f'   Unsupported claims: {report.unsupported_claims}/{report.total_claims}')
-        Logger.error(f'   Action: BLOCKING output to prevent hallucinated content')
+        Logger.error('   Action: BLOCKING output to prevent hallucinated content')
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals.add(f'FACTUAL_INTEGRITY_FAIL:{stage_name}')
             self.ctx.signals.add(f'HALLUCINATION_DETECTED:{stage_name}:{report.hallucination_percentage:.1%}')
@@ -396,7 +395,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
             Logger.warning(f'   No source raw data found for {file_path}')
             return
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 generated_output = f.read()
         except Exception as e:
             Logger.error(f'   Could not read output file: {e}')
@@ -430,7 +429,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
             Logger.error(f'   Could not inject audit trail: {e}')
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Operational guardrail agent - no repository healing required."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

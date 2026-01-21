@@ -240,7 +240,7 @@ def generate_fix_report(data_findings, mismatches, mappings):
         fixes_needed.append({
             'file': f'js/renderers/{file}',
             'issue': f'Column reference "{col}" not in schema',
-            'fix': f'Update to correct column name from schema'
+            'fix': 'Update to correct column name from schema'
         })
 
     # Mapping fixes
@@ -249,7 +249,7 @@ def generate_fix_report(data_findings, mismatches, mappings):
             fixes_needed.append({
                 'file': 'js/main.js',
                 'issue': f'Missing polyfill mapping: {mapping}',
-                'fix': f'Add mapping in checkDependencies()'
+                'fix': 'Add mapping in checkDependencies()'
             })
 
     if fixes_needed:

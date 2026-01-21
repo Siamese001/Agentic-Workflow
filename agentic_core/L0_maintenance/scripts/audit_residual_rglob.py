@@ -9,12 +9,12 @@ Date: January 19, 2026
 Phase: 6.9 - Final Mile
 """
 import ast
-from pathlib import Path
 from collections import defaultdict
-from typing import List, Dict, Any
+from pathlib import Path
+from typing import Any
 
 
-def audit_residual_rglob_calls(project_root: Path) -> Dict[str, Any]:
+def audit_residual_rglob_calls(project_root: Path) -> dict[str, Any]:
     """
     Audit all remaining rglob/glob calls in agentic_core.
 
@@ -100,7 +100,7 @@ def audit_residual_rglob_calls(project_root: Path) -> Dict[str, Any]:
     }
 
 
-def print_audit_report(audit_results: Dict[str, Any]) -> None:
+def print_audit_report(audit_results: dict[str, Any]) -> None:
     """Print a formatted audit report."""
     print("=" * 80)
     print("RESIDUAL RGLOB/GLOB AUDIT REPORT")
@@ -137,7 +137,7 @@ def print_audit_report(audit_results: Dict[str, Any]) -> None:
     for pattern, calls in sorted_patterns:
         print(f"{len(calls):3d} calls: {pattern}")
         # Show sample files
-        sample_files = list(set(call['file'] for call in calls[:3]))
+        sample_files = list({call['file'] for call in calls[:3]})
         for file in sample_files:
             print(f"      - {file}")
 
@@ -186,10 +186,10 @@ def print_audit_report(audit_results: Dict[str, Any]) -> None:
     print(f"Current count: {current}")
     print(f"Target count: {target}")
     print(f"Calls to eliminate: {needed}")
-    print(f"\nRecommended approach:")
+    print("\nRecommended approach:")
     print(f"  1. Refactor all L0_maintenance/scripts files ({len(l0_scripts)} files)")
-    print(f"  2. Refactor remaining high-value targets")
-    print(f"  3. Verify with AST scanner")
+    print("  2. Refactor remaining high-value targets")
+    print("  3. Verify with AST scanner")
 
 
 def main():

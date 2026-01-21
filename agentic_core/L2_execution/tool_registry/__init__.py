@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L2 Execution: Tool Registry (SSOT)
 Pattern: Builder/Healer agents (Validation + Healing)

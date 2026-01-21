@@ -14,8 +14,8 @@ try:
 except ImportError:
     HealingStrategy = None
 
-from .SafetyStrategy import SafetyStrategy
 from .RLStrategy import RLStrategy
+from .SafetyStrategy import SafetyStrategy
 
 __all__ = [
     "HealingStrategy",

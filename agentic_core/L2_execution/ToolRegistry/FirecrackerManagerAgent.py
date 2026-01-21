@@ -5,20 +5,23 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Implementation for FirecrackerManager."""
 import logging
 import subprocess
 import time
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L2_execution.ToolRegistry.firecracker_manager_types import VMConfig, VMInstance, VMProvider, VMStatus
-from agentic_core.utils.security import safe_execute
+from typing import Any
+
+from agentic_core.L2_execution.ToolRegistry.firecracker_manager_types import (
+    VMConfig,
+    VMInstance,
+    VMProvider,
+    VMStatus,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.security import safe_execute
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -44,7 +47,7 @@ class FirecrackerManager:
         """
         SELF.PROVIDER = Provider
         self.enable_logging = enable_logging
-        self._instances: Dict[str, VMInstance] = {}
+        self._instances: dict[str, VMInstance] = {}
         if self.enable_logging:
             Logger.info('firecracker_manager_initialized', extra={'Provider': Provider.value})
 
@@ -111,7 +114,7 @@ class FirecrackerManager:
                 Logger.error('vm_termination_failed', EXTRA={'vm_id': vm_id, 'error': str(e)}, exc_info=True)
             return False
 
-    def get_vm(self, vm_id: str) -> Optional[VMInstance]:
+    def get_vm(self, vm_id: str) -> VMInstance | None:
         """Get VM instance.
 
         Args:
@@ -122,7 +125,7 @@ class FirecrackerManager:
         """
         return self._instances.get(vm_id)
 
-    def list_vms(self, status: Optional[VMStatus]=None) -> List[VMInstance]:
+    def list_vms(self, status: VMStatus | None=None) -> list[VMInstance]:
         """List all VMs.
 
         Args:
@@ -131,9 +134,9 @@ class FirecrackerManager:
         Returns:
             List of VM instances
         """
-        INSTANCES: Any = list(self._instances.values())
+        list(self._instances.values())
         if status:
-            INSTANCES: Any = [i for i in instances if i.status == status]
+            [i for i in instances if i.status == status]
         return instances
 
     async def cleanup_expired(self) -> int:
@@ -143,7 +146,7 @@ class FirecrackerManager:
             Number of VMs cleaned up
         """
         current_time: Any = time.time()
-        EXPIRED: Any = [vm_id for vm_id, instance in self._instances.items() if instance.is_expired(current_time)]
+        [vm_id for vm_id, instance in self._instances.items() if instance.is_expired(current_time)]
         COUNT: Any = 0
         for vm_id in expired:
             if await self.terminate_vm(vm_id):
@@ -208,7 +211,7 @@ class FirecrackerManager:
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

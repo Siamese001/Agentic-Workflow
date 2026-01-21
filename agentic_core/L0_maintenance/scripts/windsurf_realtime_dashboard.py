@@ -13,16 +13,15 @@ Prerequisites: pip install dash pandas plotly
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import dash
-from dash import dcc, html
-from dash.dependencies import Input, Output
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from dash import dcc, html
+from dash.dependencies import Input, Output
 from plotly.subplots import make_subplots
-import pandas as pd
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Initialize Dash app
 app = dash.Dash(
@@ -40,7 +39,7 @@ def load_data() -> pd.DataFrame:
     """Load data from windsurf_log.json."""
     if LOG_PATH.exists():
         try:
-            with open(LOG_PATH, 'r') as f:
+            with open(LOG_PATH) as f:
                 data = json.load(f)
             df = pd.DataFrame(data)
             df['date'] = pd.to_datetime(df['date'])
@@ -57,7 +56,7 @@ def load_data() -> pd.DataFrame:
     return pd.DataFrame()
 
 
-def get_latest_stats(df: pd.DataFrame) -> Dict[str, Any]:
+def get_latest_stats(df: pd.DataFrame) -> dict[str, Any]:
     """Get latest statistics from dataframe."""
     if df.empty:
         return {
@@ -171,7 +170,7 @@ def update_dashboard(n_intervals):
     if df.empty:
         empty_fig = go.Figure()
         empty_fig.add_annotation(text="No data available", xref="paper", yref="paper",
-                                  x=0.5, y=0.5, showarrow=False, font=dict(size=20))
+                                  x=0.5, y=0.5, showarrow=False, font={"size": 20})
         return cards, empty_fig, empty_fig, empty_fig, empty_fig, "No data loaded"
 
     # Line chart: Healing % Progress
@@ -205,13 +204,13 @@ def update_dashboard(n_intervals):
     fig_dual = make_subplots(specs=[[{"secondary_y": True}]])
     fig_dual.add_trace(
         go.Scatter(x=df['batch'], y=df['healed_agents'],
-                   name='Healed Agents', line=dict(color='#1E3A8A', width=3),
+                   name='Healed Agents', line={"color": '#1E3A8A', "width": 3},
                    mode='lines+markers'),
         secondary_y=False
     )
     fig_dual.add_trace(
         go.Scatter(x=df['batch'], y=df['cumulative_commits'],
-                   name='Cumulative Commits', line=dict(color='#F59E0B', width=3),
+                   name='Cumulative Commits', line={"color": '#F59E0B', "width": 3},
                    mode='lines+markers'),
         secondary_y=True
     )
@@ -248,8 +247,8 @@ if __name__ == '__main__':
     print("🌊 Windsurf Real-Time Progress Dashboard")
     print("=" * 60)
     print(f"\n📂 Loading data from: {LOG_PATH}")
-    print(f"🌐 Dashboard URL: http://127.0.0.1:8050")
-    print(f"🔄 Auto-refresh: Every 30 seconds")
+    print("🌐 Dashboard URL: http://127.0.0.1:8050")
+    print("🔄 Auto-refresh: Every 30 seconds")
     print("\nPress Ctrl+C to stop the server\n")
 
     app.run(debug=True, host='127.0.0.1', port=8050)

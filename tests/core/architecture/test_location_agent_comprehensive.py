@@ -9,9 +9,9 @@ Comprehensive Test Suite: LocationAgent Smart Depth Re-alignment
 
 Standard Sovereign Depth: 3 (e.g., agentic_core/L2_execution/runner.py)
 """
-import sys
-import shutil
 import atexit
+import shutil
+import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent

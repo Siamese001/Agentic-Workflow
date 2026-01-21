@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 ⚛️ Subatomic Flattening Rule - Golden State Reference
 
@@ -9,8 +10,7 @@ Pattern Origin: agent_logic.py check_and_learn() method refactoring (Dec 19, 202
 Success Metrics: 41% line reduction, 50% nesting reduction, 103% preservation
 """
 import ast
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from dataclasses import dataclass
 
 
 @dataclass
@@ -37,8 +37,8 @@ class ExtractionCandidate:
     line_count: int
     nesting_level: int
     suggested_name: str
-    dependencies: List[str]
-    returns: Optional[str]
+    dependencies: list[str]
+    returns: str | None
 
 
 @dataclass
@@ -77,7 +77,7 @@ class FlatteningPattern:
     }
 
     @classmethod
-    def analyze_method(cls, method_code: str, method_name: str) -> Tuple[ComplexityMetrics, List[ExtractionCandidate]]:
+    def analyze_method(cls, method_code: str, method_name: str) -> tuple[ComplexityMetrics, list[ExtractionCandidate]]:
         """
         Analyze a method and identify extraction candidates.
 
@@ -124,7 +124,7 @@ class FlatteningPattern:
             max_depth = max(max_depth, depth)
 
             # Increase depth for control flow structures
-            if isinstance(node, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
+            if isinstance(node, ast.If | ast.For | ast.While | ast.With | ast.Try):
                 depth += 1
 
             for child in ast.iter_child_nodes(node):
@@ -147,7 +147,7 @@ class FlatteningPattern:
         return count
 
     @classmethod
-    def _identify_extraction_candidates(cls, tree: ast.AST, method_name: str) -> List[ExtractionCandidate]:
+    def _identify_extraction_candidates(cls, tree: ast.AST, method_name: str) -> list[ExtractionCandidate]:
         """
         Identify code blocks that should be extracted into helper methods.
 
@@ -192,7 +192,7 @@ class FlatteningPattern:
         return candidates
 
     @classmethod
-    def generate_extraction_plan(cls, metrics: ComplexityMetrics, candidates: List[ExtractionCandidate]) -> Dict:
+    def generate_extraction_plan(cls, metrics: ComplexityMetrics, candidates: list[ExtractionCandidate]) -> dict:
         """
         Generate a step-by-step extraction plan.
 
@@ -352,7 +352,7 @@ agent_logic_pattern = {
 }
 
 
-def get_flattening_pattern() -> Dict:
+def get_flattening_pattern() -> dict:
     """
     Get the golden state flattening pattern for Pinecone storage.
 

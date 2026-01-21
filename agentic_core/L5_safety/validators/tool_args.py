@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Tool Arguments Schema
 ====================
@@ -8,7 +9,6 @@ execution guardrails.
 """
 
 from pathlib import Path
-from typing import List, Optional
 
 from pydantic import BaseModel, Field, validator
 
@@ -53,7 +53,7 @@ class MoveFileArgs(BaseModel):
 class ListFilesArgs(BaseModel):
     """Arguments for listing files in a directory."""
     path: str = Field(default=".", description="Relative path to the directory to list")
-    pattern: Optional[str] = Field(default=None, description="Glob pattern to filter files (e.g., '*.py')")
+    pattern: str | None = Field(default=None, description="Glob pattern to filter files (e.g., '*.py')")
     recursive: bool = Field(default=False, description="Recursively list subdirectories")
 
     @validator('path')
@@ -90,8 +90,8 @@ class CreateDirectoryArgs(BaseModel):
 class ExecuteCommandArgs(BaseModel):
     """Arguments for executing a shell command."""
     command: str = Field(..., description="Command to execute")
-    args: List[str] = Field(default_factory=list, description="Command arguments")
-    cwd: Optional[str] = Field(default=None, description="Working directory (relative to project root)")
+    args: list[str] = Field(default_factory=list, description="Command arguments")
+    cwd: str | None = Field(default=None, description="Working directory (relative to project root)")
     timeout: int = Field(default=30, description="Timeout in seconds (max 300)")
     capture_output: bool = Field(default=True, description="Capture stdout and stderr")
 

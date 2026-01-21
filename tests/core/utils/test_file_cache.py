@@ -14,11 +14,10 @@ Opportunity #3: rglob Scan Proliferation
 NOTE: Most tests use a temporary directory for speed.
 Only exclusion tests use PROJECT_ROOT (with os.walk pruning, this is fast).
 """
+import shutil
 import sys
 import tempfile
-import shutil
 from pathlib import Path
-from typing import List
 
 import pytest
 

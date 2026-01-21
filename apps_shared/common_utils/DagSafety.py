@@ -7,9 +7,11 @@ validation hooks, and protection against partial state corruption.
 import copy
 import logging
 import time
-from typing import Any, Callable, Dict, List, Optional, Set
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
+
 import networkx as nx
 
 logger = logging.getLogger(__name__)
@@ -29,9 +31,9 @@ class StateSnapshot:
     """Snapshot of DAG state at a point in time."""
     timestamp: float
     graph_copy: nx.DiGraph
-    node_attributes: Dict[str, Dict[str, Any]]
-    edge_attributes: Dict[str, Dict[str, Any]]
-    external_state: Dict[str, Any] = field(default_factory=dict)
+    node_attributes: dict[str, dict[str, Any]]
+    edge_attributes: dict[str, dict[str, Any]]
+    external_state: dict[str, Any] = field(default_factory=dict)
 
     def restore_to(self, target_graph: nx.DiGraph) -> None:
         """Restore this snapshot to a target graph.
@@ -66,18 +68,18 @@ class DAGSafetyManager:
             name: Manager name for logging
         """
         self.name = name
-        self._snapshots: List[StateSnapshot] = []
-        self._validation_hooks: Dict[MutationPhase, List[Callable]] = {
+        self._snapshots: list[StateSnapshot] = []
+        self._validation_hooks: dict[MutationPhase, list[Callable]] = {
             phase: [] for phase in MutationPhase
         }
-        self._mutation_stack: List[Dict[str, Any]] = []
+        self._mutation_stack: list[dict[str, Any]] = []
 
         logger.debug(f"Initialized DAGSafetyManager: {name}")
 
     def add_validation_hook(
         self,
         phase: MutationPhase,
-        hook: Callable[[nx.DiGraph, Dict[str, Any]], None]
+        hook: Callable[[nx.DiGraph, dict[str, Any]], None]
     ) -> None:
         """Add a validation hook for a specific phase.
 
@@ -91,7 +93,7 @@ class DAGSafetyManager:
     def create_snapshot(
         self,
         graph: nx.DiGraph,
-        external_state: Optional[Dict[str, Any]] = None
+        external_state: dict[str, Any] | None = None
     ) -> str:
         """Create a snapshot of the current DAG state.
 
@@ -153,10 +155,10 @@ class DAGSafetyManager:
         snapshot = self._snapshots[-1]
         snapshot.restore_to(target_graph)
 
-        logger.info(f"Restored snapshot to graph")
+        logger.info("Restored snapshot to graph")
         return True
 
-    def begin_mutation(self, mutation_type: str, metadata: Dict[str, Any]) -> str:
+    def begin_mutation(self, mutation_type: str, metadata: dict[str, Any]) -> str:
         """Begin a mutation operation.
 
         Args:
@@ -250,7 +252,7 @@ class DAGSafetyManager:
         self,
         phase: MutationPhase,
         graph: nx.DiGraph,
-        mutation_info: Dict[str, Any]
+        mutation_info: dict[str, Any]
     ) -> None:
         """Run validation hooks for a phase.
 
@@ -266,7 +268,7 @@ class DAGSafetyManager:
                 logger.error(f"Validation hook failed in phase {phase.value}: {e}")
                 raise
 
-    def get_mutation_history(self) -> List[Dict[str, Any]]:
+    def get_mutation_history(self) -> list[dict[str, Any]]:
         """Get history of mutations.
 
         Returns:
@@ -282,26 +284,26 @@ class DAGSafetyManager:
 
 
 # Default validation hooks
-def validate_acyclic_hook(graph: nx.DiGraph, mutation_info: Dict[str, Any]) -> None:
+def validate_acyclic_hook(graph: nx.DiGraph, mutation_info: dict[str, Any]) -> None:
     """Validate that graph remains acyclic."""
     if not nx.is_directed_acyclic_graph(graph):
         raise ValueError("Mutation would create a cycle")
 
 
-def validate_connectivity_hook(graph: nx.DiGraph, mutation_info: Dict[str, Any]) -> None:
+def validate_connectivity_hook(graph: nx.DiGraph, mutation_info: dict[str, Any]) -> None:
     """Validate graph connectivity."""
     if not nx.is_weakly_connected(graph):
         logger.warning("Mutation created disconnected components")
 
 
-def validate_node_attributes_hook(graph: nx.DiGraph, mutation_info: Dict[str, Any]) -> None:
+def validate_node_attributes_hook(graph: nx.DiGraph, mutation_info: dict[str, Any]) -> None:
     """Validate all nodes have required attributes."""
     for node in graph.nodes():
         if 'hop_spec' not in graph.nodes[node]:
             raise ValueError(f"Node {node} missing hop_spec attribute")
 
 
-def validate_depth_consistency_hook(graph: nx.DiGraph, mutation_info: Dict[str, Any]) -> None:
+def validate_depth_consistency_hook(graph: nx.DiGraph, mutation_info: dict[str, Any]) -> None:
     """Validate depth values are consistent."""
     depths = nx.get_node_attributes(graph, 'depth')
 
@@ -339,7 +341,7 @@ class SafeMutationContext:
         safety_manager: DAGSafetyManager,
         graph: nx.DiGraph,
         mutation_type: str,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ):
         """Initialize the context.
 

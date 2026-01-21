@@ -18,13 +18,13 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Set
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 class BudgetExceededError(Exception):
@@ -50,14 +50,14 @@ class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         HealerMixin: Provides healing chain support.
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize the cost governor with budget configuration.
 
         Args:
             config: Configuration dictionary containing:
                 - budget_limit: Maximum allowed spend in dollars (default: 10.0)
         """
-        self.config: Dict[str, Any] = config
+        self.config: dict[str, Any] = config
         self.limit: float = config.get('budget_limit', 10.0)
         self.spend: float = 0.0
 
@@ -92,8 +92,8 @@ class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational agent - no repository healing required.

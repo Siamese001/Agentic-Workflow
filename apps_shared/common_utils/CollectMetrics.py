@@ -6,9 +6,9 @@ Generated: 2025-12-07T12:07:59.846192
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, field
 from collections import defaultdict
+from dataclasses import dataclass, field
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +24,9 @@ class CollectedItem:
 class BaseCollector:
     """Collector for metrics domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: dict[str, object] | None = None):
         self.config = config or {}
-        self.items: Dict[str, List[CollectedItem]] = defaultdict(list)
+        self.items: dict[str, list[CollectedItem]] = defaultdict(list)
         self.max_items = self.config.get("max_items", 1000)
         logger.info(f"Initialized {self.__class__.__name__}")
 
@@ -41,13 +41,13 @@ class BaseCollector:
 
         logger.debug(f"Collected item from {source}")
 
-    def get_items(self, source: Optional[str] = None) -> List[CollectedItem]:
+    def get_items(self, source: str | None = None) -> list[CollectedItem]:
         """Get collected items."""
         if source:
             return self.items.get(source, [])
         return [item for items in self.items.values() for item in items]
 
-    def flush(self, source: Optional[str] = None) -> List[CollectedItem]:
+    def flush(self, source: str | None = None) -> list[CollectedItem]:
         """Flush and return items."""
         if source:
             items = self.items.pop(source, [])
@@ -66,6 +66,6 @@ def collect(source: str, data: object) -> None:
     _collector.collect(source, data)
 
 
-def get_collected(source: Optional[str] = None) -> List[CollectedItem]:
+def get_collected(source: str | None = None) -> list[CollectedItem]:
     """Get items from global collector."""
     return _collector.get_items(source)

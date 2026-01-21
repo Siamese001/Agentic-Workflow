@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Canon Validator Mission Runner
 
@@ -12,19 +13,13 @@ This module consolidates all mission execution logic from the canon validator.
 import asyncio
 import logging
 import os
-import re
-import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+
 from agentic_core.utils.security import safe_git_execute
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 Logger = logging.getLogger(__name__)
@@ -78,17 +73,9 @@ def _get_imports():
 
     # GRAVITY FIX: Removed all scripts.CanonValidatorAgent imports
     # These agents need to be moved to agentic_core or refactored
-    from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent as ArchitectureGovernor  # Keys 40, 41, 50 + syntax fix
-    CodeStyleGuardian = None  # Keys 10-16, 21, 47 + auto-fix whitespace/tabs/newlines
-    DependencySentinelAgent = None  # Keys 7, 8, 9, 14, 44 + autoflake/isort
-    HygieneGuardian = None  # Key 45 + auto-delete generative artifacts
-    NamingEnforcer = None  # Key 47 + auto-fix naming
-    StructuralEngineer = None  # Keys 17, 18, 20, 25, 42, 43, 46
-    TypeEnforcer = None  # Key 22 + auto-inject typing imports
-    GitAgent = None
-    Historian = None
-    RgReflectionAgent = None
-    RgStrategicPlannerAgent = None
+    from agentic_core.L5_safety.validators.GovernanceAgent import (
+        GovernanceAgent as ArchitectureGovernor,  # Keys 40, 41, 50 + syntax fix
+    )
 
     # Use the FULL ValidationContext from scripts/CanonValidatorAgent which has all methods
     # GRAVITY FIX: Removed all scripts.CanonValidatorAgent imports
@@ -237,8 +224,8 @@ def run_standard_mode():
     StructuralEngineer = imports['StructuralEngineer']
     SafetyInspectorAgent = imports['SafetyInspectorAgent']
     TestPilot = imports['TestPilot']
-    RgReflectionAgent = imports['ReflectionAgent']
-    RgStrategicPlannerAgent = imports['StrategicPlannerAgent']
+    imports['ReflectionAgent']
+    imports['StrategicPlannerAgent']
 
     try:
         ctx = ValidationContext()
@@ -330,7 +317,7 @@ def run_standard_mode():
                 break
 
             if cycle < MAX_CYCLES:
-                print(f"   [~] Modifications detected. Rerunning validation to ensure stability...")
+                print("   [~] Modifications detected. Rerunning validation to ensure stability...")
                 await asyncio.sleep(1)
         else:
             _handle_max_cycles_reached(ctx)
@@ -374,7 +361,7 @@ def _start_websocket_server(ctx):
     ws_thread.start()
 
 
-def _build_agenda(cycle: int, ctx, agents: List, GitAgent, StrategicPlannerAgent, ReflectionAgent) -> List:
+def _build_agenda(cycle: int, ctx, agents: list, GitAgent, StrategicPlannerAgent, ReflectionAgent) -> list:
     """Build the agent execution agenda based on cycle and signals."""
     agenda = [GitAgent(ctx)]
 
@@ -419,7 +406,7 @@ def _build_agenda(cycle: int, ctx, agents: List, GitAgent, StrategicPlannerAgent
     return agenda
 
 
-def _deduplicate_agenda(agenda: List) -> List:
+def _deduplicate_agenda(agenda: list) -> list:
     """Deduplicate agenda while preserving order."""
     seen = set()
     final_agenda = []
@@ -443,7 +430,7 @@ async def _check_intervention(cycle: int, ctx, FASTAPI_AVAILABLE: bool,
         print(f"\n   [ALERT] L5 INTERVENTION: High-risk state detected (cycle {cycle})")
         print(f"      Modified files: {len(ctx.modified_files)} | Signals: {len(ctx.signals)}")
         start_intervention_server(ctx)
-        print(f"   ⏳ Awaiting human decision at http://127.0.0.1:8080")
+        print("   ⏳ Awaiting human decision at http://127.0.0.1:8080")
         approval_event.clear()
         try:
             await asyncio.wait_for(approval_event.wait(), timeout=None)
@@ -462,7 +449,7 @@ async def _check_intervention(cycle: int, ctx, FASTAPI_AVAILABLE: bool,
 
 def _handle_max_cycles_reached(ctx):
     """Handle the case when max healing cycles are reached."""
-    print(f"\n[!] MAX HEALING CYCLES REACHED. Escalating...")
+    print("\n[!] MAX HEALING CYCLES REACHED. Escalating...")
     if ctx.modified_files or ctx.signals:
         esc_dir = Path("observability/human_review")
         esc_dir.mkdir(parents=True, exist_ok=True)

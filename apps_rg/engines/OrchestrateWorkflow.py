@@ -8,11 +8,12 @@ import hashlib
 import json
 import logging
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 
 
 class HopStatus(Enum):
@@ -67,10 +68,10 @@ class HopSpec:
     id: str
     script: str
     description: str
-    inputs: List[HopInput] = field(default_factory=list)
-    outputs: List[HopOutput] = field(default_factory=list)
+    inputs: list[HopInput] = field(default_factory=list)
+    outputs: list[HopOutput] = field(default_factory=list)
     retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
-    extra_args: List[str] = field(default_factory=list)
+    extra_args: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -79,7 +80,7 @@ class WorkflowSpec:
 
     name: str
     version: str
-    hops: List[HopSpec]
+    hops: list[HopSpec]
 
 
 @dataclass
@@ -100,9 +101,9 @@ class HopCheckpoint:
     hop_id: str
     status: HopStatus
     start_time: datetime
-    end_time: Optional[datetime] = None
-    output_artifacts: List[str] = field(default_factory=list)
-    error_message: Optional[str] = None
+    end_time: datetime | None = None
+    output_artifacts: list[str] = field(default_factory=list)
+    error_message: str | None = None
 
 
 @dataclass
@@ -112,7 +113,7 @@ class ValidationResult:
     gate_id: str
     decision: GateDecision
     message: str
-    details: Dict[str, object] = field(default_factory=dict)
+    details: dict[str, object] = field(default_factory=dict)
 
 
 class WorkflowSpecError(Exception):
@@ -141,9 +142,9 @@ class DAGBuilder:
 
     def __init__(self) -> None:
         """Initialize the DAG builder."""
-        self._nodes: Dict[str, HopSpec] = {}
-        self._edges: List[tuple[str, str]] = []
-        self._artifact_producers: Dict[str, str] = {}
+        self._nodes: dict[str, HopSpec] = {}
+        self._edges: list[tuple[str, str]] = []
+        self._artifact_producers: dict[str, str] = {}
 
     def add_hop(self, hop: HopSpec) -> "DAGBuilder":
         """Add a hop to the DAG."""
@@ -182,11 +183,11 @@ class DAGBuilder:
 
         return self
 
-    def get_execution_order(self) -> List[str]:
+    def get_execution_order(self) -> list[str]:
         """Get topological execution order."""
         # Build adjacency list
-        in_degree: Dict[str, int] = {node: 0 for node in self._nodes}
-        adjacency: Dict[str, List[str]] = {node: [] for node in self._nodes}
+        in_degree: dict[str, int] = dict.fromkeys(self._nodes, 0)
+        adjacency: dict[str, list[str]] = {node: [] for node in self._nodes}
 
         for source, target in self._edges:
             adjacency[source].append(target)
@@ -194,7 +195,7 @@ class DAGBuilder:
 
         # Kahn's algorithm for topological sort
         queue = [node for node, degree in in_degree.items() if degree == 0]
-        order: List[str] = []
+        order: list[str] = []
 
         while queue:
             node = queue.pop(0)
@@ -210,9 +211,9 @@ class DAGBuilder:
 
         return order
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate the DAG and return any issues."""
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Check for cycles
         try:
@@ -236,7 +237,7 @@ class RGWorkflowOrchestrator:
 
     def __init__(
         self,
-        workflow_spec: Optional[WorkflowSpec] = None,
+        workflow_spec: WorkflowSpec | None = None,
         run_base_dir: str = "./pipeline_runs",
     ) -> None:
         """
@@ -249,22 +250,22 @@ class RGWorkflowOrchestrator:
         self.workflow_id = str(uuid.uuid4())[:8]
         self.Logger = logging.getLogger(__name__)
         self.run_base_dir = Path(run_base_dir)
-        self.run_dir: Optional[Path] = None
+        self.run_dir: Path | None = None
 
         self.spec = workflow_spec
-        self.artifacts: Dict[str, Artifact] = {}
-        self.hop_checkpoints: List[HopCheckpoint] = []
-        self.validation_results: List[ValidationResult] = []
+        self.artifacts: dict[str, Artifact] = {}
+        self.hop_checkpoints: list[HopCheckpoint] = []
+        self.validation_results: list[ValidationResult] = []
 
-        self._dag_builder: Optional[DAGBuilder] = None
-        self._hop_executors: Dict[str, Callable[..., Any]] = {}
+        self._dag_builder: DAGBuilder | None = None
+        self._hop_executors: dict[str, Callable[..., Any]] = {}
 
     def load_spec_from_file(self, spec_path: Path) -> None:
         """Load workflow spec from a JSON file."""
         if not spec_path.exists():
             raise WorkflowSpecError(f"Workflow spec not found: {spec_path}")
 
-        with open(spec_path, "r", encoding="utf-8") as f:
+        with open(spec_path, encoding="utf-8") as f:
             spec_data = json.load(f)
 
         hops = []
@@ -339,7 +340,7 @@ class RGWorkflowOrchestrator:
         self._dag_builder.build_edges()
         return self._dag_builder
 
-    def get_execution_order(self) -> List[str]:
+    def get_execution_order(self) -> list[str]:
         """Get the execution order for hops."""
         if self._dag_builder is None:
             self.build_dag()
@@ -348,7 +349,7 @@ class RGWorkflowOrchestrator:
     def execute_hop(
         self,
         hop_id: str,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> HopCheckpoint:
         """
         Execute a single hop.
@@ -392,8 +393,8 @@ class RGWorkflowOrchestrator:
 
     def execute_workflow(
         self,
-        context: Dict[str, object],
-    ) -> Dict[str, object]:
+        context: dict[str, object],
+    ) -> dict[str, object]:
         """
         Execute the complete workflow.
 
@@ -408,7 +409,7 @@ class RGWorkflowOrchestrator:
         execution_order = self.get_execution_order()
         self.Logger.info(f"Execution order: {execution_order}")
 
-        results: Dict[str, object] = {
+        results: dict[str, object] = {
             "workflow_id": self.workflow_id,
             "status": "RUNNING",
             "hops_completed": [],
@@ -433,14 +434,14 @@ class RGWorkflowOrchestrator:
         self.Logger.info(f"Workflow completed with status: {results['status']}")
         return results
 
-    def get_checkpoint(self, hop_id: str) -> Optional[HopCheckpoint]:
+    def get_checkpoint(self, hop_id: str) -> HopCheckpoint | None:
         """Get Checkpoint for a specific hop."""
         for Checkpoint in self.hop_checkpoints:
             if Checkpoint.hop_id == hop_id:
                 return Checkpoint
         return None
 
-    def get_all_checkpoints(self) -> List[HopCheckpoint]:
+    def get_all_checkpoints(self) -> list[HopCheckpoint]:
         """Get all hop checkpoints."""
         return self.hop_checkpoints.copy()
 
@@ -448,11 +449,11 @@ class RGWorkflowOrchestrator:
         """Add a validation result."""
         self.validation_results.append(result)
 
-    def get_validation_results(self) -> List[ValidationResult]:
+    def get_validation_results(self) -> list[ValidationResult]:
         """Get all validation results."""
         return self.validation_results.copy()
 
-    def export_execution_log(self, output_path: Optional[Path] = None) -> Path:
+    def export_execution_log(self, output_path: Path | None = None) -> Path:
         """Export execution log to a JSON file."""
         if output_path is None:
             if self.run_dir is None:
@@ -494,7 +495,7 @@ class RGWorkflowOrchestrator:
 
 
 def create_orchestrator(
-    workflow_spec: Optional[WorkflowSpec] = None,
+    workflow_spec: WorkflowSpec | None = None,
     run_base_dir: str = "./pipeline_runs",
 ) -> RGWorkflowOrchestrator:
     """builder function to create an orchestrator."""

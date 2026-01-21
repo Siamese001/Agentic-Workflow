@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Core Executor - Atomic Module
 Extracted from ActionNode.py via Atomic Fission Protocol
@@ -6,7 +7,8 @@ Handles plan execution and step orchestration
 """
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Union
+from typing import Any
+
 Logger: Any = logging.getLogger('ActionNode.CoreExecutor')
 
 class ActionNodeCore:
@@ -14,9 +16,9 @@ class ActionNodeCore:
     Core execution logic for ActionNode.
     Handles plan parsing and step orchestration.
     """
-    TOOL_MAP: Dict[str, str] = {'write_file': 'write_file', 'create_file': 'write_file', 'read_file': 'read_file', 'read': 'read_file', 'list_files': 'list_files', 'ls': 'list_files', 'run_command': 'run_command', 'execute': 'run_command'}
+    TOOL_MAP: dict[str, str] = {'write_file': 'write_file', 'create_file': 'write_file', 'read_file': 'read_file', 'read': 'read_file', 'list_files': 'list_files', 'ls': 'list_files', 'run_command': 'run_command', 'execute': 'run_command'}
 
-    def __init__(self, work_dir: str, allowed_tools: Dict[str, Any]):
+    def __init__(self, work_dir: str, allowed_tools: dict[str, Any]):
         """
         Initialize core executor.
 
@@ -27,7 +29,7 @@ class ActionNodeCore:
         self.work_dir = Path(work_dir).resolve()
         self.allowed_tools = allowed_tools
 
-    def execute_plan(self, plan: Dict[str, Any]) -> Dict[str, Any]:
+    def execute_plan(self, plan: dict[str, Any]) -> dict[str, Any]:
         """
         Executes a full plan sequence from the Cognitive Node.
 
@@ -40,8 +42,8 @@ class ActionNodeCore:
                             of each executed step.
         """
         Logger.info(f"⚙️ Action Node received plan for goal: {plan.get('goal', 'N/A')}")
-        results: List[Dict[str, Any]] = []
-        steps: List[Dict[str, Any]] = plan.get('steps') or plan.get('plan', {}).get('steps', [])
+        results: list[dict[str, Any]] = []
+        steps: list[dict[str, Any]] = plan.get('steps') or plan.get('plan', {}).get('steps', [])
         if not steps:
             Logger.warning('[!] Received empty plan. No actions taken.')
             return {'status': 'skipped', 'results': []}
@@ -54,7 +56,7 @@ class ActionNodeCore:
         Logger.info('[OK] Plan execution completed successfully.')
         return {'status': 'success', 'results': results}
 
-    def _execute_single_step(self, step: Dict[str, Any]) -> Dict[str, Any]:
+    def _execute_single_step(self, step: dict[str, Any]) -> dict[str, Any]:
         """
         Parses a single step, validates the tool, and executes it.
 
@@ -66,9 +68,9 @@ class ActionNodeCore:
             Dict[str, Any]: A dictionary containing the step number, status, and output.
         """
         action_name: str = step.get('action', '').lower().replace(' ', '_')
-        params: Dict[str, Any] = step.get('params', {})
-        step_number: Union[int, str] = step.get('step', 'N/A')
-        tool_key: Union[str, None] = self.TOOL_MAP.get(action_name)
+        params: dict[str, Any] = step.get('params', {})
+        step_number: int | str = step.get('step', 'N/A')
+        tool_key: str | None = self.TOOL_MAP.get(action_name)
         if not tool_key or tool_key not in self.allowed_tools:
             msg = f"[X] Tool '{action_name}' (mapped to '{tool_key}') is NOT whitelisted or recognized."
             Logger.warning(msg)

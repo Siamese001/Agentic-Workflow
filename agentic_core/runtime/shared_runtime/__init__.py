@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 runtime/shared_runtime – Sovereign Territory
 
@@ -26,7 +27,13 @@ Future Curation Roadmap:
 # Public API surface — expose only what's intended
 # Graceful imports - some modules may not exist yet
 try:
-    from .reflection_engine import ReflectionEngine, CritiqueResult, ValidationCriterion, ReflectionConfig, MutationRequest
+    from .reflection_engine import (
+        CritiqueResult,
+        MutationRequest,
+        ReflectionConfig,
+        ReflectionEngine,
+        ValidationCriterion,
+    )
 except ImportError:
     ReflectionEngine = None
     CritiqueResult = None
@@ -35,7 +42,13 @@ except ImportError:
     MutationRequest = None
 
 try:
-    from .signal_enhancer import SignalEnhancer, SignalQuality, SignalAssessment, QualityThresholds, ClaimAnalysis
+    from .signal_enhancer import (
+        ClaimAnalysis,
+        QualityThresholds,
+        SignalAssessment,
+        SignalEnhancer,
+        SignalQuality,
+    )
 except ImportError:
     SignalEnhancer = None
     SignalQuality = None

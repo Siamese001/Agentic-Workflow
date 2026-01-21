@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import hashlib
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -13,7 +15,8 @@ import json
 import logging
 import os
 import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 try:
     from connection_manager import ConnectionManager
 except ImportError:
@@ -24,15 +27,14 @@ except ImportError:
     CanonEntry = CanonMetadata = type('Stub', (), {})
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-
 # Extracted to L1 canonical agent_logic.py (2026-01-06)
-from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+
 class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Legacy L4 connectivity variant - use L1 canonical for full implementation.
@@ -56,8 +58,8 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         self.cm = ConnectionManager()
         self.similarity_threshold = similarity_threshold
         self.manifest_path = manifest_path
-        self.manifest_cache: Dict[str, Any] = {}
-        self.manifest_lookup: Dict[str, Dict[str, Any]] = {}
+        self.manifest_cache: dict[str, Any] = {}
+        self.manifest_lookup: dict[str, dict[str, Any]] = {}
         self.last_manifest_load = 0
         self.redis_client = self.cm.get_redis_client()
         self.redis_index = self.cm.get_redis_index()
@@ -65,12 +67,12 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         self._refresh_manifest()
         self.embedding_fn = self.cm.get_embedding
 
-    def _load_manifest_data(self) -> Dict[str, Any]:
+    def _load_manifest_data(self) -> dict[str, Any]:
         """Helper to load manifest data from file."""
-        with open(self.manifest_path, 'r') as f:
+        with open(self.manifest_path) as f:
             return json.load(f)
 
-    def _build_manifest_lookup(self, manifest_data: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    def _build_manifest_lookup(self, manifest_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
         """
         Builds a quick lookup dictionary from file path to its manifest entry.
         Refactored to reduce nesting depth.
@@ -131,7 +133,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         self._refresh_manifest()
         return file_path in self.manifest_lookup
 
-    def _generate_compound_key(self, query_content: str, context_file_path: Optional[str]=None) -> str:
+    def _generate_compound_key(self, query_content: str, context_file_path: str | None=None) -> str:
         """
         [HARDENED 6b] Generates a cache key that binds the query to the SPECIFIC file version.
 
@@ -145,7 +147,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             raw_key = query_content
         return hashlib.sha256(raw_key.encode('utf-8')).hexdigest()
 
-    def process_entry(self, entry: CanonEntry) -> Dict[str, Any]:
+    def process_entry(self, entry: CanonEntry) -> dict[str, Any]:
         """
         Main entry point.
         1. Checks L1 (Redis) for exact AST match.
@@ -168,7 +170,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             return self._format_result(l2_match, 'l2_semantic_match', start_time)
         return self._ingest_new_entry(entry, start_time)
 
-    def check_and_learn(self, code: str, context: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
+    def check_and_learn(self, code: str, context: dict[str, Any] | None=None) -> dict[str, Any]:
         """
         Compatibility method for simulation script.
         Accepts raw string input and converts to CanonEntry.
@@ -180,7 +182,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             return {'status': 'error', 'message': str(e)}
         project_context_val: Any = 'default'
         canon_rule_id_val: Any = 'unknown'
-        file_path_val: Optional[str] = None
+        file_path_val: str | None = None
         if context:
             project_context_val: Any = context.get('project_context', 'default')
             canon_rule_id_val: Any = context.get('type', 'unknown')
@@ -196,7 +198,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             result['source'] = 'l2_match'
         return result
 
-    def _check_l1_cache(self, entry: CanonEntry) -> Optional[Dict[str, Any]]:
+    def _check_l1_cache(self, entry: CanonEntry) -> dict[str, Any] | None:
         """
         Checks Redis L1 cache using the hardened compound key.
         """
@@ -216,7 +218,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         Logger.info('Reasoning cache miss - Code version may have changed.')
         return None
 
-    def upsert_l1_cache(self, entry: CanonEntry, result: Dict[str, Any]) -> Any:
+    def upsert_l1_cache(self, entry: CanonEntry, result: dict[str, Any]) -> Any:
         """
         Stores result in L1 cache with the version-aware key.
         """
@@ -228,7 +230,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         except Exception as e:
             Logger.error(f'Redis upsert failed: {e}')
 
-    def _process_pinecone_match(self, best_match: Dict[str, Any], score: float) -> Optional[Dict[str, Any]]:
+    def _process_pinecone_match(self, best_match: dict[str, Any], score: float) -> dict[str, Any] | None:
         """
         Helper to process a Pinecone match, apply similarity threshold, and format the result.
         Reduces nesting depth in _check_l2_cache.
@@ -238,7 +240,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         metadata = best_match.get('metadata', {})
         return {'id': best_match['id'], 'content': metadata.get('code_snippet', 'Content not in metadata'), 'similarity': score, 'metadata': metadata}
 
-    def _check_l2_cache(self, entry: CanonEntry) -> Optional[Dict[str, Any]]:
+    def _check_l2_cache(self, entry: CanonEntry) -> dict[str, Any] | None:
         """
         Queries Pinecone for semantic similarity.
         """
@@ -255,7 +257,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             Logger.error(f'Pinecone query failed: {e}')
         return None
 
-    def _ingest_new_entry(self, entry: CanonEntry, start_time: float) -> Dict[str, Any]:
+    def _ingest_new_entry(self, entry: CanonEntry, start_time: float) -> dict[str, Any]:
         """
         Writes the new unique entry to both L1 (Redis) and L2 (Pinecone).
         Checks active_manifest.json to ensure we only index validated files.
@@ -281,12 +283,12 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             Logger.error(f'Ingestion failed: {e}')
             return {'status': 'error', 'is_valid': False, 'confidence': 0.0, 'message': f'Ingestion failed: {str(e)}', 'query_time_ms': (time.time() - start_time) * 1000}
 
-    def query_semantic_memory(self, query: str, context_file: Optional[str]=None, top_k: int=5) -> Optional[Dict[str, Any]]:
+    def query_semantic_memory(self, query: str, context_file: str | None=None, top_k: int=5) -> dict[str, Any] | None:
         """
         [HARDENED] Retrieval that ignores 'Ghost' vectors.
         """
         query_vector: Any = self.embedding_fn(query)
-        metadata_filter: Dict[str, Any] = {}
+        metadata_filter: dict[str, Any] = {}
         if context_file:
             active_hash: Any = self._get_file_hash(context_file)
             metadata_filter: Any = {'file_path': context_file, 'content_hash': active_hash}
@@ -304,14 +306,14 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         """
         Logger.info(f"Learning update: Pattern {pattern_id} is {('valid' if is_valid else 'invalid')}")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """
         Return validation statistics.
         TODO: Implement actual stats collection.
         """
         return {'redis_stats': {'total_checks': 0, 'hits': 0, 'misses': 0}, 'pinecone_stats': {'total_queries': 0, 'matches_found': 0, 'vectors_stored': 0}, 'thresholds': {'similarity_threshold': self.similarity_threshold, 'failure_threshold': self.FAILURE_THRESHOLD, 'success_threshold': self.SUCCESS_THRESHOLD, 'max_patterns': self.MAX_PATTERNS}, 'total_validations': 0, 'valid_count': 0, 'invalid_count': 0, 'duplicate_count': 0, 'error_count': 0}
 
-    def _format_result(self, match: Dict[str, Any], source: str, start_time: float) -> Dict[str, Any]:
+    def _format_result(self, match: dict[str, Any], source: str, start_time: float) -> dict[str, Any]:
         """
         Helper to format a 'Duplicate Found' or 'Similar Found' response.
         """
@@ -327,8 +329,8 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Wired Legacy Validation - Checks for structural drift in legacy canon files.
 

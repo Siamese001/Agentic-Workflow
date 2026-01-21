@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 """Types and models for message_assembler."""
 import logging
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class QaBlockType(Enum):
@@ -31,8 +33,8 @@ class MessageAssemblerConfig:
 class MessageAssemblerResult:
     """Docstring."""
     final_message: str
-    qa_blocks: List[QABlock]
+    qa_blocks: list[QABlock]
     signature: str
-    validation_results: List[ValidationResult]
+    validation_results: list[ValidationResult]
     success: bool
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-import sys
 import os
+import sys
+
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -30,39 +30,64 @@ Usage:
   python scripts/test_dashboard_end_to_end.py --skip-regenerate  # Skip regeneration (NOT RECOMMENDED)
   python scripts/test_dashboard_end_to_end.py -y                 # Skip interactive prompts
 """
+import argparse
 import json
 import re
-import hashlib
+import sys
+from datetime import datetime
+from pathlib import Path
+
 import safe_execute
 import safe_popen
-import argparse
-import sys
-from pathlib import Path
-from typing import Dict, List, Tuple
-from datetime import datetime
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
-
 # SSOT: Import all metric definitions from single source
 from scripts.dashboard_ssot_definitions import (
-    # Field names (SSOT for agent_discovery_full.json)
-    FIELD_HAS_HEALING, FIELD_INVOCATION as FIELD_INVOCATION_CONST, FIELD_HAS_TESTS, FIELD_MCP_HARDENED,
-    FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
-    FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
-    FIELD_CLASS_NAME, FIELD_PATH, FIELD_LAYER, FIELD_TERRITORY,
+    COL_CANONICAL_INHERITANCE,
+    COL_CODE_QUALITY,
+    COL_COMPLEXITY_HEALTH,
+    COL_DOCUMENTED,
+    COL_HARDENED,
     # Column names (SSOT for dashboard display)
-    COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
-    COL_AVG_CC, COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED,
-    COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH,
+    COL_HEAL_CAP,
+    COL_HEALTH,
+    COL_INVOCATION,
+    COL_SCHEMA_STRICTNESS,
+    COL_TEST,
+    COL_TYPED,
+    FIELD_CLASS_NAME,
+    FIELD_CYCLOMATIC_COMPLEXITY,
+    FIELD_DOCUMENTED_PCT,
+    # Field names (SSOT for agent_discovery_full.json)
+    FIELD_HAS_HEALING,
+    FIELD_HAS_TESTS,
+    FIELD_LAYER,
+    FIELD_MCP_HARDENED,
+    FIELD_PATH,
+    FIELD_PROPER_BASE_CLASS,
+    FIELD_SCHEMA_STRICTNESS,
+    FIELD_TERRITORY,
+    FIELD_TYPED_PCT,
+    calc_canonical_inheritance_pct,
+    calc_documented_pct,
+    calc_hardened_pct,
+    calc_heal_cap_pct,
     # Calculation functions (SSOT for metrics)
-    calc_health_score, calc_typed_pct, calc_documented_pct,
-    calc_schema_strictness_pct, calc_canonical_inheritance_pct,
-    calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct
+    calc_health_score,
+    calc_invocation_pct,
+    calc_schema_strictness_pct,
+    calc_test_pct,
+    calc_typed_pct,
+)
+from scripts.dashboard_ssot_definitions import FIELD_INVOCATION as FIELD_INVOCATION_CONST
+
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
 )
 
 # =============================================================================
@@ -82,7 +107,7 @@ def load_agent_discovery_json() -> list:
     if not discovery_path.exists():
         raise FileNotFoundError(f"SSOT file not found: {discovery_path}")
 
-    with open(discovery_path, 'r', encoding='utf-8') as f:
+    with open(discovery_path, encoding='utf-8') as f:
         return json.load(f)
 
 
@@ -130,7 +155,7 @@ def load_html_content() -> str:
 # =============================================================================
 # HELPER FUNCTION: Load Dashboard Data from Consolidated SSOT Location
 # =============================================================================
-def load_dashboard_data() -> Tuple[list, str]:
+def load_dashboard_data() -> tuple[list, str]:
     """
     Load dashboard data from the consolidated SSOT location.
 
@@ -158,7 +183,7 @@ def load_dashboard_data() -> Tuple[list, str]:
     return dashboard_data, data_js
 
 
-def test_agent_discovery_integrity() -> Tuple[bool, List[str]]:
+def test_agent_discovery_integrity() -> tuple[bool, list[str]]:
     """Test 1: Verify agent_discovery_full.json integrity."""
     errors = []
     project_root = get_validated_project_root()
@@ -169,7 +194,7 @@ def test_agent_discovery_integrity() -> Tuple[bool, List[str]]:
         return False, errors
 
     try:
-        with open(discovery_path, 'r', encoding='utf-8') as f:
+        with open(discovery_path, encoding='utf-8') as f:
             agents = json.load(f)
 
         if not isinstance(agents, list):
@@ -195,7 +220,7 @@ def test_agent_discovery_integrity() -> Tuple[bool, List[str]]:
         errors.append(f"❌ Failed to load agent_discovery_full.json: {e}")
         return False, errors
 
-def test_dashboard_html_exists() -> Tuple[bool, List[str]]:
+def test_dashboard_html_exists() -> tuple[bool, list[str]]:
     """Test 2: Verify dashboard HTML and data files exist."""
     errors = []
     project_root = get_validated_project_root()
@@ -229,7 +254,7 @@ def test_dashboard_html_exists() -> Tuple[bool, List[str]]:
         errors.append(f"❌ Failed to read dashboard files: {e}")
         return False, errors
 
-def test_dashboard_data_structure() -> Tuple[bool, List[str]]:
+def test_dashboard_data_structure() -> tuple[bool, list[str]]:
     """Test 3: Verify dashboardData JSON structure in dashboard_data.js."""
     errors = []
     data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
@@ -274,7 +299,7 @@ def test_dashboard_data_structure() -> Tuple[bool, List[str]]:
         errors.append(f"❌ Failed to parse dashboardData: {e}")
         return False, errors
 
-def test_dashboard_required_fields() -> Tuple[bool, List[str]]:
+def test_dashboard_required_fields() -> tuple[bool, list[str]]:
     """Test 4: Verify all required fields exist in dashboardData."""
     errors = []
     data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
@@ -314,14 +339,14 @@ def test_dashboard_required_fields() -> Tuple[bool, List[str]]:
                 errors.append(f"❌ Territory rows missing fields: {', '.join(missing_fields)}")
                 return False, errors
 
-        print(f"✅ Test 4 PASSED: All required fields present in dashboardData")
+        print("✅ Test 4 PASSED: All required fields present in dashboardData")
         return True, []
 
     except Exception as e:
         errors.append(f"❌ Failed to verify required fields: {e}")
         return False, errors
 
-def test_discovery_field_names() -> Tuple[bool, List[str]]:
+def test_discovery_field_names() -> tuple[bool, list[str]]:
     """Test 4B: Verify agent_discovery_full.json uses exact SSOT field names.
 
     CRITICAL: This test prevents field name errors like:
@@ -360,7 +385,7 @@ def test_discovery_field_names() -> Tuple[bool, List[str]]:
 
     try:
         discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, 'r', encoding='utf-8') as f:
+        with open(discovery_path, encoding='utf-8') as f:
             agents = json.load(f)
 
         if not agents:
@@ -388,29 +413,29 @@ def test_discovery_field_names() -> Tuple[bool, List[str]]:
             errors.append(f"Test 4B FAILED: {len(field_issues)} SSOT field name violations")
             for issue in field_issues[:5]:  # Show first 5
                 errors.append(f"  - {issue}")
-            print(f"❌ Test 4B FAILED: Discovery JSON uses incorrect field names")
+            print("❌ Test 4B FAILED: Discovery JSON uses incorrect field names")
             for issue in field_issues[:5]:
                 print(f"   - {issue}")
             return False, errors
 
-        print(f"✅ Test 4B PASSED: All agents use correct SSOT field names")
+        print("✅ Test 4B PASSED: All agents use correct SSOT field names")
         print(f"   ✓ Validated {len(sample_agents)} agents")
-        print(f"   ✓ No forbidden fields (docstring_percentage, typed_percentage, etc.)")
-        print(f"   ✓ All required SSOT fields present")
+        print("   ✓ No forbidden fields (docstring_percentage, typed_percentage, etc.)")
+        print("   ✓ All required SSOT fields present")
         return True, []
 
     except Exception as e:
         errors.append(f"Test 4B FAILED: {e}")
         return False, errors
 
-def test_data_consistency() -> Tuple[bool, List[str]]:
+def test_data_consistency() -> tuple[bool, list[str]]:
     """Test 5: Verify dashboard data matches agent_discovery_full.json."""
     errors = []
 
     try:
         # Load agent discovery (using SSOT path - no hardcoding)
         discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, 'r', encoding='utf-8') as f:
+        with open(discovery_path, encoding='utf-8') as f:
             agents = json.load(f)
 
         # Load dashboard data from JS file
@@ -449,7 +474,7 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
             errors.append(f"❌ {COL_HEALTH} mismatch: Dashboard={actual_heal_pct}%, Expected={expected_health}%")
             return False, errors
 
-        print(f"✅ Test 5 PASSED: Dashboard data consistent with agent_discovery_full.json")
+        print("✅ Test 5 PASSED: Dashboard data consistent with agent_discovery_full.json")
         print(f"   Total agents: {actual_total}")
         print(f"   {COL_HEALTH}: {actual_heal_pct}%")
         return True, []
@@ -458,7 +483,7 @@ def test_data_consistency() -> Tuple[bool, List[str]]:
         errors.append(f"❌ Failed to verify data consistency: {e}")
         return False, errors
 
-def test_table_rendering_elements() -> Tuple[bool, List[str]]:
+def test_table_rendering_elements() -> tuple[bool, list[str]]:
     """Test 6: Verify HTML and JS files have table rendering functions.
 
     RCA FIX (2026-01-18): JS files are now checked FIRST, before HTML.
@@ -522,7 +547,7 @@ def test_table_rendering_elements() -> Tuple[bool, List[str]]:
             html_has_functions = all(f'function {func}' in html for func in js_functions_missing)
             if html_has_functions:
                 print(f"   ⚠️  WARNING: Functions {js_functions_missing} found in HTML, not modular JS")
-                print(f"   ⚠️  This is a legacy pattern - consider migrating to js/renderers/")
+                print("   ⚠️  This is a legacy pattern - consider migrating to js/renderers/")
             else:
                 for func in js_functions_missing:
                     errors.append(f"❌ Missing function in JS files: {func}")
@@ -534,7 +559,7 @@ def test_table_rendering_elements() -> Tuple[bool, List[str]]:
                 errors.append(f"❌ Missing HTML element: {elem}")
                 return False, errors
 
-        print(f"✅ Test 6 PASSED: All table rendering elements present")
+        print("✅ Test 6 PASSED: All table rendering elements present")
         print(f"   ✓ JS functions: {', '.join(js_functions_found)}")
         return True, []
 
@@ -582,7 +607,6 @@ def run_all_tests() -> bool:
     print("─" * 70)
 
     # Extract realAgentData from agent_data.js (separate file from dashboard_data.js)
-    import re
     import json
     agent_data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'agent_data.js'
 
@@ -642,7 +666,7 @@ def run_all_tests() -> bool:
 
             if not undefined_found and agents_checked > 0:
                 print(f"✅ Test 7 PASSED: All {agents_checked} agents in {territories_checked} territories have valid drill-down data")
-                print(f"   No 'undefined' values found")
+                print("   No 'undefined' values found")
 
         except json.JSONDecodeError as e:
             errors.append(f"Test 7 FAILED: Could not parse realAgentData: {e}")
@@ -672,7 +696,7 @@ def run_all_tests() -> bool:
     try:
         # Load agents from discovery file (using SSOT path)
         discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, 'r', encoding='utf-8') as f:
+        with open(discovery_path, encoding='utf-8') as f:
             agents = json.load(f)
 
         # Group base agents by layer
@@ -751,7 +775,7 @@ def run_all_tests() -> bool:
             for orphan in orphans[:3]:
                 errors.append(f"  - {orphan}")
         else:
-            print(f"✅ Test 9 PASSED: All agents have proper base class architecture")
+            print("✅ Test 9 PASSED: All agents have proper base class architecture")
 
     except Exception as e:
         errors.append(f"Test 9 FAILED: Could not validate base class architecture: {e}")
@@ -787,7 +811,7 @@ def run_all_tests() -> bool:
             for inc in inconsistencies[:2]:
                 errors.append(f"  - {inc}")
         else:
-            print(f"✅ Test 10 PASSED: All metrics are logically consistent")
+            print("✅ Test 10 PASSED: All metrics are logically consistent")
 
     except Exception as e:
         errors.append(f"Test 10 FAILED: Could not validate metrics: {e}")
@@ -850,7 +874,7 @@ def run_all_tests() -> bool:
                     elif quality_score < 0 or quality_score > 100:
                         errors.append(f"Test 12 FAILED: Invalid Code Quality Score = {quality_score}")
                     else:
-                        print(f"✅ Test 12 PASSED: Table 2 data valid")
+                        print("✅ Test 12 PASSED: Table 2 data valid")
                         print(f"   Typed: {typed_pct}%, Documented: {doc_pct}%, Quality: {quality_score}")
 
                     # Test 12A: Canonical Inheritance % Accuracy (cross-validate with discovery data)
@@ -860,7 +884,7 @@ def run_all_tests() -> bool:
                     tolerance = 1.0  # Allow 1% variance
 
                     if abs(proper_base_pct - expected_proper_base) > tolerance:
-                        errors.append(f"Test 12A FAILED: Canonical Inheritance % mismatch")
+                        errors.append("Test 12A FAILED: Canonical Inheritance % mismatch")
                         errors.append(f"  Expected: {expected_proper_base:.1f}% (from SSOT calculation)")
                         errors.append(f"  Actual: {proper_base_pct}%")
                         errors.append(f"  Difference: {abs(proper_base_pct - expected_proper_base):.1f}%")
@@ -907,7 +931,7 @@ def run_all_tests() -> bool:
                 for err in territory_errors[:3]:  # Show first 3
                     errors.append(f"  - {err}")
             else:
-                print(f"✅ Test 12B PASSED: Territory-level Canonical Inheritance % accurate (sampled 5 territories)")
+                print("✅ Test 12B PASSED: Territory-level Canonical Inheritance % accurate (sampled 5 territories)")
         else:
             errors.append("Test 12B FAILED: Could not extract dashboard data")
 
@@ -963,16 +987,16 @@ def run_all_tests() -> bool:
                 errors.append(f"Test 12C FAILED: {len(table2_issues)} Table 2 functionality gaps")
                 for issue in table2_issues:
                     errors.append(f"  - {issue}")
-                print(f"❌ Test 12C FAILED: Table 2 missing functionality that Table 1 has")
+                print("❌ Test 12C FAILED: Table 2 missing functionality that Table 1 has")
                 for issue in table2_issues:
                     print(f"   - {issue}")
             else:
-                print(f"✅ Test 12C PASSED: Table 2 uses same functions as Table 1")
-                print(f"   ✓ formatDistributionCell for min/max/stddev display")
-                print(f"   ✓ computeDistributionStats for calculations")
-                print(f"   ✓ getGradientBg for color formatting")
-                print(f"   ✓ formatProblemAgentsTooltip for tooltips")
-                print(f"   ✓ metric-cell class for styling")
+                print("✅ Test 12C PASSED: Table 2 uses same functions as Table 1")
+                print("   ✓ formatDistributionCell for min/max/stddev display")
+                print("   ✓ computeDistributionStats for calculations")
+                print("   ✓ getGradientBg for color formatting")
+                print("   ✓ formatProblemAgentsTooltip for tooltips")
+                print("   ✓ metric-cell class for styling")
 
     except Exception as e:
         errors.append(f"Test 12C FAILED: {e}")
@@ -1017,15 +1041,15 @@ def run_all_tests() -> bool:
             errors.append(f"Test 12D FAILED: {len(dist_issues)} distribution stat issues in Table 2")
             for issue in dist_issues:
                 errors.append(f"  - {issue}")
-            print(f"❌ Test 12D FAILED: Table 2 distribution stats incomplete")
+            print("❌ Test 12D FAILED: Table 2 distribution stats incomplete")
             for issue in dist_issues:
                 print(f"   - {issue}")
         else:
-            print(f"✅ Test 12D PASSED: Table 2 shows min/max/stddev for all metrics")
-            print(f"   ✓ typedStats with formatDistributionCell")
-            print(f"   ✓ documentedStats with formatDistributionCell")
-            print(f"   ✓ schemaStats with formatDistributionCell")
-            print(f"   ✓ baseClassStats with formatDistributionCell")
+            print("✅ Test 12D PASSED: Table 2 shows min/max/stddev for all metrics")
+            print("   ✓ typedStats with formatDistributionCell")
+            print("   ✓ documentedStats with formatDistributionCell")
+            print("   ✓ schemaStats with formatDistributionCell")
+            print("   ✓ baseClassStats with formatDistributionCell")
 
     except Exception as e:
         errors.append(f"Test 12D FAILED: {e}")
@@ -1072,14 +1096,14 @@ def run_all_tests() -> bool:
             errors.append(f"Test 12E FAILED: {len(color_issues)} color formatting issues")
             for issue in color_issues:
                 errors.append(f"  - {issue}")
-            print(f"❌ Test 12E FAILED: Table 2 color formatting doesn't match Table 1")
+            print("❌ Test 12E FAILED: Table 2 color formatting doesn't match Table 1")
             for issue in color_issues:
                 print(f"   - {issue}")
         else:
-            print(f"✅ Test 12E PASSED: Table 2 color formatting matches Table 1")
+            print("✅ Test 12E PASSED: Table 2 color formatting matches Table 1")
             print(f"   ✓ Table 1 uses getGradientBg {table1_gradient_count} times")
             print(f"   ✓ Table 2 uses getGradientBg {table2_gradient_count} times")
-            print(f"   ✓ Both tables use conditional background styling")
+            print("   ✓ Both tables use conditional background styling")
 
     except Exception as e:
         errors.append(f"Test 12E FAILED: {e}")
@@ -1124,14 +1148,14 @@ def run_all_tests() -> bool:
             errors.append(f"Test 12F FAILED: {len(tooltip_issues)} tooltip issues")
             for issue in tooltip_issues:
                 errors.append(f"  - {issue}")
-            print(f"❌ Test 12F FAILED: Table 2 tooltips incomplete")
+            print("❌ Test 12F FAILED: Table 2 tooltips incomplete")
             for issue in tooltip_issues:
                 print(f"   - {issue}")
         else:
-            print(f"✅ Test 12F PASSED: Table 2 tooltips match Table 1 functionality")
+            print("✅ Test 12F PASSED: Table 2 tooltips match Table 1 functionality")
             print(f"   ✓ {table2_tooltip_count} tooltips with formatProblemAgentsTooltip")
-            print(f"   ✓ custom-tooltip class for styling")
-            print(f"   ✓ All 4 metrics have tooltips (typed, documented, schema, baseClass)")
+            print("   ✓ custom-tooltip class for styling")
+            print("   ✓ All 4 metrics have tooltips (typed, documented, schema, baseClass)")
 
     except Exception as e:
         errors.append(f"Test 12F FAILED: {e}")
@@ -1186,16 +1210,16 @@ def run_all_tests() -> bool:
             errors.append(f"Test 12G FAILED: {len(stats_100_issues)} issues with 100% stats hiding logic")
             for issue in stats_100_issues:
                 errors.append(f"  - {issue}")
-            print(f"❌ Test 12G FAILED: Stats not properly hidden at 100%")
+            print("❌ Test 12G FAILED: Stats not properly hidden at 100%")
             for issue in stats_100_issues:
                 print(f"   - {issue}")
         else:
-            print(f"✅ Test 12G PASSED: Distribution stats correctly hidden at 100%")
-            print(f"   ✓ Checks stats.count <= 1 (single value)")
-            print(f"   ✓ Checks stats.min === stats.max && stats.min >= 99.9 (identical at 100%)")
-            print(f"   ✓ Shows min/max/stdev for cells < 100% (RCA: Jan 17 2026)")
-            print(f"   ✓ Shows uniform value indicator for non-100% cells")
-            print(f"   ✓ No duplicate function in format-utils.js")
+            print("✅ Test 12G PASSED: Distribution stats correctly hidden at 100%")
+            print("   ✓ Checks stats.count <= 1 (single value)")
+            print("   ✓ Checks stats.min === stats.max && stats.min >= 99.9 (identical at 100%)")
+            print("   ✓ Shows min/max/stdev for cells < 100% (RCA: Jan 17 2026)")
+            print("   ✓ Shows uniform value indicator for non-100% cells")
+            print("   ✓ No duplicate function in format-utils.js")
 
     except Exception as e:
         errors.append(f"Test 12G FAILED: {e}")
@@ -1306,9 +1330,9 @@ def run_all_tests() -> bool:
                 errors.append(f"  - {issue}")
             print(f"\n❌ Test 13 FAILED: {len(footnote_checks)} footnote accuracy issues")
         else:
-            print(f"\n✅ Test 13 PASSED: All footnotes accurate for both Table 1 and Table 2")
-            print(f"   ✓ Table 1: 6 metrics verified (Heal Cap, Invocation, MCP, Test, Complexity, Health)")
-            print(f"   ✓ Table 2: 5 metrics verified (Typed, Documented, Schema, Base Class, Quality Score)")
+            print("\n✅ Test 13 PASSED: All footnotes accurate for both Table 1 and Table 2")
+            print("   ✓ Table 1: 6 metrics verified (Heal Cap, Invocation, MCP, Test, Complexity, Health)")
+            print("   ✓ Table 2: 5 metrics verified (Typed, Documented, Schema, Base Class, Quality Score)")
 
     except Exception as e:
         errors.append(f"Test 13 FAILED: Could not validate footnotes: {e}")
@@ -1325,12 +1349,12 @@ def run_all_tests() -> bool:
 
         if not snapshot_t1.exists():
             errors.append("Test 14 SKIPPED: Snapshot file not found")
-            errors.append(f"  Create baseline: git show HEAD~5:agent_discovery_full.json > agent_discovery_snapshot_t-1.json")
+            errors.append("  Create baseline: git show HEAD~5:agent_discovery_full.json > agent_discovery_snapshot_t-1.json")
         else:
             # Load snapshots
-            with open(snapshot_t1, 'r', encoding='utf-8') as f:
+            with open(snapshot_t1, encoding='utf-8') as f:
                 t_minus_1 = json.load(f)
-            with open(current_t, 'r', encoding='utf-8') as f:
+            with open(current_t, encoding='utf-8') as f:
                 t_current = json.load(f)
 
             # Compare base classes
@@ -1376,7 +1400,7 @@ def run_all_tests() -> bool:
                 for violation in base_violations[:3]:
                     errors.append(f"  - {violation}")
             else:
-                print(f"✅ Test 14 PASSED: Snapshot regression test passed")
+                print("✅ Test 14 PASSED: Snapshot regression test passed")
                 print(f"   All {len(all_layers)} layers have exactly 1 base class")
 
     except Exception as e:
@@ -1396,8 +1420,8 @@ def run_all_tests() -> bool:
     print("Running: Browser Cache & JavaScript Validation")
     print("─" * 70)
 
-    print(f"   ⚠️  Remember to hard refresh browser (Ctrl+Shift+R) after changes")
-    print(f"✅ Test 15 PASSED: Browser cache guidance provided")
+    print("   ⚠️  Remember to hard refresh browser (Ctrl+Shift+R) after changes")
+    print("✅ Test 15 PASSED: Browser cache guidance provided")
 
     # Test 16: File Freshness & Hash Verification
     # Note: File existence is validated in Test 2. This provides freshness info.
@@ -1410,7 +1434,7 @@ def run_all_tests() -> bool:
         mod_time = datetime.fromtimestamp(stat.st_mtime)
         print(f"   File size: {stat.st_size:,} bytes")
         print(f"   Modified: {mod_time.strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"✅ Test 16 PASSED: File freshness verified")
+        print("✅ Test 16 PASSED: File freshness verified")
     except Exception as e:
         print(f"   ⚠️  Could not verify freshness: {e}")
 
@@ -1470,7 +1494,7 @@ def run_all_tests() -> bool:
             for missing in missing_base_classes:
                 errors.append(f"  - {missing}")
         else:
-            print(f"✅ Test 17A PASSED: All expected Base Class territories present in dashboard")
+            print("✅ Test 17A PASSED: All expected Base Class territories present in dashboard")
 
         # Check agent count matches - discovery agents should all be in dashboard
         # Note: Discovery 'territory' field may differ from dashboard computed territories
@@ -1507,10 +1531,10 @@ def run_all_tests() -> bool:
             for invalid in invalid_rows[:5]:
                 errors.append(f"  - {invalid}")
         else:
-            print(f"✅ Test 17C PASSED: All dashboard rows have valid data")
+            print("✅ Test 17C PASSED: All dashboard rows have valid data")
 
         # Summary of visual inspection
-        print(f"\n   📊 VISUAL INSPECTION SUMMARY:")
+        print("\n   📊 VISUAL INSPECTION SUMMARY:")
         print(f"   Dashboard territories: {len(dashboard_territories)}")
         print(f"   Expected Base Classes: {len(expected_base_classes)}")
         print(f"   Base Classes present:  {len([b for b in expected_base_classes if b in dashboard_territories])}")
@@ -1529,7 +1553,7 @@ def run_all_tests() -> bool:
     try:
         # Load discovery data
         discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, 'r', encoding='utf-8') as f:
+        with open(discovery_path, encoding='utf-8') as f:
             agents = json.load(f)
 
         # Calculate expected values from discovery using SSOT functions
@@ -1566,7 +1590,7 @@ def run_all_tests() -> bool:
                 for issue in hardcoded_issues:
                     errors.append(f"  - {issue}")
             else:
-                print(f"✅ Test 18 PASSED: All dashboard values match discovery data (no hardcoding)")
+                print("✅ Test 18 PASSED: All dashboard values match discovery data (no hardcoding)")
                 print(f"   Typed: {dashboard_typed}% (expected {expected_typed}%)")
                 print(f"   Documented: {dashboard_documented}% (expected {expected_documented}%)")
                 print(f"   Schema: {dashboard_schema}% (expected {expected_schema}%)")
@@ -1619,12 +1643,12 @@ def run_all_tests() -> bool:
             for issue in issues:
                 errors.append(f"  - {issue}")
         else:
-            print(f"✅ Test 19 PASSED: Strategic Observations section configured")
-            print(f"   ✓ Section header present")
-            print(f"   ✓ Macro observations container present")
-            print(f"   ✓ Metric observations container present")
+            print("✅ Test 19 PASSED: Strategic Observations section configured")
+            print("   ✓ Section header present")
+            print("   ✓ Macro observations container present")
+            print("   ✓ Metric observations container present")
             if render_function_exists:
-                print(f"   ✓ Render function defined")
+                print("   ✓ Render function defined")
 
     except Exception as e:
         errors.append(f"Test 19 FAILED: Could not validate Strategic Observations: {e}")
@@ -1637,7 +1661,7 @@ def run_all_tests() -> bool:
     try:
         # Load discovery data
         discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, 'r', encoding='utf-8') as f:
+        with open(discovery_path, encoding='utf-8') as f:
             agents = json.load(f)
 
         total_agents = len(agents)
@@ -1695,7 +1719,7 @@ def run_all_tests() -> bool:
     try:
         # Load discovery data
         discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, 'r', encoding='utf-8') as f:
+        with open(discovery_path, encoding='utf-8') as f:
             agents = json.load(f)
 
         # Get dashboard TOTAL row using SSOT helper
@@ -1725,15 +1749,15 @@ def run_all_tests() -> bool:
                 errors.append(f"  Actual: {actual_health:.1f}")
                 errors.append(f"  Simple average: {simple_avg:.1f}")
             elif abs(actual_health - expected_health) > 0.5:
-                errors.append(f"Test 20B FAILED: Health score mismatch")
+                errors.append("Test 20B FAILED: Health score mismatch")
                 errors.append(f"  Expected (SSOT weighted): {expected_health:.1f}")
                 errors.append(f"  Actual: {actual_health:.1f}")
-                errors.append(f"  Formula: (Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15)")
+                errors.append("  Formula: (Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15)")
             else:
-                print(f"✅ Test 20B PASSED: Health score uses correct weighted average")
+                print("✅ Test 20B PASSED: Health score uses correct weighted average")
                 print(f"   Expected (weighted): {expected_health:.1f}")
                 print(f"   Actual: {actual_health:.1f}")
-                print(f"   Formula: Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15")
+                print("   Formula: Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15")
                 print(f"   NOT simple average: {simple_avg:.1f}")
         else:
             errors.append("Test 20B FAILED: Could not find TOTAL row")
@@ -1747,8 +1771,8 @@ def run_all_tests() -> bool:
     print("Running: Detailed Footnote Review")
     print("─" * 70)
 
-    print(f"   ✓ Footnote accuracy validated in Test 13")
-    print(f"✅ Test 21 PASSED: Detailed footnote review complete")
+    print("   ✓ Footnote accuracy validated in Test 13")
+    print("✅ Test 21 PASSED: Detailed footnote review complete")
 
     # Test 22: Comprehensive JavaScript Table Rendering Simulation
     # RCA: Previous bug where "N/A" strings caused JS runtime errors was not caught
@@ -1969,14 +1993,14 @@ def run_all_tests() -> bool:
                 for issue in js_issues[:5]:
                     print(f"   - {issue}")
             else:
-                print(f"✅ Test 22 PASSED: JavaScript table rendering simulation successful")
+                print("✅ Test 22 PASSED: JavaScript table rendering simulation successful")
                 print(f"   ✓ {len(required_functions)} rendering functions present")
-                print(f"   ✓ loadData() orchestrates all render calls")
+                print("   ✓ loadData() orchestrates all render calls")
                 print(f"   ✓ {len(territory_rows)} territory rows + TOTAL row have all required fields")
                 print(f"   ✓ {len(na_rows)} N/A rows (L0) handled correctly")
                 print(f"   ✓ realAgentData present for {len(territory_rows)} territories")
-                print(f"   ✓ All DOM containers present")
-                print(f"   ✓ Table HTML structure verified (<table>, <thead>, <tbody>, <tr>, <td>)")
+                print("   ✓ All DOM containers present")
+                print("   ✓ Table HTML structure verified (<table>, <thead>, <tbody>, <tr>, <td>)")
 
     except Exception as e:
         import traceback
@@ -2018,13 +2042,13 @@ def run_all_tests() -> bool:
                     errors.append(f"Test 23 FAILED: {len(order_issues)} row order issues")
                     for issue in order_issues:
                         errors.append(f"  - {issue}")
-                    print(f"❌ Test 23 FAILED: Dashboard row order incorrect")
+                    print("❌ Test 23 FAILED: Dashboard row order incorrect")
                     for issue in order_issues:
                         print(f"   - {issue}")
                 else:
-                    print(f"✅ Test 23 PASSED: Dashboard row order correct")
-                    print(f"   ✓ First row: TOTAL (summary)")
-                    print(f"   ✓ Sovereign Base Agent present")
+                    print("✅ Test 23 PASSED: Dashboard row order correct")
+                    print("   ✓ First row: TOTAL (summary)")
+                    print("   ✓ Sovereign Base Agent present")
                     print(f"   ✓ Total rows: {len(dashboard_data)}")
 
     except Exception as e:
@@ -2080,7 +2104,7 @@ def run_all_tests() -> bool:
             for issue in tooltip_issues[:5]:
                 print(f"   - {issue}")
         else:
-            print(f"✅ Test 24 PASSED: Tooltip functionality verified")
+            print("✅ Test 24 PASSED: Tooltip functionality verified")
 
     except Exception as e:
         print(f"   ⚠️  Test 24 warning: {e}")
@@ -2155,12 +2179,12 @@ def run_all_tests() -> bool:
             for issue in calc_issues:
                 print(f"   - {issue}")
         else:
-            print(f"✅ Test 25 PASSED: Min/Max/StdDev calculations correctly implemented")
-            print(f"   ✓ computeDistributionStats filters N/A values")
-            print(f"   ✓ Min/Max calculations present")
-            print(f"   ✓ StdDev calculation present")
-            print(f"   ✓ Count tracking present")
-            print(f"   ✓ formatDistributionCell properly formats values")
+            print("✅ Test 25 PASSED: Min/Max/StdDev calculations correctly implemented")
+            print("   ✓ computeDistributionStats filters N/A values")
+            print("   ✓ Min/Max calculations present")
+            print("   ✓ StdDev calculation present")
+            print("   ✓ Count tracking present")
+            print("   ✓ formatDistributionCell properly formats values")
 
     except Exception as e:
         errors.append(f"Test 25 FAILED: {e}")
@@ -2209,15 +2233,15 @@ def run_all_tests() -> bool:
                     errors.append(f"Test 26 FAILED: {len(order_issues)} row order issues")
                     for issue in order_issues[:5]:
                         errors.append(f"  - {issue}")
-                    print(f"❌ Test 26 FAILED: Row order incorrect")
+                    print("❌ Test 26 FAILED: Row order incorrect")
                     print(f"   Actual first 5: {actual_territories[:5]}")
                     for issue in order_issues[:5]:
                         print(f"   - {issue}")
                 else:
-                    print(f"✅ Test 26 PASSED: Row order is correct")
+                    print("✅ Test 26 PASSED: Row order is correct")
                     print(f"   ✓ First row: {actual_territories[0]} (summary)")
-                    print(f"   ✓ Sovereign Base Agent present")
-                    print(f"   ✓ All layers (L0-L6) represented")
+                    print("   ✓ Sovereign Base Agent present")
+                    print("   ✓ All layers (L0-L6) represented")
                     print(f"   ✓ Total territories: {len(actual_territories)}")
             else:
                 errors.append("Test 26 FAILED: Could not find window.dashboardData in dashboard_data.js")
@@ -2268,13 +2292,13 @@ def run_all_tests() -> bool:
         print("   4. Or use incognito/private browsing mode")
 
         if cache_issues:
-            print(f"\n   ⚠️  Potential cache issues detected:")
+            print("\n   ⚠️  Potential cache issues detected:")
             for issue in cache_issues:
                 print(f"      - {issue}")
             # Don't fail test, just warn
-            print(f"✅ Test 27 PASSED (with warnings): Cache-busting instructions provided")
+            print("✅ Test 27 PASSED (with warnings): Cache-busting instructions provided")
         else:
-            print(f"✅ Test 27 PASSED: All files are fresh")
+            print("✅ Test 27 PASSED: All files are fresh")
 
     except Exception as e:
         errors.append(f"Test 27 FAILED: {e}")
@@ -2337,7 +2361,7 @@ def run_all_tests() -> bool:
         if 'meta-learning.css' not in html_content:
             errors.append("Test 28C FAILED: meta-learning.css not included in dashboard")
         else:
-            print(f"✅ Test 28C PASSED: meta-learning.css included")
+            print("✅ Test 28C PASSED: meta-learning.css included")
 
         # Check Phase 5 section headers
         phase5_sections = [
@@ -2863,8 +2887,8 @@ def regenerate_agent_discovery() -> bool:
         return False
 
     try:
-        import sys
         import os
+        import sys
         env = os.environ.copy()
         env["PYTHONPATH"] = str(project_root)
         env["PYTHONIOENCODING"] = "utf-8"
@@ -2920,8 +2944,8 @@ def regenerate_dashboard() -> bool:
         return False
 
     try:
-        import sys
         import os
+        import sys
         env = os.environ.copy()
         env["PYTHONPATH"] = str(project_root)
         env["PYTHONIOENCODING"] = "utf-8"
@@ -2954,7 +2978,7 @@ def regenerate_dashboard() -> bool:
         return False
 
 
-def check_if_stale() -> Tuple[bool, str]:
+def check_if_stale() -> tuple[bool, str]:
     """Check if dashboard is stale and needs regeneration.
 
     RCA FIX (2026-01-18): Enhanced staleness detection to ensure full scan
@@ -3000,7 +3024,7 @@ def check_if_stale() -> Tuple[bool, str]:
         if dashboard_data_path.exists():
             dashboard_age = datetime.now().timestamp() - dashboard_data_path.stat().st_mtime
             if dashboard_age > file_age + 60:  # Dashboard older than discovery by >1 min
-                return True, f"Dashboard data is older than discovery - REGENERATION REQUIRED"
+                return True, "Dashboard data is older than discovery - REGENERATION REQUIRED"
 
         return False, f"Dashboard is current ({discovered_count} agents, {file_age/60:.0f} min old)"
 
@@ -3029,7 +3053,6 @@ def full_regeneration_pipeline() -> bool:
 def check_server_health():
     """Check if dashboard server is healthy and accepting connections."""
     import socket
-    import time
 
     try:
         # Try to connect to server
@@ -3052,7 +3075,7 @@ def check_server_health():
 
                 if time_wait_count > 30:
                     print(f"   ⚠️  WARNING: {time_wait_count} TIME_WAIT connections detected")
-                    print(f"   ⚠️  Server may be overloaded - restart recommended")
+                    print("   ⚠️  Server may be overloaded - restart recommended")
                     return False
                 elif time_wait_count > 20:
                     print(f"   ⚠️  INFO: {time_wait_count} TIME_WAIT connections (acceptable)")
@@ -3062,7 +3085,7 @@ def check_server_health():
                 print(f"   ⚠️  Could not check TIME_WAIT connections: {e}")
                 return True  # Assume healthy if we can't check
         else:
-            print(f"   ❌ Server not responding on port 8765")
+            print("   ❌ Server not responding on port 8765")
             return False
     except Exception as e:
         print(f"   ❌ Health check failed: {e}")
@@ -3071,8 +3094,9 @@ def check_server_health():
 
 def restart_dashboard_server():
     """Stop any running dashboard server and restart it with health checks."""
-    import psutil
     import time
+
+    import psutil
 
     print("\n" + "=" * 70)
     print("🔄 AUTOMATED DASHBOARD SERVER RESTART")
@@ -3100,9 +3124,9 @@ def restart_dashboard_server():
 
     # Start new server in background
     dashboard_dir = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards"
-    print(f"\n   🚀 Starting new server...")
+    print("\n   🚀 Starting new server...")
     print(f"      Directory: {dashboard_dir}")
-    print(f"      Port: 8765")
+    print("      Port: 8765")
 
     try:
         # Start server as background process
@@ -3120,18 +3144,18 @@ def restart_dashboard_server():
         # Check if server is still running
         if server_process.poll() is None:
             print(f"   ✅ Server started successfully (PID {server_process.pid})")
-            print(f"   🌐 Dashboard URL: http://localhost:8765/autonomy_dashboard.html")
+            print("   🌐 Dashboard URL: http://localhost:8765/autonomy_dashboard.html")
 
             # Verify server health
-            print(f"\n   💚 Verifying server health...")
+            print("\n   💚 Verifying server health...")
             if check_server_health():
-                print(f"   ✅ Server is healthy and accepting connections")
+                print("   ✅ Server is healthy and accepting connections")
             else:
-                print(f"   ⚠️  Server health check failed but server is running")
+                print("   ⚠️  Server health check failed but server is running")
 
             return True
         else:
-            print(f"   ❌ Server failed to start")
+            print("   ❌ Server failed to start")
             return False
     except Exception as e:
         print(f"   ❌ Failed to start server: {e}")

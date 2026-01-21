@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 L5 Safety: HealValidatorAgent
 Post-LLM output validation pipeline for healed code.
@@ -26,12 +27,11 @@ Placed in L5_safety/validators per SSOT semantic registry:
 """
 import ast
 import hashlib
+import logging
 import re
 import tempfile
 from difflib import unified_diff
 from pathlib import Path
-from typing import Dict, List, Optional, Set
-import logging
 
 Logger = logging.getLogger(__name__)
 
@@ -85,25 +85,12 @@ BANDIT_HIGH_SEVERITY_PATTERNS = [
     'B607',  # start_process_with_partial_path
 ]
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
     """
@@ -138,7 +125,7 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
         original_code: str,
         healed_code: str,
         file_path: Path
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Validate healed code through multi-stage pipeline.
 
@@ -197,7 +184,7 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
         Logger.info(f"[HealValidatorAgent] ✓ {file_path.name} passed all validation stages")
         return result
 
-    def _validate_syntax(self, code: str, file_path: Path) -> Dict[str, any]:
+    def _validate_syntax(self, code: str, file_path: Path) -> dict[str, any]:
         """Stage 1: Validate Python syntax via AST parsing."""
         try:
             ast.parse(code)
@@ -221,7 +208,7 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
                 "details": {}
             }
 
-    def _validate_dangerous_patterns(self, code: str, file_path: Path) -> Dict[str, any]:
+    def _validate_dangerous_patterns(self, code: str, file_path: Path) -> dict[str, any]:
         """Stage 2: Detect dangerous code patterns via regex."""
         detected_patterns = []
 
@@ -245,7 +232,7 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
 
         return {"valid": True, "reason": ""}
 
-    def _validate_static_analysis(self, code: str, file_path: Path) -> Dict[str, any]:
+    def _validate_static_analysis(self, code: str, file_path: Path) -> dict[str, any]:
         """Stage 3: Run Bandit static analysis (high-Severity checks only)."""
         if not self.bandit_available:
             return {"valid": True, "reason": "Bandit not available"}
@@ -302,7 +289,7 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
             # Don't fail validation if Bandit crashes - fall back to pattern matching
             return {"valid": True, "reason": f"Bandit analysis skipped: {e}"}
 
-    def _validate_diff_sanity(self, original_code: str, healed_code: str, file_path: Path) -> Dict[str, any]:
+    def _validate_diff_sanity(self, original_code: str, healed_code: str, file_path: Path) -> dict[str, any]:
         """Stage 4: Validate diff sanity (no excessive changes or file deletion)."""
         original_lines = original_code.splitlines()
         healed_lines = healed_code.splitlines()

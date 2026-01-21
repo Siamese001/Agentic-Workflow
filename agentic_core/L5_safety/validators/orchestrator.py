@@ -29,7 +29,8 @@ SSOT PRINCIPLE:
 
 from __future__ import annotations
 
-from typing import Dict, Any, List, Optional, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
@@ -49,7 +50,7 @@ class IOrchestrator(Protocol):
     - Documentation of expected behavior
     """
 
-    def run_mission(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    def run_mission(self, context: dict[str, Any]) -> dict[str, Any]:
         """
         Execute a healing/validation mission across agents.
 
@@ -71,7 +72,7 @@ class IOrchestrator(Protocol):
         """
         ...
 
-    def validate_stability(self, result: Dict[str, Any]) -> bool:
+    def validate_stability(self, result: dict[str, Any]) -> bool:
         """
         Validate whether the mission result indicates a stable repository.
 
@@ -108,7 +109,7 @@ class IHealable(Protocol):
         dry_run: bool = True,
         execute: bool = False,
         **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Heal repository issues within this agent's domain.
 

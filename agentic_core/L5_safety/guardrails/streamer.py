@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L5 Streamer - Live Reasoning Broadcast System
 
@@ -18,10 +19,10 @@ import logging
 import re
 import sys
 import threading
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set
+from typing import Any
+
 if sys.platform == 'win32':
     sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
 Logger: Any = logging.getLogger(__name__)
@@ -51,13 +52,13 @@ class L5Streamer:
         self.stream_dir = Path(stream_dir)
         self.log_path = self.stream_dir / 'live_stream.jsonl'
         self.stream_queue: asyncio.Queue = asyncio.Queue()
-        self.stream_task: Optional[asyncio.Task] = None
+        self.stream_task: asyncio.Task | None = None
         self._streamer_initialized: bool = False
         self._current_agent: str = 'System'
-        self._websocket_server: Optional[Any] = None
-        self._websocket_clients: Set[WebSocketServerProtocol] = set()
-        self._websocket_task: Optional[threading.Thread] = None
-        self.signals: Set[str] = set()
+        self._websocket_server: Any | None = None
+        self._websocket_clients: set[WebSocketServerProtocol] = set()
+        self._websocket_task: threading.Thread | None = None
+        self.signals: set[str] = set()
         LOGGER.info(f'L5Streamer initialized with output: {self.log_path}')
 
     async def start_streamer(self) -> Any:
@@ -112,7 +113,7 @@ class L5Streamer:
                 LOGGER.error(f'WebSocket client error: {e}')
             finally:
                 self._websocket_clients.discard(websocket)
-                LOGGER.info(f'WebSocket client disconnected')
+                LOGGER.info('WebSocket client disconnected')
 
         async def server_main():
             """Main WebSocket server coroutine."""
@@ -203,7 +204,7 @@ class L5Streamer:
         self._websocket_clients.clear()
         self._streamer_initialized = False
         LOGGER.info('L5 Streamer stopped')
-_l5_streamer: Optional[L5Streamer] = None
+_l5_streamer: L5Streamer | None = None
 
 def get_l5_streamer(stream_dir: str='observability/audit') -> L5Streamer:
     """Get or create the global L5 streamer instance."""

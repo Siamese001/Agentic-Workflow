@@ -24,29 +24,22 @@ SSOT Consolidation (Jan 20, 2026):
 """
 from __future__ import annotations
 
-from ast import parse, unparse
 import ast
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, TYPE_CHECKING, TypedDict
+import asyncio
 import logging
 import time
-import asyncio
+from ast import parse, unparse
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, TypedDict
 
 # Lazy import to break circular dependency
 if TYPE_CHECKING:
-    from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+    from agentic_core.schemas.models.anomaly_report import AnomalyReport
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    get_validated_project_root,
-    safe_path_join,
-    validate_path_within_project
-)
 
 # Import instructional injection patterns for all agents
 from agentic_core.utils.core_extensions.instructional_injection_mixin import (
     InstructionalInjectionMixin,
-    INSTRUCTIONAL_PATTERNS,
-    InjectionLayer,
 )
 
 Logger = logging.getLogger(__name__)
@@ -108,13 +101,13 @@ class HealerMixin(InstructionalInjectionMixin):
         """
         super().__init__(**kwargs)
         # Private prefix _healer_ to avoid attribute collisions
-        self._healer_cache: Dict[str, Tuple[float, bool]] = {}  # {type: (ts, success)}
+        self._healer_cache: dict[str, tuple[float, bool]] = {}  # {type: (ts, success)}
         self._healer_metrics = {"count": 0, "total_time": 0.0, "success_count": 0}
         self._healer_cache_ttl = 300  # 5min suppression (configurable)
         self._healer_max_depth = 5
         self._healer_current_depth = 0
 
-    def heal(self, violation: Dict[str, Any], anomaly: Optional["AnomalyReport"] = None) -> bool:
+    def heal(self, violation: dict[str, Any], anomaly: AnomalyReport | None = None) -> bool:
         """
         Autonomous repair with rollback verification.
 
@@ -255,11 +248,11 @@ class HealerMixin(InstructionalInjectionMixin):
                     "success_rate": self._healer_metrics["success_count"] / self._healer_metrics["count"]
                 })
 
-    async def heal_async(self, violation: Dict[str, Any], anomaly: Optional["AnomalyReport"] = None) -> bool:
+    async def heal_async(self, violation: dict[str, Any], anomaly: AnomalyReport | None = None) -> bool:
         """Non-blocking heal for orchestrators/state agents."""
         return await asyncio.to_thread(self.heal, violation, anomaly)
 
-    def get_healing_metrics(self) -> Dict[str, Any]:
+    def get_healing_metrics(self) -> dict[str, Any]:
         """Zero-loss observable — for diagnostics/metrics agents."""
         count = self._healer_metrics["count"]
         return {
@@ -268,12 +261,12 @@ class HealerMixin(InstructionalInjectionMixin):
             "success_rate": (self._healer_metrics["success_count"] / count) if count else 1.0
         }
 
-    def _perform_healing(self, anomaly: "AnomalyReport") -> bool:
+    def _perform_healing(self, anomaly: AnomalyReport) -> bool:
         """Override in subclasses for anomaly-specific healing logic."""
         Logger.debug(f"[HEALING] {self.__class__.__name__}: No _perform_healing implementation")
         return False
 
-    def apply_fix(self, ast_tree: Any, violation: Dict[str, Any]) -> Optional[Any]:
+    def apply_fix(self, ast_tree: Any, violation: dict[str, Any]) -> Any | None:
         """
         Override: Implement specific transformer logic.
 
@@ -296,7 +289,7 @@ class HealerMixin(InstructionalInjectionMixin):
         """
         return self._healing_enabled
 
-    def _log_healing_success(self, violation: Dict[str, Any]) -> None:
+    def _log_healing_success(self, violation: dict[str, Any]) -> None:
         """Log successful healing for observability."""
         class_name = violation.get('class_name', 'Unknown')
         path = violation.get('path', 'Unknown')
@@ -320,7 +313,7 @@ class HealerMixin(InstructionalInjectionMixin):
         """Reset healing budget for new session."""
         self._healing_count = 0
 
-    def _normalize_result(self, result: Dict[str, Any]) -> HealResult:
+    def _normalize_result(self, result: dict[str, Any]) -> HealResult:
         """
         ZERO-LOSS NORMALIZATION:
         Maps legacy keys (violations, fixed, renamed) to the standard HealResult format
@@ -354,7 +347,7 @@ class HealerMixin(InstructionalInjectionMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None,
+        _call_path: set[str] | None = None,
         **kwargs  # Essential for dynamic orchestrator calls
     ) -> HealResult:
         """
@@ -431,8 +424,8 @@ class HealerMixin(InstructionalInjectionMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """Non-blocking heal_repository for orchestrators/async agents."""
         return await asyncio.to_thread(
             self.heal_repository, dry_run, execute, depth, max_depth, _call_path

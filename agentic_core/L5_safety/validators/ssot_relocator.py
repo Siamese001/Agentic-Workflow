@@ -14,28 +14,17 @@ Provides automated remediation for:
 """
 
 from __future__ import annotations
-import shutil
-import logging
-from pathlib import Path
-from typing import List, Dict, Any, Optional
-from datetime import datetime
-from dataclasses import dataclass
 
+import logging
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
+    ARCHIVES_DIR,
 )
 
 # Configure logging
@@ -50,7 +39,7 @@ class RelocationResult:
     target: str
     success: bool
     action: str  # 'MOVED', 'ARCHIVED', 'FLATTENED', 'SKIPPED'
-    error: Optional[str] = None
+    error: str | None = None
     timestamp: str = ""
 
     def __post_init__(self):
@@ -65,7 +54,7 @@ class EnforcementReport:
     successful: int = 0
     failed: int = 0
     skipped: int = 0
-    results: List[RelocationResult] = None
+    results: list[RelocationResult] = None
 
     def __post_init__(self):
         if self.results is None:
@@ -93,7 +82,7 @@ class SSOTRelocator:
         self,
         project_root: Path,
         dry_run: bool = True,
-        log_file: Optional[Path] = None
+        log_file: Path | None = None
     ):
         """
         Initialize SSOT relocator.
@@ -127,7 +116,10 @@ class SSOTRelocator:
         if not dry_run:
             self.archive_root.mkdir(parents=True, exist_ok=True)
 
-        # Approval flags
+        # Initialize ArchivalGatekeeper for safe file operations
+        self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
+
+        # Approval flags (deprecated - now handled by ArchivalGatekeeper)
         self._skip_all_moves = False
         self._approve_all_moves = False
 
@@ -161,7 +153,7 @@ class SSOTRelocator:
             rel_target = target
 
         print(f"\n{'='*60}")
-        print(f"MOVE APPROVAL REQUIRED")
+        print("MOVE APPROVAL REQUIRED")
         print(f"{'='*60}")
         print(f"Source: {rel_source}")
         print(f"Target: {rel_target}")
@@ -184,7 +176,7 @@ class SSOTRelocator:
             print("\nMove cancelled by user")
             return False
 
-    def relocate_orphans(self, drift_violations: List[Any]) -> EnforcementReport:
+    def relocate_orphans(self, drift_violations: list[Any]) -> EnforcementReport:
         """
         Move orphaned folders (drift violations) to archives.
 
@@ -229,7 +221,7 @@ class SSOTRelocator:
 
         return report
 
-    def enforce_hierarchy(self, hierarchy_violations: List[Any]) -> EnforcementReport:
+    def enforce_hierarchy(self, hierarchy_violations: list[Any]) -> EnforcementReport:
         """
         Flatten folders exceeding depth limits.
 
@@ -293,7 +285,7 @@ class SSOTRelocator:
 
     def relocate_agents(
         self,
-        gravity_violations: List[Any]
+        gravity_violations: list[Any]
     ) -> EnforcementReport:
         """
         Move agents to their correct layers (gravity violation remediation).
@@ -384,20 +376,26 @@ class SSOTRelocator:
             logger.info(f"[DRY-RUN] Would {action.lower()}: {result.source} → {result.target}")
         else:
             try:
-                # SSOT COMPLIANCE: All moves require user approval
-                if not self._prompt_user_for_move_approval(source, target, f"{action} operation"):
+                # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
+                gk_result = self.gatekeeper.safe_move(
+                    source,
+                    target,
+                    "SSOTRelocator",
+                    f"SSOT Reconciliation: {action}"
+                )
+
+                if gk_result.success:
+                    result.success = True
+                    logger.info(f"{action}: {result.source} → {result.target}")
+                    # Clean up empty parent directories
+                    self._cleanup_empty_dirs(source.parent)
+                elif gk_result.approval_status == "DENIED":
                     result.action = 'SKIPPED'
                     result.error = "User declined move"
                     logger.info(f"Skipped {action.lower()} of {result.source} - user declined")
-                    return result
-
-                target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.move(str(source), str(target))
-                result.success = True
-                logger.info(f"{action}: {result.source} → {result.target}")
-
-                # Clean up empty parent directories
-                self._cleanup_empty_dirs(source.parent)
+                else:
+                    result.error = gk_result.error
+                    logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
             except Exception as e:
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
@@ -446,17 +444,24 @@ class SSOTRelocator:
             logger.info(f"[DRY-RUN] Would {action.lower()}: {result.source} → {result.target}")
         else:
             try:
-                # SSOT COMPLIANCE: All moves require user approval
-                if not self._prompt_user_for_move_approval(source, target, f"{action} folder operation"):
+                # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
+                gk_result = self.gatekeeper.safe_move(
+                    source,
+                    target,
+                    "SSOTRelocator",
+                    f"SSOT Reconciliation: {action} folder"
+                )
+
+                if gk_result.success:
+                    result.success = True
+                    logger.info(f"{action}: {result.source} → {result.target}")
+                elif gk_result.approval_status == "DENIED":
                     result.action = 'SKIPPED'
                     result.error = "User declined move"
                     logger.info(f"Skipped {action.lower()} of {result.source} - user declined")
-                    return result
-
-                target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.move(str(source), str(target))
-                result.success = True
-                logger.info(f"{action}: {result.source} → {result.target}")
+                else:
+                    result.error = gk_result.error
+                    logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
             except Exception as e:
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
@@ -499,18 +504,11 @@ class SSOTRelocator:
             logger.info(f"[DRY-RUN] Would flatten: {result.source} -> {result.target}")
         else:
             try:
-                # SSOT COMPLIANCE: All moves require user approval
-                if not self._prompt_user_for_move_approval(source, target, "Flatten folder operation"):
-                    result.action = 'SKIPPED'
-                    result.error = "User declined move"
-                    logger.info(f"Skipped flatten of {result.source} - user declined")
-                    return result
-
                 target.mkdir(parents=True, exist_ok=True)
 
                 # Move all files from source to target
                 # Final True 20: Use ssot_discovery instead of rglob
-                from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+                from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
                 all_items = list(get_python_files(source)) + list(get_data_files(source))
                 for item in all_items:
                     if item.is_file():
@@ -519,7 +517,18 @@ class SSOTRelocator:
 
                         if not target_file.exists():
                             target_file.parent.mkdir(parents=True, exist_ok=True)
-                            shutil.move(str(item), str(target_file))
+                            # DELEGATION: Use ArchivalGatekeeper for safe move
+                            gk_result = self.gatekeeper.safe_move(
+                                item,
+                                target_file,
+                                "SSOTRelocator",
+                                "SSOT Reconciliation: Flatten folder"
+                            )
+                            if not gk_result.success and gk_result.approval_status == "DENIED":
+                                result.action = 'SKIPPED'
+                                result.error = "User declined move"
+                                logger.info(f"Skipped flatten of {result.source} - user declined")
+                                return result
 
                 # Remove empty source folder
                 if source.exists() and not any(source.iterdir()):

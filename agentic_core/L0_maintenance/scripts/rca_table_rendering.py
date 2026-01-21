@@ -6,10 +6,13 @@ Compare mock data structure vs real data structure to identify mismatch
 """
 import json
 import re
-from pathlib import Path
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
+)
+
 
 def rca_table_rendering():
     """Root cause analysis for table rendering failure."""
@@ -71,12 +74,12 @@ def rca_table_rendering():
 
     if in_dash_not_real:
         print(f"\n   ❌ MISMATCH: {len(in_dash_not_real)} territories in dashboardData have NO realAgentData:")
-        for name in sorted(list(in_dash_not_real))[:10]:
+        for name in sorted(in_dash_not_real)[:10]:
             print(f"      - '{name}'")
 
     if in_real_not_dash:
         print(f"\n   ⚠️  EXTRA: {len(in_real_not_dash)} territories in realAgentData not in dashboardData:")
-        for name in sorted(list(in_real_not_dash))[:10]:
+        for name in sorted(in_real_not_dash)[:10]:
             print(f"      - '{name}'")
 
     # Check structure of realAgentData
@@ -93,7 +96,7 @@ def rca_table_rendering():
             agent = sample_data['agents'][0]
             print(f"   Agent keys: {list(agent.keys())}")
     else:
-        print(f"   ❌ Missing 'agents' array")
+        print("   ❌ Missing 'agents' array")
 
     # Check rendering function expectations
     print("\n7. Checking rendering function expectations:")
@@ -121,8 +124,8 @@ def rca_table_rendering():
         print("\n   SOLUTION:")
         print("   - Territory names in dashboardData MUST match realAgentData keys")
         print("   - Regenerate dashboard to ensure name consistency")
-        print(f"\n   Example mismatches:")
-        for name in sorted(list(in_dash_not_real))[:5]:
+        print("\n   Example mismatches:")
+        for name in sorted(in_dash_not_real)[:5]:
             # Find closest match in realAgentData
             closest = None
             for real_name in real_territories:

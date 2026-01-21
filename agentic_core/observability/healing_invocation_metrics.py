@@ -6,29 +6,13 @@ Measures healing invocation percentage and validates chain activation.
 Tracks healing calls vs total agent activations to confirm >95% invocation.
 """
 
-import time
 import json
-from pathlib import Path
-from typing import Dict, Optional
 from datetime import datetime
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 class HealingMetricsCollector:
@@ -232,7 +216,7 @@ Phase 5.3 metrics validation complete.
         print(f"Healing Calls: {self.counters['healing_calls']}")
         print(f"Agent Activations: {self.counters['agent_activations']}")
         print(f"Invocation Percentage: {invocation_pct:.1f}%")
-        print(f"Target: >95%")
+        print("Target: >95%")
         print(f"Status: {'✓ TARGET MET' if invocation_pct >= 95 else '⚠ BELOW TARGET'}")
         print()
         print(f"Successful Chains: {self.counters['successful_chains']}")

@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 """
 Test Protocol: Key 42 Subject
 """
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 
 def operation_0() -> Any:
     """Brief description of functionality and purpose."""

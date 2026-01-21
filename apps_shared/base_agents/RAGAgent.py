@@ -3,16 +3,16 @@
 import asyncio
 import json
 import uuid
-from typing import Any, Dict, List
+from typing import Any
 
+from agent_tools_v10_7 import BM25SearchTool, ChromaDBSearchTool, HyDETool
 from core_v10_7 import (
     A2AMessage,
     BaseAgent,
     PydanticSchemaError,
-    track_metrics,
     _format_prompt_with_defaults,
+    track_metrics,
 )
-from agent_tools_v10_7 import HyDETool, ChromaDBSearchTool, BM25SearchTool
 
 
 class RAG_SearchAgent(BaseAgent):
@@ -32,7 +32,7 @@ class RAG_SearchAgent(BaseAgent):
 
     async def _ingest_resume_to_chroma_async(
         self,
-        resume_experience: List[Dict[str, Any]],
+        resume_experience: list[dict[str, Any]],
         workflow_id: str,
     ) -> None:
         self.log_info(
@@ -43,9 +43,9 @@ class RAG_SearchAgent(BaseAgent):
                 name=self.collection_name,
                 embedding_function=self.embedding_function,
             )
-            documents: List[str] = []
-            metadatas: List[Dict[str, Any]] = []
-            ids: List[str] = []
+            documents: list[str] = []
+            metadatas: list[dict[str, Any]] = []
+            ids: list[str] = []
             for exp in resume_experience:
                 for bullet in exp.get("bullet_pool", []):
                     documents.append(bullet)
@@ -70,10 +70,10 @@ class RAG_SearchAgent(BaseAgent):
             self.log_error(f"ChromaDB ingestion failed: {exc}")
 
     def _build_bm25_corpus(
-        self, resume_experience: List[Dict[str, Any]]
-    ) -> tuple[list[str], list[Dict[str, Any]]]:
-        corpus_text: List[str] = []
-        corpus_metadata: List[Dict[str, Any]] = []
+        self, resume_experience: list[dict[str, Any]]
+    ) -> tuple[list[str], list[dict[str, Any]]]:
+        corpus_text: list[str] = []
+        corpus_metadata: list[dict[str, Any]] = []
         for exp in resume_experience:
             doc = (
                 f"{exp.get('title')} {exp.get('company')} "
@@ -83,8 +83,8 @@ class RAG_SearchAgent(BaseAgent):
             corpus_metadata.append(exp)
         return corpus_text, corpus_metadata
 
-    def _merge_and_deduplicate(self, all_results: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
-        merged: Dict[str, Dict[str, Any]] = {}
+    def _merge_and_deduplicate(self, all_results: list[list[dict[str, Any]]]) -> list[dict[str, Any]]:
+        merged: dict[str, dict[str, Any]] = {}
         for result_list in all_results:
             for item in result_list:
                 key = f"{item.get('company')}_{item.get('title')}"
@@ -92,8 +92,8 @@ class RAG_SearchAgent(BaseAgent):
         return list(merged.values())
 
     async def rerank_results(
-        self, query: str, candidates: List[Dict[str, Any]], client: Any
-    ) -> List[Dict[str, Any]]:
+        self, query: str, candidates: list[dict[str, Any]], client: Any
+    ) -> list[dict[str, Any]]:
         self.log_info(f"Reranking {len(candidates)} hybrid candidates...")
         prompt_template = self.prompt_manager.get_template("rerank_results")
 
@@ -124,7 +124,7 @@ class RAG_SearchAgent(BaseAgent):
         return ranked
 
     @track_metrics("run_agentic_rag")
-    async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    async def run_async(self, state: dict[str, Any]) -> dict[str, Any]:
         self.log_info("Running Agentic RAG Conductor (v10.7)...")
 
         workflow_id = state["metadata"]["workflow_id"]
@@ -160,7 +160,7 @@ class RAG_SearchAgent(BaseAgent):
 
         messages = [{"role": "user", "content": react_prompt_template}]
         current_query = query
-        all_tool_results: List[List[Dict[str, Any]]] = []
+        all_tool_results: list[list[dict[str, Any]]] = []
 
         for step in range(max_steps):
             response = await client.chat_completion_async(

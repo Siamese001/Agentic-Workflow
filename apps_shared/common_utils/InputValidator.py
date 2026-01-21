@@ -8,12 +8,12 @@ import json
 import logging
 import re
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Type, Union, get_type_hints
-from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
+
 from pydantic import BaseModel, ValidationError, validator
-import math
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +39,14 @@ class ValidationRule:
     name: str
     validation_type: ValidationType
     required: bool = True
-    min_length: Optional[int] = None
-    max_length: Optional[int] = None
-    min_value: Optional[Union[int, float]] = None
-    max_value: Optional[Union[int, float]] = None
-    pattern: Optional[str] = None
-    allowed_values: Optional[List[Any]] = None
-    schema: Optional[Dict[str, Any]] = None
-    custom_validator: Optional[callable] = None
+    min_length: int | None = None
+    max_length: int | None = None
+    min_value: int | float | None = None
+    max_value: int | float | None = None
+    pattern: str | None = None
+    allowed_values: list[Any] | None = None
+    schema: dict[str, Any] | None = None
+    custom_validator: callable | None = None
     sanitize: bool = True
 
 
@@ -77,8 +77,8 @@ class InputValidator:
             name: Validator name for logging
         """
         self.name = name
-        self._rules: Dict[str, ValidationRule] = {}
-        self._schemas: Dict[str, Dict[str, Any]] = {}
+        self._rules: dict[str, ValidationRule] = {}
+        self._schemas: dict[str, dict[str, Any]] = {}
 
         logger.debug(f"Initialized InputValidator: {name}")
 
@@ -92,7 +92,7 @@ class InputValidator:
         self._rules[field] = rule
         logger.debug(f"Added validation rule for field: {field}")
 
-    def add_schema(self, schema_name: str, schema: Dict[str, Any]) -> None:
+    def add_schema(self, schema_name: str, schema: dict[str, Any]) -> None:
         """Add a JSON schema.
 
         Args:
@@ -102,7 +102,7 @@ class InputValidator:
         self._schemas[schema_name] = schema
         logger.debug(f"Added schema: {schema_name}")
 
-    def validate(self, data: Dict[str, Any], strict: bool = True) -> Dict[str, Any]:
+    def validate(self, data: dict[str, Any], strict: bool = True) -> dict[str, Any]:
         """Validate input data.
 
         Args:
@@ -293,7 +293,7 @@ class InputValidator:
         except (ValueError, TypeError, json.JSONDecodeError, ET.ParseError) as e:
             raise InputValidationError("type", f"Invalid type conversion: {e}")
 
-    def _validate_json_schema(self, value: Any, schema: Dict[str, Any]) -> None:
+    def _validate_json_schema(self, value: Any, schema: dict[str, Any]) -> None:
         """Validate JSON against schema.
 
         Args:
@@ -327,7 +327,7 @@ class InputValidator:
                     validator.add_rule(prop, rule)
                     validator.validate({prop: value[prop]}, strict=False)
 
-    def _validate_dict_schema(self, value: Dict[str, Any], schema: Dict[str, Any]) -> None:
+    def _validate_dict_schema(self, value: dict[str, Any], schema: dict[str, Any]) -> None:
         """Validate dictionary against schema.
 
         Args:
@@ -344,7 +344,7 @@ class InputValidator:
                 if expected_type and not isinstance(value[key], expected_type):
                     raise InputValidationError(key, f"Expected {expected_type.__name__}")
 
-    def _get_validation_type_from_schema(self, schema: Dict[str, Any]) -> ValidationType:
+    def _get_validation_type_from_schema(self, schema: dict[str, Any]) -> ValidationType:
         """Get validation type from schema.
 
         Args:
@@ -486,7 +486,7 @@ class ValidatedInput(BaseModel):
         return v
 
 
-def validate_with_pydantic(data: Dict[str, Any], model_class: Type[ValidatedInput]) -> ValidatedInput:
+def validate_with_pydantic(data: dict[str, Any], model_class: type[ValidatedInput]) -> ValidatedInput:
     """Validate data using Pydantic model.
 
     Args:

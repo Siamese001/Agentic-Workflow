@@ -5,11 +5,11 @@ including validation, environment management, version control, and deployment st
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -44,11 +44,11 @@ class ConfigDefinition:
     name: str
     format: ConfigFormat
     environment: ConfigEnvironment
-    content: Dict[str, Any]
+    content: dict[str, Any]
     version: str = "1.0.0"
-    namespace: Optional[str] = None
-    description: Optional[str] = None
-    tags: List[str] = field(default_factory=list)
+    namespace: str | None = None
+    description: str | None = None
+    tags: list[str] = field(default_factory=list)
 
 @dataclass
 class ConfigValidationRule:
@@ -64,11 +64,11 @@ class ConfigValidationRule:
 class DeploymentPlan:
     """Plan for configuration deployment."""
     strategy: DeploymentStrategy
-    target_environments: List[ConfigEnvironment]
+    target_environments: list[ConfigEnvironment]
     rollout_percentage: float = 100.0
-    validation_steps: List[str] = field(default_factory=list)
-    rollback_plan: Optional[str] = None
-    dependencies: List[str] = field(default_factory=list)
+    validation_steps: list[str] = field(default_factory=list)
+    rollback_plan: str | None = None
+    dependencies: list[str] = field(default_factory=list)
 
 @dataclass
 class ConfigPlanningConfig:
@@ -84,22 +84,22 @@ class ConfigPlanningConfig:
 class ConfigPlanningResult:
     """Result of config planning orchestration."""
     success: bool
-    validated_configs: List[ConfigDefinition] = field(default_factory=list)
-    deployment_plan: Optional[DeploymentPlan] = None
-    validation_errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    validated_configs: list[ConfigDefinition] = field(default_factory=list)
+    deployment_plan: DeploymentPlan | None = None
+    validation_errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 class ConfigPlanningOrchestrator:
     """Orchestrator for planning configuration operations."""
 
-    def __init__(self, config: Optional[ConfigPlanningConfig] = None):
+    def __init__(self, config: ConfigPlanningConfig | None = None):
         self.config = config or ConfigPlanningConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
-    def execute(self, config_request: Dict[str, Any]) -> ConfigPlanningResult:
+    def execute(self, config_request: dict[str, Any]) -> ConfigPlanningResult:
         """Execute the config planning orchestration.
 
         Args:
@@ -152,7 +152,7 @@ class ConfigPlanningOrchestrator:
                 }
             )
 
-    def _validate_request(self, request: Dict[str, Any]) -> None:
+    def _validate_request(self, request: dict[str, Any]) -> None:
         """Validate config planning request."""
         if not request:
             raise ValueError("Config request cannot be empty")
@@ -163,7 +163,7 @@ class ConfigPlanningOrchestrator:
         if "environment" not in request:
             raise ValueError("Target environment is required in config request")
 
-    def _validate_configs(self, request: Dict[str, Any]) -> List[ConfigDefinition]:
+    def _validate_configs(self, request: dict[str, Any]) -> list[ConfigDefinition]:
         """Validate and parse configurations from request."""
         configs = []
         raw_configs = request.get("configs", [])
@@ -199,7 +199,7 @@ class ConfigPlanningOrchestrator:
 
         return configs
 
-    def _create_deployment_plan(self, request: Dict[str, Any], configs: List[ConfigDefinition]) -> Optional[DeploymentPlan]:
+    def _create_deployment_plan(self, request: dict[str, Any], configs: list[ConfigDefinition]) -> DeploymentPlan | None:
         """Create deployment plan for configurations."""
         if not configs:
             return None
@@ -245,7 +245,7 @@ class ConfigPlanningOrchestrator:
             dependencies=deployment_config.get("dependencies", [])
         )
 
-    def _collect_validation_errors(self, request: Dict[str, Any]) -> List[str]:
+    def _collect_validation_errors(self, request: dict[str, Any]) -> list[str]:
         """Collect validation errors from configurations."""
         errors = []
         configs = request.get("configs", [])
@@ -286,10 +286,10 @@ def create_config_planning_orchestrator(
 def plan_config_deployment(
     service: str,
     environment: str,
-    configs: List[Dict[str, Any]],
-    deployment: Optional[Dict[str, Any]] = None,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    configs: list[dict[str, Any]],
+    deployment: dict[str, Any] | None = None,
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Plan configuration deployment from simple parameters.
 
     Args:

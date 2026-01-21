@@ -1,25 +1,40 @@
 from __future__ import annotations
+
 """
 Tool Registry - Type-Safe FunctionDeclaration Generation for Gemini 2.5/3.0
 Automatically generates google.genai.types.FunctionDeclaration from Pydantic models.
 """
-from typing import Any, Callable, Dict, List, Optional, Protocol
+from collections.abc import Callable
+from typing import Any
+
 from pydantic import BaseModel
+
 try:
     from google.genai import types
     GENAI_AVAILABLE: Any = True
 except ImportError:
     GENAI_AVAILABLE: Any = False
     types: Any = None
-from agentic_core.L2_execution.ToolRegistry.definitions import CreateDirectoryArgs, DeleteFileArgs, ExecuteCommandArgs, ListFilesArgs, MoveFileArgs, ReadFileArgs, WriteFileArgs
+from agentic_core.L2_execution.ToolRegistry.definitions import (
+    CreateDirectoryArgs,
+    DeleteFileArgs,
+    ExecuteCommandArgs,
+    ListFilesArgs,
+    MoveFileArgs,
+    ReadFileArgs,
+    WriteFileArgs,
+)
 from agentic_core.L2_execution.ToolRegistry.execution import execute_command
-from agentic_core.L5_safety.validators.filesystem import create_directory, delete_file, list_files, move_file, read_file, write_file
+from agentic_core.L5_safety.validators.filesystem import (
+    create_directory,
+    delete_file,
+    list_files,
+    move_file,
+    read_file,
+    write_file,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 class ToolRegistry:
@@ -29,7 +44,7 @@ class ToolRegistry:
     """
 
     def __init__(self):
-        self.tools: Dict[str, Dict[str, Any]] = {}
+        self.tools: dict[str, dict[str, Any]] = {}
         self._register_default_tools()
 
     def _register_default_tools(self):
@@ -54,7 +69,7 @@ class ToolRegistry:
         """
         self.tools[name] = {'description': description, 'args_model': args_model, 'function': function, 'schema': args_model.schema()}
 
-    def get_function_declarations(self) -> List:
+    def get_function_declarations(self) -> list:
         """
         Generate google.genai.types.FunctionDeclaration for all registered tools.
 
@@ -83,7 +98,7 @@ class ToolRegistry:
             declarations.append(declaration)
         return declarations
 
-    def _convert_type(self, pydantic_type: Optional[str]) -> str:
+    def _convert_type(self, pydantic_type: str | None) -> str:
         """
         Convert Pydantic type to JSON Schema type.
 
@@ -98,7 +113,7 @@ class ToolRegistry:
         type_mapping = {'string': 'string', 'integer': 'integer', 'number': 'number', 'boolean': 'boolean', 'array': 'array', 'object': 'object'}
         return type_mapping.get(pydantic_type, 'string')
 
-    def execute_tool(self, name: str, args: Dict[str, Any], **kwargs) -> Any:
+    def execute_tool(self, name: str, args: dict[str, Any], **kwargs) -> Any:
         """
         Execute a registered tool with validated arguments.
 
@@ -122,14 +137,14 @@ class ToolRegistry:
         validated_args: Any = args_model(**args)
         return function(validated_args, **kwargs)
 
-    def get_tool_names(self) -> List[str]:
+    def get_tool_names(self) -> list[str]:
         """Get list of registered tool names."""
         return list(self.tools.keys())
 
-    def get_tool_info(self, name: str) -> Optional[Dict[str, Any]]:
+    def get_tool_info(self, name: str) -> dict[str, Any] | None:
         """Get information about a specific tool."""
         return self.tools.get(name)
-_global_registry: Optional[ToolRegistry] = None
+_global_registry: ToolRegistry | None = None
 
 def create_tool_registry() -> ToolRegistry:
     """
@@ -143,7 +158,7 @@ def create_tool_registry() -> ToolRegistry:
         _global_registry = ToolRegistry()
     return _global_registry
 
-def get_function_declarations() -> List:
+def get_function_declarations() -> list:
     """
     Get FunctionDeclarations for all registered tools.
 
@@ -153,7 +168,7 @@ def get_function_declarations() -> List:
     registry: Any = create_tool_registry()
     return registry.get_function_declarations()
 
-def execute_tool_call(name: str, args: Dict[str, Any], **kwargs) -> Any:
+def execute_tool_call(name: str, args: dict[str, Any], **kwargs) -> Any:
     """
     Execute a tool call from the global registry.
 

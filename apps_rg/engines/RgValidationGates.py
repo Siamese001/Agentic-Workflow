@@ -6,8 +6,6 @@ Ported from: archives/legacy_resume_gen/Job Workflow - JSON/Job_Workflow_v61.27.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Union
-import scripts.validation.check_canonical_structure
 
 
 class GateDecision(Enum):
@@ -37,8 +35,8 @@ class GateResult:
     decision: GateDecision
     Severity: GateSeverity
     message: str
-    details: Dict[str, object] = field(default_factory=dict)
-    violations: List[str] = field(default_factory=list)
+    details: dict[str, object] = field(default_factory=dict)
+    violations: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -49,7 +47,7 @@ class ValidationGate:
     name: str
     description: str
     Severity: GateSeverity
-    validator: Callable[[object, Dict[str, object]], GateResult]
+    validator: Callable[[object, dict[str, object]], GateResult]
 
 
 class RGValidationGates:
@@ -71,7 +69,7 @@ class RGValidationGates:
 
     def __init__(self) -> None:
         """Initialize the validation gates."""
-        self._gates: Dict[str, ValidationGate] = {}
+        self._gates: dict[str, ValidationGate] = {}
         self._register_default_gates()
 
     def _register_critical_gates(self) -> None:
@@ -238,11 +236,11 @@ class RGValidationGates:
         """Register a validation gate."""
         self._gates[gate.gate_id] = gate
 
-    def get_gate(self, gate_id: str) -> Optional[ValidationGate]:
+    def get_gate(self, gate_id: str) -> ValidationGate | None:
         """Get a gate by ID."""
         return self._gates.get(gate_id)
 
-    def list_gates(self) -> List[str]:
+    def list_gates(self) -> list[str]:
         """List all registered gate IDs."""
         return list(self._gates.keys())
 
@@ -250,7 +248,7 @@ class RGValidationGates:
         self,
         gate_id: str,
         content: object,
-        context: Optional[Dict[str, object]] = None,
+        context: dict[str, object] | None = None,
     ) -> GateResult:
         """
         Run a specific validation gate.
@@ -278,8 +276,8 @@ class RGValidationGates:
     def run_all_gates(
         self,
         content: object,
-        context: Optional[Dict[str, object]] = None,
-    ) -> List[GateResult]:
+        context: dict[str, object] | None = None,
+    ) -> list[GateResult]:
         """
         Run all validation gates.
 
@@ -299,7 +297,7 @@ class RGValidationGates:
     def _validate_summary_grounding(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate summary grounding."""
         violations = []
@@ -344,7 +342,7 @@ class RGValidationGates:
     def _validate_bullet_hallucination(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate bullet hallucination."""
         violations = []
@@ -382,7 +380,7 @@ class RGValidationGates:
     def _validate_thematic_uniqueness(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate thematic uniqueness."""
         violations = []
@@ -419,7 +417,7 @@ class RGValidationGates:
     def _validate_creative_brief_adherence(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate creative brief adherence."""
         violations = []
@@ -462,7 +460,7 @@ class RGValidationGates:
     def _validate_header_integrity(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate header integrity."""
         violations = []
@@ -490,7 +488,7 @@ class RGValidationGates:
     def _validate_bullet_provenance(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate bullet provenance."""
         violations = []
@@ -519,7 +517,7 @@ class RGValidationGates:
     def _validate_redundancy(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate for redundancy."""
         # Simplified implementation
@@ -533,7 +531,7 @@ class RGValidationGates:
     def _validate_hyphen_preservation(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate hyphen preservation."""
         # Simplified implementation
@@ -547,7 +545,7 @@ class RGValidationGates:
     def _validate_competency_balance(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate competency word count balance."""
         violations = []
@@ -581,7 +579,7 @@ class RGValidationGates:
     def _validate_bullet_punctuation(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate bullet punctuation."""
         violations = []
@@ -609,7 +607,7 @@ class RGValidationGates:
     def _validate_summary_voice_tense(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate summary voice and tense."""
         violations = []
@@ -639,7 +637,7 @@ class RGValidationGates:
     def _validate_agentic_output(
         self,
         content: object,
-        context: Dict[str, object],
+        context: dict[str, object],
     ) -> GateResult:
         """Validate agentic output."""
         violations = []
@@ -673,7 +671,7 @@ def create_validation_gates() -> RGValidationGates:
 def run_gate(
     gate_id: str,
     content: object,
-    context: Optional[Dict[str, object]] = None,
+    context: dict[str, object] | None = None,
 ) -> GateResult:
     """Run a specific validation gate."""
     gates = RGValidationGates()

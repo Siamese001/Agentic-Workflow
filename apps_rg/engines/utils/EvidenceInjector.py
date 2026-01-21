@@ -10,7 +10,6 @@ import logging
 import re
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -34,7 +33,7 @@ class EvidenceItem(BaseModel):
     url: str
     title: str
     type: EvidenceType
-    keywords: List[str] = Field(default_factory=list)
+    keywords: list[str] = Field(default_factory=list)
     description: str
     confidence_threshold: float = Field(default=0.3, description="Min similarity for match")
     priority: int = Field(default=1, description="Higher priority = preferred match")
@@ -52,7 +51,7 @@ class EvidenceInjector:
         """
         self.max_links_per_bullet = max_links_per_bullet
         self.max_links_per_resume = max_links_per_resume
-        self.evidence_library: List[EvidenceItem] = []
+        self.evidence_library: list[EvidenceItem] = []
         self._links_used = 0
 
         logger.info(f"Initialized EvidenceInjector (max {max_links_per_bullet}/bullet, {max_links_per_resume}/resume)")
@@ -70,7 +69,7 @@ class EvidenceInjector:
             return
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 if file_path.suffix.lower() in ['.yaml', '.yml']:
                     import yaml
                     data = yaml.safe_load(f)
@@ -93,7 +92,7 @@ class EvidenceInjector:
             logger.error(f"Failed to load evidence library: {e}")
             raise
 
-    def inject(self, bullets: List[str]) -> List[str]:
+    def inject(self, bullets: list[str]) -> list[str]:
         """Inject evidence links into resume bullets.
 
         Args:
@@ -157,7 +156,7 @@ class EvidenceInjector:
 
         return bullet
 
-    def _find_best_matches(self, bullet: str) -> List[Tuple[float, EvidenceItem]]:
+    def _find_best_matches(self, bullet: str) -> list[tuple[float, EvidenceItem]]:
         """Find best matching evidence for a bullet.
 
         Args:
@@ -217,7 +216,7 @@ class EvidenceInjector:
 
         return min(total_score, 1.0)
 
-    def _find_link_phrase(self, bullet: str, evidence: EvidenceItem) -> Optional[str]:
+    def _find_link_phrase(self, bullet: str, evidence: EvidenceItem) -> str | None:
         """Find the best phrase in bullet to link to evidence.
 
         Args:
@@ -285,7 +284,7 @@ class EvidenceInjector:
                 return True
         return False
 
-    def get_stats(self) -> Dict[str, any]:
+    def get_stats(self) -> dict[str, any]:
         """Get injector statistics.
 
         Returns:
@@ -305,7 +304,7 @@ class EvidenceInjector:
 
 
 # Global injector instance
-_evidence_injector: Optional[EvidenceInjector] = None
+_evidence_injector: EvidenceInjector | None = None
 
 
 def get_evidence_injector() -> EvidenceInjector:
@@ -321,7 +320,7 @@ def get_evidence_injector() -> EvidenceInjector:
 
 
 # Convenience function
-def inject_evidence_links(bullets: List[str], library_path: Optional[str] = None) -> List[str]:
+def inject_evidence_links(bullets: list[str], library_path: str | None = None) -> list[str]:
     """Inject evidence links into resume bullets.
 
     Args:

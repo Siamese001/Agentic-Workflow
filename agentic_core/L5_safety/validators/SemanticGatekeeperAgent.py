@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 Semantic Gatekeeper - L3 Orchestration Layer
 
@@ -13,17 +15,18 @@ Manages concurrency, timeouts, and dead letter handling for agent execution.
 """
 import asyncio
 import logging
-import re
-import time
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Dict, Any, List, Optional
-from agentic_core.utils.core_extensions.timeout_decorator import timeout, Protocol
+from typing import Any
+
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 # NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30
 @dataclass
@@ -53,7 +56,7 @@ class SemanticGatekeeperAgent(MCPHardenedMixin, HealerMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -126,7 +129,7 @@ class SemanticGatekeeperAgent(MCPHardenedMixin, HealerMixin):
         """Get gatekeeper statistics."""
         return {'max_concurrent': self.semaphore._value, 'current_running': self.semaphore._value - self.semaphore._value, 'dead_letter_count': len(self.dead_letter_queue), 'timeout_seconds': self.timeout_seconds}
 
-_global_gatekeeper: Optional[SemanticGatekeeperAgent] = None
+_global_gatekeeper: SemanticGatekeeperAgent | None = None
 
 def get_gatekeeper() -> SemanticGatekeeperAgent:
     """Get or create the global gatekeeper instance."""
@@ -146,5 +149,5 @@ async def with_gatekeeping(trace_id: str, operation: str, coro: Any) -> Any:
     Returns:
         Result of the coroutine
     """
-    GATEKEEPER: Any = get_gatekeeper()
+    get_gatekeeper()
     return await gatekeeper.run_with_gating(trace_id, operation, coro)

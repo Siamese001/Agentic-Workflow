@@ -4,10 +4,9 @@ Shared constants for Location Validation and Healing.
 Extracted from LocationAgent.py during SRP fission.
 All location-related agents should import from this module.
 """
-from typing import Dict
 
 # Archive subfolder mapping for violation types
-ARCHIVE_SUBFOLDERS: Dict[str, str] = {
+ARCHIVE_SUBFOLDERS: dict[str, str] = {
     "VOID VIOLATION": "void_violations",
     "GRAVITY": "void_violations",
     "LAYER PREFIX VIOLATION": "naming_violations",
@@ -19,7 +18,7 @@ DEFAULT_ARCHIVE_SUBFOLDER: str = "location_violations"
 # Healing strategy mapping (violation type → method name)
 # CRITICAL: VOID VIOLATION must be handled BEFORE falling back to archiving
 # The correct flow is: relocate → propose new subfolder → update SSOT → archive (last resort)
-HEALING_STRATEGY_MAP: Dict[str, str] = {
+HEALING_STRATEGY_MAP: dict[str, str] = {
     "BROKEN BACKUP": "_heal_broken_backup",
     "APP-SPECIFIC IN CORE": "_heal_app_specific_violation",
     "TERRITORY MISMATCH": "_heal_territory_mismatch",
@@ -31,7 +30,7 @@ HEALING_STRATEGY_MAP: Dict[str, str] = {
 DEFAULT_APP_HEALING_TARGET: str = "engines"
 
 # Violation severity thresholds
-VIOLATION_THRESHOLDS: Dict[str, int] = {
+VIOLATION_THRESHOLDS: dict[str, int] = {
     "critical": 10,
     "high": 25,
     "medium": 50,

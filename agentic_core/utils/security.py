@@ -10,10 +10,9 @@ Purpose: Harden all subprocess calls against shell injection attacks
 """
 from __future__ import annotations
 
-import subprocess
 import logging
 import re
-from typing import List, Optional, Dict, Any, Union
+import subprocess
 from pathlib import Path
 
 # Use standard logging instead of custom Logger
@@ -80,14 +79,14 @@ class SecurityViolationError(Exception):
 
 
 def safe_execute(
-    args: List[str],
-    cwd: Optional[Union[str, Path]] = None,
-    timeout: Optional[int] = None,
+    args: list[str],
+    cwd: str | Path | None = None,
+    timeout: int | None = None,
     capture_output: bool = True,
     text: bool = True,
     check: bool = True,
-    env: Optional[Dict[str, str]] = None,
-    input_data: Optional[str] = None,
+    env: dict[str, str] | None = None,
+    input_data: str | None = None,
 ) -> subprocess.CompletedProcess:
     """
     Hardened wrapper for subprocess.run with zero-trust security constraints.
@@ -205,7 +204,7 @@ def safe_execute(
         )
         raise
 
-    except subprocess.TimeoutExpired as e:
+    except subprocess.TimeoutExpired:
         Logger.error(
             f"[Security] Command timeout after {timeout}s: {cmd_str}"
         )
@@ -220,12 +219,12 @@ def safe_execute(
 
 
 def safe_popen(
-    args: List[str],
-    cwd: Optional[Union[str, Path]] = None,
-    stdout: Optional[int] = subprocess.PIPE,
-    stderr: Optional[int] = subprocess.PIPE,
+    args: list[str],
+    cwd: str | Path | None = None,
+    stdout: int | None = subprocess.PIPE,
+    stderr: int | None = subprocess.PIPE,
     text: bool = True,
-    env: Optional[Dict[str, str]] = None,
+    env: dict[str, str] | None = None,
 ) -> subprocess.Popen:
     """
     Hardened wrapper for subprocess.Popen with zero-trust security constraints.
@@ -301,7 +300,7 @@ def safe_popen(
         raise
 
 
-def validate_command_whitelist(args: List[str], allowed_commands: List[str]) -> bool:
+def validate_command_whitelist(args: list[str], allowed_commands: list[str]) -> bool:
     """
     Validate that the command is in an allowed whitelist.
 
@@ -344,8 +343,8 @@ def validate_command_whitelist(args: List[str], allowed_commands: List[str]) -> 
 
 # Convenience function for common git operations
 def safe_git_execute(
-    git_args: List[str],
-    repo_root: Optional[Union[str, Path]] = None,
+    git_args: list[str],
+    repo_root: str | Path | None = None,
     timeout: int = 30,
 ) -> subprocess.CompletedProcess:
     """

@@ -20,16 +20,16 @@ import ast
 import importlib
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
-from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
+from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # GRAVITY FIXED: Dynamic import for MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L2_execution.mcp.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
+MCPHardenedMixin = _mod.MCPHardenedMixin
 
 
 @dataclass
@@ -54,10 +54,10 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
     """
 
     # Configuration constants
-    DANGEROUS_BUILTINS: Set[str] = field(default_factory=lambda: {
+    DANGEROUS_BUILTINS: set[str] = field(default_factory=lambda: {
         'compile', '__import__', 'globals', 'locals', 'vars'
     })
-    FORBIDDEN_CALLS: Set[str] = field(default_factory=lambda: {'eval', 'exec'})
+    FORBIDDEN_CALLS: set[str] = field(default_factory=lambda: {'eval', 'exec'})
 
     # Validation keys for each check type
     KEY_DEBUGGER: int = 3
@@ -173,8 +173,8 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, Any]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, Any]:
         """
         Aggregated healing logic for all AST-based violations.
 
@@ -198,7 +198,7 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
             _call_path=_call_path
         )
 
-    def validate_all(self, source: str, file_path: Optional[Path] = None) -> Dict[str, List[Dict[str, Any]]]:
+    def validate_all(self, source: str, file_path: Path | None = None) -> dict[str, list[dict[str, Any]]]:
         """
         Validate source code and return violations grouped by key.
 
@@ -238,7 +238,7 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
 
         return grouped
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """
         Run internal self-tests for the unified validator.
 
@@ -343,35 +343,35 @@ def get_unified_ast_validator() -> UnifiedASTValidatorAgent:
 
 
 # Convenience functions for backward compatibility with legacy validators
-def validate_bare_except(file_path: Path, content: str) -> List[Dict[str, Any]]:
+def validate_bare_except(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 5: No bare except statements."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)
     return [v for v in violations if 'bare except' in v.get('message', '').lower()]
 
 
-def validate_empty_except(file_path: Path, content: str) -> List[Dict[str, Any]]:
+def validate_empty_except(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 4: No empty except blocks."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)
     return [v for v in violations if 'empty except' in v.get('message', '').lower()]
 
 
-def validate_eval_exec(file_path: Path, content: str) -> List[Dict[str, Any]]:
+def validate_eval_exec(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 6: No eval/exec."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)
     return [v for v in violations if 'eval' in v.get('message', '').lower() or 'exec' in v.get('message', '').lower()]
 
 
-def validate_dangerous_builtins(file_path: Path, content: str) -> List[Dict[str, Any]]:
+def validate_dangerous_builtins(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 42: No dangerous builtins."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)
     return [v for v in violations if 'dangerous builtin' in v.get('message', '').lower()]
 
 
-def validate_debugger(file_path: Path, content: str) -> List[Dict[str, Any]]:
+def validate_debugger(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 3: No debugger statements."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)

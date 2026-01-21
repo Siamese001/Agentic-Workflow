@@ -22,13 +22,13 @@ import logging
 import os
 import sys
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any, Protocol
 
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.validators.structure_blueprint_1 import SOVEREIGN_REGISTRY
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 class CanonBaseAgentInterface(Protocol):
     """Protocol for CanonBaseAgent interface compatibility."""
@@ -64,7 +64,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         dry_run: bool = True,
         execute: bool = False,
         **kwargs: Any
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """
         Execute autonomous healing for Canon Key 51 compliance.
 
@@ -82,23 +82,23 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         super().heal_repository()
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, ctx: Optional[Any] = None) -> None:
+    def __init__(self, ctx: Any | None = None) -> None:
         """
         Initialize the HealerAgent.
 
         Args:
             ctx: Optional ValidationContext for file access and reporting.
         """
-        self.impl: Optional[CanonBaseAgent] = None  # Abstract, skip instantiation
+        self.impl: CanonBaseAgent | None = None  # Abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.Logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     async def execute(
         self,
-        goal: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        goal: str | None = None,
+        context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Execute healing operations.
 
@@ -114,7 +114,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         await self._execute_healing()
         return {"status": "completed", "agent": self.name}
 
-    def get_capabilities(self) -> List[str]:
+    def get_capabilities(self) -> list[str]:
         """
         Get list of agent capabilities.
 
@@ -136,7 +136,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
             return True
         return self.impl.validate_state()
 
-    def _check_file_for_syntax_error(self, file_path: str) -> Tuple[bool, Optional[SyntaxError]]:
+    def _check_file_for_syntax_error(self, file_path: str) -> tuple[bool, SyntaxError | None]:
         """Check a single file for syntax errors.
 
         Args:
@@ -146,7 +146,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
             Tuple of (has_error, error_object). If no error, error_object is None.
         """
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 ast.parse(f.read(), filename=file_path)
             return False, None
         except SyntaxError as e:
@@ -167,7 +167,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         excluded_patterns = ['__pycache__', '.git', 'venv', '.venv', 'node_modules']
         return any(pattern in file_path for pattern in excluded_patterns)
 
-    def _scan_for_syntax_errors(self) -> List[Tuple[str, Optional[SyntaxError]]]:
+    def _scan_for_syntax_errors(self) -> list[tuple[str, SyntaxError | None]]:
         """Scan all Python files for syntax errors.
 
         Returns:
@@ -197,7 +197,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         print(f"      [SCAN] Fixing {file_path}:{lineno} – {msg}")
         return await self.smart_fix(file_path, 48)
 
-    def _get_remaining_errors(self) -> List[str]:
+    def _get_remaining_errors(self) -> list[str]:
         """Get list of files that still have syntax errors.
 
         Returns:

@@ -6,23 +6,11 @@ Validates that all calculated fields match their source data and formulas.
 """
 import json
 from pathlib import Path
+
 import pytest
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 
@@ -128,7 +116,7 @@ def test_territory_health_scores():
                 f"(Cap={heal_cap}%, Inv={invocation}%, Test={tests}%, Obs={observable}%, CC={cc_health}%)"
             )
 
-    assert not failures, f"Health score calculation failures:\n" + "\n".join(failures)
+    assert not failures, "Health score calculation failures:\n" + "\n".join(failures)
 
 
 def test_invocation_percentage_accuracy():
@@ -218,7 +206,7 @@ def test_percentage_ranges():
                 if not (0 <= value <= 100):
                     failures.append(f"{territory}.{field} = {value}% (out of range)")
 
-    assert not failures, f"Percentage out of range:\n" + "\n".join(failures)
+    assert not failures, "Percentage out of range:\n" + "\n".join(failures)
 
 
 if __name__ == "__main__":

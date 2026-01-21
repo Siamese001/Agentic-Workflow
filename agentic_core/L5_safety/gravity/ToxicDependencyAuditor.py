@@ -14,26 +14,12 @@ Logic:
 
 import ast
 from pathlib import Path
-from typing import Dict, List, Set
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class ToxicDependencyAuditor(MCPHardenedMixin):
@@ -45,9 +31,9 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
     def __init__(self, root_dir: str = ".", toxic_threshold: int = 10):
         self.root = Path(root_dir)
         self.threshold = toxic_threshold
-        self.dependency_map: Dict[str, Set[str]] = {}  # module -> set of dependents
+        self.dependency_map: dict[str, set[str]] = {}  # module -> set of dependents
 
-    def audit_toxicity(self, coverage_data: Dict[str, float] = None) -> List[Dict]:
+    def audit_toxicity(self, coverage_data: dict[str, float] = None) -> list[dict]:
         """Builds the fan-in map and identifies toxic hubs with coverage weighting.
 
         Args:
@@ -100,7 +86,7 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
                     self.dependency_map[imp] = set()
                 self.dependency_map[imp].add(current_module)
 
-    def _extract_internal_imports(self, file_path: Path) -> Set[str]:
+    def _extract_internal_imports(self, file_path: Path) -> set[str]:
         """Uses AST to find internal agentic_core imports."""
         imports = set()
         try:
@@ -125,7 +111,7 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
         except ValueError:
             return ""
 
-    def report(self, toxic_hubs: List[Dict]):
+    def report(self, toxic_hubs: list[dict]):
         """Generates a Sovereign Toxicity Report with coverage weighting."""
         if not toxic_hubs:
             print(f"✅ TOXICITY CHECK: No modules exceed fan-in threshold ({self.threshold}).")

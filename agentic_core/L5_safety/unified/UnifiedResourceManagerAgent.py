@@ -18,11 +18,10 @@ from __future__ import annotations
 
 import logging
 import threading
-import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -87,7 +86,7 @@ class ResourceConfig:
     enable_fallback: bool = True
     max_concurrent_allocations: int = 100
     allocation_timeout_seconds: float = 30.0
-    fallback_strategies: List[str] = field(default_factory=lambda: ["queue", "throttle", "reject"])
+    fallback_strategies: list[str] = field(default_factory=lambda: ["queue", "throttle", "reject"])
 
 
 class UnifiedResourceManagerAgent:
@@ -113,13 +112,13 @@ class UnifiedResourceManagerAgent:
             print("Budget exhausted!")
     """
 
-    def __init__(self, config: Optional[ResourceConfig] = None):
+    def __init__(self, config: ResourceConfig | None = None):
         self.config = config or ResourceConfig()
         self._lock = threading.RLock()
-        self._budgets: Dict[ResourceType, ResourceBudget] = {}
-        self._allocations: List[ResourceAllocation] = []
-        self._agent_allocations: Dict[str, List[ResourceAllocation]] = {}
-        self._pending_queue: List[tuple] = []
+        self._budgets: dict[ResourceType, ResourceBudget] = {}
+        self._allocations: list[ResourceAllocation] = []
+        self._agent_allocations: dict[str, list[ResourceAllocation]] = {}
+        self._pending_queue: list[tuple] = []
         self._initialized = False
 
         Logger.info("UnifiedResourceManagerAgent initialized")
@@ -286,7 +285,7 @@ class UnifiedResourceManagerAgent:
                 return 0.0
             return self._budgets[resource_type].utilization
 
-    def get_budget_status(self, resource_type: ResourceType) -> Dict[str, Any]:
+    def get_budget_status(self, resource_type: ResourceType) -> dict[str, Any]:
         """Get detailed budget status."""
         with self._lock:
             if resource_type not in self._budgets:
@@ -304,7 +303,7 @@ class UnifiedResourceManagerAgent:
                 "hard_cap": budget.hard_cap,
             }
 
-    def get_all_budgets(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_budgets(self) -> dict[str, dict[str, Any]]:
         """Get status of all budgets."""
         with self._lock:
             return {

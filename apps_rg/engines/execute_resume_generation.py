@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 ExecuteResumeGeneration.py - Execution Module
 
@@ -7,7 +8,8 @@ Generated: 2025-12-07T13:29:00.515392
 """
 import logging
 import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 
 class LocalWorkflowLoader:
     """Local workflow loader to avoid architectural Violation."""
@@ -28,7 +30,7 @@ Logger: Any = logging.getLogger(__name__)
 class ExecuteResumeGeneration:
     """Executor for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None, WorkflowLoader: Optional[LocalWorkflowLoader]=None):
+    def __init__(self, config: dict[str, object] | None=None, WorkflowLoader: LocalWorkflowLoader | None=None):
         self.config = config or {}
         self.timeout = self.config.get('timeout', 30.0)
         self.workflow = WorkflowLoader or create_local_workflow_loader()
@@ -37,7 +39,7 @@ class ExecuteResumeGeneration:
         self.ResumeGenerator = ResumeGenerator(llm_client=self.config.get('llm_client'), PROVIDER=self.config.get('Provider'), creative_brief=creative_brief, validation_rules=self.workflow.get_validation_rules())
         LOGGER.info(f'Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}')
 
-    def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
+    def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""
         START: Any = time.time()
         try:
@@ -48,7 +50,7 @@ class ExecuteResumeGeneration:
             duration_ms: Any = (time.time() - START) * 1000
             return ExecutionResult(STATUS=ResultStatus.FAILURE, ERROR=str(e), METADATA={'duration_ms': duration_ms}, step_results=[Result(status=ResultStatus.FAILURE, error=str(e))], total_steps=1)
 
-    def _perform_action(self, action: str, params: Dict[str, object]) -> object:
+    def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""
         LOGGER.info(f'Executing {action} with {params}')
         if action == 'analyze_job':
@@ -60,7 +62,7 @@ class ExecuteResumeGeneration:
         else:
             return {'action': action, 'params': params, 'status': 'completed'}
 
-    def _analyze_job(self, params: Dict[str, object]) -> Dict[str, Any]:
+    def _analyze_job(self, params: dict[str, object]) -> dict[str, Any]:
         """Analyze a job description."""
         JobDescription = params.get('JobDescription', '')
         if not JobDescription:
@@ -68,12 +70,12 @@ class ExecuteResumeGeneration:
         ANALYSIS = self.JobAnalyzer.analyze(JobDescription)
         return {'action': 'analyze_job', 'analysis': ANALYSIS, 'status': 'completed'}
 
-    def _generate_resume(self, params: Dict[str, object]) -> Dict[str, Any]:
+    def _generate_resume(self, params: dict[str, object]) -> dict[str, Any]:
         """Generate a new resume from scratch."""
         resume_data = params.get('resume_data', {})
         return {'action': 'generate_resume', 'resume': resume_data, 'status': 'completed'}
 
-    def _tailor_resume(self, params: Dict[str, object]) -> Dict[str, Any]:
+    def _tailor_resume(self, params: dict[str, object]) -> dict[str, Any]:
         """Tailor an existing resume to a job description."""
         resume_data = params.get('resume_data', {})
         JobDescription = params.get('JobDescription', '')
@@ -86,6 +88,6 @@ class ExecuteResumeGeneration:
         optimized_resume = self.ResumeGenerator.optimize_for_ats(tailored_resume, ANALYSIS)
         return {'action': 'tailor_resume', 'original_resume': resume_data, 'job_analysis': ANALYSIS, 'tailored_resume': optimized_resume, 'status': 'completed'}
 
-def execute(action: str, params: Dict[str, object], config: Optional[Dict]=None) -> ExecutionResult:
+def execute(action: str, params: dict[str, object], config: dict | None=None) -> ExecutionResult:
     """Execute action."""
     return ExecuteResumeGeneration(config).execute(action, params)

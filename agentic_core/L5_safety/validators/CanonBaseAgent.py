@@ -17,21 +17,18 @@ import asyncio
 import hashlib
 import logging
 import os
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        SOVEREIGN_REGISTRY,
         CORE_SUBFOLDER_MAP,
+        SOVEREIGN_REGISTRY,
     )
 except ImportError:
-    from agentic_core.config.blueprint_sovereign.registry import (
-        SOVEREIGN_REGISTRY,
-        CORE_SUBFOLDER_MAP,
-    )
+    pass
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -57,7 +54,7 @@ class CanonBaseAgent(HealerMixin):
         name: Agent name for logging and reporting.
         layer: Optional layer identifier.
     """
-    VERIFICATION_REGISTRY: Dict[int, Any] = {}
+    VERIFICATION_REGISTRY: dict[int, Any] = {}
     _registry_built: bool = False
 
     @classmethod
@@ -73,18 +70,20 @@ class CanonBaseAgent(HealerMixin):
         """
         if cls._registry_built:
             return
+        # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
+        import importlib
+
         from agentic_core.canon_agents_core import SystemArchitect
-        from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
+
         # ARCHIVED: DocumentationAgent import removed
         from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
+
         # ARCHIVED: BudgetAgent import removed
         # ARCHIVED: TypeMechanicAgent import removed
         from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
-
-        # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
-        import importlib
+        from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
         _struct_mod = importlib.import_module('agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent')
-        StructuralEngineerAgent = getattr(_struct_mod, 'StructuralEngineerAgent')
+        StructuralEngineerAgent = _struct_mod.StructuralEngineerAgent
         arch = SystemArchitect(ctx)
         budget = BudgetAgent(ctx)
         janitor = CodeJanitor(ctx)
@@ -100,9 +99,9 @@ class CanonBaseAgent(HealerMixin):
 
     def __init__(
         self,
-        context: Optional[ValidationProtocol] = None,
-        name: Optional[str] = None,
-        layer: Optional[str] = None
+        context: ValidationProtocol | None = None,
+        name: str | None = None,
+        layer: str | None = None
     ) -> None:
         """
         Initialize the Canon base agent.
@@ -138,11 +137,11 @@ class CanonBaseAgent(HealerMixin):
         try:
             with open(file_path, 'rb') as f:
                 return hashlib.sha256(f.read()).hexdigest()
-        except IOError as e:
+        except OSError as e:
             Logger.warning(f'Could not read file {file_path} for hashing: {e}')
             return ''
 
-    def check_cache(self, file_path: str, key: int) -> Optional[Dict[str, Any]]:
+    def check_cache(self, file_path: str, key: int) -> dict[str, Any] | None:
         """
         Check Redis cache for validation result.
 
@@ -159,7 +158,7 @@ class CanonBaseAgent(HealerMixin):
         cache_key: Any = f'{self.name}:{key}:{file_hash}'
         return self.ctx.services.get_cached_result(cache_key)
 
-    def store_cache(self, file_path: str, key: int, result: Dict[str, Any]) -> None:
+    def store_cache(self, file_path: str, key: int, result: dict[str, Any]) -> None:
         """
         Store validation result in Redis cache.
 
@@ -174,13 +173,13 @@ class CanonBaseAgent(HealerMixin):
         cache_key: Any = f'{self.name}:{key}:{file_hash}'
         self.ctx.services.cache_result(cache_key, result)
 
-    async def _run_check_func(self, check_func: Any) -> Tuple[bool, List[Any]]:
+    async def _run_check_func(self, check_func: Any) -> Tuple[bool, list[Any]]:
         """Run a check function (sync or async) and return result."""
         if asyncio.iscoroutinefunction(check_func):
             return await check_func()
         return check_func()
 
-    def _get_violation_details(self, res: Tuple[bool, List[Any]], file_path: str) -> str:
+    def _get_violation_details(self, res: Tuple[bool, list[Any]], file_path: str) -> str:
         """Extract violation details relevant to a specific file."""
         if res[0]:
             return ''
@@ -190,7 +189,7 @@ class CanonBaseAgent(HealerMixin):
         max_shown = int(os.getenv('MAX_VIOLATIONS_SHOWN', '8'))
         return '\nSpecific Violations:\n' + '\n'.join(map(str, relevant[:max_shown]))
 
-    def _get_reference_fix(self, violation_desc: str) -> Optional[str]:
+    def _get_reference_fix(self, violation_desc: str) -> str | None:
         """Find similar patterns and return reference fix if available."""
         similar = self.ctx.services.find_similar_patterns(violation_desc)
         if similar and similar[0]['similarity'] > 0.85:
@@ -198,7 +197,7 @@ class CanonBaseAgent(HealerMixin):
             return f"\n\nReference Fix (similarity: {best['similarity']:.2f}):\n{best['fix']}"
         return None
 
-    def _build_task(self, violation_key: int, file_path: str, details: str, ref_fix: Optional[str]) -> str:
+    def _build_task(self, violation_key: int, file_path: str, details: str, ref_fix: str | None) -> str:
         """Build the task description for LLM healing."""
         parts = [f'Fix Key {violation_key} Violation in {file_path}.']
         if details:
@@ -243,7 +242,7 @@ class CanonBaseAgent(HealerMixin):
             return False
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 original_code = f.read()
 
             res = await self._run_check_func(check_func)
@@ -253,7 +252,7 @@ class CanonBaseAgent(HealerMixin):
 
             max_rounds = int(os.getenv('MAX_HEALING_ROUNDS', '5'))
             current_code = original_code
-            previous_failure: Optional[str] = None
+            previous_failure: str | None = None
 
             for round_num in range(1, max_rounds + 1):
                 print(f'      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}', flush=True)
@@ -312,8 +311,8 @@ class CanonBaseAgent(HealerMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """
         Execute L1 cognition healing operations.
 

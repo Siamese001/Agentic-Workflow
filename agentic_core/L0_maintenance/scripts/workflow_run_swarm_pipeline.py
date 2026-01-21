@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Swarm Pipeline Orchestration - Main entry point demonstrating full parallel workflow.
 
 This script demonstrates the complete optimized pipeline using all 4 phases:
@@ -14,17 +15,19 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 project_root: Any = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 from scripts.runtime.core.SubatomicSwarm import create_subatomic_swarm
 from scripts.runtime.shared.batch_embeddings import create_batch_embedding_service
 from scripts.runtime.shared.memory_vector_store import create_memory_vector_cache
 from scripts.runtime.shared.ResumeSwarm import create_resume_swarm
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 Logger: Any = logging.getLogger(__name__)
 
-def mock_embedder(texts: List[str]) -> List[List[float]]:
+def mock_embedder(texts: list[str]) -> list[list[float]]:
     """Mock embedding function simulating network latency."""
     import time
     time.sleep(0.1)
@@ -37,7 +40,7 @@ class MockSubatomicHop:
     def __init__(self, hop_id: str='mock_hop'):
         self.hop_id = hop_id
 
-    async def run(self, **kwargs) -> Dict[str, Any]:
+    async def run(self, **kwargs) -> dict[str, Any]:
         """Simulate HOP execution."""
         await asyncio.sleep(0.5)
         return {'hop_id': self.hop_id, 'status': 'completed', 'result': f"Processed: {kwargs.get('data', 'no data')}"}
@@ -65,7 +68,7 @@ async def demo_phase2_batch_embeddings() -> Any:
     embedder.shutdown()
     return embeddings
 
-async def demo_phase2_vector_cache(embeddings: List) -> Any:
+async def demo_phase2_vector_cache(embeddings: list) -> Any:
     """Demonstrate Phase 2: In-Memory Vector Cache."""
     print('\n' + '=' * 80)
     print('💾 PHASE 2 DEMO: In-Memory Vector Cache')
@@ -76,18 +79,18 @@ async def demo_phase2_vector_cache(embeddings: List) -> Any:
     ids: Any = [f'resume_{i}' for i in range(len(embeddings))]
     print(f'\n📥 Adding {len(documents)} documents to hot cache...')
     start_add: Any = time.time()
-    await vector_cache.add_documents(documents=documents, metadatas=metadatas, ids=ids, embeddings=[emb for emb in embeddings])
+    await vector_cache.add_documents(documents=documents, metadatas=metadatas, ids=ids, embeddings=list(embeddings))
     time_add: Any = time.time() - start_add
     print(f'   Time: {time_add:.2f}s')
     print(f'   Cache size: {vector_cache.get_count()} documents')
-    print(f'\n🔍 Searching hot cache...')
+    print('\n🔍 Searching hot cache...')
     query_embedding: Any = embeddings[0]
     start_disk: Any = time.time()
     await asyncio.sleep(0.08)
     time_disk: Any = time.time() - start_disk
     print(f'   Disk-based search: {time_disk * 1000:.1f}ms')
     start_mem: Any = time.time()
-    results: Any = await vector_cache.search(query_embeddings=[query_embedding], top_k=5)
+    await vector_cache.search(query_embeddings=[query_embedding], top_k=5)
     time_mem: Any = time.time() - start_mem
     print(f'   In-memory search: {time_mem * 1000:.1f}ms')
     print(f'   Speedup: {time_disk / time_mem:.1f}x')
@@ -105,7 +108,7 @@ async def demo_phase3_subatomic_swarm() -> Any:
     print(f'\n⏱️  Sequential Execution ({num_hops} HOPs)...')
     start_seq: Any = time.time()
     seq_results: Any = []
-    for hop, inp in zip(hops, inputs):
+    for hop, inp in zip(hops, inputs, strict=False):
         result: Any = await hop.run(**inp)
         seq_results.append(result)
     time_seq: Any = time.time() - start_seq
@@ -164,7 +167,7 @@ async def demo_full_pipeline() -> Any:
     await vector_cache.add_documents(documents=job_descriptions, metadatas=[{'index': i} for i in range(len(embeddings))], ids=[f'job_{i}' for i in range(len(embeddings))], embeddings=embeddings)
     step2_time: Any = time.time() - step2_start
     print(f'   ✓ Completed in {step2_time:.2f}s')
-    print(f'\n🤖 Step 3: Generating content with LLM swarm...')
+    print('\n🤖 Step 3: Generating content with LLM swarm...')
     step3_start: Any = time.time()
     hops: Any = [MockSubatomicHop(f'content_hop_{i}') for i in range(num_jobs)]
     inputs: Any = [{'data': desc} for desc in job_descriptions]
@@ -172,7 +175,7 @@ async def demo_full_pipeline() -> Any:
     step3_time: Any = time.time() - step3_start
     print(f'   ✓ Completed in {step3_time:.2f}s')
     print(f'   ✓ Success rate: {llm_swarm.get_success_rate():.1f}%')
-    print(f'\n📄 Step 4: Rendering PDFs with CPU swarm...')
+    print('\n📄 Step 4: Rendering PDFs with CPU swarm...')
     step4_start: Any = time.time()
     pdf_jobs: Any = [{'job_id': f'pdf_{i}', 'content': 'resume content'} for i in range(num_jobs)]
     cpu_swarm.generate_batch(pdf_jobs)

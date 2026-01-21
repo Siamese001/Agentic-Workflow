@@ -2,8 +2,8 @@
 """
 Quick verification script to check health score calculation in dashboard.
 """
-import re
 import json
+import re
 from pathlib import Path
 
 dashboard_path = Path("reports/autonomy_dashboard.html")
@@ -41,26 +41,26 @@ expected_health = round((heal_cap + invocation + tests + observable + cc_health)
 print("\n" + "="*80)
 print("DASHBOARD HEALTH SCORE VERIFICATION")
 print("="*80)
-print(f"\nTOTAL Row Components:")
+print("\nTOTAL Row Components:")
 print(f"  Heal Capability:     {heal_cap:6.1f}%")
 print(f"  Heal Invocation:     {invocation:6.1f}%")
 print(f"  Test Coverage:       {tests:6.1f}%")
 print(f"  Observability:       {observable:6.1f}%")
 print(f"  Complexity Health:   {cc_health:6.1f}%")
-print(f"\nHealth Score Calculation:")
-print(f"  Formula: (Heal Cap + Invocation + Tests + Observable + CC Health) / 5")
+print("\nHealth Score Calculation:")
+print("  Formula: (Heal Cap + Invocation + Tests + Observable + CC Health) / 5")
 print(f"  Expected: {expected_health:.1f}%")
 print(f"  Actual:   {actual_health:.1f}%")
 
 if abs(actual_health - expected_health) < 0.1:
-    print(f"\n✅ PASS: Health score correctly calculated!")
+    print("\n✅ PASS: Health score correctly calculated!")
 else:
-    print(f"\n❌ FAIL: Health score mismatch!")
+    print("\n❌ FAIL: Health score mismatch!")
     print(f"  Difference: {abs(actual_health - expected_health):.1f}%")
 
     if actual_health == 100.0:
-        print(f"\n⚠️  WARNING: Health score is hardcoded to 100%!")
-        print(f"  This is incorrect - it should be calculated from actual metrics.")
+        print("\n⚠️  WARNING: Health score is hardcoded to 100%!")
+        print("  This is incorrect - it should be calculated from actual metrics.")
 
 print("="*80 + "\n")
 

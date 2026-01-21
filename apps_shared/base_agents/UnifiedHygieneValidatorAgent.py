@@ -25,19 +25,15 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
+from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.L5Agent import L5Agent
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
     GLOBAL_EXCLUDED_DIRS,
     SCRIPTS_DIR,
     TESTS_DIR,
-    get_validated_project_root,
 )
-from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 @dataclass
@@ -47,8 +43,8 @@ class HygieneViolation:
     violation_type: str  # 'duplicate', 'empty_file', 'dead_code', 'tech_debt', 'orphan'
     severity: str  # 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'
     description: str
-    line_number: Optional[int] = None
-    related_files: Optional[List[str]] = None
+    line_number: int | None = None
+    related_files: list[str] | None = None
 
 
 @dataclass
@@ -76,20 +72,20 @@ class UnifiedHygieneValidatorAgent(L5Agent):
     project_root: Path = field(default_factory=Path.cwd)
 
     # Configuration
-    DEBT_MARKERS: List[str] = field(default_factory=lambda: ['TODO', 'FIXME', 'HACK', 'XXX', 'BUG'])
+    DEBT_MARKERS: list[str] = field(default_factory=lambda: ['TODO', 'FIXME', 'HACK', 'XXX', 'BUG'])
     MIN_FILE_SIZE: int = 10  # Bytes - files smaller are considered empty
-    ALLOWED_EMPTY: Set[str] = field(default_factory=lambda: {'__init__.py'})
-    SKIP_DIRS: Set[str] = field(default_factory=lambda: set(GLOBAL_EXCLUDED_DIRS))
+    ALLOWED_EMPTY: set[str] = field(default_factory=lambda: {'__init__.py'})
+    SKIP_DIRS: set[str] = field(default_factory=lambda: set(GLOBAL_EXCLUDED_DIRS))
 
     # Entry points that shouldn't be flagged as orphans
-    ENTRY_POINTS: Set[str] = field(default_factory=lambda: {
+    ENTRY_POINTS: set[str] = field(default_factory=lambda: {
         'main', 'setup', 'manage', 'run', 'conftest', '__main__', '__init__'
     })
 
     # Internal state
-    file_hashes: Dict[str, List[Path]] = field(default_factory=lambda: defaultdict(list))
-    import_graph: Dict[str, Set[str]] = field(default_factory=lambda: defaultdict(set))
-    all_py_files: List[Path] = field(default_factory=list)
+    file_hashes: dict[str, list[Path]] = field(default_factory=lambda: defaultdict(list))
+    import_graph: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
+    all_py_files: list[Path] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Initialize the unified hygiene validator."""
@@ -104,7 +100,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
         if not isinstance(self.all_py_files, list):
             self.all_py_files = []
 
-    def validate_repository(self) -> Dict[str, Any]:
+    def validate_repository(self) -> dict[str, Any]:
         """
         Perform comprehensive hygiene validation of the repository.
 
@@ -176,7 +172,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
             # Build import graph
             self._analyze_imports(py_file)
 
-    def _get_file_hash(self, path: Path) -> Optional[str]:
+    def _get_file_hash(self, path: Path) -> str | None:
         """
         Calculate MD5 hash for a file.
 
@@ -228,7 +224,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
         except Exception:
             pass  # Skip unparseable files
 
-    def _find_duplicates(self) -> List[Dict[str, Any]]:
+    def _find_duplicates(self) -> list[dict[str, Any]]:
         """
         Detect duplicate files using MD5 hashing (Addresses GAP-4).
 
@@ -252,7 +248,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
 
         return duplicates
 
-    def _find_empty_files(self) -> List[Dict[str, Any]]:
+    def _find_empty_files(self) -> list[dict[str, Any]]:
         """
         Find empty or near-empty files that shouldn't be empty.
 
@@ -281,7 +277,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
 
         return empty_files
 
-    def _scan_markers(self) -> List[Dict[str, Any]]:
+    def _scan_markers(self) -> list[dict[str, Any]]:
         """
         Scan for technical debt markers (TODO, FIXME, HACK, etc.).
 
@@ -317,7 +313,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
 
         return markers_found
 
-    def _find_orphans(self) -> List[Dict[str, Any]]:
+    def _find_orphans(self) -> list[dict[str, Any]]:
         """
         Detect files not referenced in any import statements (dead code).
 
@@ -364,8 +360,8 @@ class UnifiedHygieneValidatorAgent(L5Agent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, Any]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, Any]:
         """
         Audit and optionally heal hygiene violations.
 
@@ -431,7 +427,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
         finally:
             _call_path.discard(agent_name)
 
-    def validate(self, target: Any = None) -> Dict[str, Any]:
+    def validate(self, target: Any = None) -> dict[str, Any]:
         """
         Validate hygiene for a specific target or entire repository.
 
@@ -453,7 +449,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
         else:
             return self.validate_repository()
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """
         Run internal self-tests for the unified hygiene validator.
 
@@ -535,21 +531,21 @@ def get_unified_hygiene_validator(project_root: Path = None) -> UnifiedHygieneVa
 
 
 # Convenience functions for backward compatibility
-def find_duplicates(project_root: Path = None) -> List[Dict[str, Any]]:
+def find_duplicates(project_root: Path = None) -> list[dict[str, Any]]:
     """Find duplicate files in repository."""
     validator = get_unified_hygiene_validator(project_root)
     validator._scan_repository()
     return validator._find_duplicates()
 
 
-def find_orphans(project_root: Path = None) -> List[Dict[str, Any]]:
+def find_orphans(project_root: Path = None) -> list[dict[str, Any]]:
     """Find orphan (dead code) files in repository."""
     validator = get_unified_hygiene_validator(project_root)
     validator._scan_repository()
     return validator._find_orphans()
 
 
-def scan_tech_debt(project_root: Path = None) -> List[Dict[str, Any]]:
+def scan_tech_debt(project_root: Path = None) -> list[dict[str, Any]]:
     """Scan for technical debt markers."""
     validator = get_unified_hygiene_validator(project_root)
     validator._scan_repository()

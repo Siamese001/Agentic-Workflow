@@ -7,8 +7,8 @@ reducing noise and improving signal density in the RAG pipeline.
 import logging
 import re
 import time
-from typing import List, Dict, Set, Optional, Tuple
-from pydantic import BaseModel, Field, validator
+
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ class ContextualCompressor:
 
         logger.info(f"Initialized ContextualCompressor: threshold={similarity_threshold}, llm={use_llm}")
 
-    def _split_into_sentences(self, text: str) -> List[str]:
+    def _split_into_sentences(self, text: str) -> list[str]:
         """Split text into sentences using regex.
 
         Args:
@@ -97,7 +97,7 @@ class ContextualCompressor:
 
         return len(intersection) / len(union)
 
-    def _extract_entities(self, text: str) -> Set[str]:
+    def _extract_entities(self, text: str) -> set[str]:
         """Extract named entities from text using simple patterns.
 
         Args:
@@ -114,7 +114,7 @@ class ContextualCompressor:
 
         return entities
 
-    def _compress_heuristic(self, chunks: List[str], query: str) -> str:
+    def _compress_heuristic(self, chunks: list[str], query: str) -> str:
         """Compress using heuristic Jaccard similarity.
 
         Args:
@@ -195,7 +195,7 @@ class ContextualCompressor:
 
         return compressed_text
 
-    async def _compress_llm(self, chunks: List[str], query: str) -> str:
+    async def _compress_llm(self, chunks: list[str], query: str) -> str:
         """Compress using LLM extraction.
 
         Args:
@@ -210,7 +210,7 @@ class ContextualCompressor:
 
         # Import LLM client
         try:
-            from .multi_provider_clients import get_client, Provider
+            from .multi_provider_clients import Provider, get_client
 
             client = get_client(Provider.ANTHROPIC)
 
@@ -236,7 +236,7 @@ Extracted sentences:"""
             # Fallback to heuristic
             return self._compress_heuristic(chunks, query)
 
-    def compress(self, chunks: List[str], query: str, use_llm: Optional[bool] = None) -> CompressionResult:
+    def compress(self, chunks: list[str], query: str, use_llm: bool | None = None) -> CompressionResult:
         """Compress retrieved chunks to extract relevant sentences.
 
         Args:
@@ -290,7 +290,7 @@ Extracted sentences:"""
 
 
 # Convenience function for direct usage
-def compress_chunks(chunks: List[str], query: str, similarity_threshold: float = 0.1) -> str:
+def compress_chunks(chunks: list[str], query: str, similarity_threshold: float = 0.1) -> str:
     """Compress chunks using default settings.
 
     Args:

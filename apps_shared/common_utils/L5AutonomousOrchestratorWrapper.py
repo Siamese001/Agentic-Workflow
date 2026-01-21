@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 L5 Autonomous Orchestrator - Thin Wrapper
 Delegates to consolidated core orchestrator in agentic_core/core/orchestrator_main.py
@@ -14,16 +15,12 @@ by routing all orchestration through the consolidated AtomicBlackboard-integrate
 """
 import asyncio
 import logging
-import re
-from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
-from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
+
+from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -43,7 +40,7 @@ async def run_l5_outreach_orchestrator(campaign_id: str, Archetype: str='RECRUIT
     Returns:
         Workflow execution results
     """
-    Logger.info(f'🚀 L5 Outreach Orchestrator (Wrapper)')
+    Logger.info('🚀 L5 Outreach Orchestrator (Wrapper)')
     Logger.info(f'   Campaign: {campaign_id}')
     Logger.info(f'   Archetype: {Archetype}')
     config: Any = OrchestratorConfig(max_cycles=max_cycles, quality_threshold=quality_threshold, enable_intervention=enable_intervention)

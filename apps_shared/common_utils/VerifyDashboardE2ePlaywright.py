@@ -20,12 +20,13 @@ Usage:
 """
 import argparse
 import subprocess
-import time
 import sys
+import time
 from pathlib import Path
 
 try:
-    from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
+    from playwright.sync_api import sync_playwright
 except ImportError:
     print("❌ ERROR: Playwright not installed")
     print("   Install with: pip install playwright")
@@ -276,10 +277,10 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
             print("\n" + "=" * 80)
             print("✅ DASHBOARD VERIFICATION PASSED")
             print("=" * 80)
-            print(f"✓ HTTP 200 OK")
+            print("✓ HTTP 200 OK")
             print(f"✓ {row_count} territory rows rendered")
             print(f"✓ TOTAL row: {total_agents} agents")
-            print(f"✓ No JavaScript errors")
+            print("✓ No JavaScript errors")
             print(f"✓ Screenshot: {screenshot_path.name}")
             print("=" * 80)
 

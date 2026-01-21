@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Ephemeral VM with Isolation and Auto-Teardown.
 
 Phase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)
@@ -8,16 +9,13 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from enum import Enum
+from typing import Any
+
 from agentic_core.L2_execution.ToolRegistry.firecracker_manager_impl import FirecrackerManager
 from agentic_core.L2_execution.ToolRegistry.firecracker_manager_types import VMConfig
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -38,7 +36,7 @@ class IsolationConfig:
     max_memory_mb: int = 512
     max_execution_time_seconds: int = 60
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {'level': self.level.value, 'allow_network': self.allow_network, 'allow_filesystem': self.allow_filesystem, 'allow_subprocess': self.allow_subprocess, 'max_cpu_percent': self.max_cpu_percent, 'max_memory_mb': self.max_memory_mb, 'max_execution_time_seconds': self.max_execution_time_seconds}
 
@@ -47,12 +45,12 @@ class ExecutionResult:
     """Result from code execution in VM."""
     success: bool
     output: str
-    error: Optional[str] = None
+    error: str | None = None
     execution_time_seconds: float = 0.0
     exit_code: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {'success': self.success, 'output': self.output, 'error': self.error, 'execution_time_seconds': self.execution_time_seconds, 'exit_code': self.exit_code, 'metadata': self.metadata}
 
@@ -67,7 +65,7 @@ class EphemeralVm:
     - Network isolation
     """
 
-    def __init__(self, vm_manager: FirecrackerManager, IsolationConfig: Optional[IsolationConfig]=None, enable_logging: bool=True):
+    def __init__(self, vm_manager: FirecrackerManager, IsolationConfig: IsolationConfig | None=None, enable_logging: bool=True):
         """Initialize ephemeral VM.
 
         Args:
@@ -82,7 +80,7 @@ class EphemeralVm:
         if self.enable_logging:
             LOGGER.info('ephemeral_vm_initialized', extra={'isolation': self.IsolationConfig.to_dict()})
 
-    async def execute_code(self, code: str, language: str='python', timeout_seconds: Optional[int]=None) -> ExecutionResult:
+    async def execute_code(self, code: str, language: str='python', timeout_seconds: int | None=None) -> ExecutionResult:
         """Execute code in ephemeral VM.
         Args:
             code: Code to execute
@@ -203,7 +201,7 @@ class EphemeralVm:
         except Exception as e:
             return ExecutionResult(success=False, output='', error=str(e), exit_code=1)
 
-def create_ephemeral_vm(vm_manager: Optional[FirecrackerManager]=None, IsolationConfig: Optional[IsolationConfig]=None) -> EphemeralVM:
+def create_ephemeral_vm(vm_manager: FirecrackerManager | None=None, IsolationConfig: IsolationConfig | None=None) -> EphemeralVM:
     """Factory function to create ephemeral VM.
 
     Args:

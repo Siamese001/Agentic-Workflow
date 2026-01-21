@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 ReportingAgent: Sovereign Compliance Diagnostic Visualizer
 
@@ -26,15 +28,15 @@ Placed in observability/compliance per SSOT semantic registry:
 Depth: agentic_core/observability/compliance/reporting_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 """
-from pathlib import Path
-from typing import Dict, Any, List, Optional
-from agentic_core.utils.ssot_discovery import get_python_files
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_EXCLUDED_FOLDERS,      # Comprehensive exclusion set (.git, venv, __pycache__, etc.)
+    SOVEREIGN_EXCLUDED_FOLDERS,  # Comprehensive exclusion set (.git, venv, __pycache__, etc.)
 )
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.ssot_discovery import get_python_files
 
 # Additional reporting-specific exclusions (stubs, backups)
 SCOPE_SUMMARY_EXCLUSIONS = {
@@ -49,11 +51,11 @@ try:
 except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+
 
 @dataclass
 class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -75,7 +77,7 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.project_root = project_root.resolve()
         # Union of general sovereign exclusions + reporting-specific
         self.exclude_dirs = SOVEREIGN_EXCLUDED_FOLDERS | SCOPE_SUMMARY_EXCLUSIONS
-        self.metrics_agent: Optional[MetricsAgent] = None
+        self.metrics_agent: MetricsAgent | None = None
 
         if METRICS_AGENT_AVAILABLE:
             try:
@@ -84,7 +86,7 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 # Silent fallback — metrics optional
                 print(f"[ReportingAgent] MetricsAgent init failed (optional): {e}")
 
-    def get_folder_scope_summary(self) -> Dict[str, int]:
+    def get_folder_scope_summary(self) -> dict[str, int]:
         """
         Generate territory scope summary.
         Counts .py files per top-level sovereign folder.
@@ -98,7 +100,7 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         - Filters top-level iteration only (not recursive folder scan)
         - Excludes hidden dirs and known noise (venv, .git, etc.)
         """
-        summary: Dict[str, int] = {}
+        summary: dict[str, int] = {}
 
         for folder_path in self.project_root.iterdir():
             if not folder_path.is_dir():
@@ -159,7 +161,7 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         _walk_directory(start_path, depth=1)
         return "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(tree_lines)
 
-    def _get_compliance_metrics(self) -> Dict[str, Any]:
+    def _get_compliance_metrics(self) -> dict[str, Any]:
         """
         Pull live compliance metrics from MetricsAgent (if available).
 
@@ -184,7 +186,7 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         except Exception:
             return {}
 
-    def run_diagnostic_report(self) -> Dict[str, Any]:
+    def run_diagnostic_report(self) -> dict[str, Any]:
         """
         Generate complete diagnostic report.
         Combines:
@@ -213,7 +215,7 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Observability agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()

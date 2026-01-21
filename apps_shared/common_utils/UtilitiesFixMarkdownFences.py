@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Fix markdown code fences in Python files.
 Removes ```python and ``` from files that have them.
@@ -6,13 +7,12 @@ Removes ```python and ``` from files that have them.
 import re
 from pathlib import Path
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 def fix_markdown_fences(file_path: str) -> bool:
     """Remove markdown code fences from a Python file."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             content: Any = f.read()
         if '```python' not in content and '```' not in content:
             return False

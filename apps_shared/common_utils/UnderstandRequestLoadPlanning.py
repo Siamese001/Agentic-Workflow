@@ -5,11 +5,11 @@ including parameter extraction, validation rules, and configuration mapping.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -49,19 +49,19 @@ class ConfigParameter:
     value: Any
     type: str
     required: bool = False
-    default_value: Optional[Any] = None
+    default_value: Any | None = None
     description: str = ""
-    validation_rules: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    validation_rules: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ConfigSection:
     """Information about a configuration section."""
     name: str
-    parameters: List[ConfigParameter] = field(default_factory=list)
-    subsections: List['ConfigSection'] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    parameters: list[ConfigParameter] = field(default_factory=list)
+    subsections: list['ConfigSection'] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -72,7 +72,7 @@ class ValidationRule:
     condition: str
     error_message: str
     severity: str = "error"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -82,12 +82,12 @@ class ConfigLoadPlan:
     name: str
     config_type: ConfigType
     scope: ConfigScope
-    sections: List[ConfigSection] = field(default_factory=list)
-    validation_rules: List[ValidationRule] = field(default_factory=list)
+    sections: list[ConfigSection] = field(default_factory=list)
+    validation_rules: list[ValidationRule] = field(default_factory=list)
     validation_level: ValidationLevel = ValidationLevel.BASIC
     enable_caching: bool = True
     cache_ttl: int = 600
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -105,26 +105,26 @@ class ConfigLoadConfig:
 class ConfigLoadResult:
     """Result of config load planning."""
     success: bool
-    load_plan: Optional[ConfigLoadPlan] = None
+    load_plan: ConfigLoadPlan | None = None
     parameter_count: int = 0
     section_count: int = 0
     validation_rule_count: int = 0
     load_time_estimate: int = 0
     memory_estimate: int = 0
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ConfigLoadPlanner:
     """Planner for configuration loading operations."""
 
-    def __init__(self, config: Optional[ConfigLoadConfig] = None):
+    def __init__(self, config: ConfigLoadConfig | None = None):
         self.config = config or ConfigLoadConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
-    def plan_load(self, load_request: Dict[str, Any]) -> ConfigLoadResult:
+    def plan_load(self, load_request: dict[str, Any]) -> ConfigLoadResult:
         """Plan configuration loading operations.
 
         Args:
@@ -210,7 +210,7 @@ class ConfigLoadPlanner:
                 }
             )
 
-    def _validate_request(self, request: Dict[str, Any]) -> None:
+    def _validate_request(self, request: dict[str, Any]) -> None:
         """Validate config load planning request."""
         if not request:
             raise ValueError("Config load planning request cannot be empty")
@@ -221,7 +221,7 @@ class ConfigLoadPlanner:
         if "config_type" not in request:
             raise ValueError("Config type is required in config load planning request")
 
-    def _parse_config_type(self, request: Dict[str, Any]) -> ConfigType:
+    def _parse_config_type(self, request: dict[str, Any]) -> ConfigType:
         """Parse config type from request."""
         type_mapping = {
             "system_config": ConfigType.SYSTEM_CONFIG,
@@ -235,7 +235,7 @@ class ConfigLoadPlanner:
         config_type_str = request.get("config_type", "app_config")
         return type_mapping.get(config_type_str, ConfigType.APP_CONFIG)
 
-    def _parse_scope(self, request: Dict[str, Any]) -> ConfigScope:
+    def _parse_scope(self, request: dict[str, Any]) -> ConfigScope:
         """Parse scope from request."""
         scope_mapping = {
             "global": ConfigScope.GLOBAL,
@@ -249,7 +249,7 @@ class ConfigLoadPlanner:
         scope_str = request.get("scope", "project")
         return scope_mapping.get(scope_str, ConfigScope.PROJECT)
 
-    def _parse_validation_level(self, request: Dict[str, Any]) -> ValidationLevel:
+    def _parse_validation_level(self, request: dict[str, Any]) -> ValidationLevel:
         """Parse validation level from request."""
         level_mapping = {
             "none": ValidationLevel.NONE,
@@ -261,7 +261,7 @@ class ConfigLoadPlanner:
         level_str = request.get("validation_level", self.config.default_validation_level)
         return level_mapping.get(level_str, ValidationLevel.BASIC)
 
-    def _parse_sections(self, request: Dict[str, Any]) -> List[ConfigSection]:
+    def _parse_sections(self, request: dict[str, Any]) -> list[ConfigSection]:
         """Parse sections from request."""
         sections = []
         raw_sections = request.get("sections", [])
@@ -307,7 +307,7 @@ class ConfigLoadPlanner:
 
         return sections
 
-    def _parse_subsections(self, raw_subsections: List[Dict[str, Any]]) -> List[ConfigSection]:
+    def _parse_subsections(self, raw_subsections: list[dict[str, Any]]) -> list[ConfigSection]:
         """Parse subsections recursively."""
         subsections = []
 
@@ -346,7 +346,7 @@ class ConfigLoadPlanner:
 
         return subsections
 
-    def _parse_validation_rules(self, request: Dict[str, Any]) -> List[ValidationRule]:
+    def _parse_validation_rules(self, request: dict[str, Any]) -> list[ValidationRule]:
         """Parse validation rules from request."""
         rules = []
         raw_rules = request.get("validation_rules", [])
@@ -367,11 +367,11 @@ class ConfigLoadPlanner:
 
     def _create_load_plan(
         self,
-        request: Dict[str, Any],
+        request: dict[str, Any],
         config_type: ConfigType,
         scope: ConfigScope,
-        sections: List[ConfigSection],
-        validation_rules: List[ValidationRule],
+        sections: list[ConfigSection],
+        validation_rules: list[ValidationRule],
         validation_level: ValidationLevel
     ) -> ConfigLoadPlan:
         """Create config load plan from parsed components."""
@@ -467,11 +467,11 @@ def plan_config_load(
     plan_name: str,
     config_type: str,
     scope: str = "project",
-    sections: Optional[List[Dict[str, Any]]] = None,
-    validation_rules: Optional[List[Dict[str, Any]]] = None,
+    sections: list[dict[str, Any]] | None = None,
+    validation_rules: list[dict[str, Any]] | None = None,
     validation_level: str = "basic",
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Plan config load from simple parameters.
 
     Args:
@@ -502,7 +502,7 @@ def plan_config_load(
     result = planner.plan_load(request)
 
     # Convert result to dict for JSON serialization
-    def serialize_section(section: ConfigSection) -> Dict[str, Any]:
+    def serialize_section(section: ConfigSection) -> dict[str, Any]:
         """Serialize a ConfigSection to a dictionary for JSON output."""
         return {
             "name": section.name,

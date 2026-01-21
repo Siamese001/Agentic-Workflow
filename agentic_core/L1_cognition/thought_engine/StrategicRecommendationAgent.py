@@ -20,17 +20,17 @@ Purpose:
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-from dataclasses import dataclass
 
 import json
 import logging
 import re
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
+from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class StrategicRecommendationAgent(SubatomicTestingMixin, HealerMixin):
     - Integrated into report generator → injects into autonomy_dashboard.html
     """
 
-    def __init__(self, project_root: Optional[Path] = None, llm_client: Any = None) -> None:
+    def __init__(self, project_root: Path | None = None, llm_client: Any = None) -> None:
         """
         Initialize Strategic Recommendation Agent.
 
@@ -59,7 +59,7 @@ class StrategicRecommendationAgent(SubatomicTestingMixin, HealerMixin):
         self.llm_client = llm_client
         log.info("[L3 STRATEGIC] StrategicRecommendationAgent initialized")
 
-    def plan(self, dashboard_data: List[Dict[str, Any]]) -> str:
+    def plan(self, dashboard_data: list[dict[str, Any]]) -> str:
         """
         Generate strategic prompt from data patterns.
 
@@ -70,7 +70,7 @@ class StrategicRecommendationAgent(SubatomicTestingMixin, HealerMixin):
             Structured prompt for LLM to generate recommendations
         """
         # Identify key gaps (handle None and "N/A" values gracefully)
-        def safe_get(row: Dict, key: str, default: float = 0) -> float:
+        def safe_get(row: dict, key: str, default: float = 0) -> float:
             val = row.get(key, default)
             if val is None or val == "N/A":
                 return default
@@ -122,7 +122,7 @@ Output strict JSON:
 """
         return prompt
 
-    def act(self, plan: str, dashboard_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def act(self, plan: str, dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Call LLM with structured prompt or generate fallback recommendations.
 
@@ -143,7 +143,7 @@ Output strict JSON:
         # Fallback: Generate rule-based recommendations
         return self._generate_fallback_recommendations(dashboard_data)
 
-    def _parse_llm_response(self, response: str) -> Dict[str, Any]:
+    def _parse_llm_response(self, response: str) -> dict[str, Any]:
         """
         Parse LLM response to extract JSON.
 
@@ -162,7 +162,7 @@ Output strict JSON:
                 return json.loads(json_match.group(0))
             return {"review": "Parsing failed", "recommendations": []}
 
-    def _generate_fallback_recommendations(self, dashboard_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _generate_fallback_recommendations(self, dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Generate rule-based recommendations when LLM is unavailable.
 
@@ -178,7 +178,7 @@ Output strict JSON:
             Dict with review, macro_observations, metric_observations, and recommendations
         """
         # Helper for None-safe value extraction (handles "N/A" strings)
-        def safe_val(row: Dict, key: str, default: float = 0) -> float:
+        def safe_val(row: dict, key: str, default: float = 0) -> float:
             val = row.get(key, default)
             if val is None or val == "N/A":
                 return default
@@ -376,7 +376,7 @@ Output strict JSON:
             "recommendations": formatted_recs[:10]
         }
 
-    def run(self, dashboard_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def run(self, dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Full execution: Generate strategic recommendations from dashboard data.
 
@@ -391,6 +391,6 @@ Output strict JSON:
         return result
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, int]:
         """Invoke healing chain via super()."""
         return super().heal_repository(dry_run=dry_run, **kwargs)

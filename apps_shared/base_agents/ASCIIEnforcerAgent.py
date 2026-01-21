@@ -5,11 +5,14 @@ Originally from: ContentCleanlinessValidatorAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Dict, Tuple
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class ASCIIEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -47,7 +50,7 @@ class ASCIIEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return text
 
-    def validate(self, text: str) -> Tuple[bool, str]:
+    def validate(self, text: str) -> tuple[bool, str]:
         """
         Validate that text contains only ASCII characters.
 
@@ -60,11 +63,11 @@ class ASCIIEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         try:
             text.encode("ascii")
             return True, ""
-        except UnicodeEncodeError as e:
+        except UnicodeEncodeError:
             non_ascii_chars = [c for c in text if ord(c) > 127]
             return False, f"Non-ASCII characters: {set(non_ascii_chars[:5])}"
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

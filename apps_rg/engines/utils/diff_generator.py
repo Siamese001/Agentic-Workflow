@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Diff/Patch Generator (DPG) — Phase 2 Tool
 
@@ -13,7 +14,7 @@ Part of the Tool Registry Enhancement Roadmap.
 import difflib
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -58,12 +59,12 @@ class DiffResult:
     success: bool
     diff: str
     format: str
-    stats: Dict[str, int] = field(default_factory=dict)
+    stats: dict[str, int] = field(default_factory=dict)
     patch_applicable: bool = True
-    warnings: List[str] = field(default_factory=list)
-    error: Optional[str] = None
+    warnings: list[str] = field(default_factory=list)
+    error: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "success": self.success,
             "diff": self.diff,
@@ -82,10 +83,10 @@ class PatchResult:
     patched_content: str
     hunks_applied: int = 0
     hunks_failed: int = 0
-    warnings: List[str] = field(default_factory=list)
-    error: Optional[str] = None
+    warnings: list[str] = field(default_factory=list)
+    error: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "success": self.success,
             "patched_content": self.patched_content,
@@ -344,7 +345,7 @@ def apply_patch(
         )
 
 
-def validate_patch(original: str, patch: str) -> Dict[str, Any]:
+def validate_patch(original: str, patch: str) -> dict[str, Any]:
     """
     Validate that a patch can be applied to the original content.
 
@@ -417,9 +418,9 @@ def validate_patch(original: str, patch: str) -> Dict[str, Any]:
 # =============================================================================
 
 def _calculate_diff_stats(
-    original_lines: List[str],
-    modified_lines: List[str]
-) -> Dict[str, int]:
+    original_lines: list[str],
+    modified_lines: list[str]
+) -> dict[str, int]:
     """Calculate statistics about the diff."""
     matcher = difflib.SequenceMatcher(None, original_lines, modified_lines)
 
@@ -445,7 +446,7 @@ def _calculate_diff_stats(
     }
 
 
-def _parse_unified_diff(patch: str) -> List[Dict[str, Any]]:
+def _parse_unified_diff(patch: str) -> list[dict[str, Any]]:
     """Parse a unified diff into hunks."""
     hunks = []
     current_hunk = None
@@ -482,8 +483,8 @@ def _parse_unified_diff(patch: str) -> List[Dict[str, Any]]:
 
 
 def _apply_hunk(
-    lines: List[str],
-    hunk: Dict[str, Any]
+    lines: list[str],
+    hunk: dict[str, Any]
 ) -> tuple:
     """Apply a single hunk to lines."""
     start = hunk["original_start"] - 1
@@ -522,7 +523,7 @@ def _apply_hunk(
         return False, lines, f"Failed to apply hunk at line {start+1}: {e}"
 
 
-def _reverse_hunk(hunk: Dict[str, Any]) -> Dict[str, Any]:
+def _reverse_hunk(hunk: dict[str, Any]) -> dict[str, Any]:
     """Reverse a hunk (swap additions and deletions)."""
     reversed_lines = []
     for line in hunk["lines"]:
@@ -544,7 +545,7 @@ def _reverse_hunk(hunk: Dict[str, Any]) -> Dict[str, Any]:
 # MAIN ENTRY POINT
 # =============================================================================
 
-def generate_diff(args: DiffGeneratorArgs) -> Dict[str, Any]:
+def generate_diff(args: DiffGeneratorArgs) -> dict[str, Any]:
     """
     Main entry point for diff generation.
 
@@ -613,7 +614,7 @@ def quick_html_diff(original: str, modified: str) -> str:
     return result.get("diff", "")
 
 
-def diff_stats(original: str, modified: str) -> Dict[str, int]:
+def diff_stats(original: str, modified: str) -> dict[str, int]:
     """Get statistics about changes between two strings."""
     original_lines = original.splitlines(keepends=True)
     modified_lines = modified.splitlines(keepends=True)

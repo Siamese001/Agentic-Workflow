@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Fix circular imports in agentic_core by converting absolute imports to relative imports.
 
@@ -9,15 +10,9 @@ This script:
 """
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 def calculate_relative_import(file_path: Path, import_path: str, project_root: Path) -> str:
@@ -70,7 +65,7 @@ def calculate_relative_import(file_path: Path, import_path: str, project_root: P
         return f'{dots}{import_path}'
     return f'..{import_path}'
 
-def fix_imports_in_file(file_path: Path, agentic_core_root: Path, dry_run: bool=False) -> Tuple[int, List[str]]:
+def fix_imports_in_file(file_path: Path, agentic_core_root: Path, dry_run: bool=False) -> tuple[int, list[str]]:
     """
     Fix imports in a single file.
 
@@ -78,7 +73,7 @@ def fix_imports_in_file(file_path: Path, agentic_core_root: Path, dry_run: bool=
         Tuple of (number of changes, list of changes made)
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             content: Any = f.read()
     except Exception as e:
         return (0, [f'ERROR reading {file_path}: {e}'])

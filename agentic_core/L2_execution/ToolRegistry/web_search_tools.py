@@ -1,19 +1,17 @@
 from __future__ import annotations
+
 """
 Sovereign Brave Search MCP Client — L2 Execution Layer
 Phase 13F: Full MCP integration via L3 router with unified output formatting
 Tool ID Prefix: ACT-001
 """
-import logging
 import json
-from typing import Any, Dict, List, Optional
+import logging
+from typing import Any
+
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger('ActionRegistry.WebSearch')
 
@@ -50,7 +48,7 @@ class WebSearchTools:
             Logger.error(f'[L2 WEB SEARCH] MCP call failed: {e}')
             return f'Search Error: {str(e)}'
 
-    async def search_local(self, query: str, location: Optional[str]=None) -> str:
+    async def search_local(self, query: str, location: str | None=None) -> str:
         """
         Geographic/Business search via Brave MCP.
 
@@ -97,7 +95,7 @@ class WebSearchTools:
         except (json.JSONDecodeError, TypeError):
             return content
 
-    def _format_web_json(self, data: Dict) -> str:
+    def _format_web_json(self, data: dict) -> str:
         """
         Formats web search results into standardized output.
 
@@ -118,7 +116,7 @@ class WebSearchTools:
             formatted.append(f'Title: {title}\nSummary: {summary}\nLink: {url}\n---')
         return '\n'.join(formatted)
 
-    def _format_local_json(self, data: Dict) -> str:
+    def _format_local_json(self, data: dict) -> str:
         """
         Formats local search results into standardized output.
 

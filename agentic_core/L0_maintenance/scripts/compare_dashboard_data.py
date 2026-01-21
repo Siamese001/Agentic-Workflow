@@ -7,7 +7,7 @@ Validates every cell to ensure data fidelity
 import json
 import re
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 def extract_monolithic_data():
     """Extract dashboard data from monolithic backup HTML"""
@@ -17,7 +17,7 @@ def extract_monolithic_data():
         print(f"❌ Backup file not found: {backup_path}")
         return None
 
-    with open(backup_path, 'r', encoding='utf-8') as f:
+    with open(backup_path, encoding='utf-8') as f:
         html_content = f.read()
 
     # Find the dashboardData JSON in the HTML (handles both formats)
@@ -40,7 +40,7 @@ def load_modular_data():
         print(f"❌ Modular data file not found: {data_path}")
         return None
 
-    with open(data_path, 'r', encoding='utf-8') as f:
+    with open(data_path, encoding='utf-8') as f:
         js_content = f.read()
 
     # Extract the JSON array from window.dashboardData

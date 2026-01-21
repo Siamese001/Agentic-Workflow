@@ -14,31 +14,19 @@ Usage:
     python run_dashboard_pipeline.py --watch      # Run with auto-reload
     python run_dashboard_pipeline.py --skip-tests # Skip tests (dev mode)
 """
+import argparse
+import importlib.util
 import subprocess
 import sys
 import time
 import webbrowser
 from pathlib import Path
-from typing import Optional
-import argparse
-import importlib.util
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+
 
 class DashboardPipeline:
     """Orchestrates the complete dashboard generation and deployment pipeline."""
@@ -49,7 +37,7 @@ class DashboardPipeline:
         self.skip_tests = skip_tests
         self.watch = watch
         self.keep_server = keep_server
-        self.server_process: Optional[subprocess.Popen] = None
+        self.server_process: subprocess.Popen | None = None
 
     def print_header(self, title: str):
         """Print a formatted section header."""
@@ -81,7 +69,7 @@ class DashboardPipeline:
             print(result.stdout)
 
             if result.returncode != 0:
-                print(f"❌ Dashboard generation FAILED")
+                print("❌ Dashboard generation FAILED")
                 print(result.stderr)
                 return False
 
@@ -117,7 +105,7 @@ class DashboardPipeline:
             print(result.stdout)
 
             if result.returncode != 0:
-                print(f"❌ TESTS FAILED - Cannot proceed to deployment")
+                print("❌ TESTS FAILED - Cannot proceed to deployment")
                 print(result.stderr)
                 return False
 
@@ -159,7 +147,7 @@ class DashboardPipeline:
             # Check if server is still running
             if self.server_process.poll() is not None:
                 stdout, stderr = self.server_process.communicate()
-                print(f"❌ Server failed to start")
+                print("❌ Server failed to start")
                 print(stdout)
                 print(stderr)
                 return False

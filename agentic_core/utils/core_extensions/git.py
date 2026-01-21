@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SovereignGitClient - Audited Git Operations
 
@@ -10,28 +11,14 @@ Routes all Git operations through controlled plane with:
 import logging
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    TESTS_DIR,
+)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.security import safe_git_execute
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
 
 Logger = logging.getLogger(__name__)
 
@@ -39,7 +26,7 @@ Logger = logging.getLogger(__name__)
 class SovereignGitClient(MCPHardenedMixin, HealerMixin):
     """Sovereign Git client - audit + safe exec for all Git operations."""
 
-    def __init__(self, repo_root: Optional[Path] = None):
+    def __init__(self, repo_root: Path | None = None):
         """
         Initialize Git client.
 
@@ -48,10 +35,10 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
         """
         super().__init__()
         self.repo_root = repo_root or Path.cwd()
-        self.audit_log: List[Dict[str, Any]] = []
+        self.audit_log: list[dict[str, Any]] = []
         self._mcp_audit('init')
 
-    def _audit(self, operation: str, payload: Dict[str, Any], result: Any) -> None:
+    def _audit(self, operation: str, payload: dict[str, Any], result: Any) -> None:
         """Record operation to audit log."""
         self.audit_log.append({
             'operation': operation,
@@ -59,7 +46,7 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
             'success': result.get('success', False) if isinstance(result, dict) else True
         })
 
-    def _run_git(self, args: List[str]) -> Dict[str, Any]:
+    def _run_git(self, args: list[str]) -> dict[str, Any]:
         """Execute git command safely using safe_git_execute wrapper."""
         try:
             result = safe_git_execute(
@@ -85,7 +72,7 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
                 'error': 'Git command timed out'
             }
 
-    def execute(self, operation: str, **payload) -> Dict[str, Any]:
+    def execute(self, operation: str, **payload) -> dict[str, Any]:
         """
         Route Git operations safely via dispatch pattern.
 
@@ -116,46 +103,46 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
         self._audit(operation, payload, result)
         return result
 
-    def _handle_commit(self, message: str = 'Sovereign commit', files: List[str] = None, **kwargs) -> Dict[str, Any]:
+    def _handle_commit(self, message: str = 'Sovereign commit', files: list[str] = None, **kwargs) -> dict[str, Any]:
         """Sub-atomic commit handler."""
         if files:
             for f in files:
                 self._run_git(['add', str(f)])
         return self._run_git(['commit', '-m', message])
 
-    def _handle_push(self, branch: str = 'HEAD', remote: str = 'origin', **kwargs) -> Dict[str, Any]:
+    def _handle_push(self, branch: str = 'HEAD', remote: str = 'origin', **kwargs) -> dict[str, Any]:
         """Sub-atomic push handler."""
         return self._run_git(['push', remote, branch])
 
-    def _handle_pull(self, remote: str = 'origin', branch: str = '', **kwargs) -> Dict[str, Any]:
+    def _handle_pull(self, remote: str = 'origin', branch: str = '', **kwargs) -> dict[str, Any]:
         """Sub-atomic pull handler."""
         args = ['pull', remote]
         if branch:
             args.append(branch)
         return self._run_git(args)
 
-    def _handle_status(self, **kwargs) -> Dict[str, Any]:
+    def _handle_status(self, **kwargs) -> dict[str, Any]:
         """Sub-atomic status handler."""
         return self._run_git(['status', '--porcelain'])
 
-    def _handle_diff(self, file: str = '', **kwargs) -> Dict[str, Any]:
+    def _handle_diff(self, file: str = '', **kwargs) -> dict[str, Any]:
         """Sub-atomic diff handler."""
         args = ['diff']
         if file:
             args.append(str(file))
         return self._run_git(args)
 
-    def _handle_log(self, count: int = 10, **kwargs) -> Dict[str, Any]:
+    def _handle_log(self, count: int = 10, **kwargs) -> dict[str, Any]:
         """Sub-atomic log handler."""
         return self._run_git(['log', f'-{count}', '--oneline'])
 
-    def _handle_checkout(self, branch: str = '', **kwargs) -> Dict[str, Any]:
+    def _handle_checkout(self, branch: str = '', **kwargs) -> dict[str, Any]:
         """Sub-atomic checkout handler."""
         if not branch:
             return {'success': False, 'error': 'Branch required for checkout'}
         return self._run_git(['checkout', branch])
 
-    def _handle_branch(self, action: str = 'list', name: str = '', **kwargs) -> Dict[str, Any]:
+    def _handle_branch(self, action: str = 'list', name: str = '', **kwargs) -> dict[str, Any]:
         """Sub-atomic branch handler with action dispatch."""
         if action == 'list':
             return self._run_git(['branch', '-a'])

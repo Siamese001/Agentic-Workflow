@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 """PII Vault for protecting sensitive information.
 
 Grafted from monolith with Presidio-based PII detection and redaction.
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ class PIIVault:
             self.analyzer = None
             self.anonymizer = None
 
-        self._mappings: Dict[str, Dict[str, str]] = {}
+        self._mappings: dict[str, dict[str, str]] = {}
         LOGGER.info("PII Vault initialized")
 
     def redact(self, session_id: str, text: str) -> str:
@@ -140,7 +141,7 @@ class PIIVault:
             del self._mappings[session_id]
             LOGGER.info(f"Cleared PII mappings for session {session_id}")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get vault statistics.
 
         Returns:

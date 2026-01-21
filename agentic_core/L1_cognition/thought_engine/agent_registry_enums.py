@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 """Enum types for AgentRegistry."""
 import logging
-from enum import Enum, auto
+from enum import Enum
 from typing import Any
+
 _logger = logging.getLogger(__name__)
 
 class AgentCapability(Enum):

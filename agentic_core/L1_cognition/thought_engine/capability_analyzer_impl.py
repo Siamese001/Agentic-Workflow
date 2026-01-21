@@ -1,18 +1,22 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-import re
 import time
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.planning.capability_analyzer_types import AnalysisReport, CapabilityGap, CapabilityGapType, Recommendation, RecommendationType
+from typing import Any
+
+from agentic_core.L1_cognition.planning.capability_analyzer_types import (
+    AnalysisReport,
+    CapabilityGap,
+    CapabilityGapType,
+    Recommendation,
+    RecommendationType,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -34,12 +38,12 @@ class CapabilityAnalyzer:
             enable_logging: Enable logging
         """
         self.enable_logging = enable_logging
-        self._gap_history: Dict[str, List[CapabilityGap]] = {}
-        self._recommendation_history: Dict[str, List[Recommendation]] = {}
+        self._gap_history: dict[str, list[CapabilityGap]] = {}
+        self._recommendation_history: dict[str, list[Recommendation]] = {}
         if self.enable_logging:
             LOGGER.info('capability_analyzer_initialized')
 
-    def analyze_failures(self, agent_id: str, failure_reports: List[Dict[str, Any]]) -> List[CapabilityGap]:
+    def analyze_failures(self, agent_id: str, failure_reports: list[dict[str, Any]]) -> list[CapabilityGap]:
         """Analyze failure reports to identify capability gaps.
 
         Args:
@@ -49,7 +53,7 @@ class CapabilityAnalyzer:
         Returns:
             List of identified capability gaps
         """
-        gaps: List[CapabilityGap] = []
+        gaps: list[CapabilityGap] = []
         failure_patterns: Any = self._identify_failure_patterns(failure_reports)
         for pattern_type, pattern_failures in failure_patterns.items():
             gap: Any = self._create_gap_from_pattern(agent_id=agent_id, pattern_type=pattern_type, failures=pattern_failures)
@@ -62,7 +66,7 @@ class CapabilityAnalyzer:
             LOGGER.info('capability_gaps_identified', EXTRA={'agent_id': agent_id, 'gap_count': len(gaps)})
         return gaps
 
-    def generate_recommendations(self, agent_id: str, gaps: List[CapabilityGap]) -> List[Recommendation]:
+    def generate_recommendations(self, agent_id: str, gaps: list[CapabilityGap]) -> list[Recommendation]:
         """Generate improvement recommendations for capability gaps.
 
         Args:
@@ -72,7 +76,7 @@ class CapabilityAnalyzer:
         Returns:
             List of recommendations
         """
-        recommendations: List[Recommendation] = []
+        recommendations: list[Recommendation] = []
         for gap in gaps:
             recs: Any = self._generate_recommendations_for_gap(gap)
             recommendations.extend(recs)
@@ -84,7 +88,7 @@ class CapabilityAnalyzer:
             LOGGER.info('recommendations_generated', EXTRA={'agent_id': agent_id, 'recommendation_count': len(recommendations)})
         return recommendations
 
-    def create_analysis_report(self, agent_id: str, failure_reports: List[Dict[str, Any]]) -> AnalysisReport:
+    def create_analysis_report(self, agent_id: str, failure_reports: list[dict[str, Any]]) -> AnalysisReport:
         """Create complete capability gap analysis report.
 
         Args:
@@ -100,7 +104,7 @@ class CapabilityAnalyzer:
         report: Any = AnalysisReport(report_id=f'analysis_{agent_id}_{int(time.time())}', agent_id=agent_id, gaps_identified=gaps, recommendations=recommendations, overall_health_score=health_score, analysis_timestamp=time.time())
         return report
 
-    def _identify_failure_patterns(self, failure_reports: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+    def _identify_failure_patterns(self, failure_reports: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
         """Identify common failure patterns.
 
         Args:
@@ -109,7 +113,7 @@ class CapabilityAnalyzer:
         Returns:
             Dict mapping pattern type to failures
         """
-        patterns: Dict[str, List[Dict[str, Any]]] = {}
+        patterns: dict[str, list[dict[str, Any]]] = {}
         for report in failure_reports:
             error_type = report.get('error_type', 'unknown')
             if 'tool' in error_type.lower() or 'not found' in error_type.lower():
@@ -127,7 +131,7 @@ class CapabilityAnalyzer:
             patterns[pattern_type].append(report)
         return patterns
 
-    def _create_gap_from_pattern(self, agent_id: str, pattern_type: str, failures: List[Dict[str, Any]]) -> Optional[CapabilityGap]:
+    def _create_gap_from_pattern(self, agent_id: str, pattern_type: str, failures: list[dict[str, Any]]) -> CapabilityGap | None:
         """Create capability gap from failure pattern.
 
         Args:
@@ -142,13 +146,13 @@ class CapabilityAnalyzer:
             return None
         gap_type_map = {'missing_tool': CapabilityGapType.MISSING_TOOL, 'insufficient_knowledge': CapabilityGapType.INSUFFICIENT_KNOWLEDGE, 'performance': CapabilityGapType.PERFORMANCE_DEGRADATION, 'reasoning': CapabilityGapType.REASONING_LIMITATION, 'integration': CapabilityGapType.INTEGRATION_FAILURE}
         GapType = gap_type_map.get(pattern_type, CapabilityGapType.INTEGRATION_FAILURE)
-        scenarios = list(set((f.get('scenario_id', 'unknown') for f in failures)))
+        scenarios = list({f.get('scenario_id', 'unknown') for f in failures})
         Severity = min(len(failures) / 10.0, 1.0)
         evidence = [f.get('error_message', '') for f in failures[:5]]
         gap = CapabilityGap(gap_id=f'gap_{agent_id}_{pattern_type}_{int(time.time())}', GapType=GapType, description=f"{pattern_type.replace('_', ' ').title()} detected in {len(failures)} cases", affected_scenarios=scenarios, failure_count=len(failures), Severity=Severity, evidence=evidence)
         return gap
 
-    def _generate_recommendations_for_gap(self, gap: CapabilityGap) -> List[Recommendation]:
+    def _generate_recommendations_for_gap(self, gap: CapabilityGap) -> list[Recommendation]:
         """Generate recommendations for a specific gap.
 
         Args:
@@ -157,7 +161,7 @@ class CapabilityAnalyzer:
         Returns:
             List of recommendations
         """
-        recommendations: List[Recommendation] = []
+        recommendations: list[Recommendation] = []
         if gap.GapType == CapabilityGapType.MISSING_TOOL:
             rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_add_tool', RecommendationType=RecommendationType.ADD_TOOL, title='Add Missing Tool', description=f"Add tool to handle scenarios: {', '.join(gap.affected_scenarios[:3])}", addresses_gaps=[gap.gap_id], priority=gap.Severity, implementation_steps=['Identify required tool functionality', 'Search tool registry or implement custom tool', 'Integrate tool with action plane', 'Test in Agent Gym'], estimated_impact=0.8)
             recommendations.append(rec)
@@ -172,7 +176,7 @@ class CapabilityAnalyzer:
             recommendations.append(rec)
         return recommendations
 
-    def _calculate_health_score(self, gaps: List[CapabilityGap]) -> float:
+    def _calculate_health_score(self, gaps: list[CapabilityGap]) -> float:
         """Calculate overall health score.
 
         Args:
@@ -183,7 +187,7 @@ class CapabilityAnalyzer:
         """
         if not gaps:
             return 1.0
-        total_severity = sum((g.Severity for g in gaps))
+        total_severity = sum(g.Severity for g in gaps)
         avg_severity = total_severity / len(gaps)
         health_score = 1.0 - min(avg_severity, 1.0)
         return health_score

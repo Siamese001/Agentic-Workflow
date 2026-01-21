@@ -8,7 +8,7 @@ ArchivalGatekeeper.py is a PROTECTED file that requires explicit override.
 USAGE:
     # As pre-commit hook (checks staged files)
     python scripts/security/gatekeeper_lock.py
-    
+
     # With commit message file (for commit-msg stage)
     python scripts/security/gatekeeper_lock.py --commit-msg-filename .git/COMMIT_EDITMSG
 
@@ -22,7 +22,6 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-
 
 # Protected files that require security override
 PROTECTED_FILES = [
@@ -79,21 +78,21 @@ def main() -> int:
         help='Path to commit message file (for commit-msg stage)'
     )
     args = parser.parse_args()
-    
+
     # Check for bypass
     if check_env_bypass():
         print(f"⚠️  GATEKEEPER BYPASS: {BYPASS_ENV_VAR} environment variable set")
         return 0
-    
+
     # Get staged files
     staged_files = get_staged_files()
     if not staged_files:
         return 0
-    
+
     # Normalize paths for comparison
     staged_normalized = [normalize_path(f) for f in staged_files]
     protected_normalized = [normalize_path(f) for f in PROTECTED_FILES]
-    
+
     # Check for protected file modifications
     protected_modified = []
     for protected in protected_normalized:
@@ -101,19 +100,19 @@ def main() -> int:
             if staged == protected or staged.endswith(protected):
                 protected_modified.append(protected)
                 break
-    
+
     if not protected_modified:
         return 0
-    
+
     # Protected files are being modified - check for override
     commit_message = get_commit_message(args.commit_msg_filename)
-    
+
     if check_commit_message_override(commit_message):
-        print(f"⚠️  SECURITY OVERRIDE: Allowing modification of protected files")
+        print("⚠️  SECURITY OVERRIDE: Allowing modification of protected files")
         for f in protected_modified:
             print(f"   - {f}")
         return 0
-    
+
     # No override - block the commit
     print("\n" + "="*70)
     print("🔒 GATEKEEPER LOCK: COMMIT BLOCKED")
@@ -121,20 +120,20 @@ def main() -> int:
     print("\nThe following PROTECTED files are being modified:")
     for f in protected_modified:
         print(f"   ❌ {f}")
-    
+
     print("\n" + "-"*70)
     print("ArchivalGatekeeper is a CRITICAL INFRASTRUCTURE file.")
     print("Unauthorized modifications could compromise system integrity.")
     print("-"*70)
-    
+
     print("\nTo proceed, use ONE of these methods:")
     print(f"\n  1. Add '{OVERRIDE_TOKEN}' to your commit message:")
     print(f"     git commit -m \"Fix gatekeeper bug {OVERRIDE_TOKEN}\"")
-    print(f"\n  2. Set bypass environment variable:")
+    print("\n  2. Set bypass environment variable:")
     print(f"     {BYPASS_ENV_VAR}=1 git commit -m \"your message\"")
-    
+
     print("\n" + "="*70 + "\n")
-    
+
     return 1
 
 

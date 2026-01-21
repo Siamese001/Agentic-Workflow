@@ -2,9 +2,9 @@
 file: tests/maintenance/test_tool_registry.py
 description: Test cases for the ToolRegistry to verify tool safety and discovery.
 """
-import pytest
 from pathlib import Path
-from typing import Callable
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 

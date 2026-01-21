@@ -5,18 +5,18 @@ Defines specific exception types for the L5 Multi-Agent System
 to handle Canon violations and memory synchronization errors.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class CanonError(Exception):
     """Base class for all Canon-related errors."""
 
-    def __init__(self, message: str, context: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, context: dict[str, Any] | None = None):
         super().__init__(message)
         self.message = message
         self.context = context or {}
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert exception to dictionary for logging."""
         return {
             "error_type": self.__class__.__name__,
@@ -37,16 +37,16 @@ class CanonViolationError(CanonError):
         self,
         message: str,
         violation_type: str,
-        agent_id: Optional[str] = None,
-        pattern_id: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        agent_id: str | None = None,
+        pattern_id: str | None = None,
+        context: dict[str, Any] | None = None
     ):
         super().__init__(message, context)
         self.violation_type = violation_type
         self.agent_id = agent_id
         self.pattern_id = pattern_id
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
         result.update({
             "violation_type": self.violation_type,
@@ -70,14 +70,14 @@ class MemorySyncError(CanonError):
         operation: str,
         backend: str,  # "redis" or "qdrant"
         retry_count: int = 0,
-        context: Optional[Dict[str, Any]] = None
+        context: dict[str, Any] | None = None
     ):
         super().__init__(message, context)
         self.operation = operation
         self.backend = backend
         self.retry_count = retry_count
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
         result.update({
             "operation": self.operation,
@@ -99,12 +99,12 @@ class SwarmInitializationError(CanonError):
         self,
         message: str,
         failed_component: str,
-        context: Optional[Dict[str, Any]] = None
+        context: dict[str, Any] | None = None
     ):
         super().__init__(message, context)
         self.failed_component = failed_component
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
         result.update({
             "failed_component": self.failed_component
@@ -125,14 +125,14 @@ class AgentExecutionError(CanonError):
         agent_id: str,
         task: str,
         retry_count: int = 0,
-        context: Optional[Dict[str, Any]] = None
+        context: dict[str, Any] | None = None
     ):
         super().__init__(message, context)
         self.agent_id = agent_id
         self.task = task
         self.retry_count = retry_count
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
         result.update({
             "agent_id": self.agent_id,
@@ -153,15 +153,15 @@ class CanonTokenError(CanonError):
     def __init__(
         self,
         message: str,
-        token: Optional[str] = None,
-        issuer: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        token: str | None = None,
+        issuer: str | None = None,
+        context: dict[str, Any] | None = None
     ):
         super().__init__(message, context)
         self.token = token
         self.issuer = issuer
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
         result.update({
             "token": self.token,

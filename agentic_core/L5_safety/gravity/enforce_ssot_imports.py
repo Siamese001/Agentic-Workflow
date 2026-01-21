@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 SSOT Enforcement Script
@@ -7,7 +8,6 @@ but don't already import from SSOT.
 """
 import re
 from pathlib import Path
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 AGENTIC_CORE = PROJECT_ROOT / "agentic_core"

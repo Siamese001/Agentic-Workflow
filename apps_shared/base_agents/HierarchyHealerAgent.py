@@ -5,30 +5,31 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 # HierarchyHealerAgent.py
 # L5 Hierarchy Healing Agent
 # PURPOSE: Heals hierarchy violations by relocating files and removing empty folders
 # LOCATION: agentic_core/L5_safety/guardrails/ (SSOT-compliant)
-
 import shutil
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Set
+from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-    ROOT_PROTECTED_FILES,
-    ALLOWED_DUPLICATE_FILENAMES,
-)
 from agentic_core.utils.general_helpers.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    ALLOWED_DUPLICATE_FILENAMES,
+    CORE_SUBFOLDER_MAP,
+    ROOT_PROTECTED_FILES,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+    SOVEREIGN_REGISTRY,
+)
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
@@ -55,7 +56,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         self.healing_enabled = healing_enabled
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
 
-    def heal_hierarchy_violations(self) -> Dict[str, Any]:
+    def heal_hierarchy_violations(self) -> dict[str, Any]:
         """
         Heal hierarchy violations by relocating files and removing empty folders.
 
@@ -97,7 +98,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
 
         return results
 
-    def _heal_l1_folder(self, bad_l1: str, agentic_core_path: Path, approved_l1: set, results: Dict[str, Any]) -> None:
+    def _heal_l1_folder(self, bad_l1: str, agentic_core_path: Path, approved_l1: set, results: dict[str, Any]) -> None:
         """Heal non-approved L1 folder by relocating files and removing empty folder."""
         bad_path = agentic_core_path / bad_l1
         print(f"   [!] Non-approved L1 folder: {bad_l1}")
@@ -115,7 +116,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         # Try to remove empty folder tree
         self._cleanup_empty_folder(bad_path, bad_l1, results)
 
-    def _relocate_file_to_l1(self, py_file: Path, target_l1: str, target_path: Path, results: Dict[str, Any]) -> None:
+    def _relocate_file_to_l1(self, py_file: Path, target_l1: str, target_path: Path, results: dict[str, Any]) -> None:
         """Relocate a single file to approved L1 folder."""
         try:
             target_l2 = get_best_target_l2(target_l1, py_file.name)
@@ -132,7 +133,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         except Exception as e:
             results["errors"].append(f"{py_file.name}: {e}")
 
-    def _heal_l2_folders(self, l1_name: str, agentic_core_path: Path, results: Dict[str, Any]) -> None:
+    def _heal_l2_folders(self, l1_name: str, agentic_core_path: Path, results: dict[str, Any]) -> None:
         """Heal non-approved L2 folders within an approved L1 folder."""
         l1_path = agentic_core_path / l1_name
         if not l1_path.exists():
@@ -151,7 +152,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         for bad_l2 in non_approved_l2:
             self._heal_single_l2_folder(l1_name, l1_path, bad_l2, results)
 
-    def _heal_single_l2_folder(self, l1_name: str, l1_path: Path, bad_l2: str, results: Dict[str, Any]) -> None:
+    def _heal_single_l2_folder(self, l1_name: str, l1_path: Path, bad_l2: str, results: dict[str, Any]) -> None:
         """Heal a single non-approved L2 folder."""
         bad_path = l1_path / bad_l2
         print(f"   [!] Non-approved L2 folder: {l1_name}/{bad_l2}")
@@ -179,7 +180,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         # Try to remove empty folder
         self._cleanup_empty_folder(bad_path, f"{l1_name}/{bad_l2}", results)
 
-    def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: Dict[str, Any]) -> None:
+    def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: dict[str, Any]) -> None:
         """Remove empty folder tree after relocation."""
         try:
             self._remove_empty_dirs(folder_path)
@@ -261,7 +262,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
             marker_exists = any(marker_comment in line for line in lines)
 
             if pattern_exists or marker_exists:
-                print(f"   [OK] .gitignore already configured for purge artifacts")
+                print("   [OK] .gitignore already configured for purge artifacts")
                 return
 
             # Find first non-comment line for strategic insertion
@@ -282,7 +283,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         except Exception as e:
             print(f"   [!] Failed to update .gitignore: {e}")
 
-    def purge_orphaned_files(self) -> Dict[str, Any]:
+    def purge_orphaned_files(self) -> dict[str, Any]:
         """
         Purge code and assets in forbidden or root-level locations.
         Only files with no legal home are archived.
@@ -374,7 +375,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         print(f"   [L6 PURGE] Complete: {purged_count} orphaned files archived/purged")
         return {"purged": purged_count, "errors": errors}
 
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
 

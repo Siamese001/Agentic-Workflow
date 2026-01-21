@@ -15,11 +15,11 @@ Specialized Coordinators for Unified Workflow Engine
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
-import asyncio
 
-from .base_coordinator import WorkflowCoordinator, CoordinatorCapability
-from .execution_strategy import WorkflowContext, WorkflowResult, ExecutionStatus
+from typing import Any
+
+from .base_coordinator import CoordinatorCapability, WorkflowCoordinator
+from .execution_strategy import ExecutionStatus, WorkflowContext, WorkflowResult
 
 
 class RLCoordinator(WorkflowCoordinator):
@@ -35,7 +35,7 @@ class RLCoordinator(WorkflowCoordinator):
     def __init__(self):
         super().__init__("rl_coordinator")
         self.strategies = ["ppo", "q_learning", "actor_critic", "a2c"]
-        self.reward_history: List[float] = []
+        self.reward_history: list[float] = []
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute RL-based coordination."""
@@ -61,14 +61,14 @@ class RLCoordinator(WorkflowCoordinator):
             }
         )
 
-    async def _select_action(self, strategy: str, state: Dict, actions: List) -> Any:
+    async def _select_action(self, strategy: str, state: dict, actions: list) -> Any:
         """Select action using RL strategy."""
         if not actions:
             return None
         # Simplified action selection
         return actions[0] if actions else None
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="rl_routing",
@@ -96,7 +96,7 @@ class TerritoryCoordinator(WorkflowCoordinator):
 
     def __init__(self):
         super().__init__("territory_coordinator")
-        self.territories: Dict[str, Dict] = {}
+        self.territories: dict[str, dict] = {}
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute territory-based coordination."""
@@ -118,20 +118,20 @@ class TerritoryCoordinator(WorkflowCoordinator):
             output=result
         )
 
-    async def _map_territory(self, territory: str, context: WorkflowContext) -> Dict:
+    async def _map_territory(self, territory: str, context: WorkflowContext) -> dict:
         """Map territory semantically."""
         self.territories[territory] = {"mapped": True, "context": context.metadata}
         return {"territory": territory, "status": "mapped"}
 
-    async def _heal_territory(self, territory: str, context: WorkflowContext) -> Dict:
+    async def _heal_territory(self, territory: str, context: WorkflowContext) -> dict:
         """Heal territory violations."""
         return {"territory": territory, "status": "healed", "violations_fixed": 0}
 
-    async def _handle_change(self, territory: str, context: WorkflowContext) -> Dict:
+    async def _handle_change(self, territory: str, context: WorkflowContext) -> dict:
         """Handle territory change."""
         return {"territory": territory, "status": "changed"}
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="territory_management",
@@ -158,7 +158,7 @@ class MCPCoordinator(WorkflowCoordinator):
 
     def __init__(self):
         super().__init__("mcp_coordinator")
-        self.tools: Dict[str, Dict] = {}
+        self.tools: dict[str, dict] = {}
         self.verified_tools: set = set()
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
@@ -181,20 +181,20 @@ class MCPCoordinator(WorkflowCoordinator):
             output=result
         )
 
-    async def _route_tool(self, tool: str, context: WorkflowContext) -> Dict:
+    async def _route_tool(self, tool: str, context: WorkflowContext) -> dict:
         """Route to appropriate tool."""
         return {"tool": tool, "routed": True}
 
-    async def _verify_tool(self, tool: str, context: WorkflowContext) -> Dict:
+    async def _verify_tool(self, tool: str, context: WorkflowContext) -> dict:
         """Verify tool."""
         self.verified_tools.add(tool)
         return {"tool": tool, "verified": True}
 
-    async def _discover_tools(self, context: WorkflowContext) -> Dict:
+    async def _discover_tools(self, context: WorkflowContext) -> dict:
         """Discover available tools."""
         return {"tools": list(self.tools.keys()), "verified": list(self.verified_tools)}
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="mcp_management",
@@ -221,7 +221,7 @@ class MissionCoordinator(WorkflowCoordinator):
 
     def __init__(self):
         super().__init__("mission_coordinator")
-        self.active_missions: Dict[str, Dict] = {}
+        self.active_missions: dict[str, dict] = {}
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute mission-based coordination."""
@@ -245,27 +245,27 @@ class MissionCoordinator(WorkflowCoordinator):
             output=result
         )
 
-    async def _run_mission(self, mission_id: str, context: WorkflowContext) -> Dict:
+    async def _run_mission(self, mission_id: str, context: WorkflowContext) -> dict:
         """Run mission."""
         self.active_missions[mission_id] = {"status": "running", "context": context.metadata}
         return {"mission_id": mission_id, "status": "running"}
 
-    async def _test_mission(self, mission_id: str, context: WorkflowContext) -> Dict:
+    async def _test_mission(self, mission_id: str, context: WorkflowContext) -> dict:
         """Test mission execution."""
         return {"mission_id": mission_id, "status": "tested", "passed": True}
 
-    async def _resume_mission(self, mission_id: str, context: WorkflowContext) -> Dict:
+    async def _resume_mission(self, mission_id: str, context: WorkflowContext) -> dict:
         """Resume paused mission."""
         if mission_id in self.active_missions:
             self.active_missions[mission_id]["status"] = "resumed"
         return {"mission_id": mission_id, "status": "resumed"}
 
-    async def _get_status(self, mission_id: str) -> Dict:
+    async def _get_status(self, mission_id: str) -> dict:
         """Get mission status."""
         mission = self.active_missions.get(mission_id, {})
         return {"mission_id": mission_id, "status": mission.get("status", "unknown")}
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="mission_execution",
@@ -291,8 +291,8 @@ class ModelCoordinator(WorkflowCoordinator):
 
     def __init__(self):
         super().__init__("model_coordinator")
-        self.models: Dict[str, Dict] = {}
-        self.providers: Dict[str, Dict] = {}
+        self.models: dict[str, dict] = {}
+        self.providers: dict[str, dict] = {}
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute model-based coordination."""
@@ -314,21 +314,21 @@ class ModelCoordinator(WorkflowCoordinator):
             output=result
         )
 
-    async def _route_model(self, model: str, context: WorkflowContext) -> Dict:
+    async def _route_model(self, model: str, context: WorkflowContext) -> dict:
         """Route to model."""
         return {"model": model, "routed": True, "provider": "default"}
 
-    async def _rag_query(self, context: WorkflowContext) -> Dict:
+    async def _rag_query(self, context: WorkflowContext) -> dict:
         """Execute RAG query."""
         query = context.input_data.get("query", "")
         return {"query": query, "results": [], "source": "rag"}
 
-    async def _select_model(self, context: WorkflowContext) -> Dict:
+    async def _select_model(self, context: WorkflowContext) -> dict:
         """Select best model for task."""
         task = context.input_data.get("task", "")
         return {"task": task, "selected_model": "default", "reason": "default selection"}
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="model_management",
@@ -355,7 +355,7 @@ class HealthCoordinator(WorkflowCoordinator):
 
     def __init__(self):
         super().__init__("health_coordinator")
-        self.health_checks: List[Dict] = []
+        self.health_checks: list[dict] = []
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute health-based coordination."""
@@ -378,25 +378,25 @@ class HealthCoordinator(WorkflowCoordinator):
             output=result
         )
 
-    async def _health_check(self, context: WorkflowContext) -> Dict:
+    async def _health_check(self, context: WorkflowContext) -> dict:
         """Perform health check."""
         check = {"status": "healthy", "timestamp": context.workflow_id}
         self.health_checks.append(check)
         return check
 
-    async def _proactive_audit(self, context: WorkflowContext) -> Dict:
+    async def _proactive_audit(self, context: WorkflowContext) -> dict:
         """Perform proactive audit."""
         return {"audit": "complete", "issues": 0}
 
-    async def _detect_deadlock(self, context: WorkflowContext) -> Dict:
+    async def _detect_deadlock(self, context: WorkflowContext) -> dict:
         """Detect deadlocks."""
         return {"deadlocks": 0, "status": "clean"}
 
-    async def _detect_memory_leak(self, context: WorkflowContext) -> Dict:
+    async def _detect_memory_leak(self, context: WorkflowContext) -> dict:
         """Detect memory leaks."""
         return {"leaks": 0, "status": "clean"}
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="health_monitoring",
@@ -422,8 +422,8 @@ class GovernanceCoordinator(WorkflowCoordinator):
 
     def __init__(self):
         super().__init__("governance_coordinator")
-        self.policies: Dict[str, Dict] = {}
-        self.permissions: Dict[str, List[str]] = {}
+        self.policies: dict[str, dict] = {}
+        self.permissions: dict[str, list[str]] = {}
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute governance-based coordination."""
@@ -444,21 +444,21 @@ class GovernanceCoordinator(WorkflowCoordinator):
             output=result
         )
 
-    async def _validate_registry(self, context: WorkflowContext) -> Dict:
+    async def _validate_registry(self, context: WorkflowContext) -> dict:
         """Validate agent registry."""
         return {"registry": "valid", "agents": 0}
 
-    async def _check_permission(self, context: WorkflowContext) -> Dict:
+    async def _check_permission(self, context: WorkflowContext) -> dict:
         """Check agent permission."""
         agent = context.input_data.get("agent", "")
         action = context.input_data.get("action", "")
         return {"agent": agent, "action": action, "allowed": True}
 
-    async def _enforce_governance(self, context: WorkflowContext) -> Dict:
+    async def _enforce_governance(self, context: WorkflowContext) -> dict:
         """Enforce architecture governance."""
         return {"governance": "enforced", "violations": 0}
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="governance_enforcement",
@@ -508,23 +508,23 @@ class UtilityCoordinator(WorkflowCoordinator):
             output=result
         )
 
-    async def _conversation_repair(self, context: WorkflowContext) -> Dict:
+    async def _conversation_repair(self, context: WorkflowContext) -> dict:
         """Repair conversation."""
         return {"repaired": True}
 
-    async def _curate_context(self, context: WorkflowContext) -> Dict:
+    async def _curate_context(self, context: WorkflowContext) -> dict:
         """Curate context."""
         return {"curated": True, "context_size": len(context.metadata)}
 
-    async def _handshake(self, context: WorkflowContext) -> Dict:
+    async def _handshake(self, context: WorkflowContext) -> dict:
         """Perform handshake."""
         return {"handshake": "complete"}
 
-    async def _think_act_observe(self, context: WorkflowContext) -> Dict:
+    async def _think_act_observe(self, context: WorkflowContext) -> dict:
         """Execute TAO loop."""
         return {"thought": "analyzed", "action": "executed", "observation": "recorded"}
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="utility_functions",
@@ -545,7 +545,7 @@ class CachingCoordinator(WorkflowCoordinator):
 
     def __init__(self):
         super().__init__("caching_coordinator")
-        self.cache: Dict[str, Any] = {}
+        self.cache: dict[str, Any] = {}
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute caching coordination."""
@@ -570,7 +570,7 @@ class CachingCoordinator(WorkflowCoordinator):
             output=result
         )
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="caching",
@@ -611,19 +611,19 @@ class SecurityCoordinator(WorkflowCoordinator):
             output=result
         )
 
-    async def _validate_security(self, context: WorkflowContext) -> Dict:
+    async def _validate_security(self, context: WorkflowContext) -> dict:
         """Validate security."""
         return {"valid": True, "threats": 0}
 
-    async def _harden(self, context: WorkflowContext) -> Dict:
+    async def _harden(self, context: WorkflowContext) -> dict:
         """Harden workflow."""
         return {"hardened": True}
 
-    async def _security_audit(self, context: WorkflowContext) -> Dict:
+    async def _security_audit(self, context: WorkflowContext) -> dict:
         """Perform security audit."""
         return {"audit": "complete", "vulnerabilities": 0}
 
-    def get_capabilities(self) -> List[CoordinatorCapability]:
+    def get_capabilities(self) -> list[CoordinatorCapability]:
         return [
             CoordinatorCapability(
                 name="security",

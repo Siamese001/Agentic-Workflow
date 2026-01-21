@@ -5,17 +5,19 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 L0 Transaction Manager: Atomic Healing with Rollback
 Provides ACID-like guarantees for healing operations.
 
 Phase 10B: Transactional Healing (Dec 26, 2025)
 """
+import logging
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Any, List, Tuple, Optional
-import logging
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class HealingTransaction:
@@ -34,7 +36,7 @@ class HealingTransaction:
         # [SSOT FIX 2026-01-19] Changed from .sovereign_healing_backup to archives/healing_backups
         # Per SSOT: Only archives/ is the canonical backup location
         self.backup_dir = Path(f'archives/healing_backups/transactions/{self.timestamp}')
-        self.backups: List[Tuple[Path, Path]] = []
+        self.backups: list[tuple[Path, Path]] = []
         self.committed = False
         self.rolled_back = False
 

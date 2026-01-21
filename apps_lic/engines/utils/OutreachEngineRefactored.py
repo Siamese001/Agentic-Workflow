@@ -17,25 +17,20 @@ For new code, prefer importing and using agents directly:
 import asyncio
 import json
 import os
-from typing import Any, Dict, Optional
+from typing import Any
+
+# === NEW: Import decomposed agents ===
+from apps_lic.agents import (
+    BrowserSessionAgent,
+    JobApplicationAgent,
+    LeadVettingAgent,
+    OptimalTimeSchedulerAgent,
+    ResilientPipelineAgent,
+)
 
 # Import core utilities (kept for helper functions)
 from core_utils import (
     add_observations,
-    browser_click,
-    browser_navigate,
-    browser_type,
-    commit_transaction,
-    get_current_time,
-    log_action,
-    read_text_file,
-    register_process,
-    search_records,
-    start_transaction,
-    string_get,
-    string_set,
-    transaction_set_with_ttl,
-    watch_key,
 )
 
 # Import hardened MCP functions
@@ -47,15 +42,6 @@ from mcp_hardening import (
 
 # Import egress filter for Protocol 8
 from network_utils import strict_egress_filter
-
-# === NEW: Import decomposed agents ===
-from apps_lic.agents import (
-    LeadVettingAgent,
-    OptimalTimeSchedulerAgent,
-    JobApplicationAgent,
-    BrowserSessionAgent,
-    ResilientPipelineAgent,
-)
 
 # Global configuration (shared with agents)
 SHADOW_MODE_ACTIVE = os.environ.get("AGENT_MODE", "PRODUCTION") == "SHADOW"
@@ -70,7 +56,7 @@ OUTREACH_ALLOWED_HOSTS = [
 # === Shared Helper Functions (kept in orchestrator) ===
 
 @strict_egress_filter(allowed_domains=OUTREACH_ALLOWED_HOSTS)
-def _fetch_company_content(url: str, fetch_tool: Any, max_length: int = 1000) -> Optional[str]:
+def _fetch_company_content(url: str, fetch_tool: Any, max_length: int = 1000) -> str | None:
     """Fetches company content with egress filtering."""
     return fetch_tool(url=url, max_length=max_length)
 
@@ -78,7 +64,7 @@ def _fetch_company_content(url: str, fetch_tool: Any, max_length: int = 1000) ->
 # === BACKWARD-COMPATIBLE WRAPPER FUNCTIONS ===
 # These wrap the new agents to maintain compatibility with existing callers
 
-def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
+def automated_lead_vetting(company_url: str, user_name: str, tools: dict[str, Any], Logger: Any | None = None) -> dict[str, Any]:
     """
     DEPRECATED: Use LeadVettingAgent directly for new code.
 
@@ -88,7 +74,7 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
     return asyncio.run(agent.execute(company_url, user_name, tools, Logger))
 
 
-def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
+def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, tools: dict[str, Any], Logger: Any | None = None) -> dict[str, Any]:
     """
     DEPRECATED: Use OptimalTimeSchedulerAgent directly for new code.
 
@@ -98,7 +84,7 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
     return asyncio.run(agent.execute(lead_email, lead_timezone, pitch_body, tools, Logger))
 
 
-def execute_autonomous_job_application(app_url: str, user_name: str, code_sample_path: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
+def execute_autonomous_job_application(app_url: str, user_name: str, code_sample_path: str, tools: dict[str, Any], Logger: Any | None = None) -> dict[str, Any]:
     """
     DEPRECATED: Use JobApplicationAgent directly for new code.
 
@@ -108,7 +94,7 @@ def execute_autonomous_job_application(app_url: str, user_name: str, code_sample
     return asyncio.run(agent.execute(app_url, user_name, code_sample_path, tools, Logger))
 
 
-def adaptive_browser_session(target_url: str, tools: Dict[str, Any] = None, Logger: Optional[Any] = None) -> Dict[str, Any]:
+def adaptive_browser_session(target_url: str, tools: dict[str, Any] = None, Logger: Any | None = None) -> dict[str, Any]:
     """
     DEPRECATED: Use BrowserSessionAgent directly for new code.
 
@@ -118,7 +104,7 @@ def adaptive_browser_session(target_url: str, tools: Dict[str, Any] = None, Logg
     return asyncio.run(agent.execute(target_url, tools, max_retries=3, Logger=Logger))
 
 
-def execute_resilient_application_pipeline(app_url: str, user_name: str, max_retries: int = 3, Logger: Optional[Any] = None) -> Dict[str, Any]:
+def execute_resilient_application_pipeline(app_url: str, user_name: str, max_retries: int = 3, Logger: Any | None = None) -> dict[str, Any]:
     """
     DEPRECATED: Use ResilientPipelineAgent directly for new code.
 
@@ -128,7 +114,7 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
     return asyncio.run(agent.execute(app_url, user_name, tools=None, max_retries=max_retries, Logger=Logger))
 
 
-def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str, max_retries: int = 3, Logger: Optional[Any] = None) -> Dict[str, Any]:
+def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str, max_retries: int = 3, Logger: Any | None = None) -> dict[str, Any]:
     """
     DEPRECATED: Use ResilientPipelineAgent directly for new code.
 
@@ -140,7 +126,7 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
 
 # === FUNCTIONS KEPT IN ORCHESTRATOR (Not yet agent-converted) ===
 
-def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name: str, pitch_topic: str, expected_title: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
+def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name: str, pitch_topic: str, expected_title: str, tools: dict[str, Any], Logger: Any | None = None) -> dict[str, Any]:
     """
     Refined 'Lead Snapshot Vetting' (Outreach Engine). Uses L2 Playwright for efficient, verified context capture
     before committing to the outreach action, adhering to the 22/100 connection budget.
@@ -211,7 +197,7 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
 
         return {
             "status": "outreach_dispatched",
-            "message": f"Outreach successfully dispatched and logged to MEMemory.",
+            "message": "Outreach successfully dispatched and logged to MEMemory.",
             "snapshot_path": snapshot_file_path,
             "send_result": send_result
         }
@@ -219,7 +205,7 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
         return {"status": "error", "message": f"Send Email MCP failed: {e}"}
 
 
-def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "default", Logger: Optional[Any] = None) -> Dict[str, Any]:
+def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "default", Logger: Any | None = None) -> dict[str, Any]:
     """
     Outreach sequence with brand compliance and cost-controlled search.
     Integrates Figma (L2) for brand guidelines and rate-limited Brave Search (L1/L3).
@@ -252,7 +238,7 @@ def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "
             results = json.loads(search_results)
             company_info = results[0] if results else {}
             if Logger:
-                Logger.info(f"✅ Retrieved company information via rate-limited search")
+                Logger.info("✅ Retrieved company information via rate-limited search")
         else:
             company_info = {}
             if Logger:
@@ -308,7 +294,7 @@ Best regards,
 
 # === NEW UNIFIED ENTRYPOINT ===
 
-async def run_outreach_engine(workflow: str, **kwargs) -> Dict[str, Any]:
+async def run_outreach_engine(workflow: str, **kwargs) -> dict[str, Any]:
     """
     Unified entrypoint for the Outreach Engine.
 

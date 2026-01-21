@@ -7,12 +7,11 @@ This script distinguishes between:
 
 Purpose: Prevent accidental deletion of intentional variants that just need better names.
 """
-import sys
-from pathlib import Path
-from collections import defaultdict
 import hashlib
 import re
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+import sys
+from collections import defaultdict
+from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -30,7 +29,7 @@ def compute_file_hash(file_path: Path) -> str:
 def read_file_content(file_path: Path) -> str:
     """Read file content as string."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             return f.read()
     except Exception:
         return ""
@@ -148,7 +147,7 @@ def scan_for_duplicates():
     exclude_dirs = {'__pycache__', '.git', 'node_modules', 'venv', '.venv', 'archive'}
 
     # Absolute Zero: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
     all_files = list(get_python_files(project_root)) + list(get_data_files(project_root))
     for file_path in all_files:
         if not file_path.is_file():
@@ -199,7 +198,7 @@ def main():
 
     for filename, file_info in sorted(filename_groups.items()):
         # Check if all hashes are the same (identical content)
-        hashes = set(f['hash'] for f in file_info)
+        hashes = {f['hash'] for f in file_info}
 
         if len(hashes) == 1:
             # All identical - true duplicates
@@ -232,7 +231,7 @@ def main():
     print()
 
     # Summary
-    print(f"SUMMARY:")
+    print("SUMMARY:")
     print(f"  ✓ True Duplicates (safe to delete): {len(true_duplicates)}")
     print(f"  ⚠ Intentional Variants (need rename): {len(intentional_variants)}")
     print(f"  ? Needs Manual Review: {len(needs_review)}")
@@ -251,18 +250,18 @@ def main():
             print(f"    Variant Confidence: {analysis['confidence'].upper()}")
             print(f"    Variant Score: {analysis['score']}")
             print()
-            print(f"    Reasons:")
+            print("    Reasons:")
             for reason in analysis['reasons']:
                 print(f"      - {reason}")
             print()
-            print(f"    Locations:")
+            print("    Locations:")
             for f in file_info:
                 rel_path = f['path'].relative_to(project_root)
                 print(f"      {rel_path}")
             print()
-            print(f"    ⚠️  ACTION REQUIRED:")
-            print(f"       DO NOT DELETE - These files have different functionality")
-            print(f"       Use NamingAgent to suggest unique names for each variant")
+            print("    ⚠️  ACTION REQUIRED:")
+            print("       DO NOT DELETE - These files have different functionality")
+            print("       Use NamingAgent to suggest unique names for each variant")
             print(f"       Command: python -m agentic_core.utils.core_extensions.NamingAgent --file {file_info[0]['path']}")
             print()
             print("-" * 120)

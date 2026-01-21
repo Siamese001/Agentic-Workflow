@@ -6,9 +6,9 @@ and archetype-appropriate phrasing.
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
-from runtime.shared.agent_base import Agent, ReasoningConfig
+from typing import Any
 
+from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class K5Output:
     archetype: str
     word_count: int
     char_count: int
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 # Route-specific CTA templates (from outreach_orchestration_config.py)
@@ -99,7 +99,7 @@ class K5_CTAAgent(Agent):
             f"word_limit={self.template['word_limit']}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> K5Output:
+    async def execute(self, context: dict[str, Any]) -> K5Output:
         """Execute K.5 CTA generation.
 
         Args:
@@ -230,7 +230,7 @@ Generate the CTA now (single sentence, {word_limit} words max):
 
     def _build_regeneration_prompt(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         feedback: str,
     ) -> str:
         """Build regeneration prompt with validation feedback.

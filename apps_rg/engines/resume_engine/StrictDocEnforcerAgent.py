@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Governance & Meta-Optimization Module - Phase 7 Implementation
 
@@ -9,12 +10,6 @@ This module provides advanced governance capabilities:
 - PromptGovernor: AI prompt security and segregation
 - PredictiveBudgetManager: Cost prediction before execution
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-from enum import Enum, auto
-import time
-
-
 import ast
 import hashlib
 import re
@@ -24,12 +19,13 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .context import ResumeEngineContext
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 
 class DependencyStatus(Enum):
@@ -87,7 +83,7 @@ class DocViolation:
     file_path: str
     function_name: str
     ViolationType: str
-    missing_args: List[str]
+    missing_args: list[str]
     missing_return: bool
     line_number: int
 
@@ -135,10 +131,10 @@ class DependencyArbiter:
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._issues: List[DependencyIssue] = []
+        self._issues: list[DependencyIssue] = []
         self._checks_performed = 0
 
-    def check_environment(self) -> List[DependencyIssue]:
+    def check_environment(self) -> list[DependencyIssue]:
         """
         Check environment for dependency issues.
 
@@ -159,7 +155,7 @@ class DependencyArbiter:
         self._issues.extend(issues)
         return issues
 
-    def _run_pip_check(self) -> List[DependencyIssue]:
+    def _run_pip_check(self) -> list[DependencyIssue]:
         """Run pip check to find conflicts."""
         issues = []
 
@@ -202,7 +198,7 @@ class DependencyArbiter:
 
         return issues
 
-    def _check_requirements(self) -> List[DependencyIssue]:
+    def _check_requirements(self) -> list[DependencyIssue]:
         """Check requirements.txt exists and is valid."""
         issues = []
 
@@ -235,7 +231,7 @@ class DependencyArbiter:
 
         return issues
 
-    def analyze_imports(self, content: str, file_path: str = "unknown") -> List[str]:
+    def analyze_imports(self, content: str, file_path: str = "unknown") -> list[str]:
         """
         Analyze imports in Python content.
 
@@ -269,15 +265,15 @@ class DependencyArbiter:
 
         return list(set(non_standard))
 
-    def get_issues(self) -> List[DependencyIssue]:
+    def get_issues(self) -> list[DependencyIssue]:
         """Get all dependency issues."""
         return self._issues
 
-    def get_issues_by_status(self, status: DependencyStatus) -> List[DependencyIssue]:
+    def get_issues_by_status(self, status: DependencyStatus) -> list[DependencyIssue]:
         """Get issues filtered by status."""
         return [i for i in self._issues if i.status == status]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get arbiter statistics."""
         return {
             "checks_performed": self._checks_performed,
@@ -302,9 +298,9 @@ class StrictDocEnforcerAgent(MCPHardenedMixin, HealerMixin):
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._violations: List[DocViolation] = []
+        self._violations: list[DocViolation] = []
 
-    def check_content(self, content: str, file_path: str = "unknown") -> List[DocViolation]:
+    def check_content(self, content: str, file_path: str = "unknown") -> list[DocViolation]:
         """
         Check content for documentation violations.
 
@@ -332,7 +328,7 @@ class StrictDocEnforcerAgent(MCPHardenedMixin, HealerMixin):
 
         return violations
 
-    def _check_function(self, node: ast.FunctionDef, file_path: str) -> Optional[DocViolation]:
+    def _check_function(self, node: ast.FunctionDef, file_path: str) -> DocViolation | None:
         """Check a function for documentation compliance."""
         # Skip private/magic methods
         if node.name.startswith("_"):
@@ -385,7 +381,7 @@ class StrictDocEnforcerAgent(MCPHardenedMixin, HealerMixin):
 
         return None
 
-    def _parse_args_section(self, docstring: str) -> Set[str]:
+    def _parse_args_section(self, docstring: str) -> set[str]:
         """Parse Args section from Google-style docstring."""
         documented_args = set()
 
@@ -401,7 +397,7 @@ class StrictDocEnforcerAgent(MCPHardenedMixin, HealerMixin):
 
         return documented_args
 
-    def get_violations(self) -> List[DocViolation]:
+    def get_violations(self) -> list[DocViolation]:
         """Get all documentation violations."""
         return self._violations
 
@@ -430,7 +426,7 @@ class StrictDocEnforcerAgent(MCPHardenedMixin, HealerMixin):
 
         return DocComplianceLevel.TYPED
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get enforcer statistics."""
         return {
             "total_violations": len(self._violations),
@@ -456,12 +452,12 @@ class DashboardGenerator:
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._generated_reports: List[str] = []
+        self._generated_reports: list[str] = []
 
     def generate(
         self,
-        results: Dict[str, Any],
-        signals: Set[str],
+        results: dict[str, Any],
+        signals: set[str],
         output_path: str = "observability/mission_control.html",
     ) -> str:
         """
@@ -500,8 +496,8 @@ class DashboardGenerator:
 
     def _generate_html(
         self,
-        results: Dict[str, Any],
-        signals: Set[str],
+        results: dict[str, Any],
+        signals: set[str],
         total: int,
         passed: int,
         failed: int,
@@ -539,14 +535,14 @@ class DashboardGenerator:
 
         return html
 
-    def _render_signals(self, signals: Set[str]) -> str:
+    def _render_signals(self, signals: set[str]) -> str:
         """Render signals as badges."""
         if not signals:
             return '<Span style="color: #888;">No active signals</Span>'
 
         return "".join(f'<Span class="signal-badge">{s}</Span>' for s in signals)
 
-    def _render_results_table(self, results: Dict[str, Any]) -> str:
+    def _render_results_table(self, results: dict[str, Any]) -> str:
         """Render results as table rows."""
         rows = []
         for agent, result in sorted(results.items()):
@@ -565,7 +561,7 @@ class DashboardGenerator:
 
         return "".join(rows)
 
-    def _render_mermaid_graph(self, results: Dict[str, Any]) -> str:
+    def _render_mermaid_graph(self, results: dict[str, Any]) -> str:
         """Render Mermaid.js graph."""
         graph = "graph TD\n"
 
@@ -583,11 +579,11 @@ class DashboardGenerator:
 
         return graph
 
-    def get_generated_reports(self) -> List[str]:
+    def get_generated_reports(self) -> list[str]:
         """Get list of generated reports."""
         return self._generated_reports
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get generator statistics."""
         return {
             "reports_generated": len(self._generated_reports),
@@ -616,9 +612,9 @@ class PromptGovernor:
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._issues: List[PromptIssue] = []
+        self._issues: list[PromptIssue] = []
 
-    def scan_content(self, content: str, file_path: str = "unknown") -> List[PromptIssue]:
+    def scan_content(self, content: str, file_path: str = "unknown") -> list[PromptIssue]:
         """
         Scan content for prompt security issues.
 
@@ -653,7 +649,7 @@ class PromptGovernor:
 
         return issues
 
-    def _check_assignment(self, node: ast.Assign, target: ast.Name, file_path: str) -> Optional[PromptIssue]:
+    def _check_assignment(self, node: ast.Assign, target: ast.Name, file_path: str) -> PromptIssue | None:
         """Check an assignment for prompt issues."""
         var_name = target.id
 
@@ -684,7 +680,7 @@ class PromptGovernor:
 
         return None
 
-    def _check_large_strings(self, content: str, file_path: str) -> List[PromptIssue]:
+    def _check_large_strings(self, content: str, file_path: str) -> list[PromptIssue]:
         """Check for large string literals that might be prompts."""
         issues = []
 
@@ -751,15 +747,15 @@ class PromptGovernor:
 
         return PromptRisk.LOW
 
-    def get_issues(self) -> List[PromptIssue]:
+    def get_issues(self) -> list[PromptIssue]:
         """Get all prompt issues."""
         return self._issues
 
-    def get_issues_by_risk(self, risk: PromptRisk) -> List[PromptIssue]:
+    def get_issues_by_risk(self, risk: PromptRisk) -> list[PromptIssue]:
         """Get issues filtered by risk level."""
         return [i for i in self._issues if i.risk_level == risk]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get governor statistics."""
         return {
             "total_issues": len(self._issues),
@@ -797,7 +793,7 @@ class PredictiveBudgetManager:
         self.ctx = ctx
         self.budget_limit = budget_limit
         self._current_cost = 0.0
-        self._predictions: List[CostPrediction] = []
+        self._predictions: list[CostPrediction] = []
 
     def predict_cost(
         self,
@@ -872,7 +868,7 @@ class PredictiveBudgetManager:
         self._current_cost = 0.0
         self._predictions.clear()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get budget statistics."""
         return {
             "budget_limit": self.budget_limit,

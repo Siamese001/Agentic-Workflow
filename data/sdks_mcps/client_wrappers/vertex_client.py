@@ -2,11 +2,9 @@
 Implements retry logic, grounding optimization, and configurable safety settings.
 """
 
-import json
 import os
-import time
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Union, object
+from typing import object
 
 import backoff
 from vertexai import init as vertex_init
@@ -26,7 +24,7 @@ from vertexai.preview import grounding as vertex_grounding
 @dataclass
 class VertexConfig:
     """Configuration for Vertex AI client."""
-    project_id: Optional[str] = None
+    project_id: str | None = None
     location: str = "us-central1"
     model: str = "gemini-1.5-pro-002"
     temperature: float = 0.7
@@ -38,7 +36,7 @@ class VertexConfig:
 class VertexClient:
     """Production-ready Vertex AI client with grounding and safety support."""
 
-    def __init__(self, config: Optional[VertexConfig] = None):
+    def __init__(self, config: VertexConfig | None = None):
         self.config = config or VertexConfig()
 
         # Initialize Vertex AI
@@ -70,14 +68,14 @@ class VertexClient:
     def generate_content(
         self,
         prompt: str,
-        system_instruction: Optional[str] = None,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        enable_grounding: Optional[bool] = None,
-        safety_settings: Optional[Dict[HarmCategory, HarmBlockThreshold]] = None,
-        tools: Optional[List[Tool]] = None,
+        system_instruction: str | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        enable_grounding: bool | None = None,
+        safety_settings: dict[HarmCategory, HarmBlockThreshold] | None = None,
+        tools: list[Tool] | None = None,
         stream: bool = False,
-        **kwargs: Dict[str, object]) -> object:
+        **kwargs: dict[str, object]) -> object:
         """Generate content with retry logic and optional grounding.
 
         Args:
@@ -182,7 +180,7 @@ class VertexClient:
         prompt: str,
         grounding_threshold: float = 0.7,
         include_citations: bool = True,
-        **kwargs: Dict[str, object]) -> Dict[str, object]:
+        **kwargs: dict[str, object]) -> dict[str, object]:
         """Generate response with Google Search grounding and citations.
 
         Args:
@@ -260,8 +258,8 @@ class VertexClient:
         self,
         prompt: str,
         safety_threshold: HarmBlockThreshold = HarmBlockThreshold.BLOCK_NONE,
-        custom_safety: Optional[Dict[HarmCategory, HarmBlockThreshold]] = None,
-        **kwargs: Dict[str, object]) -> Dict[str, object]:
+        custom_safety: dict[HarmCategory, HarmBlockThreshold] | None = None,
+        **kwargs: dict[str, object]) -> dict[str, object]:
         """Generate response with configurable safety settings.
 
         Args:
@@ -313,7 +311,7 @@ class VertexClient:
         self,
         prompt: str,
         callback: callable = None,
-        **kwargs: Dict[str, object]) -> List[str]:
+        **kwargs: dict[str, object]) -> list[str]:
         """Stream response with optional callback.
 
         Args:
@@ -337,7 +335,7 @@ class VertexClient:
 
         return chunks
 
-    def _extract_citations(self, grounding_metadata: Dict[str, object]) -> List[Dict[str, object]]:
+    def _extract_citations(self, grounding_metadata: dict[str, object]) -> list[dict[str, object]]:
         """Extract structured citations from grounding metadata."""
         citations = []
         seen_sources = set()
@@ -359,7 +357,7 @@ class VertexClient:
 
         return citations
 
-    def _extract_usage(self, response) -> Dict[str, object]:
+    def _extract_usage(self, response) -> dict[str, object]:
         """Extract usage metadata from response."""
         if hasattr(response, 'usage_metadata'):
             return {
@@ -395,7 +393,7 @@ class VertexClient:
         else:
             return Exception(f"Vertex AI error: {error}")
 
-    def get_usage_stats(self) -> Dict[str, object]:
+    def get_usage_stats(self) -> dict[str, object]:
         """Get current usage statistics."""
         return self.usage_stats.copy()
 
@@ -413,11 +411,11 @@ class VertexClient:
 
 # builder function for easy instantiation
 def create_vertex_client(
-    project_id: Optional[str] = None,
+    project_id: str | None = None,
     location: str = "us-central1",
     model: str = "gemini-1.5-pro-002",
     enable_grounding: bool = True,
-    **kwargs: Dict[str, object]) -> VertexClient:
+    **kwargs: dict[str, object]) -> VertexClient:
     """Create configured Vertex AI client.
 
     Args:

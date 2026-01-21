@@ -7,7 +7,7 @@ heal_repository methods that call their internal validation logic.
 """
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -52,7 +52,9 @@ def test_scripts_planning_validation():
     print("=" * 70)
 
     try:
-        from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
+        from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import (
+            CoreOrchestrationAgent,
+        )
 
         agent = CoreOrchestrationAgent()
 
@@ -80,7 +82,9 @@ def test_memory_leak_detector():
     print("=" * 70)
 
     try:
-        from agentic_core.L2_execution.ToolRegistry.MemoryLeakDetectorAgent import MemoryLeakDetectorAgent
+        from agentic_core.L2_execution.ToolRegistry.MemoryLeakDetectorAgent import (
+            MemoryLeakDetectorAgent,
+        )
 
         # Create with mock context
         mock_ctx = MagicMock()
@@ -111,7 +115,9 @@ def test_peer_intelligence_auditor():
     print("=" * 70)
 
     try:
-        from agentic_core.L2_execution.ToolRegistry.PeerIntelligenceAuditorAgent import PeerIntelligenceAuditorAgent
+        from agentic_core.L2_execution.ToolRegistry.PeerIntelligenceAuditorAgent import (
+            PeerIntelligenceAuditorAgent,
+        )
 
         agent = PeerIntelligenceAuditorAgent()
 
@@ -138,7 +144,7 @@ def test_dag_mutator():
     print("=" * 70)
 
     try:
-        from archives.void_violations.DAGMutatorAgent import DAGMutatorAgent, DAGConfig
+        from archives.void_violations.DAGMutatorAgent import DAGConfig, DAGMutatorAgent
 
         config = DAGConfig()
         agent = DAGMutatorAgent(config=config)

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 """
 MessageDiversityValidatorAgent - Extracted for one-class-per-file pattern.
 
@@ -8,10 +9,12 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
-from typing import Dict, Any, List
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class MessageDiversityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
@@ -29,7 +32,7 @@ class MessageDiversityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         Sets up TF-IDF vectorizer for similarity analysis and initializes
         message history tracking.
         """
-        self.message_history: List[str] = []
+        self.message_history: list[str] = []
         self.vectorizer = TfidfVectorizer()
 
     def check_diversity(self, new_message: str) -> Tuple[bool, float, str]:

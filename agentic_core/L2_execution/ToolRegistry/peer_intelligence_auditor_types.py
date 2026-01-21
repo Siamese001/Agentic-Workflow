@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 """Types and models for PeerIntelligenceAuditorAgent."""
 import logging
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol, Set
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class KeywordClassification(Enum):
@@ -16,9 +18,9 @@ class KeywordClassification(Enum):
 class RagHop:
     """Docstring."""
     hop_number: int
-    search_queries: List[str]
-    results: List[Dict[str, Any]]
-    keywords_found: Set[str]
+    search_queries: list[str]
+    results: list[dict[str, Any]]
+    keywords_found: set[str]
 
 @dataclass
 class KeywordAnalysis:
@@ -40,10 +42,10 @@ class PeerIntelligenceConfig:
 @dataclass
 class PeerIntelligenceResult:
     """Docstring."""
-    hops: List[RAGHop]
-    keyword_analyses: List[KeywordAnalysis]
-    table_stakes: List[str]
-    differentiators: List[str]
-    validation_results: List[ValidationResult]
+    hops: list[RAGHop]
+    keyword_analyses: list[KeywordAnalysis]
+    table_stakes: list[str]
+    differentiators: list[str]
+    validation_results: list[ValidationResult]
     success: bool
     total_searches_executed: int

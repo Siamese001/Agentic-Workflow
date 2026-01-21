@@ -1,17 +1,17 @@
 from __future__ import annotations
+
 """Constitutional AI System for Safety and Alignment.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
 Migrated from archives/engines/legacy_engines/ConstitutionalAiSystem.py
 """
 
+import logging
 import re
 import time
-import logging
+from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional
-from collections import defaultdict
 
 Logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class ConstitutionalRule:
     pattern: str
     Severity: RuleSeverity
     action: str
-    replacement: Optional[str] = None
+    replacement: str | None = None
 
 
 @dataclass
@@ -71,9 +71,9 @@ class ViolationReport:
 class ConstitutionalReviewResult:
     """Result of constitutional review."""
     is_compliant: bool
-    violations: List[ViolationReport]
+    violations: list[ViolationReport]
     compliance_score: float
-    recommendations: List[str]
+    recommendations: list[str]
     reviewed_at: float
 
 
@@ -91,8 +91,8 @@ class ConstitutionalAISystem:
             enable_logging: Enable logging of violations
         """
         self.enable_logging = enable_logging
-        self.rules: Dict[str, ConstitutionalRule] = {}
-        self.rule_patterns: Dict[RuleType, List[ConstitutionalRule]] = {
+        self.rules: dict[str, ConstitutionalRule] = {}
+        self.rule_patterns: dict[RuleType, list[ConstitutionalRule]] = {
             rt: [] for rt in RuleType
         }
         self._load_default_rules()
@@ -126,7 +126,7 @@ class ConstitutionalAISystem:
     def review_content(
         self,
         content: str,
-        context: Optional[Dict[str, any]] = None,
+        context: dict[str, any] | None = None,
     ) -> ConstitutionalReviewResult:
         """Review content against constitutional rules.
 
@@ -176,8 +176,8 @@ class ConstitutionalAISystem:
     def _check_compliance(
         self,
         content: str,
-        context: Optional[Dict[str, any]] = None,
-    ) -> List[ViolationReport]:
+        context: dict[str, any] | None = None,
+    ) -> list[ViolationReport]:
         """Check content against all rules.
 
         Args:
@@ -208,8 +208,8 @@ class ConstitutionalAISystem:
         self,
         content: str,
         rule: ConstitutionalRule,
-        context: Optional[Dict[str, any]] = None,
-    ) -> List[ViolationReport]:
+        context: dict[str, any] | None = None,
+    ) -> list[ViolationReport]:
         """Check content against a specific rule.
 
         Args:
@@ -245,7 +245,7 @@ class ConstitutionalAISystem:
 
         return violations
 
-    def _calculate_compliance_score(self, violations: List[ViolationReport]) -> float:
+    def _calculate_compliance_score(self, violations: list[ViolationReport]) -> float:
         """Calculate compliance score based on violations.
 
         Args:
@@ -274,8 +274,8 @@ class ConstitutionalAISystem:
 
     def _generate_recommendations(
         self,
-        violations: List[ViolationReport],
-    ) -> List[str]:
+        violations: list[ViolationReport],
+    ) -> list[str]:
         """Generate recommendations based on violations.
 
         Args:
@@ -305,7 +305,7 @@ class ConstitutionalAISystem:
                 "high-Severity violations"
             )
 
-        unique_rules = set(v.rule_id for v in violations)
+        unique_rules = {v.rule_id for v in violations}
         if len(unique_rules) <= 3:
             for rule_id in unique_rules:
                 rule = self.rules.get(rule_id)
@@ -350,7 +350,7 @@ class ConstitutionalAISystem:
             self.add_rule(rule)
 
 
-def review_content(content: str, context: Optional[Dict[str, any]] = None) -> ConstitutionalReviewResult:
+def review_content(content: str, context: dict[str, any] | None = None) -> ConstitutionalReviewResult:
     """Convenience function to review content.
 
     Args:

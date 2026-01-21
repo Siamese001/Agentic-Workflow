@@ -20,15 +20,14 @@ from __future__ import annotations
 import ast
 import logging
 import re
-import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -52,12 +51,12 @@ class Violation:
     """Represents a single code violation."""
     violation_type: ViolationType
     message: str
-    file_path: Optional[Path] = None
+    file_path: Path | None = None
     line_number: int = 0
     column: int = 0
     severity: str = "error"  # error, warning, info
-    rule_id: Optional[str] = None
-    suggestion: Optional[str] = None
+    rule_id: str | None = None
+    suggestion: str | None = None
 
     def __str__(self) -> str:
         loc = f"{self.file_path}:{self.line_number}:{self.column}" if self.file_path else f"line {self.line_number}"
@@ -67,10 +66,10 @@ class Violation:
 @dataclass
 class ValidationReport:
     """Aggregated report of all violations found."""
-    file_path: Optional[Path] = None
-    violations: List[Violation] = field(default_factory=list)
+    file_path: Path | None = None
+    violations: list[Violation] = field(default_factory=list)
     execution_time: float = 0.0
-    checks_performed: Set[str] = field(default_factory=set)
+    checks_performed: set[str] = field(default_factory=set)
 
     @property
     def has_errors(self) -> bool:
@@ -88,10 +87,10 @@ class ValidationReport:
     def warning_count(self) -> int:
         return sum(1 for v in self.violations if v.severity == "warning")
 
-    def by_type(self, violation_type: ViolationType) -> List[Violation]:
+    def by_type(self, violation_type: ViolationType) -> list[Violation]:
         return [v for v in self.violations if v.violation_type == violation_type]
 
-    def merge(self, other: "ValidationReport") -> "ValidationReport":
+    def merge(self, other: ValidationReport) -> ValidationReport:
         """Merge another report into this one."""
         self.violations.extend(other.violations)
         self.checks_performed.update(other.checks_performed)
@@ -130,7 +129,7 @@ class RuleSet:
     class_naming_pattern: str = r"^[A-Z][a-zA-Z0-9]*Agent$"
 
     @classmethod
-    def strict(cls) -> "RuleSet":
+    def strict(cls) -> RuleSet:
         """Create a strict rule set with all checks enabled."""
         return cls(
             check_type_hints=True,
@@ -139,7 +138,7 @@ class RuleSet:
         )
 
     @classmethod
-    def minimal(cls) -> "RuleSet":
+    def minimal(cls) -> RuleSet:
         """Create a minimal rule set for quick validation."""
         return cls(
             check_syntax=True,
@@ -161,30 +160,30 @@ class UnifiedASTVisitor(ast.NodeVisitor):
     def __init__(
         self,
         rules: RuleSet,
-        file_path: Optional[Path] = None,
-        source_code: Optional[str] = None,
+        file_path: Path | None = None,
+        source_code: str | None = None,
     ):
         self.rules = rules
         self.file_path = file_path
         self.source_code = source_code
-        self.violations: List[Violation] = []
+        self.violations: list[Violation] = []
 
         # State tracking
         self._in_async_function = False
-        self._current_class: Optional[str] = None
-        self._class_bases: Dict[str, List[str]] = {}
-        self._class_decorators: Dict[str, List[str]] = {}
-        self._imports: Set[str] = set()
-        self._from_imports: Dict[str, Set[str]] = {}
+        self._current_class: str | None = None
+        self._class_bases: dict[str, list[str]] = {}
+        self._class_decorators: dict[str, list[str]] = {}
+        self._imports: set[str] = set()
+        self._from_imports: dict[str, set[str]] = {}
 
     def _add_violation(
         self,
         violation_type: ViolationType,
         message: str,
-        node: Optional[ast.AST] = None,
+        node: ast.AST | None = None,
         severity: str = "error",
-        rule_id: Optional[str] = None,
-        suggestion: Optional[str] = None,
+        rule_id: str | None = None,
+        suggestion: str | None = None,
     ) -> None:
         """Add a violation to the list."""
         line = getattr(node, "lineno", 0) if node else 0
@@ -253,8 +252,8 @@ class UnifiedASTVisitor(ast.NodeVisitor):
     def _check_canon_compliance(
         self,
         node: ast.ClassDef,
-        bases: List[str],
-        decorators: List[str],
+        bases: list[str],
+        decorators: list[str],
     ) -> None:
         """Check canon compliance for agent classes."""
         # Check for @dataclass decorator
@@ -437,8 +436,8 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     def validate_source(
         self,
         source_code: str,
-        file_path: Optional[Path] = None,
-        rules: Optional[RuleSet] = None,
+        file_path: Path | None = None,
+        rules: RuleSet | None = None,
     ) -> ValidationReport:
         """
         Validate source code string.
@@ -494,7 +493,7 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     def validate_file(
         self,
         file_path: Path,
-        rules: Optional[RuleSet] = None,
+        rules: RuleSet | None = None,
     ) -> ValidationReport:
         """
         Validate a Python file.
@@ -522,9 +521,9 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
 
     def validate_files(
         self,
-        file_paths: List[Path],
-        rules: Optional[RuleSet] = None,
-    ) -> Dict[Path, ValidationReport]:
+        file_paths: list[Path],
+        rules: RuleSet | None = None,
+    ) -> dict[Path, ValidationReport]:
         """
         Validate multiple files.
 
@@ -543,10 +542,10 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     def validate_directory(
         self,
         directory: Path,
-        rules: Optional[RuleSet] = None,
+        rules: RuleSet | None = None,
         pattern: str = "**/*.py",
-        exclude_patterns: Optional[List[str]] = None,
-    ) -> Dict[Path, ValidationReport]:
+        exclude_patterns: list[str] | None = None,
+    ) -> dict[Path, ValidationReport]:
         """
         Validate all Python files in a directory.
 
@@ -581,8 +580,8 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None,
-    ) -> Dict[str, int]:
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 validation agent - operational healing."""
         if _call_path is None:
             _call_path = set()

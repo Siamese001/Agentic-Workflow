@@ -1,6 +1,6 @@
 """Debug which territories have mismatched targets."""
-import re
 import json
+import re
 from pathlib import Path
 
 dashboard_path = Path("reports/autonomy_dashboard.html")

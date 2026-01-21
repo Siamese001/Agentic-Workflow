@@ -4,17 +4,19 @@ Advanced verification for Phase 6 (Tests 4-10).
 Comprehensive testing for deep functional validation, data integrity,
 and system stability after the global SSOT migration.
 """
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.config import SOVEREIGN_REGISTRY, DEFAULT_EXCLUDE_DIRS, HEALING_CONFIG
+from agentic_core.utils.backup_manager import BackupManager
+
+from agentic_core.config import DEFAULT_EXCLUDE_DIRS, HEALING_CONFIG, SOVEREIGN_REGISTRY
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.ssot_discovery import get_python_files
-from agentic_core.utils.backup_manager import BackupManager
 
 
 # --- Test Case 4: Data Fidelity ---

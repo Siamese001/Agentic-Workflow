@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 [DEPRECATED - 2026-01-02] Naming Law Healer Agent - File Identity Standardizer
@@ -23,11 +25,11 @@ Use instead:
 This file will be removed in a future release.
 """
 
-import warnings
 import json
 import re
+import warnings
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Emit deprecation warning on import
 warnings.warn(
@@ -37,14 +39,13 @@ warnings.warn(
     stacklevel=2
 )
 
+from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import (
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from archives.location_violations.sovereign_index import SovereignIndex
 
 
 @dataclass
@@ -115,7 +116,7 @@ Current date: December 24, 2025
             return await self._execute_per_file(file_path)
 
         # Batch mode (legacy)
-        print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] NamingLawHealerAgent: Scanning for naming violations...")
+        print("\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] NamingLawHealerAgent: Scanning for naming violations...")
         self.healed_count = 0
         self.healed_files = []
 
@@ -151,11 +152,11 @@ Current date: December 24, 2025
 
         if self.healed_count > 0:
             print(f"   [✓] NamingLawHealerAgent: Standardized {self.healed_count} file identities.")
-            print(f"      [WARNING] Manual import updates may be required for renamed files.")
+            print("      [WARNING] Manual import updates may be required for renamed files.")
         else:
-            print(f"   [✓] NamingLawHealerAgent: All files comply with naming laws.")
+            print("   [✓] NamingLawHealerAgent: All files comply with naming laws.")
 
-    async def _execute_per_file(self, file_path: str) -> Dict:
+    async def _execute_per_file(self, file_path: str) -> dict:
         """Per-file execution with sovereign mutation and physical transformation."""
         # [SOVEREIGN MUTATION]
         response = await self.ctx.engine.resilient_mutation(
@@ -239,7 +240,7 @@ Current date: December 24, 2025
         self.reasoning_steps.append(thought)
         self.scratchpad += f"- {thought}\n"
 
-    def _detect_low_signal(self, code: str, current_name: str) -> List[str]:
+    def _detect_low_signal(self, code: str, current_name: str) -> list[str]:
         """Detect low-signal patterns in file name."""
         violations = []
         stem = current_name.lower()
@@ -254,7 +255,7 @@ Current date: December 24, 2025
 
         return violations
 
-    def _generate_suggestions(self, current_name: str, code: str) -> List[str]:
+    def _generate_suggestions(self, current_name: str, code: str) -> list[str]:
         """Generate high-signal name suggestions based on code content."""
         suggestions = []
         stem = current_name.lower()
@@ -273,7 +274,7 @@ Current date: December 24, 2025
 
         return list(set(suggestions))
 
-    def _rank_suggestions(self, suggestions: List[str], code: str) -> str:
+    def _rank_suggestions(self, suggestions: list[str], code: str) -> str:
         """Rank suggestions by signal strength."""
         if not suggestions:
             return None
@@ -297,7 +298,7 @@ Current date: December 24, 2025
         # More sophisticated version would update class names
         return code
 
-    def get_summary(self) -> Dict:
+    def get_summary(self) -> dict:
         """Return a summary of the healing pass."""
         return {
             "agent": "NamingLawHealerAgent",
@@ -309,7 +310,7 @@ Current date: December 24, 2025
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Naming/utils agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

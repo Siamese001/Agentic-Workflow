@@ -7,18 +7,17 @@ Phase 2 - Resilient Routing Layer
 """
 
 import logging
-import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
-from shared.resilience.circuit_breaker import CircuitBreakerState
-from shared.resilience.telemetry import SystemTelemetry, get_telemetry, OperationStatus
-from runtime.shared.multi_provider_clients import Provider
-from runtime.shared.hardened_openai_executor import HardenedOpenAIExecutor, HardenedOpenAIConfig
-from runtime.shared.hardened_anthropic_executor import HardenedAnthropicExecutor, HardenedAnthropicConfig
-from runtime.shared.hardened_gemini_executor import HardenedGeminiExecutor, HardenedGeminiConfig
 from runtime.shared.agent_executor import AgentMessage, AgentResponse
+from runtime.shared.hardened_anthropic_executor import HardenedAnthropicExecutor
+from runtime.shared.hardened_gemini_executor import HardenedGeminiExecutor
+from runtime.shared.hardened_openai_executor import HardenedOpenAIExecutor
+from runtime.shared.multi_provider_clients import Provider
+from shared.resilience.circuit_breaker import CircuitBreakerState
+from shared.resilience.telemetry import OperationStatus, SystemTelemetry, get_telemetry
 
-from .schema import RouteConfig, RoutingTier, DEFAULT_ROUTING_CONFIGS
+from .schema import DEFAULT_ROUTING_CONFIGS, RouteConfig, RoutingTier
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +25,7 @@ logger = logging.getLogger(__name__)
 class AllProvidersDownError(Exception):
     """Raised when all providers in the routing chain are unavailable."""
 
-    def __init__(self, tier: str, providers: List[Provider]):
+    def __init__(self, tier: str, providers: list[Provider]):
         self.tier = tier
         self.providers = providers
         super().__init__(
@@ -43,8 +42,8 @@ class HardenedRouter:
 
     def __init__(
         self,
-        configs: Optional[Dict[str, RouteConfig]] = None,
-        telemetry: Optional[SystemTelemetry] = None,
+        configs: dict[str, RouteConfig] | None = None,
+        telemetry: SystemTelemetry | None = None,
     ):
         """Initialize hardened router.
 
@@ -58,7 +57,7 @@ class HardenedRouter:
         self.telemetry = telemetry or get_telemetry()
 
         # Initialize hardened executors for each provider
-        self.executors: Dict[Provider, Any] = {}
+        self.executors: dict[Provider, Any] = {}
         self._initialize_executors()
 
     def _initialize_executors(self) -> None:
@@ -82,7 +81,7 @@ class HardenedRouter:
             except Exception as e:
                 logger.error(f"Failed to initialize executor for {provider}: {e}")
 
-    def get_config(self, tier: Union[str, RoutingTier]) -> RouteConfig:
+    def get_config(self, tier: str | RoutingTier) -> RouteConfig:
         """Get routing configuration for a tier.
 
         Args:
@@ -134,7 +133,7 @@ class HardenedRouter:
         tier: str,
         provider: Provider,
         is_fallback: bool,
-        reason: Optional[str] = None,
+        reason: str | None = None,
     ) -> None:
         """Log a routing event for observability.
 
@@ -159,13 +158,13 @@ class HardenedRouter:
 
     async def execute_with_fallback(
         self,
-        tier: Union[str, RoutingTier],
+        tier: str | RoutingTier,
         prompt: str,
         *,
-        system_prompt: Optional[str] = None,
-        messages: Optional[List[AgentMessage]] = None,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
+        system_prompt: str | None = None,
+        messages: list[AgentMessage] | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
         **kwargs,
     ) -> AgentResponse:
         """Execute request with automatic provider fallback.
@@ -274,10 +273,10 @@ class HardenedRouter:
         provider: Provider,
         config: RouteConfig,
         prompt: str,
-        system_prompt: Optional[str] = None,
-        messages: Optional[List[AgentMessage]] = None,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
+        system_prompt: str | None = None,
+        messages: list[AgentMessage] | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
         **kwargs,
     ) -> AgentResponse:
         """Execute request on a specific provider.
@@ -329,7 +328,7 @@ class HardenedRouter:
 
         raise RuntimeError(f"Executor for {provider} has no compatible execution method")
 
-    def get_provider_health(self) -> Dict[str, Dict[str, Any]]:
+    def get_provider_health(self) -> dict[str, dict[str, Any]]:
         """Get health status of all providers.
 
         Returns:

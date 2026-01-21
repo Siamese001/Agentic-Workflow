@@ -9,11 +9,9 @@ This module replaces the 4 competing backup patterns identified in the SSOT audi
 
 All agents should use BackupManager for backup operations.
 """
-from pathlib import Path
-from datetime import datetime
-from typing import Optional, List, Union
 import shutil
-import os
+from datetime import datetime
+from pathlib import Path
 
 
 class BackupManager:
@@ -29,7 +27,7 @@ class BackupManager:
     def get_backup_dir(
         cls,
         category: str,
-        project_root: Optional[Union[str, Path]] = None,
+        project_root: str | Path | None = None,
         timestamped: bool = True
     ) -> Path:
         """
@@ -60,7 +58,7 @@ class BackupManager:
         cls,
         category: str,
         keep_last_n: int = 10,
-        project_root: Optional[Union[str, Path]] = None
+        project_root: str | Path | None = None
     ) -> int:
         """
         Remove old backups for a specific category, keeping only the N most recent.
@@ -96,10 +94,10 @@ class BackupManager:
     @classmethod
     def backup_file(
         cls,
-        target_file: Union[str, Path],
+        target_file: str | Path,
         category: str = "misc",
-        project_root: Optional[Union[str, Path]] = None
-    ) -> Optional[Path]:
+        project_root: str | Path | None = None
+    ) -> Path | None:
         """
         Quickly backup a single file to a timestamped location.
 
@@ -124,8 +122,8 @@ class BackupManager:
     def list_backups(
         cls,
         category: str,
-        project_root: Optional[Union[str, Path]] = None
-    ) -> List[Path]:
+        project_root: str | Path | None = None
+    ) -> list[Path]:
         """
         List all backup directories for a category.
 
@@ -151,8 +149,8 @@ class BackupManager:
     @classmethod
     def restore_backup(
         cls,
-        backup_path: Union[str, Path],
-        target_path: Union[str, Path],
+        backup_path: str | Path,
+        target_path: str | Path,
         overwrite: bool = False
     ) -> bool:
         """
@@ -197,7 +195,7 @@ class BackupManager:
     @classmethod
     def decommission_legacy_backups(
         cls,
-        project_root: Optional[Union[str, Path]] = None
+        project_root: str | Path | None = None
     ) -> int:
         """
         Final cleanup of deprecated backup directories.
@@ -231,8 +229,8 @@ class BackupManager:
     @classmethod
     def get_legacy_backup_dirs(
         cls,
-        project_root: Optional[Union[str, Path]] = None
-    ) -> List[Path]:
+        project_root: str | Path | None = None
+    ) -> list[Path]:
         """
         List any legacy backup directories that still exist.
 

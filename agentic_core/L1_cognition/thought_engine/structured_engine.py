@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 RESIDUAL SWEEP COMPLETE: Phase 2C
 All models centralized in sovereign SSOT: agentic_core/schemas/models/core_contracts.py
@@ -7,6 +8,7 @@ This file originally contained duplicate AgentPlan model.
 Import from SSOT instead.
 """
 from agentic_core.schemas.models.core_contracts import AgentPlan
+
 
 # NAMING FIXED: StructuredEngine → StructuredEngine
 class StructuredEngine:

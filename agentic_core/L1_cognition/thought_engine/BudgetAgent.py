@@ -14,12 +14,11 @@ from __future__ import annotations
 import ast
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 # Sovereign Agent for token budget tracking and complexity management
 @dataclass
@@ -45,7 +44,7 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
         dry_run: bool = True,
         execute: bool = False,
         **kwargs: Any
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """
         Execute autonomous healing for Canon Key 51 compliance.
 
@@ -72,7 +71,7 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
         passed, details = self.check_key_19_no_complex_functions()
         self.ctx.report(self.name, 19, passed, details)
 
-    def _parse_file_safe(self, fp: str) -> Tuple[ast.AST, None] | Tuple[None, str]:
+    def _parse_file_safe(self, fp: str) -> tuple[ast.AST, None] | tuple[None, str]:
         """Safely parse a Python file into AST.
 
         Args:
@@ -82,9 +81,9 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
             Tuple of (tree, None) on success or (None, error_msg) on failure.
         """
         try:
-            with open(fp, "r", encoding="utf-8") as f:
+            with open(fp, encoding="utf-8") as f:
                 return ast.parse(f.read(), filename=fp), None
-        except (IOError, SyntaxError) as e:
+        except (OSError, SyntaxError) as e:
             return None, str(e)
 
     def _get_function_line_count(self, node: ast.FunctionDef) -> int:
@@ -93,7 +92,7 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
 
     def _check_functions_in_file(
         self, fp: str, tree: ast.AST, checker: callable, formatter: callable
-    ) -> List[str]:
+    ) -> list[str]:
         """Check all functions in a file using provided checker and formatter.
 
         Args:
@@ -113,7 +112,7 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
                     violations.append(formatter(fp, node, result))
         return violations
 
-    def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
+    def check_key_17_no_large_functions(self) -> tuple[bool, list[str]]:
         """Check for functions exceeding maximum line count.
 
         The limit is configurable via MAX_FUNCTION_LINES env var (default: 50).
@@ -139,7 +138,7 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
             violations.extend(self._check_functions_in_file(fp, tree, check, format_msg))
         return len(violations) == 0, violations
 
-    def check_key_19_no_complex_functions(self) -> Tuple[bool, List[str]]:
+    def check_key_19_no_complex_functions(self) -> tuple[bool, list[str]]:
         """Check for functions exceeding maximum cyclomatic complexity.
 
         The limit is configurable via MAX_CYCLOMATIC_COMPLEXITY env var (default: 10).
@@ -179,7 +178,7 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
         """
         complexity = 1  # Start with 1 for the function itself
         for child in ast.walk(node):
-            if isinstance(child, (ast.If, ast.For, ast.While, ast.ExceptHandler, ast.AsyncFor, ast.AsyncWith)):
+            if isinstance(child, ast.If | ast.For | ast.While | ast.ExceptHandler | ast.AsyncFor | ast.AsyncWith):
                 complexity += 1
             elif isinstance(child, ast.BoolOp):
                 # Each 'and' or 'or' adds to complexity

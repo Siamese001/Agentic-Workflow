@@ -7,10 +7,10 @@ Tests verify that:
 - Constants are properly loaded from SSOT
 - ssot_discovery uses the centralized constants
 """
-import pytest
-import warnings
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -52,10 +52,10 @@ def test_healing_config_ssot():
 def test_package_init_exports():
     """Verify package __init__ exports all expected symbols."""
     from agentic_core.config.blueprint_sovereign import (
-        DEFAULT_EXCLUDE_DIRS,
-        SOVEREIGN_REGISTRY,
-        HEALING_CONFIG,
         ACTIVE_CANON_KEYS,
+        DEFAULT_EXCLUDE_DIRS,
+        HEALING_CONFIG,
+        SOVEREIGN_REGISTRY,
     )
     assert DEFAULT_EXCLUDE_DIRS is not None
     assert SOVEREIGN_REGISTRY is not None

@@ -5,13 +5,16 @@ Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Dict, List
+
 import json
 import re
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from dataclasses import dataclass
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ResumeAgent):
@@ -99,7 +102,7 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
             self.record_pass("ATS compatible")
             self.remove_signal("ATS_FAILURE")
 
-    def _calculate_keyword_score(self, resume: Dict[str, any], job_desc: str) -> float:
+    def _calculate_keyword_score(self, resume: dict[str, any], job_desc: str) -> float:
         """
         Calculate keyword match score between resume and job description.
 
@@ -126,7 +129,7 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
 
         return matches / len(job_words)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

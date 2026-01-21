@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+
 """
 SubatomicTestingMixin - Phase 1 Canonical Self-Testing for L2 Agents
 
@@ -9,12 +11,12 @@ This mixin enforces the sovereign requirement that L2-L4 agents must be "Self" t
 Location: agentic_core/L2_execution/tool_registry/subatomic_testing_mixin.py
 Purpose: Shared testing infrastructure for SubAtomicAgent-derived classes
 """
-from typing import Any, Dict, Optional
 import logging
+
 # GRAVITY FIXED: Use correct L2 location for MCPHardenedMixin
 try:
     _mod = importlib.import_module('agentic_core.L2_execution.mcp.mcp_hardened_mixin')
-    MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
+    MCPHardenedMixin = _mod.MCPHardenedMixin
 except (ImportError, AttributeError):
     # Fallback: create stub if module not available during healing
     class MCPHardenedMixin:
@@ -97,7 +99,7 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
 
         # If tools present, test registration structure
         if hasattr(self, "tools") and self.tools is not None:
-            assert isinstance(self.tools, (dict, list)), \
+            assert isinstance(self.tools, dict | list), \
                 f"{class_name}: Tools must be dict or list, got {type(self.tools)}"
 
         # If memory/state dict exists, test basic operations

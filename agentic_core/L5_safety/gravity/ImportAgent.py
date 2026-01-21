@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ImportAgent: Gravity & Import Convention Enforcer (Key 6/Gravity territory)
 
@@ -38,28 +39,28 @@ GOLD STANDARD UPGRADE (2026-01-02):
 - Autonomous cleanup_violations with multi-stage healing
 - run_with_cleanup returning comprehensive summaries
 """
-from pathlib import Path
-from typing import List, Tuple, Set, Dict, Optional, Any
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from dataclasses import dataclass
 import ast
-import re
 import logging
+import re
 import shutil
+from dataclasses import dataclass
 from datetime import datetime
-from collections import defaultdict
+from pathlib import Path
+from typing import Any
+
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    PYTHON_STDLIB_MODULES,
-    UPSTREAM_SOVEREIGN_ROOTS,
     DOWNSTREAM_ROOTS,
     GRAVITY_SURGERY_ENABLED,
+    PYTHON_STDLIB_MODULES,
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    UPSTREAM_SOVEREIGN_ROOTS,
 )
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -118,7 +119,7 @@ class ImportValidationVisitor(ast.NodeVisitor):
 
     def visit_Name(self, node) -> Any:
         """Execute visit_Name operation."""
-        if isinstance(node.ctx, (ast.Load, ast.Store)):
+        if isinstance(node.ctx, ast.Load | ast.Store):
             self.used_names.add(node.id)
         self.generic_visit(node)
 
@@ -130,8 +131,6 @@ class ImportValidationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 @registers_prompt(
     template_name="gravity_repair.jinja",
@@ -168,9 +167,9 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         """Structured violation output for deterministic healing."""
         is_valid: bool
         message: str
-        file_path: Optional[Path] = None
-        suggested_action: Optional[str] = None  # REMOVE_IMPORT, REORDER, MOVE_FILE
-        suggested_target: Optional[str] = None
+        file_path: Path | None = None
+        suggested_action: str | None = None  # REMOVE_IMPORT, REORDER, MOVE_FILE
+        suggested_target: str | None = None
         severity: int = 5
         confidence: int = 100
 
@@ -194,7 +193,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         self._naming_agent = None
 
         # Backup directory for safe operations
-        self._backup_dir: Optional[Path] = None
+        self._backup_dir: Path | None = None
 
     @property
     def location_agent(self):
@@ -218,7 +217,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                 pass
         return self._naming_agent
 
-    def _categorize_imports(self, import_nodes: List[ast.Import | ast.ImportFrom]) -> tuple:
+    def _categorize_imports(self, import_nodes: list[ast.Import | ast.ImportFrom]) -> tuple:
         """Categorize imports by type and track line numbers."""
         categories = {"stdlib": [], "thirdparty": [], "local": []}
         imported_roots = set()
@@ -243,12 +242,12 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return categories, imported_roots
 
-    def _detect_unused_imports_advanced(self, file_path: Path, tree: ast.AST, imported: Set[str]) -> List[str]:
+    def _detect_unused_imports_advanced(self, file_path: Path, tree: ast.AST, imported: set[str]) -> list[str]:
         """
         Advanced unused import detection via AST walking.
         """
-        violations: List[str] = []
-        used_names: Set[str] = set()
+        violations: list[str] = []
+        used_names: set[str] = set()
         dynamic_access = False
 
         # Capture outer class dynamic_patterns for nested class
@@ -258,7 +257,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             """UsageVisitor agent for autonomous operations."""
             def visit_Name(self, node: ast.Name) -> Any:
                 """Execute visit_Name operation."""
-                if isinstance(node.ctx, (ast.Load, ast.Store)):
+                if isinstance(node.ctx, ast.Load | ast.Store):
                     used_names.add(node.id)
                 self.generic_visit(node)
 
@@ -306,20 +305,20 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             if isinstance(node, ast.If) and isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING":
                 # Find imports inside this If block and remove them from violations
                 for inner in ast.walk(node):
-                    if isinstance(inner, (ast.Import, ast.ImportFrom)):
+                    if isinstance(inner, ast.Import | ast.ImportFrom):
                         for alias in inner.names:
                             target = alias.asname if alias.asname else alias.name
                             violations = [v for v in violations if target not in v]
 
         return violations
 
-    def validate_import_conventions(self, file_path: Path) -> List[str]:
+    def validate_import_conventions(self, file_path: Path) -> list[str]:
         """
         Check ordering, relative imports, star imports, and circular risks.
         Now includes advanced unused import detection.
         Returns list of Violation messages.
         """
-        violations: List[str] = []
+        violations: list[str] = []
 
         try:
             rel_path = file_path.relative_to(self.project_root)
@@ -334,7 +333,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             violations.append(f"PARSE ERROR: Cannot parse {file_path.name}: {e}")
             return violations
 
-        import_nodes = [n for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom))]
+        import_nodes = [n for n in ast.walk(tree) if isinstance(n, ast.Import | ast.ImportFrom)]
         import_nodes.sort(key=lambda n: n.lineno if hasattr(n, "lineno") else 0)
 
         # === RELATIVE & STAR IMPORT BANS ===
@@ -366,12 +365,12 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return violations
 
-    def check_import_waterfall_violations(self, file_path: Path) -> List[str]:
+    def check_import_waterfall_violations(self, file_path: Path) -> list[str]:
         """
         Gravity enforcement: upstream sovereign roots must not import downstream domains.
         Only active when GRAVITY_SURGERY_ENABLED.
         """
-        violations: List[str] = []
+        violations: list[str] = []
 
         if not GRAVITY_SURGERY_ENABLED:
             return violations
@@ -412,18 +411,18 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return violations
 
-    def analyze_file(self, file_path: Path) -> List[str]:
+    def analyze_file(self, file_path: Path) -> list[str]:
         """Combined analysis: conventions + gravity."""
         violations = self.validate_import_conventions(file_path)
         violations.extend(self.check_import_waterfall_violations(file_path))
         return violations
 
-    def run(self, valid_files: List[Path]) -> List[Tuple[Path, List[str]]]:
+    def run(self, valid_files: list[Path]) -> list[tuple[Path, list[str]]]:
         """
         Full import compliance scan on pre-validated files.
         Returns list of (file_path, [violation_messages]).
         """
-        all_violations: List[Tuple[Path, List[str]]] = []
+        all_violations: list[tuple[Path, list[str]]] = []
 
         for file_path in valid_files:
             if not file_path.suffix == ".py":
@@ -461,7 +460,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         shutil.copy2(file_path, backup_path)
         return backup_path
 
-    def safe_remove_import(self, file_path: Path, import_name: str, dry_run: bool = True) -> Dict[str, Any]:
+    def safe_remove_import(self, file_path: Path, import_name: str, dry_run: bool = True) -> dict[str, Any]:
         """Safely remove an unused import from a file."""
         result = {"applied": False, "action_taken": "", "error": None}
 
@@ -493,7 +492,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return result
 
-    def suggest_gravity_move(self, file_path: Path, downstream_roots: List[str]) -> Dict[str, Any]:
+    def suggest_gravity_move(self, file_path: Path, downstream_roots: list[str]) -> dict[str, Any]:
         """
         Suggest file move to resolve gravity violation (root-cause fix).
         Uses LocationAgent to determine correct territory.
@@ -510,7 +509,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         try:
             # Analyze file content to determine best territory
-            content = file_path.read_text(encoding="utf-8", errors="ignore")
+            file_path.read_text(encoding="utf-8", errors="ignore")
 
             # If file imports downstream, it might belong in apps_shared
             if "apps_rg" in str(downstream_roots) or "apps_lic" in str(downstream_roots):
@@ -525,7 +524,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return result
 
-    def post_heal_validation(self, file_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+    def post_heal_validation(self, file_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """Validate import compliance on files after healing."""
         report = {
             "post_heal_status": "SKIPPED",
@@ -565,7 +564,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return report
 
-    def post_location_validation(self, file_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+    def post_location_validation(self, file_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """Run LocationAgent validation after gravity fixes."""
         report = {
             "location_status": "SKIPPED",
@@ -599,7 +598,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return report
 
-    def cleanup_violations(self, violations: List[Tuple[Path, List[str]]], dry_run: bool = True, max_actions: int = 50) -> List[Dict[str, Any]]:
+    def cleanup_violations(self, violations: list[tuple[Path, list[str]]], dry_run: bool = True, max_actions: int = 50) -> list[dict[str, Any]]:
         """
         GOLD STANDARD CLEANUP ENGINE — Multi-stage autonomous healing.
 
@@ -610,7 +609,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         4. Location validation for affected files
         """
         actions = []
-        affected_paths: List[Path] = []
+        affected_paths: list[Path] = []
         action_count = 0
 
         for file_path, msgs in violations:
@@ -683,7 +682,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return actions
 
-    def run_with_cleanup(self, files: List[Path] = None, dry_run: bool = True) -> Dict[str, Any]:
+    def run_with_cleanup(self, files: list[Path] = None, dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD WORKFLOW — Full import compliance with autonomous cleanup.
         """
@@ -708,7 +707,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Import/gravity enforcer - scans and fixes violations."""
         if _call_path is None:
             _call_path = set()

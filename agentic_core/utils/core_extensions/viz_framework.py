@@ -5,29 +5,10 @@ This framework provides standardized data visualization capabilities for all age
 eliminating the need for markdown tables and providing rich, interactive dashboards.
 """
 
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
-import json
 import csv
-from datetime import datetime
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+import json
+from pathlib import Path
+from typing import Any
 
 
 class VizFramework:
@@ -41,11 +22,11 @@ class VizFramework:
     def create_dashboard(
         self,
         title: str,
-        data: List[Dict[str, Any]],
-        metrics: List[Dict[str, Any]],
-        charts: List[Dict[str, Any]],
+        data: list[dict[str, Any]],
+        metrics: list[dict[str, Any]],
+        charts: list[dict[str, Any]],
         agent_name: str,
-        description: Optional[str] = None
+        description: str | None = None
     ) -> Path:
         """
         Create interactive HTML dashboard for agent data.
@@ -76,7 +57,7 @@ class VizFramework:
         dashboard_path.write_text(html_content, encoding='utf-8')
         return dashboard_path
 
-    def _save_csv(self, data: List[Dict[str, Any]], csv_path: Path):
+    def _save_csv(self, data: list[dict[str, Any]], csv_path: Path):
         """Save data as CSV file."""
         if not data:
             return
@@ -90,11 +71,11 @@ class VizFramework:
     def _generate_html_dashboard(
         self,
         title: str,
-        data: List[Dict[str, Any]],
-        metrics: List[Dict[str, Any]],
-        charts: List[Dict[str, Any]],
+        data: list[dict[str, Any]],
+        metrics: list[dict[str, Any]],
+        charts: list[dict[str, Any]],
         agent_name: str,
-        description: Optional[str],
+        description: str | None,
         csv_filename: str
     ) -> str:
         """Generate complete HTML dashboard."""
@@ -579,10 +560,10 @@ class VizFramework:
         }
         """
 
-    def launch_instructions(self, dashboard_path: Path, csv_path: Optional[Path] = None) -> List[str]:
+    def launch_instructions(self, dashboard_path: Path, csv_path: Path | None = None) -> list[str]:
         """Generate user instructions for viewing dashboard."""
         instructions = [
-            f"🚀 VIEW INTERACTIVE DASHBOARD:",
+            "🚀 VIEW INTERACTIVE DASHBOARD:",
             f"   📊 Dashboard: {dashboard_path.name}",
         ]
 
@@ -590,16 +571,16 @@ class VizFramework:
             instructions.append(f"   📈 Raw Data: {csv_path.name}")
 
         instructions.extend([
-            f"",
-            f"💡 VIEWING OPTIONS:",
-            f"   1. Install 'Live Server' extension in VS Code",
-            f"   2. Right-click dashboard → 'Open with Live Server'",
-            f"   3. Or open file directly in browser",
-            f"",
-            f"📋 ALTERNATIVE TOOLS:",
-            f"   • Excel Viewer extension for CSV files",
-            f"   • Rainbow CSV for color-coded data",
-            f"   • Data Preview extension for inline charts"
+            "",
+            "💡 VIEWING OPTIONS:",
+            "   1. Install 'Live Server' extension in VS Code",
+            "   2. Right-click dashboard → 'Open with Live Server'",
+            "   3. Or open file directly in browser",
+            "",
+            "📋 ALTERNATIVE TOOLS:",
+            "   • Excel Viewer extension for CSV files",
+            "   • Rainbow CSV for color-coded data",
+            "   • Data Preview extension for inline charts"
         ])
 
         return instructions

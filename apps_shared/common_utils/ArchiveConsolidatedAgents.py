@@ -25,7 +25,7 @@ import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -130,7 +130,7 @@ def create_archive_directory() -> Path:
     return archive_dir
 
 
-def archive_agent(agent_name: str, info: Dict[str, Any], archive_dir: Path, dry_run: bool = False) -> Dict[str, Any]:
+def archive_agent(agent_name: str, info: dict[str, Any], archive_dir: Path, dry_run: bool = False) -> dict[str, Any]:
     """
     Archive a single legacy agent.
 
@@ -175,7 +175,7 @@ def archive_agent(agent_name: str, info: Dict[str, Any], archive_dir: Path, dry_
     return result
 
 
-def create_consolidation_manifest(results: List[Dict[str, Any]], archive_dir: Path) -> None:
+def create_consolidation_manifest(results: list[dict[str, Any]], archive_dir: Path) -> None:
     """Create a manifest documenting the consolidation."""
     manifest = {
         "consolidation_date": datetime.now().isoformat(),
@@ -315,8 +315,8 @@ def main():
     # Create manifest
     if not args.dry_run:
         create_consolidation_manifest(results, archive_dir)
-        print(f"\n  ✓ Created CONSOLIDATION_MANIFEST.json")
-        print(f"  ✓ Created README.md")
+        print("\n  ✓ Created CONSOLIDATION_MANIFEST.json")
+        print("  ✓ Created README.md")
 
     # Summary
     print(f"\n{'=' * 60}")

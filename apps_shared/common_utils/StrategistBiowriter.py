@@ -10,9 +10,9 @@ Legacy K-Node: K.1
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
-from runtime.shared.agent_base import Agent, ReasoningConfig
+from typing import Any
 
+from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +23,9 @@ class ExecutiveSummaryOutput:
     summary: str
     word_count: int
     sentence_count: int
-    first_person_violations: List[str]
+    first_person_violations: list[str]
     third_person_compliant: bool
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 # First-person patterns that MUST be blocked
@@ -85,7 +85,7 @@ class Strategist_BioWriter(Agent):
             f"sentences={sentence_count_min}-{sentence_count_max}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> ExecutiveSummaryOutput:
+    async def execute(self, context: dict[str, Any]) -> ExecutiveSummaryOutput:
         """Execute executive summary generation with 3rd-person voice.
 
         Args:
@@ -157,9 +157,9 @@ class Strategist_BioWriter(Agent):
 
     def _build_initial_prompt(
         self,
-        career_highlights: List[str],
-        expertise_areas: List[str],
-        value_propositions: List[str],
+        career_highlights: list[str],
+        expertise_areas: list[str],
+        value_propositions: list[str],
         target_role: str,
     ) -> str:
         """Build initial generation prompt with 3rd-person enforcement.
@@ -217,7 +217,7 @@ Generate the executive summary now ({self.word_count_min}-{self.word_count_max} 
 
     def _build_regeneration_prompt(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         feedback: str,
     ) -> str:
         """Build regeneration prompt with validation feedback.
@@ -252,7 +252,7 @@ Generate the corrected executive summary:
 
         return prompt
 
-    def _check_first_person(self, text: str) -> List[str]:
+    def _check_first_person(self, text: str) -> list[str]:
         """Check for first-person voice violations.
 
         Args:

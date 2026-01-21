@@ -5,44 +5,32 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 Autonomy Guardian Agent - Autonomy Meta-Enforcement (Canon Key 51)
 HARDENED: Pure L5 Validation & Enforcement.
 Reporting logic and discovery are delegated to the L6 Modular Engine to ensure Logic Sovereignty.
 """
+import ast
+import json
+import logging
 from datetime import date
 from pathlib import Path
-from typing import List, Dict, Any, Set, Optional, Tuple
-import ast
-import logging
-import importlib.util
-import json
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
-from agentic_core.prompt_governance.renderer import DashboardRenderer
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
+from agentic_core.prompt_governance.renderer import DashboardRenderer
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 log = logging.getLogger(__name__)
 
@@ -97,7 +85,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             TESTS_DIR: (TESTS_DIR, "Medium"),
         }
 
-    def validate_agent_autonomy(self, agent_file: Path) -> List[str]:
+    def validate_agent_autonomy(self, agent_file: Path) -> list[str]:
         """AST-based check for required autonomy methods."""
         violations = []
         try:
@@ -111,14 +99,14 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             violations = list(self.required_methods)
         return violations
 
-    def run(self) -> List[Tuple[Path, str]]:
+    def run(self) -> list[tuple[Path, str]]:
         """Scan repository for autonomy and script violations."""
         violations = []
         self._check_forbidden_runner_scripts(violations)
         self._check_agent_autonomy_violations(violations)
         return violations
 
-    def _check_forbidden_runner_scripts(self, violations: List[Tuple[Path, str]]) -> None:
+    def _check_forbidden_runner_scripts(self, violations: list[tuple[Path, str]]) -> None:
         """Check for forbidden runner scripts."""
         # Phase 6.7: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
@@ -129,7 +117,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     if any(p in py_file.stem.lower() for p in self.forbidden_patterns):
                         violations.append((py_file, "FORBIDDEN_RUNNER_SCRIPT"))
 
-    def _check_agent_autonomy_violations(self, violations: List[Tuple[Path, str]]) -> None:
+    def _check_agent_autonomy_violations(self, violations: list[tuple[Path, str]]) -> None:
         """Check for agent autonomy violations."""
         registry = DashboardDataGenerator(self.project_root, self.territories).load_registry()
         for entry in registry:
@@ -140,7 +128,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     violations.append((agent_path, f"MISSING_METHOD:{m}"))
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set[str]] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set[str] | None = None) -> dict[str, int]:
         """Meta-healing: Purge forbidden scripts and report missing methods."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         actual_execute = execute and not dry_run
@@ -174,7 +162,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
         self._generate_dashboard_v2_with_rows(today, dashboard_rows, total_row)
 
-    def _save_modular_markdown_report(self, today: str, total_row: Dict[str, Any], dashboard_rows: List[Dict[str, Any]]) -> None:
+    def _save_modular_markdown_report(self, today: str, total_row: dict[str, Any], dashboard_rows: list[dict[str, Any]]) -> None:
         """Passive Markdown renderer consuming pre-computed L6 rows."""
         report_path = self.project_root / AGENTIC_CORE_DIR / "L6_observability" / REPORTS_DIR / "autonomy_compliance_report.md"
         md = f"# Autonomy Compliance SSOT Report — {today}\n\n"
@@ -185,7 +173,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         md += "| **TOTAL** | **{Total}** | **{Heal Cap %}** | **** | **{Test %}** | **{Avg CC}** | **{Health}** |\n".format(**total_row)
         report_path.write_text(md, encoding="utf-8")
 
-    def _generate_dashboard_v2_with_rows(self, today: str, dashboard_rows: List[Dict[str, Any]], total_row: Dict[str, Any]) -> None:
+    def _generate_dashboard_v2_with_rows(self, today: str, dashboard_rows: list[dict[str, Any]], total_row: dict[str, Any]) -> None:
         """L6 Interactive Dashboard generation consuming pre-computed unified rows."""
         renderer = DashboardRenderer(self.project_root)
         recs = renderer.generate_recommendations(total_row, dashboard_rows)
@@ -194,7 +182,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         html = renderer.render(dashboard_rows, recs, questions, gauge_data, today)
         renderer.save(html)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[List] = None) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: list | None = None) -> dict[str, Any]:
         """
         Autonomous healing with Cognitive Performance tracking.
 
@@ -228,7 +216,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                 # Track confidence score if available
                 if "score" in existing_pattern:
                     self.retrieval_stats["conf_scores"].append(existing_pattern["score"])
-                print(f"[Meta-Learning] Found existing healing pattern. Reusing fix signature.")
+                print("[Meta-Learning] Found existing healing pattern. Reusing fix signature.")
                 print(f"   Pattern ID: {existing_pattern.get('id', 'unknown')}")
                 print(f"   Previous fixes: {existing_pattern.get('metadata', {}).get('fixed', 0)}")
             else:
@@ -242,7 +230,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             agent_paths = []
             if self.discovery_json_path.exists():
                 try:
-                    with open(self.discovery_json_path, 'r', encoding='utf-8') as f:
+                    with open(self.discovery_json_path, encoding='utf-8') as f:
                         agents_data = json.load(f)
                         for agent in agents_data:
                             path_str = agent.get("path", "")
@@ -269,7 +257,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
                 # Check if agent has heal_repository method
                 try:
-                    with open(agent_path, 'r', encoding='utf-8') as f:
+                    with open(agent_path, encoding='utf-8') as f:
                         content = f.read()
                         tree = ast.parse(content)
 
@@ -355,8 +343,8 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         # Meta-Learning: Record healing events to L4 State
         if not dry_run and summary.get("fixed", 0) > 0:
             try:
-                import json
                 import asyncio
+                import json
 
                 # Record fix event to Redis for immediate pattern reuse (async)
                 cache_key = f"autonomy_fix_{self.timestamp}"
@@ -392,12 +380,12 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                         ))
 
                         log.info(f"[META-LEARNING] Semantic fix signature persisted to Pinecone: {vector_id}")
-                        print(f"[Meta-Learning] ✅ Semantic fix signature persisted to Pinecone.")
+                        print("[Meta-Learning] ✅ Semantic fix signature persisted to Pinecone.")
 
                     except Exception as pinecone_error:
                         log.warning(f"[META-LEARNING] Pinecone upsert failed: {pinecone_error}")
                 else:
-                    log.info(f"[META-LEARNING] Gemini embedder unavailable - skipping Pinecone upsert")
+                    log.info("[META-LEARNING] Gemini embedder unavailable - skipping Pinecone upsert")
                     log.info(f"[META-LEARNING] Description: {healing_description}")
                     log.info(f"[META-LEARNING] Metadata: action=inject_heal_repository_stub, target=CanonKey51, fixed={summary['fixed']}")
 
@@ -406,7 +394,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
         return summary
 
-    def search_healing_patterns(self, query: str) -> Optional[Dict[str, Any]]:
+    def search_healing_patterns(self, query: str) -> dict[str, Any] | None:
         """
         Phase 4.4: Search Pinecone for existing healing patterns.
 

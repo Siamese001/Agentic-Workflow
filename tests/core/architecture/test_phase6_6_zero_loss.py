@@ -35,7 +35,7 @@ def test_tc41_secure_checkpoint_security():
     secure_checkpoint = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "SecureCheckpointManagerAgent.py"
 
     if not secure_checkpoint.exists():
-        print(f"⚠️  WARNING: SecureCheckpointManagerAgent.py not found")
+        print("⚠️  WARNING: SecureCheckpointManagerAgent.py not found")
         return True
 
     try:
@@ -55,7 +55,7 @@ def test_tc41_secure_checkpoint_security():
         cleanup_refactored = 'def cleanup_old_checkpoints' in content and 'get_data_files' in content
         quarantine_refactored = 'def quarantine_all_checkpoints' in content and 'get_data_files' in content
 
-        print(f"   SecureCheckpointManagerAgent.py:")
+        print("   SecureCheckpointManagerAgent.py:")
         print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
         print(f"      glob calls: {glob_count}")
         print(f"      Uses get_data_files: {'✓' if uses_get_data_files else '✗'}")
@@ -64,7 +64,7 @@ def test_tc41_secure_checkpoint_security():
         print(f"      quarantine_all_checkpoints refactored: {'✓' if quarantine_refactored else '✗'}")
 
         if not has_ssot_import:
-            print(f"❌ FAIL: Missing ssot_discovery import")
+            print("❌ FAIL: Missing ssot_discovery import")
             return False
 
         if glob_count > 0:
@@ -72,7 +72,7 @@ def test_tc41_secure_checkpoint_security():
             return False
 
         if not uses_get_data_files:
-            print(f"❌ FAIL: Not using get_data_files for checkpoint discovery")
+            print("❌ FAIL: Not using get_data_files for checkpoint discovery")
             return False
 
         print("✅ PASS: SecureCheckpointManager uses ssot_discovery correctly")
@@ -97,7 +97,7 @@ def test_tc42_depth_compliance():
     force_app_depth = PROJECT_ROOT / "agentic_core" / "utils" / "core_extensions" / "force_app_depth.py"
 
     if not force_app_depth.exists():
-        print(f"⚠️  WARNING: force_app_depth.py not found")
+        print("⚠️  WARNING: force_app_depth.py not found")
         return True
 
     try:
@@ -112,20 +112,20 @@ def test_tc42_depth_compliance():
         # Check that it uses get_python_files
         uses_get_python_files = 'get_python_files(app_path)' in content
 
-        print(f"   force_app_depth.py:")
+        print("   force_app_depth.py:")
         print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
         print(f"      glob calls: {glob_count}")
         print(f"      Uses get_python_files: {'✓' if uses_get_python_files else '✗'}")
 
         if not has_ssot_import:
-            print(f"❌ FAIL: Missing ssot_discovery import")
+            print("❌ FAIL: Missing ssot_discovery import")
             return False
 
         if glob_count > 0:
             print(f"⚠️  INFO: Still has {glob_count} glob calls (may be acceptable for directory traversal)")
 
         if not uses_get_python_files:
-            print(f"❌ FAIL: Not using get_python_files for depth enforcement")
+            print("❌ FAIL: Not using get_python_files for depth enforcement")
             return False
 
         print("✅ PASS: force_app_depth uses ssot_discovery correctly")
@@ -149,7 +149,7 @@ def test_tc43_dashboard_integrity():
     dashboard_test = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "test_dashboard_end_to_end.py"
 
     if not dashboard_test.exists():
-        print(f"⚠️  WARNING: test_dashboard_end_to_end.py not found")
+        print("⚠️  WARNING: test_dashboard_end_to_end.py not found")
         return True
 
     try:
@@ -164,13 +164,13 @@ def test_tc43_dashboard_integrity():
         # Check that it uses get_data_files for JS
         uses_get_data_files_js = "get_data_files(js_dir, extensions=['.js'])" in content
 
-        print(f"   test_dashboard_end_to_end.py:")
+        print("   test_dashboard_end_to_end.py:")
         print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
         print(f"      rglob('*.js') calls: {rglob_js_count}")
         print(f"      Uses get_data_files for JS: {'✓' if uses_get_data_files_js else '✗'}")
 
         if not has_ssot_import:
-            print(f"❌ FAIL: Missing ssot_discovery import")
+            print("❌ FAIL: Missing ssot_discovery import")
             return False
 
         if rglob_js_count > 0:
@@ -178,7 +178,7 @@ def test_tc43_dashboard_integrity():
             return False
 
         if not uses_get_data_files_js:
-            print(f"❌ FAIL: Not using get_data_files for JS file discovery")
+            print("❌ FAIL: Not using get_data_files for JS file discovery")
             return False
 
         print("✅ PASS: test_dashboard_end_to_end uses ssot_discovery correctly")
@@ -205,7 +205,7 @@ def test_phase6_6_reduction():
     total_count, offenders = scan_for_rglob_usage(agentic_core)
 
     print(f"   Current rglob/glob count: {total_count}")
-    print(f"   Target: < 150")
+    print("   Target: < 150")
 
     # Phase 6.5 baseline was 184
     baseline = 184
@@ -294,8 +294,8 @@ def main():
     if core_passed == 3:
         print("✅ 100% PASS - All Phase 6.6 Zero-Loss tests passed!")
         print("\nPhase 6.6 Scorched Earth Refactoring is verified.")
-        print(f"\n🎯 ACHIEVEMENT: rglob count reduced from 184 to 170 (14 calls, 7.6% reduction)")
-        print(f"🏆 APPROACHING SUB-150 TARGET!")
+        print("\n🎯 ACHIEVEMENT: rglob count reduced from 184 to 170 (14 calls, 7.6% reduction)")
+        print("🏆 APPROACHING SUB-150 TARGET!")
         return 0
     else:
         print(f"❌ FAIL - {3 - core_passed} core test(s) failed")

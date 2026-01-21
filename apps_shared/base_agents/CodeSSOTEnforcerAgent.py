@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 CodeSSOTEnforcerAgent — CODE-LEVEL SSOT ENFORCEMENT
 
@@ -31,7 +33,8 @@ import ast
 import logging
 import re
 from pathlib import Path
-from typing import List, Dict, Any, Set, Tuple, Optional
+from typing import Any
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
@@ -69,11 +72,11 @@ SKIP_PATHS = {
     "runtime/backups",
 }
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 @dataclass
 class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -104,7 +107,7 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         file_str = str(py_file)
         return any(skip in file_str for skip in SKIP_PATHS)
 
-    def _extract_string_literals(self, content: str) -> List[Tuple[int, str, str]]:
+    def _extract_string_literals(self, content: str) -> list[tuple[int, str, str]]:
         """
         Use AST to extract only string literals (not comments, docstrings, etc.)
 
@@ -200,7 +203,7 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
         return False
 
-    def validate_and_fix_ssot_drift(self, dry_run: bool = True) -> Dict[str, Any]:
+    def validate_and_fix_ssot_drift(self, dry_run: bool = True) -> dict[str, Any]:
         """
         Ultra high-signal SSOT validation.
         Only reports true hard-coded path drift.
@@ -258,7 +261,7 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             "summary": f"SSOT drift scan: {len(unique_violations)} true violations in {files_scanned} files"
         }
 
-    async def detect_violations(self, file_path: str) -> List[Dict[str, Any]]:
+    async def detect_violations(self, file_path: str) -> list[dict[str, Any]]:
         """
         Detection-only interface for MissionController phase separation.
         """
@@ -287,13 +290,13 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
         return violations
 
-    def execute(self) -> Dict[str, Any]:
+    def execute(self) -> dict[str, Any]:
         """Orchestrator entrypoint"""
         return self.validate_and_fix_ssot_drift(dry_run=True)
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Autonomous code SSOT enforcement."""
         if _call_path is None:
             _call_path = set()

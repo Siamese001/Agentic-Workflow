@@ -6,12 +6,11 @@ Mermaid.js diagrams, providing visual proof of system design competency.
 
 import logging
 import re
-from typing import Dict, List, Optional, Tuple, Any
 from enum import Enum
+
 from pydantic import BaseModel, Field, validator
 
 from .models import LLMResponse
-
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +96,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             "event": r'\b(event|message|trigger|signal)\b'
         }
 
-    async def _extract_system_components(self, text: str) -> Tuple[List[DiagramNode], List[Tuple[str, str]]]:
+    async def _extract_system_components(self, text: str) -> tuple[list[DiagramNode], list[tuple[str, str]]]:
         """Extract system components and relationships from text.
 
         Args:
@@ -158,8 +157,8 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
 
     def _generate_mermaid_code(
         self,
-        nodes: List[DiagramNode],
-        relationships: List[Tuple[str, str]],
+        nodes: list[DiagramNode],
+        relationships: list[tuple[str, str]],
         diagram_type: DiagramType
     ) -> str:
         """Generate Mermaid code from nodes and relationships.
@@ -209,8 +208,8 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         self,
         description: str,
         diagram_type: DiagramType = DiagramType.FLOWCHART,
-        caption: Optional[str] = None
-    ) -> Optional[DiagramArtifact]:
+        caption: str | None = None
+    ) -> DiagramArtifact | None:
         """Generate a Mermaid diagram from text description.
 
         Args:
@@ -272,7 +271,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
 *Nodes: {artifact.node_count} | Complexity: {artifact.complexity_score:.1%}*
 """
 
-    async def visualize_bullet(self, bullet_text: str) -> Optional[str]:
+    async def visualize_bullet(self, bullet_text: str) -> str | None:
         """Convert a resume bullet describing a system into a diagram.
 
         Args:
@@ -309,7 +308,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from .multi_provider_clients import get_client, Provider
+            from .multi_provider_clients import Provider, get_client
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)

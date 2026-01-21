@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 MCPGuardianAgent - L5 Safety Guardian for MCP Integration Compliance
 
@@ -20,18 +22,19 @@ Audits all MCP calls for:
 Emits CRITIQUE on violations for subatomic retry.
 """
 import logging
-import os
 import re
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 @dataclass
 class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -45,7 +48,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     - SovereignEvent emission on lifecycle events
     """
 
-    def __init__(self, project_root: Optional[Path] = None) -> None:
+    def __init__(self, project_root: Path | None = None) -> None:
         """
         Initialize MCP Guardian.
 
@@ -53,13 +56,13 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             project_root: Project root directory for scanning
         """
         self.project_root = project_root or Path.cwd()
-        self.violations: List[Dict[str, Any]] = []
+        self.violations: list[dict[str, Any]] = []
 
     async def audit_mcp_call(
         self,
         operation: str,
         client_name: str,
-        config: Dict[str, Any]
+        config: dict[str, Any]
     ) -> bool:
         """
         Audit a single MCP call for compliance.
@@ -112,7 +115,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return True
 
-    def scan_codebase(self) -> Dict[str, Any]:
+    def scan_codebase(self) -> dict[str, Any]:
         """
         Scan entire codebase for MCP compliance violations.
 
@@ -161,7 +164,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return results
 
-    def _has_hardcoded_credentials(self, config: Dict[str, Any]) -> bool:
+    def _has_hardcoded_credentials(self, config: dict[str, Any]) -> bool:
         """
         Check if configuration contains hardcoded credentials.
 
@@ -182,7 +185,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return False
 
-    def _emit_critique(self, violations: List[Dict[str, Any]]) -> None:
+    def _emit_critique(self, violations: list[dict[str, Any]]) -> None:
         """
         Emit CRITIQUE for MCP violations.
 
@@ -244,7 +247,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return "\n".join(report)
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -263,10 +266,10 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
 
 # Singleton instance
-_guardian: Optional[MCPGuardianAgent] = None
+_guardian: MCPGuardianAgent | None = None
 
 
-def get_mcp_guardian(project_root: Optional[Path] = None) -> MCPGuardianAgent:
+def get_mcp_guardian(project_root: Path | None = None) -> MCPGuardianAgent:
     """
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()

@@ -17,11 +17,8 @@ from __future__ import annotations
 import sys
 import tempfile
 import threading
-import time
 import unittest
 from pathlib import Path
-from typing import Any, Dict
-from unittest.mock import MagicMock, patch
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -91,8 +88,8 @@ class TestPhase2SingleASTPass(unittest.TestCase):
     def test_single_ast_pass_efficiency(self):
         """Verify single-pass is faster than multiple passes."""
         from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
-            UnifiedCodeValidatorAgent,
             RuleSet,
+            UnifiedCodeValidatorAgent,
         )
 
         # Create test file
@@ -122,8 +119,8 @@ class TestPhase2GravityViolation(unittest.TestCase):
     def test_gravity_violation_detection(self):
         """Verify L3 importing L5 is flagged."""
         from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-            UnifiedStructureValidatorAgent,
             StructureConfig,
+            UnifiedStructureValidatorAgent,
         )
 
         config = StructureConfig(check_gravity=True)
@@ -143,9 +140,9 @@ class TestPhase3ResourceConcurrency(unittest.TestCase):
     def test_resource_concurrency(self):
         """10+ agents requesting budget simultaneously."""
         from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
-            UnifiedResourceManagerAgent,
             ResourceConfig,
             ResourceType,
+            UnifiedResourceManagerAgent,
         )
 
         config = ResourceConfig(
@@ -184,9 +181,9 @@ class TestPhase3BudgetHardCap(unittest.TestCase):
     def test_budget_hard_cap(self):
         """Execution halted at 100% exhaustion."""
         from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
-            UnifiedResourceManagerAgent,
             ResourceConfig,
             ResourceType,
+            UnifiedResourceManagerAgent,
         )
 
         config = ResourceConfig(enable_hard_caps=True)
@@ -207,8 +204,8 @@ class TestPhase3SovereigntyProtection(unittest.TestCase):
     def test_sovereignty_protection(self):
         """Block L3/L4 modifying L5 without exception."""
         from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
-            UnifiedCodeEnforcerAgent,
             EnforcementConfig,
+            UnifiedCodeEnforcerAgent,
         )
 
         config = EnforcementConfig(enable_sovereignty=True)
@@ -231,8 +228,8 @@ class TestPhase3NamingCompliance(unittest.TestCase):
     def test_naming_law_compliance(self):
         """Force-rename non-compliant classes."""
         from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
-            UnifiedStructureEnforcerAgent,
             StructureConfig,
+            UnifiedStructureEnforcerAgent,
         )
 
         config = StructureConfig(enable_naming=True)
@@ -253,8 +250,8 @@ class TestPhase4DeadlockDetection(unittest.TestCase):
     def test_deadlock_detection(self):
         """Correctly identify circular wait conditions."""
         from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import (
-            UnifiedCodeDetectorAgent,
             DetectionType,
+            UnifiedCodeDetectorAgent,
         )
 
         detector = UnifiedCodeDetectorAgent()
@@ -293,7 +290,6 @@ class TestPhase4PromptInjectionBlock(unittest.TestCase):
         """Flag 100% of standard injection patterns."""
         from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import (
             UnifiedSafetyDetectorAgent,
-            SafetyThreatType,
         )
 
         detector = UnifiedSafetyDetectorAgent()
@@ -325,8 +321,8 @@ class TestPhase4ImportHealerPrecision(unittest.TestCase):
     def test_import_healer_precision(self):
         """Fix broken imports without breaking functional code."""
         from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
-            UnifiedCodeHealerAgent,
             HealerConfig,
+            UnifiedCodeHealerAgent,
         )
 
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
@@ -360,9 +356,8 @@ class TestPhase4ModelRoutingCostLogic(unittest.TestCase):
     def test_model_routing_cost_logic(self):
         """Route by complexity and cost."""
         from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import (
-            UnifiedModelRouterAgent,
             TaskComplexity,
-            ModelTier,
+            UnifiedModelRouterAgent,
         )
 
         router = UnifiedModelRouterAgent()
@@ -392,13 +387,13 @@ class TestPhase4IntegrityGateBlocking(unittest.TestCase):
 
     def test_integrity_gate_blocking(self):
         """Block execution on high-severity violations."""
-        from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import (
-            UnifiedSafetyExecutorAgent,
-            ExecutorConfig,
-            ExecutionStatus,
-        )
         from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import (
             UnifiedSafetyDetectorAgent,
+        )
+        from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import (
+            ExecutionStatus,
+            ExecutorConfig,
+            UnifiedSafetyExecutorAgent,
         )
 
         detector = UnifiedSafetyDetectorAgent()

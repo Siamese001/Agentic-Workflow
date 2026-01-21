@@ -9,13 +9,17 @@ Features:
 - Namespace isolation
 """
 from __future__ import annotations
-import hashlib
+
 import asyncio
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from agentic_core.config.feature_flags import USE_PINECONE, CACHE_METRICS_ENABLED, GRACEFUL_DEGRADATION
+from agentic_core.config.feature_flags import (
+    CACHE_METRICS_ENABLED,
+    GRACEFUL_DEGRADATION,
+    USE_PINECONE,
+)
 from agentic_core.observability.cache_metrics import get_cache_metrics
 
 log = logging.getLogger(__name__)
@@ -62,7 +66,9 @@ class PineconeVectorMixin:
             return None
         if self._pinecone_client is None:
             try:
-                from agentic_core.L2_execution.mcp.pinecone_mcp_client import get_pinecone_mcp_client
+                from agentic_core.L2_execution.mcp.pinecone_mcp_client import (
+                    get_pinecone_mcp_client,
+                )
                 self._pinecone_client = get_pinecone_mcp_client()
             except Exception as e:
                 if not GRACEFUL_DEGRADATION:
@@ -73,11 +79,11 @@ class PineconeVectorMixin:
 
     async def vector_search(
         self,
-        embedding: List[float],
+        embedding: list[float],
         top_k: int = 10,
-        metadata_filter: Optional[Dict[str, Any]] = None,
+        metadata_filter: dict[str, Any] | None = None,
         include_metadata: bool = True
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Search for similar vectors.
 
@@ -159,8 +165,8 @@ class PineconeVectorMixin:
     async def vector_upsert(
         self,
         id: str,
-        embedding: List[float],
-        metadata: Dict[str, Any]
+        embedding: list[float],
+        metadata: dict[str, Any]
     ) -> bool:
         """
         Upsert a vector with metadata.
@@ -210,7 +216,7 @@ class PineconeVectorMixin:
         log.debug(f"Vector stored locally: {id}")
         return True
 
-    async def vector_delete(self, ids: List[str]) -> int:
+    async def vector_delete(self, ids: list[str]) -> int:
         """
         Delete vectors by ID.
 
@@ -236,7 +242,7 @@ class PineconeVectorMixin:
 
         return deleted
 
-    async def vector_fetch(self, ids: List[str]) -> Dict[str, Dict[str, Any]]:
+    async def vector_fetch(self, ids: list[str]) -> dict[str, dict[str, Any]]:
         """
         Fetch vectors by ID.
 

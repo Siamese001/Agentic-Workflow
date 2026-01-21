@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 """
 ConvergenceDetectorAgent - Extracted for one-class-per-file pattern.
 
@@ -8,10 +9,16 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
-from typing import List, Set, Dict, Any
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
+
+from typing import Any
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
+    L3SubatomicTestingMixin,
+)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
@@ -25,7 +32,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
         history: List of signal states from previous cycles
     """
 
-    def __init__(self, ctx: 'ResumeEngineContext') -> None:
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         """
         Initialize convergence detector.
 
@@ -33,7 +40,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
             ctx: Resume engine context
         """
         self.ctx = ctx
-        self.history: List[Set[str]] = []
+        self.history: list[set[str]] = []
 
     def record_state(self) -> None:
         """
@@ -65,8 +72,8 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
         if len(self.history) < window * 2:
             return False
 
-        recent: List[Set[str]] = self.history[-window:]
-        earlier: List[Set[str]] = self.history[-window * 2:-window]
+        recent: list[set[str]] = self.history[-window:]
+        earlier: list[set[str]] = self.history[-window * 2:-window]
 
         # Check if recent states match earlier states
         for i, state in enumerate(recent):
@@ -75,7 +82,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
 
         return False
 
-    def get_stuck_signals(self) -> Set[str]:
+    def get_stuck_signals(self) -> set[str]:
         """
         Get signals that have persisted across multiple cycles.
 
@@ -87,7 +94,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
 
         return self.history[-1] & self.history[-2]
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

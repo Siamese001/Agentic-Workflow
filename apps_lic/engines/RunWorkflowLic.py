@@ -5,18 +5,16 @@ __version__ = "12.0"
 
 import asyncio
 import json
-import sys
 import os
+import sys
+from typing import Any
 from uuid import uuid4
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, Any
 
 from models_LIC import OutreachMission
 
 __version__ = "12.0"
 
-def load_mission_input(filename: str = "mission_input_LIC.json") -> Dict[str, Any]:
+def load_mission_input(filename: str = "mission_input_LIC.json") -> dict[str, Any]:
     """
     Loads the mission input JSON file.
 
@@ -39,14 +37,14 @@ def load_mission_input(filename: str = "mission_input_LIC.json") -> Dict[str, An
         sys.exit(1)
 
     try:
-        with open(filename, 'r') as f:
+        with open(filename) as f:
             return json.load(f)
     except json.JSONDecodeError as e:
         print(f"FATAL: Error decoding {filename}: {e}")
         print(f"Line {e.lineno}, column {e.colno}: {e.msg}")
         sys.exit(1)
 
-def validate_mission_input(input_data: Dict[str, Any]) -> bool:
+def validate_mission_input(input_data: dict[str, Any]) -> bool:
     """
     Validate that mission input contains all required fields.
 
@@ -131,7 +129,7 @@ def print_mission_summary(mission: OutreachMission):
     print(f"Company:      {mission.job_description.get('company', 'N/A')}")
     print(f"Location:     {mission.job_description.get('location', 'N/A')}")
 
-def print_results(result: Dict[str, Any]):
+def print_results(result: dict[str, Any]):
     """Print workflow execution results"""
     print(f"\n{'='*80}")
     print("WORKFLOW RESULTS")
@@ -144,7 +142,7 @@ def print_results(result: Dict[str, Any]):
         print(f"Route: {result.get('route', 'N/A')}")
         print(f"Archetype: {result.get('archetype', 'N/A')}")
 
-        print(f"\nQA Summary:")
+        print("\nQA Summary:")
         qa = result['qa_summary']
         print(f"  Critical Issues: {qa['critical_issues']}")
         print(f"  High Issues:     {qa['high_issues']}")
@@ -244,7 +242,7 @@ async def main():
         with open(output_file, 'w') as f:
             json.dump(result, f, indent=2, default=str)
         print(f"\n💾 Full results saved to: {output_file}")
-    except IOError as e:
+    except OSError as e:
         print(f"\n⚠️  Could not save results to file: {e}")
 
     return result

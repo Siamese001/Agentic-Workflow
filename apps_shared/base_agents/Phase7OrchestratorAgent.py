@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 """
 Phase7OrchestratorAgent - Extracted for one-class-per-file pattern.
 
@@ -8,6 +9,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+
 
 @dataclass
 class Phase7OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):

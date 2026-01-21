@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Airlock Protocol - Zero Trust Human Authorization
 
@@ -8,11 +9,9 @@ Prevents autonomous execution of dangerous or irreversible operations.
 import asyncio
 import json
 import logging
-import time
 import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
@@ -90,8 +89,8 @@ class AirlockProtocol:
 
     async def acquire_permission(self,
                                 tool_name: str,
-                                args: Dict,
-                                risk_score: Optional[int] = None) -> bool:
+                                args: dict,
+                                risk_score: int | None = None) -> bool:
         """
         Request Permission to execute a potentially dangerous action.
 
@@ -134,7 +133,7 @@ class AirlockProtocol:
         with open(ticket_path, "w") as f:
             json.dump(ticket, f, indent=2)
 
-        LOGGER.warning(f"[!] HIGH RISK ACTION TRAPPED in AIRLOCK")
+        LOGGER.warning("[!] HIGH RISK ACTION TRAPPED in AIRLOCK")
         LOGGER.warning(f"Ticket ID: {ticket_id}")
         LOGGER.warning(f"Action: {tool_name} with risk score {risk_score}")
         LOGGER.warning(f"Args: {json.dumps(args, indent=2)}")
@@ -176,7 +175,7 @@ class AirlockProtocol:
                     LOGGER.info(f"[OK] Airlock request {ticket_id} approved by human")
                     return True
                 elif rejected_path.exists():
-                    with open(rejected_path, "r") as f:
+                    with open(rejected_path) as f:
                         data = json.load(f)
                     reason = data.get("reason", "No reason provided")
                     raise PermissionError(f"Human rejected action: {reason}")
@@ -186,7 +185,7 @@ class AirlockProtocol:
 
             # Check ticket status directly
             try:
-                with open(ticket_path, "r") as f:
+                with open(ticket_path) as f:
                     data = json.load(f)
 
                 if data.get("status") == "APPROVED":
@@ -199,7 +198,7 @@ class AirlockProtocol:
                     self._move_ticket(ticket_path, self.rejected_dir, reason)
                     raise PermissionError(f"Human rejected action: {reason}")
 
-            except (json.JSONDecodeError, IOError):
+            except (OSError, json.JSONDecodeError):
                 # Ticket file may be corrupted or unreadable, continue waiting
                 pass
 
@@ -209,7 +208,7 @@ class AirlockProtocol:
     def _move_ticket(self,
                     ticket_path: Path,
                     destination: Path,
-                    reason: Optional[str] = None):
+                    reason: str | None = None):
         """
         Move ticket to destination directory with optional reason.
 
@@ -219,7 +218,7 @@ class AirlockProtocol:
             reason: Optional rejection reason
         """
         try:
-            with open(ticket_path, "r") as f:
+            with open(ticket_path) as f:
                 data = json.load(f)
 
             if reason:
@@ -242,7 +241,7 @@ class AirlockProtocol:
         pending = []
         for ticket_file in self.pending_dir.glob("*.json"):
             try:
-                with open(ticket_file, "r") as f:
+                with open(ticket_file) as f:
                     data = json.load(f)
                 pending.append(data)
             except Exception:
@@ -259,7 +258,7 @@ class AirlockProtocol:
         """
         ticket_path = self.pending_dir / f"{ticket_id}.json"
         if ticket_path.exists():
-            with open(ticket_path, "r") as f:
+            with open(ticket_path) as f:
                 data = json.load(f)
             data["status"] = "APPROVED"
             data["approved_by"] = approver
@@ -279,7 +278,7 @@ class AirlockProtocol:
         """
         ticket_path = self.pending_dir / f"{ticket_id}.json"
         if ticket_path.exists():
-            with open(ticket_path, "r") as f:
+            with open(ticket_path) as f:
                 data = json.load(f)
             data["status"] = "REJECTED"
             data["reason"] = reason

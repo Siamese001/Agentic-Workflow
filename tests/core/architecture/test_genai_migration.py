@@ -80,9 +80,9 @@ def test_new_genai_imports():
 
         content = full_path.read_text(encoding='utf-8')
         if new_pattern.search(content):
-            test_pass(f"NEW_IMPORT-{Path(rel_path).stem}", f"Uses google.genai")
+            test_pass(f"NEW_IMPORT-{Path(rel_path).stem}", "Uses google.genai")
         else:
-            test_fail(f"NEW_IMPORT-{Path(rel_path).stem}", f"Missing 'from google import genai'")
+            test_fail(f"NEW_IMPORT-{Path(rel_path).stem}", "Missing 'from google import genai'")
 
 
 def test_genai_client_usage():

@@ -6,8 +6,9 @@ and resolved as needed throughout the application.
 """
 
 import logging
-from typing import Type, TypeVar, Dict, Any, Optional, Callable
-from abc import ABC, abstractmethod
+from abc import ABC
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -36,16 +37,16 @@ class ServiceContainer:
             name: Optional name for the container (useful for debugging)
         """
         self.name = name
-        self._services: Dict[Type, Any] = {}
-        self._factories: Dict[Type, Callable[[], Any]] = {}
-        self._singletons: Dict[Type, Any] = {}
-        self._lifecycle: Dict[Type, str] = {}  # "singleton" or "transient"
+        self._services: dict[type, Any] = {}
+        self._factories: dict[type, Callable[[], Any]] = {}
+        self._singletons: dict[type, Any] = {}
+        self._lifecycle: dict[type, str] = {}  # "singleton" or "transient"
 
     def register(
         self,
-        interface: Type[T],
-        implementation: Optional[T] = None,
-        factory: Optional[Callable[[], T]] = None,
+        interface: type[T],
+        implementation: T | None = None,
+        factory: Callable[[], T] | None = None,
         lifecycle: str = "singleton"
     ) -> None:
         """Register a service in the container.
@@ -78,7 +79,7 @@ class ServiceContainer:
 
         logger.debug(f"Registered {interface.__name__} in container '{self.name}'")
 
-    def resolve(self, interface: Type[T]) -> T:
+    def resolve(self, interface: type[T]) -> T:
         """Resolve a service from the container.
 
         Args:
@@ -127,7 +128,7 @@ class ServiceContainer:
 
         raise ServiceNotFoundError(f"Could not resolve {interface.__name__}")
 
-    def is_registered(self, interface: Type) -> bool:
+    def is_registered(self, interface: type) -> bool:
         """Check if a service is registered.
 
         Args:
@@ -146,7 +147,7 @@ class ServiceContainer:
         self._lifecycle.clear()
         logger.debug(f"Cleared all services from container '{self.name}'")
 
-    def list_services(self) -> Dict[Type, str]:
+    def list_services(self) -> dict[type, str]:
         """List all registered services and their lifecycles.
 
         Returns:
@@ -156,7 +157,7 @@ class ServiceContainer:
 
 
 # Global default container for backward compatibility
-_default_container: Optional[ServiceContainer] = None
+_default_container: ServiceContainer | None = None
 
 
 def get_default_container() -> ServiceContainer:
@@ -172,9 +173,9 @@ def get_default_container() -> ServiceContainer:
 
 
 def register_default(
-    interface: Type[T],
-    implementation: Optional[T] = None,
-    factory: Optional[Callable[[], T]] = None,
+    interface: type[T],
+    implementation: T | None = None,
+    factory: Callable[[], T] | None = None,
     lifecycle: str = "singleton"
 ) -> None:
     """Register a service in the default container.
@@ -190,7 +191,7 @@ def register_default(
     get_default_container().register(interface, implementation, factory, lifecycle)
 
 
-def resolve_default(interface: Type[T]) -> T:
+def resolve_default(interface: type[T]) -> T:
     """Resolve a service from the default container.
 
     This is a convenience function for global resolution.

@@ -3,16 +3,13 @@ Sovereign Core Contracts – Absolute SSOT for all Pydantic models and data sche
 No inline BaseModel definitions allowed outside schemas/.
 """
 import logging
-from pathlib import Path
 from enum import Enum
-from typing import Optional, List, Dict, Any, Literal, Set
-from pydantic import BaseModel, Field, ConfigDict, validator, field_validator
+from pathlib import Path
+from typing import Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, validator
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 # === SOVEREIGN SEVERITY LEVELS – Phase 12 (Dec 26, 2025) ===
@@ -248,7 +245,7 @@ class territory(sovereign_base_model):
     name: str
     depth: int
     path: str
-    canon_key: Optional[int] = None
+    canon_key: int | None = None
 
 # NAMING FIXED: AgentMessage → agent_message
 class agent_message(sovereign_base_model):
@@ -257,7 +254,7 @@ class agent_message(sovereign_base_model):
     source: str
     destination: str
     content: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 # NAMING FIXED: ReadFileArgs → read_file_args
 class read_file_args(BaseModel):
@@ -303,7 +300,7 @@ class move_file_args(BaseModel):
 class list_files_args(BaseModel):
     """Arguments for listing files in a directory."""
     path: str = Field(default=".", description="Relative path to the directory to list")
-    pattern: Optional[str] = Field(default=None, description="Glob pattern to filter files (e.g., '*.py')")
+    pattern: str | None = Field(default=None, description="Glob pattern to filter files (e.g., '*.py')")
     recursive: bool = Field(default=False, description="Recursively list subdirectories")
 
     @validator('path')
@@ -317,8 +314,8 @@ class list_files_args(BaseModel):
 class execute_command_args(BaseModel):
     """Arguments for executing a shell command."""
     command: str = Field(..., description="Command to execute")
-    args: List[str] = Field(default_factory=list, description="Command arguments")
-    cwd: Optional[str] = Field(default=None, description="Working directory (relative to project root)")
+    args: list[str] = Field(default_factory=list, description="Command arguments")
+    cwd: str | None = Field(default=None, description="Working directory (relative to project root)")
     timeout: int = Field(default=30, description="Timeout in seconds (max 300)")
     capture_output: bool = Field(default=True, description="Capture stdout and stderr")
 
@@ -369,16 +366,16 @@ class agent_thought_process(BaseModel):
     Forces the agent to show its work before acting.
     This is the "Physics" of your Agent - the schema it must follow.
     """
-    reasoning_trace: List[str] = Field(
+    reasoning_trace: list[str] = Field(
         ...,
         description="Step-by-step logic leading to the decision. Each step should be clear and atomic."
     )
-    relevant_context_keys: List[str] = Field(...)
+    relevant_context_keys: list[str] = Field(...)
     tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
         ...,
         description="The action type to take"
     )
-    tool_arguments: Dict[str, Any] = Field(
+    tool_arguments: dict[str, Any] = Field(
         default_factory=dict,
         description="Arguments for the chosen tool"
     )
@@ -411,15 +408,15 @@ class code_generation_result(BaseModel):
     """Schema for code generation tasks."""
     reasoning: str = Field(..., description="Why this code solves the problem")
     code: str = Field(..., description="The generated Python code")
-    dependencies: List[str] = Field(
+    dependencies: list[str] = Field(
         default_factory=list,
         description="Required pip packages"
     )
-    test_cases: List[str] = Field(
+    test_cases: list[str] = Field(
         default_factory=list,
         description="Test cases to verify the code"
     )
-    safety_notes: List[str] = Field(
+    safety_notes: list[str] = Field(
         default_factory=list,
         description="Potential safety concerns or limitations"
     )
@@ -428,16 +425,16 @@ class code_generation_result(BaseModel):
 class research_result(BaseModel):
     """Schema for research tasks."""
     query_understanding: str = Field(..., description="How you interpreted the research question")
-    sources: List[Dict[str, str]] = Field(
+    sources: list[dict[str, str]] = Field(
         ...,
         description="List of sources with 'url' and 'relevance' keys"
     )
-    key_findings: List[str] = Field(..., description="Main findings from the research")
+    key_findings: list[str] = Field(..., description="Main findings from the research")
     confidence_level: Literal["high", "medium", "low"] = Field(
         ...,
         description="Confidence in the research results"
     )
-    follow_up_questions: List[str] = Field(
+    follow_up_questions: list[str] = Field(
         default_factory=list,
         description="Suggested follow-up research questions"
     )
@@ -447,7 +444,7 @@ class consensus_verdict(BaseModel):
     """Result of a consensus deliberation."""
     chosen_plan: str
     consensus_score: float  # 0.0 to 1.0
-    dissenting_opinions: List[str] = Field(default_factory=list)
+    dissenting_opinions: list[str] = Field(default_factory=list)
     reasoning: str
     safe_to_proceed: bool
 
@@ -494,8 +491,8 @@ class generation_config(BaseModel):
     """Configuration for LLM generation based on tone profile."""
     system_prompt_fragment: str = Field(..., description="Instruction to inject into prompts")
     temperature_setting: float = Field(..., ge=0.1, le=1.0, description="LLM temperature")
-    banned_phrases: List[str] = Field(default_factory=list, description="Phrases to avoid")
-    preferred_transitions: List[str] = Field(default_factory=list, description="Preferred transition words")
+    banned_phrases: list[str] = Field(default_factory=list, description="Phrases to avoid")
+    preferred_transitions: list[str] = Field(default_factory=list, description="Preferred transition words")
     max_sentence_length: int = Field(default=25, ge=5, le=100, description="Max words per sentence")
 
     @validator('temperature_setting')
@@ -527,7 +524,7 @@ class retry_policy(BaseModel):
     max_retries: int = Field(default=3, ge=0, le=10)
     retry_delay: float = Field(default=1.0, ge=0.0)
     exponential_backoff: bool = Field(default=True)
-    retryable_stages: List[micro_stage] = Field(
+    retryable_stages: list[micro_stage] = Field(
         default=[micro_stage.THINK, micro_stage.ACT, micro_stage.CRITIQUE]
     )
 
@@ -538,16 +535,16 @@ class micro_checkpoint(BaseModel):
     stage: micro_stage
     timestamp: float
     state: HopState
-    data: Dict[str, Any] = Field(default_factory=dict)
-    error: Optional[str] = None
+    data: dict[str, Any] = Field(default_factory=dict)
+    error: str | None = None
 
 # NAMING FIXED: StageTransition → stage_transition
 class stage_transition(BaseModel):
     """Record of a stage transition."""
-    from_stage: Optional[micro_stage] = None
+    from_stage: micro_stage | None = None
     to_stage: micro_stage
     timestamp: float
-    reason: Optional[str] = None
+    reason: str | None = None
 
 # NAMING FIXED: InjectionType → injection_type
 class injection_type(Enum):
@@ -563,9 +560,9 @@ class injection_type(Enum):
 # NAMING FIXED: InjectionScope → injection_scope
 class injection_scope(BaseModel):
     """Scope where injection should be applied."""
-    hop_types: List[str] = Field(default_factory=list)
-    stages: List[str] = Field(default_factory=list)
-    contexts: Dict[str, Any] = Field(default_factory=dict)
+    hop_types: list[str] = Field(default_factory=list)
+    stages: list[str] = Field(default_factory=list)
+    contexts: dict[str, Any] = Field(default_factory=dict)
 
 # NAMING FIXED: InjectionPattern → injection_pattern
 class injection_pattern(BaseModel):
@@ -575,7 +572,7 @@ class injection_pattern(BaseModel):
     type: InjectionType
     description: str
     template: str
-    variables: List[str] = Field(default_factory=list)
+    variables: list[str] = Field(default_factory=list)
     scope: InjectionScope = Field(default_factory=InjectionScope)
     priority: int = Field(default=0, ge=0, le=10)
     enabled: bool = True
@@ -647,15 +644,15 @@ class hard_state:
     information that must remain stable throughout the workflow.
     """
     execution_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    workflow_id: Optional[str] = None
-    node_id: Optional[str] = None
+    workflow_id: str | None = None
+    node_id: str | None = None
     security_scopes: set = field(default_factory=set)
-    file_paths: Dict[str, str] = field(default_factory=dict)
-    schemas: Dict[str, str] = field(default_factory=dict)
-    execution_trace: List[Dict[str, Any]] = field(default_factory=list)
+    file_paths: dict[str, str] = field(default_factory=dict)
+    schemas: dict[str, str] = field(default_factory=dict)
+    execution_trace: list[dict[str, Any]] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.utcnow)
 
-    def add_trace(self, event: str, data: Dict[str, Any]) -> 'HardState':
+    def add_trace(self, event: str, data: dict[str, Any]) -> 'HardState':
         """Add an event to the execution trace (returns new instance)."""
         new_trace = self.execution_trace + [{
             "event": event,
@@ -682,11 +679,11 @@ class soft_state:
     This is where the LLM can draft, speculate, and iterate without risking
     system stability. Content here must be validated before promotion to HardState.
     """
-    drafts: Dict[str, Any] = field(default_factory=dict)
-    scratchpad: List[str] = field(default_factory=list)
-    creative_variants: List[Dict[str, Any]] = field(default_factory=list)
-    speculative_content: Dict[str, Any] = field(default_factory=dict)
-    revision_history: List[Dict[str, Any]] = field(default_factory=list)
+    drafts: dict[str, Any] = field(default_factory=dict)
+    scratchpad: list[str] = field(default_factory=list)
+    creative_variants: list[dict[str, Any]] = field(default_factory=list)
+    speculative_content: dict[str, Any] = field(default_factory=dict)
+    revision_history: list[dict[str, Any]] = field(default_factory=list)
 
     def add_draft(self, key: str, content: Any) -> None:
         """Add content to the drafts."""
@@ -714,10 +711,10 @@ class thermal_config:
     top_p: float = 0.85
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
-    max_tokens: Optional[int] = None
-    node_overrides: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    max_tokens: int | None = None
+    node_overrides: dict[str, dict[str, float]] = field(default_factory=dict)
 
-    def get_params_for_node(self, node_id: str) -> Dict[str, float]:
+    def get_params_for_node(self, node_id: str) -> dict[str, float]:
         """Get thermal parameters for a specific node."""
         if node_id in self.node_overrides:
             return {
@@ -751,8 +748,8 @@ class signed_claim:
     claim: str
     source: str
     confidence: float
-    evidence: Optional[str] = None
-    verified_at: Optional[datetime] = None
+    evidence: str | None = None
+    verified_at: datetime | None = None
 
     def __post_init__(self):
         if self.verified_at is None:
@@ -767,7 +764,7 @@ class signal_context(BaseModel):
     hard_state: HardState = Field(default_factory=HardState)
     soft_state: SoftState = Field(default_factory=SoftState)
     thermal_config: thermal_config = Field(default_factory=thermal_config)
-    signed_claims: List[signed_claim] = Field(default_factory=list)
+    signed_claims: list[signed_claim] = Field(default_factory=list)
     context_version: str = "1.0.0"
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_modified: datetime = Field(default_factory=datetime.utcnow)
@@ -780,7 +777,7 @@ class signal_context(BaseModel):
         """Update the last modified timestamp."""
         self.last_modified = datetime.utcnow()
 
-    def add_signed_claim(self, claim: str, source: str, confidence: float, evidence: Optional[str] = None) -> None:
+    def add_signed_claim(self, claim: str, source: str, confidence: float, evidence: str | None = None) -> None:
         """Add a signed claim to the context."""
         signed_claim = signed_claim(claim=claim, source=source, confidence=confidence, evidence=evidence)
         self.signed_claims.append(signed_claim)
@@ -801,7 +798,7 @@ class sim_scenario(BaseModel):
     """Simulation scenario definition."""
     id: str
     description: str
-    initial_context: Dict[str, Any]
+    initial_context: dict[str, Any]
     execution_profile_name: str
     run_count: int
 
@@ -809,7 +806,7 @@ class sim_scenario(BaseModel):
 class sim_outcome(BaseModel):
     """Simulation outcome results."""
     scenario_id: str
-    average_scores: Dict[str, float]
+    average_scores: dict[str, float]
     safety_incidents: int
     agent_conflict_count: int
 
@@ -822,16 +819,16 @@ class hypothesis(BaseModel):
     agent_id: str
     content: str
     confidence: float = 0.0
-    evidence_ids: List[str] = Field(default_factory=list)
-    rationale: Optional[str] = None
+    evidence_ids: list[str] = Field(default_factory=list)
+    rationale: str | None = None
 
 # NAMING FIXED: MetacognitionReport → metacognition_report
 class metacognition_report(BaseModel):
     """Aggregate view over a set of hypotheses and signals."""
-    hypotheses: List[Hypothesis] = Field(default_factory=list)
+    hypotheses: list[Hypothesis] = Field(default_factory=list)
     global_confidence: float = 0.0
     uncertainty_score: float = 0.0
-    issues_detected: List[str] = Field(default_factory=list)
+    issues_detected: list[str] = Field(default_factory=list)
 
 # Golden State Models
 
@@ -842,7 +839,7 @@ class golden_state_test_case:
     id: str
     input_text: str
     expected_behavior: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 # NAMING FIXED: JudgeVerdict → judge_verdict
@@ -859,25 +856,25 @@ class eval_result:
     test_id: str
     verdict: JudgeVerdict
     raw_output: str
-    reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
+    reasoning_trace: list[dict[str, Any]] = field(default_factory=list)
 
 # NAMING FIXED: GoldenCase → golden_case
 class golden_case(BaseModel):
     """Golden test case for evaluation."""
     id: str
     input_text: str
-    agent_sequence: List[str]
-    expected_keypoints: List[str]
-    correctness_criteria: Dict[str, Any]
+    agent_sequence: list[str]
+    expected_keypoints: list[str]
+    correctness_criteria: dict[str, Any]
 
 # NAMING FIXED: GoldenOutput → golden_output
 class golden_output(BaseModel):
     """Golden test output results."""
     case_id: str
-    produced_keypoints: List[str]
-    correctness_map: Dict[str, bool]
-    safety_decisions: Dict[str, Any]
-    metacognition_summary: Dict[str, Any]
+    produced_keypoints: list[str]
+    correctness_map: dict[str, bool]
+    safety_decisions: dict[str, Any]
+    metacognition_summary: dict[str, Any]
     final_verdict: Literal["pass", "fail", "borderline"]
 
 # Budget Profile
@@ -925,9 +922,9 @@ class llm_response:
     """Standard LLM response format."""
     content: str
     model: str
-    usage: Optional[Dict[str, int]] = None
-    finish_reason: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    usage: dict[str, int] | None = None
+    finish_reason: str | None = None
+    metadata: dict[str, Any] | None = None
 
 # NAMING FIXED: MessageType → message_type
 class message_type(str, Enum):
@@ -943,9 +940,9 @@ class residual_agent_message:  # CONFLICT: Renamed to avoid collision with exist
     """Message in agent conversation (from runtime_shared_models.py)."""
     role: MessageType
     content: str
-    tool_calls: Optional[List[Dict[str, Any]]] = None
-    tool_call_id: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    tool_calls: list[dict[str, Any]] | None = None
+    tool_call_id: str | None = None
+    metadata: dict[str, Any] | None = None
 
 @dataclass
 # NAMING FIXED: AgentResponse → agent_response
@@ -953,17 +950,17 @@ class agent_response:
     """Response from agent execution."""
     message: 'ResidualAgentMessage'
     success: bool
-    error: Optional[str] = None
-    usage: Optional[Dict[str, int]] = None
-    metadata: Optional[Dict[str, Any]] = None
+    error: str | None = None
+    usage: dict[str, int] | None = None
+    metadata: dict[str, Any] | None = None
 
 # NAMING FIXED: ResidualValidationResult → residual_validation_result
 class residual_validation_result(BaseModel):  # CONFLICT: Renamed to avoid collision
     """Validation result for data or operations (from runtime_shared_models.py)."""
     is_valid: bool
-    errors: List[str] = []
-    warnings: List[str] = []
-    metadata: Dict[str, Any] = {}
+    errors: list[str] = []
+    warnings: list[str] = []
+    metadata: dict[str, Any] = {}
 
 # NAMING FIXED: ReasoningConfig → reasoning_config
 class reasoning_config(BaseModel):
@@ -973,7 +970,7 @@ class reasoning_config(BaseModel):
     top_p: float = 0.9
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
-    stop_sequences: Optional[List[str]] = None
+    stop_sequences: list[str] | None = None
 
 # NAMING FIXED: HopStatus → hop_status
 class hop_status(str, Enum):
@@ -1006,9 +1003,9 @@ class workflow_checkpoint:
     """Checkpoint in workflow execution."""
     hop_id: str
     status: HopStatus
-    data: Dict[str, Any]
+    data: dict[str, Any]
     timestamp: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 @dataclass
 # NAMING FIXED: ThematicAnalysis → thematic_analysis
@@ -1016,18 +1013,18 @@ class thematic_analysis:
     """Analysis of thematic content."""
     theme: str
     confidence: float
-    keywords: List[str]
-    sentiment: Optional[str] = None
+    keywords: list[str]
+    sentiment: str | None = None
 
 @dataclass
 # NAMING FIXED: RAGState → rag_state
 class rag_state:
     """State of RAG operations."""
     query: str
-    retrieved_docs: List[Dict[str, Any]]
+    retrieved_docs: list[dict[str, Any]]
     context: str
-    response: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    response: str | None = None
+    metadata: dict[str, Any] | None = None
 
 # NAMING FIXED: CircuitState → circuit_state
 class circuit_state(str, Enum):
@@ -1075,25 +1072,25 @@ class file_paths_config:
 # NAMING FIXED: ArtistConfig → artist_config
 class artist_config:
     """Configuration for the Artist Generator (resume content generation)."""
-    provenance_split_targets: Dict = field(default_factory=dict)
-    bullet_word_count_ranges: Dict = field(default_factory=dict)
-    narrative_config: Dict = field(default_factory=dict)
+    provenance_split_targets: dict = field(default_factory=dict)
+    bullet_word_count_ranges: dict = field(default_factory=dict)
+    narrative_config: dict = field(default_factory=dict)
 
 @dataclass
 # NAMING FIXED: ValidatorConfig → validator_config
 class validator_config:
     """Configuration for validation rules and constraints."""
-    forbidden_verbs: List[str] = field(default_factory=list)
-    required_sections: Set[str] = field(default_factory=set)
-    bullet_word_count_sections_to_check: Set[str] = field(default_factory=set)
-    provenance_split_targets: Dict = field(default_factory=dict)
-    pipeline_status_enum: List[str] = field(default_factory=list)
+    forbidden_verbs: list[str] = field(default_factory=list)
+    required_sections: set[str] = field(default_factory=set)
+    bullet_word_count_sections_to_check: set[str] = field(default_factory=set)
+    provenance_split_targets: dict = field(default_factory=dict)
+    pipeline_status_enum: list[str] = field(default_factory=list)
 
 @dataclass
 # NAMING FIXED: PromptsConfig → prompts_config
 class prompts_config:
     """Configuration for all prompt templates."""
-    prompts: Dict[str, Dict[str, str]] = field(default_factory=dict)
+    prompts: dict[str, dict[str, str]] = field(default_factory=dict)
 
     def get_prompt(self, prompt_name: str, section: str='default') -> str:
         """Retrieve a prompt template by name and section."""
@@ -1111,7 +1108,7 @@ class prompts_config:
 # NAMING FIXED: WebRagConfig → web_rag_config
 class web_rag_config:
     """Configuration for Web RAG (Retrieval Augmented Generation)."""
-    peers_by_industry: Dict = field(default_factory=lambda: {
+    peers_by_industry: dict = field(default_factory=lambda: {
         'Financial Technology': ['JPMorgan', 'Goldman Sachs', 'Morgan Stanley', 'Stripe', 'Square'],
         'Healthcare': ['UnitedHealth', 'CVS Health', 'Anthem', 'Cigna', 'Humana'],
         'Retail/E-Commerce': ['Amazon', 'Walmart', 'Target', 'Shopify', 'eBay'],
@@ -1123,7 +1120,7 @@ class web_rag_config:
 # NAMING FIXED: EnricherConfig → enricher_config
 class enricher_config:
     """Configuration for data enrichment."""
-    canonical_verbs: Dict = field(default_factory=lambda: {
+    canonical_verbs: dict = field(default_factory=lambda: {
         'led': ['led', 'lead', 'leading'],
         'built': ['built', 'build', 'building'],
         'drove': ['drove', 'drive', 'driving'],
@@ -1156,7 +1153,7 @@ class enforcement_rag_config:
     cache_ttl_days: int = 30
     telemetry_enabled: bool = True
     chroma_collection_name: str = 'rag_librarian_v1'
-    source_weights: Dict[str, float] = field(default_factory=lambda: {
+    source_weights: dict[str, float] = field(default_factory=lambda: {
         'SOURCE_JD': 1.8,
         'SOURCE_COMPANY_BLOG': 1.5,
         'SOURCE_TARGET_EMPLOYEE': 1.4,
@@ -1264,12 +1261,12 @@ CORE_CONTRACTS_REGISTRY.update({
 class outreach_mission:
     """Complete mission specification (Input)"""
     mission_id: str
-    sender_profile: Dict[str, Any]
-    recipient_profile: Dict[str, Any]
-    job_description: Dict[str, Any]
+    sender_profile: dict[str, Any]
+    recipient_profile: dict[str, Any]
+    job_description: dict[str, Any]
     connection_status: str = "not_connected"
     prior_message_count: int = 0
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 # NAMING FIXED: ProfileAnalysis → profile_analysis
@@ -1278,7 +1275,7 @@ class profile_analysis:
     archetype: str
     confidence: float
     reasoning: str
-    key_indicators: List[str]
+    key_indicators: list[str]
     needs_manual_override: bool = False
 
 @dataclass
@@ -1287,16 +1284,16 @@ class message_claim:
     """Individual claim with confidence"""
     text: str
     confidence: float
-    supporting_sources: List[str]
-    source_weights: List[float]
+    supporting_sources: list[str]
+    source_weights: list[float]
 
 @dataclass
 # NAMING FIXED: RAGCritique → rag_critique
 class rag_critique:
     """RAG quality critique"""
     confidence_score: float
-    gaps_identified: List[str]
-    refinement_tasks: List[str]
+    gaps_identified: list[str]
+    refinement_tasks: list[str]
     reasoning: str
     is_sufficient: bool = False
 
@@ -1307,7 +1304,7 @@ class enforcement_rag_result:
     source: str
     source_type: str
     text: str
-    extracted_keywords: List[str]
+    extracted_keywords: list[str]
     source_weight: float
     age_days: int
     recipient_specific: bool
@@ -1317,22 +1314,22 @@ class enforcement_rag_result:
 # NAMING FIXED: SenderGroundingWhitelists → sender_grounding_whitelists
 class sender_grounding_whitelists:
     """Output of SenderGroundingAgent for claim validation"""
-    team_members: List[str] = field(default_factory=list)
-    products: List[str] = field(default_factory=list)
-    case_studies: List[str] = field(default_factory=list)
-    quantifiable_achievements: List[str] = field(default_factory=list)
-    raw_evidence: Dict[str, List[str]] = field(default_factory=dict)
+    team_members: list[str] = field(default_factory=list)
+    products: list[str] = field(default_factory=list)
+    case_studies: list[str] = field(default_factory=list)
+    quantifiable_achievements: list[str] = field(default_factory=list)
+    raw_evidence: dict[str, list[str]] = field(default_factory=dict)
 
 @dataclass
 # NAMING FIXED: ResearchContext → research_context
 class research_context:
     """DEPRECATED v13.0: Research context output (kept for backward compatibility)"""
-    recipient_insights: List[str]
-    company_context: List[str]
-    recent_activity: List[str]
-    rag_results: List['EnforcementRAGResult']
-    sender_grounding: Optional[SenderGroundingWhitelists] = None
-    adversarial_findings: List[str] = field(default_factory=list)
+    recipient_insights: list[str]
+    company_context: list[str]
+    recent_activity: list[str]
+    rag_results: list['EnforcementRAGResult']
+    sender_grounding: SenderGroundingWhitelists | None = None
+    adversarial_findings: list[str] = field(default_factory=list)
 
 @dataclass
 # NAMING FIXED: MessageScaffold → message_scaffold
@@ -1340,9 +1337,9 @@ class message_scaffold:
     """DEPRECATED v13.0: Message scaffold output (kept for backward compatibility)"""
     route: str
     archetype: str
-    sections: Dict[str, Dict[str, Any]]
-    constraints: Dict[str, Any]
-    locked_sections: Set[str] = field(default_factory=set)
+    sections: dict[str, dict[str, Any]]
+    constraints: dict[str, Any]
+    locked_sections: set[str] = field(default_factory=set)
 
 @dataclass
 # NAMING FIXED: GeneratedMessage → generated_message
@@ -1365,14 +1362,14 @@ class enforcement_validation_result:
     severity: str
     rule_id: str
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
 
 @dataclass
 # NAMING FIXED: QAReport → qa_report
 class qa_report:
     """DEPRECATED v13.0: QA report output (kept for backward compatibility)"""
     mission_id: str
-    validation_results: List['EnforcementValidationResult']
+    validation_results: list['EnforcementValidationResult']
     passed: bool
     timestamp: str
 
@@ -1401,8 +1398,8 @@ class executive_profile:
     name: str
     title: str
     ownership: str
-    strategic_focus: Optional[str] = None
-    linkedin_url: Optional[str] = None
+    strategic_focus: str | None = None
+    linkedin_url: str | None = None
 
 @dataclass
 # NAMING FIXED: FinancialMetric → financial_metric
@@ -1413,7 +1410,7 @@ class financial_metric:
     value: str
     period: str
     source_citation: str
-    yoy_change: Optional[str] = None
+    yoy_change: str | None = None
 
     def validate(self) -> bool:
 
@@ -1427,7 +1424,7 @@ class technical_implementation:
     technology_name: str
     implementation_details: str
     source_citation: str
-    performance_gain: Optional[str] = None
+    performance_gain: str | None = None
 
     def validate(self) -> bool:
 
@@ -1439,8 +1436,8 @@ class technical_implementation:
 class strategic_layer:
     """Strategic research layer."""
     core_thesis: str
-    financial_proof_points: List[FinancialMetric] = field(default_factory=list)
-    strategic_initiatives: List[str] = field(default_factory=list)
+    financial_proof_points: list[FinancialMetric] = field(default_factory=list)
+    strategic_initiatives: list[str] = field(default_factory=list)
 
     def validate(self) -> bool:
 
@@ -1448,49 +1445,49 @@ class strategic_layer:
             return False
         if len(self.financial_proof_points) < 2:
             return False
-        return all((metric.validate() for metric in self.financial_proof_points))
+        return all(metric.validate() for metric in self.financial_proof_points)
 
 @dataclass
 # NAMING FIXED: TechnicalLayer → technical_layer
 # NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class technical_layer:
     """Technical research layer."""
-    key_technologies: List[TechnicalImplementation] = field(default_factory=list)
-    infrastructure_stack: List[str] = field(default_factory=list)
-    implementation_summary: Optional[str] = None
+    key_technologies: list[TechnicalImplementation] = field(default_factory=list)
+    infrastructure_stack: list[str] = field(default_factory=list)
+    implementation_summary: str | None = None
 
     def validate(self) -> bool:
 
         if len(self.key_technologies) < 2:
             return False
-        return all((tech.validate() for tech in self.key_technologies))
+        return all(tech.validate() for tech in self.key_technologies)
 
 @dataclass
 # NAMING FIXED: LeadershipLayer → leadership_layer
 # NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class leadership_layer:
     """Leadership research layer."""
-    key_executives: List[ExecutiveProfile] = field(default_factory=list)
-    organizational_structure: Optional[str] = None
+    key_executives: list[ExecutiveProfile] = field(default_factory=list)
+    organizational_structure: str | None = None
 
     def validate(self) -> bool:
 
         if len(self.key_executives) < 2:
             return False
-        return all((exec.name and exec.title and exec.ownership for exec in self.key_executives))
+        return all(exec.name and exec.title and exec.ownership for exec in self.key_executives)
 
 @dataclass
 # NAMING FIXED: CitationMap → citation_map
 # NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class citation_map:
     """Citation tracking for research sources."""
-    citations: Dict[str, str] = field(default_factory=dict)
+    citations: dict[str, str] = field(default_factory=dict)
 
     def add_citation(self, source_id: str, url: str) -> None:
 
         self.citations[source_id] = url
 
-    def get_citation(self, source_id: str) -> Optional[str]:
+    def get_citation(self, source_id: str) -> str | None:
 
         return self.citations.get(source_id)
 
@@ -1508,7 +1505,7 @@ class deep_research_output:
     technical_layer: TechnicalLayer
     leadership_layer: LeadershipLayer
     citation_map: CitationMap
-    research_timestamp: Optional[str] = None
+    research_timestamp: str | None = None
 
     def validate(self) -> bool:
 
@@ -1517,7 +1514,7 @@ class deep_research_output:
                 self.leadership_layer.validate() and
                 self.citation_map.validate())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
 
         return {
             'company_name': self.company_name,
@@ -1568,18 +1565,18 @@ class research_hop_result:
     """Result from a research hop phase."""
     phase: str
     query: str
-    results: List[str] = field(default_factory=list)
-    citations: List[str] = field(default_factory=list)
+    results: list[str] = field(default_factory=list)
+    citations: list[str] = field(default_factory=list)
     success: bool = True
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 @dataclass
 # NAMING FIXED: IntegrityGateResult → integrity_gate_result
 class integrity_gate_result:
     """Result from integrity gate validation."""
     passed: bool
-    rejection_reasons: List[str] = field(default_factory=list)
-    detailed_violations: List[str] = field(default_factory=list)
+    rejection_reasons: list[str] = field(default_factory=list)
+    detailed_violations: list[str] = field(default_factory=list)
     depth_score: float = 0.0
 
     def add_violation(self, reason: str, detail: str) -> None:
@@ -1611,7 +1608,7 @@ class subject_line_brief:
     """Brief for subject line generation."""
     word_count: tuple[int, int]
     tone: str
-    forbidden_phrases: List[str] = field(default_factory=list)
+    forbidden_phrases: list[str] = field(default_factory=list)
 
 @dataclass
 # NAMING FIXED: MessageBodyBrief → message_body_brief
@@ -1627,7 +1624,7 @@ class cta_brief:
     """Brief for call-to-action generation."""
     word_count: tuple[int, int]
     tone: str
-    strategy: Optional[str] = None
+    strategy: str | None = None
 
 @dataclass
 # NAMING FIXED: CreativeBrief → creative_brief
@@ -1653,7 +1650,7 @@ class archetype_template:
 class signature_template:
     """Template for message signature."""
     template: str
-    use_for: List[str]
+    use_for: list[str]
     line_count: int
 
 @dataclass
@@ -1694,12 +1691,12 @@ class api_call_metrics:
 # NAMING FIXED: ImmutableStagingBuffer → immutable_staging_buffer
 class immutable_staging_buffer:
     """Immutable buffer for staging data transformations."""
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: dict[str, Any] = field(default_factory=dict)
     version: int = 1
-    timestamp: Optional[str] = None
-    checksum: Optional[str] = None
+    timestamp: str | None = None
+    checksum: str | None = None
 
-    def with_data(self, new_data: Dict[str, Any]) -> 'ImmutableStagingBuffer':
+    def with_data(self, new_data: dict[str, Any]) -> 'ImmutableStagingBuffer':
         """Return a new buffer with updated data."""
         from datetime import datetime
         return ImmutableStagingBuffer(
@@ -1826,8 +1823,8 @@ class char_count_constraint:
 class structure_constraint:
     """Structure constraint for a section."""
     structure: str
-    segment_word_limit: Optional[int] = None
-    exclusions: List[str] = field(default_factory=list)
+    segment_word_limit: int | None = None
+    exclusions: list[str] = field(default_factory=list)
 
 @dataclass
 # NAMING FIXED: HeadlineBrief → headline_brief
@@ -1837,7 +1834,7 @@ class headline_brief:
     char_count_max: int = 90
     STRUCTURE: str = 'Domain | Leadership | Value Prop'
     segment_word_limit: int = 3
-    exclusions: List[str] = field(default_factory=lambda: ['and', 'a', 'an', 'the', 'in', 'on', 'at', 'for', 'to', 'of'])
+    exclusions: list[str] = field(default_factory=lambda: ['and', 'a', 'an', 'the', 'in', 'on', 'at', 'for', 'to', 'of'])
     GUIDANCE: str = 'Must incorporate differentiator keywords from the Competitive Analysis.'
 
 # Orchestration Workflow Models (from L3_orchestration/workflow_engines/orchestrate_workflow_types_models.py)
@@ -1864,10 +1861,10 @@ class hop_spec:
     id: str
     script: str
     description: str
-    inputs: List[HopInput] = field(default_factory=list)
-    outputs: List[HopOutput] = field(default_factory=list)
+    inputs: list[HopInput] = field(default_factory=list)
+    outputs: list[HopOutput] = field(default_factory=list)
     retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
-    extra_args: List[str] = field(default_factory=list)
+    extra_args: list[str] = field(default_factory=list)
 
 @dataclass
 # NAMING FIXED: WorkflowSpec → workflow_spec
@@ -1875,7 +1872,7 @@ class workflow_spec:
     """Specification for a complete workflow."""
     name: str
     version: str
-    hops: List[HopSpec]
+    hops: list[HopSpec]
 
 # Update Registry
 CORE_CONTRACTS_REGISTRY.update({
@@ -1900,10 +1897,10 @@ CORE_CONTRACTS_REGISTRY.update({
 class experience_bullets_brief:
     """Creative brief for experience bullets section."""
     provenance_strategy: ProvenanceStrategy = ProvenanceStrategy.JD_FIT_BASED
-    provenance_map: Dict[str, str] = field(default_factory=lambda: {'Unify Consulting': '4V-3T-0S', 'IBM': '4V-2T-0S'})
+    provenance_map: dict[str, str] = field(default_factory=lambda: {'Unify Consulting': '4V-3T-0S', 'IBM': '4V-2T-0S'})
     default_provenance_fallback: str = '10V-0A-0S'
     selection_logic: str = 'Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)'
-    overview_word_count: Dict[str, WordCountConstraint] = field(default_factory=lambda: {'k6': WordCountConstraint(25, 33), 'k7': WordCountConstraint(22, 28)})
+    overview_word_count: dict[str, WordCountConstraint] = field(default_factory=lambda: {'k6': WordCountConstraint(25, 33), 'k7': WordCountConstraint(22, 28)})
     k6_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(28, 33))
     k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
     GUIDANCE: str = "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
@@ -1924,7 +1921,7 @@ class cover_letter_brief:
     STRUCTURE: str = '1-intro-2-body'
     word_count_per_para: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(85, 100))
     min_specific_details: int = 4
-    forbidden_patterns: List[str] = field(default_factory=lambda: ['At [COMPANY], I...', 'During my time at...'])
+    forbidden_patterns: list[str] = field(default_factory=lambda: ['At [COMPANY], I...', 'During my time at...'])
     signature_generation_policy: str = 'DYNAMIC_FROM_OWNER_CONTACT'
 
 @dataclass
@@ -1952,7 +1949,7 @@ class executive_summary_brief:
     """Creative brief for executive summary section."""
     word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(120, 140))
     voice: VoiceType = VoiceType.THIRD_PERSON_IMPLIED
-    forbidden_patterns: List[str] = field(default_factory=lambda: ['I have', 'My expertise', 'At [COMPANY],', 'I'])
+    forbidden_patterns: list[str] = field(default_factory=lambda: ['I have', 'My expertise', 'At [COMPANY],', 'I'])
     GUIDANCE: str = """Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography. Do not use phrasing from the job posting."""
 
 # Update Registry
@@ -1973,22 +1970,22 @@ CORE_CONTRACTS_REGISTRY.update({
 # NAMING FIXED: RouteConditions → route_conditions
 class route_conditions:
     """Conditions for route selection."""
-    connection_status: Optional[str] = None
-    prior_message_count: Optional[int] = None
-    prior_message_count_gt: Optional[int] = None
-    prior_message_count_gte: Optional[int] = None
+    connection_status: str | None = None
+    prior_message_count: int | None = None
+    prior_message_count_gt: int | None = None
+    prior_message_count_gte: int | None = None
 
 @dataclass
 # NAMING FIXED: RouteConstraints → route_constraints
 class route_constraints:
     """Constraints for a message route."""
-    char_limit: Optional[int] = None
-    word_range: Optional[tuple[int, int]] = None
+    char_limit: int | None = None
+    word_range: tuple[int, int] | None = None
     signature_format: SignatureFormat = SignatureFormat.STANDARD
     subject_line_enabled: bool = False
     attachments_enabled: bool = False
     cta_format: CTAFormat = CTAFormat.STANDARD
-    cta_max_words: Optional[int] = None
+    cta_max_words: int | None = None
     greeting_format: str = "Hi {first_name},"
 
 @dataclass
@@ -2004,7 +2001,7 @@ class route_config:
 class archetone_config:
     """Tone configuration for an archetype."""
     message_tone: str
-    verb_preference: List[str]
+    verb_preference: list[str]
     jargon_level: str
     formality: str
     focus: str
@@ -2032,6 +2029,7 @@ CORE_CONTRACTS_REGISTRY.update({
 # Migrated with Builder pattern for fluent, immutable construction
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 # NAMING FIXED: MissionPriority → mission_priority
@@ -2056,10 +2054,10 @@ class mission_status(str, Enum):
 class mission_phase(sovereign_base_model):
     """A single phase of a mission."""
     name: str
-    agents: List[str]
-    dependencies: List[str] = field(default_factory=list)
+    agents: list[str]
+    dependencies: list[str] = field(default_factory=list)
     status: str = "pending"
-    result: Optional[Dict[str, Any]] = None
+    result: dict[str, Any] | None = None
 
 @dataclass(frozen=True)
 # NAMING FIXED: MissionPlan → mission_plan
@@ -2076,8 +2074,8 @@ class mission_plan(sovereign_base_model):
     cycle_id: int
     priority: MissionPriority
     objective: str
-    phases: List[MissionPhase] = field(default_factory=list)
-    risk_assessment: Dict = field(default_factory=dict)
+    phases: list[MissionPhase] = field(default_factory=list)
+    risk_assessment: dict = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.utcnow)
     status: MissionStatus = MissionStatus.PLANNED
 
@@ -2091,12 +2089,12 @@ class mission_plan(sovereign_base_model):
         """
 
         def __init__(self):
-            self._mission_id: Optional[str] = None
-            self._cycle_id: Optional[int] = None
+            self._mission_id: str | None = None
+            self._cycle_id: int | None = None
             self._priority: MissionPriority = MissionPriority.MEDIUM
-            self._objective: Optional[str] = None
-            self._phases: List[MissionPhase] = []
-            self._risk_assessment: Dict = {}
+            self._objective: str | None = None
+            self._phases: list[MissionPhase] = []
+            self._risk_assessment: dict = {}
             self._phase_names: set = set()  # Integrity check
 
         def with_mission_id(self, mission_id: str) -> 'MissionPlan.Builder':
@@ -2127,7 +2125,7 @@ class mission_plan(sovereign_base_model):
             self._phases.append(phase)
             return self
 
-        def with_risk_assessment(self, assessment: Dict) -> 'MissionPlan.Builder':
+        def with_risk_assessment(self, assessment: dict) -> 'MissionPlan.Builder':
 
             self._risk_assessment = assessment
             return self
@@ -2168,7 +2166,7 @@ class mission_plan(sovereign_base_model):
                 return
 
             # Build graph: phase_name → list of dependent phase names
-            graph: Dict[str, List[str]] = {p.name: p.dependencies for p in self._phases}
+            graph: dict[str, list[str]] = {p.name: p.dependencies for p in self._phases}
 
             visited = set()
             rec_stack = set()
@@ -2229,10 +2227,10 @@ class thought_chain(sovereign_base_model):
     """
     chain_id: str
     goal: str
-    steps: List[ThinkingStep] = field(default_factory=list)
-    active_hypotheses: List[Hypothesis] = field(default_factory=list)
-    revisions: List[RevisionStep] = field(default_factory=list)
-    final_conclusion: Optional[str] = None
+    steps: list[ThinkingStep] = field(default_factory=list)
+    active_hypotheses: list[Hypothesis] = field(default_factory=list)
+    revisions: list[RevisionStep] = field(default_factory=list)
+    final_conclusion: str | None = None
     success: bool = False
     duration_seconds: float = 0.0
 
@@ -2242,12 +2240,12 @@ class thought_chain(sovereign_base_model):
         Enforces sequential integrity, constitutional validation, and observability.
         """
         def __init__(self):
-            self._chain_id: Optional[str] = None
-            self._goal: Optional[str] = None
-            self._steps: List[ThinkingStep] = []
-            self._hypotheses: List[Hypothesis] = []
-            self._revisions: List[RevisionStep] = []
-            self._final_conclusion: Optional[str] = None
+            self._chain_id: str | None = None
+            self._goal: str | None = None
+            self._steps: list[ThinkingStep] = []
+            self._hypotheses: list[Hypothesis] = []
+            self._revisions: list[RevisionStep] = []
+            self._final_conclusion: str | None = None
             self._success: bool = False
             self._duration_seconds: float = 0.0
 
@@ -2311,7 +2309,6 @@ class thought_chain(sovereign_base_model):
 
 # Healing & Observability Models (Phase 12 – Dec 26, 2025)
 
-import uuid
 
 @dataclass(frozen=True)
 # NAMING FIXED: ConstitutionalViolation → constitutional_violation
@@ -2331,10 +2328,10 @@ class constitutional_violation(sovereign_base_model):
     dimension: str  # e.g., "DDD Alignment", "Schema SSOT"
     severity: str  # "CRITICAL", "HIGH", "MEDIUM", "LOW"
     file_path: str
-    line_number: Optional[int] = None
+    line_number: int | None = None
     description: str
     evidence: str
-    suggested_fix: Optional[str] = None
+    suggested_fix: str | None = None
     status: str = "detected"  # "detected", "healing_proposed", "healed", "persistent"
 
     class Builder:
@@ -2346,15 +2343,15 @@ class constitutional_violation(sovereign_base_model):
         - Observability warning trail on creation
         """
         def __init__(self):
-            self._violation_id: Optional[str] = None
-            self._guardian: Optional[str] = None
-            self._dimension: Optional[str] = None
-            self._severity: Optional[str] = None
-            self._file_path: Optional[str] = None
-            self._line_number: Optional[int] = None
-            self._description: Optional[str] = None
-            self._evidence: Optional[str] = None
-            self._suggested_fix: Optional[str] = None
+            self._violation_id: str | None = None
+            self._guardian: str | None = None
+            self._dimension: str | None = None
+            self._severity: str | None = None
+            self._file_path: str | None = None
+            self._line_number: int | None = None
+            self._description: str | None = None
+            self._evidence: str | None = None
+            self._suggested_fix: str | None = None
 
         def with_guardian(self, guardian: str) -> 'ConstitutionalViolation.Builder':
 
@@ -2373,7 +2370,7 @@ class constitutional_violation(sovereign_base_model):
             self._severity = severity
             return self
 
-        def at_location(self, file_path: str, line_number: Optional[int] = None) -> 'ConstitutionalViolation.Builder':
+        def at_location(self, file_path: str, line_number: int | None = None) -> 'ConstitutionalViolation.Builder':
 
             self._file_path = file_path
             self._line_number = line_number
@@ -2444,12 +2441,12 @@ class healing_action(sovereign_base_model):
     strategy: str
     action_type: str  # e.g., "move", "replace", "inject_logging"
     target_file: str
-    target_line: Optional[int] = None
+    target_line: int | None = None
     reason: str
     success: bool
-    error_message: Optional[str] = None
-    backup_path: Optional[str] = None
-    transaction_id: Optional[str] = None
+    error_message: str | None = None
+    backup_path: str | None = None
+    transaction_id: str | None = None
 
     class Builder:
         """
@@ -2461,16 +2458,16 @@ class healing_action(sovereign_base_model):
         - Atomic transaction linkage
         """
         def __init__(self):
-            self._action_id: Optional[str] = None
-            self._strategy: Optional[str] = None
-            self._action_type: Optional[str] = None
-            self._target_file: Optional[str] = None
-            self._target_line: Optional[int] = None
-            self._reason: Optional[str] = None
-            self._success: Optional[bool] = None
-            self._error_message: Optional[str] = None
-            self._backup_path: Optional[str] = None
-            self._transaction_id: Optional[str] = None
+            self._action_id: str | None = None
+            self._strategy: str | None = None
+            self._action_type: str | None = None
+            self._target_file: str | None = None
+            self._target_line: int | None = None
+            self._reason: str | None = None
+            self._success: bool | None = None
+            self._error_message: str | None = None
+            self._backup_path: str | None = None
+            self._transaction_id: str | None = None
 
         def with_strategy(self, strategy: str) -> 'HealingAction.Builder':
 
@@ -2482,7 +2479,7 @@ class healing_action(sovereign_base_model):
             self._action_type = action_type
             return self
 
-        def targeting(self, file: str, line: Optional[int] = None) -> 'HealingAction.Builder':
+        def targeting(self, file: str, line: int | None = None) -> 'HealingAction.Builder':
 
             self._target_file = file
             self._target_line = line
@@ -2568,7 +2565,7 @@ class healing_cycle(sovereign_base_model):
     timestamp: datetime = field(default_factory=datetime.utcnow)
     trigger_score: float  # Pre-healing overall score
     target_score: float   # Post-healing overall score
-    actions: List[HealingAction] = field(default_factory=list)
+    actions: list[HealingAction] = field(default_factory=list)
     success: bool
     duration_seconds: float = 0.0
     healed_violations: int = 0
@@ -2584,11 +2581,11 @@ class healing_cycle(sovereign_base_model):
         - Observability logging upon completion
         """
         def __init__(self):
-            self._cycle_id: Optional[str] = None
-            self._trigger_score: Optional[float] = None
-            self._target_score: Optional[float] = None
-            self._actions: List[HealingAction] = []
-            self._success: Optional[bool] = None
+            self._cycle_id: str | None = None
+            self._trigger_score: float | None = None
+            self._target_score: float | None = None
+            self._actions: list[HealingAction] = []
+            self._success: bool | None = None
             self._duration_seconds: float = 0.0
 
         def with_cycle_id(self, cycle_id: str) -> 'HealingCycle.Builder':
@@ -2666,11 +2663,11 @@ class healing_report(sovereign_base_model):
     target_scope: str
     violations_found: int
     violations_fixed: int
-    healing_actions: List[Dict[str, Any]] = field(default_factory=list)
+    healing_actions: list[dict[str, Any]] = field(default_factory=list)
     pre_healing_score: float
     post_healing_score: float
     success: bool
-    healing_strategies_used: List[str] = field(default_factory=list)
+    healing_strategies_used: list[str] = field(default_factory=list)
 
     class Builder:
         """
@@ -2682,16 +2679,16 @@ class healing_report(sovereign_base_model):
         - Observability integration
         """
         def __init__(self):
-            self._report_id: Optional[str] = None
+            self._report_id: str | None = None
             self._auditor_version: str = "v3.0"
             self._target_scope: str = "agentic_core"
             self._violations_found: int = 0
             self._violations_fixed: int = 0
-            self._healing_actions: List[Dict[str, Any]] = []
+            self._healing_actions: list[dict[str, Any]] = []
             self._pre_healing_score: float = 0.0
             self._post_healing_score: float = 0.0
             self._success: bool = False
-            self._strategies_used: List[str] = []
+            self._strategies_used: list[str] = []
 
         def with_report_id(self, report_id: str) -> 'HealingReport.Builder':
 
@@ -2706,7 +2703,7 @@ class healing_report(sovereign_base_model):
             self._violations_fixed = fixed
             return self
 
-        def add_healing_action(self, action: Dict[str, Any]) -> 'HealingReport.Builder':
+        def add_healing_action(self, action: dict[str, Any]) -> 'HealingReport.Builder':
             """Adds an action and automatically tracks the strategy used."""
             self._healing_actions.append(action)
             strategy = action.get("strategy", "unknown")
@@ -2761,9 +2758,9 @@ class sovereign_event(sovereign_base_model):
     event_type: sovereign_event_type
     severity: sovereign_severity
     source: str
-    dimension: Optional[str] = None
-    payload: Dict[str, Any] = field(default_factory=dict)
-    correlation_id: Optional[str] = None
+    dimension: str | None = None
+    payload: dict[str, Any] = field(default_factory=dict)
+    correlation_id: str | None = None
 
     @field_validator('event_type', mode='before')
     @classmethod
@@ -2796,13 +2793,13 @@ class sovereign_event(sovereign_base_model):
         - Correlation support for multi-layer audit trails
         """
         def __init__(self):
-            self._event_id: Optional[str] = None
-            self._event_type: Optional[SovereignEventType] = None
-            self._severity: Optional[SovereignSeverity] = None
-            self._source: Optional[str] = None
-            self._dimension: Optional[str] = None
-            self._payload: Dict[str, Any] = {}
-            self._correlation_id: Optional[str] = None
+            self._event_id: str | None = None
+            self._event_type: SovereignEventType | None = None
+            self._severity: SovereignSeverity | None = None
+            self._source: str | None = None
+            self._dimension: str | None = None
+            self._payload: dict[str, Any] = {}
+            self._correlation_id: str | None = None
 
         def with_type(self, event_type: Any) -> 'SovereignEvent.Builder':
             """Supports both Enum and String types with immediate validation."""
@@ -2825,7 +2822,7 @@ class sovereign_event(sovereign_base_model):
             self._source = source
             return self
 
-        def in_dimension(self, dimension: Optional[str]) -> 'SovereignEvent.Builder':
+        def in_dimension(self, dimension: str | None) -> 'SovereignEvent.Builder':
 
             self._dimension = dimension
             return self

@@ -9,13 +9,13 @@ Part of the quality enforcement agent family.
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import ast
 import re
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from typing import Any
+
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
+
 
 # NOT_AN_AGENT — legacy L1 class removed 2026-01-06, use utils canonical
 # from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
@@ -41,7 +41,7 @@ class _LegacyNamingAgent(SubAtomicAgent):
         """Helper to check if a class name violates PEP 8 PascalCase."""
         return not re.match('^[A-Z][a-zA-Z0-9]*$', name)
 
-    def _find_naming_convention_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
+    def _find_naming_convention_violations_in_tree(self, tree: ast.AST, fp: str) -> list[str]:
         """Helper to find naming convention violations in an AST tree."""
         file_violations = []
         for node in ast.walk(tree):
@@ -51,7 +51,7 @@ class _LegacyNamingAgent(SubAtomicAgent):
                 file_violations.append(f'{fp}:{node.lineno} class {node.name}')
         return file_violations
 
-    def check_key_47_naming_conventions(self) -> Tuple[bool, List[str]]:
+    def check_key_47_naming_conventions(self) -> tuple[bool, list[str]]:
         """
         Checks for PEP 8 naming conventions for functions (snake_case)
         and classes (PascalCase) using AST parsing.
@@ -59,7 +59,7 @@ class _LegacyNamingAgent(SubAtomicAgent):
         violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, 'r', encoding='utf-8') as f:
+                with open(fp, encoding='utf-8') as f:
                     tree: Any = ast.parse(f.read())
                 violations.extend(self._find_naming_convention_violations_in_tree(tree, fp))
             except Exception:

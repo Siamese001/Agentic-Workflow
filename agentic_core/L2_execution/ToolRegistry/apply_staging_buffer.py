@@ -1,12 +1,14 @@
 from __future__ import annotations
+
 import copy
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import logging
-import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 'Immutable staging buffer for HOP-4.'
 
@@ -19,7 +21,7 @@ class ImmutableStagingBuffer:
 
     def __init__(self: Any) -> None:
         """Initialize the staging buffer."""
-        self._data: Dict[str, object] = {}
+        self._data: dict[str, object] = {}
         self._locked: bool = False
         self._lock_timestamp: str | None = None
 
@@ -29,7 +31,7 @@ class ImmutableStagingBuffer:
             raise StagingBufferError(f"Cannot set '{key}': buffer is locked")
         self._data[key] = value
 
-    def get(self: Any, key: str, default: Optional[object]) -> Optional[object]:
+    def get(self: Any, key: str, default: object | None) -> object | None:
         """Get value from buffer."""
         return self._data.get(key, default)
 
@@ -44,6 +46,6 @@ class ImmutableStagingBuffer:
         return self._locked
 
     @property
-    def data(self: Any) -> Dict[str, object]:
+    def data(self: Any) -> dict[str, object]:
         """Read-only access to data."""
         return copy.deepcopy(self._data)

@@ -7,9 +7,9 @@ route (INMAIL vs CONNECTION_REQ) with premium routing validation.
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
-from runtime.shared.agent_base import Agent, ReasoningConfig
+from typing import Any
 
+from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class ArchetypeClassificationResult:
     """Result of archetype classification."""
     archetype: str  # C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER
     confidence: float
-    matched_tokens: List[str]
+    matched_tokens: list[str]
     cxo_precedence_triggered: bool
     manual_override_required: bool
 
@@ -30,7 +30,7 @@ class RouteSelectionResult:
     route: str  # INMAIL, CONNECTION_REQ, SHORT_NEW, FOLLOW_UP
     premium_available: bool
     premium_routing_mismatch: bool
-    blocking_reason: Optional[str] = None
+    blocking_reason: str | None = None
 
 
 @dataclass
@@ -38,8 +38,8 @@ class K1Output:
     """K.1 routing agent output."""
     archetype: ArchetypeClassificationResult
     route: RouteSelectionResult
-    entrance_gates_passed: List[str]
-    metadata: Dict[str, Any]
+    entrance_gates_passed: list[str]
+    metadata: dict[str, Any]
 
 
 class K1_RoutingAgent(Agent):
@@ -59,9 +59,9 @@ class K1_RoutingAgent(Agent):
     def __init__(
         self,
         config: ReasoningConfig,
-        archetype_tokens: Dict[str, List[str]],
-        cxo_precedence_tokens: List[str],
-        route_configs: Dict[str, Any],
+        archetype_tokens: dict[str, list[str]],
+        cxo_precedence_tokens: list[str],
+        route_configs: dict[str, Any],
     ):
         """Initialize K.1 routing agent.
 
@@ -79,7 +79,7 @@ class K1_RoutingAgent(Agent):
 
         logger.info("K.1 Routing Agent initialized with CXO precedence rule")
 
-    async def execute(self, context: Dict[str, Any]) -> K1Output:
+    async def execute(self, context: dict[str, Any]) -> K1Output:
         """Execute K.1 routing and classification.
 
         Args:
@@ -288,7 +288,7 @@ class K1_RoutingAgent(Agent):
         self,
         lifecycle: str,
         premium_available: bool,
-        route_override: Optional[str],
+        route_override: str | None,
         archetype: str,
     ) -> RouteSelectionResult:
         """Select message route with premium routing validation.

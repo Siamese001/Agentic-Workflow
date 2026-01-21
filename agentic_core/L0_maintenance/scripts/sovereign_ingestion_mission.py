@@ -1,18 +1,19 @@
 from __future__ import annotations
+
 """
 Sovereign Ingestion Mission - Index all sovereign territories into vector store.
 """
 import argparse
-import asyncio
-import hashlib
-import os
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 # AST-aware imports
 import ast
+import asyncio
+import hashlib
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
+
 
 async def load_text_file(file_path: Path) -> str:
     """Load text from supported files with encoding fallback."""
@@ -43,22 +44,22 @@ class SemanticChunk:
     text: str
     start_line: int
     end_line: int
-    parent: Optional[str] = None
-    docstring: Optional[str] = None
+    parent: str | None = None
+    docstring: str | None = None
 
-def _extract_docstring(node: ast.AST) -> Optional[str]:
+def _extract_docstring(node: ast.AST) -> str | None:
     """Extract docstring from AST node if present."""
-    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Module)):
+    if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef | ast.Module):
         if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
             if isinstance(node.body[0].value.value, str):
                 return node.body[0].value.value.strip()
     return None
 
-def _get_source_segment(lines: List[str], start: int, end: int) -> str:
+def _get_source_segment(lines: list[str], start: int, end: int) -> str:
     """Extract line segment from source lines (1-indexed)."""
     return '\n'.join(lines[start-1:end])
 
-def chunk_python_ast(text: str, file_path: Path) -> List[SemanticChunk]:
+def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
     """Parse Python file to semantic chunks using ast."""
     chunks = []
     lines = text.splitlines()
@@ -81,7 +82,7 @@ def chunk_python_ast(text: str, file_path: Path) -> List[SemanticChunk]:
         ))
 
     # Import block as single chunk
-    import_nodes = [n for n in ast.iter_child_nodes(tree) if isinstance(n, (ast.Import, ast.ImportFrom))]
+    import_nodes = [n for n in ast.iter_child_nodes(tree) if isinstance(n, ast.Import | ast.ImportFrom)]
     if import_nodes:
         start = min(n.lineno for n in import_nodes)
         end = max(n.end_lineno or n.lineno for n in import_nodes)
@@ -105,7 +106,7 @@ def chunk_python_ast(text: str, file_path: Path) -> List[SemanticChunk]:
                 end_line=end_line,
                 docstring=_extract_docstring(node)
             ))
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             # Check if method (inside class)
             parent_class = None
             # Traverse up to find enclosing class
@@ -128,7 +129,7 @@ def chunk_python_ast(text: str, file_path: Path) -> List[SemanticChunk]:
 
     return chunks
 
-def chunk_text_fallback(text: str, file_path: Path) -> List[SemanticChunk]:
+def chunk_text_fallback(text: str, file_path: Path) -> list[SemanticChunk]:
     """Fallback to line-based chunking for non-Python or parse failures."""
     chunks = []
     lines = text.splitlines()
@@ -146,7 +147,7 @@ def chunk_text_fallback(text: str, file_path: Path) -> List[SemanticChunk]:
             ))
     return chunks
 
-def chunk_text(text: str, file_path: Path) -> List[Dict]:
+def chunk_text(text: str, file_path: Path) -> list[dict]:
     """
     Smart semantic chunking: AST for Python, fallback for others.
     Returns dicts ready for vector store with enriched metadata.
@@ -203,11 +204,11 @@ async def process_file(file_path: Path, embedder: Any, vector_store: Any) -> int
         print(f'   [+] Indexed {file_path.name}: chunks {i + 1}-{min(i + batch_size, len(chunks))}')
     return total_processed
 
-async def scan_directory(directory: Path, embedder: Any, vector_store: Any) -> Dict[str, int]:
+async def scan_directory(directory: Path, embedder: Any, vector_store: Any) -> dict[str, int]:
     """Scan directory and process all supported files"""
     stats: Any = {'files_processed': 0, 'chunks_indexed': 0}
     extensions: Any = {'.py', '.md', '.txt', '.json', '.yaml', '.yml'}
-    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
     all_files = list(get_python_files(directory)) + list(get_data_files(directory))
     for file_path in all_files:
         if file_path.is_file() and file_path.suffix in extensions:
@@ -235,7 +236,7 @@ async def main() -> Any:
     if args.reset:
         print('[*] Resetting vector index...')
     stats: Any = await scan_directory(target_path, embedder, vector_store)
-    print(f'\n[✓] Ingestion Complete:')
+    print('\n[✓] Ingestion Complete:')
     print(f"    Files processed: {stats['files_processed']}")
     print(f"    Chunks indexed: {stats['chunks_indexed']}")
 if __name__ == '__main__':

@@ -1,6 +1,5 @@
 """MCPClient discovery and invocation tests."""
 import pytest
-
 from src.lic_agentic.mcp import MCPClient, ToolSpec
 
 

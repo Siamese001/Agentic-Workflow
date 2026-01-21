@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 MCP Router - L3 Orchestration Switchboard
 
@@ -21,12 +23,14 @@ MCP Assignment by Layer:
 - L1 Cognition: Gemini/Claude (Core)
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from typing import Any
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -43,7 +47,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     - L5 failures → GitKraken for version control verification
     """
 
-    def __init__(self, tui_handle: Optional[Any] = None) -> None:
+    def __init__(self, tui_handle: Any | None = None) -> None:
         """
         Initialize MCP Router.
 
@@ -51,10 +55,10 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             tui_handle: Optional TUI dashboard for status updates
         """
         self.tui = tui_handle
-        self.registry: Dict[str, List[str]] = {'L1': ['sequential_thinking'], 'L2': ['brave_search', 'deepwiki', 'fetch'], 'L3': ['redis', 'playwright'], 'L4': ['pinecone', 'memory', 'filesystem'], 'L5': ['sequential_thinking', 'gitkraken']}
+        self.registry: dict[str, list[str]] = {'L1': ['sequential_thinking'], 'L2': ['brave_search', 'deepwiki', 'fetch'], 'L3': ['redis', 'playwright'], 'L4': ['pinecone', 'memory', 'filesystem'], 'L5': ['sequential_thinking', 'gitkraken']}
         Logger.info('[OK] MCP Router initialized with L1-L5 registry')
 
-    async def resolve_failure(self, layer: str, error_context: str) -> Dict[str, Any]:
+    async def resolve_failure(self, layer: str, error_context: str) -> dict[str, Any]:
         """
         Hardens the implementation by selecting the best tool for the layer.
 
@@ -67,24 +71,24 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         Logger.info(f'🔀 MCP Router: Resolving {layer} failure')
         if layer == 'L1':
-            Logger.info(f'   → Routing to Sequential Thinking for reasoning breakdown')
+            Logger.info('   → Routing to Sequential Thinking for reasoning breakdown')
             return await self.call_mcp('sequential_thinking', {'query': error_context, 'purpose': 'Break down complex reasoning into atomic steps'})
         if layer == 'L2':
-            Logger.info(f'   → Routing to Brave Search for documentation')
+            Logger.info('   → Routing to Brave Search for documentation')
             return await self.call_mcp('brave_search', {'query': f'python fix {error_context}', 'purpose': 'Find documentation or fixes for syntax errors'})
         if layer == 'L3':
-            Logger.info(f'   → Routing to Redis for state recovery')
+            Logger.info('   → Routing to Redis for state recovery')
             return await self.call_mcp('redis', {'action': 'get', 'key': f'state:{error_context}', 'purpose': 'Recover orchestration state'})
         if layer == 'L4':
-            Logger.info(f'   → Routing to Pinecone for structural patterns')
+            Logger.info('   → Routing to Pinecone for structural patterns')
             return await self.call_mcp('pinecone', {'query': error_context, 'top_k': 1, 'purpose': 'Find last known good structural pattern'})
         if layer == 'L5':
-            Logger.info(f'   → Routing to GitKraken for version control verification')
+            Logger.info('   → Routing to GitKraken for version control verification')
             return await self.call_mcp('gitkraken', {'action': 'status', 'file': error_context, 'purpose': 'Verify git history before override'})
         Logger.warning(f'   [!]  Unknown layer: {layer}')
         return {'status': 'error', 'message': f'Unknown layer: {layer}'}
 
-    async def call_mcp(self, mcp_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    async def call_mcp(self, mcp_name: str, params: dict[str, Any]) -> dict[str, Any]:
         """
         Interface with specific MCP server.
 
@@ -101,7 +105,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Logger.debug(f'      Parameters: {params}')
         return {'status': 'success', 'mcp': mcp_name, 'params': params, 'result': f'Mock response from {mcp_name}'}
 
-    def get_available_mcps(self, layer: Optional[str]=None) -> Dict[str, list]:
+    def get_available_mcps(self, layer: str | None=None) -> dict[str, list]:
         """
         Get available MCPs for a layer or all layers.
 
@@ -115,7 +119,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return {layer: self.registry.get(layer, [])}
         return self.registry
 
-    async def health_check(self) -> Dict[str, bool]:
+    async def health_check(self) -> dict[str, bool]:
         """
         Check health of all registered MCPs.
 

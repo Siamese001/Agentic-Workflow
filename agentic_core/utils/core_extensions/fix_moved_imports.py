@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Fix imports after moving files to P1_core subdirectories.
 Updates all references to moved files throughout the codebase.
@@ -6,7 +7,7 @@ Updates all references to moved files throughout the codebase.
 import re
 from pathlib import Path
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 import_rewrites: Any = {'from \\.fission_executor import': 'from .P1_core.fission_executor import'}
 
@@ -26,7 +27,7 @@ def fix_imports() -> Any:
                 py_file.write_text(content, encoding='utf-8')
                 print(f'  [✓] Fixed: {py_file.relative_to(ROOT)}')
                 fixed += 1
-        except Exception as e:
+        except Exception:
             pass
     print(f'\n[OK] Fixed {fixed} import statements')
 if __name__ == '__main__':

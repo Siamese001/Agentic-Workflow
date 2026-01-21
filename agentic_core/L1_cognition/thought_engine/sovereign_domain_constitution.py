@@ -1,23 +1,20 @@
 from __future__ import annotations
+
 """
 Sovereign Domain Constitution – DDD Alignment (Dec 26, 2025)
 Defines Bounded Contexts, Aggregates, and Ubiquitous Language.
 L0-L5 + Observability Sovereign Stack Hierarchy established.
 """
-from typing import List, Dict, Any
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 # 1. Bounded Contexts (Strict Boundaries) - DERIVED FROM SSOT
 # Sovereign Layer Hierarchy (L0=Governance, L6=Observability)
 # Higher ranks (smaller numbers) define Policy and Intent.
 # Lower ranks (larger numbers) provide Data and Infrastructure.
 # Note: Paths are derived from SOVEREIGN_REGISTRY and CORE_SUBFOLDER_MAP
-BOUNDED_CONTEXTS: Dict[str, Dict[str, Any]] = {
+BOUNDED_CONTEXTS: dict[str, dict[str, Any]] = {
     "L0_Governance": {
         "path": "agentic_core/L0_maintenance",
         "rank": 0,
@@ -61,7 +58,7 @@ BOUNDED_CONTEXTS: Dict[str, Dict[str, Any]] = {
 }
 
 # 2. Domain Aggregates (Root Entity Protection)
-DOMAIN_AGGREGATES: Dict[str, Dict] = {
+DOMAIN_AGGREGATES: dict[str, dict] = {
     "Mission": {
         "root": "MissionPlan",
         "entities": ["MissionPhase", "ThoughtChain"],
@@ -75,7 +72,7 @@ DOMAIN_AGGREGATES: Dict[str, Dict] = {
 }
 
 # 3. Ubiquitous Language (Required Terminology)
-UBIQUITOUS_LANGUAGE: Dict[str, str] = {
+UBIQUITOUS_LANGUAGE: dict[str, str] = {
     "Territory": "Canonical folder with defined depth and canon key",
     "Sovereignty": "State of zero-drift SSOT compliance",
     "Fission": "Atomic decomposition of large logic files",

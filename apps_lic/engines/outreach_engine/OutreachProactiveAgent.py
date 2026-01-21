@@ -7,10 +7,13 @@ Extracted: 2026-01-06 (Surgical Extraction)
 Proactively identifies and executes outreach tasks with predictive handoff.
 """
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from typing import Any
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 
 @dataclass
 class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
@@ -27,7 +30,7 @@ class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
         monitor: Capability monitoring agent
     """
 
-    def __init__(self, ctx: 'OutreachEngineContext') -> None:
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         """
         Initialize the proactive outreach agent.
 
@@ -83,7 +86,7 @@ class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
         self.record_result(True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending")
         print(f"   [{self.name}] ✅ Proactive analysis complete")
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

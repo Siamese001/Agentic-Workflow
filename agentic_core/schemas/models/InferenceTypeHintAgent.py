@@ -5,14 +5,17 @@
 # This boosts alignment detection — review and integrate appropriately
 
 import ast
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
-from typing import Dict, Any, List, Optional
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from typing import Any
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -31,7 +34,7 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     """
     PROMPT_TEMPLATE: str = '\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nAdd precise Python type hints to the following function/method.\n\nRules:\n- Use concrete types when possible (List[str], Dict[str, int], etc.)\n- Use from __future__ import annotations if needed\n- Preserve all existing code, comments, and formatting\n- Only modify type annotations (parameters and return)\n- If uncertain, use Any from typing\n\nOutput ONLY the fully annotated function (no explanations, no markdown).\n\nFUNCTION:\n{code}\n'
 
-    def __init__(self, ctx: Any, project_root: Optional[str] = None) -> None:
+    def __init__(self, ctx: Any, project_root: str | None = None) -> None:
         """
         Initialize with mandatory ctx for sovereign operation.
 
@@ -47,7 +50,7 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         self.ctx = ctx
         self.project_root = project_root
 
-    async def execute(self, file_path: str) -> Dict[str, Any]:
+    async def execute(self, file_path: str) -> dict[str, Any]:
         """
         Execute method for validator compatibility.
 
@@ -59,7 +62,7 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         """
         return await self.heal_violation(Path(file_path), self.ctx)
 
-    async def heal_violation(self, file_path: Path, ctx: Optional[Any] = None) -> Dict[str, Any]:
+    async def heal_violation(self, file_path: Path, ctx: Any | None = None) -> dict[str, Any]:
         """
         Per-file healing: invoke LLM for precise type inference.
 
@@ -74,20 +77,20 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         if not getattr(ctx, 'RUN_HIERARCHY_HEALING', False):
             return {'healed': False}
         if not hasattr(ctx, 'engine') or ctx.engine is None:
-            print(f'   [!] InferenceTypeHintAgent: SubAtomicEngine not available')
+            print('   [!] InferenceTypeHintAgent: SubAtomicEngine not available')
             return {'healed': False}
         try:
             source: str = file_path.read_text(encoding='utf-8')
             tree: ast.Module = ast.parse(source)
-            targets: List[Dict] = []
+            targets: list[dict] = []
             for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                     if node.name.startswith('_'):
                         continue
-                    missing_param: bool = any((arg.annotation is None for arg in node.args.args if arg.arg not in ('self', 'cls')))
+                    missing_param: bool = any(arg.annotation is None for arg in node.args.args if arg.arg not in ('self', 'cls'))
                     missing_return: bool = node.returns is None
                     if missing_param or missing_return:
-                        code_segment: Optional[str] = ast.get_source_segment(source, node)
+                        code_segment: str | None = ast.get_source_segment(source, node)
                         if code_segment:
                             targets.append({'node': node, 'code': code_segment, 'lineno': node.lineno})
             if not targets:
@@ -127,7 +130,7 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Operational validator - requires LLM context."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

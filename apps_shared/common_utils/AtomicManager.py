@@ -6,16 +6,14 @@ Uses shadow files/keys for isolation and atomic swap operations.
 Phase 3 - Atomic State Persistence
 """
 
-import json
 import logging
 import os
-import shutil
 import time
 from pathlib import Path
-from typing import Optional, Dict, Any
 
-from shared.resilience.telemetry import SystemTelemetry, get_telemetry, OperationStatus
-from .schema import WorkflowState, BackendType, CheckpointMetadata
+from shared.resilience.telemetry import SystemTelemetry, get_telemetry
+
+from .schema import BackendType, CheckpointMetadata, WorkflowState
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +38,8 @@ class AtomicStateManager:
     def __init__(
         self,
         backend: BackendType = BackendType.FILE,
-        storage_path: Optional[str] = None,
-        telemetry: Optional[SystemTelemetry] = None,
+        storage_path: str | None = None,
+        telemetry: SystemTelemetry | None = None,
     ):
         """Initialize atomic state manager.
 
@@ -103,7 +101,7 @@ class AtomicStateManager:
             # PHASE 2: ATOMIC SWAP - Replace active with shadow
             active_key = self._get_active_key(workflow_id)
             self._atomic_swap(shadow_key, active_key)
-            logger.debug(f"Phase 2 complete: Atomic swap successful")
+            logger.debug("Phase 2 complete: Atomic swap successful")
 
             # PHASE 3: CLEANUP - Transaction complete
             # Note: Shadow file is now the active file after rename
@@ -149,7 +147,7 @@ class AtomicStateManager:
             try:
                 shadow_key = self._get_shadow_key(workflow_id)
                 self._delete_from_backend(shadow_key)
-                logger.debug(f"Cleaned up shadow state after failure")
+                logger.debug("Cleaned up shadow state after failure")
             except Exception as cleanup_error:
                 logger.warning(f"Failed to cleanup shadow state: {cleanup_error}")
 
@@ -174,7 +172,7 @@ class AtomicStateManager:
 
             raise StatePersistenceError(f"Failed to commit state for {workflow_id}: {e}") from e
 
-    def resume_workflow(self, workflow_id: str) -> Optional[WorkflowState]:
+    def resume_workflow(self, workflow_id: str) -> WorkflowState | None:
         """Resume workflow from last valid checkpoint.
 
         Args:
@@ -186,7 +184,7 @@ class AtomicStateManager:
         logger.info(f"Attempting to resume workflow: {workflow_id}")
         return self._load_state(workflow_id)
 
-    def get_active_checkpoint(self, workflow_id: str) -> Optional[WorkflowState]:
+    def get_active_checkpoint(self, workflow_id: str) -> WorkflowState | None:
         """Get the current active checkpoint for a workflow.
 
         Args:
@@ -215,7 +213,7 @@ class AtomicStateManager:
             logger.warning(f"Failed to delete checkpoint for {workflow_id}: {e}")
             return False
 
-    def list_checkpoints(self) -> Dict[str, WorkflowState]:
+    def list_checkpoints(self) -> dict[str, WorkflowState]:
         """List all available checkpoints.
 
         Returns:
@@ -311,7 +309,7 @@ class AtomicStateManager:
             # SQLite transaction with UPDATE
             raise NotImplementedError("SQLite backend not yet implemented")
 
-    def _load_state(self, workflow_id: str) -> Optional[WorkflowState]:
+    def _load_state(self, workflow_id: str) -> WorkflowState | None:
         """Load state from backend storage.
 
         Args:
@@ -329,7 +327,7 @@ class AtomicStateManager:
                     logger.debug(f"No checkpoint found for workflow: {workflow_id}")
                     return None
 
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     json_data = f.read()
 
                 state = WorkflowState.from_json(json_data)

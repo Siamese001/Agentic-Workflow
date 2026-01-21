@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class InjectionLayer(Enum):
@@ -45,7 +45,7 @@ class InstructionalPattern:
 
 
 # All 30 instructional injection patterns from v5
-INSTRUCTIONAL_PATTERNS: Dict[int, InstructionalPattern] = {
+INSTRUCTIONAL_PATTERNS: dict[int, InstructionalPattern] = {
     # Framing Layer (1-5)
     1: InstructionalPattern(
         id=1,
@@ -284,14 +284,14 @@ class InstructionalInjectionMixin:
                 return self.llm_call(prompt)
     """
 
-    _injection_patterns: Dict[int, InstructionalPattern] = INSTRUCTIONAL_PATTERNS
-    _enabled_layers: set = field(default_factory=lambda: {layer for layer in InjectionLayer})
+    _injection_patterns: dict[int, InstructionalPattern] = INSTRUCTIONAL_PATTERNS
+    _enabled_layers: set = field(default_factory=lambda: set(InjectionLayer))
 
-    def get_pattern(self, pattern_id: int) -> Optional[InstructionalPattern]:
+    def get_pattern(self, pattern_id: int) -> InstructionalPattern | None:
         """Get a specific instructional pattern by ID."""
         return self._injection_patterns.get(pattern_id)
 
-    def get_patterns_by_layer(self, layer: InjectionLayer) -> List[InstructionalPattern]:
+    def get_patterns_by_layer(self, layer: InjectionLayer) -> list[InstructionalPattern]:
         """Get all patterns for a specific layer."""
         return [p for p in self._injection_patterns.values() if p.layer == layer and p.enabled]
 
@@ -422,7 +422,7 @@ class InstructionalInjectionMixin:
         prompt = self.inject_output_layer(prompt, schema=schema, **kwargs)
         return prompt
 
-    def get_injection_summary(self) -> Dict[str, Any]:
+    def get_injection_summary(self) -> dict[str, Any]:
         """Get summary of available injection patterns."""
         return {
             "total_patterns": len(self._injection_patterns),

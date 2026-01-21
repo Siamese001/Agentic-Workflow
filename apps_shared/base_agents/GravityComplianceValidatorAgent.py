@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 DEPRECATED (2026-01-07): Use GravityValidatorAgent in L5_safety/validators/ instead.
@@ -18,6 +19,7 @@ from pathlib import Path
 
 # [SSOT IMPORT] Layer authority from structure_blueprint.py
 from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # [SSOT DERIVED] Layer authority order: Lower index = higher authority (cannot import upward)

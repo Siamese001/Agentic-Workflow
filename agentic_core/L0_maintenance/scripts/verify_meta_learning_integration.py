@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
 
+
 def test_redis_cache_method():
     """Test if _cache_result method exists and is callable."""
     project_root = Path(__file__).parent.parent
@@ -65,7 +66,7 @@ def test_pinecone_vector_method():
 def test_meta_learning_trigger():
     """Test the Meta-Learning trigger logic by simulating a healing result."""
     project_root = Path(__file__).parent.parent
-    guardian = get_autonomy_guardian(project_root)
+    get_autonomy_guardian(project_root)
 
     print("\n[TEST 3] Meta-Learning Trigger Logic")
     print("-" * 60)
@@ -90,13 +91,13 @@ def test_meta_learning_trigger():
     fixed_count = simulated_summary.get("fixed", 0)
 
     if not dry_run and fixed_count > 0:
-        print(f"✅ Meta-Learning trigger conditions met:")
+        print("✅ Meta-Learning trigger conditions met:")
         print(f"   - dry_run={dry_run}")
         print(f"   - fixed={fixed_count}")
-        print(f"   → Recording WOULD be triggered")
+        print("   → Recording WOULD be triggered")
         return True
     else:
-        print(f"❌ Meta-Learning trigger conditions NOT met:")
+        print("❌ Meta-Learning trigger conditions NOT met:")
         print(f"   - dry_run={dry_run}")
         print(f"   - fixed={fixed_count}")
         return False
@@ -109,8 +110,8 @@ def verify_mixin_inheritance():
     print("\n[TEST 4] Mixin Inheritance")
     print("-" * 60)
 
-    from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
     from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+    from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 
     is_redis = isinstance(guardian, RedisCacheMixin)
     is_pinecone = isinstance(guardian, PineconeVectorMixin)

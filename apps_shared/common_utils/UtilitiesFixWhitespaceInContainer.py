@@ -1,14 +1,14 @@
 from __future__ import annotations
+
 """Simple script to fix trailing whitespace and Missing newlines."""
 import os
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 def fix_whitespace_in_file(filepath: Any) -> Any:
     """Fix trailing whitespace and ensure file ends with newline."""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             lines: Any = f.readlines()
         fixed_lines: Any = []
         for line in lines:

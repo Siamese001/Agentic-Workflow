@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 """Types and models for route_classifier."""
 import logging
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 _logger = logging.getLogger(__name__)
 
@@ -40,6 +41,6 @@ class ClassificationResult:
     _route: RouteType
     _archetype: ArchetypeType
     _confidence: float
-    _validation_results: List[ValidationResult]
+    _validation_results: list[ValidationResult]
     _success: bool
-    _details: Dict[str, Any]
+    _details: dict[str, Any]

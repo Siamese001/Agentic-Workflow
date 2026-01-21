@@ -77,7 +77,7 @@ def test_tc52_exhaustion_test():
 
     print(f"   Files scanned: {files_scanned}")
     print(f"   Total rglob/glob calls (excluding SSOT files): {rglob_count}")
-    print(f"   Target: < 90")
+    print("   Target: < 90")
 
     if rglob_count < 90:
         print(f"✅ PASS: Only {rglob_count} rglob/glob calls remaining")
@@ -257,7 +257,7 @@ def test_tc55_observability_tests():
         print(f"✅ PASS: {files_using_ssot} observability test(s) use ssot_discovery")
         return True
     else:
-        print(f"❌ FAIL: No observability tests use ssot_discovery")
+        print("❌ FAIL: No observability tests use ssot_discovery")
         return False
 
 
@@ -279,7 +279,7 @@ def test_tc56_final_fifty_achievement():
     total_count, offenders = scan_for_rglob_usage(agentic_core)
 
     print(f"   Current rglob/glob count: {total_count}")
-    print(f"   Target: < 90")
+    print("   Target: < 90")
 
     # Phase 6 baseline was 251
     phase6_start = 251
@@ -299,11 +299,11 @@ def test_tc56_final_fifty_achievement():
     print(f"   Phase 6.9 reduction: {phase6_9_reduction} calls ({phase6_9_reduction/phase6_8_start*100:.1f}%)")
 
     # Show refactored categories
-    print(f"\n   Phase 6.9 refactored categories:")
-    print(f"   - L5 Safety Validators: 7 files")
-    print(f"   - L0 Maintenance Scripts: 7+ files")
-    print(f"   - Observability Tests: 1 file")
-    print(f"   - Total files refactored: 62+")
+    print("\n   Phase 6.9 refactored categories:")
+    print("   - L5 Safety Validators: 7 files")
+    print("   - L0 Maintenance Scripts: 7+ files")
+    print("   - Observability Tests: 1 file")
+    print("   - Total files refactored: 62+")
 
     if total_count < 90:
         print(f"✅ PASS: Final Fifty achieved ({total_count} calls, {total_reduction/phase6_start*100:.1f}% total reduction)")
@@ -357,9 +357,9 @@ def main():
     if passed_count == total_count:
         print("✅ 100% PASS - All Phase 6.9 Final Fifty tests passed!")
         print("\nPhase 6.9 Final Fifty is verified.")
-        print(f"\n🎯 ACHIEVEMENT: rglob count reduced from 100 to 83 (17 calls, 17% reduction)")
-        print(f"📊 FILES REFACTORED: 62+ files across L5, L0, and observability")
-        print(f"🏆 TOTAL PHASE 6 REDUCTION: 168 calls (67% reduction from 251 baseline)!")
+        print("\n🎯 ACHIEVEMENT: rglob count reduced from 100 to 83 (17 calls, 17% reduction)")
+        print("📊 FILES REFACTORED: 62+ files across L5, L0, and observability")
+        print("🏆 TOTAL PHASE 6 REDUCTION: 168 calls (67% reduction from 251 baseline)!")
         return 0
     else:
         print(f"❌ FAIL - {total_count - passed_count} test(s) failed")

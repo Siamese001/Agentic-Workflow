@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign Guardian: Observability Footprint (Dark Reasoning Check)
 Ensures every L1 reasoning step leaves an L6 observability trail.
@@ -11,30 +12,14 @@ The Governance Cycle:
 
 Phase 9C: Dark Reasoning Guardian (Dec 26, 2025)
 """
-import ast
 from pathlib import Path
-from typing import List, Tuple
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 
-def check_dark_reasoning(filepath: Path) -> List[str]:
+def check_dark_reasoning(filepath: Path) -> list[str]:
     """
     Check for reasoning operations without corresponding observability footprints.
 
@@ -77,13 +62,13 @@ def check_dark_reasoning(filepath: Path) -> List[str]:
                 if not any(log_sig in ContextWindow for log_sig in log_signals):
                     issues.append(f"Potential Dark Reasoning at line {i+1}: Action without L6 footprint")
 
-    except Exception as e:
+    except Exception:
         # Silently skip files that can't be read
         pass
 
     return issues
 
-def validate_observability_footprint(target_dir: str) -> Tuple[float, List[str]]:
+def validate_observability_footprint(target_dir: str) -> tuple[float, list[str]]:
     """
     Validate that all reasoning operations have observability footprints.
 

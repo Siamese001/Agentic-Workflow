@@ -1,24 +1,11 @@
 #!/usr/bin/env python3
 """Trace dashboard generation to find where it's failing."""
-from pathlib import Path
-import sys
 import json
+import sys
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 sys.path.insert(0, str(Path.cwd()))
@@ -73,10 +60,10 @@ try:
         agent.generate_compliance_report(markdown=False)
         print("✓ Generation completed successfully")
     except RuntimeError as e:
-        print(f"✗ Generation failed with RuntimeError:")
+        print("✗ Generation failed with RuntimeError:")
         print(str(e))
     except Exception as e:
-        print(f"✗ Generation failed with unexpected error:")
+        print("✗ Generation failed with unexpected error:")
         print(f"Type: {type(e).__name__}")
         print(f"Message: {str(e)}")
         import traceback

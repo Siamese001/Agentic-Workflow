@@ -10,18 +10,13 @@ Run with: python -m asyncio runtime.shared.test_uber_signal_agents.py
 
 import asyncio
 import logging
-from typing import Dict, Any
 
 # Import the three agents
 from runtime.shared import (
     ArchitectureVisualizerAgent,
     CulturalDecoderAgent,
-    PreMortemAgent,
     DiagramType,
-    CompanyDNA,
-    WritingStyle,
-    RiskCategory,
-    ImpactLevel
+    PreMortemAgent,
 )
 
 # Configure logging

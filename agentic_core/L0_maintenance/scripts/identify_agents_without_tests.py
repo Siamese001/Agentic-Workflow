@@ -4,14 +4,13 @@ Identify agents without test coverage for improvement.
 Prioritize by layer and complexity.
 """
 import json
-from pathlib import Path
 from collections import defaultdict
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 
 # Load discovery data
-with open(project_root / "agent_discovery_full.json", 'r', encoding='utf-8') as f:
+with open(project_root / "agent_discovery_full.json", encoding='utf-8') as f:
     agents = json.load(f)
 
 # Filter agents without tests

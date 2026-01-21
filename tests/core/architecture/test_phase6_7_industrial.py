@@ -173,11 +173,11 @@ def test_tc46_discovery_integrity():
     # Check that ssot_discovery module is accessible
     try:
         from agentic_core.utils.ssot_discovery import (
-            get_python_files,
-            get_data_files,
             get_agent_files,
+            get_data_files,
             get_json_files,
-            get_markdown_files
+            get_markdown_files,
+            get_python_files,
         )
         print("   ✓ ssot_discovery module accessible")
         print("   ✓ get_python_files available")
@@ -193,7 +193,7 @@ def test_tc46_discovery_integrity():
         if len(py_files) > 0:
             print(f"   ✓ get_python_files works ({len(py_files)} files found in utils)")
         else:
-            print(f"   ⚠️  get_python_files returned 0 files")
+            print("   ⚠️  get_python_files returned 0 files")
 
         print("✅ PASS: Discovery integrity maintained")
         return True
@@ -224,7 +224,7 @@ def test_tc47_industrial_achievement():
     total_count, offenders = scan_for_rglob_usage(agentic_core)
 
     print(f"   Current rglob/glob count: {total_count}")
-    print(f"   Target: < 120")
+    print("   Target: < 120")
 
     # Phase 6.6 baseline was 170
     baseline = 170
@@ -234,10 +234,10 @@ def test_tc47_industrial_achievement():
     print(f"   Reduction: {reduction} calls ({reduction/baseline*100:.1f}%)")
 
     # Show top refactored categories
-    print(f"\n   Top refactored categories:")
-    print(f"   - L0_maintenance scripts: 22+ files")
-    print(f"   - L5_safety validators: 4 files")
-    print(f"   - Total files refactored: 28+")
+    print("\n   Top refactored categories:")
+    print("   - L0_maintenance scripts: 22+ files")
+    print("   - L5_safety validators: 4 files")
+    print("   - Total files refactored: 28+")
 
     if reduction >= 35:
         print(f"✅ PASS: Significant industrial reduction achieved ({reduction} calls, {reduction/baseline*100:.1f}%)")
@@ -290,9 +290,9 @@ def main():
     if passed_count == total_count:
         print("✅ 100% PASS - All Phase 6.7 Industrial Refactoring tests passed!")
         print("\nPhase 6.7 Industrial Refactoring is verified.")
-        print(f"\n🎯 ACHIEVEMENT: rglob count reduced from 170 to 131 (39 calls, 23% reduction)")
-        print(f"📊 FILES REFACTORED: 28+ files across L0_maintenance and L5_safety")
-        print(f"🏆 APPROACHING SUB-120 TARGET!")
+        print("\n🎯 ACHIEVEMENT: rglob count reduced from 170 to 131 (39 calls, 23% reduction)")
+        print("📊 FILES REFACTORED: 28+ files across L0_maintenance and L5_safety")
+        print("🏆 APPROACHING SUB-120 TARGET!")
         return 0
     else:
         print(f"❌ FAIL - {total_count - passed_count} test(s) failed")

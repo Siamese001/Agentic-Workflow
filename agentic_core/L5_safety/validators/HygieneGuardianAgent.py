@@ -14,18 +14,17 @@ Territory: agentic_core/L5_safety/validators/
 
 from __future__ import annotations
 
-import ast
 import re
-from collections import Counter, defaultdict
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
 
 @dataclass
@@ -34,7 +33,7 @@ class HygieneViolation:
     file_path: Path
     violation_type: str
     message: str
-    line_number: Optional[int] = None
+    line_number: int | None = None
     severity: int = 5  # 1-10, 10 being critical
     auto_fixable: bool = False
 
@@ -89,7 +88,7 @@ class HygieneGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         self.project_root = Path(project_root).resolve()
         self.ctx = ctx
         self.dry_run = dry_run
-        self.violations: List[HygieneViolation] = []
+        self.violations: list[HygieneViolation] = []
         self.agent_name = self.__class__.__name__
 
         # Initialize ArchivalGatekeeper for safe file operations
@@ -116,7 +115,7 @@ class HygieneGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
 
         return len(python_files) == 0
 
-    def _has_debug_prints(self, file_path: Path) -> List[int]:
+    def _has_debug_prints(self, file_path: Path) -> list[int]:
         """Detect debug print statements and return line numbers."""
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -139,7 +138,7 @@ class HygieneGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         except Exception:
             return []
 
-    def _has_commented_code(self, file_path: Path) -> Tuple[bool, int]:
+    def _has_commented_code(self, file_path: Path) -> tuple[bool, int]:
         """
         Detect large blocks of commented-out code.
 
@@ -158,7 +157,7 @@ class HygieneGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         except Exception:
             return False, 0
 
-    def _has_repeated_filename_parts(self, filename: str) -> Tuple[bool, Optional[str]]:
+    def _has_repeated_filename_parts(self, filename: str) -> tuple[bool, str | None]:
         """
         Check if filename has repeated consecutive strings (merged from FileCleanupAgent).
 
@@ -189,7 +188,7 @@ class HygieneGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
 
         return False, None
 
-    def _is_copy_pattern_filename(self, filename: str) -> Tuple[bool, Optional[str]]:
+    def _is_copy_pattern_filename(self, filename: str) -> tuple[bool, str | None]:
         """
         Check if filename matches copy patterns.
 
@@ -353,7 +352,7 @@ class HygieneGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         return fixed_count
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method for repository hygiene.
 
@@ -375,7 +374,7 @@ class HygieneGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         self._scan_directory(self.project_root)
 
         # Group violations by type
-        by_type: Dict[str, List[HygieneViolation]] = {}
+        by_type: dict[str, list[HygieneViolation]] = {}
         for v in self.violations:
             by_type.setdefault(v.violation_type, []).append(v)
 
@@ -408,6 +407,6 @@ class HygieneGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
             'dry_run': self.dry_run,
         }
 
-    async def execute(self) -> Dict[str, Any]:
+    async def execute(self) -> dict[str, Any]:
         """Execute hygiene checks (async wrapper)."""
         return self.heal_repository(dry_run=self.dry_run)

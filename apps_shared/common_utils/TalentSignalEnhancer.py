@@ -7,9 +7,9 @@ AI leadership roles.
 
 import logging
 import re
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
+from typing import Any
 
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -18,9 +18,9 @@ class TalentMetrics(BaseModel):
     """Metrics describing talent acquisition and management capabilities."""
 
     team_size: int = Field(..., ge=0, description="Size of team managed")
-    pedigree_keywords: List[str] = Field(default_factory=list, description="Prestige markers in team")
-    retention_rate: Optional[str] = Field(None, description="Team retention rate")
-    hiring_velocity: Optional[str] = Field(None, description="Hiring speed metric")
+    pedigree_keywords: list[str] = Field(default_factory=list, description="Prestige markers in team")
+    retention_rate: str | None = Field(None, description="Team retention rate")
+    hiring_velocity: str | None = Field(None, description="Hiring speed metric")
 
     @validator('pedigree_keywords')
     def validate_pedigree(cls, v):
@@ -40,7 +40,7 @@ class TalentMetrics(BaseModel):
 class TalentSignalEnhancer:
     """Enhances talent signals in resume content and generates network hooks."""
 
-    def __init__(self, candidate_background: Dict[str, Any]):
+    def __init__(self, candidate_background: dict[str, Any]):
         """Initialize the talent signal enhancer.
 
         Args:
@@ -157,7 +157,7 @@ class TalentSignalEnhancer:
             logger.error(f"Error enhancing management bullet: {str(e)}")
             return bullet_text
 
-    def generate_network_hook(self, target_role: str) -> Optional[str]:
+    def generate_network_hook(self, target_role: str) -> str | None:
         """Generate a P.S. hook leveraging network as asset.
 
         Args:
@@ -190,7 +190,7 @@ class TalentSignalEnhancer:
             logger.error(f"Error generating network hook: {str(e)}")
             return None
 
-    def get_hyde_context(self, job_description: str) -> Optional[str]:
+    def get_hyde_context(self, job_description: str) -> str | None:
         """Get HyDE context if JD is hiring-heavy.
 
         Args:
@@ -218,7 +218,7 @@ class TalentSignalEnhancer:
             logger.error(f"Error getting HyDE context: {str(e)}")
             return None
 
-    def _detect_pedigree(self, text: str) -> List[str]:
+    def _detect_pedigree(self, text: str) -> list[str]:
         """Detect prestige markers in text.
 
         Args:
@@ -287,7 +287,7 @@ class TalentSignalEnhancer:
             logger.error(f"Error extracting team size: {str(e)}")
             return 0
 
-    def _extract_hiring_metric(self, text: str) -> Optional[str]:
+    def _extract_hiring_metric(self, text: str) -> str | None:
         """Extract hiring velocity from text.
 
         Args:
@@ -320,7 +320,7 @@ class TalentSignalEnhancer:
             logger.error(f"Error extracting hiring metric: {str(e)}")
             return None
 
-    def _extract_retention_metric(self, text: str) -> Optional[str]:
+    def _extract_retention_metric(self, text: str) -> str | None:
         """Extract retention rate from text.
 
         Args:
@@ -394,7 +394,7 @@ class TalentSignalEnhancer:
 
 
 # Factory function for easy instantiation
-def create_talent_signal_enhancer(candidate_background: Dict[str, Any]) -> TalentSignalEnhancer:
+def create_talent_signal_enhancer(candidate_background: dict[str, Any]) -> TalentSignalEnhancer:
     """Create a TalentSignalEnhancer instance.
 
     Args:
@@ -408,9 +408,9 @@ def create_talent_signal_enhancer(candidate_background: Dict[str, Any]) -> Talen
 
 # Convenience function for quick enhancement
 def enhance_talent_signals(
-    bullets: List[str],
-    candidate_background: Dict[str, Any]
-) -> Tuple[List[str], Optional[str]]:
+    bullets: list[str],
+    candidate_background: dict[str, Any]
+) -> tuple[list[str], str | None]:
     """Quickly enhance talent signals in bullets.
 
     Args:

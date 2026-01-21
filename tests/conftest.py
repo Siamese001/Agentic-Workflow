@@ -1,12 +1,14 @@
 import sys
+
 '''Brief description of functionality and purpose.'''
 
-import os
 import builtins
+import os
 import warnings
 from pathlib import Path
-import pytest
 from unittest.mock import mock_open
+
+import pytest
 
 # Sovereignty Injection: Ensure project root and stubs are at the top of the path
 project_root = Path(__file__).parent.parent

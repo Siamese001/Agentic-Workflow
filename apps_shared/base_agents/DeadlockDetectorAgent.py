@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 DeadlockDetectorAgent - Extracted for one-class-per-file pattern.
 
@@ -12,13 +13,14 @@ Originally from: TaskMonitorAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
-from typing import Any, Dict, Optional, Set
-from dataclasses import dataclass
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 import logging
+from dataclasses import dataclass
+from typing import Any
+
+from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -36,9 +38,9 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
     def __init__(self) -> None:
         """Initialize the DeadlockDetectorAgent."""
         super().__init__()
-        self.monitored_tasks: Dict[str, TaskMonitorAgent] = {}
-        self.alerted_tasks: Set[str] = set()
-        self.monitor_task: Optional[asyncio.Task] = None
+        self.monitored_tasks: dict[str, TaskMonitorAgent] = {}
+        self.alerted_tasks: set[str] = set()
+        self.monitor_task: asyncio.Task | None = None
         self.enabled = True
         self._mcp_audit('init')
         Logger.info("DeadlockDetectorAgent initialized")
@@ -207,7 +209,7 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
 
         try:
             if alert_file.exists():
-                with open(alert_file, 'r') as f:
+                with open(alert_file) as f:
                     alerts = json.load(f)
             else:
                 alerts = []
@@ -223,7 +225,7 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
         except Exception as e:
             LOGGER.error(f"Failed to save deadlock alert: {e}")
 
-    def get_status(self) -> Dict:
+    def get_status(self) -> dict:
         """Get current monitoring status."""
         active_tasks = sum(1 for m in self.monitored_tasks.values()
                           if not m.Task.done())
@@ -238,7 +240,7 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
             "heartbeat_interval": HEARTBEAT_INTERVAL
         }
 
-    def get_task_details(self, task_id: str) -> Optional[Dict]:
+    def get_task_details(self, task_id: str) -> dict | None:
         """Get details for a specific Task."""
         if task_id not in self.monitored_tasks:
             return None
@@ -263,8 +265,8 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Deadlock Healing - Clears stale tasks and resets corrupted monitors.
         """

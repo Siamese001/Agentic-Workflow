@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L5 Consolidated Knowledge Retrieval for Resume Engine
 Consolidates L3 (Pinecone) and L5 (MEMemory) into unified knowledge access
@@ -9,16 +10,17 @@ This module provides unified access to:
 - Consolidated search across both knowledge bases
 """
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class KnowledgeResult:
     """Result from knowledge retrieval."""
-    user_profile: Optional[Dict[str, Any]]
-    template: Optional[Dict[str, Any]]
-    metadata: Dict[str, Any]
+    user_profile: dict[str, Any] | None
+    template: dict[str, Any] | None
+    metadata: dict[str, Any]
 
 class L5ConsolidatedKnowledge:
     """Consolidated knowledge access layer."""
@@ -36,15 +38,15 @@ class L5ConsolidatedKnowledge:
         self._fallback_profiles = self._load_fallback_profiles()
         self._fallback_templates = self._load_fallback_templates()
 
-    def _load_fallback_profiles(self) -> Dict[str, Any]:
+    def _load_fallback_profiles(self) -> dict[str, Any]:
         """Load fallback user profiles if MEMemory unavailable."""
         return {'default': {'name': 'John Doe', 'title': 'Senior Software Engineer', 'experience': '5 years', 'skills': ['Python', 'JavaScript', 'React', 'Docker'], 'education': 'B.S. Computer Science', 'achievements': ['Led team of 5 developers', 'Reduced deployment time by 50%', 'Implemented CI/CD pipeline'], 'contact': {'email': 'john.doe@email.com', 'phone': '(555) 123-4567', 'linkedin': 'linkedin.com/in/johndoe'}}}
 
-    def _load_fallback_templates(self) -> Dict[str, Any]:
+    def _load_fallback_templates(self) -> dict[str, Any]:
         """Load fallback templates if Pinecone unavailable."""
         return {'professional': {'name': 'Professional Cover Letter', 'structure': {'header': '{name}\n{contact}\n{date}', 'greeting': 'Dear {hiring_manager},', 'introduction': 'I am writing to express my interest in the {position} position at {company}.', 'body': ['With {experience} of experience in {field}, I have developed strong skills in {skills}.', 'At my previous role at {previous_company}, I {achievement}.', 'I am particularly drawn to {company} because of {company_value}.'], 'closing': 'I look forward to discussing how my skills can benefit your team.', 'signature': 'Sincerely,\n{name}'}, 'tone': 'formal', 'length': 'medium'}, 'modern': {'name': 'Modern Cover Letter', 'structure': {'header': '{name} | {title} | {contact}', 'greeting': 'Hello {hiring_manager},', 'introduction': 'Excited about the {position} opportunity at {company}!', 'body': ['My {experience} in {field} has prepared me to tackle {challenge}.', 'Key achievements: {achievements}', "Why I'm excited: {company_culture}"], 'closing': "Let's connect and discuss how I can contribute!", 'signature': 'Best regards,\n{name}'}, 'tone': 'casual', 'length': 'short'}}
 
-    def search_knowledge(self, query: str, types: List[str]=None) -> KnowledgeResult:
+    def search_knowledge(self, query: str, types: list[str]=None) -> KnowledgeResult:
         """
         Search consolidated knowledge base.
 
@@ -66,7 +68,7 @@ class L5ConsolidatedKnowledge:
             result.metadata['template_source'] = self._get_template_source()
         return result
 
-    def _get_user_profile(self, query: str) -> Optional[Dict[str, Any]]:
+    def _get_user_profile(self, query: str) -> dict[str, Any] | None:
         """Get user profile from MEMemory or fallback."""
         if self.memory_client:
             try:
@@ -79,7 +81,7 @@ class L5ConsolidatedKnowledge:
         Logger.info('Using fallback user profile')
         return self._fallback_profiles.get('default')
 
-    def _get_template(self, query: str) -> Optional[Dict[str, Any]]:
+    def _get_template(self, query: str) -> dict[str, Any] | None:
         """Get template from Pinecone or fallback."""
         if self.pinecone_client:
             try:
@@ -93,7 +95,7 @@ class L5ConsolidatedKnowledge:
         Logger.info(f'Using fallback template: {template_type}')
         return self._fallback_templates.get(template_type)
 
-    def _embed_query(self, query: str) -> List[float]:
+    def _embed_query(self, query: str) -> list[float]:
         """Create embedding for query (placeholder)."""
         return [0.1] * 384
 
@@ -105,7 +107,7 @@ class L5ConsolidatedKnowledge:
         """Get source of template retrieval."""
         return 'pinecone' if self.pinecone_client else 'fallback'
 
-    def save_profile(self, profile: Dict[str, Any]) -> bool:
+    def save_profile(self, profile: dict[str, Any]) -> bool:
         """
         Save user profile to MEMemory.
 
@@ -127,7 +129,7 @@ class L5ConsolidatedKnowledge:
         Logger.info('Profile saved to fallback storage')
         return True
 
-    def add_template(self, template: Dict[str, Any]) -> bool:
+    def add_template(self, template: dict[str, Any]) -> bool:
         """
         Add template to Pinecone.
 
@@ -170,7 +172,7 @@ class L5ConsolidatedKnowledge:
         evaluations.append({'model': 'spam_detector', 'status': 'PASS' if spam_score <= 0.3 else 'FAIL', 'score': spam_score, 'reason': 'Spam and promotional content analysis'})
         professionalism_score: Any = self._check_professionalism(pitch)
         evaluations.append({'model': 'professionalism_checker', 'status': 'PASS' if professionalism_score >= 0.6 else 'FAIL', 'score': professionalism_score, 'reason': 'Professional tone and language analysis'})
-        pass_count: Any = sum((1 for e in evaluations if e['status'] == 'PASS'))
+        pass_count: Any = sum(1 for e in evaluations if e['status'] == 'PASS')
         total_count: Any = len(evaluations)
         consensus_status: Any = 'PASS' if pass_count == total_count else 'FAIL'
         failure_reasons: Any = [e['reason'] for e in evaluations if e['status'] == 'FAIL']
@@ -187,7 +189,7 @@ class L5ConsolidatedKnowledge:
                 score -= 0.2
         required_tone = guidelines.get('tone', 'professional')
         if required_tone == 'professional':
-            if any((word in pitch.lower() for word in ['amazing', 'incredible', 'revolutionary'])):
+            if any(word in pitch.lower() for word in ['amazing', 'incredible', 'revolutionary']):
                 score -= 0.1
         return max(0, min(1, score))
 
@@ -199,7 +201,7 @@ class L5ConsolidatedKnowledge:
             if trigger in pitch.upper():
                 spam_score += 0.2
         words = pitch.split()
-        caps_ratio = sum((1 for w in words if w.isupper())) / len(words)
+        caps_ratio = sum(1 for w in words if w.isupper()) / len(words)
         if caps_ratio > 0.1:
             spam_score += 0.2
         return min(1, spam_score)
@@ -209,7 +211,7 @@ class L5ConsolidatedKnowledge:
         score = 0.7
         if pitch.strip().startswith(('Dear', 'Hello', 'Hi')):
             score += 0.1
-        if any((closing in pitch for closing in ['Best regards', 'Sincerely', 'Regards'])):
+        if any(closing in pitch for closing in ['Best regards', 'Sincerely', 'Regards']):
             score += 0.1
         word_count = len(pitch.split())
         if 100 <= word_count <= 200:

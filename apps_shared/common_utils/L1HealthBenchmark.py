@@ -9,9 +9,8 @@ Measures:
 """
 
 import asyncio
-import time
 import sys
-from typing import List, Dict, Any
+from typing import Any
 
 sys.path.insert(0, 'c:/Git/Agentic-Workflow')
 
@@ -32,12 +31,12 @@ class L1HealthBenchmark:
     def __init__(self):
         """Initialize benchmark."""
         self.node = CognitiveNode()
-        self.results: List[Dict[str, Any]] = []
-        self.latencies: List[float] = []
-        self.confidences: List[float] = []
-        self.plan_scores: List[float] = []
+        self.results: list[dict[str, Any]] = []
+        self.latencies: list[float] = []
+        self.confidences: list[float] = []
+        self.plan_scores: list[float] = []
 
-    async def run_benchmark(self) -> Dict[str, Any]:
+    async def run_benchmark(self) -> dict[str, Any]:
         """Run full benchmark suite."""
         print("=" * 80)
         print("L1 COGNITION HEALTH BENCHMARK")
@@ -78,7 +77,7 @@ class L1HealthBenchmark:
 
         return metrics
 
-    def _create_missions(self) -> List[Dict[str, Any]]:
+    def _create_missions(self) -> list[dict[str, Any]]:
         """Create diverse test missions."""
         return [
             {
@@ -133,7 +132,7 @@ class L1HealthBenchmark:
             },
         ]
 
-    def _calculate_metrics(self) -> Dict[str, Any]:
+    def _calculate_metrics(self) -> dict[str, Any]:
         """Calculate performance metrics."""
         if not self.latencies:
             return {}
@@ -184,7 +183,7 @@ class L1HealthBenchmark:
         avg_latency: float,
         avg_confidence: float,
         avg_plan_score: float,
-        meta_stats: Dict[str, Any]
+        meta_stats: dict[str, Any]
     ) -> float:
         """
         Calculate L1 health score (0-100).
@@ -218,7 +217,7 @@ class L1HealthBenchmark:
 
         return min(100, max(0, health))
 
-    def _print_results(self, metrics: Dict[str, Any]) -> None:
+    def _print_results(self, metrics: dict[str, Any]) -> None:
         """Print benchmark results."""
         print("\n" + "=" * 80)
         print("RESULTS")

@@ -9,7 +9,7 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type
+from typing import Any
 
 
 @dataclass
@@ -26,9 +26,9 @@ class CanonASTValidator(ast.NodeVisitor):
     Subclasses should override visit_* methods to implement specific checks.
     """
 
-    violations: List[Dict[str, Any]] = field(default_factory=list)
+    violations: list[dict[str, Any]] = field(default_factory=list)
     in_type_checking: bool = False
-    current_file: Optional[Path] = None
+    current_file: Path | None = None
 
     def __post_init__(self) -> None:
         """Initialize the validator."""
@@ -88,7 +88,7 @@ class CanonASTValidator(ast.NodeVisitor):
         }
         self.violations.append(violation)
 
-    def add_violation(self, violation: Dict[str, Any]) -> None:
+    def add_violation(self, violation: dict[str, Any]) -> None:
         """
         Add a pre-formatted violation dict.
 
@@ -97,7 +97,7 @@ class CanonASTValidator(ast.NodeVisitor):
         """
         self.violations.append(violation)
 
-    def validate(self, source: str, file_path: Optional[Path] = None) -> List[Dict[str, Any]]:
+    def validate(self, source: str, file_path: Path | None = None) -> list[dict[str, Any]]:
         """
         Validate source code and return violations.
 
@@ -127,7 +127,7 @@ class CanonASTValidator(ast.NodeVisitor):
 
         return self.violations
 
-    def validate_file(self, file_path: Path) -> List[Dict[str, Any]]:
+    def validate_file(self, file_path: Path) -> list[dict[str, Any]]:
         """
         Validate a file and return violations.
 
@@ -150,7 +150,7 @@ class CanonASTValidator(ast.NodeVisitor):
                 'file': str(file_path),
             }]
 
-    def get_violations(self) -> List[Dict[str, Any]]:
+    def get_violations(self) -> list[dict[str, Any]]:
         """Return all collected violations."""
         return self.violations
 
@@ -163,8 +163,8 @@ def parse_and_validate(
     file_path: Path,
     content: str,
     key_id: int,
-    validator_class: Type[CanonASTValidator]
-) -> List[Dict[str, Any]]:
+    validator_class: type[CanonASTValidator]
+) -> list[dict[str, Any]]:
     """
     Parse content and validate using specified validator class.
 

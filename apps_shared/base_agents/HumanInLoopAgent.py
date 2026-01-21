@@ -5,9 +5,7 @@ import json
 import math
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional
-
-from pydantic import BaseModel, Field
+from typing import Any
 
 from core_v10_7 import (
     BaseAgent,
@@ -17,11 +15,12 @@ from core_v10_7 import (
     HILReconciliationResult,
     PersonaConsensus,
     PersonaReviewDecision,
-    StrategyPlan,
-    track_metrics,
-    _format_prompt_with_defaults,
     PydanticSchemaError,
+    StrategyPlan,
+    _format_prompt_with_defaults,
+    track_metrics,
 )
+from pydantic import BaseModel, Field
 
 
 class VirtualReviewerPersonaAgent(BaseAgent):
@@ -54,7 +53,7 @@ class VirtualReviewerPersonaAgent(BaseAgent):
     async def run_async(
         self,
         human_feedback: str,
-        intent_clusters: List[HILFeedbackIntent],
+        intent_clusters: list[HILFeedbackIntent],
         workflow_id: str,
     ) -> PersonaReviewDecision:
         client = self.get_model_client("qa_model")
@@ -138,7 +137,7 @@ class VirtualReviewerCouncilAgent(BaseAgent):
     async def run_async(
         self,
         human_feedback: str,
-        intent_clusters: List[HILFeedbackIntent],
+        intent_clusters: list[HILFeedbackIntent],
         workflow_id: str,
     ) -> PersonaConsensus:
         persona_tasks = []
@@ -160,7 +159,7 @@ class VirtualReviewerCouncilAgent(BaseAgent):
         )
         approved = approvals >= math.ceil(len(persona_decisions) / 2)
 
-        negotiated_actions: List[str] = []
+        negotiated_actions: list[str] = []
         for decision in persona_decisions:
             for action in decision.proposed_actions:
                 if action not in negotiated_actions:
@@ -194,16 +193,16 @@ class HILFeedbackSummarizerAgent(BaseAgent):
     """Clusters human edits into reusable intents for downstream routing."""
 
     class SummarizerOutput(BaseModel):
-        intent_clusters: List[HILFeedbackIntent] = Field(default_factory=list)
+        intent_clusters: list[HILFeedbackIntent] = Field(default_factory=list)
         delegation_score: float = Field(0.0, ge=0.0, le=1.0)
         recommended_node: str = Field("DRAFTING")
-        recommended_specialists: List[str] = Field(default_factory=list)
+        recommended_specialists: list[str] = Field(default_factory=list)
 
     @track_metrics("run_hil_feedback_summarizer")
     async def run_async(
         self,
         human_feedback: str,
-        state_snapshot: Optional[Dict[str, Any]],
+        state_snapshot: dict[str, Any] | None,
         workflow_id: str,
     ) -> SummarizerOutput:
         if not human_feedback.strip():
@@ -260,9 +259,9 @@ class HILReconciliationAgent(BaseAgent):
     @track_metrics("run_hil_reconciliation")
     async def run_async(
         self,
-        draft_sections: Dict[str, Any],
-        specialist_feedback: List[str],
-        persona_consensus: Optional[PersonaConsensus],
+        draft_sections: dict[str, Any],
+        specialist_feedback: list[str],
+        persona_consensus: PersonaConsensus | None,
         workflow_id: str,
     ) -> HILReconciliationResult:
         if not specialist_feedback:
@@ -350,7 +349,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
         self,
         strategy: StrategyPlan,
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         self.log_info("Detecting ambiguity (v10.7)...")
         client = self.get_model_client("qa_model")
 
@@ -397,8 +396,8 @@ class HILFeedbackRouterAgent(BaseAgent):
         self,
         human_feedback: str,
         workflow_id: str,
-        state_snapshot: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state_snapshot: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         self.log_info("Routing human feedback with persona council...")
 
         try:

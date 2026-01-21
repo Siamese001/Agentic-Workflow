@@ -16,49 +16,34 @@ Additional Tests:
 """
 from __future__ import annotations
 
-import ast
+import sys
 import tempfile
 import time
 import warnings
-import pytest
 from pathlib import Path
-from typing import Any, Dict
-from unittest.mock import MagicMock, patch
 
-import sys
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
-    UnifiedCodeValidatorAgent,
     RuleSet,
-    ValidationReport,
-    Violation,
+    UnifiedCodeValidatorAgent,
     ViolationType,
-    UnifiedASTVisitor,
     create_legacy_syntax_validator,
-    create_legacy_canon_validator,
-    create_legacy_async_validator,
-    create_legacy_print_validator,
 )
 from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-    UnifiedStructureValidatorAgent,
-    StructureViolation,
     StructureViolationType,
-    StructureConfig,
-    extract_layer_from_path,
-    extract_layer_from_import,
+    UnifiedStructureValidatorAgent,
     create_legacy_gravity_validator,
-    create_legacy_hygiene_validator,
+    extract_layer_from_import,
+    extract_layer_from_path,
 )
 from apps_lic.shared.validation.AppContentValidatorAgent import (
     AppContentValidatorAgent,
-    ContentValidationReport,
-    ContentViolation,
     ContentViolationType,
-    ContentConfig,
     create_legacy_message_diversity_validator,
 )
 
@@ -423,8 +408,12 @@ class TestRegistryMapping:
     def test_phase2_validator_mapping_exists(self):
         """Phase 2 validator mapping should be defined."""
         # Import the mapping function directly to avoid SubAtomicRegistryAgent import issues
-        from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
-        from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
+        from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
+            UnifiedCodeValidatorAgent,
+        )
+        from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+            UnifiedStructureValidatorAgent,
+        )
         from apps_lic.shared.validation.AppContentValidatorAgent import AppContentValidatorAgent
 
         # Define expected mapping (mirrors what's in SubAtomicRegistryAgent)

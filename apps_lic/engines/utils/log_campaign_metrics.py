@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 LogCampaignMetrics.py - Diagnostics Module
 
@@ -6,18 +7,20 @@ Domain: outreach
 Generated: 2025-12-07T13:28:54.060979
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol, Union
+from typing import Any
+
 from shared.result_types import DiagnosticReport
+
 Logger: Any = logging.getLogger(__name__)
 
 class LogCampaignMetrics:
     """Diagnostics for outreach domain."""
 
-def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
+def __init__(self: Any, config: dict[str, object] | None) -> None:
     SELF.CONFIG = config or {}
     Logger.info(f'Initialized {self.__class__.__name__}')
 
-def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
+def diagnose(self: Any, target: str | dict) -> DiagnosticReport:
     """Run diagnostics."""
     METRICS: Any = {}
     if target is None:
@@ -29,6 +32,6 @@ def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
     METRICS['TYPE'] = type(target).__name__
     return DiagnosticReport(healthy=len(issues) == 0, issues=issues, metrics=metrics)
 
-def diagnose(target: Union[str, Dict], config: Optional[Dict]=None) -> DiagnosticReport:
+def diagnose(target: str | dict, config: dict | None=None) -> DiagnosticReport:
     """Run diagnostics."""
     return LogCampaignMetrics(config).diagnose(target)

@@ -11,20 +11,21 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 # PromptRegistryAgent - Sovereign Version Registry
 # Territory: agentic_core/prompt_governance/version_registry
 # Canon Alignment: Prompt versioning, active template management, backward compatibility
 # SSOT Integration: Used by SovereignPromptRenderer and mission logging
-
 import json
 from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 import hashlib
 import logging
-import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any
+
 import numpy as np
 
 Logger = logging.getLogger(__name__)
@@ -34,10 +35,6 @@ from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 # Semantic deduplication imports
 try:
@@ -76,7 +73,7 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
     REGISTRY_FILE = Path(__file__).parent / "registry.json"
 
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -91,8 +88,8 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
 
     def __init__(self) -> None:
         """Initialize the instance."""
-        self.registry: Dict[str, List[Dict[str, Any]]] = {}
-        self._content_cache: Dict[str, str] = {}  # Cache for content hashing
+        self.registry: dict[str, list[dict[str, Any]]] = {}
+        self._content_cache: dict[str, str] = {}  # Cache for content hashing
         self.similarity_threshold = SIMILARITY_THRESHOLD
         self.embedding_model = EMBEDDING_MODEL
 
@@ -145,17 +142,17 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
             # Atomic rename (POSIX-safe, Windows best-effort)
             Path(tmp_path).replace(self.REGISTRY_FILE)
 
-        except IOError as e:
+        except OSError as e:
             Logger.error(f"PromptRegistry: Critical persistence failure: {e}")
             print(f"[!] PromptRegistry: Critical persistence failure: {e}")
 
-    def _hash_content(self, content: Optional[str]) -> Optional[str]:
+    def _hash_content(self, content: str | None) -> str | None:
         """Generate content hash for deduplication. Returns None if no content."""
         if content is None:
             return None
         return hashlib.sha256(content.encode('utf-8')).hexdigest()[:16]
 
-    def _compute_embedding(self, content: Optional[str]) -> Optional[np.ndarray]:
+    def _compute_embedding(self, content: str | None) -> np.ndarray | None:
         """Compute normalized embedding for semantic similarity."""
         if content is None or not EMBEDDINGS_AVAILABLE:
             return None
@@ -168,7 +165,7 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
             Logger.warning(f"Failed to compute embedding: {e}")
             return None
 
-    def _find_similar_prompts(self, new_emb: np.ndarray, template_name: str) -> List[Dict]:
+    def _find_similar_prompts(self, new_emb: np.ndarray, template_name: str) -> list[dict]:
         """Find semantically similar prompts across registry."""
         similar = []
         for name, entries in self.registry.items():
@@ -195,7 +192,7 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         territory: str = "templates",
         active: bool = True,
         author: str = "SovereignOrchestrator",
-        content: Optional[str] = None
+        content: str | None = None
     ) -> None:
         """
         Register or update a prompt version. Enforces single-active-version law.
@@ -283,13 +280,13 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         Logger.info(f"Registered: {template_name} {version} (Territory: {territory}, Author: {author})")
         print(f"    [REGISTERED] {template_name} {version} (Territory: {territory})")
 
-    def get_active_version(self, template_name: str) -> Optional[Dict[str, Any]]:
+    def get_active_version(self, template_name: str) -> dict[str, Any] | None:
         """Return the current active version metadata for a given template."""
         versions = self.registry.get(template_name, [])
         active = [v for v in versions if v.get("active", False)]
         return active[0] if active else None
 
-    def list_active_prompts(self) -> List[str]:
+    def list_active_prompts(self) -> list[str]:
         """List all currently active template names for mission planning."""
         return [name for name, versions in self.registry.items() if any(v.get("active") for v in versions)]
 
@@ -302,7 +299,7 @@ class DuplicatePromptError(Exception):
 
 
 # Singleton Management
-_global_registry: Optional[PromptRegistryAgent] = None
+_global_registry: PromptRegistryAgent | None = None
 
 def get_prompt_registry() -> PromptRegistryAgent:
     """Factory for singleton access. Bootstraps known templates on first call."""
@@ -355,7 +352,7 @@ def registers_prompt(
     version: str = "v1",
     territory: str = "templates",
     active: bool = True,
-    content: Optional[str] = None,
+    content: str | None = None,
 ) -> Any:
     """
     Decorator for agents to declare their prompt template dependencies.

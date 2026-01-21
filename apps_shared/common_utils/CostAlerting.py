@@ -13,7 +13,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +36,9 @@ class CostMetrics:
     avg_cost_per_request: float
     period_start: float
     period_end: float
-    model_breakdown: Dict[str, float] = field(default_factory=dict)
+    model_breakdown: dict[str, float] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "agent_id": self.agent_id,
@@ -65,7 +65,7 @@ class CostAlert:
     budget_limit: float
     timestamp: float = field(default_factory=time.time)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "alert_id": self.alert_id,
@@ -92,7 +92,7 @@ class CostTracker:
 
     def __init__(
         self,
-        default_budget_per_agent: Optional[float] = None,
+        default_budget_per_agent: float | None = None,
         alert_threshold_percent: float = 0.8,
         enable_logging: bool = True,
     ):
@@ -107,9 +107,9 @@ class CostTracker:
         self.alert_threshold_percent = alert_threshold_percent
         self.enable_logging = enable_logging
 
-        self._agent_costs: Dict[str, List[Dict[str, Any]]] = {}
-        self._agent_budgets: Dict[str, float] = {}
-        self._alerts: List[CostAlert] = []
+        self._agent_costs: dict[str, list[dict[str, Any]]] = {}
+        self._agent_budgets: dict[str, float] = {}
+        self._alerts: list[CostAlert] = []
 
         if self.enable_logging:
             logger.info(
@@ -186,7 +186,7 @@ class CostTracker:
         self,
         agent_id: str,
         period_hours: int = 24,
-    ) -> Optional[CostMetrics]:
+    ) -> CostMetrics | None:
         """Get cost metrics for an agent.
 
         Args:
@@ -215,7 +215,7 @@ class CostTracker:
         avg_cost = total_cost / request_count if request_count > 0 else 0.0
 
         # Model breakdown
-        model_breakdown: Dict[str, float] = {}
+        model_breakdown: dict[str, float] = {}
         for record in period_records:
             model_id = record["model_id"]
             model_breakdown[model_id] = model_breakdown.get(model_id, 0.0) + record["cost"]
@@ -240,7 +240,7 @@ class CostTracker:
     def get_all_metrics(
         self,
         period_hours: int = 24,
-    ) -> List[CostMetrics]:
+    ) -> list[CostMetrics]:
         """Get metrics for all agents.
 
         Args:
@@ -260,9 +260,9 @@ class CostTracker:
 
     def get_alerts(
         self,
-        agent_id: Optional[str] = None,
-        level: Optional[CostAlertLevel] = None,
-    ) -> List[CostAlert]:
+        agent_id: str | None = None,
+        level: CostAlertLevel | None = None,
+    ) -> list[CostAlert]:
         """Get cost alerts.
 
         Args:
@@ -368,7 +368,7 @@ class CostTracker:
 
 
 def create_cost_tracker(
-    default_budget_per_agent: Optional[float] = None,
+    default_budget_per_agent: float | None = None,
 ) -> CostTracker:
     """Factory function to create cost tracker.
 

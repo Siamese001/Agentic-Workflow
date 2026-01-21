@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 RedisSovereignAgent - Eternal Sovereign Gateway to Redis
@@ -13,19 +15,18 @@ RedisSovereignAgent - Eternal Sovereign Gateway to Redis
 
 import hashlib
 from pathlib import Path
-from typing import Dict, Optional, Any
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
 
 import redis
 from redis.connection import ConnectionPool
 
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
-
-
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent
 @dataclass
@@ -35,7 +36,7 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
     """
     _instance = None
 
-    def __new__(cls, project_root: Path, ctx: Optional[Any] = None) -> 'RedisSovereignAgent':
+    def __new__(cls, project_root: Path, ctx: Any | None = None) -> RedisSovereignAgent:
         """
         Singleton constructor for Redis sovereign agent.
 
@@ -50,7 +51,7 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
             cls._instance = super().__new__(cls)
             return get_redis_sovereign(project_root, ctx)
 
-    def _init(self, project_root: Path, ctx: Optional[Any] = None) -> None:
+    def _init(self, project_root: Path, ctx: Any | None = None) -> None:
         """
         Initialize Redis connection with hardened pool.
 
@@ -64,10 +65,10 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
         env: Any = get_env(project_root)
 
         # Store ValidationContext for state persistence operations
-        self.ctx: Optional[Any] = ctx
+        self.ctx: Any | None = ctx
 
         # Hardened Pool: Prevent connection leaks
-        connection_kwargs: Dict[str, Any] = {
+        connection_kwargs: dict[str, Any] = {
             "max_connections": 20,
             "socket_connect_timeout": 5,
             "socket_timeout": 5,
@@ -161,7 +162,7 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

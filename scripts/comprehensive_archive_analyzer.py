@@ -18,13 +18,9 @@ Methods used:
 """
 
 import ast
-import json
-import re
-from pathlib import Path
-from typing import Dict, List, Set, Optional, Any, Tuple
 from collections import defaultdict
 from dataclasses import dataclass, field
-import hashlib
+from pathlib import Path
 
 # ============================================================================
 # DATA STRUCTURES
@@ -36,9 +32,9 @@ class CodeEntity:
     name: str
     entity_type: str  # 'class', 'function', 'agent', 'model', 'mixin'
     file_path: str
-    bases: List[str] = field(default_factory=list)
-    methods: List[str] = field(default_factory=list)
-    params: List[str] = field(default_factory=list)
+    bases: list[str] = field(default_factory=list)
+    methods: list[str] = field(default_factory=list)
+    params: list[str] = field(default_factory=list)
     docstring: str = ""
     loc: int = 0
     domain: str = ""  # resume, outreach, shared, infrastructure
@@ -48,10 +44,10 @@ class FileAnalysis:
     """Complete analysis of a single file."""
     path: str
     archive_folder: str
-    entities: List[CodeEntity] = field(default_factory=list)
-    imports: List[str] = field(default_factory=list)
-    external_deps: List[str] = field(default_factory=list)
-    internal_deps: List[str] = field(default_factory=list)
+    entities: list[CodeEntity] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
+    external_deps: list[str] = field(default_factory=list)
+    internal_deps: list[str] = field(default_factory=list)
     loc: int = 0
     has_syntax_error: bool = False
     domain: str = ""
@@ -70,9 +66,9 @@ def extract_docstring(node) -> str:
     except:
         return ""
 
-def classify_entity_type(name: str, bases: List[str]) -> str:
+def classify_entity_type(name: str, bases: list[str]) -> str:
     """Classify entity type based on name and inheritance."""
-    name_lower = name.lower()
+    name.lower()
 
     if name.endswith('Agent') or any('Agent' in b for b in bases):
         return 'agent'
@@ -84,7 +80,7 @@ def classify_entity_type(name: str, bases: List[str]) -> str:
         return 'class'
     return 'function'
 
-def infer_domain(content: str, entities: List[CodeEntity]) -> str:
+def infer_domain(content: str, entities: list[CodeEntity]) -> str:
     """Infer domain from content and entity names."""
     content_lower = content.lower()
 
@@ -116,7 +112,7 @@ def infer_domain(content: str, entities: List[CodeEntity]) -> str:
         return 'infrastructure'
     return 'shared'
 
-def analyze_file(file_path: Path, archive_folder: str) -> Optional[FileAnalysis]:
+def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
     """Perform deep AST analysis on a file."""
     try:
         content = file_path.read_text(encoding='utf-8', errors='replace')
@@ -165,7 +161,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> Optional[FileAnalysis]
                     bases.append(base.attr)
 
             methods = [item.name for item in node.body
-                      if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                      if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef)]
 
             entity = CodeEntity(
                 name=node.name,
@@ -178,7 +174,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> Optional[FileAnalysis]
             )
             analysis.entities.append(entity)
 
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             params = [arg.arg for arg in node.args.args if arg.arg != 'self']
             entity = CodeEntity(
                 name=node.name,
@@ -204,7 +200,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> Optional[FileAnalysis]
 # CODEBASE INDEXING
 # ============================================================================
 
-def build_current_codebase_index(dirs: List[str]) -> Dict[str, Set[str]]:
+def build_current_codebase_index(dirs: list[str]) -> dict[str, set[str]]:
     """Build index of all entities in current codebase."""
     index = {
         'classes': set(),
@@ -228,16 +224,16 @@ def build_current_codebase_index(dirs: List[str]) -> Dict[str, Set[str]]:
                         if node.name.endswith('Agent'):
                             index['agents'].add(node.name.lower())
                         for item in node.body:
-                            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                            if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                                 index['methods'].add(item.name.lower())
-                    elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         index['functions'].add(node.name.lower())
             except:
                 continue
 
     return index
 
-def calculate_uniqueness(analysis: FileAnalysis, codebase_index: Dict[str, Set[str]]) -> Tuple[float, List[str]]:
+def calculate_uniqueness(analysis: FileAnalysis, codebase_index: dict[str, set[str]]) -> tuple[float, list[str]]:
     """Calculate how unique the file's entities are compared to codebase."""
     if not analysis.entities:
         return 0.0, []
@@ -308,7 +304,7 @@ def main():
         'consolidated_agents',
     ]
 
-    all_analyses: List[FileAnalysis] = []
+    all_analyses: list[FileAnalysis] = []
     archive_stats = defaultdict(lambda: {'files': 0, 'agents': 0, 'unique': 0})
 
     for archive_name in priority_archives:
@@ -356,7 +352,7 @@ def main():
             continue
 
         agents = [e for e in analysis.entities if e.entity_type == 'agent']
-        models = [e for e in analysis.entities if e.entity_type == 'model']
+        [e for e in analysis.entities if e.entity_type == 'model']
 
         if analysis.unique_score >= 80:
             if agents:
@@ -377,7 +373,7 @@ def main():
     report.append("=" * 80)
     report.append("ARCHIVE RESTORATION FINDINGS & RECOMMENDATIONS")
     report.append("=" * 80)
-    report.append(f"\nAnalysis Date: 2026-01-20")
+    report.append("\nAnalysis Date: 2026-01-20")
     report.append(f"Total Files Analyzed: {len(all_analyses)}")
     report.append(f"Current Codebase: {len(codebase_index['agents'])} agents, {len(codebase_index['classes'])} classes")
 

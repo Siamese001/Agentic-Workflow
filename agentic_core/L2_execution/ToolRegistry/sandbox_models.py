@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import logging
 from typing import Any
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -17,7 +19,7 @@ def test_tool_call_request_defaults() -> None:
 
 def test_tool_call_result_defaults() -> None:
     """TODO: Add docstring."""
-    RES: Any = ToolCallResult(success=True)
+    ToolCallResult(success=True)
     assert res.success is True
     assert res.exit_code == 0
     'TODO: Add docstring.'

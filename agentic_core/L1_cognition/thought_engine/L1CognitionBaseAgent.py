@@ -5,23 +5,23 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import asyncio
 import hashlib
 import logging
 import os
-from typing import Any, Dict, List, Optional, Protocol
 from dataclasses import dataclass, field
+from typing import Any
+
 from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
+from agentic_core.observability.SovereignBaseAgent import (
+    SovereignBaseAgent,  # NEW: Root inheritance
 )
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent  # NEW: Root inheritance
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO').upper())
 Logger: Any = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     _cache_prefix: str = "l1_cognition"
     _namespace: str = "l1_patterns"
     # Consistent hardening: prevent mutable default bugs
-    VERIFICATION_REGISTRY: Dict[str, Any] = field(default_factory=dict)
+    VERIFICATION_REGISTRY: dict[str, Any] = field(default_factory=dict)
     _registry_built: bool = False
 
     @classmethod
@@ -62,7 +62,9 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
 
         # Archived agents - use stubs for backward compatibility
         try:
-            from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
+            from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
+                UnifiedCodeEnforcerAgent,
+            )
         except ImportError:
             UnifiedCodeEnforcerAgent = None
         try:
@@ -81,7 +83,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
         import importlib
         _struct_mod = importlib.import_module('agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent')
-        StructuralEngineerAgent = getattr(_struct_mod, 'StructuralEngineerAgent')
+        StructuralEngineerAgent = _struct_mod.StructuralEngineerAgent
         arch = SystemArchitect(ctx)
         budget = BudgetAgent(ctx)
         janitor = CodeJanitor(ctx)
@@ -95,7 +97,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         cls.VERIFICATION_REGISTRY = {0: safety.check_key_00_no_hardcoded_secrets, 1: safety.check_key_01_no_todo_fixme, 2: safety.check_key_02_no_print_statements, 3: safety.check_key_03_no_debugger_statements, 4: safety.check_key_04_no_empty_except_blocks, 5: safety.check_key_05_no_bare_except, 6: safety.check_key_06_no_eval_exec, 7: deps.check_key_07_no_star_imports, 8: deps.check_key_08_no_relative_imports, 10: janitor.check_key_10_no_long_lines, 11: janitor.check_key_11_no_trailing_whitespace, 12: janitor.check_key_12_no_missing_newline, 13: janitor.check_key_13_no_tabs, 14: deps.check_key_14_no_duplicate_imports, 15: janitor.check_key_15_no_magic_numbers, 16: janitor.check_key_16_no_deep_nesting, 17: budget.check_key_17_no_large_functions, 18: struct.check_key_18_no_many_parameters, 19: budget.check_key_19_no_complex_functions, 20: struct.check_key_20_no_large_classes, 21: docs.check_key_21_no_missing_docstrings, 22: type_mech.check_key_22_no_missing_type_hints, 23: type_mech.check_key_23_no_unreachable_code, 24: type_mech.check_key_24_no_unused_variables, 25: struct.check_key_25_no_global_variables, 26: pattern.check_key_26_no_mutable_defaults, 27: pattern.check_key_27_prefer_str_join, 28: pattern.check_key_28_no_bare_except, 29: pattern.check_key_29_no_assert_in_prod, 30: pattern.check_key_30_prefer_fstrings, 31: pattern.check_key_31_no_complex_comprehensions, 32: pattern.check_key_32_no_dict_keys_check, 33: pattern.check_key_33_no_float_equality, 34: pattern.check_key_34_use_is_for_none, 36: pattern.check_key_36_no_shadowed_builtins, 37: pattern.check_key_37_no_redundant_self, 38: pattern.check_key_38_prefer_comprehensions, 39: pattern.check_key_39_no_useless_return, 40: arch.check_key_40_no_metaclasses, 41: arch.check_key_41_scoped_nesting, 42: struct.check_key_42_no_large_files, 43: struct.check_key_43_class_density, 44: deps.check_key_44_no_circular_imports, 45: deps.check_key_45_no_unused_imports, 46: struct.check_key_46_no_duplicate_code, 47: naming.check_key_47_no_snake_case_classes}
         cls._registry_built = True
 
-    def __init__(self, context: Optional[ValidationProtocol] = None, name: Optional[str] = None, layer: Optional[str] = None, **kwargs: Any) -> None:
+    def __init__(self, context: ValidationProtocol | None = None, name: str | None = None, layer: str | None = None, **kwargs: Any) -> None:
         """
         Initialize L1 cognition base agent.
 
@@ -114,11 +116,11 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         try:
             with open(file_path, 'rb') as f:
                 return hashlib.sha256(f.read()).hexdigest()
-        except IOError as e:
+        except OSError as e:
             Logger.warning(f'Could not read file {file_path} for hashing: {e}')
             return ''
 
-    def check_cache(self, file_path: str, key: int) -> Optional[dict]:
+    def check_cache(self, file_path: str, key: int) -> dict | None:
         """Check Redis cache for validation result."""
         file_hash: Any = self.get_file_hash(file_path)
         if not file_hash:
@@ -144,7 +146,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             return False
         self.__class__._init_registry(self.ctx)
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 original_code: Any = f.read()
             current_code: Any = original_code
             check_func: Any = self.VERIFICATION_REGISTRY.get(violation_key)
@@ -213,7 +215,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     # L1-SPECIFIC LAYER METHODS: Cognition/Reasoning
     # =========================================================================
 
-    def plan(self, task: str, history: List[Dict] = None) -> Dict[str, Any]:
+    def plan(self, task: str, history: list[dict] = None) -> dict[str, Any]:
         """L1-specific: Multi-step Chain-of-Thought planning with self-critique.
 
         Args:
@@ -252,7 +254,7 @@ Output JSON: {{"steps": [...], "tools": [...], "critique": "..."}}
             "critique": "Initial plan - needs execution feedback"
         }
 
-    def reflect(self, outcome: Dict[str, Any]) -> str:
+    def reflect(self, outcome: dict[str, Any]) -> str:
         """L1-specific: Deep reflection for learning and improvement.
 
         Args:
@@ -282,7 +284,7 @@ Persistent improvements to apply:
 
         return reflection
 
-    def _summarize_history(self, history: List[Dict]) -> str:
+    def _summarize_history(self, history: list[dict]) -> str:
         """Summarize conversation/action history for context efficiency."""
         if not history:
             return "No prior history"
@@ -307,7 +309,7 @@ Persistent improvements to apply:
         raise NotImplementedError(f'{self.name}.execute() not implemented')
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

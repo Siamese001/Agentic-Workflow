@@ -15,7 +15,6 @@ Test Cases:
 
 import sys
 import warnings
-import time
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -112,6 +111,7 @@ def test_orchestrator_ssot():
 
     try:
         from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
+
         from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
 
         # Test unified mode
@@ -200,9 +200,9 @@ def test_deprecation_guard():
 
     try:
         from agentic_core.L3_orchestration.orchestrator_registry import (
-            SSOTOrchestratorAgent,
-            HealingOrchestratorAgent,
             ConsolidatedOrchestratorAgent,
+            HealingOrchestratorAgent,
+            SSOTOrchestratorAgent,
         )
 
         # Test SSOTOrchestratorAgent deprecation

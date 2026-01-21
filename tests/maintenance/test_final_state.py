@@ -8,16 +8,18 @@ Tests verify that:
 - Legacy backup directories are removed
 - SSOT backup location is the only one present
 """
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.utils.ssot_discovery import get_python_files
 from agentic_core.utils.backup_manager import BackupManager
+
 from agentic_core.utils.project_root import get_project_root
+from agentic_core.utils.ssot_discovery import get_python_files
 
 # Files that are allowed to contain legacy patterns (migration tools, tests, shims)
 ALLOWED_FILES = {
@@ -102,7 +104,7 @@ def test_migration_map_covers_key_patterns():
 def test_ssot_modules_importable():
     """Verify all SSOT modules are importable."""
     # Config SSOT
-    from agentic_core.config import SOVEREIGN_REGISTRY, DEFAULT_EXCLUDE_DIRS
+    from agentic_core.config import DEFAULT_EXCLUDE_DIRS, SOVEREIGN_REGISTRY
     assert SOVEREIGN_REGISTRY is not None
     assert DEFAULT_EXCLUDE_DIRS is not None
 

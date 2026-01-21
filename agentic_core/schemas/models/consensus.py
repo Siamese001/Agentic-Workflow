@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Consensus & Deliberation Schemas
 ===============================
@@ -7,7 +8,6 @@ model opinions. Used to ensure plan safety and agreement across
 the agentic collective.
 """
 
-from typing import List
 
 from pydantic import BaseModel, Field
 
@@ -16,7 +16,7 @@ class ConsensusVerdict(BaseModel):
     """Result of a consensus deliberation across multiple models."""
     chosen_plan: str = Field(..., description="The definitive plan agreed upon by the collective")
     consensus_score: float = Field(..., ge=0.0, le=1.0, description="Level of agreement (0.0 to 1.0)")
-    dissenting_opinions: List[str] = Field(default_factory=list, description="Summary of non-concurring views")
+    dissenting_opinions: list[str] = Field(default_factory=list, description="Summary of non-concurring views")
     reasoning: str = Field(..., description="The logic used to synthesize the final Verdict")
     safe_to_proceed: bool = Field(..., description="Final gate check based on consensus risks")
 

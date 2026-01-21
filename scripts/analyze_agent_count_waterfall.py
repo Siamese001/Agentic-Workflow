@@ -4,11 +4,11 @@ analyze_agent_count_waterfall.py - Trace agent count changes through git history
 
 Produces a detailed waterfall showing how agent count changed over time.
 """
-import subprocess
 import json
+import subprocess
 import sys
-from datetime import datetime
 from collections import defaultdict
+
 
 def get_agent_count_at_commit(commit_hash):
     """Get agent count from agent_discovery_full.json at a specific commit."""

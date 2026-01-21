@@ -5,16 +5,17 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-import logging
+
 '''Brief description of functionality and purpose.'''
 
-import sys
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from typing import Protocol
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING FIXED: Logger → Logger
@@ -40,10 +41,10 @@ class SystemCommandExecutorAgent(HealerMixin, Protocol):
 
     def execute_safe_command(self, command: str, *,
 
-                             timeout: int = 60) -> Tuple[int, str, str]: ...
+                             timeout: int = 60) -> tuple[int, str, str]: ...
     def attempt_destructive_command(
 
-        self, command: str, *, timeout: int = 60, confirmed: bool = False) -> Tuple[int, str, str]: ...
+        self, command: str, *, timeout: int = 60, confirmed: bool = False) -> tuple[int, str, str]: ...
 
 # --- Concrete Implementations of Dependencies ---
 
@@ -98,7 +99,7 @@ class SafeSystemCommandExecutorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
                 return True
         return False
 
-    def execute_safe_command(self, command: str, *, timeout: int = 60) -> Tuple[int, str, str]:
+    def execute_safe_command(self, command: str, *, timeout: int = 60) -> tuple[int, str, str]:
         """
         Executes a *presumed safe* system command if it adheres to security policies.
         For this simulation, it primarily logs the attempt, as actual execution
@@ -116,7 +117,7 @@ class SafeSystemCommandExecutorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         # For now, we simulate success for non-dangerous commands.
         return 0, f"Simulated output for: {command}", ""
 
-    def attempt_destructive_command(self, command: str, *, timeout: int = 60, confirmed: bool = False) -> Tuple[int, str, str]:
+    def attempt_destructive_command(self, command: str, *, timeout: int = 60, confirmed: bool = False) -> tuple[int, str, str]:
         """
         Handles attempts to execute potentially destructive commands.
         Always blocks actual execution but logs the attempt and human confirmation status.

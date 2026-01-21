@@ -5,51 +5,35 @@ transforming each hop from a single function execution into a state machine
 with 5 distinct micro-stages, enabling granular error handling and recovery.
 """
 
+import asyncio
 import json
 import logging
+import shutil
 import time
 import uuid
-from .shared_models import (
-    MicroStage,
-    HopState,
-    RetryPolicy,
-    MicroCheckpoint,
-    StageTransition
-)
-from typing import Dict, Any, Optional, Callable, List, Union
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from pathlib import Path
-import shutil
-import asyncio
-from pydantic import BaseModel, Field, validator
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
-from .service_container import ServiceContainer, get_default_container
+from .quality.signal_enhancer import QualityThresholds, SignalQuality, get_signal_enhancer
 from .reflection_engine import (
-    ReflectionEngine,
-    ReflectionConfig,
-    CritiqueResult,
+    STANDARD_CRITERIA,
     MutationRequest,
+    ReflectionConfig,
+    ReflectionEngine,
     get_reflection_engine,
-    STANDARD_CRITERIA
 )
 from .resilience.circuit_breaker import (
+    CircuitBreakerConfig,
     CircuitBreakerFactory,
     CircuitOpenError,
-    CircuitBreakerConfig,
-    CriticalServiceFailure
+    CriticalServiceFailure,
 )
-from .security.secure_checkpoint import (
-    SecureCheckpointManager,
-    CheckpointManagerFactory,
-    CheckpointIntegrityError
-)
-from .quality.signal_enhancer import (
-    SignalEnhancer,
-    SignalQuality,
-    QualityThresholds,
-    get_signal_enhancer
-)
+from .security.secure_checkpoint import CheckpointIntegrityError, CheckpointManagerFactory
+from .service_container import ServiceContainer, get_default_container
+from .shared_models import HopState, MicroCheckpoint, MicroStage, RetryPolicy, StageTransition
 
 logger = logging.getLogger(__name__)
 
@@ -85,8 +69,8 @@ class SubatomicHopConfig:
     enable_checkpoints: bool = True
     enable_observability: bool = True
     max_execution_time: float = 300.0  # 5 minutes default
-    reflection_config: Optional[ReflectionConfig] = None
-    critique_criteria: List[str] = field(default_factory=lambda: STANDARD_CRITERIA)
+    reflection_config: ReflectionConfig | None = None
+    critique_criteria: list[str] = field(default_factory=lambda: STANDARD_CRITERIA)
 
 
 class SubatomicHop:
@@ -95,9 +79,9 @@ class SubatomicHop:
     def __init__(
         self,
         hop_function: Callable,
-        config: Optional[SubatomicHopConfig] = None,
-        initial_context: Optional[Dict[str, Any]] = None,
-        container: Optional[ServiceContainer] = None
+        config: SubatomicHopConfig | None = None,
+        initial_context: dict[str, Any] | None = None,
+        container: ServiceContainer | None = None
     ):
         """Initialize the Subatomic Hop.
 
@@ -149,26 +133,24 @@ class SubatomicHop:
         )
 
         # State management
-        self.current_stage: Optional[MicroStage] = None
+        self.current_stage: MicroStage | None = None
         self.state: HopState = HopState.PENDING
-        self.stage_history: List[StageTransition] = []
-        self.checkpoints: Dict[MicroStage, MicroCheckpoint] = {}
+        self.stage_history: list[StageTransition] = []
+        self.checkpoints: dict[MicroStage, MicroCheckpoint] = {}
 
         # Execution tracking
-        self.start_time: Optional[float] = None
-        self.end_time: Optional[float] = None
-        self.stage_retry_counts: Dict[MicroStage, int] = {
-            stage: 0 for stage in MicroStage
-        }
+        self.start_time: float | None = None
+        self.end_time: float | None = None
+        self.stage_retry_counts: dict[MicroStage, int] = dict.fromkeys(MicroStage, 0)
 
         # Critique loop tracking
         self.critique_loop_count = 0
 
         # DAG mutation support
-        self.dag_manager: Optional[DAGManager] = None
+        self.dag_manager: DAGManager | None = None
 
         # Negotiation support
-        self.node_negotiator: Optional[Any] = None
+        self.node_negotiator: Any | None = None
         self.negotiation_enabled: bool = True
 
         # Prompt injection support
@@ -179,7 +161,7 @@ class SubatomicHop:
 
         logger.info(f"Initialized SubatomicHop {self.config.hop_id}")
 
-    async def run(self, **kwargs) -> Dict[str, Any]:
+    async def run(self, **kwargs) -> dict[str, Any]:
         """Execute the hop through all micro-stages.
 
         Args:
@@ -292,7 +274,7 @@ class SubatomicHop:
                 logger.warning(f"Stage {stage} failed, retry {retry_count}/{max_retries} in {delay}s: {e}")
                 await asyncio.sleep(delay)
 
-    async def _pre_check(self, **kwargs) -> Dict[str, Any]:
+    async def _pre_check(self, **kwargs) -> dict[str, Any]:
         """Validate inputs and context."""
         logger.debug(f"Pre-check for hop {self.config.hop_id}")
 
@@ -308,7 +290,7 @@ class SubatomicHop:
         # This can be customized per hop type
         return {"valid": True, "inputs": list(kwargs.keys())}
 
-    async def _think(self, **kwargs) -> Dict[str, Any]:
+    async def _think(self, **kwargs) -> dict[str, Any]:
         """Plan the execution (Chain of Thought) with prompt injections."""
         logger.debug(f"Think stage for hop {self.config.hop_id}")
 
@@ -382,7 +364,7 @@ class SubatomicHop:
 
         return plan
 
-    async def _apply_stage_injections(self, stage: MicroStage, kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    async def _apply_stage_injections(self, stage: MicroStage, kwargs: dict[str, Any]) -> dict[str, Any]:
         """Apply instructional injections appropriate for the stage.
 
         Args:
@@ -504,7 +486,7 @@ class SubatomicHop:
             logger.error(f"Failed to apply stage injections: {e}")
             return kwargs
 
-    async def _act(self, **kwargs) -> Dict[str, Any]:
+    async def _act(self, **kwargs) -> dict[str, Any]:
         """Execute the actual hop function with circuit breaker protection."""
         logger.debug(f"Act stage for hop {self.config.hop_id}")
 
@@ -534,7 +516,7 @@ class SubatomicHop:
             logger.error(f"Hop execution failed: {e}")
             raise StageExecutionError(f"Failed to execute hop: {e}")
 
-    async def _critique(self, **kwargs) -> Dict[str, Any]:
+    async def _critique(self, **kwargs) -> dict[str, Any]:
         """Review and validate the output using Reflection Engine and Signal Enhancer."""
         logger.debug(f"Critique stage for hop {self.config.hop_id}")
 
@@ -665,7 +647,7 @@ class SubatomicHop:
 
         return {"validated_output": validated_output}
 
-    async def _commit(self, **kwargs) -> Dict[str, Any]:
+    async def _commit(self, **kwargs) -> dict[str, Any]:
         """Write to state/memory with atomic write pattern."""
         logger.debug(f"Commit stage for hop {self.config.hop_id}")
 
@@ -685,10 +667,10 @@ class SubatomicHop:
                     json.dump(validated_output, f, indent=2)
 
                 # Verify file was written correctly
-                with open(temp_file, 'r') as f:
+                with open(temp_file) as f:
                     loaded = json.load(f)
                     if loaded != validated_output:
-                        raise IOError("Verification failed")
+                        raise OSError("Verification failed")
 
                 # Atomic rename
                 shutil.move(str(temp_file), str(final_file))
@@ -765,7 +747,7 @@ class SubatomicHop:
             logger.warning(f"Failed to load secure checkpoint: {e}")
             # Continue without checkpoint - start fresh
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current status of the hop."""
         return {
             "hop_id": self.config.hop_id,
@@ -869,7 +851,7 @@ class SubatomicHop:
             context=kwargs
         )
 
-    def handle_negotiation_request(self, request: Dict[str, Any]) -> None:
+    def handle_negotiation_request(self, request: dict[str, Any]) -> None:
         """Handle a negotiation request from downstream.
 
         Args:
@@ -899,7 +881,7 @@ class SubatomicHop:
 # Factory function for creating subatomic hops
 def create_subatomic_hop(
     hop_function: Callable,
-    config: Optional[SubatomicHopConfig] = None,
+    config: SubatomicHopConfig | None = None,
     **kwargs
 ) -> SubatomicHop:
     """Create a SubatomicHop from a regular function.
@@ -920,7 +902,7 @@ def create_subatomic_hop(
 
 
 # Decorator for converting functions to subatomic hops
-def subatomic_hop(config: Optional[SubatomicHopConfig] = None):
+def subatomic_hop(config: SubatomicHopConfig | None = None):
     """Decorator to convert a function into a SubatomicHop.
 
     Args:

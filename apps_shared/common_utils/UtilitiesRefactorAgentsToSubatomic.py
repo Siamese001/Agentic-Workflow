@@ -1,14 +1,13 @@
 from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 Automated refactoring script to update all agents to use shared Sub-Atomic Engine.
 This script systematically updates all agent files in agentic_core/agents/.
 """
 
-import logging
 import re
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # NAMING FIXED: AGENT_FILES → agent_files
 agent_files = [
@@ -100,7 +99,7 @@ def process_agent_file(file_path: Path) -> bool:
     print(f"\n📝 Processing: {file_path.name}")
 
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             content = f.read()
 
         original_content = content

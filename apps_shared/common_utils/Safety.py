@@ -2,7 +2,6 @@
 safety.py - shared Module
 """
 import logging
-from typing import Dict, Optional
 from dataclasses import dataclass, field
 
 Logger = logging.getLogger(__name__)
@@ -13,16 +12,16 @@ class Result:
     """Operation result."""
     success: bool
     data: object = None
-    metadata: Dict[str, object] = field(default_factory=dict)
+    metadata: dict[str, object] = field(default_factory=dict)
 
 
 class Safety:
     """executor for shared operations."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: dict[str, object] | None = None):
         self.config = config or {}
 
-    def process(self, data: object, context: Optional[Dict] = None) -> Result:
+    def process(self, data: object, context: dict | None = None) -> Result:
         """Process data."""
         try:
             return Result(success=True, data=self._execute(data, context))
@@ -30,11 +29,11 @@ class Safety:
             Logger.error(f"Processing failed: {e}")
             return Result(success=False, metadata={"error": str(e)})
 
-    def _execute(self, data: object, context: Optional[Dict]) -> object:
+    def _execute(self, data: object, context: dict | None) -> object:
         """Execute processing."""
         return data
 
 
-def process(data: object, config: Optional[Dict] = None) -> Result:
+def process(data: object, config: dict | None = None) -> Result:
     """Process data."""
     return Safety(config).process(data)

@@ -5,13 +5,16 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import ast
+
 '''Brief description of functionality and purpose.'''
 
-import os
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 # NAMING FIXED: SubAtomicAgent → SubAtomicAgent
 class SubAtomicAgent:
@@ -19,7 +22,7 @@ class SubAtomicAgent:
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L1 cognition - operational only."""
         if _call_path is None:
             _call_path = set()
@@ -60,7 +63,7 @@ class nesting_depth_visitor(ast.NodeVisitor):
         self.max_allowed_depth = max_allowed_depth
         self.filepath = filepath
         self.current_depth = 0
-        self.violations: List[str] = []
+        self.violations: list[str] = []
 
     def _report_violation_message(self, node, current_depth_val: int) -> str:
         """

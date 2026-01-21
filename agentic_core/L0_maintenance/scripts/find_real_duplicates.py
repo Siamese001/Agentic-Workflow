@@ -4,28 +4,9 @@ Find REAL duplicate agent files (different paths, same or similar content).
 Excludes phantom duplicates where the same path appears twice.
 """
 import hashlib
-from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
 
 
 def compute_file_hash(file_path: Path) -> str:
@@ -76,7 +57,7 @@ def find_real_duplicates(project_root: Path):
     for file_hash, files in hash_to_files.items():
         if len(files) > 1:
             # Check if paths are actually different
-            unique_paths = set(str(f.relative_to(project_root)) for f in files)
+            unique_paths = {str(f.relative_to(project_root)) for f in files}
             if len(unique_paths) > 1:
                 real_duplicates.append((file_hash, files))
 
@@ -122,7 +103,7 @@ def main():
         f.write("| Agent Name | Canonical Path | Duplicate Path | Rationale |\n")
         f.write("| --- | --- | --- | --- |\n")
 
-        for file_hash, files in duplicates:
+        for _file_hash, files in duplicates:
             # Sort by path priority (production > blueprint)
             files_sorted = sorted(files, key=lambda f: (
                 0 if "blueprint_sovereign" not in str(f) else 1,
@@ -143,7 +124,7 @@ def main():
         f.write("## Delete Commands\n")
         f.write("```bash\n")
 
-        for file_hash, files in duplicates:
+        for _file_hash, files in duplicates:
             files_sorted = sorted(files, key=lambda f: (
                 0 if "blueprint_sovereign" not in str(f) else 1,
                 str(f)
@@ -163,7 +144,7 @@ def main():
     print("REAL DUPLICATES FOUND")
     print("="*80)
 
-    for file_hash, files in duplicates:
+    for _file_hash, files in duplicates:
         files_sorted = sorted(files, key=lambda f: (
             0 if "blueprint_sovereign" not in str(f) else 1,
             str(f)

@@ -3,7 +3,7 @@ repos:
   # TIER 0: Standard Hygiene (Prevent bloat, secrets, and basic issues)
   # ============================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0  # Jan 2026 Stability Release
     hooks:
       - id: trailing-whitespace
         name: Trim Trailing Whitespace
@@ -21,8 +21,18 @@ repos:
       - id: check-merge-conflict
         name: Check for Merge Conflict Markers
 
+      - id: check-json
+        name: Check JSON Syntax
+
+      - id: check-toml
+        name: Check TOML Syntax
+
+      - id: detect-private-key
+        name: Detect Private Keys (Defense-in-depth)
+        exclude: ^(tests/security/.*|agentic_core/L5_safety/validators/CredentialScannerAgent\.py|agentic_core/L5_safety/guardrails/membrane\.py)$
+
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
+    rev: v1.5.0 # Updated for 2026 API token patterns
     hooks:
       - id: detect-secrets
         name: Detect Secrets (Prevent API keys in audit logs)
@@ -33,11 +43,11 @@ repos:
   # TIER 1: Linting & Type Safety (Catch UnboundLocalError, unused imports)
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.9
+    rev: v0.14.13  # Jan 2026 Latest
     hooks:
       - id: ruff
-        name: Ruff Linter (F821 UnboundLocalError, F401 unused imports)
-        args: [--fix, --select, "F,E,W"]
+        name: Ruff Linter (Security, Bugs, and Modernization)
+        args: [--fix, --select, "F,E,W,B,S,UP", --ignore, "S101"] # S101 ignored to allow asserts in tests
         types: [python]
 
       - id: ruff-format
@@ -45,12 +55,12 @@ repos:
         types: [python]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.19.1  # Restore target 2026 version
     hooks:
       - id: mypy
-        name: Mypy Type Checker (@standard_heal return types)
-        args: [--ignore-missing-imports, --no-strict-optional]
-        additional_dependencies: [types-all]
+        name: Mypy Type Checker (Hardened Agent Safety)
+        args: [--ignore-missing-imports, --strict]
+        additional_dependencies: [types-requests, types-PyYAML, types-toml] # Specific stubs avoid dependency conflicts
         types: [python]
         exclude: ^(tests/|scripts/|stubs/)
 
@@ -65,7 +75,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [commit]
+        stages: [pre-commit]
 
       - id: check-deprecated-imports
         name: Check for Deprecated Agent Imports
@@ -73,7 +83,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [commit]
+        stages: [pre-commit]
 
       - id: check-heal-schema-compliance
         name: Check @standard_heal Schema Compliance
@@ -81,7 +91,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [commit]
+        stages: [pre-commit]
 
       - id: check-protected-files
         name: Gatekeeper Protection (Block ArchivalGatekeeper.py changes)
@@ -89,7 +99,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [commit]
+        stages: [pre-commit]
 
       - id: gatekeeper-security-lock
         name: Gatekeeper Security Lock (Requires [SECURITY-OVERRIDE])
@@ -97,7 +107,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [commit]
+        stages: [pre-commit]
 
       - id: test-hygiene-consolidation
         name: Test Hygiene Consolidation (Survivor Agent Protection)
@@ -105,4 +115,4 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [commit]
+        stages: [pre-commit]

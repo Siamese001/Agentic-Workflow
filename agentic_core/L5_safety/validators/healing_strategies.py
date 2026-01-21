@@ -6,10 +6,11 @@ Each strategy encapsulates healing logic for a specific violation category.
 """
 
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional
-from pathlib import Path
+
 import logging
+from abc import ABC, abstractmethod
+from pathlib import Path
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ Logger = logging.getLogger(__name__)
 class HealingStrategy(ABC):
     """Base strategy for polymorphic violation healing."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         """
         Initialize healing strategy.
 
@@ -27,7 +28,7 @@ class HealingStrategy(ABC):
         self.config = config or {}
 
     @abstractmethod
-    def apply(self, violation: Dict[str, Any], file_path: Path) -> Dict[str, Any]:
+    def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """
         Apply healing strategy to violation.
 
@@ -40,7 +41,7 @@ class HealingStrategy(ABC):
         """
         pass
 
-    def _validate_inputs(self, violation: Dict, file_path: Path) -> bool:
+    def _validate_inputs(self, violation: dict, file_path: Path) -> bool:
         """Validate inputs before healing."""
         return bool(violation) and isinstance(file_path, Path)
 
@@ -48,7 +49,7 @@ class HealingStrategy(ABC):
 class TerritoryHealingStrategy(HealingStrategy):
     """Healing strategy for territory/location violations."""
 
-    def apply(self, violation: Dict[str, Any], file_path: Path) -> Dict[str, Any]:
+    def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply territory healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
@@ -75,7 +76,7 @@ class TerritoryHealingStrategy(HealingStrategy):
 class GravityHealingStrategy(HealingStrategy):
     """Healing strategy for gravity/import violations."""
 
-    def apply(self, violation: Dict[str, Any], file_path: Path) -> Dict[str, Any]:
+    def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply gravity healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
@@ -102,7 +103,7 @@ class GravityHealingStrategy(HealingStrategy):
 class NamingHealingStrategy(HealingStrategy):
     """Healing strategy for naming convention violations."""
 
-    def apply(self, violation: Dict[str, Any], file_path: Path) -> Dict[str, Any]:
+    def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply naming healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
@@ -129,7 +130,7 @@ class NamingHealingStrategy(HealingStrategy):
 class HierarchyHealingStrategy(HealingStrategy):
     """Healing strategy for hierarchy/structure violations."""
 
-    def apply(self, violation: Dict[str, Any], file_path: Path) -> Dict[str, Any]:
+    def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply hierarchy healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
@@ -156,7 +157,7 @@ class HierarchyHealingStrategy(HealingStrategy):
 class ComplianceHealingStrategy(HealingStrategy):
     """Healing strategy for compliance violations."""
 
-    def apply(self, violation: Dict[str, Any], file_path: Path) -> Dict[str, Any]:
+    def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply compliance healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
@@ -183,7 +184,7 @@ class ComplianceHealingStrategy(HealingStrategy):
 class DriftHealingStrategy(HealingStrategy):
     """Healing strategy for code drift violations."""
 
-    def apply(self, violation: Dict[str, Any], file_path: Path) -> Dict[str, Any]:
+    def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply drift healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
@@ -210,7 +211,7 @@ class DriftHealingStrategy(HealingStrategy):
 class DeadCodeHealingStrategy(HealingStrategy):
     """Healing strategy for dead code violations."""
 
-    def apply(self, violation: Dict[str, Any], file_path: Path) -> Dict[str, Any]:
+    def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply dead code healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
@@ -254,7 +255,7 @@ class HealingStrategyFactory:
     def create(
         cls,
         violation_type: str,
-        config: Optional[Dict[str, Any]] = None
+        config: dict[str, Any] | None = None
     ) -> HealingStrategy:
         """
         Create healing strategy instance.

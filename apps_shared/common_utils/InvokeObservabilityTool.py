@@ -5,13 +5,14 @@ protocol handling, parameter validation, and response processing.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Callable
+import json
 import logging
+import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import time
-import json
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +39,8 @@ class ToolEndpoint:
     endpoint_id: str
     url: str
     protocol: str
-    authentication: Optional[Dict[str, Any]] = None
-    headers: Dict[str, str] = field(default_factory=dict)
+    authentication: dict[str, Any] | None = None
+    headers: dict[str, str] = field(default_factory=dict)
     timeout: float = 30.0
 
 
@@ -49,11 +50,11 @@ class InvocationRequest:
     invocation_id: str
     tool_name: str
     method: str
-    parameters: Dict[str, Any]
-    endpoint: Optional[ToolEndpoint] = None
+    parameters: dict[str, Any]
+    endpoint: ToolEndpoint | None = None
     invocation_type: InvocationType = InvocationType.DIRECT
     response_format: ResponseFormat = ResponseFormat.JSON
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -72,27 +73,27 @@ class InvocationResponse:
     invocation_id: str
     tool_name: str
     success: bool
-    data: Optional[Any] = None
-    headers: Dict[str, str] = field(default_factory=dict)
-    status_code: Optional[int] = None
-    error: Optional[str] = None
-    warnings: List[str] = field(default_factory=list)
+    data: Any | None = None
+    headers: dict[str, str] = field(default_factory=dict)
+    status_code: int | None = None
+    error: str | None = None
+    warnings: list[str] = field(default_factory=list)
     execution_time: float = 0.0
 
 
 class ObservabilityToolInvoker:
     """Main invoker for observability tools."""
 
-    def __init__(self, config: Optional[InvocationConfig] = None):
+    def __init__(self, config: InvocationConfig | None = None):
         self.config = config or InvocationConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._registered_tools: Dict[str, ToolEndpoint] = {}
-        self._tool_handlers: Dict[str, Callable] = {}
-        self._invocation_cache: Dict[str, Tuple[Any, float]] = {}
+        self._registered_tools: dict[str, ToolEndpoint] = {}
+        self._tool_handlers: dict[str, Callable] = {}
+        self._invocation_cache: dict[str, tuple[Any, float]] = {}
         self._initialize_handlers()
 
     def register_tool(self, tool_name: str, endpoint: ToolEndpoint,
-                     handler: Optional[Callable] = None) -> None:
+                     handler: Callable | None = None) -> None:
         """Register a tool endpoint.
 
         Args:
@@ -166,7 +167,7 @@ class ObservabilityToolInvoker:
                 start_time
             )
 
-    def invoke_batch(self, requests: List[InvocationRequest]) -> List[InvocationResponse]:
+    def invoke_batch(self, requests: list[InvocationRequest]) -> list[InvocationResponse]:
         """Invoke multiple tools.
 
         Args:
@@ -183,7 +184,7 @@ class ObservabilityToolInvoker:
 
         return responses
 
-    def invoke_stream(self, request: InvocationRequest) -> Dict[str, object]:
+    def invoke_stream(self, request: InvocationRequest) -> dict[str, object]:
         """Invoke tool with streaming response.
 
         Args:
@@ -204,7 +205,7 @@ class ObservabilityToolInvoker:
         for chunk in handler(request.parameters, stream=True):
             yield chunk
 
-    def get_tool_status(self, tool_name: str) -> Optional[Dict[str, Any]]:
+    def get_tool_status(self, tool_name: str) -> dict[str, Any] | None:
         """Get tool status.
 
         Args:
@@ -226,7 +227,7 @@ class ObservabilityToolInvoker:
             "last_check": datetime.utcnow().isoformat()
         }
 
-    def clear_cache(self, pattern: Optional[str] = None) -> int:
+    def clear_cache(self, pattern: str | None = None) -> int:
         """Clear invocation cache.
 
         Args:
@@ -354,7 +355,7 @@ class ObservabilityToolInvoker:
             status_code=200
         )
 
-    def _get_from_cache(self, request: InvocationRequest) -> Optional[InvocationResponse]:
+    def _get_from_cache(self, request: InvocationRequest) -> InvocationResponse | None:
         """Get response from cache."""
         cache_key = self._generate_cache_key(request)
 
@@ -398,7 +399,7 @@ class ObservabilityToolInvoker:
     def _initialize_handlers(self) -> None:
         """Initialize default tool handlers."""
         # Trace collector handler
-        def _trace_handler(method: str, params: Dict[str, Any]) -> Dict[str, Any]:
+        def _trace_handler(method: str, params: dict[str, Any]) -> dict[str, Any]:
             if method == "collect":
                 return {
                     "traces": [
@@ -411,7 +412,7 @@ class ObservabilityToolInvoker:
                 raise ValueError(f"Unknown method: {method}")
 
         # Metric collector handler
-        def _metric_handler(method: str, params: Dict[str, Any]) -> Dict[str, Any]:
+        def _metric_handler(method: str, params: dict[str, Any]) -> dict[str, Any]:
             if method == "collect":
                 return {
                     "metrics": [
@@ -424,7 +425,7 @@ class ObservabilityToolInvoker:
                 raise ValueError(f"Unknown method: {method}")
 
         # Log analyzer handler
-        def _log_handler(method: str, params: Dict[str, Any]) -> Dict[str, Any]:
+        def _log_handler(method: str, params: dict[str, Any]) -> dict[str, Any]:
             if method == "analyze":
                 return {
                     "analysis": {
@@ -466,10 +467,10 @@ def invoke_observability_tool(
     invocation_id: str,
     tool_name: str,
     method: str,
-    parameters: Dict[str, Any],
+    parameters: dict[str, Any],
     invocation_type: str = "direct",
     response_format: str = "json"
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Invoke observability tool.
 
     Args:

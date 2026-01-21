@@ -5,11 +5,9 @@ Open heal invocation = agent has invocation='Yes' but has_healing=False
 This is a data integrity issue that needs to be fixed.
 """
 import json
-from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
-with open('agent_discovery_full.json', 'r') as f:
+with open('agent_discovery_full.json') as f:
     agents = json.load(f)
 
 print(f"Total agents: {len(agents)}")
@@ -50,11 +48,11 @@ else:
             print(f"    Inheritance: {', '.join(agent.get('inheritance', []))}")
 
 print(f"\n{'='*70}")
-print(f"SUMMARY")
+print("SUMMARY")
 print(f"{'='*70}")
 print(f"Total agents: {len(agents)}")
 print(f"Agents with healing: {sum(1 for a in agents if a.get('has_healing'))}")
 print(f"Agents with invocation: {sum(1 for a in agents if a.get('invocation') == 'Yes')}")
 print(f"Open heal invocations: {len(open_invocations)}")
-print(f"\nExpected: Invocation count should equal Healing count")
+print("\nExpected: Invocation count should equal Healing count")
 print(f"Actual gap: {sum(1 for a in agents if a.get('invocation') == 'Yes') - sum(1 for a in agents if a.get('has_healing'))}")

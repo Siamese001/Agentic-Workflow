@@ -11,18 +11,18 @@ Tests the canonical functions in canonical_truth.py to ensure:
 These tests enforce the Single Source of Truth principle.
 """
 
-import pytest
 from pathlib import Path
 
+import pytest
+
 from agentic_core.L5_safety.validators.canonical_truth import (
+    HEALTH_WEIGHTS,
     calculate_health_score,
-    get_canonical_layer,
-    validate_health_components,
-    get_health_weights,
     categorize_agent,
     get_agent_categories,
-    HEALTH_WEIGHTS,
-    AGENT_CATEGORY_PATTERNS
+    get_canonical_layer,
+    get_health_weights,
+    validate_health_components,
 )
 
 

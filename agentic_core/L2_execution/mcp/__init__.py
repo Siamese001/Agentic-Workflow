@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 """MCP Integration - Hardened Sovereign Module."""
 from .client import MCPClient, MCPClientSpec
-from .factory import parse_mcp_client_specs, instantiate_mcp_client, create_mcp_registry
-from .providers import get_default_module, get_default_class
-from .exceptions import MCPError, MCPClientInitializationError, MCPClientNotFoundError
+from .exceptions import MCPClientInitializationError, MCPClientNotFoundError, MCPError
+from .factory import create_mcp_registry, instantiate_mcp_client, parse_mcp_client_specs
+from .providers import get_default_class, get_default_module
 
 __all__ = [
     "MCPClient",

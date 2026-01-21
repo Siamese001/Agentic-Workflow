@@ -6,8 +6,6 @@ Ported from: archives/legacy_lic/Agentic LIC/validator_rules_LIC.json
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Pattern
-import scripts.validation.check_canonical_structure
 
 
 class ValidationSeverity(Enum):
@@ -37,7 +35,7 @@ class ContentCleanlinessRule:
     rule_id: str
     Severity: ValidationSeverity
     ErrorCode: str
-    patterns: List[str] = field(default_factory=list)
+    patterns: list[str] = field(default_factory=list)
     max_violations: int = 0
 
 
@@ -45,8 +43,8 @@ class ContentCleanlinessRule:
 class SignalQualityConfig:
     """Configuration for signal quality scoring."""
 
-    source_weights: Dict[str, float]
-    recency_factors: Dict[str, float]
+    source_weights: dict[str, float]
+    recency_factors: dict[str, float]
     min_signal_threshold: float = 0.7
     recency_decay_days: int = 90
 
@@ -65,7 +63,7 @@ class ClaimConfidenceConfig:
 
 
 # Error Code Registry
-LIC_ERROR_CODES: Dict[str, ErrorCode] = {
+LIC_ERROR_CODES: dict[str, ErrorCode] = {
     "LIC-E001": ErrorCode(
         code="LIC-E001",
         Severity=ValidationSeverity.CRITICAL,
@@ -159,7 +157,7 @@ LIC_ERROR_CODES: Dict[str, ErrorCode] = {
 }
 
 # Forbidden verbs list
-FORBIDDEN_VERBS: List[str] = [
+FORBIDDEN_VERBS: list[str] = [
     "spearheaded",
     "leveraged",
     "utilized",
@@ -180,7 +178,7 @@ FORBIDDEN_VERBS: List[str] = [
 ]
 
 # Filler patterns
-FILLER_PATTERNS: List[str] = [
+FILLER_PATTERNS: list[str] = [
     r"(?i)\bi hope\b",
     r"(?i)\bhope (this|you) (finds|are|don't)",
     r"(?i)\bi (wanted|would like) to (reach|connect|discuss|share)",
@@ -190,7 +188,7 @@ FILLER_PATTERNS: List[str] = [
     r"(?i)\bjust (wanted|reaching|following)",
 ]
 
-implementation_PATTERNS: List[str] = [
+implementation_PATTERNS: list[str] = [
     r"\[.*?\]",
     r"\{.*?\}",
     r"<.*?>",
@@ -200,7 +198,7 @@ implementation_PATTERNS: List[str] = [
 ]
 
 # Unicode replacements for ASCII enforcement
-UNICODE_REPLACEMENTS: Dict[str, str] = {
+UNICODE_REPLACEMENTS: dict[str, str] = {
     "\u2013": "-",
     "\u2014": "-",
     "\u2018": "'",
@@ -213,7 +211,7 @@ UNICODE_REPLACEMENTS: Dict[str, str] = {
 }
 
 # Signal quality source weights
-SIGNAL_SOURCE_WEIGHTS: Dict[str, float] = {
+SIGNAL_SOURCE_WEIGHTS: dict[str, float] = {
     "RECIPIENT_LINKEDIN_ABOUT": 1.0,
     "RECIPIENT_RECENT_POST": 0.95,
     "RECIPIENT_COMMENT": 0.85,
@@ -232,7 +230,7 @@ SIGNAL_SOURCE_WEIGHTS: Dict[str, float] = {
 }
 
 # Recency factors
-RECENCY_FACTORS: Dict[str, float] = {
+RECENCY_FACTORS: dict[str, float] = {
     "0-7_days": 1.0,
     "8-30_days": 0.95,
     "31-90_days": 0.85,
@@ -256,18 +254,16 @@ class LICValidator:
                 found.append(verb)
         return found
 
-    def check_filler_phrases(self, text: str) -> List[str]:
+    def check_filler_phrases(self, text: str) -> list[str]:
         """Check for weak filler phrases in text."""
-        import scripts.validation.check_canonical_structure
         found = []
         for pattern in FILLER_PATTERNS:
             if re.search(pattern, text):
                 found.append(pattern)
         return found
 
-    def check_implementations(self, text: str) -> List[str]:
+    def check_implementations(self, text: str) -> list[str]:
         """Check for implementation patterns in text."""
-        import scripts.validation.check_canonical_structure
         found = []
         for pattern in implementation_PATTERNS:
             if re.search(pattern, text):
@@ -294,7 +290,7 @@ class LICValidator:
         else:
             return RECENCY_FACTORS["180+_days"]
 
-    def _calculate_source_weight(self, source: Dict[str, object], recency_days: Optional[int]) -> float:
+    def _calculate_source_weight(self, source: dict[str, object], recency_days: int | None) -> float:
         """Calculate weight for a single source."""
         SourceType = source.get("SourceType", "GENERIC_SEARCH")
         base_weight = SIGNAL_SOURCE_WEIGHTS.get(SourceType, 0.4)
@@ -306,8 +302,8 @@ class LICValidator:
 
     def calculate_signal_score(
         self,
-        sources: List[Dict[str, object]],
-        recency_days: Optional[int] = None,
+        sources: list[dict[str, object]],
+        recency_days: int | None = None,
     ) -> float:
         """Calculate signal quality score from sources."""
         if not sources:
@@ -316,9 +312,9 @@ class LICValidator:
         total_weight = sum(self._calculate_source_weight(source, recency_days) for source in sources)
         return min(1.0, total_weight / len(sources))
 
-    def validate_message(self, text: str) -> Dict[str, object]:
+    def validate_message(self, text: str) -> dict[str, object]:
         """Perform full validation on a message."""
-        results: Dict[str, object] = {
+        results: dict[str, object] = {
             "is_valid": True,
             "errors": [],
             "warnings": [],
@@ -360,7 +356,7 @@ def create_lic_validator() -> LICValidator:
     return LICValidator()
 
 
-def get_error_code(code: str) -> Optional[ErrorCode]:
+def get_error_code(code: str) -> ErrorCode | None:
     """Get error code definition by code."""
     return LIC_ERROR_CODES.get(code)
 

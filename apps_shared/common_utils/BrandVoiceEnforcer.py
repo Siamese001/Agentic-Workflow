@@ -7,7 +7,6 @@ active voice) across all generated text in both Resume and Outreach engines.
 import logging
 import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -28,9 +27,9 @@ class ToneSettings(BaseModel):
     primary_voice: ToneVoice
     max_sentence_length: int = Field(default=25, ge=5, le=100)
     min_sentence_length: int = Field(default=5, ge=1, le=20)
-    banned_words: List[str] = Field(default_factory=list)
-    required_keywords: List[str] = Field(default_factory=list)
-    preferred_verbs: Dict[str, List[str]] = Field(default_factory=dict)
+    banned_words: list[str] = Field(default_factory=list)
+    required_keywords: list[str] = Field(default_factory=list)
+    preferred_verbs: dict[str, list[str]] = Field(default_factory=dict)
     voice_intensity: float = Field(default=0.8, ge=0.0, le=1.0)
     formality_level: str = Field(default="professional")  # casual, professional, formal
     max_passive_voice_percent: float = Field(default=20.0, ge=0.0, le=100.0)
@@ -41,17 +40,17 @@ class ToneViolation(BaseModel):
     type: str  # e.g., "sentence_length", "banned_word", "passive_voice"
     severity: str  # "error", "warning", "info"
     message: str
-    location: Optional[str] = None  # Text snippet where violation occurred
-    suggestion: Optional[str] = None
+    location: str | None = None  # Text snippet where violation occurred
+    suggestion: str | None = None
 
 
 class ToneAnalysisResult(BaseModel):
     """Result of tone analysis."""
     is_compliant: bool
-    violations: List[ToneViolation] = Field(default_factory=list)
+    violations: list[ToneViolation] = Field(default_factory=list)
     score: float = Field(ge=0.0, le=1.0)  # Overall compliance score
-    voice_detected: Optional[ToneVoice] = None
-    metrics: Dict[str, float] = Field(default_factory=dict)
+    voice_detected: ToneVoice | None = None
+    metrics: dict[str, float] = Field(default_factory=dict)
 
 
 class ToneEnforcer:
@@ -60,7 +59,7 @@ class ToneEnforcer:
     def __init__(self):
         """Initialize tone enforcer with default profiles."""
         # Default tone profiles
-        self.profiles: Dict[ToneVoice, ToneSettings] = self._create_default_profiles()
+        self.profiles: dict[ToneVoice, ToneSettings] = self._create_default_profiles()
 
         # Voice-specific patterns
         self.voice_patterns = {
@@ -101,7 +100,7 @@ class ToneEnforcer:
 
         logger.info("Initialized ToneEnforcer with default profiles")
 
-    def _create_default_profiles(self) -> Dict[ToneVoice, ToneSettings]:
+    def _create_default_profiles(self) -> dict[ToneVoice, ToneSettings]:
         """Create default tone profiles.
 
         Returns:
@@ -170,7 +169,7 @@ class ToneEnforcer:
             )
         }
 
-    def audit_content(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
+    def audit_content(self, text: str, settings: ToneSettings) -> list[ToneViolation]:
         """Audit content for tone violations.
 
         Args:
@@ -202,7 +201,7 @@ class ToneEnforcer:
 
         return violations
 
-    def _check_sentence_length(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
+    def _check_sentence_length(self, text: str, settings: ToneSettings) -> list[ToneViolation]:
         """Check sentence length violations.
 
         Args:
@@ -227,7 +226,7 @@ class ToneEnforcer:
                     severity="warning",
                     message=f"Sentence too long: {word_count} words (max: {settings.max_sentence_length})",
                     location=sentence[:50] + "..." if len(sentence) > 50 else sentence,
-                    suggestion=f"Consider breaking into shorter sentences"
+                    suggestion="Consider breaking into shorter sentences"
                 ))
 
             elif word_count < settings.min_sentence_length:
@@ -241,7 +240,7 @@ class ToneEnforcer:
 
         return violations
 
-    def _check_banned_words(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
+    def _check_banned_words(self, text: str, settings: ToneSettings) -> list[ToneViolation]:
         """Check for banned words.
 
         Args:
@@ -265,12 +264,12 @@ class ToneEnforcer:
                     severity="error",
                     message=f"Banned word detected: '{word}'",
                     location=match.group() if match else word,
-                    suggestion=f"Replace with stronger alternative"
+                    suggestion="Replace with stronger alternative"
                 ))
 
         return violations
 
-    def _check_required_keywords(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
+    def _check_required_keywords(self, text: str, settings: ToneSettings) -> list[ToneViolation]:
         """Check for required keywords.
 
         Args:
@@ -293,12 +292,12 @@ class ToneEnforcer:
                 type="missing_keyword",
                 severity="warning",
                 message=f"Missing required keywords: {', '.join(missing_keywords)}",
-                suggestion=f"Consider incorporating these keywords"
+                suggestion="Consider incorporating these keywords"
             ))
 
         return violations
 
-    def _check_voice_consistency(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
+    def _check_voice_consistency(self, text: str, settings: ToneSettings) -> list[ToneViolation]:
         """Check voice consistency with primary voice.
 
         Args:
@@ -344,7 +343,7 @@ class ToneEnforcer:
 
         return violations
 
-    def _check_passive_voice(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
+    def _check_passive_voice(self, text: str, settings: ToneSettings) -> list[ToneViolation]:
         """Check for excessive passive voice.
 
         Args:
@@ -384,7 +383,7 @@ class ToneEnforcer:
 
         return violations
 
-    def _check_formality(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
+    def _check_formality(self, text: str, settings: ToneSettings) -> list[ToneViolation]:
         """Check formality level compliance.
 
         Args:
@@ -499,7 +498,7 @@ class ToneEnforcer:
 
         return ToneVoice.AUTHORITATIVE  # Default
 
-    def _calculate_compliance_score(self, violations: List[ToneViolation]) -> float:
+    def _calculate_compliance_score(self, violations: list[ToneViolation]) -> float:
         """Calculate overall compliance score.
 
         Args:
@@ -520,7 +519,7 @@ class ToneEnforcer:
 
         return score
 
-    def _calculate_metrics(self, text: str, violations: List[ToneViolation]) -> Dict[str, float]:
+    def _calculate_metrics(self, text: str, violations: list[ToneViolation]) -> dict[str, float]:
         """Calculate analysis metrics.
 
         Args:
@@ -573,7 +572,7 @@ class ToneEnforcer:
 
 
 # Global enforcer instance
-_tone_enforcer: Optional[ToneEnforcer] = None
+_tone_enforcer: ToneEnforcer | None = None
 
 
 def get_tone_enforcer() -> ToneEnforcer:
@@ -589,7 +588,7 @@ def get_tone_enforcer() -> ToneEnforcer:
 
 
 # Convenience functions
-def audit_text(text: str, voice: ToneVoice) -> List[ToneViolation]:
+def audit_text(text: str, voice: ToneVoice) -> list[ToneViolation]:
     """Audit text for tone violations.
 
     Args:

@@ -1,12 +1,13 @@
 from __future__ import annotations
+
 """
 Text similarity computation using TF-IDF cosine similarity.
 
 Provides core similarity calculation with sklearn alternative path.
 """
-import logging
 import math
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any
+
 try:
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE: Any = True
@@ -41,25 +42,24 @@ class TextSimilarityCalculator:
         """Basic fallback implementation without sklearn."""
         if not text1 or not text2:
             return 0.0
-        WORDS1 = set(text1.lower().split())
-        WORDS2 = set(text2.lower().split())
+        set(text1.lower().split())
+        set(text2.lower().split())
         if not words1 or not words2:
             return 0.0
-        INTERSECTION = words1.intersection(words2)
+        words1.intersection(words2)
         if not intersection:
             return 0.0
-        NUMERATOR = len(intersection)
-        DENOMINATOR = math.sqrt(len(words1) * len(words2))
+        len(intersection)
+        math.sqrt(len(words1) * len(words2))
         if denominator == 0:
             return 0.0
         return numerator / denominator
 
-    def find_duplicates(self, texts: List[str], threshold: float=0.9) -> List[Tuple[int, int, float]]:
+    def find_duplicates(self, texts: list[str], threshold: float=0.9) -> list[tuple[int, int, float]]:
         """Find text pairs with similarity >= threshold."""
-        DUPLICATES: Any = []
         for i in range(len(texts)):
             for j in range(i + 1, len(texts)):
-                SIMILARITY: Any = self.calculate(texts[i], texts[j])
+                self.calculate(texts[i], texts[j])
                 if similarity >= threshold:
                     duplicates.append((i, j, similarity))
         return duplicates

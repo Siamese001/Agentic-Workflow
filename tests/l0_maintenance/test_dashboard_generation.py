@@ -5,35 +5,16 @@ E2E Dashboard Generation Test - MANDATORY DATA INJECTION VALIDATION
 This test ensures that dashboard generation and data injection are atomic.
 If any injection fails, the entire generation must fail.
 """
-import sys
-import re
 import json
+import re
+import sys
 from pathlib import Path
 
 # SSOT: Import canonical definitions for dashboard testing
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from scripts.dashboard_ssot_definitions import (
-    COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
-    COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_SCHEMA,
-    COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH
-)
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
     REPORTS_DIR,
-    get_validated_project_root,
 )
 
 # Add project root to path

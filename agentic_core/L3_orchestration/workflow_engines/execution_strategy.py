@@ -9,11 +9,13 @@ Provides pluggable execution strategies for the UnifiedWorkflowEngine:
 """
 
 from __future__ import annotations
+
+import asyncio
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional, Callable
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-import asyncio
+from typing import Any
 
 
 class ExecutionStatus(Enum):
@@ -31,10 +33,10 @@ class WorkflowContext:
     """Context for workflow execution."""
     workflow_id: str
     workflow_type: str
-    input_data: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    state: Dict[str, Any] = field(default_factory=dict)
-    parent_context: Optional[WorkflowContext] = None
+    input_data: dict[str, Any]
+    metadata: dict[str, Any] = field(default_factory=dict)
+    state: dict[str, Any] = field(default_factory=dict)
+    parent_context: WorkflowContext | None = None
 
 
 @dataclass
@@ -43,8 +45,8 @@ class WorkflowResult:
     workflow_id: str
     status: ExecutionStatus
     output: Any = None
-    error: Optional[str] = None
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    error: str | None = None
+    metrics: dict[str, Any] = field(default_factory=dict)
     steps_executed: int = 0
 
 
@@ -54,7 +56,7 @@ class WorkflowStep:
     step_id: str
     name: str
     handler: Callable
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
     timeout_seconds: float = 30.0
     retries: int = 0
 
@@ -63,7 +65,7 @@ class ExecutionStrategy(ABC):
     """Base execution strategy interface."""
 
     @abstractmethod
-    async def execute(self, context: WorkflowContext, steps: List[WorkflowStep]) -> WorkflowResult:
+    async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow using this strategy."""
         pass
 
@@ -86,14 +88,14 @@ class DAGStrategy(ExecutionStrategy):
         self.name = "dag"
         self.supported_types = ["dag", "pipeline", "sequential", "parallel"]
 
-    async def execute(self, context: WorkflowContext, steps: List[WorkflowStep]) -> WorkflowResult:
+    async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow as DAG."""
         completed = set()
         results = {}
         steps_executed = 0
 
         # Build dependency graph
-        step_map = {step.step_id: step for step in steps}
+        {step.step_id: step for step in steps}
 
         while len(completed) < len(steps):
             # Find ready steps (all dependencies completed)
@@ -139,7 +141,7 @@ class DAGStrategy(ExecutionStrategy):
             steps_executed=steps_executed
         )
 
-    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, results: Dict) -> Any:
+    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, results: dict) -> Any:
         """Execute single step."""
         try:
             if asyncio.iscoroutinefunction(step.handler):
@@ -167,7 +169,7 @@ class StateMachineStrategy(ExecutionStrategy):
         self.name = "state_machine"
         self.supported_types = ["state_machine", "fsm", "workflow"]
 
-    async def execute(self, context: WorkflowContext, steps: List[WorkflowStep]) -> WorkflowResult:
+    async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow as state machine."""
         current_state = "start"
         steps_executed = 0
@@ -226,7 +228,7 @@ class StateMachineStrategy(ExecutionStrategy):
             steps_executed=steps_executed
         )
 
-    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, results: Dict) -> Any:
+    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, results: dict) -> Any:
         """Execute single state."""
         if asyncio.iscoroutinefunction(step.handler):
             return await step.handler(context, results)
@@ -248,7 +250,7 @@ class EventDrivenStrategy(ExecutionStrategy):
         self.name = "event_driven"
         self.supported_types = ["event", "event_driven", "async"]
 
-    async def execute(self, context: WorkflowContext, steps: List[WorkflowStep]) -> WorkflowResult:
+    async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow using event-driven pattern."""
         event_queue = asyncio.Queue()
         results = {}
@@ -303,7 +305,7 @@ class EventDrivenStrategy(ExecutionStrategy):
             steps_executed=steps_executed
         )
 
-    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, results: Dict) -> Any:
+    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, results: dict) -> Any:
         """Execute step as event handler."""
         if asyncio.iscoroutinefunction(step.handler):
             return await step.handler(context, results)
@@ -325,7 +327,7 @@ class ReactiveStrategy(ExecutionStrategy):
         self.name = "reactive"
         self.supported_types = ["reactive", "stream", "observable"]
 
-    async def execute(self, context: WorkflowContext, steps: List[WorkflowStep]) -> WorkflowResult:
+    async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow using reactive streams."""
         results = {}
         steps_executed = 0
@@ -371,7 +373,7 @@ class ReactiveStrategy(ExecutionStrategy):
 
 
 # Strategy registry
-STRATEGY_REGISTRY: Dict[str, ExecutionStrategy] = {
+STRATEGY_REGISTRY: dict[str, ExecutionStrategy] = {
     "dag": DAGStrategy(),
     "state_machine": StateMachineStrategy(),
     "event_driven": EventDrivenStrategy(),

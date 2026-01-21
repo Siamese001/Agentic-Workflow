@@ -1,18 +1,17 @@
 from __future__ import annotations
+
 # mission_preflight.py
 # L5 Mission Preflight Validator
 # PURPOSE: Executes pre-mission compliance checks and enforces void compliance
 # LOCATION: agentic_core/L5_safety/validators/ (SSOT-compliant)
-
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
+from agentic_core.L5_safety.validators.HierarchyHealerAgent import HierarchyHealerAgent
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.validators.HierarchyHealerAgent import HierarchyHealerAgent
 
 
 class MissionPreflight:
@@ -71,7 +70,7 @@ class MissionPreflight:
                 pass
         return self._import_agent
 
-    def run_preflight(self, target_sector: str) -> Dict[str, Any]:
+    def run_preflight(self, target_sector: str) -> dict[str, Any]:
         """
         Execute the full preflight compliance check.
 
@@ -87,7 +86,7 @@ class MissionPreflight:
         # Cross-reference with IDE Rules
         rules_path = self.project_root / "windsurfrules.md"
         if rules_path.exists():
-            print(f"   [INFO] Synchronization active: windsurfrules.md detected.")
+            print("   [INFO] Synchronization active: windsurfrules.md detected.")
 
         target_path = Path(target_sector).resolve()
 
@@ -137,7 +136,7 @@ class MissionPreflight:
                 span_result = hierarchy_agent.check_span_of_two()
                 violations = span_result.get("violations", 0)
                 if span_result.get("compliant", True):
-                    print(f"   [OK] Span-of-Two compliance verified by HierarchyAgent")
+                    print("   [OK] Span-of-Two compliance verified by HierarchyAgent")
                 else:
                     print(f"[!] L6 ALERT: Found {violations} Span violations:")
                     for v in span_result.get("details", [])[:3]:
@@ -149,7 +148,7 @@ class MissionPreflight:
             print("   [!] Hierarchy monitoring unavailable - Span-of-Two status unknown.")
         return 0
 
-    def _check_hierarchy(self, target_path: Path) -> List[Tuple[Path, str]]:
+    def _check_hierarchy(self, target_path: Path) -> list[tuple[Path, str]]:
         """Check hierarchy alignment using HierarchyAgent."""
         hierarchy_agent = self._get_hierarchy_agent()
         if hierarchy_agent:
@@ -269,7 +268,7 @@ class MissionPreflight:
 
         return len(location_violations)
 
-    def _print_dashboard(self, results: Dict[str, Any]) -> None:
+    def _print_dashboard(self, results: dict[str, Any]) -> None:
         """Print the sovereignty dashboard."""
         print("\n" + "="*70)
         print(" SOVEREIGN INTEGRITY DASHBOARD (L6 PRE-FLIGHT)")

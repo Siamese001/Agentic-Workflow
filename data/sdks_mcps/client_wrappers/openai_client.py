@@ -4,29 +4,28 @@ Implements robust error handling, retry logic, and structured output parsing.
 
 import json
 import os
-import time
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Union, object
+from typing import object
 
-import data.sdks_mcps.reference_clients.minimal_openai
-from data.sdks_mcps.reference_clients.minimal_openai import (
-    OpenAI,
-    APIError,
-    RateLimitError,
-    APITimeoutError
-)
 import backoff
 from openai.types.chat import ChatCompletion
+
+from data.sdks_mcps.reference_clients.minimal_openai import (
+    APIError,
+    APITimeoutError,
+    OpenAI,
+    RateLimitError,
+)
 
 
 @dataclass
 class OpenAIConfig:
     """Configuration for OpenAI client."""
-    api_key: Optional[str] = None
-    base_url: Optional[str] = None
+    api_key: str | None = None
+    base_url: str | None = None
     timeout: int = 60
     max_retries: int = 3
-    organization: Optional[str] = None
+    organization: str | None = None
     default_model: str = "gpt-4o-2024-08-06"
     default_temperature: float = 0.7
     default_max_tokens: int = 4096
@@ -34,7 +33,7 @@ class OpenAIConfig:
 class OpenAIClient:
     """Production-ready OpenAI client with comprehensive error handling."""
 
-    def __init__(self, config: Optional[OpenAIConfig] = None):
+    def __init__(self, config: OpenAIConfig | None = None):
         self.config = config or OpenAIConfig()
         self.client = OpenAI(
             api_key=self.config.api_key or os.getenv("OPENAI_API_KEY"),
@@ -61,15 +60,15 @@ class OpenAIClient:
     )
     def chat_completion(
         self,
-        messages: List[Dict[str, str]],
-        model: Optional[str] = None,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        response_format: Optional[Dict[str, object]] = None,
-        tools: Optional[List[Dict[str, object]]] = None,
-        tool_choice: Optional[Union[str, Dict[str, object]]] = None,
+        messages: list[dict[str, str]],
+        model: str | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        response_format: dict[str, object] | None = None,
+        tools: list[dict[str, object]] | None = None,
+        tool_choice: str | dict[str, object] | None = None,
         stream: bool = False,
-        **kwargs: Dict[str, object]) -> Union[ChatCompletion, object]:
+        **kwargs: dict[str, object]) -> ChatCompletion | object:
         """Execute chat completion with retry logic and error handling.
 
         Args:
@@ -120,10 +119,10 @@ class OpenAIClient:
 
     def structured_completion(
         self,
-        messages: List[Dict[str, str]],
-        schema: Dict[str, object],
-        model: Optional[str] = None,
-        **kwargs: Dict[str, object]) -> Dict[str, object]:
+        messages: list[dict[str, str]],
+        schema: dict[str, object],
+        model: str | None = None,
+        **kwargs: dict[str, object]) -> dict[str, object]:
         """Execute structured output completion with validation.
 
         Args:
@@ -184,9 +183,9 @@ class OpenAIClient:
 
     def stream_completion(
         self,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         callback: callable = None,
-        **kwargs: Dict[str, object]) -> List[str]:
+        **kwargs: dict[str, object]) -> list[str]:
         """Stream chat completion with optional callback.
 
         Args:
@@ -212,9 +211,9 @@ class OpenAIClient:
 
     def batch_completion(
         self,
-        batch_requests: List[Dict[str, object]],
+        batch_requests: list[dict[str, object]],
         concurrent_limit: int = 5
-    ) -> List[Dict[str, object]]:
+    ) -> list[dict[str, object]]:
         """Execute multiple completions with controlled concurrency.
 
         Args:
@@ -254,7 +253,7 @@ class OpenAIClient:
             cost = (usage.prompt_tokens * 0.0025 + usage.completion_tokens * 0.01) / 1000
             self.usage_stats["total_cost"] += cost
 
-    def _validate_schema(self, data: object, schema: Dict[str, object]): # Changed Any to object for consistency
+    def _validate_schema(self, data: object, schema: dict[str, object]): # Changed Any to object for consistency
         """Basic schema validation for structured output."""
         schema_type = schema.get("type")
 
@@ -294,7 +293,7 @@ class OpenAIClient:
         else:
             return APIError(f"Unexpected error: {error}")
 
-    def get_usage_stats(self) -> Dict[str, object]:
+    def get_usage_stats(self) -> dict[str, object]:
         """Get current usage statistics."""
         return self.usage_stats.copy()
 
@@ -309,9 +308,9 @@ class OpenAIClient:
 
 # builder function for easy instantiation
 def create_openai_client(
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     model: str = "gpt-4o-2024-08-06",
-    **kwargs: Dict[str, object]) -> OpenAIClient:
+    **kwargs: dict[str, object]) -> OpenAIClient:
     """Create configured OpenAI client.
 
     Args:
@@ -356,5 +355,5 @@ if __name__ == "__main__":
 
         # Usage stats
 
-    except Exception as e:
+    except Exception:
         pass # Added pass to complete the try-except block

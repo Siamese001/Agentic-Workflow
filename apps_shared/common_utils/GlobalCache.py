@@ -6,13 +6,10 @@ everywhere through semantic similarity matching.
 """
 
 import hashlib
-import json
 import logging
 import time
 from collections import OrderedDict
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 from pydantic import BaseModel, Field
@@ -24,7 +21,7 @@ class CacheEntry(BaseModel):
     """Cache entry with metadata."""
     key_hash: str
     value: Any
-    embedding: List[float] = Field(default_factory=list)
+    embedding: list[float] = Field(default_factory=list)
     created_at: float = Field(default_factory=time.time)
     ttl: int = Field(default=3600)  # TTL in seconds
     source_engine: str = Field(default="UNKNOWN")
@@ -61,7 +58,7 @@ class L1MemoryCache:
 
         logger.debug(f"Initialized L1 cache with max_size={max_size}")
 
-    def get(self, key_hash: str) -> Optional[CacheEntry]:
+    def get(self, key_hash: str) -> CacheEntry | None:
         """Get entry from cache.
 
         Args:
@@ -114,7 +111,7 @@ class L1MemoryCache:
         self._hits = 0
         self._misses = 0
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics.
 
         Returns:
@@ -142,7 +139,7 @@ class L2VectorStore:
             max_size: Maximum number of entries
         """
         self.max_size = max_size
-        self.entries: List[CacheEntry] = []
+        self.entries: list[CacheEntry] = []
         self.embeddings: np.ndarray = np.array([]).reshape(0, 0)
         self._hits = 0
         self._misses = 0
@@ -184,10 +181,10 @@ class L2VectorStore:
 
     def search(
         self,
-        query_embedding: List[float],
+        query_embedding: list[float],
         threshold: float = 0.92,
         max_results: int = 5
-    ) -> List[Tuple[CacheEntry, float]]:
+    ) -> list[tuple[CacheEntry, float]]:
         """Search for semantically similar entries.
 
         Args:
@@ -237,7 +234,7 @@ class L2VectorStore:
         self._hits = 0
         self._misses = 0
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get store statistics.
 
         Returns:
@@ -282,7 +279,7 @@ class SimpleEmbedder:
                 logger.warning("sentence_transformers not available, using dummy embeddings")
                 self._model = "dummy"
 
-    def embed(self, text: str) -> List[float]:
+    def embed(self, text: str) -> list[float]:
         """Generate embedding for text.
 
         Args:
@@ -346,7 +343,7 @@ class GlobalCache:
 
         logger.info(f"Initialized GlobalCache (L1: {l1_size}, L2: {l2_size}, threshold: {semantic_threshold})")
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get value by exact key.
 
         Args:
@@ -382,9 +379,9 @@ class GlobalCache:
     def get_semantic(
         self,
         query_text: str,
-        threshold: Optional[float] = None,
+        threshold: float | None = None,
         max_results: int = 1
-    ) -> List[Any]:
+    ) -> list[Any]:
         """Get values by semantic similarity.
 
         Args:
@@ -424,7 +421,7 @@ class GlobalCache:
         self,
         key: str,
         value: Any,
-        text_for_embedding: Optional[str] = None,
+        text_for_embedding: str | None = None,
         ttl: int = 3600,
         source_engine: str = "UNKNOWN"
     ) -> None:
@@ -512,7 +509,7 @@ class GlobalCache:
 
         return cleaned
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics.
 
         Returns:
@@ -534,7 +531,7 @@ class GlobalCache:
 
 
 # Global cache instance
-_global_cache: Optional[GlobalCache] = None
+_global_cache: GlobalCache | None = None
 
 
 def get_global_cache() -> GlobalCache:
@@ -551,7 +548,7 @@ def get_global_cache() -> GlobalCache:
 
 # Decorator for caching function results
 def cached(
-    key_func: Optional[callable] = None,
+    key_func: callable | None = None,
     ttl: int = 3600,
     semantic: bool = False,
     threshold: float = 0.92
@@ -611,7 +608,7 @@ def cached(
 
 
 # Convenience functions
-def cache_get(key: str) -> Optional[Any]:
+def cache_get(key: str) -> Any | None:
     """Get value from global cache.
 
     Args:
@@ -627,7 +624,7 @@ def cache_get(key: str) -> Optional[Any]:
 def cache_put(
     key: str,
     value: Any,
-    text_for_embedding: Optional[str] = None,
+    text_for_embedding: str | None = None,
     ttl: int = 3600,
     source_engine: str = "UNKNOWN"
 ) -> None:
@@ -646,9 +643,9 @@ def cache_put(
 
 def cache_search_semantic(
     query_text: str,
-    threshold: Optional[float] = None,
+    threshold: float | None = None,
     max_results: int = 1
-) -> List[Any]:
+) -> list[Any]:
     """Search cache semantically.
 
     Args:

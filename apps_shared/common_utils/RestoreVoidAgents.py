@@ -26,14 +26,13 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 VOID_DIR = PROJECT_ROOT / "archives" / "void_violations"
 AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
 
 # Agents to restore with their target locations
-RESTORE_MAP: Dict[str, str] = {
+RESTORE_MAP: dict[str, str] = {
     # DAG/Workflow agents -> L3
     "DagEngineAgent.py": "L3_orchestration/workflow_engines/",
     "DagExecutorAgent.py": "L3_orchestration/workflow_engines/",
@@ -79,7 +78,7 @@ SKIP_AGENTS = {
 }
 
 
-def restore_agent(filename: str, target_dir: str, dry_run: bool = False) -> Tuple[bool, str]:
+def restore_agent(filename: str, target_dir: str, dry_run: bool = False) -> tuple[bool, str]:
     """
     Restore a single agent from void_violations.
 
@@ -145,7 +144,7 @@ def main():
     print(f"  Skipped:  {skipped}")
     print(f"  Errors:   {errors}")
 
-    print(f"\nAgents NOT restored (have active replacements):")
+    print("\nAgents NOT restored (have active replacements):")
     for agent in sorted(SKIP_AGENTS):
         print(f"  - {agent}")
 

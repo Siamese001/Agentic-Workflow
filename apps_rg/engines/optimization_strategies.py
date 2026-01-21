@@ -6,9 +6,9 @@ to reduce reasoning latency and improve quality.
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+
 from dataclasses import dataclass
-import statistics
+from typing import Any
 
 
 @dataclass
@@ -41,7 +41,7 @@ class EarlyStoppingStrategy:
 
     def should_stop_early(
         self,
-        steps: List[Dict[str, Any]],
+        steps: list[dict[str, Any]],
         current_confidence: float,
         current_step: int
     ) -> tuple:
@@ -82,7 +82,7 @@ class EarlyStoppingStrategy:
         """
         return confidence < self.min_confidence_for_pruning
 
-    def _detect_convergence(self, recent_steps: List[Dict[str, Any]]) -> bool:
+    def _detect_convergence(self, recent_steps: list[dict[str, Any]]) -> bool:
         """
         Detect if reasoning has converged (repeating patterns).
 
@@ -102,7 +102,7 @@ class EarlyStoppingStrategy:
         # If all recent thoughts are identical, converged
         return unique_thoughts == 1
 
-    def estimate_convergence_score(self, steps: List[Dict[str, Any]]) -> float:
+    def estimate_convergence_score(self, steps: list[dict[str, Any]]) -> float:
         """
         Estimate convergence score (0.0 to 1.0).
 
@@ -137,7 +137,7 @@ class ConfidenceEstimator:
             "is_actionable": 0.2
         }
 
-    def estimate_step_confidence(self, step: Dict[str, Any]) -> float:
+    def estimate_step_confidence(self, step: dict[str, Any]) -> float:
         """
         Estimate confidence in a reasoning step.
 
@@ -167,7 +167,7 @@ class ConfidenceEstimator:
 
         return min(1.0, max(0.0, score))
 
-    def estimate_chain_confidence(self, steps: List[Dict[str, Any]]) -> float:
+    def estimate_chain_confidence(self, steps: list[dict[str, Any]]) -> float:
         """
         Estimate overall confidence in reasoning chain.
 
@@ -193,7 +193,7 @@ class ConfidenceEstimator:
 
         return weighted_sum / weight_sum
 
-    def _is_coherent(self, step: Dict[str, Any]) -> bool:
+    def _is_coherent(self, step: dict[str, Any]) -> bool:
         """Check if step is coherent."""
         thought = str(step.get('thought', ''))
 
@@ -231,7 +231,7 @@ class PathPruningStrategy:
 
         return False
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get pruning statistics."""
         return {
             "total_paths": self.total_paths,
@@ -252,8 +252,8 @@ class OptimizedReasoningEngine:
     def reason_with_optimization(
         self,
         problem: str,
-        context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Execute reasoning with optimization strategies.
 
@@ -314,7 +314,7 @@ class OptimizedReasoningEngine:
             }
         }
 
-    def _generate_step(self, current: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_step(self, current: str, context: dict[str, Any]) -> dict[str, Any]:
         """
         Generate a single reasoning step.
 

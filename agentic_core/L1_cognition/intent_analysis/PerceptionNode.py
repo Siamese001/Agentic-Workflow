@@ -6,9 +6,9 @@ and memory retrieval. Isolated from reasoning and action logic.
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
-import hashlib
+
 import asyncio
+from typing import Any
 
 
 class PerceptionNode:
@@ -25,9 +25,9 @@ class PerceptionNode:
     def __init__(self):
         """Initialize perception node."""
         self.inputs_processed = 0
-        self.cache: Dict[str, Dict[str, Any]] = {}
+        self.cache: dict[str, dict[str, Any]] = {}
 
-    def process(self, raw_input: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    def process(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """
         Process raw input into perceived state.
 
@@ -59,7 +59,7 @@ class PerceptionNode:
 
         return perceived
 
-    async def process_async(self, raw_input: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_async(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """
         Asynchronous input processing.
 
@@ -87,7 +87,7 @@ class PerceptionNode:
 
         return perceived
 
-    def _parse_query(self, raw_input: Dict[str, Any]) -> str:
+    def _parse_query(self, raw_input: dict[str, Any]) -> str:
         """
         Parse raw input into query string.
 
@@ -101,7 +101,7 @@ class PerceptionNode:
             return raw_input.get("user_query", raw_input.get("text", ""))
         return str(raw_input)
 
-    def _classify_intent(self, query: str, raw_input: Dict[str, Any]) -> str:
+    def _classify_intent(self, query: str, raw_input: dict[str, Any]) -> str:
         """
         Classify user intent from query.
 
@@ -124,7 +124,7 @@ class PerceptionNode:
         else:
             return "general"
 
-    def _retrieve_relevant_memory(self, query: str, context: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _retrieve_relevant_memory(self, query: str, context: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Retrieve relevant memory for query.
 
@@ -167,7 +167,7 @@ class PerceptionNode:
 
         return min(1.0, confidence)
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get perception statistics."""
         return {
             "inputs_processed": self.inputs_processed,

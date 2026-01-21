@@ -1,16 +1,17 @@
 from __future__ import annotations
+
 import gc
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import json
 import logging
-import re
-import time
 import tracemalloc
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 memory_threshold_mb: Any = 100
 snapshot_interval: Any = 60
@@ -45,11 +46,12 @@ class MemorySnapshot:
         """Convert bytes to megabytes."""
         return size_bytes / (1024 * 1024)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
         return {'label': self.label, 'timestamp': self.timestamp.isoformat(), 'total_allocated_mb': self.get_size_mb(self.total_allocated), 'total_peaked_mb': self.get_size_mb(self.total_peaked), 'current_allocated_mb': self.get_size_mb(self.current_allocated), 'current_peaked_mb': self.get_size_mb(self.current_peaked), 'top_allocations': [{'file': str(stat.traceback[0].filename), 'line': stat.traceback[0].lineno, 'size_mb': self.get_size_mb(stat.size), 'count': stat.count} for stat in self.top_allocations[:5]]}
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 class MemoryLeakDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
@@ -65,9 +67,9 @@ class MemoryLeakDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMix
     def __init__(self) -> None:
         """Initialize the MemoryLeakDetectorAgent."""
         self.enabled = True
-        self.snapshots: List[MemorySnapshot] = []
-        self.cycle_snapshots: Dict[str, List[MemorySnapshot]] = {}
-        self.current_cycle: Optional[str] = None
+        self.snapshots: list[MemorySnapshot] = []
+        self.cycle_snapshots: dict[str, list[MemorySnapshot]] = {}
+        self.current_cycle: str | None = None
         if not tracemalloc.is_tracing():
             try:
                 tracemalloc.start(25)
@@ -161,7 +163,7 @@ class MemoryLeakDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMix
         alert_file.parent.mkdir(parents=True, exist_ok=True)
         try:
             if alert_file.exists():
-                with open(alert_file, 'r') as f:
+                with open(alert_file) as f:
                     alerts = json.load(f)
             else:
                 alerts = []
@@ -173,14 +175,14 @@ class MemoryLeakDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMix
         except Exception as e:
             LOGGER.error(f'Failed to save memory leak alert: {e}')
 
-    def get_current_usage(self) -> Dict:
+    def get_current_usage(self) -> dict:
         """Get current memory usage."""
         if not self.enabled or not self.snapshots:
             return {'enabled': False}
         latest: Any = self.snapshots[-1]
         return {'enabled': True, 'allocated_mb': latest.get_size_mb(latest.current_allocated), 'peaked_mb': latest.get_size_mb(latest.current_peaked), 'timestamp': latest.timestamp.isoformat()}
 
-    def get_cycle_summary(self, cycle_id: str) -> Dict:
+    def get_cycle_summary(self, cycle_id: str) -> dict:
         """Get memory summary for a cycle."""
         if cycle_id not in self.cycle_snapshots:
             return {'error': 'Cycle not found'}
@@ -204,7 +206,7 @@ class MemoryLeakDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMix
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
-_memory_detector: Optional[MemoryLeakDetectorAgent] = None
+_memory_detector: MemoryLeakDetectorAgent | None = None
 
 def get_memory_detector() -> MemoryLeakDetectorAgent:
     """Get or create the global MemoryLeakDetectorAgent instance."""

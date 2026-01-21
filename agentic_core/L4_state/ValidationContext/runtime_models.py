@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Shared models and enums for the Agentic Workflow runtime.
 
 This file contains all shared data structures that are used across multiple
@@ -9,7 +10,8 @@ runtime.* modules - only from pydantic, enum, and typing.
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Union, Type
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 Logger = logging.getLogger(__name__)
@@ -43,7 +45,7 @@ class RetryPolicy(BaseModel):
     max_retries: int = Field(default=3, ge=0, le=10)
     retry_delay: float = Field(default=1.0, ge=0.0)
     exponential_backoff: bool = Field(default=True)
-    retryable_stages: List[MicroStage] = Field(
+    retryable_stages: list[MicroStage] = Field(
         default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
     )
 
@@ -54,16 +56,16 @@ class MicroCheckpoint(BaseModel):
     stage: MicroStage
     timestamp: float
     state: HopState
-    data: Dict[str, Any] = Field(default_factory=dict)
-    error: Optional[str] = None
+    data: dict[str, Any] = Field(default_factory=dict)
+    error: str | None = None
 
 
 class StageTransition(BaseModel):
     """Record of a stage transition."""
-    from_stage: Optional[MicroStage] = None
+    from_stage: MicroStage | None = None
     to_stage: MicroStage
     timestamp: float
-    reason: Optional[str] = None
+    reason: str | None = None
 
 
 # ============================================================================
@@ -127,9 +129,9 @@ class InjectionType(Enum):
 
 class InjectionScope(BaseModel):
     """Scope where injection should be applied."""
-    hop_types: List[str] = Field(default_factory=list)
-    stages: List[str] = Field(default_factory=list)
-    contexts: Dict[str, Any] = Field(default_factory=dict)
+    hop_types: list[str] = Field(default_factory=list)
+    stages: list[str] = Field(default_factory=list)
+    contexts: dict[str, Any] = Field(default_factory=dict)
 
 
 class InjectionPattern(BaseModel):
@@ -139,7 +141,7 @@ class InjectionPattern(BaseModel):
     type: InjectionType
     description: str
     template: str
-    variables: List[str] = Field(default_factory=list)
+    variables: list[str] = Field(default_factory=list)
     scope: InjectionScope = Field(default_factory=InjectionScope)
     priority: int = Field(default=0, ge=0, le=10)
     enabled: bool = True
@@ -152,7 +154,7 @@ class InjectionMatch(BaseModel):
     """Result of matching injections to context."""
     injection: InjectionPattern
     relevance_score: float = Field(ge=0.0, le=1.0)
-    variable_values: Dict[str, Any] = Field(default_factory=dict)
+    variable_values: dict[str, Any] = Field(default_factory=dict)
 
 
 class InjectionConfig(BaseModel):
@@ -172,24 +174,24 @@ class ValidationResult(BaseModel):
     """Result of a validation operation."""
     is_valid: bool
     confidence: float = Field(ge=0.0, le=1.0)
-    errors: List[str] = Field(default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    errors: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ExecutionResult(BaseModel):
     """Result of an execution operation."""
     success: bool
-    output: Optional[Any] = None
-    error: Optional[str] = None
-    metrics: Dict[str, Any] = Field(default_factory=dict)
-    duration_ms: Optional[float] = None
+    output: Any | None = None
+    error: str | None = None
+    metrics: dict[str, Any] = Field(default_factory=dict)
+    duration_ms: float | None = None
 
 
 # Type Aliases
 # Common type aliases for better readability
-ContextData = Dict[str, Any]
-StageData = Dict[str, Any]
-InjectionVariables = Dict[str, Any]
-HopTypes = List[str]
-StageList = List[str]
+ContextData = dict[str, Any]
+StageData = dict[str, Any]
+InjectionVariables = dict[str, Any]
+HopTypes = list[str]
+StageList = list[str]

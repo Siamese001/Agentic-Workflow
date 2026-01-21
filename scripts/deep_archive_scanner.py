@@ -14,14 +14,11 @@ Performs comprehensive analysis of ALL files in archives/ folder using:
 """
 
 import ast
+import hashlib
 import os
-import re
-import json
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional, Any
 from collections import defaultdict
 from dataclasses import dataclass, field
-import hashlib
+from pathlib import Path
 
 # ============================================================================
 # CONFIGURATION
@@ -49,9 +46,9 @@ class CodeEntity:
     name: str
     entity_type: str  # 'agent', 'class', 'model', 'mixin', 'function'
     file_path: str
-    bases: List[str] = field(default_factory=list)
-    methods: List[str] = field(default_factory=list)
-    params: List[str] = field(default_factory=list)
+    bases: list[str] = field(default_factory=list)
+    methods: list[str] = field(default_factory=list)
+    params: list[str] = field(default_factory=list)
     docstring: str = ""
     line_start: int = 0
     line_end: int = 0
@@ -62,16 +59,16 @@ class FileAnalysis:
     path: str
     relative_path: str
     archive_folder: str
-    entities: List[CodeEntity] = field(default_factory=list)
-    imports: Set[str] = field(default_factory=set)
+    entities: list[CodeEntity] = field(default_factory=list)
+    imports: set[str] = field(default_factory=set)
     loc: int = 0
     has_syntax_error: bool = False
     syntax_error_msg: str = ""
     domain: str = "unknown"
     quality_score: float = 0.0
     uniqueness_score: float = 0.0
-    unique_entities: List[str] = field(default_factory=list)
-    existing_entities: List[str] = field(default_factory=list)
+    unique_entities: list[str] = field(default_factory=list)
+    existing_entities: list[str] = field(default_factory=list)
     recommendation: str = ""  # 'restore', 'extract', 'review', 'skip'
     target_folder: str = ""
 
@@ -83,13 +80,13 @@ class CodebaseIndex:
     """Index of all entities in current codebase."""
 
     def __init__(self):
-        self.classes: Set[str] = set()
-        self.functions: Set[str] = set()
-        self.agents: Set[str] = set()
-        self.methods: Set[str] = set()
-        self.file_hashes: Dict[str, str] = {}
+        self.classes: set[str] = set()
+        self.functions: set[str] = set()
+        self.agents: set[str] = set()
+        self.methods: set[str] = set()
+        self.file_hashes: dict[str, str] = {}
 
-    def build(self, dirs: List[str]):
+    def build(self, dirs: list[str]):
         """Build index from directories."""
         for dir_path in dirs:
             if not Path(dir_path).exists():
@@ -117,9 +114,9 @@ class CodebaseIndex:
                         self.agents.add(node.name.lower())
                     # Index methods
                     for item in node.body:
-                        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                             self.methods.add(item.name.lower())
-                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                     self.functions.add(node.name.lower())
         except:
             pass
@@ -147,7 +144,7 @@ def get_docstring(node) -> str:
     except:
         return ""
 
-def classify_entity(name: str, bases: List[str]) -> str:
+def classify_entity(name: str, bases: list[str]) -> str:
     """Classify entity type based on name and inheritance."""
     if name.endswith('Agent') or any('Agent' in b for b in bases):
         return 'agent'
@@ -159,7 +156,7 @@ def classify_entity(name: str, bases: List[str]) -> str:
         return 'class'
     return 'function'
 
-def infer_domain(content: str, entities: List[CodeEntity]) -> str:
+def infer_domain(content: str, entities: list[CodeEntity]) -> str:
     """Infer domain from content and entities."""
     content_lower = content.lower()
 
@@ -187,11 +184,11 @@ def infer_domain(content: str, entities: List[CodeEntity]) -> str:
         return 'infrastructure'
     return 'shared'
 
-def analyze_file(file_path: Path, archive_folder: str, index: CodebaseIndex) -> Optional[FileAnalysis]:
+def analyze_file(file_path: Path, archive_folder: str, index: CodebaseIndex) -> FileAnalysis | None:
     """Perform deep AST analysis on a file."""
     try:
         content = file_path.read_text(encoding='utf-8', errors='replace')
-    except Exception as e:
+    except Exception:
         return None
 
     # Create analysis object
@@ -231,7 +228,7 @@ def analyze_file(file_path: Path, archive_folder: str, index: CodebaseIndex) -> 
                     bases.append(base.attr)
 
             methods = [item.name for item in node.body
-                      if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                      if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef)]
 
             entity = CodeEntity(
                 name=node.name,
@@ -245,7 +242,7 @@ def analyze_file(file_path: Path, archive_folder: str, index: CodebaseIndex) -> 
             )
             analysis.entities.append(entity)
 
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             if not node.name.startswith('_'):  # Skip private functions
                 params = [arg.arg for arg in node.args.args if arg.arg != 'self']
                 entity = CodeEntity(
@@ -320,7 +317,7 @@ def analyze_file(file_path: Path, archive_folder: str, index: CodebaseIndex) -> 
 # MAIN SCANNER
 # ============================================================================
 
-def scan_archives(index: CodebaseIndex) -> List[FileAnalysis]:
+def scan_archives(index: CodebaseIndex) -> list[FileAnalysis]:
     """Recursively scan all archives."""
     all_analyses = []
 
@@ -351,7 +348,7 @@ def scan_archives(index: CodebaseIndex) -> List[FileAnalysis]:
 
     return all_analyses
 
-def generate_report(analyses: List[FileAnalysis]) -> str:
+def generate_report(analyses: list[FileAnalysis]) -> str:
     """Generate comprehensive findings report."""
     lines = []
 

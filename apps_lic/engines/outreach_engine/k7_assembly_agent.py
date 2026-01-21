@@ -6,9 +6,9 @@ header order enforcement, and final QA block ordering.
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
-from runtime.shared.agent_base import Agent, ReasoningConfig
+from typing import Any
 
+from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +21,8 @@ class K7Output:
     body_block: str
     signature_block: str
     total_chars: int
-    qa_blocks_order: List[str]
-    metadata: Dict[str, Any]
+    qa_blocks_order: list[str]
+    metadata: dict[str, Any]
 
 
 # Signature immutability template (from LinkedInCanonical v2.90)
@@ -63,7 +63,7 @@ class K7_AssemblyAgent(Agent):
 
         logger.info(f"K.7 Assembly Agent initialized: route={route}, archetype={archetype}")
 
-    async def execute(self, context: Dict[str, Any]) -> K7Output:
+    async def execute(self, context: dict[str, Any]) -> K7Output:
         """Execute K.7 final assembly.
 
         Args:
@@ -138,7 +138,7 @@ class K7_AssemblyAgent(Agent):
         self,
         linkedin_url: str,
         message_type: str,
-        subject: Optional[str],
+        subject: str | None,
     ) -> str:
         """Assemble header block in exact order.
 
@@ -218,7 +218,7 @@ class K7_AssemblyAgent(Agent):
 
         return signature
 
-    def _assemble_qa_blocks(self, qa_blocks: Dict[str, str]) -> Dict[str, str]:
+    def _assemble_qa_blocks(self, qa_blocks: dict[str, str]) -> dict[str, str]:
         """Assemble QA blocks in mandatory order.
 
         Mandatory order (from LinkedInCanonical v2.90):
@@ -252,7 +252,7 @@ class K7_AssemblyAgent(Agent):
         header_block: str,
         body_block: str,
         signature_block: str,
-        qa_blocks: Dict[str, str],
+        qa_blocks: dict[str, str],
     ) -> str:
         """Assemble final message with all components.
 

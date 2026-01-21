@@ -21,14 +21,14 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def run_self_tests() -> Dict[str, Any]:
+def run_self_tests() -> dict[str, Any]:
     """Run the CodeStandardsEnforcerAgent's internal self-tests."""
     from agentic_core.L5_safety.validators.CodeStandardsEnforcerAgent import (
         get_code_standards_enforcer,
@@ -38,7 +38,7 @@ def run_self_tests() -> Dict[str, Any]:
     return enforcer._run_self_tests()
 
 
-def test_inheritance_audit() -> Dict[str, Any]:
+def test_inheritance_audit() -> dict[str, Any]:
     """
     Inheritance Audit Test: Verify layer base class inheritance violations.
 
@@ -67,7 +67,7 @@ def test_inheritance_audit() -> Dict[str, Any]:
 
     # Parse and visit the file
     import ast
-    with open(inheritance_file, 'r', encoding='utf-8') as f:
+    with open(inheritance_file, encoding='utf-8') as f:
         tree = ast.parse(f.read())
     enforcer.visit(tree)
 
@@ -86,7 +86,7 @@ def test_inheritance_audit() -> Dict[str, Any]:
     }
 
 
-def test_pattern_violations() -> Dict[str, Any]:
+def test_pattern_violations() -> dict[str, Any]:
     """
     Pattern Violation Test: Verify coding pattern detection.
 
@@ -151,7 +151,7 @@ def test_pattern_violations() -> Dict[str, Any]:
     }
 
 
-def test_type_hint_completeness() -> Dict[str, Any]:
+def test_type_hint_completeness() -> dict[str, Any]:
     """
     Type Hint Completeness Test: Verify missing type hint detection.
 
@@ -203,7 +203,7 @@ def test_type_hint_completeness() -> Dict[str, Any]:
     }
 
 
-def test_combined_report() -> Dict[str, Any]:
+def test_combined_report() -> dict[str, Any]:
     """
     Combined Report Test: Verify all violations appear in a single unified report.
 
@@ -316,7 +316,7 @@ def main():
             elif inheritance_results.get('status') == 'SKIP':
                 print(f"  ⊘ Inheritance audit SKIPPED: {inheritance_results.get('reason')}")
             else:
-                print(f"  ✗ Inheritance audit FAILED")
+                print("  ✗ Inheritance audit FAILED")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Inheritance audit failed: {e}")
@@ -339,7 +339,7 @@ def main():
             elif pattern_results.get('status') == 'SKIP':
                 print(f"  ⊘ Pattern violations SKIPPED: {pattern_results.get('reason')}")
             else:
-                print(f"  ✗ Pattern violations FAILED")
+                print("  ✗ Pattern violations FAILED")
                 print(f"    Expected: {pattern_results.get('expected')}")
                 print(f"    Actual: {pattern_results.get('actual')}")
                 all_passed = False
@@ -362,7 +362,7 @@ def main():
             elif type_results.get('status') == 'SKIP':
                 print(f"  ⊘ Type hint test SKIPPED: {type_results.get('reason')}")
             else:
-                print(f"  ✗ Type hint test FAILED")
+                print("  ✗ Type hint test FAILED")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Type hint test failed: {e}")
@@ -377,14 +377,14 @@ def main():
             results['tests']['combined_report'] = combined_results
 
             if combined_results.get('status') == 'PASS':
-                print(f"  ✓ Combined report PASSED")
+                print("  ✓ Combined report PASSED")
                 summary = combined_results.get('summary', {})
                 print(f"    Files scanned: {summary.get('files_scanned', 0)}")
                 print(f"    Total violations: {summary.get('total_violations', 0)}")
             elif combined_results.get('status') == 'SKIP':
                 print(f"  ⊘ Combined report SKIPPED: {combined_results.get('reason')}")
             else:
-                print(f"  ✗ Combined report FAILED")
+                print("  ✗ Combined report FAILED")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Combined report test failed: {e}")

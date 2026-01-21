@@ -5,8 +5,8 @@ Filters to actual agent files only (excludes tests).
 """
 import json
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 def is_agent_file(path: str) -> bool:

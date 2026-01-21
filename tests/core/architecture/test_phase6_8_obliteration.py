@@ -216,7 +216,7 @@ def test_tc51_total_obliteration_achievement():
     total_count, offenders = scan_for_rglob_usage(agentic_core)
 
     print(f"   Current rglob/glob count: {total_count}")
-    print(f"   Target: < 80")
+    print("   Target: < 80")
 
     # Phase 6 baseline was 251
     phase6_start = 251
@@ -234,11 +234,11 @@ def test_tc51_total_obliteration_achievement():
     print(f"   Phase 6.8 reduction: {phase6_8_reduction} calls ({phase6_8_reduction/phase6_7_start*100:.1f}%)")
 
     # Show refactored categories
-    print(f"\n   Phase 6.8 refactored categories:")
-    print(f"   - Test suite files: 6+ files")
-    print(f"   - L1-L3 Deep Stack: 7 files")
-    print(f"   - Utils/core_extensions: 19 files")
-    print(f"   - Total files refactored: 43+")
+    print("\n   Phase 6.8 refactored categories:")
+    print("   - Test suite files: 6+ files")
+    print("   - L1-L3 Deep Stack: 7 files")
+    print("   - Utils/core_extensions: 19 files")
+    print("   - Total files refactored: 43+")
 
     if phase6_8_reduction >= 25:
         print(f"✅ PASS: Significant obliteration achieved ({phase6_8_reduction} calls, {phase6_8_reduction/phase6_7_start*100:.1f}%)")
@@ -291,9 +291,9 @@ def main():
     if passed_count == total_count:
         print("✅ 100% PASS - All Phase 6.8 Total Obliteration tests passed!")
         print("\nPhase 6.8 Total Obliteration is verified.")
-        print(f"\n🎯 ACHIEVEMENT: rglob count reduced from 131 to 100 (31 calls, 24% reduction)")
-        print(f"📊 FILES REFACTORED: 43+ files across tests, L1-L3, and utils")
-        print(f"🏆 TOTAL PHASE 6 REDUCTION: 151 calls (60% reduction from 251 baseline)!")
+        print("\n🎯 ACHIEVEMENT: rglob count reduced from 131 to 100 (31 calls, 24% reduction)")
+        print("📊 FILES REFACTORED: 43+ files across tests, L1-L3, and utils")
+        print("🏆 TOTAL PHASE 6 REDUCTION: 151 calls (60% reduction from 251 baseline)!")
         return 0
     else:
         print(f"❌ FAIL - {total_count - passed_count} test(s) failed")

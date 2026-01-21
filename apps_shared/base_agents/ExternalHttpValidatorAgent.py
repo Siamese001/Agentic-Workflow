@@ -13,17 +13,20 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
-import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+
 import ast
-from pathlib import Path
-from typing import List, Dict, Any
-from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+from typing import Any
+
+from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
+
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
+MCPHardenedMixin = _mod.MCPHardenedMixin
+from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.validators.decorators import standard_heal
+
 
 class ExternalHttpValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """

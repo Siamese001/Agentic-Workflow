@@ -11,12 +11,11 @@ Tests for the SSOT alignment changes:
 
 All tests must pass 100%.
 """
-import sys
 import json
 import logging
+import sys
 import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -98,7 +97,7 @@ def test_2_test_agent_discovery():
         return True  # Skip, not fail
 
     try:
-        with open(discovery_path, 'r', encoding='utf-8') as f:
+        with open(discovery_path, encoding='utf-8') as f:
             agents = json.load(f)
 
         agent_count = len(agents)
@@ -119,7 +118,7 @@ def test_2_test_agent_discovery():
         test_agents = [n for n in agent_names if 'Test' in n and 'Agent' in n]
 
         if not test_agents:
-            print(f"  INFO: No test agents found in discovery (may be expected)")
+            print("  INFO: No test agents found in discovery (may be expected)")
         else:
             print(f"  Found {len(test_agents)} test agents: {test_agents[:5]}...")
 
@@ -144,8 +143,8 @@ def test_3_roster_deduplication():
 
     try:
         from agentic_core.L0_maintenance.scripts.discovery_roster_builder import (
+            SKIP_AGENTS,
             build_healing_roster,
-            SKIP_AGENTS
         )
 
         # Check SKIP_AGENTS contains the expected entries
@@ -164,7 +163,7 @@ def test_3_roster_deduplication():
             print(f"  FAIL: These Tier 0-1 agents are missing from SKIP_AGENTS: {missing_from_skip}")
             return False
 
-        print(f"  SKIP_AGENTS contains all Tier 0-1 core agents")
+        print("  SKIP_AGENTS contains all Tier 0-1 core agents")
 
         # Build roster and verify exclusions
         # Note: build_healing_roster returns List[(class_name, instance)] tuples
@@ -235,7 +234,7 @@ def test_4_fixture_exclusion():
                 print(f"    - {f}")
             return False
 
-        print(f"  PASS: Fixture exclusion working correctly")
+        print("  PASS: Fixture exclusion working correctly")
         return True
 
     except Exception as e:
@@ -268,20 +267,20 @@ def test_5_stability_gate_status():
             content = temp_path.read_text()
             try:
                 ast.parse(content)
-                print(f"  FAIL: Expected syntax error but file parsed successfully")
+                print("  FAIL: Expected syntax error but file parsed successfully")
                 return False
             except SyntaxError:
-                print(f"  Confirmed: Temp file has syntax error (as expected)")
+                print("  Confirmed: Temp file has syntax error (as expected)")
 
             # Test that our AST utils handle this gracefully
             from agentic_core.utils.ast_utils import safe_parse_file
 
             result = safe_parse_file(temp_path)
             if result is not None:
-                print(f"  FAIL: safe_parse_file should return None for syntax errors")
+                print("  FAIL: safe_parse_file should return None for syntax errors")
                 return False
 
-            print(f"  PASS: Syntax errors are detected and handled correctly")
+            print("  PASS: Syntax errors are detected and handled correctly")
             return True
 
         finally:

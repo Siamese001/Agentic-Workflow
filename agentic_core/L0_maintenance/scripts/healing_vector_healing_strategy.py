@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 """
 Sovereign Vector Healing Strategy – Phase 17B (Dec 27, 2025)
 Detects and autonomously corrects Pinecone vector state drift.
 L4 state self-healing using official Pinecone MCP.
 """
-import logging
 import hashlib
+import logging
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import Any
+
 # from agentic_core.L4_state.semantic_memory.pinecone  # Refactored to dynamic import to avoid upward dependency
 
 def _get_pinecone_client():
@@ -17,14 +19,10 @@ def _get_pinecone_client():
     return module
 
 # from _mcp_client import get_pinecone_mcp_client  # Commented out - appears to be incomplete/broken import
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -48,7 +46,7 @@ class VectorHealingStrategy:
         self.processed_today = 0
         Logger.info('[L0 VECTOR HEALING] Strategy initialized')
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
         """
         Diagnose vector drift from auditor issues or proactive scan.
 
@@ -65,12 +63,12 @@ class VectorHealingStrategy:
         for issue in issues:
             desc: Any = issue.get('description', '').lower()
             message: Any = issue.get('message', '').lower()
-            if any((keyword in desc or keyword in message for keyword in ['vector', 'embedding', 'pinecone'])):
+            if any(keyword in desc or keyword in message for keyword in ['vector', 'embedding', 'pinecone']):
                 fixes.append({'action': 're_embed_file', 'file': issue.get('file'), 'reason': 'Vector drift detected (L4 state inconsistency)', 'priority': self.priority, 'strategy': self.name})
         Logger.info(f'[L0 VECTOR HEALING] Diagnosed {len(fixes)} vector drift issues')
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any=None) -> bool:
+    async def apply(self, fix: dict, ctx: Any=None) -> bool:
         """
         Apply vector healing fix using Sovereign Clients.
 
@@ -117,7 +115,7 @@ class VectorHealingStrategy:
             Logger.error(f"[L0 VECTOR HEALING] Vector healing failed for {fix.get('file', 'unknown')}: {e}")
             return False
 
-    async def _get_embedding(self, content: str) -> List[float]:
+    async def _get_embedding(self, content: str) -> list[float]:
         """
         Generate embedding using Pinecone Inference MCP.
 

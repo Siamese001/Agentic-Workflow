@@ -5,9 +5,10 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Stub for canon validator engine."""
-from typing import Dict, Any, List
 from enum import Enum
+
 
 # NAMING FIXED: PhaseStatus → PhaseStatus
 class PhaseStatus(Enum):
@@ -60,7 +61,7 @@ class CanonValidatorEngineZlm:
         self.config = kwargs
         self.violations = []
 
-    def validate(self, data: Dict) -> bool:
+    def validate(self, data: dict) -> bool:
 
         return True
 

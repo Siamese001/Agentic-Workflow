@@ -12,34 +12,18 @@ Detects both direct methods and inherited capabilities from base classes.
 """
 import ast
 import json
-import os
-import sys
-from pathlib import Path
-from agentic_core.utils.security import safe_execute
-from typing import Dict, List, Set, Tuple
 from collections import defaultdict
+from pathlib import Path
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
 from agentic_core.L5_safety.validators.canonical_truth import get_canonical_layer
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.security import safe_execute
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
@@ -80,7 +64,7 @@ HEALING_BASES = {
 # All layer inference now uses get_canonical_layer() from canonical_truth.py
 
 
-def extract_bases(class_node: ast.ClassDef) -> Set[str]:
+def extract_bases(class_node: ast.ClassDef) -> set[str]:
     """Extract base class names from class definition."""
     bases = set()
     for base in class_node.bases:
@@ -94,13 +78,13 @@ def extract_bases(class_node: ast.ClassDef) -> Set[str]:
 def has_method(class_node: ast.ClassDef, method_name: str) -> bool:
     """Check if class has a specific method."""
     for item in class_node.body:
-        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
             if item.name == method_name:
                 return True
     return False
 
 
-def analyze_agent(class_node: ast.ClassDef, file_path: Path) -> Dict:
+def analyze_agent(class_node: ast.ClassDef, file_path: Path) -> dict:
     """Analyze a single agent class for testing compliance."""
     bases = extract_bases(class_node)
     layer = get_canonical_layer(file_path)
@@ -149,13 +133,13 @@ def regenerate_discovery_json():
     safe_execute(['python', str(DISCOVERY_SCRIPT)], cwd=str(PROJECT_ROOT), check=False)
 
 
-def load_from_canonical_json() -> List[Dict]:
+def load_from_canonical_json() -> list[dict]:
     """Load agents from canonical JSON, regenerating if needed."""
     # Force fresh regeneration if JSON doesn't exist or is older than 1 hour
     if not DISCOVERY_JSON.exists():
         regenerate_discovery_json()
 
-    with open(DISCOVERY_JSON, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_JSON, encoding='utf-8') as f:
         return json.load(f)
 
 
@@ -167,7 +151,7 @@ def main():
     print()
 
     # Load from canonical JSON
-    canonical_agents = load_from_canonical_json()
+    load_from_canonical_json()
 
     # Convert to our format
     agents = []

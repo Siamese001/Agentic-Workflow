@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import List, Optional, Union
 
 
 def normalize_location_path(path: str) -> str:
@@ -24,7 +23,7 @@ def normalize_location_path(path: str) -> str:
     return os.path.normpath(path).replace('\\', '/')
 
 
-def get_agent_files(root_dir: str) -> List[str]:
+def get_agent_files(root_dir: str) -> list[str]:
     """
     Discovers all .py files within the agentic_core structure.
 
@@ -42,7 +41,7 @@ def get_agent_files(root_dir: str) -> List[str]:
     return agent_files
 
 
-def compute_module_path(file_path: Path, project_root: Optional[Path] = None) -> str:
+def compute_module_path(file_path: Path, project_root: Path | None = None) -> str:
     """
     Compute Python module path from file path.
 
@@ -67,10 +66,10 @@ def compute_module_path(file_path: Path, project_root: Optional[Path] = None) ->
 
 
 def is_path_compliant(
-    file_path: Union[str, Path],
-    project_root: Optional[Path] = None
+    file_path: str | Path,
+    project_root: Path | None = None
 ) -> bool:
-    """
+    r"""
     L5 Sovereign Structural SSOT - Hard-enforcement of path validity.
 
     This is the Supreme Court for structural compliance. All L3 and L2 agents
@@ -100,9 +99,9 @@ def is_path_compliant(
         False
     """
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        ROOT_WHITELIST,
-        FORBIDDEN_ROOT_FOLDERS,
         FORBIDDEN_FOLDER_PATTERN,
+        FORBIDDEN_ROOT_FOLDERS,
+        ROOT_WHITELIST,
         SOVEREIGN_REGISTRY,
         get_validated_project_root,
     )
@@ -153,7 +152,9 @@ def is_path_compliant(
         actual_depth = len(parts) - 1
         if actual_depth != expected_depth:
             # Allow variable depth for certain subfolders
-            from agentic_core.L5_safety.validators.structure_blueprint import VARIABLE_DEPTH_SUBFOLDERS
+            from agentic_core.L5_safety.validators.structure_blueprint import (
+                VARIABLE_DEPTH_SUBFOLDERS,
+            )
             if root_folder == "agentic_core" and len(parts) > 1:
                 subfolder = parts[1]
                 if subfolder in VARIABLE_DEPTH_SUBFOLDERS and actual_depth >= 2:
@@ -163,7 +164,7 @@ def is_path_compliant(
     return True
 
 
-def is_excepted_from_key(key_id: int, file_path: Union[str, Path], line_content: str = '') -> bool:
+def is_excepted_from_key(key_id: int, file_path: str | Path, line_content: str = '') -> bool:
     """
     Check if file/line is excepted from key validation.
 
@@ -176,7 +177,6 @@ def is_excepted_from_key(key_id: int, file_path: Union[str, Path], line_content:
         True if excepted, False otherwise
     """
     import fnmatch
-    import re
 
     # Convert to string for pattern matching
     file_str = str(file_path)

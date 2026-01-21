@@ -18,13 +18,12 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / "archives" / "legacy_agents"
 
 # Phase 3 legacy agents to archive
-LEGACY_MANAGERS: List[str] = [
+LEGACY_MANAGERS: list[str] = [
     # Resource Managers -> UnifiedResourceManagerAgent
     "BudgetManagerAgent.py",
     "ProactiveResourceManagerAgent.py",
@@ -42,7 +41,7 @@ LEGACY_MANAGERS: List[str] = [
     "ValidationContextManagerAgent.py",
 ]
 
-LEGACY_ENFORCERS: List[str] = [
+LEGACY_ENFORCERS: list[str] = [
     # Code Enforcers -> UnifiedCodeEnforcerAgent
     "CodeSSOTEnforcerAgent.py",
     "CodeStandardsEnforcerAgent.py",
@@ -80,7 +79,7 @@ def find_agent(filename: str) -> Path | None:
     return None
 
 
-def archive_file(source: Path, category: str, dry_run: bool = False) -> Tuple[bool, str]:
+def archive_file(source: Path, category: str, dry_run: bool = False) -> tuple[bool, str]:
     """Archive a single file to category subfolder."""
     target_dir = ARCHIVE_DIR / category
     target = target_dir / source.name

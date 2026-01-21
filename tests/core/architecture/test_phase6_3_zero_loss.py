@@ -35,7 +35,7 @@ def test_tc32_structural_healer_key_compliance():
     structural_healer = PROJECT_ROOT / "agentic_core" / "L5_safety" / "gravity" / "StructuralHealerAgent.py"
 
     if not structural_healer.exists():
-        print(f"⚠️  WARNING: StructuralHealerAgent.py not found")
+        print("⚠️  WARNING: StructuralHealerAgent.py not found")
         return True
 
     try:
@@ -57,11 +57,11 @@ def test_tc32_structural_healer_key_compliance():
         print(f"   Standardized return dict: {'✓' if has_standardized_return else '✗'}")
 
         if not has_violations_found:
-            print(f"❌ FAIL: StructuralHealerAgent missing 'violations_found'")
+            print("❌ FAIL: StructuralHealerAgent missing 'violations_found'")
             return False
 
         if not has_violations_fixed:
-            print(f"❌ FAIL: StructuralHealerAgent missing 'violations_fixed'")
+            print("❌ FAIL: StructuralHealerAgent missing 'violations_fixed'")
             return False
 
         print("✅ PASS: StructuralHealerAgent uses standardized keys")
@@ -90,7 +90,7 @@ def test_tc33_rglob_count_reduction():
     total_count, offenders = scan_for_rglob_usage(agentic_core)
 
     print(f"   Current rglob/glob count: {total_count}")
-    print(f"   Target: < 200")
+    print("   Target: < 200")
 
     # Phase 6 baseline was 250
     baseline = 250
@@ -105,7 +105,7 @@ def test_tc33_rglob_count_reduction():
 
     # Show top offenders
     if offenders:
-        print(f"   Top 5 remaining offenders:")
+        print("   Top 5 remaining offenders:")
         for offender in offenders[:5]:
             print(f"      - {offender['file']}: {offender['count']} calls")
 
@@ -129,11 +129,10 @@ def test_tc34_discovery_integrity():
     print("="*60)
 
     from agentic_core.utils.ssot_discovery import (
-        get_python_files,
-        get_data_files,
+        get_agent_files,
         get_json_files,
         get_markdown_files,
-        get_agent_files
+        get_python_files,
     )
 
     # Test Python file discovery
@@ -185,7 +184,7 @@ def test_tc34_discovery_integrity():
             print(f"      - {lf}")
         return False
 
-    print(f"   No backup files in results ✓")
+    print("   No backup files in results ✓")
     print("✅ PASS: All discovery functions work correctly")
     return True
 
@@ -283,7 +282,7 @@ def main():
     if core_passed == 3:
         print("✅ 100% PASS - All Phase 6.3 Zero-Loss tests passed!")
         print("\nPhase 6.3 Aggressive rglob Reduction is verified.")
-        print(f"\n🎯 ACHIEVEMENT: rglob count reduced from 250 to 227 (23 calls, 9.2% reduction)")
+        print("\n🎯 ACHIEVEMENT: rglob count reduced from 250 to 227 (23 calls, 9.2% reduction)")
         return 0
     else:
         print(f"❌ FAIL - {3 - core_passed} core test(s) failed")

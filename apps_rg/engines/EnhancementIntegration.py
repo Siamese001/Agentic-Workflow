@@ -6,13 +6,13 @@ resume generation capabilities.
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
-from .persona_router import PersonaRouter, ReaderPersona, get_persona_router
-from .evidence_injector import EvidenceInjector, get_evidence_injector
-from ..strategy.competitor_recon import ReconAgent, ReconSignal, get_recon_agent
-from ..shared.infrastructure_integration import InfrastructureOrchestrator, TaskType
 from ..shared.core.event_bus import EventType, SystemEvent
+from ..shared.infrastructure_integration import InfrastructureOrchestrator, TaskType
+from ..strategy.competitor_recon import ReconAgent, ReconSignal, get_recon_agent
+from .evidence_injector import EvidenceInjector, get_evidence_injector
+from .persona_router import PersonaRouter, ReaderPersona, get_persona_router
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +22,10 @@ class ResumeEnhancementOrchestrator:
 
     def __init__(self):
         """Initialize resume enhancement orchestrator."""
-        self.persona_router: Optional[PersonaRouter] = None
-        self.evidence_injector: Optional[EvidenceInjector] = None
-        self.recon_agent: Optional[ReconAgent] = None
-        self.infrastructure: Optional[InfrastructureOrchestrator] = None
+        self.persona_router: PersonaRouter | None = None
+        self.evidence_injector: EvidenceInjector | None = None
+        self.recon_agent: ReconAgent | None = None
+        self.infrastructure: InfrastructureOrchestrator | None = None
 
         self._initialized = False
 
@@ -142,7 +142,7 @@ class ResumeEnhancementOrchestrator:
         except Exception as e:
             logger.error(f"Failed to handle persona analyzed: {e}")
 
-    def _extract_company_from_jd(self, jd_text: str) -> Optional[str]:
+    def _extract_company_from_jd(self, jd_text: str) -> str | None:
         """Extract company name from job description.
 
         Args:
@@ -175,11 +175,11 @@ class ResumeEnhancementOrchestrator:
     async def generate_enhanced_resume(
         self,
         job_description: str,
-        candidate_history: List[str],
-        resume_bullets: List[str],
-        evidence_library_path: Optional[str] = None,
-        trace_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        candidate_history: list[str],
+        resume_bullets: list[str],
+        evidence_library_path: str | None = None,
+        trace_id: str | None = None
+    ) -> dict[str, Any]:
         """Generate enhanced resume with all enhancements.
 
         Args:
@@ -297,7 +297,7 @@ class ResumeEnhancementOrchestrator:
     def _calculate_complexity(
         self,
         persona: ReaderPersona,
-        recon_signal: Optional[ReconSignal]
+        recon_signal: ReconSignal | None
     ) -> int:
         """Calculate task complexity based on persona and signals.
 
@@ -326,7 +326,7 @@ class ResumeEnhancementOrchestrator:
 
         return min(base_complexity, 10)
 
-    async def get_enhancement_stats(self) -> Dict[str, Any]:
+    async def get_enhancement_stats(self) -> dict[str, Any]:
         """Get enhancement statistics.
 
         Returns:
@@ -343,7 +343,7 @@ class ResumeEnhancementOrchestrator:
 
 
 # Global orchestrator
-_enhancement_orchestrator: Optional[ResumeEnhancementOrchestrator] = None
+_enhancement_orchestrator: ResumeEnhancementOrchestrator | None = None
 _orchestrator_lock = None
 
 
@@ -370,11 +370,11 @@ async def get_resume_enhancement_orchestrator() -> ResumeEnhancementOrchestrator
 # Convenience function
 async def enhance_resume(
     job_description: str,
-    candidate_history: List[str],
-    resume_bullets: List[str],
-    evidence_library_path: Optional[str] = None,
-    trace_id: Optional[str] = None
-) -> Dict[str, Any]:
+    candidate_history: list[str],
+    resume_bullets: list[str],
+    evidence_library_path: str | None = None,
+    trace_id: str | None = None
+) -> dict[str, Any]:
     """Enhance resume with all available enhancements.
 
     Args:

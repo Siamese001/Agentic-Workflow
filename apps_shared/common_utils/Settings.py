@@ -7,8 +7,8 @@ within the shared application layer.
 """
 
 import logging
-from typing import Dict, Optional, Any
 from dataclasses import dataclass, field
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 class ExecutionResult:
     """Standardized operation result container."""
     success: bool
-    data: Optional[Any] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    error_message: Optional[str] = None
+    data: Any | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+    error_message: str | None = None
 
 class Settings:
     """
@@ -28,11 +28,11 @@ class Settings:
     across the sovereign domain.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-    def process(self, payload: Union[str, int, float, bool, list, dict], context: Optional[Dict] = None) -> ExecutionResult:
+    def process(self, payload: Union[str, int, float, bool, list, dict], context: dict | None = None) -> ExecutionResult:
         """
         Execute the primary logic for this module.
 
@@ -54,7 +54,7 @@ class Settings:
             self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 
-    def _execute_logic(self, data: Union[str, int, float, bool, list, dict], context: Optional[Dict]) -> Union[str, int, float, bool, list, dict]:
+    def _execute_logic(self, data: Union[str, int, float, bool, list, dict], context: dict | None) -> Union[str, int, float, bool, list, dict]:
         """Internal execution executor to be implemented or extended."""
         return data
 

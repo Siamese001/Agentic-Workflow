@@ -13,8 +13,6 @@ import ast
 import os
 import shutil
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict
 
 # ============================================================================
 # CONFIGURATION
@@ -58,7 +56,7 @@ PRIORITY_FOLDERS = [
 # CODEBASE INDEX
 # ============================================================================
 
-def build_codebase_index() -> Tuple[Set[str], Set[str], Set[str]]:
+def build_codebase_index() -> tuple[set[str], set[str], set[str]]:
     """Build index of classes, functions, and file hashes in current codebase."""
     classes = set()
     functions = set()
@@ -80,7 +78,7 @@ def build_codebase_index() -> Tuple[Set[str], Set[str], Set[str]]:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
                         classes.add(node.name.lower())
-                    elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         functions.add(node.name.lower())
             except:
                 pass
@@ -107,7 +105,7 @@ def should_exclude_path(path: Path) -> bool:
 
     return False
 
-def analyze_file(file_path: Path, existing_classes: Set[str], existing_functions: Set[str]) -> Dict:
+def analyze_file(file_path: Path, existing_classes: set[str], existing_functions: set[str]) -> dict:
     """Analyze a file for unique content."""
     try:
         content = file_path.read_text(encoding='utf-8', errors='replace')
@@ -135,7 +133,7 @@ def analyze_file(file_path: Path, existing_classes: Set[str], existing_functions
             else:
                 existing.append(node.name)
 
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             if not node.name.startswith('_'):
                 if node.name.lower() not in existing_functions:
                     unique_functions.append(node.name)

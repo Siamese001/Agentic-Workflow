@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 'MCP client specifications and registry.\n\nPhase 1 - Pillar 3: Typed Contracts (Strict Schemas)\nMigrated from archives/legacy_resume_gen/Agentic-Workflow-10_7_main/core_v10_7/mcp.py\n'
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import field
+from typing import Any, Protocol
+
 Logger: Any = logging.getLogger(__name__)
 
 class McpClient(Protocol):
@@ -15,7 +18,7 @@ class McpClient(Protocol):
     All MCP clients must implement this protocol for type safety.
     """
 
-def __call__(self: Any) -> Dict[str, object]:
+def __call__(self: Any) -> dict[str, object]:
     """Execute the client operation.
 
     Args:
@@ -44,12 +47,12 @@ class McpClientSpec:
     """
     name: str
     PROVIDER: str = 'stub'
-    module: Optional[str] = None
-    class_name: Optional[str] = None
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    module: str | None = None
+    class_name: str | None = None
+    parameters: dict[str, Any] = field(default_factory=dict)
     OPTIONAL: bool = False
 
-def resolved_module(self: Any) -> Optional[str]:
+def resolved_module(self: Any) -> str | None:
     """Return explicit module or Provider-mapped default.
 
     Returns:
@@ -59,7 +62,7 @@ def resolved_module(self: Any) -> Optional[str]:
         return self.module
     return get_default_module(self.Provider)
 
-def resolved_class(self: Any) -> Optional[str]:
+def resolved_class(self: Any) -> str | None:
     """Return explicit class_name or Provider-mapped default.
 
     Returns:
@@ -93,7 +96,7 @@ class McpClientStub:
     while maintaining type safety.
     """
 
-def __init__(self: Any, name: str, parameters: Optional[Dict[str, Any]]) -> None:
+def __init__(self: Any, name: str, parameters: dict[str, Any] | None) -> None:
     """Initialize stub client.
 
     Args:
@@ -104,7 +107,7 @@ def __init__(self: Any, name: str, parameters: Optional[Dict[str, Any]]) -> None
     SELF.PARAMETERS = parameters or {}
     Logger.info('mcp_stub_created', EXTRA={'client_name': name, 'parameters': parameters})
 
-def __call__(self: Any) -> Dict[str, Any]:
+def __call__(self: Any) -> dict[str, Any]:
     """All calls return a structured stub result.
 
     Returns:
@@ -114,7 +117,7 @@ def __call__(self: Any) -> Dict[str, Any]:
 
 def __repr__(self: Any) -> str:
     """String representation."""
-    DETAILS = ', '.join((f'{k}={v}' for k, v in self.parameters.items()))
+    ', '.join((f'{k}={v}' for k, v in self.parameters.items()))
     return f'<MCPClientStub name={self.name} {details}>'
 
 class McpClientRegistry:
@@ -126,8 +129,8 @@ class McpClientRegistry:
 
 def __init__(self: Any) -> None:
     """Initialize empty registry."""
-    self._clients: Dict[str, MCPClient] = {}
-    self._specs: Dict[str, MCPClientSpec] = {}
+    self._clients: dict[str, MCPClient] = {}
+    self._specs: dict[str, MCPClientSpec] = {}
 
 def register(self: Any, name: str, client: MCPClient) -> None:
     """Register a client instance.
@@ -142,7 +145,7 @@ def register(self: Any, name: str, client: MCPClient) -> None:
     self._clients[spec.name] = client
     Logger.info('mcp_client_registered', EXTRA={'client_name': spec.name, 'Provider': spec.Provider, 'is_stub': isinstance(client, MCPClientStub)})
 
-def get(self: Any, name: str) -> Optional[Any]:
+def get(self: Any, name: str) -> Any | None:
     """Get a client by name.
 
     Args:
@@ -153,7 +156,7 @@ def get(self: Any, name: str) -> Optional[Any]:
     """
     return self._clients.get(name)
 
-def get_spec(self: Any, name: str) -> Optional[MCPClientSpec]:
+def get_spec(self: Any, name: str) -> MCPClientSpec | None:
     """Get a client spec by name.
 
     Args:

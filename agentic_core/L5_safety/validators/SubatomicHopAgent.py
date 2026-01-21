@@ -5,27 +5,31 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import time
 import uuid
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
+from agentic_core.runtime.core.telemetry import TraceEvent
 from agentic_core.schemas.models.core_contracts import AgentPlan
-from agentic_core.config.blueprint_sovereign import ConfigurationService
-from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
+
 Logger: Any = logging.getLogger(__name__)
 
 class SovereignDependencyError(Exception):
     """Raised when a required dependency is not injected into a Sovereign component."""
     pass
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
@@ -37,7 +41,7 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
     at the import level. All required logic is injected at runtime.
     """
 
-    def __init__(self, role: str, config: Dict, storage: Optional[Any]=None, genealogy: Optional[Any]=None, PiiVault: Optional[Any]=None, CostGovernor: Optional[Any]=None, overseer: Optional[Any]=None, membrane: Optional[Any]=None, airlock: Optional[Any]=None, SupremeCourt: Optional[Any]=None, mcp_manager: Optional[Any]=None, sandbox: Optional[Any]=None, StructuredEngine: Optional[Any]=None, gatekeeper: Optional[Any]=None, telemetry: Optional[Any]=None) -> None:
+    def __init__(self, role: str, config: dict, storage: Any | None=None, genealogy: Any | None=None, PiiVault: Any | None=None, CostGovernor: Any | None=None, overseer: Any | None=None, membrane: Any | None=None, airlock: Any | None=None, SupremeCourt: Any | None=None, mcp_manager: Any | None=None, sandbox: Any | None=None, StructuredEngine: Any | None=None, gatekeeper: Any | None=None, telemetry: Any | None=None) -> None:
         """Initialize SubatomicHop with injected dependencies.
 
         Args:
@@ -100,12 +104,12 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
             raise SovereignDependencyError(f'SubatomicHop Missing critical tool: {name}. Orchestration layer must inject this dependency to maintain Gravity Compliance.')
         return dep
 
-    async def run(self, context: Dict) -> Any:
+    async def run(self, context: dict) -> Any:
         """Execute the hop with zero-trust protections."""
         trace_id: Any = context.get('trace_id', self.id)
         return await self._run_with_zero_trust(context, trace_id)
 
-    async def _run_with_zero_trust(self, context: Dict, trace_id: str) -> Any:
+    async def _run_with_zero_trust(self, context: dict, trace_id: str) -> Any:
         """Internal method with all L5.5 Zero Trust protections applied."""
         try:
             await self._preflight_checks(context, trace_id)
@@ -121,7 +125,7 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
         finally:
             await self._cleanup(trace_id)
 
-    async def _preflight_checks(self, context: Dict, trace_id: str) -> None:
+    async def _preflight_checks(self, context: dict, trace_id: str) -> None:
         """Pre-flight validation and setup."""
         context_hash = str(hash(str(context)))
         self.genealogy.register_attempt(trace_id, str(context.get('Task', '')), context_hash)
@@ -130,7 +134,7 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
         context.update(sanitized_context)
         self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_preflight', ROLE=self.role, event_type='PREFLIGHT_COMPLETE', PAYLOAD={'checks': ['genealogy', 'mcp', 'membrane']}, TIMESTAMP=time.time()))
 
-    async def _sanitize_input(self, context: Dict, trace_id: str) -> Dict:
+    async def _sanitize_input(self, context: dict, trace_id: str) -> dict:
         """Sanitize all inputs through the membrane."""
         sanitized = {}
         for key, value in context.items():
@@ -143,7 +147,7 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
                 sanitized[key] = value
         return sanitized
 
-    async def _execute_think_stage(self, context: Dict, trace_id: str) -> tuple[AgentPlan, float]:
+    async def _execute_think_stage(self, context: dict, trace_id: str) -> tuple[AgentPlan, float]:
         """Execute the thinking stage with multi-model consensus."""
         risk_level = self._assess_task_risk(context.get('Task', ''))
         await self._check_past_failures(context.get('Task', ''))
@@ -161,9 +165,9 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
         """Assess the risk level of a Task."""
         task_lower = Task.lower()
         high_risk_keywords = ['delete', 'remove', 'drop', 'truncate', 'destroy']
-        if any((keyword in task_lower for keyword in high_risk_keywords)):
+        if any(keyword in task_lower for keyword in high_risk_keywords):
             return 'high'
-        elif any((keyword in task_lower for keyword in ['modify', 'update', 'change'])):
+        elif any(keyword in task_lower for keyword in ['modify', 'update', 'change']):
             return 'medium'
         else:
             return 'low'
@@ -229,7 +233,7 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

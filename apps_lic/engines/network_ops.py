@@ -1,14 +1,16 @@
 from __future__ import annotations
+
 """
 Network Operations - API Calls, Redis, and External Service Integration
 Consolidated from core_utils.py, network_utils.py, and security_utils.py
 """
 import json
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
-def string_get(key: str) -> Optional[str]:
+def string_get(key: str) -> str | None:
     """
     Mock for Redis MCP: Get string value.
 
@@ -98,7 +100,7 @@ def brave_search(query: str, count: int=5) -> str:
     results: Any = [{'title': f'Result 1 for {query}', 'url': 'https://example.com/1', 'snippet': f'Mock snippet about {query}'}, {'title': f'Result 2 for {query}', 'url': 'https://example.com/2', 'snippet': f'Another result about {query}'}, {'title': f'Result 3 for {query}', 'url': 'https://example.com/3', 'snippet': f'Third result about {query}'}]
     return json.dumps(results[:count])
 
-def execute_cost_controlled_search(query: str, logger_instance: Optional[Any]=None) -> Optional[str]:
+def execute_cost_controlled_search(query: str, logger_instance: Any | None=None) -> str | None:
     """
     Mock for Brave Search wrapper with rate limiting.
     Returns search results 70% of the time to simulate rate limiting.
@@ -150,7 +152,7 @@ def search_nodes(query: str) -> str:
     """
     return json.dumps({'entityName': 'user', 'skills': ['Python', 'JavaScript', 'Machine Learning'], 'projects': ['E-commerce Platform', 'ML Pipeline'], 'experience': '5 years'})
 
-def get_from_langcache(key: str) -> Optional[str]:
+def get_from_langcache(key: str) -> str | None:
     """
     Mock: Retrieves final result from LangCache.
 
@@ -172,7 +174,7 @@ def set_to_langcache(key: str, value: str, ttl: int=86400) -> None:
         ttl: Time to live in seconds
     """
 
-def get_current_time(timezone: Optional[str]=None) -> str:
+def get_current_time(timezone: str | None=None) -> str:
     """
     Mock for Time MCP: Returns current time or converts timezone.
 

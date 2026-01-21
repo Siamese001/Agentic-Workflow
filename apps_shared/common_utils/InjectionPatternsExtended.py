@@ -5,15 +5,10 @@ to improve the quality and effectiveness of resume and message outputs
 in the Subatomic Hop system.
 """
 
-from typing import List, Dict, Any
-from .prompt_injection_loader import (
-    InjectionPattern,
-    InjectionType,
-    InjectionScope
-)
+from .prompt_injection_loader import InjectionPattern, InjectionScope, InjectionType
 
 
-def get_resume_injection_patterns() -> List[InjectionPattern]:
+def get_resume_injection_patterns() -> list[InjectionPattern]:
     """Get resume-specific injection patterns."""
     return [
         # Resume summary injections
@@ -107,7 +102,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
     ]
 
 
-def get_message_injection_patterns() -> List[InjectionPattern]:
+def get_message_injection_patterns() -> list[InjectionPattern]:
     """Get message-specific injection patterns."""
     return [
         # LinkedIn outreach injections
@@ -202,7 +197,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
     ]
 
 
-def get_quality_boost_injections() -> List[InjectionPattern]:
+def get_quality_boost_injections() -> list[InjectionPattern]:
     """Get general quality boost injection patterns."""
     return [
         InjectionPattern(
@@ -249,7 +244,7 @@ def get_quality_boost_injections() -> List[InjectionPattern]:
     ]
 
 
-def load_all_extended_patterns() -> Dict[str, InjectionPattern]:
+def load_all_extended_patterns() -> dict[str, InjectionPattern]:
     """Load all extended injection patterns."""
     patterns = {}
 

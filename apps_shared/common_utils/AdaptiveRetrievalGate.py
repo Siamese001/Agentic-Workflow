@@ -6,8 +6,8 @@ requires retrieval from the vector database or can be handled from context.
 
 import logging
 import re
-from typing import List, Dict, Optional
-from pydantic import BaseModel, Field, validator
+
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -160,7 +160,7 @@ class AdaptiveRetrievalGate:
 
         return base_score
 
-    def should_retrieve(self, query: str, history: Optional[List[Dict]] = None) -> RetrievalDecision:
+    def should_retrieve(self, query: str, history: list[dict] | None = None) -> RetrievalDecision:
         """Determine if retrieval is needed for the query.
 
         Args:
@@ -245,7 +245,7 @@ class AdaptiveRetrievalGate:
             confidence=confidence
         )
 
-    def get_statistics(self, decisions: List[RetrievalDecision]) -> Dict[str, float]:
+    def get_statistics(self, decisions: list[RetrievalDecision]) -> dict[str, float]:
         """Calculate statistics from a list of retrieval decisions.
 
         Args:
@@ -274,7 +274,7 @@ class AdaptiveRetrievalGate:
 
 
 # Convenience function for direct usage
-def should_retrieve(query: str, history: Optional[List[Dict]] = None) -> bool:
+def should_retrieve(query: str, history: list[dict] | None = None) -> bool:
     """Quick check if retrieval is needed.
 
     Args:

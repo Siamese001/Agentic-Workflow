@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """
 NervousSystemAgent - Extracted for one-class-per-file pattern.
 
@@ -14,27 +15,11 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
-import asyncio
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 
 @dataclass
 class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
@@ -55,9 +40,9 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
     def __init__(
         self,
-        cognitive_plane: Optional[ICognitivePlane] = None,
-        action_plane: Optional[IActionPlane] = None,
-        config: Optional[OrchestratorConfig] = None,
+        cognitive_plane: ICognitivePlane | None = None,
+        action_plane: IActionPlane | None = None,
+        config: OrchestratorConfig | None = None,
     ) -> None:
         """Initialize nervous system.
 
@@ -83,11 +68,11 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         )
         self.config = config or OrchestratorConfig()
 
-        self._state: Dict[str, Any] = {}
+        self._state: dict[str, Any] = {}
         self._iteration_val = [0] # Use a list to pass by reference for iteration
 
         # Execution tracking
-        self._results: Dict[str, Dict[str, Any]] = {}
+        self._results: dict[str, dict[str, Any]] = {}
         self._signals: set = set()
         self._modified_files: set = set() # This will be passed to context.modified_files
 
@@ -118,7 +103,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             self.import_agent = ImportAgent(self.project_root)
         except ImportError:
             self.import_agent = None
-        self._backup_dir: Optional[Path] = None
+        self._backup_dir: Path | None = None
 
         # Initialize helper classes
         self._checkpointing = NervousSystemCheckpointing(
@@ -153,7 +138,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         )
 
         # PHASE 5: Coverage bias tracking for dynamic layer prioritization
-        self.coverage_bias_state: Dict[str, Dict] = {}
+        self.coverage_bias_state: dict[str, dict] = {}
         self.bias_hysteresis_threshold = 0.15
         self.max_concurrent_biases = 3
         subscribe_event("coverage_bias_update", self._handle_bias_update)
@@ -180,7 +165,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             }
         )
 
-    def _handle_bias_update(self, event_data: Dict) -> None:
+    def _handle_bias_update(self, event_data: dict) -> None:
         """Process CoverageAgent bias events — multi-layer queue."""
         layer = event_data.get("underrepresented_layer")
         weight = event_data.get("selection_weight_multiplier")
@@ -226,7 +211,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
                 # If metrics unavailable, just decrement cycles
                 pass
 
-    def force_exerciser_fallback(self, task: Dict) -> Optional[str]:
+    def force_exerciser_fallback(self, task: dict) -> str | None:
         """If no candidates in target layer, direct to exerciser."""
         target = task.get("target_territory")
         if target:
@@ -255,18 +240,18 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         """Iteration."""
         self._iteration_val[0] = value
 
-    async def _restore_checkpoint_if_exists(self) -> Optional[str]:
+    async def _restore_checkpoint_if_exists(self) -> str | None:
         """Restore from checkpoint if one exists."""
         last_checkpoint = await self._checkpointing.find_last_checkpoint()
         if last_checkpoint:
-            LOGGER.info(f"L4: Checkpoint found. Resuming from Phase 2.")
+            LOGGER.info("L4: Checkpoint found. Resuming from Phase 2.")
             (self._state, self._results, self._signals,
              self._modified_files, self._iteration, resume_phase) = \
                 self._checkpointing.restore_from_checkpoint(last_checkpoint)
             return resume_phase
         return None
 
-    async def run_mission(self, max_phases: Optional[int] = None) -> ExecutionResult:
+    async def run_mission(self, max_phases: int | None = None) -> ExecutionResult:
         """Run the full mission with phase-based execution.
 
         Args:
@@ -298,7 +283,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         if max_phases:
             phase_names = list(self.phases.keys())
             limited_phases = {}
-            for i, phase_name in enumerate(phase_names[:max_phases]):
+            for _i, phase_name in enumerate(phase_names[:max_phases]):
                 limited_phases[phase_name] = self.phases[phase_name]
             self.phases = limited_phases
             LOGGER.info(f"Limiting execution to first {max_phases} phases")
@@ -342,7 +327,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         # Execute the mission
         return await self.execute(context, resume_phase=resume_phase)
 
-    async def execute(self, context: ExecutionContext, resume_phase: Optional[str] = None) -> ExecutionResult:
+    async def execute(self, context: ExecutionContext, resume_phase: str | None = None) -> ExecutionResult:
         """Execute mission through phase-based execution.
 
         Args:
@@ -416,7 +401,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
         return True
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current orchestrator state.
 
         Returns:
@@ -441,7 +426,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         self._iteration = loaded_state.get("iteration", 0)
         self._state = loaded_state.get("state", {})
 
-    def _extract_actions(self, think_result: Dict[str, Any]) -> List[ActionRequest]:
+    def _extract_actions(self, think_result: dict[str, Any]) -> list[ActionRequest]:
         """Extract action requests from planning result.
 
         Args:
@@ -450,7 +435,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         Returns:
             List of action requests
         """
-        actions: List[ActionRequest] = []
+        actions: list[ActionRequest] = []
 
         plan = think_result.get("plan", [])
 
@@ -466,7 +451,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
         return actions
 
-    async def get_impact_radius(self, modified_files: List[str] = None) -> Dict[str, Any]:
+    async def get_impact_radius(self, modified_files: list[str] = None) -> dict[str, Any]:
         """
         Calculate the blast radius for modified files.
 
@@ -478,7 +463,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         """
         return await self._architecture_governance.get_impact_radius(modified_files, self._modified_files)
 
-    def validate_architecture(self, file_paths: List[str] = None) -> Dict[str, Any]:
+    def validate_architecture(self, file_paths: list[str] = None) -> dict[str, Any]:
         """
         Validate architecture compliance.
 
@@ -490,7 +475,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         """
         return self._architecture_governance.validate_architecture(file_paths)
 
-    def post_phase_validation(self, phase_name: str, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+    def post_phase_validation(self, phase_name: str, affected_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD: Post-phase validation using domain-specific agents.
         Validates location, hierarchy, and import compliance after phase completion.
@@ -578,10 +563,10 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
     def cleanup_violations(
         self,
-        violations: List[PhaseViolation],
+        violations: list[PhaseViolation],
         dry_run: bool = True,
         max_actions: int = 50
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup violations using integrated domain agents.
         Prioritizes healing based on violation severity and type.
@@ -595,7 +580,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             List of action dicts with results and batch summary
         """
         actions = []
-        affected_paths: List[Path] = []
+        affected_paths: list[Path] = []
 
         for i, violation in enumerate(violations):
             if i >= max_actions:
@@ -661,7 +646,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
         return actions
 
-    def run_with_cleanup(self, files: List[Path] = None, dry_run: bool = True) -> Dict[str, Any]:
+    def run_with_cleanup(self, files: list[Path] = None, dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD: Full orchestration with autonomous cleanup.
         Runs all phases, validates, and cleans up violations.
@@ -674,7 +659,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             Dict with comprehensive execution and cleanup summaries
         """
         # Collect violations from post-phase validation
-        all_violations: List[PhaseViolation] = []
+        all_violations: list[PhaseViolation] = []
         affected_paths = [Path(f) for f in (files or list(self._modified_files))]
 
         # Run post-phase validation for all phases
@@ -723,7 +708,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

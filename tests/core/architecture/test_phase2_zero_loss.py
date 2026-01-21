@@ -15,11 +15,9 @@ Date: January 19, 2026
 Phase: 2 - Orchestrator Unification
 """
 import ast
-import inspect
 import sys
 import warnings
 from pathlib import Path
-from typing import Dict, Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -37,8 +35,8 @@ def test_tc5_mode_parity():
     print("TC-5: Mode Parity")
     print("="*60)
 
-    from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
     from agentic_core.L3_orchestration.interfaces import MissionResult
+    from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
 
     # Create orchestrator in healing mode
     orchestrator = UnifiedOrchestratorAgent(mode="healing")
@@ -74,7 +72,7 @@ def test_tc5_mode_parity():
 
     # Verify metadata contains mode
     if result.metadata.get("mode") != "healing":
-        print(f"❌ FAIL: MissionResult metadata should contain mode='healing'")
+        print("❌ FAIL: MissionResult metadata should contain mode='healing'")
         return False
 
     print("✅ PASS: UnifiedOrchestratorAgent(mode='healing') produces correct MissionResult")
@@ -96,6 +94,7 @@ def test_tc6_registry_resolution():
     print("="*60)
 
     from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
+
     from agentic_core.L3_orchestration.interfaces import IOrchestratorAgent
 
     # Test all valid modes
@@ -147,7 +146,7 @@ def test_tc7_graceful_fallback():
 
             # Verify error message is descriptive
             if "Unknown orchestrator mode" not in error_msg:
-                print(f"❌ FAIL: Error message should mention 'Unknown orchestrator mode'")
+                print("❌ FAIL: Error message should mention 'Unknown orchestrator mode'")
                 print(f"   Got: {error_msg}")
                 return False
 
@@ -156,12 +155,12 @@ def test_tc7_graceful_fallback():
                 return False
 
             if "Available modes" not in error_msg:
-                print(f"❌ FAIL: Error message should list available modes")
+                print("❌ FAIL: Error message should list available modes")
                 return False
 
     print("✅ PASS: Unknown modes raise descriptive ValueError")
     print(f"   Tested invalid modes: {invalid_modes}")
-    print(f"   Error message format verified")
+    print("   Error message format verified")
     return True
 
 
@@ -206,13 +205,13 @@ def test_tc8_discovery_integration():
                     glob_calls.append(ast.get_source_segment(source_code, node) or "glob call")
 
     if rglob_calls:
-        print(f"❌ FAIL: UnifiedOrchestratorAgent contains rglob calls:")
+        print("❌ FAIL: UnifiedOrchestratorAgent contains rglob calls:")
         for call in rglob_calls:
             print(f"   - {call}")
         return False
 
     if glob_calls:
-        print(f"❌ FAIL: UnifiedOrchestratorAgent contains glob calls:")
+        print("❌ FAIL: UnifiedOrchestratorAgent contains glob calls:")
         for call in glob_calls:
             print(f"   - {call}")
         return False
@@ -244,9 +243,9 @@ def test_deprecation_warnings():
     print("="*60)
 
     from agentic_core.L3_orchestration.orchestrator_registry import (
-        SSOTOrchestratorAgent,
+        ConsolidatedOrchestratorAgent,
         HealingOrchestratorAgent,
-        ConsolidatedOrchestratorAgent
+        SSOTOrchestratorAgent,
     )
 
     legacy_classes = [
@@ -269,7 +268,7 @@ def test_deprecation_warnings():
                 return False
 
             if "deprecated" not in str(w[-1].message).lower():
-                print(f"❌ FAIL: Warning message should mention 'deprecated'")
+                print("❌ FAIL: Warning message should mention 'deprecated'")
                 return False
 
     print("✅ PASS: All legacy classes emit DeprecationWarning")

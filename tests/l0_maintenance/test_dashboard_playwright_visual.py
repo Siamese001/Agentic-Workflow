@@ -16,18 +16,18 @@ Visual Checks:
 
 This test MUST pass before any dashboard deployment.
 """
+import subprocess
 import sys
 import time
-import subprocess
 from pathlib import Path
-from typing import Dict, List, Tuple
+
 from agentic_core.utils.security import safe_popen
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 
-def run_playwright_visual_tests() -> Tuple[bool, List[str]]:
+def run_playwright_visual_tests() -> tuple[bool, list[str]]:
     """
     Run Playwright visual inspection tests.
     Returns (success, errors)
@@ -119,7 +119,7 @@ def run_playwright_visual_tests() -> Tuple[bool, List[str]]:
                 errors.append("CRITICAL: Navigation tabs not found - page may not have loaded correctly")
                 # Take screenshot for debugging
                 page.screenshot(path=str(project_root / "dashboard_load_failure.png"))
-                print(f"   ❌ Dashboard failed to load properly - screenshot saved")
+                print("   ❌ Dashboard failed to load properly - screenshot saved")
 
                 # Try to get the actual error
                 try:
@@ -290,10 +290,10 @@ def run_playwright_visual_tests() -> Tuple[bool, List[str]]:
                                 territory_name = cells[0].text_content().strip()
                                 if 'L0 Maintenance' in territory_name and 'Core' in territory_name:
                                     l0_found = True
-                                    print(f"   ✅ L0 Maintenance/Core: 100% MCP Hardening verified")
+                                    print("   ✅ L0 Maintenance/Core: 100% MCP Hardening verified")
                                 elif 'L6' in territory_name and 'Metrics' in territory_name:
                                     l6_found = True
-                                    print(f"   ✅ L6_Observability/Metrics: 100% MCP Hardening verified")
+                                    print("   ✅ L6_Observability/Metrics: 100% MCP Hardening verified")
 
                         if not l0_found:
                             errors.append("TEST 7 WARNING: L0 Maintenance/Core territory not found in table")

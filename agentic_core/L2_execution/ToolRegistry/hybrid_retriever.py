@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 HybridRetriever - Dense + Sparse Retrieval with Reranking
 """
@@ -11,14 +12,11 @@ import re
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from rank_bm25 import BM25Okapi
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 class ASTAwareTokenizer:
@@ -38,7 +36,7 @@ class ASTAwareTokenizer:
     BOOST_IDENTIFIER = 3
 
     @staticmethod
-    def split_identifier(name: str) -> List[str]:
+    def split_identifier(name: str) -> list[str]:
         """Split CamelCase and snake_case identifiers into sub-tokens."""
         # First split on underscores
         parts = name.split('_')
@@ -50,7 +48,7 @@ class ASTAwareTokenizer:
         return result
 
     @classmethod
-    def tokenize_code(cls, text: str, boost_symbols: bool = True) -> List[str]:
+    def tokenize_code(cls, text: str, boost_symbols: bool = True) -> list[str]:
         """Tokenize code chunk with AST awareness and optional boosting."""
         tokens = []
 
@@ -88,7 +86,7 @@ class ASTAwareTokenizer:
         return tokens
 
     @classmethod
-    def tokenize_query(cls, query: str) -> List[str]:
+    def tokenize_query(cls, query: str) -> list[str]:
         """Tokenize natural-language or code query without boosting."""
         return cls.tokenize_code(query, boost_symbols=False)
 
@@ -99,7 +97,7 @@ class RetrievalResult:
     text: str
     score: float
     source: str
-    metadata: Dict
+    metadata: dict
 
 class HybridRetriever:
     """
@@ -109,8 +107,8 @@ class HybridRetriever:
     def __init__(self, vector_store, guardrail):
         self.vector_store = vector_store
         self.guardrail = guardrail
-        self.bm25_index: Optional[BM25Okapi] = None
-        self.local_chunks: List[Dict] = []
+        self.bm25_index: BM25Okapi | None = None
+        self.local_chunks: list[dict] = []
         self.index_ready = asyncio.Event()
         self.tokenizer = ASTAwareTokenizer()
         self._init_task = asyncio.create_task(self._load_or_rebuild_local_index())
@@ -128,7 +126,7 @@ class HybridRetriever:
                     return BM25Okapi(tokenized)
                 self.bm25_index = await asyncio.to_thread(_build_bm25)
                 self.index_ready.set()
-                print(f'   [OK] Sovereign local BM25 index loaded')
+                print('   [OK] Sovereign local BM25 index loaded')
                 return
             except Exception as e:
                 print(f'   [!] Local index cache corrupt — rebuilding: {e}')
@@ -137,7 +135,9 @@ class HybridRetriever:
     async def rebuild_from_ingestion(self) -> Any:
         """Rebuild local index from latest ingestion artifacts"""
         try:
-            from agentic_core.L0_maintenance.scripts.sovereign_ingestion_mission import load_latest_ingested_chunks
+            from agentic_core.L0_maintenance.scripts.sovereign_ingestion_mission import (
+                load_latest_ingested_chunks,
+            )
             chunks: Any = await asyncio.to_thread(load_latest_ingested_chunks)
             self.local_chunks = chunks
             if chunks:
@@ -154,11 +154,11 @@ class HybridRetriever:
                     return idx
                 self.bm25_index = await asyncio.to_thread(_sync)
                 self.index_ready.set()
-            print(f'   [OK] Sovereign local index synchronized')
+            print('   [OK] Sovereign local index synchronized')
         except Exception as e:
             print(f'   [X] Local index rebuild failed: {e}')
 
-    async def dense_search(self, query: str, top_k: int=15) -> List[RetrievalResult]:
+    async def dense_search(self, query: str, top_k: int=15) -> list[RetrievalResult]:
         """Dense semantic search via vector store"""
         try:
             results: Any = await self.vector_store.similarity_search(query, top_k=top_k)
@@ -167,7 +167,7 @@ class HybridRetriever:
             print(f'   [!] Dense search failed: {e}')
             return []
 
-    def sparse_search(self, query: str, top_k: int=15) -> List[RetrievalResult]:
+    def sparse_search(self, query: str, top_k: int=15) -> list[RetrievalResult]:
         """Sparse BM25 search on local chunks"""
         if not self.index_ready.is_set():
             print('   [!] BM25 search skipped: Index not ready')
@@ -182,7 +182,7 @@ class HybridRetriever:
                 results.append(RetrievalResult(text=chunk['text'], score=float(doc_scores[idx]), source='local_bm25', metadata=chunk.get('metadata', {})))
         return results
 
-    def deduplicate_by_hash(self, results: List[RetrievalResult], request_seen: set) -> List[RetrievalResult]:
+    def deduplicate_by_hash(self, results: list[RetrievalResult], request_seen: set) -> list[RetrievalResult]:
         """Deduplicate by content hash — prevents redundant chunks"""
         unique: Any = []
         for r in results:
@@ -192,7 +192,7 @@ class HybridRetriever:
                 unique.append(r)
         return unique
 
-    def reciprocal_rank_fusion(self, dense: List[RetrievalResult], sparse: List[RetrievalResult], k: int=60) -> List[RetrievalResult]:
+    def reciprocal_rank_fusion(self, dense: list[RetrievalResult], sparse: list[RetrievalResult], k: int=60) -> list[RetrievalResult]:
         """
         Fused rankings using optimized RRF (O(N) performance)
         """
@@ -215,13 +215,13 @@ class HybridRetriever:
         fused.sort(key=lambda x: x.score, reverse=True)
         return fused
 
-    async def rerank_combined(self, combined: List[RetrievalResult], query: str) -> List[RetrievalResult]:
+    async def rerank_combined(self, combined: list[RetrievalResult], query: str) -> list[RetrievalResult]:
         """L5 reranking via cross-encoder (guardrail)"""
         if not combined:
             return []
         return await self.guardrail.rerank_documents(combined, query)
 
-    async def hybrid_search(self, query: str, top_k: int=12) -> List[RetrievalResult]:
+    async def hybrid_search(self, query: str, top_k: int=12) -> list[RetrievalResult]:
         """Sovereign hybrid search with RRF fusion"""
         dense_results, sparse_results = await asyncio.gather(self.dense_search(query, top_k=top_k * 2), asyncio.to_thread(self.sparse_search, query, top_k=top_k * 2))
         if not dense_results and (not sparse_results):

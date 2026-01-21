@@ -5,26 +5,14 @@ Archive Duplicate Test Files
 Identifies test files with the same name in different directories
 and archives the duplicates to preserve SSOT.
 """
-from pathlib import Path
-from datetime import datetime
 import shutil
+from datetime import datetime
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+
 
 def main():
     test_dir = Path(__file__).parent.parent / TESTS_DIR
@@ -42,7 +30,7 @@ def main():
     duplicate_count = sum(len(d) for d in duplicates)
 
     print(f"\n{'='*80}")
-    print(f"DUPLICATE TEST FILE ARCHIVAL")
+    print("DUPLICATE TEST FILE ARCHIVAL")
     print(f"{'='*80}")
     print(f"Found {duplicate_count} duplicate test files")
 
@@ -72,7 +60,7 @@ def main():
                 print(f"❌ Failed to archive {dup}: {e}")
 
     print(f"\n{'='*80}")
-    print(f"ARCHIVAL COMPLETE")
+    print("ARCHIVAL COMPLETE")
     print(f"{'='*80}")
     print(f"Archived: {archived} files")
     print(f"Location: {archive_dir}")

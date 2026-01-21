@@ -5,28 +5,33 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 NeuralAutoImmuneAgent - Eternal Sovereign Self-Defense System
 """
 import json
+import logging
 import os
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Any, List, Optional
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
 import redis
-import logging
+
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 
 # Sovereign Hardening Mixins – Phase A (High Priority)
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 @dataclass
 class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
@@ -70,7 +75,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
         self.window_minutes = int(os.getenv('IMMUNE_WINDOW_MINUTES', '30'))
         self.lockdown_prefix = 'l5_immune_lockdown:'
 
-    def detect_repeated_breaches(self) -> Dict:
+    def detect_repeated_breaches(self) -> dict:
         """Scan L5 cache for high-frequency violations."""
         try:
             if self.redis:
@@ -108,7 +113,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
             return {'status': 'error', 'message': str(e)}
 
     # === Predictive Analysis – High Priority Enhancement ===
-    async def predict_imminent_breaches(self) -> List[Dict[str, Any]]:
+    async def predict_imminent_breaches(self) -> list[dict[str, Any]]:
         """
         Proactively predict files likely to cause constitutional breaches
         based on change velocity, historical patterns, and complexity.
@@ -197,7 +202,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
         return "general_violation_risk"
 
     # === Adaptive Execution Modes ===
-    async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Dict[str, Any]:
+    async def _execute_minimal(self, ctx: Any, **context: dict[str, Any]) -> dict[str, Any]:
         """Execute minimal."""
         self.Logger.warning("Minimal mode: immune system on standby")
         return {
@@ -206,7 +211,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
             "detected_breaches": [],
         }
 
-    async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Dict[str, Any]:
+    async def _execute_conservative(self, ctx: Any, **context: dict[str, Any]) -> dict[str, Any]:
         """Execute conservative."""
         self.Logger.info("Conservative mode: detection only, no prediction")
         return {
@@ -214,7 +219,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
             "mode": "conservative",
         }
 
-    async def _execute_standard(self, ctx: Any, **context: Dict[str, Any]) -> Dict[str, Any]:
+    async def _execute_standard(self, ctx: Any, **context: dict[str, Any]) -> dict[str, Any]:
         """Standard mode with full detection and prediction."""
         report = {
             "detected_breaches": self.detect_repeated_breaches(),
@@ -266,7 +271,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
         return report
 
     # === AutonomyMixin Override ===
-    async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+    async def _detect_action_opportunity(self) -> dict[str, Any] | None:
         """Proactively trigger immune scan if breach patterns detected."""
         # Check recent experience for high breach rates
         recent = self.experience_buffer.find_similar(action="immune_cycle", limit=5)
@@ -282,7 +287,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

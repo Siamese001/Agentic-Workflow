@@ -4,8 +4,6 @@ Audit code quality metrics (typed %, documented %, schema strictness %) across a
 """
 import json
 from pathlib import Path
-from typing import List, Dict, Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
@@ -17,7 +15,7 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_FILE, encoding='utf-8') as f:
         agents = json.load(f)
 
     total = len(agents)
@@ -91,7 +89,7 @@ def main():
 
     agents_with_issues.sort(key=lambda x: x['deficit'], reverse=True)
 
-    print(f"\nTop 20 agents needing most improvement:")
+    print("\nTop 20 agents needing most improvement:")
     print("-" * 70)
     for i, agent in enumerate(agents_with_issues[:20], 1):
         print(f"\n{i}. {agent['name']}")
@@ -107,7 +105,7 @@ def main():
         print("\n✅ ALL AGENTS AT 100% FOR ALL METRICS!")
     else:
         print(f"\n⚠️  {len(all_below_100)} agents need improvement")
-        print(f"\nTo achieve 100%:")
+        print("\nTo achieve 100%:")
         print(f"  - {len(typed_below_100)} agents need type hints")
         print(f"  - {len(doc_below_100)} agents need documentation")
         print(f"  - {len(schema_below_100)} agents need schema strictness")

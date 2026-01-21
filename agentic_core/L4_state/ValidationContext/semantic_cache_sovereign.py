@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """L4 State: Sovereign Semantic Cache — Redis + Pinecone Hybrid Eternal
 Redis L4 local cache for lightning recall + Pinecone eternal vector store.
 Full AST + metadata sovereignty with mission-isolation.
@@ -7,25 +8,20 @@ import ast
 import hashlib
 import json
 import logging
-import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
-from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
+from typing import Any
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
+from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
+from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import (
+    L4SubatomicTestingMixin,
+)
+from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7
@@ -35,7 +31,7 @@ redis_timeout: Any = 5
 class SovereignSemanticCache(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """Ultra-hardened hybrid semantic cache — Redis local + Pinecone eternal."""
 
-    def __init__(self, mission_id: str, engine=None, pinecone_agent: Optional[PineconeSovereignAgent]=None):
+    def __init__(self, mission_id: str, engine=None, pinecone_agent: PineconeSovereignAgent | None=None):
         super().__init__()
         self.mission_id = mission_id
         self._mcp_audit('init', payload={'mission_id': mission_id})
@@ -56,7 +52,7 @@ class SovereignSemanticCache(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMi
         path_hash = hashlib.sha256(str(Path(file_path)).encode()).hexdigest()[:16]
         return f'semantic:{self.mission_id}:{path_hash}'
 
-    def _extract_ast_features(self, code: str) -> Dict:
+    def _extract_ast_features(self, code: str) -> dict:
         """Parse AST for structural signals (Key 41/42)."""
         try:
             tree = ast.parse(code)
@@ -65,10 +61,10 @@ class SovereignSemanticCache(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMi
             return {'lines': len(code.splitlines()), 'parse_error': True}
 
     def _calculate_depth(self, node, current=0) -> int:
-        child_depths = [self._calculate_depth(c, current + 1) for c in ast.iter_child_nodes(node) if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.If, ast.For))]
+        child_depths = [self._calculate_depth(c, current + 1) for c in ast.iter_child_nodes(node) if isinstance(node, ast.FunctionDef | ast.ClassDef | ast.If | ast.For)]
         return max(child_depths, default=current)
 
-    async def cache_file(self, file_path: str, code: str, metadata: Dict) -> None:
+    async def cache_file(self, file_path: str, code: str, metadata: dict) -> None:
         """Embed and cache with dual-store synchronization."""
         key: Any = self._cache_key(file_path)
         if self.redis:

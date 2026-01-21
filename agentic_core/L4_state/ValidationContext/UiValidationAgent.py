@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """
 UiValidationAgent - Extracted for one-class-per-file pattern.
 
@@ -14,8 +15,10 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 
 @dataclass
 class UiValidationAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
@@ -35,7 +38,7 @@ class UiValidationAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin)
         """
         print(f'\n[>>>] {self.agent.name} ACTIVATED: Validating UI Patterns...')
         if not self.can_run():
-            print(f'   [!]  Figma MCP not available - skipping UI validation')
+            print('   [!]  Figma MCP not available - skipping UI validation')
             return
         print('   ℹ UI validation placeholder - Figma MCP integration pending')
 

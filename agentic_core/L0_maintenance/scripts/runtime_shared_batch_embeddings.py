@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Batch Embedding Service - Parallel embedding generation for 5-10x speedup.
 
 Optimized for i7-10750H (6 cores/12 threads) with 32GB RAM allocation.
@@ -6,9 +7,12 @@ Uses ThreadPoolExecutor to process embeddings in parallel batches.
 """
 import asyncio
 import logging
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Callable, Dict, List, Optional, Protocol
+from typing import Any
+
 import numpy as np
+
 Logger: Any = logging.getLogger(__name__)
 
 class BatchEmbeddingService:
@@ -29,7 +33,7 @@ class BatchEmbeddingService:
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
         Logger.info(f'Initialized BatchEmbeddingService: batch_size={batch_size}, max_workers={max_workers}')
 
-    async def embed_batch(self, texts: List[str], model_func: Callable[[List[str]], List[np.ndarray]]) -> List[np.ndarray]:
+    async def embed_batch(self, texts: list[str], model_func: Callable[[list[str]], list[np.ndarray]]) -> list[np.ndarray]:
         """Embed a list of texts in parallel batches.
 
         Args:
@@ -62,7 +66,7 @@ class BatchEmbeddingService:
             Logger.error(f'Failed to generate embeddings: {e}')
             raise
 
-    async def embed_single(self, text: str, model_func: Callable[[List[str]], List[np.ndarray]]) -> np.ndarray:
+    async def embed_single(self, text: str, model_func: Callable[[list[str]], list[np.ndarray]]) -> np.ndarray:
         """Embed a single text (convenience method).
 
         Args:

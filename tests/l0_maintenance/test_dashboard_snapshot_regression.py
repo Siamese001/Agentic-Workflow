@@ -10,17 +10,17 @@ This test ensures quality control for dashboard changes by:
 """
 import json
 import sys
-from pathlib import Path
 from collections import defaultdict
-from typing import Dict, List, Tuple, Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
+from typing import Any
 
-def load_discovery(path: str) -> List[Dict]:
+
+def load_discovery(path: str) -> list[dict]:
     """Load agent discovery JSON."""
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
 
-def get_base_class_summary(agents: List[Dict]) -> Dict[str, List[str]]:
+def get_base_class_summary(agents: list[dict]) -> dict[str, list[str]]:
     """Extract base class agents grouped by layer."""
     base_classes = defaultdict(list)
     for agent in agents:
@@ -29,7 +29,7 @@ def get_base_class_summary(agents: List[Dict]) -> Dict[str, List[str]]:
             base_classes[layer].append(agent['class_name'])
     return dict(base_classes)
 
-def get_territory_counts(agents: List[Dict]) -> Dict[str, int]:
+def get_territory_counts(agents: list[dict]) -> dict[str, int]:
     """Get agent counts per territory."""
     counts = defaultdict(int)
     for agent in agents:
@@ -37,11 +37,11 @@ def get_territory_counts(agents: List[Dict]) -> Dict[str, int]:
         counts[territory] += 1
     return dict(counts)
 
-def get_agent_list(agents: List[Dict]) -> set:
+def get_agent_list(agents: list[dict]) -> set:
     """Get set of agent class names."""
     return {a['class_name'] for a in agents}
 
-def compare_snapshots(t_minus_1: List[Dict], t: List[Dict]) -> Dict[str, Any]:
+def compare_snapshots(t_minus_1: list[dict], t: list[dict]) -> dict[str, Any]:
     """
     Compare two discovery snapshots and identify variances.
 
@@ -112,7 +112,7 @@ def compare_snapshots(t_minus_1: List[Dict], t: List[Dict]) -> Dict[str, Any]:
 
     return results
 
-def rationalize_variances(results: Dict[str, Any]) -> List[str]:
+def rationalize_variances(results: dict[str, Any]) -> list[str]:
     """
     Rationalize all variances between snapshots.
 
@@ -166,7 +166,7 @@ def rationalize_variances(results: Dict[str, Any]) -> List[str]:
 
     return rationale
 
-def print_comparison_report(results: Dict[str, Any], rationale: List[str]):
+def print_comparison_report(results: dict[str, Any], rationale: list[str]):
     """Print formatted comparison report."""
     print("\n" + "=" * 80)
     print("DASHBOARD SNAPSHOT REGRESSION TEST")

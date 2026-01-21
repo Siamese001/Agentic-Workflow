@@ -6,8 +6,8 @@ Tests:
 2. Active dependency scanning
 3. Dry-run mode validation
 """
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

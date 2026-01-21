@@ -31,22 +31,23 @@
 #   PromptTemplateManager has 'constitutional_review' prompt.
 # - FIXED: All v10_5 class names/imports updated to v10_7.
 
-import os
+import asyncio
+import hashlib
+import importlib
 import json
 import logging
-import hashlib
-import asyncio
-import importlib
+import os
+import random  # v10.7: Added for Fix #29
 import time
-import random # v10.7: Added for Fix #29
 from functools import wraps
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
 from chromadb.utils import embedding_functions
-
-from mcp import get_tool, get_schema, sync_context
+from mcp import get_schema, get_tool, sync_context
+from pydantic import BaseModel, Field
+from pydantic import ValidationError as PydanticValidationError
 from telemetry_v10_7 import log_event
+
 try:
     import anthropic
     import google.generativeai as genai
@@ -55,10 +56,11 @@ except ImportError:
     anthropic = None
     genai = None
 
-from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional, Tuple, Type, TypeVar, Callable, Awaitable
-from datetime import datetime
 from asyncio import TimeoutError as AsyncTimeoutError
+from collections.abc import Awaitable, Callable
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+from typing import Any, Optional, TypeVar
 
 # v10.7: Logger name updated
 logger = logging.getLogger("core_v10_7")
@@ -70,8 +72,8 @@ openai_module = get_tool("openai")
 AsyncOpenAI = getattr(openai_module, "AsyncOpenAI", None)
 
 if TYPE_CHECKING:  # pragma: no cover - typing aids
-    from redis import Redis as RedisType
     from chromadb import Client as ChromaClientType
+    from redis import Redis as RedisType
 else:
     RedisType = Any
     ChromaClientType = Any
@@ -111,7 +113,7 @@ class ConfigV10_7:
 class ConfigSection:
     """Wrapper for nested config sections"""
 
-    def __init__(self, data: Dict):
+    def __init__(self, data: dict):
         self._data = data
 
     def __getattr__(self, name):
@@ -145,16 +147,16 @@ class MCPClientSpec:
 
     name: str
     provider: str = "stub"
-    module: Optional[str] = None
-    class_name: Optional[str] = None
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    module: str | None = None
+    class_name: str | None = None
+    parameters: dict[str, Any] = field(default_factory=dict)
     optional: bool = False
 
 
 class MCPClientStub:
     """Fallback stub MCP client used when no concrete implementation exists."""
 
-    def __init__(self, name: str, parameters: Optional[Dict[str, Any]] = None):
+    def __init__(self, name: str, parameters: dict[str, Any] | None = None):
         self.name = name
         self.parameters = parameters or {}
 
@@ -163,10 +165,10 @@ class MCPClientStub:
         return f"<MCPClientStub name={self.name} {details}>"
 
 
-def _parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpec]:
+def _parse_mcp_client_specs(raw_specs: list[dict[str, Any]]) -> list[MCPClientSpec]:
     """Validate and normalise MCP client specifications."""
 
-    specs: List[MCPClientSpec] = []
+    specs: list[MCPClientSpec] = []
     for raw in raw_specs:
         if not isinstance(raw, dict):
             raise ValueError("Each MCP client entry must be a mapping.")
@@ -280,11 +282,11 @@ class BaseToolOutput(BaseModel):
 class DraftStrategyOutput(BaseToolOutput):
     feedback: str = Field(..., description="Strategic feedback on the draft")
 class RedTeamOutput(BaseToolOutput):
-    weaknesses_found: List[str] = Field(..., description="List of identified weaknesses")
+    weaknesses_found: list[str] = Field(..., description="List of identified weaknesses")
 class RefineSectionOutput(BaseToolOutput):
     refined_text: str = Field(..., description="The new, refined text for the section")
 class AddMetricsOutput(BaseToolOutput):
-    suggestions: List[str] = Field(..., description="Specific suggestions for adding metrics")
+    suggestions: list[str] = Field(..., description="Specific suggestions for adding metrics")
 class QAClaimOutput(BaseToolOutput):
     unsupported_claims: int = Field(..., ge=0, description="Count of claims not supported by the master resume")
     feedback: str = Field(..., description="NLI feedback and analysis")
@@ -300,19 +302,19 @@ class QANarrativeThreadOutput(BaseModel):
     narrative_clear: bool = Field(..., description="Whether a clear career narrative was detected")
 class QAJDSkillsOutput(BaseToolOutput):
     keyword_coverage: float = Field(..., ge=0.0, le=1.0, description="Percentage of JD keywords found in the draft")
-    missing_keywords: List[str] = Field(..., description="List of important missing keywords")
+    missing_keywords: list[str] = Field(..., description="List of important missing keywords")
 class QASignalScoreOutput(BaseToolOutput):
     avg_signal_score: float = Field(..., ge=0.0, le=10.0, description="Average signal-to-noise score (0-10)")
 class QATenureOutput(BaseToolOutput):
     gaps_found: int = Field(..., ge=0, description="Number of unexplained tenure gaps")
     overlaps_found: int = Field(..., ge=0, description="Number of overlapping job dates")
 class QAMissedOpportunitiesOutput(BaseToolOutput):
-    opportunities_found: List[str] = Field(..., description="List of relevant experiences from master resume that were omitted")
+    opportunities_found: list[str] = Field(..., description="List of relevant experiences from master resume that were omitted")
 class QAAdversarialOutput(BaseToolOutput):
-    red_flags: List[str] = Field(..., description="List of red flags a skeptical hiring manager would find")
+    red_flags: list[str] = Field(..., description="List of red flags a skeptical hiring manager would find")
 class QABiasOutput(BaseModel):
     bias_detected: bool
-    patterns: List[str]
+    patterns: list[str]
     bias_score: float
     dynamic_rules_applied: int
 
@@ -322,7 +324,7 @@ class PlannerAssessment(BaseModel):
     vote: str = Field(..., description="Planner vote (e.g., 'approve', 'revise', 'escalate')")
     rationale: str = Field(..., description="Summary of why the planner issued this vote")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score for the vote (0.0-1.0)")
-    recommended_actions: List[str] = Field(default_factory=list, description="Optional action items suggested by the planner")
+    recommended_actions: list[str] = Field(default_factory=list, description="Optional action items suggested by the planner")
 
 
 class ScenarioSimulationResult(BaseModel):
@@ -330,29 +332,29 @@ class ScenarioSimulationResult(BaseModel):
     risk_level: str = Field(..., description="Qualitative risk classification (e.g., low, medium, high)")
     impact_score: float = Field(..., ge=0.0, le=1.0, description="Estimated impact score between 0 and 1")
     summary: str = Field(..., description="Short narrative of simulation findings")
-    mitigation_actions: List[str] = Field(default_factory=list, description="Recommended mitigations derived from the scenario")
+    mitigation_actions: list[str] = Field(default_factory=list, description="Recommended mitigations derived from the scenario")
 
 
 class StrategyPlan(BaseModel):
     strategy_name: str = Field(..., description="A brief, descriptive name for the strategy")
-    focus_areas: List[str] = Field(..., description="The main themes to emphasize (e.g., 'AI Leadership', 'Technical Deep-Dive')")
-    key_achievements_to_highlight: List[str] = Field(..., description="Specific achievements from the master resume to feature")
+    focus_areas: list[str] = Field(..., description="The main themes to emphasize (e.g., 'AI Leadership', 'Technical Deep-Dive')")
+    key_achievements_to_highlight: list[str] = Field(..., description="Specific achievements from the master resume to feature")
     tone: str = Field(..., description="The desired tone (e.g., 'professional', 'technical', 'leadership')")
-    planner_assessments: List[PlannerAssessment] = Field(default_factory=list, description="Assessments gathered from specialist planners")
+    planner_assessments: list[PlannerAssessment] = Field(default_factory=list, description="Assessments gathered from specialist planners")
     aggregated_decision: str = Field("undecided", description="Coordinator decision synthesized from planner votes")
     aggregated_confidence: float = Field(0.0, ge=0.0, le=1.0, description="Confidence score for the aggregated decision")
-    aggregated_rationale: Optional[str] = Field(None, description="Coordinator rationale for the aggregated decision")
-    feedback_signals: List[str] = Field(default_factory=list, description="Signals or adjustments applied from downstream feedback")
-    scenario_simulations: List[ScenarioSimulationResult] = Field(default_factory=list, description="Stress test results for candidate strategy")
-    coordinator_summary: Optional[str] = Field(None, description="High-level summary generated by the strategy coordinator")
+    aggregated_rationale: str | None = Field(None, description="Coordinator rationale for the aggregated decision")
+    feedback_signals: list[str] = Field(default_factory=list, description="Signals or adjustments applied from downstream feedback")
+    scenario_simulations: list[ScenarioSimulationResult] = Field(default_factory=list, description="Stress test results for candidate strategy")
+    coordinator_summary: str | None = Field(None, description="High-level summary generated by the strategy coordinator")
 class GeneratedPrompts(BaseModel):
     bullet_generation_prompt: str
     critique_prompt: str
 class BulletList(BaseModel):
-    verified_bullets: List[str] = Field(..., description="List of fact-checked, high-quality bullets")
+    verified_bullets: list[str] = Field(..., description="List of fact-checked, high-quality bullets")
 class CritiqueResult(BaseModel):
     score: float = Field(..., ge=0.0, le=10.0, description="Quality score from 0-10")
-    suggestions: List[str] = Field(..., description="Specific suggestions for improvement")
+    suggestions: list[str] = Field(..., description="Specific suggestions for improvement")
 class HILAmbiguityReport(BaseModel):
     ambiguity_detected: bool
     confidence: float = Field(..., ge=0.0, le=1.0)
@@ -364,8 +366,8 @@ class PersonaReviewDecision(BaseModel):
     persona: str = Field(..., description="Persona name (e.g., Legal, Brand, SME)")
     approval: bool = Field(..., description="True if the persona approves the change")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Model confidence in the persona decision")
-    key_concerns: List[str] = Field(default_factory=list, description="Top issues raised by the persona")
-    proposed_actions: List[str] = Field(default_factory=list, description="Specific actions requested by the persona")
+    key_concerns: list[str] = Field(default_factory=list, description="Top issues raised by the persona")
+    proposed_actions: list[str] = Field(default_factory=list, description="Specific actions requested by the persona")
     escalation_recommended: bool = Field(
         False,
         description="True if the persona recommends escalating to a specialist human reviewer"
@@ -375,8 +377,8 @@ class PersonaReviewDecision(BaseModel):
 class PersonaConsensus(BaseModel):
     approved: bool = Field(..., description="True if consensus favors accepting the edit")
     rationale: str = Field(..., description="Narrative summary of the negotiation outcome")
-    negotiated_actions: List[str] = Field(default_factory=list, description="Actions agreed upon during negotiation")
-    persona_votes: List[PersonaReviewDecision] = Field(
+    negotiated_actions: list[str] = Field(default_factory=list, description="Actions agreed upon during negotiation")
+    persona_votes: list[PersonaReviewDecision] = Field(
         default_factory=list,
         description="Detailed breakdown of each persona's vote and rationale"
     )
@@ -387,23 +389,23 @@ class HILFeedbackIntent(BaseModel):
     summary: str = Field(..., description="Human-readable description of the intent")
     severity: str = Field(..., description="Qualitative severity (e.g., 'critical', 'minor')")
     recommended_owner: str = Field(..., description="Suggested owner (Strategy, Drafting, Legal, etc.)")
-    exemplar_quotes: List[str] = Field(default_factory=list, description="Representative human quotes for the intent")
+    exemplar_quotes: list[str] = Field(default_factory=list, description="Representative human quotes for the intent")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the clustering")
 
 
 class HILReconciliationResult(BaseModel):
     integrated_text: str = Field(..., description="Reconciled text ready to merge into the draft")
-    change_log: List[str] = Field(default_factory=list, description="Bullet log of applied changes")
-    unresolved_questions: List[str] = Field(default_factory=list, description="Open questions that need human follow-up")
+    change_log: list[str] = Field(default_factory=list, description="Bullet log of applied changes")
+    unresolved_questions: list[str] = Field(default_factory=list, description="Open questions that need human follow-up")
 
 
 class HILFeedbackRoute(BaseModel):
     next_step: str = Field(..., description="The graph node to jump to (e.g., 'STRATEGY', 'DRAFTING', 'INJECT_EDIT')")
-    payload: Optional[str] = Field(None, description="Corrected text or data from the human")
-    intent_clusters: List[HILFeedbackIntent] = Field(default_factory=list, description="Clustered intents extracted from human feedback")
-    delegated_specialists: List[str] = Field(default_factory=list, description="List of human specialists requested for escalation")
-    persona_consensus: Optional[PersonaConsensus] = Field(None, description="Negotiated consensus between virtual personas")
-    reconciliation: Optional[HILReconciliationResult] = Field(
+    payload: str | None = Field(None, description="Corrected text or data from the human")
+    intent_clusters: list[HILFeedbackIntent] = Field(default_factory=list, description="Clustered intents extracted from human feedback")
+    delegated_specialists: list[str] = Field(default_factory=list, description="List of human specialists requested for escalation")
+    persona_consensus: PersonaConsensus | None = Field(None, description="Negotiated consensus between virtual personas")
+    reconciliation: HILReconciliationResult | None = Field(
         None,
         description="Latest reconciliation result from specialist feedback"
     )
@@ -411,7 +413,7 @@ class HILFeedbackRoute(BaseModel):
 # v10.7 (Fix #30): New model for Constitutional AI
 class ConstitutionalReviewResult(BaseModel):
     review_passed: bool = Field(..., description="True if the output passes all constitutional principles")
-    violations_found: List[str] = Field(..., description="A list of principles that were violated")
+    violations_found: list[str] = Field(..., description="A list of principles that were violated")
     feedback: str = Field(..., description="Specific feedback on how to correct the violations")
 
 # ============================================================================
@@ -459,7 +461,7 @@ def get_timeout_decorator(timeout_seconds: float) -> Callable[[Callable[..., Awa
     return async_timeout(int(timeout_seconds))
 
 
-def _extract_workflow_context(args: Tuple[Any, ...], kwargs: Dict[str, Any]) -> Optional['WorkflowContext']:
+def _extract_workflow_context(args: tuple[Any, ...], kwargs: dict[str, Any]) -> Optional['WorkflowContext']:
     for arg in args:
         if isinstance(arg, WorkflowContext):
             return arg
@@ -480,7 +482,7 @@ def update_context(context: Optional['WorkflowContext']) -> None:
         logger.debug("Context sync skipped: %s", exc)
 
 
-def wrap_mcp(func: Optional[Callable] = None, *, force: bool = False) -> Callable:
+def wrap_mcp(func: Callable | None = None, *, force: bool = False) -> Callable:
     """Decorator that ensures MCP clients are initialised for node handlers."""
 
     if func is None:
@@ -580,7 +582,7 @@ class ContextBudgetManager:
         self.logger.warning(f"Context truncated to {max_tokens} tokens.")
         return f"{pruned_doc}\n\n[... DOCUMENT PRUNED ({label}) ...]"
 
-    async def prune(self, document: str, max_tokens: Optional[int] = None) -> str:
+    async def prune(self, document: str, max_tokens: int | None = None) -> str:
         if max_tokens is None:
             max_tokens = self.default_limit
 
@@ -597,7 +599,7 @@ class MetricsCollector:
     """v10.7: In-memory collector for agent/tool observability."""
     def __init__(self):
         self.logger = logging.getLogger(f"{__name__}.MetricsCollector")
-        self.metrics: List[Dict[str, Any]] = []
+        self.metrics: list[dict[str, Any]] = []
         self.log_path = "./logs/metrics_v10_7.jsonl"
         try:
             os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
@@ -605,7 +607,7 @@ class MetricsCollector:
         except OSError as e:
             self.logger.error(f"Could not create log directory for metrics: {e}")
 
-    def record(self, agent_name: str, task_name: str, duration_ms: float, success: bool, error: Optional[str] = None, metadata: Optional[Dict[str, Any]] = None):
+    def record(self, agent_name: str, task_name: str, duration_ms: float, success: bool, error: str | None = None, metadata: dict[str, Any] | None = None):
         metric = {
             "timestamp": datetime.now().isoformat(),
             "agent_name": agent_name,
@@ -623,10 +625,10 @@ class MetricsCollector:
         except Exception as e:
             self.logger.error(f"Failed to write metric to log: {e}")
 
-    def get_summary(self) -> List[Dict[str, Any]]:
+    def get_summary(self) -> list[dict[str, Any]]:
         return self.metrics
 
-    def get_average_latency(self, agent_name: str, task_name: str) -> Optional[float]:
+    def get_average_latency(self, agent_name: str, task_name: str) -> float | None:
         """v10.7 (Fix #15): Gets average latency for a specific task."""
         latencies = [
             m['duration_ms'] for m in self.metrics
@@ -693,7 +695,7 @@ class SemanticValidator:
         self.logger = logging.getLogger(f"{__name__}.SemanticValidator")
         self.metrics = metrics_collector
 
-    def check_word_count(self, text: str, min_words: int, max_words: int, llm_reported_count: Optional[int] = None, workflow_id: str = "") -> Tuple[bool, str]:
+    def check_word_count(self, text: str, min_words: int, max_words: int, llm_reported_count: int | None = None, workflow_id: str = "") -> tuple[bool, str]:
         deterministic_count = len(text.split())
 
         if llm_reported_count is not None:
@@ -724,10 +726,10 @@ class SemanticValidator:
 
 async def _format_prompt_with_defaults(
     template: str,
-    tool_input: Dict[str, Any],
+    tool_input: dict[str, Any],
     budget_manager: ContextBudgetManager,
     goal_state: str,         # v10.7 (Fix #19)
-    top_failures: List[str]  # v10.7 (Fix #24)
+    top_failures: list[str]  # v10.7 (Fix #24)
 ) -> str:
     """
     v10.7: Centralized helper.
@@ -814,7 +816,7 @@ class PromptTemplateManager:
         # v10.7 (Fix #19): Define global goal state
         self.goal_state = "Create a verified, high-quality, customized resume artifact."
 
-    def _get_top_failures(self, feedback_reader: 'FeedbackLogReader') -> List[str]:
+    def _get_top_failures(self, feedback_reader: 'FeedbackLogReader') -> list[str]:
         """v10.7 (Fix #24): Analyzes feedback log for top failure patterns."""
         try:
             failures = feedback_reader.get_failures(max_entries=100)
@@ -844,7 +846,7 @@ class PromptTemplateManager:
         )
         return injected_template
 
-    def _load_templates(self) -> Dict[str, str]:
+    def _load_templates(self) -> dict[str, str]:
         """
         v10.7 (Fix #17, #20): Defines all system prompts using Cognitive Modes.
         """
@@ -993,7 +995,7 @@ class ResponseValidator:
     def __init__(self):
         self.logger = logging.getLogger(f"{__name__}.ResponseValidator")
 
-    def _extract_json(self, text: str) -> Optional[Any]:
+    def _extract_json(self, text: str) -> Any | None:
         try:
             json_start = text.find('{')
             json_end = text.rfind('}') + 1
@@ -1013,7 +1015,7 @@ class ResponseValidator:
         self,
         response_content: Any,
         output_model: Any
-    ) -> Tuple[Optional[Any], Optional[str]]:
+    ) -> tuple[Any | None, str | None]:
         try:
             if isinstance(response_content, str):
                 json_content = self._extract_json(response_content)
@@ -1062,25 +1064,25 @@ class FeedbackEntry:
     agent_name: str
     task: str
     feedback_type: str # "success", "failure", "warning"
-    details: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 class FeedbackLogReader:
     def __init__(self, feedback_log_path: str):
         self.feedback_log_path = feedback_log_path
         self.logger = logging.getLogger(f"{__name__}.FeedbackLogReader")
-        self._cache: List[FeedbackEntry] = []
-        self._last_read_time: Optional[float] = None
+        self._cache: list[FeedbackEntry] = []
+        self._last_read_time: float | None = None
         self._cache_ttl = 60.0
 
-    def _read_log_lines(self, max_entries: int) -> List[FeedbackEntry]:
+    def _read_log_lines(self, max_entries: int) -> list[FeedbackEntry]:
         now = time.time()
         if self._last_read_time and (now - self._last_read_time) < self._cache_ttl:
             return self._cache
         try:
             if not os.path.exists(self.feedback_log_path): return []
             entries = []
-            with open(self.feedback_log_path, 'r') as f:
+            with open(self.feedback_log_path) as f:
                 # Read all lines, parse only the last N
                 lines = f.readlines()
                 for line in lines[-max_entries:]:
@@ -1093,10 +1095,10 @@ class FeedbackLogReader:
             self.logger.error(f"Failed to read feedback log: {e}")
             return []
 
-    def read_recent_feedback(self, max_entries: int = 100) -> List[FeedbackEntry]:
+    def read_recent_feedback(self, max_entries: int = 100) -> list[FeedbackEntry]:
         return self._read_log_lines(max_entries)
 
-    def get_failures(self, max_entries: int = 100) -> List[FeedbackEntry]:
+    def get_failures(self, max_entries: int = 100) -> list[FeedbackEntry]:
         """v10.7 (Fix #24): Gets recent failure events."""
         all_entries = self._read_log_lines(max_entries)
         return [e for e in all_entries if e.feedback_type == "failure"]
@@ -1111,27 +1113,27 @@ class ProposedRule:
     status: str
     rule_type: str
     description: str
-    config_changes: Dict[str, Any]
+    config_changes: dict[str, Any]
     pattern_id: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 class ProposedRulesLoader:
     def __init__(self, proposed_rules_path: str):
         self.proposed_rules_path = proposed_rules_path
         self.logger = logging.getLogger(f"{__name__}.ProposedRulesLoader")
-        self._cache: List[ProposedRule] = []
-        self._last_mtime: Optional[float] = None
+        self._cache: list[ProposedRule] = []
+        self._last_mtime: float | None = None
 
-    def load_rules(self, status_filter: str = "APPROVED") -> List[ProposedRule]:
+    def load_rules(self, status_filter: str = "APPROVED") -> list[ProposedRule]:
         try:
             if not os.path.exists(self.proposed_rules_path): return []
             current_mtime = os.path.getmtime(self.proposed_rules_path)
             if self._last_mtime == current_mtime:
                 return [r for r in self._cache if r.status == status_filter]
 
-            self.logger.info(f"Hot-reloading proposed rules (file modified).")
+            self.logger.info("Hot-reloading proposed rules (file modified).")
             rules = []
-            with open(self.proposed_rules_path, 'r') as f:
+            with open(self.proposed_rules_path) as f:
                 for line in f:
                     try:
                         data = json.loads(line.strip())
@@ -1154,7 +1156,7 @@ class ProposedRulesLoader:
             self.logger.error(f"Failed to load proposed rules: {e}")
             return []
 
-    def get_constitution_rules(self) -> List[Dict[str, Any]]:
+    def get_constitution_rules(self) -> list[dict[str, Any]]:
         rules = self.load_rules(status_filter="APPROVED")
         # v10.7 (Fix #30): Also load rules of type 'moral_constitution'
         return [r.config_changes for r in rules if r.rule_type.lower() in ["constitution", "moral_constitution"]]
@@ -1195,7 +1197,7 @@ class CacheManager:
         key_str = f"{provider}:{model}:{prompt}:{temperature}"
         return f"llm_cache_v10_7:{hashlib.sha256(key_str.encode()).hexdigest()}"
 
-    def _generate_tool_cache_key(self, tool_name: str, tool_input: Dict[str, Any]) -> str:
+    def _generate_tool_cache_key(self, tool_name: str, tool_input: dict[str, Any]) -> str:
         try:
             input_str = json.dumps(tool_input, sort_keys=True)
             key_str = f"{tool_name}:{input_str}"
@@ -1204,7 +1206,7 @@ class CacheManager:
             self.logger.warning(f"Could not generate tool cache key for {tool_name}: {e}")
             return ""
 
-    async def get_llm_cache(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, Any]]:
+    async def get_llm_cache(self, provider: str, model: str, prompt: str, temperature: float) -> dict[str, Any] | None:
         # 1. Check Exact Cache (Redis)
         cache_key = self._generate_llm_cache_key(provider, model, prompt, temperature)
         try:
@@ -1256,7 +1258,7 @@ class CacheManager:
         })
         return None
 
-    async def set_llm_cache(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, Any]):
+    async def set_llm_cache(self, provider: str, model: str, prompt: str, temperature: float, response: dict[str, Any]):
         response_str = json.dumps(response)
 
         # 1. Set Exact Cache (Redis)
@@ -1281,7 +1283,7 @@ class CacheManager:
             except Exception as e:
                 self.logger.error(f"Semantic Cache set error: {e}")
 
-    def get_tool_cache(self, tool_name: str, tool_input: Dict[str, Any]) -> Optional[Any]:
+    def get_tool_cache(self, tool_name: str, tool_input: dict[str, Any]) -> Any | None:
         cache_key = self._generate_tool_cache_key(tool_name, tool_input)
         if not cache_key: return None
         try:
@@ -1302,7 +1304,7 @@ class CacheManager:
             log_event("CacheManager", "tool_cache_error", {"tool": tool_name, "error": str(e)})
             return None
 
-    def set_tool_cache(self, tool_name: str, tool_input: Dict[str, Any], result: Any):
+    def set_tool_cache(self, tool_name: str, tool_input: dict[str, Any], result: Any):
         cache_key = self._generate_tool_cache_key(tool_name, tool_input)
         if not cache_key: return
         try:
@@ -1311,7 +1313,7 @@ class CacheManager:
         except Exception as e:
             self.logger.error(f"Tool Cache set error: {e}")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         llm_total = self._hits + self._misses + self._semantic_hits
         llm_hit_rate = ((self._hits + self._semantic_hits) / llm_total * 100) if llm_total > 0 else 0.0
         tool_total = self._tool_hits + self._tool_misses
@@ -1337,7 +1339,7 @@ class CostTracker:
     }
     def __init__(self):
         self.logger = logging.getLogger(f"{__name__}.CostTracker")
-        self._workflow_costs: Dict[str, List[Dict]] = {}
+        self._workflow_costs: dict[str, list[dict]] = {}
     def log_cost(self, workflow_id: str, agent_name: str, model_name: str, input_tokens: int, output_tokens: int):
         provider = self._get_provider_name(model_name)
         self.record_call(workflow_id, provider, model_name, input_tokens, output_tokens)
@@ -1355,7 +1357,7 @@ class CostTracker:
             "provider": provider, "model": model, "input_tokens": input_tokens,
             "output_tokens": output_tokens, "cost": cost, "timestamp": datetime.now().isoformat()
         })
-    def get_cost_summary(self, workflow_id: str) -> Dict[str, Any]:
+    def get_cost_summary(self, workflow_id: str) -> dict[str, Any]:
         calls = self._workflow_costs.get(workflow_id, [])
         total_cost = sum(c["cost"] for c in calls)
         return {"workflow_id": workflow_id, "total_workflow_cost": total_cost, "calls": calls}
@@ -1385,7 +1387,7 @@ class BaseAgent:
     def log_debug(self, message: str):
         if self.debug_mode: self.logger.debug(f"[{self.__class__.__name__}] {message}")
 
-    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, Any]):
+    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: dict[str, Any]):
         try:
             feedback_entry = {
                 "timestamp": datetime.now().isoformat(), "workflow_id": workflow_id,
@@ -1456,7 +1458,7 @@ class BaseAgent:
 
         return client
 
-    def get_mcp_client(self, name: str, default: Optional[Any] = None) -> Any:
+    def get_mcp_client(self, name: str, default: Any | None = None) -> Any:
         """Retrieve a configured MCP client by name."""
 
         try:
@@ -1476,7 +1478,7 @@ class BaseTool(BaseAgent):
     tool_name: str = "base_tool"
 
     @track_metrics('base_tool_run')
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
         """v10.7: Wrapper to implement tool caching."""
         if not self.config.caching_config.enable_tool_caching:
             return await self._run_async_internal(tool_input, workflow_id)
@@ -1494,11 +1496,11 @@ class BaseTool(BaseAgent):
         cache_manager.set_tool_cache(self.tool_name, tool_input, result)
         return result
 
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
         """Subclasses must implement their logic here"""
         raise NotImplementedError(f"Tool {self.__class__.__name__} must implement _run_async_internal")
 
-    def get_schema(self) -> Dict[str, Any]:
+    def get_schema(self) -> dict[str, Any]:
         return {
             "name": self.tool_name,
             "description": self.__doc__ or "No description",
@@ -1528,7 +1530,7 @@ class AsyncBaseModelClient:
         self.agent_name = agent_name
         # v10.7: Injected by get_model_client
         self.goal_state: str = ""
-        self.top_failures: List[str] = []
+        self.top_failures: list[str] = []
         self.budget_manager: ContextBudgetManager = None # type: ignore
 
     def _get_provider_name(self) -> str:
@@ -1537,9 +1539,9 @@ class AsyncBaseModelClient:
         if "gpt-" in self.model_name: return "openai"
         return "unknown"
 
-    async def _run_idempotency_check(self, cached_response: Dict[str, Any],
-                                     messages: List[Dict[str, str]], temperature: float,
-                                     response_format: Optional[str] = None):
+    async def _run_idempotency_check(self, cached_response: dict[str, Any],
+                                     messages: list[dict[str, str]], temperature: float,
+                                     response_format: str | None = None):
         """v10.7 (Fix #29): Runs a 'shadow call' to check for cache drift."""
         try:
             logger.debug(f"Running Idempotency Check for {self.model_name}")
@@ -1564,9 +1566,9 @@ class AsyncBaseModelClient:
             logger.warning(f"Idempotency check failed: {e}")
 
     @track_metrics('AsyncBaseModelClient') # v10.7 (Fix #15): Track latency
-    async def chat_completion_async(self, messages: List[Dict[str, str]],
+    async def chat_completion_async(self, messages: list[dict[str, str]],
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: str | None = None) -> dict[str, Any]:
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
         provider = self._get_provider_name()
 
@@ -1588,16 +1590,16 @@ class AsyncBaseModelClient:
         await self.cache_manager.set_llm_cache(provider, self.model_name, prompt, temperature, result)
         return result
 
-    async def _internal_api_call(self, messages: List[Dict[str, str]],
+    async def _internal_api_call(self, messages: list[dict[str, str]],
                                  temperature: float = 0.7,
-                                 response_format: Optional[str] = None) -> Dict[str, Any]:
+                                 response_format: str | None = None) -> dict[str, Any]:
         """Subclasses must implement the actual API call logic here."""
         raise NotImplementedError
 
 class AnthropicAsyncClient(AsyncBaseModelClient):
-    async def _internal_api_call(self, messages: List[Dict[str, str]],
+    async def _internal_api_call(self, messages: list[dict[str, str]],
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: str | None = None) -> dict[str, Any]:
         if anthropic is None:
             raise ModelAPIError("Anthropic library not installed. Run 'pip install anthropic'")
         try:
@@ -1620,9 +1622,9 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
             raise ModelAPIError(f"Anthropic API call failed: {e}")
 
 class GeminiAsyncClient(AsyncBaseModelClient):
-    async def _internal_api_call(self, messages: List[Dict[str, str]],
+    async def _internal_api_call(self, messages: list[dict[str, str]],
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: str | None = None) -> dict[str, Any]:
         if genai is None:
             raise ModelAPIError("Google GenerativeAI library not installed. Run 'pip install google-generativeai'")
         try:
@@ -1644,9 +1646,9 @@ class GeminiAsyncClient(AsyncBaseModelClient):
             raise ModelAPIError(f"Gemini API call failed: {e}")
 
 class OpenAIAsyncClient(AsyncBaseModelClient):
-    async def _internal_api_call(self, messages: List[Dict[str, str]],
+    async def _internal_api_call(self, messages: list[dict[str, str]],
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: str | None = None) -> dict[str, Any]:
         if AsyncOpenAI is None:
             raise ModelAPIError("OpenAI library not available. Install 'openai' to enable this client.")
         try:
@@ -1715,15 +1717,15 @@ class WorkflowContext:
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None # type: ignore
 
-        self._model_clients: Dict[str, Any] = {}
+        self._model_clients: dict[str, Any] = {}
 
         # MCP integration state
-        self.mcp_clients: Dict[str, Any] = {}
+        self.mcp_clients: dict[str, Any] = {}
         self._mcp_initialized: bool = False
-        self._mcp_client_specs: List[MCPClientSpec] = []
+        self._mcp_client_specs: list[MCPClientSpec] = []
         self._mcp_fallback_mode: str = "error"
-        self._mcp_fallback_parameters: Dict[str, Any] = {}
-        self._mcp_errors: Dict[str, str] = {}
+        self._mcp_fallback_parameters: dict[str, Any] = {}
+        self._mcp_errors: dict[str, str] = {}
         self._mcp_enabled: bool = False
         self.wrap_mcp_nodes: bool = False
 
@@ -1800,7 +1802,7 @@ class WorkflowContext:
     def is_mcp_enabled(self) -> bool:
         return self._mcp_enabled
 
-    def ensure_mcp_clients(self) -> Dict[str, Any]:
+    def ensure_mcp_clients(self) -> dict[str, Any]:
         """Initialise MCP clients if required and return the registry."""
 
         if self._mcp_initialized:
@@ -1811,8 +1813,8 @@ class WorkflowContext:
             self._mcp_initialized = True
             return self.mcp_clients
 
-        clients: Dict[str, Any] = {}
-        errors: Dict[str, str] = {}
+        clients: dict[str, Any] = {}
+        errors: dict[str, str] = {}
 
         for spec in self._mcp_client_specs:
             try:
@@ -1839,7 +1841,7 @@ class WorkflowContext:
         self._mcp_initialized = True
         return self.mcp_clients
 
-    def get_mcp_client(self, name: str, default: Optional[Any] = None) -> Any:
+    def get_mcp_client(self, name: str, default: Any | None = None) -> Any:
         clients = self.ensure_mcp_clients()
         if name in clients:
             return clients[name]
@@ -1870,14 +1872,14 @@ class WorkflowContext:
 def get_checkpointer(
     config: ConfigV10_7,
     *,
-    db: Optional[int] = None,
+    db: int | None = None,
     allow_memory_fallback: bool = False
 ):
     """Create a LangGraph checkpointer with standardized fallbacks."""
 
     target_db = db if db is not None else config.redis_config.db
     # Collect errors so we can surface meaningful diagnostics if all fallbacks fail.
-    fallback_errors: List[str] = []
+    fallback_errors: list[str] = []
 
     try:
         from langgraph.checkpoint.redis import RedisSaver  # type: ignore
@@ -2053,7 +2055,7 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext):
         logger.warning(f"Failed to cleanup ChromaDB collection for {workflow_id}: {e}")
 
 
-def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> Dict[str, Any]:
+def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> dict[str, Any]:
     """Centralized bias detection service shared by agents and tools."""
 
     logger.debug("Running centralized bias detection service.")
@@ -2061,7 +2063,7 @@ def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> D
     base_patterns = ["he/she", "his/her", "male/female", "young", "old"]
     rules = context.rules_loader.get_constitution_rules()
 
-    bias_patterns: List[str] = base_patterns.copy()
+    bias_patterns: list[str] = base_patterns.copy()
     for rule in rules:
         if isinstance(rule, dict) and 'bias_patterns' in rule:
             patterns = rule.get('bias_patterns')
@@ -2087,61 +2089,61 @@ def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> D
 
 @dataclass
 class ResumeContext:
-    master_resume: Dict[str, Any] = field(default_factory=dict)
-    sanitized_resume: Dict[str, Any] = field(default_factory=dict)
-    experience_bullets: List[Dict] = field(default_factory=list)
+    master_resume: dict[str, Any] = field(default_factory=dict)
+    sanitized_resume: dict[str, Any] = field(default_factory=dict)
+    experience_bullets: list[dict] = field(default_factory=list)
 @dataclass
 class JobContext:
     raw_jd: str = ""
     company: str = ""
     job_title: str = ""
-    parsed_requirements: Dict[str, Any] = field(default_factory=dict)
+    parsed_requirements: dict[str, Any] = field(default_factory=dict)
 @dataclass
 class StrategyContext:
-    strategy_plan: Optional[StrategyPlan] = None
-    tot_branches: List[Dict] = field(default_factory=list)
+    strategy_plan: StrategyPlan | None = None
+    tot_branches: list[dict] = field(default_factory=list)
 @dataclass
 class PromptContext:
-    prompts: Optional[GeneratedPrompts] = None
+    prompts: GeneratedPrompts | None = None
 @dataclass
 class BulletContext:
-    generated_bullets: List[Dict] = field(default_factory=list)
-    critiqued_bullets: List[Dict] = field(default_factory=list)
+    generated_bullets: list[dict] = field(default_factory=list)
+    critiqued_bullets: list[dict] = field(default_factory=list)
 @dataclass
 class DraftContext:
-    sections: Dict[str, Any] = field(default_factory=dict)
+    sections: dict[str, Any] = field(default_factory=dict)
 @dataclass
 class QAContext:
-    validation_results: Dict[str, Any] = field(default_factory=dict)
+    validation_results: dict[str, Any] = field(default_factory=dict)
     qa_passed: bool = False
-    constitutional_review: Optional[ConstitutionalReviewResult] = None # v10.7 (Fix #30)
+    constitutional_review: ConstitutionalReviewResult | None = None # v10.7 (Fix #30)
 @dataclass
 class ArtifactContext:
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    artifacts: dict[str, Any] = field(default_factory=dict)
 @dataclass
 class MetadataContext:
     workflow_id: str = ""
     timestamp: str = ""
     cost: float = 0.0
-    retries: Dict[str, int] = field(default_factory=lambda: {"bullet_retries": 0, "qa_retries": 0})
+    retries: dict[str, int] = field(default_factory=lambda: {"bullet_retries": 0, "qa_retries": 0})
     complexity: str = "unknown"
 @dataclass
 class SafetyContext:
     pii_detected: bool = False
     bias_detected: bool = False
-    safety_notes: List[str] = field(default_factory=list)
+    safety_notes: list[str] = field(default_factory=list)
     injection_detected: bool = False
 @dataclass
 class FeedbackContext:
-    recent_feedback: List[FeedbackEntry] = field(default_factory=list)
-    applied_rules: List[str] = field(default_factory=list)
-    selected_agents: Dict[str, str] = field(default_factory=dict)
+    recent_feedback: list[FeedbackEntry] = field(default_factory=list)
+    applied_rules: list[str] = field(default_factory=list)
+    selected_agents: dict[str, str] = field(default_factory=dict)
 @dataclass
 class HILContext:
     ambiguity_detected: bool = False
-    ambiguity_report: Optional[HILAmbiguityReport] = None
+    ambiguity_report: HILAmbiguityReport | None = None
     next_step: str = ""
-    payload: Optional[str] = None
+    payload: str | None = None
 
 # v10.7 (Fix #10): Agent-to-Agent Communication State
 @dataclass
@@ -2149,12 +2151,12 @@ class A2AMessage:
     sender: str
     recipient: str # Can be "ALL"
     message_type: str # e.g., "ERROR", "METRIC", "UI_EVENT"
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
 @dataclass
 class A2AContext:
-    messages: List[A2AMessage] = field(default_factory=list)
+    messages: list[A2AMessage] = field(default_factory=list)
 
 @dataclass
 class MainGraphState:
@@ -2173,7 +2175,7 @@ class MainGraphState:
     hil: HILContext = field(default_factory=HILContext)
     a2a: A2AContext = field(default_factory=A2AContext) # v10.7 (Fix #10)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """v10.7: Custom serializer to handle nested Pydantic models."""
         data = asdict(self)
 
@@ -2190,7 +2192,7 @@ class MainGraphState:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'MainGraphState':
+    def from_dict(cls, data: dict[str, Any]) -> 'MainGraphState':
         """v10.7: Custom deserializer to reconstruct nested Pydantic models."""
         state = cls()
 
@@ -2243,15 +2245,15 @@ class MainGraphState:
 @dataclass
 class MetaGraphState:
     """v10.7: Meta-learning graph state."""
-    raw_logs: Dict[str, str] = field(default_factory=dict)
-    log_summary: Dict[str, Any] = field(default_factory=dict)
-    patterns: List[Dict] = field(default_factory=list)
-    hypotheses: List[Dict] = field(default_factory=list)
-    proposal: Dict[str, Any] = field(default_factory=dict)
-    critique: Dict[str, Any] = field(default_factory=dict)
+    raw_logs: dict[str, str] = field(default_factory=dict)
+    log_summary: dict[str, Any] = field(default_factory=dict)
+    patterns: list[dict] = field(default_factory=list)
+    hypotheses: list[dict] = field(default_factory=list)
+    proposal: dict[str, Any] = field(default_factory=dict)
+    critique: dict[str, Any] = field(default_factory=dict)
     replan_count: int = 0
     workflow_id: str = ""
-    generated_tool_code: Optional[str] = None
+    generated_tool_code: str | None = None
 
 # ============================================================================
 # END OF core_v10_7.py

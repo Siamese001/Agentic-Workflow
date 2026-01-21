@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Prompt Optimizer
 Advanced prompt engineering and optimization.
@@ -6,7 +7,8 @@ Advanced prompt engineering and optimization.
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class OptimizationStrategy(Enum):
@@ -43,7 +45,7 @@ class PromptOptimizer:
         Logger.debug(f'Optimizing prompt with strategy: {self.config.strategy}')
         return prompt
 
-    def analyze_prompt(self, prompt: str) -> Dict[str, Any]:
+    def analyze_prompt(self, prompt: str) -> dict[str, Any]:
         """Analyze prompt quality."""
         return {'length': len(prompt), 'clarity_score': 0.8, 'specificity_score': 0.7, 'suggestions': []}
 

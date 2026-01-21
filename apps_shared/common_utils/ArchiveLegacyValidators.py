@@ -17,13 +17,12 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / "archives" / "legacy_validators"
 
 # Legacy validators to archive with their current locations
-LEGACY_VALIDATORS: Dict[str, str] = {
+LEGACY_VALIDATORS: dict[str, str] = {
     # L5 Code Validators -> UnifiedCodeValidatorAgent
     "SyntaxValidatorAgent.py": "agentic_core/L5_safety/validators/",
     "CanonAstValidatorAgent.py": "agentic_core/L5_safety/validators/",
@@ -74,7 +73,7 @@ def find_validator(filename: str, expected_dir: str) -> Path | None:
     return None
 
 
-def archive_validator(source: Path, dry_run: bool = False) -> Tuple[bool, str]:
+def archive_validator(source: Path, dry_run: bool = False) -> tuple[bool, str]:
     """Archive a single validator file."""
     target = ARCHIVE_DIR / source.name
 

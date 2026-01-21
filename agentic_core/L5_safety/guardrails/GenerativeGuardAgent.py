@@ -5,8 +5,10 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 from dataclasses import dataclass
+
 """
 GenerativeGuardAgent - Detects and removes runaway generated files.
 
@@ -19,15 +21,15 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Import CanonBaseAgentInterface
 try:
@@ -42,8 +44,6 @@ try:
         AGENT_DISCOVERY_JSON,
         AGENT_DISCOVERY_MANIFEST_JSON,
         AGENTIC_CORE_DIR,
-        SCRIPTS_DIR,
-        TESTS_DIR,
         DASHBOARD_DIR,
         L0_MAINTENANCE_DIR,
         L1_COGNITION_DIR,
@@ -52,6 +52,8 @@ try:
         L4_STATE_DIR,
         L5_SAFETY_DIR,
         L6_OBSERVABILITY_DIR,
+        SCRIPTS_DIR,
+        TESTS_DIR,
         get_validated_project_root,
     )
 except ImportError:
@@ -109,12 +111,12 @@ class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInt
             r"_temp\d*\.py$",
         ]
 
-    async def execute(self, goal: str = None, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def execute(self, goal: str = None, context: dict[str, Any] = None) -> dict[str, Any]:
         """Execute guard checks - maintains backward compatibility."""
         await self._execute_guard()
         return {"status": "completed", "agent": self.name}
 
-    def get_capabilities(self) -> List[str]:
+    def get_capabilities(self) -> list[str]:
         """Return agent capabilities."""
         return ["runaway_detection", "file_cleanup", "pattern_matching"]
 
@@ -148,7 +150,7 @@ class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInt
         except OSError as e:
             print(f"         [X] Failed to delete {file_path}: {e}", file=sys.stderr)
 
-    def _process_found_violations(self, violations: List[str]) -> Any:
+    def _process_found_violations(self, violations: list[str]) -> Any:
         """Helper to process and optionally purge detected runaway files."""
         print(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
         self.ctx.report(self.name, 45, False, violations)
@@ -170,7 +172,7 @@ class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInt
                 return True
         return False
 
-    def _find_runaway_violations_in_dir(self, root: str, files: List[str]) -> List[str]:
+    def _find_runaway_violations_in_dir(self, root: str, files: list[str]) -> list[str]:
         """Helper to find runaway violations within a specific directory."""
         violations_in_dir = []
         for file in files:
@@ -181,7 +183,7 @@ class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInt
                 violations_in_dir.append(file_path)
         return violations_in_dir
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         super().heal_repository()
 

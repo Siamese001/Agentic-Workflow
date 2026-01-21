@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Intelligence & Strategic Analysis Module - Phase 6 Implementation
 
@@ -9,24 +10,25 @@ This module provides advanced intelligence capabilities:
 - OmniContext: Global context management and semantic retrieval
 - UnifiedOrchestratorAgent: Multi-phase execution with convergence
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-
-
 import asyncio
 import hashlib
 import json
 import re
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
+    L3SubatomicTestingMixin,
+)
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .context import ResumeEngineContext
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 
 class SecurityLevel(Enum):
@@ -88,7 +90,7 @@ class SecurityIssue:
     Severity: str
     category: str
     file_path: str
-    line_number: Optional[int]
+    line_number: int | None
     description: str
     Recommendation: str
 
@@ -99,7 +101,7 @@ class SemanticMatch:
     file_path: str
     content_preview: str
     similarity_score: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -119,10 +121,10 @@ class PhaseResult:
     """Result of a phase execution."""
     phase_name: str
     phase_type: PhaseType
-    agents_executed: List[str]
+    agents_executed: list[str]
     success: bool
     duration_ms: float
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 class SecurityHardener:
@@ -167,10 +169,10 @@ class SecurityHardener:
     def __init__(self, ctx: ResumeEngineContext, level: SecurityLevel = SecurityLevel.STANDARD) -> None:
         self.ctx = ctx
         self.level = level
-        self._issues: List[SecurityIssue] = []
+        self._issues: list[SecurityIssue] = []
         self._scans_performed = 0
 
-    def scan_content(self, content: str, file_path: str = "unknown") -> List[SecurityIssue]:
+    def scan_content(self, content: str, file_path: str = "unknown") -> list[SecurityIssue]:
         """
         Scan content for security issues.
 
@@ -204,7 +206,7 @@ class SecurityHardener:
 
         return issues
 
-    def scan_resume(self, resume: Dict[str, Any]) -> List[SecurityIssue]:
+    def scan_resume(self, resume: dict[str, Any]) -> list[SecurityIssue]:
         """
         Scan resume content for sensitive data.
 
@@ -266,15 +268,15 @@ class SecurityHardener:
         }
         return recommendations.get(category, "Review and fix the security issue")
 
-    def get_issues(self) -> List[SecurityIssue]:
+    def get_issues(self) -> list[SecurityIssue]:
         """Get all security issues found."""
         return self._issues
 
-    def get_issues_by_severity(self, Severity: str) -> List[SecurityIssue]:
+    def get_issues_by_severity(self, Severity: str) -> list[SecurityIssue]:
         """Get issues filtered by Severity."""
         return [i for i in self._issues if i.Severity == Severity]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get security scanning statistics."""
         return {
             "scans_performed": self._scans_performed,
@@ -314,9 +316,9 @@ class SemanticAnalyzer:
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._analyses: List[Dict[str, Any]] = []
+        self._analyses: list[dict[str, Any]] = []
 
-    def analyze_content(self, content: str, analysis_type: AnalysisType = AnalysisType.CONTENT) -> Dict[str, Any]:
+    def analyze_content(self, content: str, analysis_type: AnalysisType = AnalysisType.CONTENT) -> dict[str, Any]:
         """
         Analyze content for quality metrics.
 
@@ -396,7 +398,7 @@ class SemanticAnalyzer:
 
         return result
 
-    def analyze_resume(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def analyze_resume(self, resume: dict[str, Any]) -> dict[str, Any]:
         """
         Analyze a complete resume.
 
@@ -450,11 +452,11 @@ class SemanticAnalyzer:
 
         return result
 
-    def get_analyses(self) -> List[Dict[str, Any]]:
+    def get_analyses(self) -> list[dict[str, Any]]:
         """Get all analyses performed."""
         return self._analyses
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get analyzer statistics."""
         return {
             "total_analyses": len(self._analyses),
@@ -474,9 +476,9 @@ class StrategicAdvisor:
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._proposals: List[RefactorProposal] = []
+        self._proposals: list[RefactorProposal] = []
 
-    def analyze_structure(self, resume: Dict[str, Any]) -> List[RefactorProposal]:
+    def analyze_structure(self, resume: dict[str, Any]) -> list[RefactorProposal]:
         """
         Analyze resume structure and propose improvements.
 
@@ -539,7 +541,7 @@ class StrategicAdvisor:
 
         return proposals
 
-    def get_ats_recommendations(self, resume: Dict[str, Any], JobDescription: str = "") -> List[str]:
+    def get_ats_recommendations(self, resume: dict[str, Any], JobDescription: str = "") -> list[str]:
         """
         Get ATS optimization recommendations.
 
@@ -583,11 +585,11 @@ class StrategicAdvisor:
 
         return recommendations
 
-    def get_proposals(self) -> List[RefactorProposal]:
+    def get_proposals(self) -> list[RefactorProposal]:
         """Get all refactoring proposals."""
         return self._proposals
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get advisor statistics."""
         return {
             "total_proposals": len(self._proposals),
@@ -612,10 +614,10 @@ class OmniContext:
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._context_buffer: str = ""
-        self._index: Dict[str, Dict[str, Any]] = {}
+        self._index: dict[str, dict[str, Any]] = {}
         self._queries: int = 0
 
-    def build_context(self, resume: Dict[str, Any]) -> str:
+    def build_context(self, resume: dict[str, Any]) -> str:
         """
         Build a context buffer from resume.
 
@@ -655,7 +657,7 @@ class OmniContext:
 
         return self._context_buffer
 
-    def search(self, query: str, top_k: int = 3) -> List[SemanticMatch]:
+    def search(self, query: str, top_k: int = 3) -> list[SemanticMatch]:
         """
         Search the context for relevant content.
 
@@ -695,13 +697,13 @@ class OmniContext:
 
         return matches[:top_k]
 
-    def get_section(self, section_name: str) -> Optional[str]:
+    def get_section(self, section_name: str) -> str | None:
         """Get a specific section from the context."""
         if section_name in self._index:
             return self._index[section_name]["content"]
         return None
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get context statistics."""
         return {
             "buffer_size": len(self._context_buffer),
@@ -729,16 +731,16 @@ class UnifiedOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
         self.strategic = StrategicAdvisor(ctx)
         self.omni = OmniContext(ctx)
 
-        self._phase_results: List[PhaseResult] = []
+        self._phase_results: list[PhaseResult] = []
         self._cycles = 0
         self._converged = False
 
     async def run_mission(
         self,
-        resume: Dict[str, Any],
+        resume: dict[str, Any],
         JobDescription: str = "",
         max_cycles: int = 3,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Run a complete intelligence mission.
 
@@ -814,7 +816,7 @@ class UnifiedOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
         self,
         phase_name: str,
         phase_type: PhaseType,
-        agents: List[Tuple[str, Callable]],
+        agents: list[tuple[str, Callable]],
     ):
         """Run a single phase."""
         start_time = time.time()
@@ -852,7 +854,7 @@ class UnifiedOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
 
         return len(high_security) == 0 and all_phases_passed
 
-    def get_comprehensive_stats(self) -> Dict[str, Any]:
+    def get_comprehensive_stats(self) -> dict[str, Any]:
         """Get comprehensive statistics from all components."""
         return {
             "security": self.security.get_stats(),

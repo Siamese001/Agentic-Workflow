@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 Pre-commit Hook Generator - SSOT Synchronization
@@ -41,7 +42,7 @@ def sync_pre_commit(dry_run: bool = False):
     exclude_pattern = f"^({all_roots_pattern})/"
     files_pattern = f"^({roots_pattern})/.*\\.py$"
 
-    print(f"[*] Syncing Pre-commit Config with SSOT...")
+    print("[*] Syncing Pre-commit Config with SSOT...")
     print(f"   [SSOT] Sovereign Roots: {', '.join(sovereign_roots)}")
     print(f"   [PATTERN] Exclude: {exclude_pattern}")
     print(f"   [PATTERN] Files: {files_pattern}")
@@ -51,20 +52,19 @@ def sync_pre_commit(dry_run: bool = False):
 
     if not config_path.exists():
         print(f"   [!] Config not found at: {config_path}")
-        print(f"   [!] Checking alternate location...")
+        print("   [!] Checking alternate location...")
         config_path = project_root / ".pre-commit-config.yaml"
 
         if not config_path.exists():
-            print(f"   [X] No .pre-commit-config.yaml found!")
+            print("   [X] No .pre-commit-config.yaml found!")
             return False
 
     print(f"   [OK] Found config at: {config_path}")
 
     # Read current config
-    with open(config_path, 'r', encoding='utf-8') as f:
+    with open(config_path, encoding='utf-8') as f:
         content = f.read()
 
-    original_content = content
 
     # Pattern replacements - target the hardcoded folder lists
     replacements = [
@@ -89,13 +89,13 @@ def sync_pre_commit(dry_run: bool = False):
             print(f"   [✓] Updated {len(matches)} pattern(s)")
 
     if changes_made == 0:
-        print(f"   [OK] No changes needed - config already synchronized")
+        print("   [OK] No changes needed - config already synchronized")
         return True
 
     if dry_run:
         print(f"\n   [DRY-RUN] Would update {changes_made} pattern(s)")
-        print(f"\n--- DIFF ---")
-        print(f"Original patterns found, would be replaced with SSOT-derived patterns")
+        print("\n--- DIFF ---")
+        print("Original patterns found, would be replaced with SSOT-derived patterns")
         return True
 
     # Write updated config
@@ -103,7 +103,7 @@ def sync_pre_commit(dry_run: bool = False):
         f.write(content)
 
     print(f"   [✓] Updated {changes_made} pattern(s) in {config_path.name}")
-    print(f"   [SUCCESS] Pre-commit config synchronized with SSOT")
+    print("   [SUCCESS] Pre-commit config synchronized with SSOT")
 
     return True
 

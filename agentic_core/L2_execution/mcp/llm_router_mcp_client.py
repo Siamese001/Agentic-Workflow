@@ -1,18 +1,16 @@
 from __future__ import annotations
+
 """
 Sovereign LLM Router MCP Client – Phase 16B (Dec 27, 2025)
 Replaces all direct LLM SDK calls in L5 safety layer.
 L3 routed, L5 shielded, L6 observable.
 """
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
+
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
@@ -25,12 +23,14 @@ class SovereignLlmRouterMcpClient(MCPHardenedMixin, HealerMixin):
         super().__init__()
         if not config.LLM_ROUTER_MCP_ENABLED:
             raise ValueError('LLM Router MCP disabled in sovereign config')
-        from agentic_core.L3_orchestration.workflow_engines.SovereignMcpRouter import SovereignMcpRouter
+        from agentic_core.L3_orchestration.workflow_engines.SovereignMcpRouter import (
+            SovereignMcpRouter,
+        )
         self.router = SovereignMcpRouter(role=role)
         self._mcp_audit('init')
         Logger.info('[L5 LLM ROUTER] Sovereign LLM Router MCP client initialized')
 
-    async def validate_content(self, content: str, validation_type: str='safety') -> Dict[str, Any]:
+    async def validate_content(self, content: str, validation_type: str='safety') -> dict[str, Any]:
         """
         Validate content via LLM Router MCP.
 
@@ -50,7 +50,7 @@ class SovereignLlmRouterMcpClient(MCPHardenedMixin, HealerMixin):
             Logger.error(f'[L5 VALIDATION] Critical Failure in Router Call: {e}')
             return {'is_safe': False, 'reason': f'VALIDATION_SYSTEM_FAILURE: {str(e)}'}
 
-    async def classify_intent(self, query: str) -> Dict[str, Any]:
+    async def classify_intent(self, query: str) -> dict[str, Any]:
         """Classify user intent via MCP."""
         try:
             return await self.router.manager.call_tool('llm_router_classify', {'query': query, 'model': config.LLM_ROUTER_DEFAULT_PROVIDER, 'temperature': 0.3})
@@ -58,12 +58,12 @@ class SovereignLlmRouterMcpClient(MCPHardenedMixin, HealerMixin):
             Logger.error(f'[L5 VALIDATION] Intent classification failed: {e}')
             return {'intent': 'unknown', 'confidence': 0.0}
 
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"healed": 0, "skipped": 0, "parent": result}
 
-_llm_router_client: Optional[SovereignLlmRouterMcpClient] = None
+_llm_router_client: SovereignLlmRouterMcpClient | None = None
 
 def get_llm_router_client() -> SovereignLlmRouterMcpClient:
     """Get or create the global LLM Router MCP client."""

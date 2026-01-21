@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Strategist BioWriter Agent - Executive Summary Generator (K.1)
 
 
@@ -19,16 +20,11 @@ Non-responsibilities:
 - Bullet synthesis
 - Gap analysis
 """
-import logging
 import re
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 @dataclass
@@ -44,8 +40,8 @@ class BioWriterResult:
     """Docstring."""
     summary: str
     word_count: int
-    validation_results: List[ValidationResult]
-    temperature_log: List[Dict[str, Any]]
+    validation_results: list[ValidationResult]
+    temperature_log: list[dict[str, Any]]
     success: bool
     attempts: int
 
@@ -60,12 +56,12 @@ class StrategistBioWriter:
     """
     FIRST_PERSON_PATTERNS: Any = ['\\bI\\b', '\\bmy\\b', '\\bme\\b', '\\bmine\\b', '\\bwe\\b', '\\bour\\b', '\\bus\\b', '\\bours\\b']
 
-    def __init__(self, config: Optional[BioWriterConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
+    def __init__(self, config: BioWriterConfig | None=None, gate_executor: IntegrityGateExecutorAgent | None=None, recovery_loop: AdaptiveRecoveryLoop | None=None):
         self.config = config or BioWriterConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.temperature)
 
-    def generate_summary(self, bullet_pool: List[str], context: Dict[str, Any]) -> BioWriterResult:
+    def generate_summary(self, bullet_pool: list[str], context: dict[str, Any]) -> BioWriterResult:
         """
         Generate executive summary with validation loop.
 
@@ -112,17 +108,17 @@ class StrategistBioWriter:
             return BioWriterResult(summary=summary, word_count=len(summary.split()), validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), success=True, attempts=attempt)
         return BioWriterResult(summary='', word_count=0, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), success=False, attempts=self.config.max_attempts)
 
-    def _generate_content(self, bullet_pool: List[str], context: Dict[str, Any], temperature: float, attempt: int) -> str:
+    def _generate_content(self, bullet_pool: list[str], context: dict[str, Any], temperature: float, attempt: int) -> str:
         """
         Generate summary content using LLM.
         This is a placeholder - actual implementation would call LLM.
         """
-        prompt = self._build_prompt(bullet_pool, context, attempt)
+        self._build_prompt(bullet_pool, context, attempt)
         return f'Placeholder summary for attempt {attempt} at temp {temperature}'
 
-    def _build_prompt(self, bullet_pool: List[str], context: Dict[str, Any], attempt: int) -> str:
+    def _build_prompt(self, bullet_pool: list[str], context: dict[str, Any], attempt: int) -> str:
         """Build prompt for summary generation"""
-        evidence_section = '\n'.join((f'- {bullet}' for bullet in bullet_pool[:10]))
+        evidence_section = '\n'.join(f'- {bullet}' for bullet in bullet_pool[:10])
         prompt = f"""Generate an executive summary for a resume.\n\nSTRICT REQUIREMENTS:\n1. Word Count: EXACTLY 118-135 words (count carefully)\n2. Voice: Third-person implied ONLY (NO "I", "my", "we", "our")\n3. Grounding: Every Claim must come from the evidence below\n4. Style: Professional, specific, achievement-focused\n\nEVIDENCE POOL:\n{evidence_section}\n\nTARGET INDUSTRY: {context.get('industry', 'Technology')}\nSENIORITY: {context.get('seniority', 'Senior')}\n\nATTEMPT: {attempt}/3\n\nGenerate the executive summary now:"""
         return prompt
 
@@ -140,6 +136,6 @@ class StrategistBioWriter:
             return ValidationResult(gate_id='VG_THIRD_PERSON_VOICE', passed=False, Severity='BLOCK', message=f'BLOCKED: {len(violations)} first-person pronouns detected', details={'violations': violations[:5]})
         return ValidationResult(gate_id='VG_THIRD_PERSON_VOICE', passed=True, Severity='INFO', message='Voice constraint satisfied - third-person only', signature=f'VOICE:OK:{hash(content) % 10000}')
 
-def create_strategist_biowriter(config: Optional[BioWriterConfig]=None) -> StrategistBioWriter:
+def create_strategist_biowriter(config: BioWriterConfig | None=None) -> StrategistBioWriter:
     """Factory function to create StrategistBioWriter instance"""
     return StrategistBioWriter(config=config)

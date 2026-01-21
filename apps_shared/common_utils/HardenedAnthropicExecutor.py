@@ -13,11 +13,10 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
 
-from shared.resilience.mixin import HardeningMixin, TokenLimitError
-from shared.resilience.telemetry import SystemTelemetry, get_telemetry
 from runtime.shared.agent_executor import AgentMessage, AgentResponse
+from shared.resilience.mixin import HardeningMixin, TokenLimitError
+from shared.resilience.telemetry import SystemTelemetry
 
 logger = logging.getLogger(__name__)
 
@@ -68,8 +67,8 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
     def __init__(
         self,
-        config: Optional[HardenedAnthropicConfig] = None,
-        telemetry: Optional[SystemTelemetry] = None,
+        config: HardenedAnthropicConfig | None = None,
+        telemetry: SystemTelemetry | None = None,
     ):
         """Initialize hardened Anthropic executor.
 
@@ -134,9 +133,9 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
     def _build_messages(
         self,
-        messages: List[AgentMessage],
-        system_prompt: Optional[str] = None,
-    ) -> tuple[List[Dict[str, str]], Optional[str]]:
+        messages: list[AgentMessage],
+        system_prompt: str | None = None,
+    ) -> tuple[list[dict[str, str]], str | None]:
         """Build Anthropic message format.
 
         Args:
@@ -162,10 +161,10 @@ class HardenedAnthropicExecutor(HardeningMixin):
         self,
         prompt: str,
         *,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
-        messages: Optional[List[AgentMessage]] = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
+        messages: list[AgentMessage] | None = None,
     ) -> str:
         """Run Anthropic completion with hardening.
 
@@ -220,10 +219,10 @@ class HardenedAnthropicExecutor(HardeningMixin):
         self,
         prompt: str,
         *,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
-        messages: Optional[List[AgentMessage]] = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
+        messages: list[AgentMessage] | None = None,
     ) -> AgentResponse:
         """Run Anthropic completion with full response metadata.
 
@@ -295,10 +294,10 @@ class HardenedAnthropicExecutor(HardeningMixin):
         self,
         prompt: str,
         *,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
-        messages: Optional[List[AgentMessage]] = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
+        messages: list[AgentMessage] | None = None,
     ) -> str:
         """Synchronous version of run_llm.
 

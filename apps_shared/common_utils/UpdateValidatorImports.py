@@ -26,12 +26,11 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
 # Import replacement mapping
-IMPORT_REPLACEMENTS: Dict[str, Tuple[str, str]] = {
+IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
     # Legacy validator -> (unified module, unified class)
     "SyntaxValidatorAgent": (
         "agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent",
@@ -88,7 +87,7 @@ IMPORT_REPLACEMENTS: Dict[str, Tuple[str, str]] = {
 }
 
 
-def find_files_with_imports(root: Path) -> List[Path]:
+def find_files_with_imports(root: Path) -> list[Path]:
     """Find all Python files that might have legacy imports."""
     files = []
     for path in root.rglob("*.py"):
@@ -104,7 +103,7 @@ def find_files_with_imports(root: Path) -> List[Path]:
     return files
 
 
-def update_imports_in_file(file_path: Path, dry_run: bool = False) -> List[str]:
+def update_imports_in_file(file_path: Path, dry_run: bool = False) -> list[str]:
     """Update legacy imports in a single file."""
     changes = []
 

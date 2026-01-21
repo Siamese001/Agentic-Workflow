@@ -1,20 +1,18 @@
 from __future__ import annotations
+
 """
 Sovereign Knowledge Graph Healing Strategy – Phase 17C (Dec 27, 2025)
 Detects and autonomously corrects structured memory drift.
 L4 state self-healing using official Memory MCP.
 """
 import logging
-from typing import List, Dict, Any
 from datetime import datetime
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+from typing import Any
+
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -37,7 +35,7 @@ class KnowledgeGraphHealingStrategy:
         self.processed_today = 0
         Logger.info('[L0 KG HEALING] Strategy initialized')
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
         """
         Diagnose KG drift from auditor issues or proactive scan.
 
@@ -54,12 +52,12 @@ class KnowledgeGraphHealingStrategy:
         for issue in issues:
             desc: Any = issue.get('description', '').lower()
             message: Any = issue.get('message', '').lower()
-            if any((keyword in desc or keyword in message for keyword in ['knowledge graph', 'entity', 'relation', 'kg'])):
+            if any(keyword in desc or keyword in message for keyword in ['knowledge graph', 'entity', 'relation', 'kg']):
                 fixes.append({'action': 're_extract_content', 'file': issue.get('file'), 'source_id': issue.get('source_id', issue.get('file')), 'reason': 'Knowledge graph drift detected (Missing/Stale Entities)', 'priority': self.priority, 'strategy': self.name})
         Logger.info(f'[L0 KG HEALING] Diagnosed {len(fixes)} knowledge graph drift issues')
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any=None) -> bool:
+    async def apply(self, fix: dict, ctx: Any=None) -> bool:
         """
         Apply KG healing via Sovereign Clients.
 
@@ -111,7 +109,7 @@ class KnowledgeGraphHealingStrategy:
             Logger.error(f"[L0 KG HEALING] KG healing failed for {fix.get('source_id', 'unknown')}: {e}")
             return False
 
-    async def _extract_entities_relations(self, text: str, source_id: str) -> Dict[str, Any]:
+    async def _extract_entities_relations(self, text: str, source_id: str) -> dict[str, Any]:
         """
         Extract entities and relations from text using Memory MCP.
 
@@ -131,7 +129,7 @@ class KnowledgeGraphHealingStrategy:
             Logger.error(f'[L0 KG HEALING] Entity/relation extraction failed: {e}')
             return None
 
-    async def _persist_kg_data(self, entities: List[Dict], relations: List[Dict], source_id: str) -> bool:
+    async def _persist_kg_data(self, entities: list[dict], relations: list[dict], source_id: str) -> bool:
         """
         Persist entities and relations to L4 state via Memory MCP.
 

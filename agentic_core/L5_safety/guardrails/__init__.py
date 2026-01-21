@@ -15,11 +15,11 @@ Note: Uses lazy imports to handle missing modules gracefully during healing.
 # Lazy imports with fallbacks for healing resilience
 try:
     from .ErrorRecoveryGuardrail import (
-        ErrorRecoveryGuardrail,
         ErrorCategory,
-        RecoveryStrategy,
         ErrorContext,
+        ErrorRecoveryGuardrail,
         RecoveryResult,
+        RecoveryStrategy,
     )
 except ImportError:
     ErrorRecoveryGuardrail = None
@@ -30,8 +30,8 @@ except ImportError:
 
 try:
     from .CodeQualityGuardrail import (
-        CodeQualityGuardrail,
         CodeIssue,
+        CodeQualityGuardrail,
         QualityResult,
     )
 except ImportError:
@@ -41,11 +41,11 @@ except ImportError:
 
 try:
     from .ThreatDetectionGuardrail import (
+        ThreatAnalysisResult,
         ThreatDetectionGuardrail,
+        ThreatIndicator,
         ThreatLevel,
         ThreatType,
-        ThreatIndicator,
-        ThreatAnalysisResult,
     )
 except ImportError:
     ThreatDetectionGuardrail = None
@@ -58,8 +58,8 @@ try:
     from .ConstitutionalGovernanceGuardrail import (
         ConstitutionalGovernanceGuardrail,
         ConstitutionalPrinciple,
-        PrincipleViolation,
         GovernanceResult,
+        PrincipleViolation,
     )
 except ImportError:
     ConstitutionalGovernanceGuardrail = None
@@ -69,10 +69,10 @@ except ImportError:
 
 try:
     from .ResourceManagementGuardrail import (
-        ResourceManagementGuardrail,
-        ResourceType,
-        ResourceQuota,
         ResourceCheckResult,
+        ResourceManagementGuardrail,
+        ResourceQuota,
+        ResourceType,
     )
 except ImportError:
     ResourceManagementGuardrail = None
@@ -82,9 +82,9 @@ except ImportError:
 
 try:
     from .IntegrityValidationGuardrail import (
+        IntegrityResult,
         IntegrityValidationGuardrail,
         IntegrityViolation,
-        IntegrityResult,
     )
 except ImportError:
     IntegrityValidationGuardrail = None
@@ -94,8 +94,8 @@ except ImportError:
 try:
     from .MCPSecurityGuardrail import (
         MCPSecurityGuardrail,
-        MCPSecurityViolation,
         MCPSecurityResult,
+        MCPSecurityViolation,
     )
 except ImportError:
     MCPSecurityGuardrail = None
@@ -104,10 +104,10 @@ except ImportError:
 
 try:
     from .LoggingObservabilityGuardrail import (
+        AuditEntry,
+        LogEntry,
         LoggingObservabilityGuardrail,
         LogLevel,
-        LogEntry,
-        AuditEntry,
     )
 except ImportError:
     LoggingObservabilityGuardrail = None

@@ -2,11 +2,9 @@
 """Find actual agent files that belong to low heal capability territories."""
 import json
 from pathlib import Path
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Read the dashboard file
-with open('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html', 'r', encoding='utf-8') as f:
+with open('C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html', encoding='utf-8') as f:
     data = f.read()
 
 # Extract JSON data
@@ -30,15 +28,16 @@ for t in sorted(territories, key=lambda x: x.get('Heal Cap %', 100)):
 # Now let's find agents in the repository that might match these territories
 # Phase 4.1: Use ssot_discovery instead of rglob
 from agentic_core.utils.ssot_discovery import get_agent_files
+
 print("\n=== Searching for agents in L1 Cognition ===")
-l1_agents = [f for f in get_agent_files(Path('C:/Git/Agentic-Workflow/agentic_core/L1_cognition'))]
+l1_agents = list(get_agent_files(Path('C:/Git/Agentic-Workflow/agentic_core/L1_cognition')))
 for agent in l1_agents:
     content = agent.read_text(encoding='utf-8', errors='ignore')
     has_heal = 'def heal_repository' in content
     print(f"  {'✅' if has_heal else '❌'} {agent.name}")
 
 print("\n=== Searching for agents in L3 Orchestration ===")
-l3_agents = [f for f in get_agent_files(Path('C:/Git/Agentic-Workflow/agentic_core/L3_orchestration'))]
+l3_agents = list(get_agent_files(Path('C:/Git/Agentic-Workflow/agentic_core/L3_orchestration')))
 for agent in l3_agents:
     content = agent.read_text(encoding='utf-8', errors='ignore')
     has_heal = 'def heal_repository' in content

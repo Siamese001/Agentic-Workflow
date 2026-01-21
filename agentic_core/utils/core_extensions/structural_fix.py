@@ -1,21 +1,14 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import re
 import shutil
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 root: Any = Path('C:/Git/Agentic-Workflow')
 
@@ -34,7 +27,7 @@ def fix_structural_violations() -> Any:
     print('  Creating local types in agentic_core...')
     agent_logic_file: Any = ROOT / 'agentic_core/L1_cognition/agent_logic.py'
     if agent_logic_file.exists():
-        with open(agent_logic_file, 'r', encoding='utf-8') as f:
+        with open(agent_logic_file, encoding='utf-8') as f:
             content: Any = f.read()
         if 'from schemas import CanonEntry' in content:
             local_def: Any = '\nfrom dataclasses import dataclass\nfrom typing import Optional\n\n@dataclass\n# NAMING FIXED: CanonEntry → CanonEntry\nclass CanonEntry:\n    """Local Canon Entry type - moved from schemas to fix gravity Violation."""\n    id: str\n    code_snippet: str\n    ast_structure: str\n    failure_count: int = 0\n    success_count: int = 0\n    last_used: Optional[str] = None\n'
@@ -45,7 +38,7 @@ def fix_structural_violations() -> Any:
     print('\n[PHASE 2] Fixing agentic_core -> scripts dependency...')
     mission_runner: Any = ROOT / 'agentic_core/L3_orchestration/mission_runner.py'
     if mission_runner.exists():
-        with open(mission_runner, 'r', encoding='utf-8') as f:
+        with open(mission_runner, encoding='utf-8') as f:
             lines: Any = f.readlines()
         new_lines: Any = []
         for line in lines:
@@ -54,7 +47,7 @@ def fix_structural_violations() -> Any:
                 if match:
                     imports: Any = match.group(1)
                     print(f'  Found import from scripts: {imports}')
-                    new_lines.append(f'# STRUCTURAL FIX: Removed Level 1 dependency\n')
+                    new_lines.append('# STRUCTURAL FIX: Removed Level 1 dependency\n')
                     new_lines.append(f'# TODO: Move {imports} to agentic_core or refactor\n')
                     new_lines.append(f'# {line}')
                 else:
@@ -71,13 +64,13 @@ def fix_structural_violations() -> Any:
         target_dir.mkdir(parents=True, exist_ok=True)
         target_file: Any = target_dir / 'analysis.py'
         shutil.move(str(analysis_file), str(target_file))
-        print(f'  ✓ Moved: analysis.py from agentic_core to apps_rg/agents')
+        print('  ✓ Moved: analysis.py from agentic_core to apps_rg/agents')
     print('\n[PHASE 4] Fixing apps_shared -> apps_rg dependency...')
     verify_file: Any = ROOT / 'apps_shared/verify_hardening.py'
     if verify_file.exists():
         target_file: Any = ROOT / 'apps_rg/verify_hardening.py'
         shutil.move(str(verify_file), str(target_file))
-        print(f'  ✓ Moved: verify_hardening.py from apps_shared to apps_rg')
+        print('  ✓ Moved: verify_hardening.py from apps_shared to apps_rg')
     print('\n[PHASE 5] Handling test script violations...')
     test_files: Any = ['scripts/validation/dry_run_signal_failure_test.py', 'scripts/validation/test_l5_infrastructure.py', 'scripts/workflow/dry_run_l5_verification.py']
     tests_dir: Any = ROOT / 'tests/integration'

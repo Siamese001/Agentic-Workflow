@@ -18,18 +18,16 @@ Performance: <5 seconds for complete validation (vs 60+ seconds running 5 tools)
 
 
 from __future__ import annotations
+
 import ast
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Set, Optional
-from collections import defaultdict
 
-from agentic_core.L5_safety.gravity.ssot_scanner import SSOTScanner, AgentMetadata
+from agentic_core.L5_safety.gravity.ssot_scanner import SSOTScanner
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    SOVEREIGN_REGISTRY,
 )
 
 
@@ -90,10 +88,10 @@ class SovereignHealthReport:
     Consolidates all validation results into a single report.
     """
     # Violation lists
-    gravity_violations: List[GravityViolation] = field(default_factory=list)
-    import_violations: List[ImportViolation] = field(default_factory=list)
-    hierarchy_violations: List[HierarchyViolation] = field(default_factory=list)
-    drift_violations: List[DriftViolation] = field(default_factory=list)
+    gravity_violations: list[GravityViolation] = field(default_factory=list)
+    import_violations: list[ImportViolation] = field(default_factory=list)
+    hierarchy_violations: list[HierarchyViolation] = field(default_factory=list)
+    drift_violations: list[DriftViolation] = field(default_factory=list)
 
     # Statistics
     total_agents: int = 0
@@ -300,7 +298,7 @@ class UnifiedSSOTValidator:
 
         return report
 
-    def _check_gravity_violations(self) -> List[GravityViolation]:
+    def _check_gravity_violations(self) -> list[GravityViolation]:
         """Check for agents in wrong layers (physical location mismatch)."""
         violations = []
 
@@ -316,7 +314,7 @@ class UnifiedSSOTValidator:
 
         return violations
 
-    def _check_import_violations(self) -> List[ImportViolation]:
+    def _check_import_violations(self) -> list[ImportViolation]:
         """Check for illegal upward dependencies (lower layer importing from higher)."""
         violations = []
 
@@ -340,7 +338,7 @@ class UnifiedSSOTValidator:
                 tree = ast.parse(content)
 
                 for node in ast.walk(tree):
-                    if isinstance(node, (ast.Import, ast.ImportFrom)):
+                    if isinstance(node, ast.Import | ast.ImportFrom):
                         import_line = self._get_import_line(node, content)
                         target_layer = self._extract_target_layer(node)
 
@@ -360,7 +358,7 @@ class UnifiedSSOTValidator:
 
         return violations
 
-    def _check_hierarchy_violations(self) -> List[HierarchyViolation]:
+    def _check_hierarchy_violations(self) -> list[HierarchyViolation]:
         """Check for folders exceeding maximum depth limits."""
         violations = []
 
@@ -374,7 +372,7 @@ class UnifiedSSOTValidator:
             # Phase 6.5: Use os.walk instead of rglob for directory traversal
             import os
             # Check all subdirectories
-            for root, dirs, files in os.walk(root_path):
+            for root, dirs, _files in os.walk(root_path):
                 dirs[:] = [d for d in dirs if not d.startswith('.')]
                 for dir_name in dirs:
                     folder = Path(root) / dir_name
@@ -400,7 +398,7 @@ class UnifiedSSOTValidator:
 
         return violations
 
-    def _check_drift_violations(self) -> List[DriftViolation]:
+    def _check_drift_violations(self) -> list[DriftViolation]:
         """Check for unauthorized folders not in blueprint."""
         violations = []
 
@@ -454,7 +452,7 @@ class UnifiedSSOTValidator:
 
         return violations
 
-    def _get_layer_from_path(self, file_path: Path) -> Optional[str]:
+    def _get_layer_from_path(self, file_path: Path) -> str | None:
         """Extract layer (L0-L5) from file path."""
         parts = file_path.parts
 
@@ -464,7 +462,7 @@ class UnifiedSSOTValidator:
 
         return None
 
-    def _extract_target_layer(self, node: ast.AST) -> Optional[str]:
+    def _extract_target_layer(self, node: ast.AST) -> str | None:
         """Extract target layer from import statement."""
         if isinstance(node, ast.ImportFrom):
             if node.module and 'agentic_core' in node.module:

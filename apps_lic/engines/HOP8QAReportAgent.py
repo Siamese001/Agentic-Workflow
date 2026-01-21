@@ -5,21 +5,23 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """HOP-8: QA Report Agent - Persistent markdown report generation."""
 
 __version__ = "13.1"
 
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from apps_shared.utils.state_manager import StateManager
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
@@ -33,7 +35,7 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     Output: outputs/QA_Report.md
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """
         Initialize the QA report agent.
 
@@ -41,9 +43,9 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             config: Configuration dictionary containing qa_report_agent settings
         """
         super().__init__()
-        self.config: Dict[str, Any] = config["qa_report_agent"]
+        self.config: dict[str, Any] = config["qa_report_agent"]
         self.sections: list = self.config["report_sections"]
-        self.scoring_weights: Dict[str, float] = self.config["scoring_weights"]
+        self.scoring_weights: dict[str, float] = self.config["scoring_weights"]
 
     async def execute(self, state_mgr: StateManager) -> str:
         """
@@ -59,7 +61,7 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         print("HOP-8: QA REPORT GENERATION")
         print(f"{'='*80}\n")
 
-        states: Dict[str, Any] = {}
+        states: dict[str, Any] = {}
         for hop_id in ["HOP-1", "HOP-2", "HOP-3", "HOP-4", "HOP-5", "HOP-6", "HOP-7"]:
             if state_mgr.state_exists(hop_id):
                 states[hop_id] = state_mgr.read_state(hop_id)
@@ -80,7 +82,7 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return str(report_path)
 
-    def _generate_markdown_report(self, states: Dict[str, Any], mission_id: str) -> str:
+    def _generate_markdown_report(self, states: dict[str, Any], mission_id: str) -> str:
         """
         Generate comprehensive markdown report from mission states.
 
@@ -93,10 +95,10 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         """
         lines: list = []
 
-        lines.append(f"# LIC v13.0 QA Report")
+        lines.append("# LIC v13.0 QA Report")
         lines.append(f"\n**Mission ID**: `{mission_id}`")
         lines.append(f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        lines.append(f"\n---\n")
+        lines.append("\n---\n")
 
         # 1. Executive Summary
         lines.append("## 1. Executive Summary\n")
@@ -182,7 +184,7 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return "\n".join(lines)
 
-    def _calculate_quality_score(self, states: Dict[str, Any]) -> float:
+    def _calculate_quality_score(self, states: dict[str, Any]) -> float:
         """Calculate overall quality score"""
         research = states.get("HOP-2", {})
         validation = states.get("HOP-6", {})
@@ -214,7 +216,7 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         return total_score
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, int]:
         """Operational agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()

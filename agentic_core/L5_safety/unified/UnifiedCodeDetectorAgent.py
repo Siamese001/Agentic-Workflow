@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class Detection:
     line_number: int
     severity: Severity
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
 
@@ -68,8 +68,8 @@ class DetectorConfig:
     enable_method_change: bool = True
     enable_deadlock: bool = True
     enable_memory_leak: bool = True
-    baseline_path: Optional[Path] = None
-    ignore_patterns: List[str] = field(default_factory=lambda: ["test_", "_test.py"])
+    baseline_path: Path | None = None
+    ignore_patterns: list[str] = field(default_factory=lambda: ["test_", "_test.py"])
 
 
 class UnifiedCodeDetectorAgent:
@@ -111,18 +111,18 @@ class UnifiedCodeDetectorAgent:
 
     def __init__(
         self,
-        project_root: Optional[Path] = None,
-        config: Optional[DetectorConfig] = None,
+        project_root: Path | None = None,
+        config: DetectorConfig | None = None,
     ):
         self.project_root = project_root or Path.cwd()
         self.config = config or DetectorConfig()
         self._lock = threading.RLock()
-        self._baseline: Dict[str, Any] = {}
-        self._detections: List[Detection] = []
+        self._baseline: dict[str, Any] = {}
+        self._detections: list[Detection] = []
 
         Logger.info("UnifiedCodeDetectorAgent initialized")
 
-    def detect_all(self, file_path: Path) -> List[Detection]:
+    def detect_all(self, file_path: Path) -> list[Detection]:
         """Run all enabled detections on a file."""
         detections = []
 
@@ -152,8 +152,8 @@ class UnifiedCodeDetectorAgent:
     def detect_dead_code(
         self,
         file_path: Path,
-        content: Optional[str] = None,
-    ) -> List[Detection]:
+        content: str | None = None,
+    ) -> list[Detection]:
         """Detect unused/dead code."""
         detections = []
 
@@ -166,8 +166,8 @@ class UnifiedCodeDetectorAgent:
             return detections
 
         # Collect all defined names
-        defined_names: Set[str] = set()
-        used_names: Set[str] = set()
+        defined_names: set[str] = set()
+        used_names: set[str] = set()
 
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
@@ -188,7 +188,7 @@ class UnifiedCodeDetectorAgent:
 
             # Find line number
             for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and node.name == name:
+                if isinstance(node, ast.FunctionDef | ast.ClassDef) and node.name == name:
                     detections.append(Detection(
                         detection_type=DetectionType.DEAD_CODE,
                         file_path=file_path,
@@ -204,8 +204,8 @@ class UnifiedCodeDetectorAgent:
     def detect_deadlocks(
         self,
         file_path: Path,
-        content: Optional[str] = None,
-    ) -> List[Detection]:
+        content: str | None = None,
+    ) -> list[Detection]:
         """Detect potential deadlock conditions."""
         detections = []
 
@@ -213,7 +213,7 @@ class UnifiedCodeDetectorAgent:
             content = file_path.read_text(encoding="utf-8")
 
         lines = content.split("\n")
-        lock_acquisitions: List[Tuple[int, str]] = []
+        lock_acquisitions: list[tuple[int, str]] = []
 
         for i, line in enumerate(lines, 1):
             for pattern in self.LOCK_PATTERNS:
@@ -253,7 +253,7 @@ class UnifiedCodeDetectorAgent:
         self,
         tree: ast.AST,
         file_path: Path,
-        detections: List[Detection],
+        detections: list[Detection],
     ) -> None:
         """Check for circular wait conditions in AST."""
         # Find all with statements that acquire locks
@@ -282,8 +282,8 @@ class UnifiedCodeDetectorAgent:
     def detect_memory_leaks(
         self,
         file_path: Path,
-        content: Optional[str] = None,
-    ) -> List[Detection]:
+        content: str | None = None,
+    ) -> list[Detection]:
         """Detect potential memory leak patterns."""
         detections = []
 
@@ -309,8 +309,8 @@ class UnifiedCodeDetectorAgent:
     def detect_method_changes(
         self,
         file_path: Path,
-        content: Optional[str] = None,
-    ) -> List[Detection]:
+        content: str | None = None,
+    ) -> list[Detection]:
         """Detect method signature changes from baseline."""
         detections = []
 
@@ -358,7 +358,7 @@ class UnifiedCodeDetectorAgent:
 
         return detections
 
-    def get_detections(self) -> List[Detection]:
+    def get_detections(self) -> list[Detection]:
         """Get all recorded detections."""
         return self._detections.copy()
 

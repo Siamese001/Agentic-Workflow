@@ -7,7 +7,6 @@ This is a HARD BLOCKER for deployment.
 import json
 import sys
 from pathlib import Path
-from collections import defaultdict
 
 project_root = Path(__file__).parent.parent
 
@@ -19,9 +18,7 @@ def validate_health_score_calculation():
 
     # Import SSOT calculation functions
     sys.path.insert(0, str(project_root / "scripts"))
-    from dashboard_ssot_definitions import (
-        calc_health_score, is_l0_territory
-    )
+    from dashboard_ssot_definitions import calc_health_score, is_l0_territory
 
     # Load dashboard data
     data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
@@ -73,7 +70,7 @@ def validate_health_score_calculation():
             print(f"   ... and {len(failures) - 10} more")
         return False
     else:
-        print(f"\n✅ PASSED: All Health scores match SSOT calculations")
+        print("\n✅ PASSED: All Health scores match SSOT calculations")
         return True
 
 def validate_health_score_ranges():
@@ -109,7 +106,7 @@ def validate_health_score_ranges():
             print(f"   {f}")
         return False
     else:
-        print(f"\n✅ PASSED: All Health scores in valid range (0-100)")
+        print("\n✅ PASSED: All Health scores in valid range (0-100)")
 
         if warnings:
             print(f"\n⚠️  {len(warnings)} territories with critically low health (<50%):")
@@ -168,7 +165,7 @@ def validate_health_score_sanity():
         if len(warnings) > 5:
             print(f"   ... and {len(warnings) - 5} more")
     else:
-        print(f"\n✅ PASSED: Health scores correlate with component metrics")
+        print("\n✅ PASSED: Health scores correlate with component metrics")
 
     # Warnings don't fail the test
     return True

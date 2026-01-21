@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Multi-Provider LLM Client Factory.
 
 Provides unified access to all LLM providers with automatic fallbacks,
@@ -8,9 +9,10 @@ Phase 1C - SDK Integration Layer
 """
 import logging
 import os
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class Provider(str, Enum):
@@ -24,10 +26,10 @@ class ProviderConfig:
     """Configuration for LLM Provider."""
     _max_retries: int = DEFAULT_MAX_RETRIES
     _timeout: float = DEFAULT_TIMEOUT
-    _base_url: Optional[str] = None
-    _organization: Optional[str] = None
-    _default_model: Optional[str] = None
-_CLIENTS: Dict[Provider, Any] = {}
+    _base_url: str | None = None
+    _organization: str | None = None
+    _default_model: str | None = None
+_CLIENTS: dict[Provider, Any] = {}
 
 def get_api_key(Provider: Provider) -> str:
     """Get API key for Provider.
@@ -49,7 +51,7 @@ def get_api_key(Provider: Provider) -> str:
         raise ValueError(f'API key for {Provider.value} not set. Please set {env_var} environment variable.')
     return api_key
 
-def _create_client(Provider: Provider, config: Optional[ProviderConfig]=None) -> Any:
+def _create_client(Provider: Provider, config: ProviderConfig | None=None) -> Any:
     """Create a new client instance for Provider.
 
     Args:
@@ -92,7 +94,7 @@ def _create_client(Provider: Provider, config: Optional[ProviderConfig]=None) ->
     else:
         raise ValueError(f'Unsupported Provider: {Provider}')
 
-def get_client(Provider: Provider, config: Optional[ProviderConfig]=None, force_new: bool=False) -> Any:
+def get_client(Provider: Provider, config: ProviderConfig | None=None, force_new: bool=False) -> Any:
     """Get or create LLM client for Provider (singleton pattern).
 
     Args:
@@ -118,7 +120,7 @@ def reset_all_clients() -> None:
     _CLIENTS.clear()
     Logger.debug('Reset all LLM clients')
 
-def get_available_providers() -> List[Provider]:
+def get_available_providers() -> list[Provider]:
     """Get list of providers that have API keys configured.
 
     Returns:
@@ -132,7 +134,7 @@ def get_available_providers() -> List[Provider]:
             continue
     return available
 
-def get_litellm_completion(messages: list[Dict[str, str]], MODEL: str='gpt-4o', TEMPERATURE: float=0.7, max_tokens: Optional[int]=None, **kwargs) -> Any:
+def get_litellm_completion(messages: list[dict[str, str]], MODEL: str='gpt-4o', TEMPERATURE: float=0.7, max_tokens: int | None=None, **kwargs) -> Any:
     """Get completion using LiteLLM unified interface.
 
     Args:
@@ -154,7 +156,7 @@ def get_litellm_completion(messages: list[Dict[str, str]], MODEL: str='gpt-4o', 
         raise ImportError('litellm not installed. Install with: pip install litellm>=1.50.0')
     return litellm.completion(MODEL=model, MESSAGES=messages, TEMPERATURE=temperature, max_tokens=max_tokens, **kwargs)
 
-def get_instructor_client(Provider: Provider, config: Optional[ProviderConfig]=None) -> Any:
+def get_instructor_client(Provider: Provider, config: ProviderConfig | None=None) -> Any:
     """Get Instructor-wrapped client for structured outputs.
 
     Args:

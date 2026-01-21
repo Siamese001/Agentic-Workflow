@@ -9,11 +9,11 @@ Tests:
 3. Path Security Validation - Ensure blueprint imports are consistent (SSOT)
 """
 
-import sys
 import subprocess
-import importlib
-import pytest
+import sys
 from pathlib import Path
+
+import pytest
 
 # --- Configuration ---
 RESTORED_AGENTS_MAP = [
@@ -112,7 +112,10 @@ except Exception as e:
         # For dataclass fields with default_factory, each instance gets its own dict
         # We verify the fix by checking the dataclass field definition
         import dataclasses
-        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
+
+        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
+            L1CognitionBaseAgent,
+        )
 
         # Get the fields of the dataclass
         fields = {f.name: f for f in dataclasses.fields(L1CognitionBaseAgent)}
@@ -156,7 +159,7 @@ except Exception as e:
         # Verify CodeDeduplicationAgent imports from the correct location
         try:
             from agentic_core.L5_safety.validators.CodeDeduplicationAgent import (
-                AGENTIC_CORE_DIR as dedup_agentic_core_dir
+                AGENTIC_CORE_DIR as dedup_agentic_core_dir,
             )
             # Verify it's the same object (SSOT)
             assert dedup_agentic_core_dir == canonical_blueprint.AGENTIC_CORE_DIR, (
@@ -164,7 +167,6 @@ except Exception as e:
             )
         except ImportError:
             # If import fails, check the source file directly
-            import ast
             dedup_path = Path(__file__).resolve().parents[2] / "agentic_core" / "L5_safety" / "validators" / "CodeDeduplicationAgent.py"
 
             if dedup_path.exists():
@@ -190,6 +192,7 @@ except Exception as e:
         with pytest.warns(DeprecationWarning, match="Direct import of MCPHardenedMixin is deprecated"):
             # Force reimport to trigger the warning
             import importlib
+
             import agentic_core.L2_execution.mcp.mcp_hardened_mixin
             importlib.reload(agentic_core.L2_execution.mcp.mcp_hardened_mixin)
 
@@ -200,8 +203,11 @@ except Exception as e:
         """
         TC-005: Verify VERIFICATION_REGISTRY has proper type annotation.
         """
-        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
         import dataclasses
+
+        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
+            L1CognitionBaseAgent,
+        )
 
         fields = {f.name: f for f in dataclasses.fields(L1CognitionBaseAgent)}
         registry_field = fields.get("VERIFICATION_REGISTRY")

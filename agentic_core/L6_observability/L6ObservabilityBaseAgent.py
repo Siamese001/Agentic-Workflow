@@ -12,7 +12,6 @@ SSOT PRINCIPLE:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
@@ -47,8 +46,8 @@ class L6ObservabilityBaseAgent(SovereignBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         L6 observability healing - validates metrics and telemetry.
 

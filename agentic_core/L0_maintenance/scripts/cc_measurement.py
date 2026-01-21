@@ -6,31 +6,16 @@ Measures CC before and after refactoring using radon.
 Generates reports comparing baseline vs current state.
 """
 
-import subprocess
 import json
+import subprocess
 import sys
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Tuple
-from agentic_core.utils.security import safe_execute
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.security import safe_execute
 
 
 class CCMeasurement:
@@ -42,7 +27,7 @@ class CCMeasurement:
         self.results = {}
         self.timestamp = datetime.now().isoformat()
 
-    def measure_cc(self, target_path: str = 'agentic_core/') -> Dict:
+    def measure_cc(self, target_path: str = 'agentic_core/') -> dict:
         """
         Measure cyclomatic complexity using radon.
 
@@ -87,7 +72,7 @@ class CCMeasurement:
             print(f"Error measuring CC: {e}")
             return {}
 
-    def analyze_results(self, data: Dict) -> Dict:
+    def analyze_results(self, data: dict) -> dict:
         """
         Analyze CC data and extract metrics.
 
@@ -145,7 +130,7 @@ class CCMeasurement:
 
         return metrics
 
-    def print_report(self, metrics: Dict, title: str = "Cyclomatic Complexity Report"):
+    def print_report(self, metrics: dict, title: str = "Cyclomatic Complexity Report"):
         """
         Print formatted CC report.
 
@@ -157,33 +142,33 @@ class CCMeasurement:
         print(f"{title}")
         print(f"{'='*70}")
         print(f"Timestamp: {self.timestamp}")
-        print(f"\nSummary:")
+        print("\nSummary:")
         print(f"  Files Analyzed: {metrics['files_analyzed']}")
         print(f"  Total Functions: {metrics['total_functions']}")
         print(f"  Total CC: {metrics['total_cc']}")
         print(f"  Average CC: {metrics['average_cc']:.2f}")
 
-        print(f"\nHigh Complexity Functions:")
+        print("\nHigh Complexity Functions:")
         print(f"  CC > 20: {len(metrics['functions_cc_gt_20'])}")
         print(f"  CC > 15: {len(metrics['functions_cc_gt_15'])}")
         print(f"  CC > 10: {len(metrics['functions_cc_gt_10'])}")
 
         if metrics['functions_cc_gt_20']:
-            print(f"\n  Functions with CC > 20:")
+            print("\n  Functions with CC > 20:")
             for func in metrics['functions_cc_gt_20'][:10]:
                 print(f"    {func['file']}::{func['function']} (CC={func['cc']})")
 
         if metrics['functions_cc_gt_15']:
-            print(f"\n  Functions with CC > 15:")
+            print("\n  Functions with CC > 15:")
             for func in metrics['functions_cc_gt_15'][:10]:
                 print(f"    {func['file']}::{func['function']} (CC={func['cc']})")
 
         if metrics['functions_cc_gt_10']:
-            print(f"\n  Functions with CC > 10:")
+            print("\n  Functions with CC > 10:")
             for func in metrics['functions_cc_gt_10'][:10]:
                 print(f"    {func['file']}::{func['function']} (CC={func['cc']})")
 
-    def save_report(self, metrics: Dict, output_file: Path):
+    def save_report(self, metrics: dict, output_file: Path):
         """
         Save metrics to JSON file.
 
@@ -207,7 +192,7 @@ class CCMeasurement:
         except Exception as e:
             print(f"Error saving report: {e}")
 
-    def compare_reports(self, baseline: Dict, current: Dict) -> Dict:
+    def compare_reports(self, baseline: dict, current: dict) -> dict:
         """
         Compare two CC reports.
 
@@ -234,7 +219,7 @@ class CCMeasurement:
 
         return comparison
 
-    def print_comparison(self, baseline: Dict, current: Dict, title: str = "CC Improvement Report"):
+    def print_comparison(self, baseline: dict, current: dict, title: str = "CC Improvement Report"):
         """
         Print comparison report.
 
@@ -249,23 +234,23 @@ class CCMeasurement:
         print(f"{title}")
         print(f"{'='*70}")
 
-        print(f"\nTotal CC Change:")
+        print("\nTotal CC Change:")
         print(f"  Baseline: {baseline['total_cc']}")
         print(f"  Current: {current['total_cc']}")
         print(f"  Change: {comparison['total_cc_change']} ({comparison['total_cc_percent_change']:.1f}%)")
 
-        print(f"\nAverage CC Change:")
+        print("\nAverage CC Change:")
         print(f"  Baseline: {baseline['average_cc']:.2f}")
         print(f"  Current: {current['average_cc']:.2f}")
         print(f"  Change: {comparison['average_cc_change']:.2f}")
 
-        print(f"\nHigh Complexity Functions:")
+        print("\nHigh Complexity Functions:")
         print(f"  CC > 20: {len(baseline['functions_cc_gt_20'])} → {len(current['functions_cc_gt_20'])} ({comparison['functions_cc_gt_20_change']:+d})")
         print(f"  CC > 15: {len(baseline['functions_cc_gt_15'])} → {len(current['functions_cc_gt_15'])} ({comparison['functions_cc_gt_15_change']:+d})")
         print(f"  CC > 10: {len(baseline['functions_cc_gt_10'])} → {len(current['functions_cc_gt_10'])} ({comparison['functions_cc_gt_10_change']:+d})")
 
         # Success criteria
-        print(f"\nSuccess Criteria:")
+        print("\nSuccess Criteria:")
         print(f"  Overall CC < 25: {'✓' if current['total_cc'] < 25 else '✗'}")
         print(f"  Functions CC > 10: {len(current['functions_cc_gt_10'])} (target: 0)")
         print(f"  Functions CC > 15: {len(current['functions_cc_gt_15'])} (target: 0)")
@@ -310,19 +295,19 @@ def main():
         print(f"⚠ Functions CC > 10: {len(metrics['functions_cc_gt_10'])} (target: 0)")
         success = False
     else:
-        print(f"✓ Functions CC > 10: 0 (target: 0)")
+        print("✓ Functions CC > 10: 0 (target: 0)")
 
     if len(metrics['functions_cc_gt_15']) > 0:
         print(f"⚠ Functions CC > 15: {len(metrics['functions_cc_gt_15'])} (target: 0)")
         success = False
     else:
-        print(f"✓ Functions CC > 15: 0 (target: 0)")
+        print("✓ Functions CC > 15: 0 (target: 0)")
 
     if success:
-        print(f"\n✓ All Phase 3 validation criteria met!")
+        print("\n✓ All Phase 3 validation criteria met!")
         sys.exit(0)
     else:
-        print(f"\n✗ Some Phase 3 validation criteria not met")
+        print("\n✗ Some Phase 3 validation criteria not met")
         sys.exit(1)
 
 

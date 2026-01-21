@@ -19,7 +19,6 @@ import argparse
 import ast
 import re
 from pathlib import Path
-from typing import List, Tuple, Optional, Set
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {
@@ -49,7 +48,7 @@ GLOB_PATTERN = re.compile(r'\.glob\s*\(\s*["\'](\*\*/\*\.py|\*\.py)["\']')
 OS_WALK_PATTERN = re.compile(r'os\.walk\s*\(')
 
 
-def find_python_files(root: Path) -> List[Path]:
+def find_python_files(root: Path) -> list[Path]:
     """Find all Python files, excluding specified directories."""
     files = []
     for path in root.rglob("*.py"):

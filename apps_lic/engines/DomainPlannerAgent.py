@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
 
 from core_v10_7 import (
     BaseAgent,
-    StrategyPlan,
     PlannerAssessment,
     ScenarioSimulationResult,
+    StrategyPlan,
 )
 
 if TYPE_CHECKING:
@@ -28,7 +28,7 @@ class DomainPlannerAgent(BaseAgent):
     async def run_async(
         self,
         plan: StrategyPlan,
-        job_context: Dict[str, Any],
+        job_context: dict[str, Any],
         workflow_id: str,
     ) -> PlannerAssessment:
         job_title = (job_context.get("job_title") or "").lower()
@@ -44,7 +44,7 @@ class DomainPlannerAgent(BaseAgent):
 
         vote = "approve" if focus_matches else "revise"
         confidence = min(1.0, 0.55 + 0.15 * focus_matches) if vote == "approve" else 0.45
-        recommended_actions: List[str] = []
+        recommended_actions: list[str] = []
         if not focus_matches:
             recommended_actions.append(
                 "Introduce a focus area that explicitly references the job title or company priorities."
@@ -77,7 +77,7 @@ class RiskAssessorAgent(BaseAgent):
     async def run_async(
         self,
         plan: StrategyPlan,
-        job_context: Dict[str, Any],
+        job_context: dict[str, Any],
         workflow_id: str,
     ) -> PlannerAssessment:
         focus_count = len(plan.focus_areas)
@@ -88,7 +88,7 @@ class RiskAssessorAgent(BaseAgent):
         if overextended or duplicate_focus:
             vote = "revise"
 
-        recommended_actions: List[str] = []
+        recommended_actions: list[str] = []
         if overextended:
             recommended_actions.append("Prioritize the top three focus areas to avoid dilution.")
         if duplicate_focus:
@@ -130,7 +130,7 @@ class FeasibilityAnalystAgent(BaseAgent):
     async def run_async(
         self,
         plan: StrategyPlan,
-        job_context: Dict[str, Any],
+        job_context: dict[str, Any],
         workflow_id: str,
     ) -> PlannerAssessment:
         achievements = plan.key_achievements_to_highlight
@@ -140,7 +140,7 @@ class FeasibilityAnalystAgent(BaseAgent):
         if not quantified_achievements:
             vote = "revise"
 
-        recommended_actions: List[str] = []
+        recommended_actions: list[str] = []
         if len(achievements) < 2:
             recommended_actions.append("Add at least two concrete achievements to anchor the plan.")
         if not quantified_achievements:
@@ -182,15 +182,15 @@ class StrategyScenarioSimulatorAgent(BaseAgent):
     async def run_async(
         self,
         plan: StrategyPlan,
-        job_context: Dict[str, Any],
+        job_context: dict[str, Any],
         workflow_id: str,
-    ) -> List[ScenarioSimulationResult]:
+    ) -> list[ScenarioSimulationResult]:
         focus_lower = [focus.lower() for focus in plan.focus_areas]
         technical_focus = any("tech" in focus for focus in focus_lower)
         leadership_focus = any("lead" in focus for focus in focus_lower)
         quantified = any(any(ch.isdigit() for ch in achievement) for achievement in plan.key_achievements_to_highlight)
 
-        scenarios: List[ScenarioSimulationResult] = []
+        scenarios: list[ScenarioSimulationResult] = []
 
         adoption_risk = "low" if quantified else "medium"
         adoption_impact = 0.35 if quantified else 0.65
@@ -257,7 +257,7 @@ class StrategyScenarioSimulatorAgent(BaseAgent):
 class StrategyCoordinatorAgent(BaseAgent):
     """Coordinates specialist planner inputs and produces an aggregated plan."""
 
-    def __init__(self, context: "WorkflowContext", debug_mode: bool = False):
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
         super().__init__(context, debug_mode)
         self.domain_planner = DomainPlannerAgent(context, debug_mode)
         self.risk_assessor = RiskAssessorAgent(context, debug_mode)
@@ -266,10 +266,10 @@ class StrategyCoordinatorAgent(BaseAgent):
 
     async def run_async(
         self,
-        job_context: Dict[str, Any],
+        job_context: dict[str, Any],
         base_plan: StrategyPlan,
         workflow_id: str,
-        downstream_feedback: Optional[Dict[str, Any]] = None,
+        downstream_feedback: dict[str, Any] | None = None,
     ) -> StrategyPlan:
         plan = base_plan.model_copy(deep=True)
 
@@ -285,7 +285,7 @@ class StrategyCoordinatorAgent(BaseAgent):
 
         weighted_votes = 0.0
         total_confidence = 0.0
-        rationale_parts: List[str] = []
+        rationale_parts: list[str] = []
         for assessment in assessments:
             vote_value = 1.0 if assessment.vote.lower() == "approve" else 0.0
             weighted_votes += vote_value * assessment.confidence
@@ -335,12 +335,12 @@ class StrategyCoordinatorAgent(BaseAgent):
     def _apply_feedback(
         self,
         plan: StrategyPlan,
-        downstream_feedback: Optional[Dict[str, Any]],
-    ) -> List[str]:
+        downstream_feedback: dict[str, Any] | None,
+    ) -> list[str]:
         if not downstream_feedback:
             return []
 
-        signals: List[str] = []
+        signals: list[str] = []
 
         qa_feedback = downstream_feedback.get("qa") if isinstance(downstream_feedback, dict) else None
         if isinstance(qa_feedback, dict):

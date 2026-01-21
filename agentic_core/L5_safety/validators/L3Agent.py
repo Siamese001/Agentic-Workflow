@@ -15,30 +15,17 @@ L3 agents handle orchestration - coordinating workflows, managing plans.
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass
@@ -59,15 +46,15 @@ class L3Agent(HealerMixin, MCPHardenedMixin):
     layer: str = "L3"
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True) -> dict[str, Any]:
         """Override in subclass to implement healing logic."""
         super().heal_repository(dry_run)
         return {"status": "not_implemented", "agent": self.name}
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """Override in subclass to implement self-tests."""
         return {"status": "not_implemented", TESTS_DIR: 0}
 
-    async def orchestrate(self, task: Dict) -> Dict:
+    async def orchestrate(self, task: dict) -> dict:
         """Override in subclass to implement orchestration logic."""
         raise NotImplementedError(f"{self.name} must implement orchestrate()")

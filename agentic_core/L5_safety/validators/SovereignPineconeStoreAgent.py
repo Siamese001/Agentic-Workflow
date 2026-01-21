@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 ==============================================================================
 SOVEREIGN PINECONE STORE AGENT (MERGED IMPLEMENTATION)
@@ -24,22 +26,20 @@ while routing all operations through the Sovereign MCP architecture.
 Features: Auto-indexing, Batch upserts, Retry-logic on rate limits, MCP routing.
 """
 import logging
-from typing import List, Optional, Any, Dict
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from pathlib import Path
+from typing import Any
+
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger('L4.PineconeStore')
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 @dataclass
@@ -51,7 +51,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     Phase 13C: All operations now flow through L3 MCP Router with L5 shielding.
     """
 
-    def __init__(self, index_name: Optional[str]=None, namespace: Optional[str]=None) -> None:
+    def __init__(self, index_name: str | None=None, namespace: str | None=None) -> None:
         """Initialize the adapter with MCP client."""
         self.McpClient = SovereignPineconeMCPClient()
         self.namespace = namespace
@@ -70,7 +70,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
             await self.McpClient.initialize()
             self._initialized = True
 
-    async def similarity_search(self, query: str, k: int=4, **kwargs) -> List[Dict]:
+    async def similarity_search(self, query: str, k: int=4, **kwargs) -> list[dict]:
         """Legacy adapter for search."""
         Logger.info(f'[L4 ADAPTER] Routing legacy search to MCP: {query}')
         await self._ensure_initialized()
@@ -80,7 +80,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L4 state agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -97,12 +97,12 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         finally:
             _call_path.discard(agent_name)
 
-    async def add_texts(self, texts: List[str], metadatas: Optional[List[dict]]=None, ids: Optional[List[str]]=None) -> List[str]:
+    async def add_texts(self, texts: list[str], metadatas: list[dict] | None=None, ids: list[str] | None=None) -> list[str]:
         """Legacy adapter for adding documents."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
 
-        Logger.info(f'[L4 ADAPTER] Routing legacy add_texts to MCP Inference + Upsert')
+        Logger.info('[L4 ADAPTER] Routing legacy add_texts to MCP Inference + Upsert')
         await self._ensure_initialized()
         emb_result: Any = await self.McpClient.inference_embed(texts)
         embeddings: Any = emb_result.get('data', [])
@@ -119,7 +119,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         await self.McpClient.upsert(vectors=vectors, namespace=self.namespace)
         return result_ids
 
-    async def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str]=None) -> Any:
+    async def upsert_file_vector(self, file_path: Path, territory_hint: str | None=None) -> Any:
         """
         Upsert single file — used during healing.
 
@@ -141,7 +141,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         except Exception as e:
             Logger.error(f'[L4 PINECONE STORE] File upsert failed for {file_path}: {e}')
 
-    async def semantic_search(self, query: str, top_k: int=5) -> List[Dict]:
+    async def semantic_search(self, query: str, top_k: int=5) -> list[dict]:
         """
         Runtime retrieval for agents needing to 'find' logic.
 
@@ -161,7 +161,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
             Logger.error(f'[L4 PINECONE STORE] Semantic search failed: {e}')
             return []
 
-    async def hybrid_search(self, query: str, top_k: int=5) -> List[Dict]:
+    async def hybrid_search(self, query: str, top_k: int=5) -> list[dict]:
         """
         Eternal precision: Combined Vector + Keyword search.
 
@@ -193,7 +193,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         """
         Logger.warning(f'[L4 PINECONE STORE] purge_ghost_vector called but delete not supported via MCP: {file_path}')
 
-    async def health_check(self) -> Dict:
+    async def health_check(self) -> dict:
         """
         Enhanced health check with sample quality assessment.
 

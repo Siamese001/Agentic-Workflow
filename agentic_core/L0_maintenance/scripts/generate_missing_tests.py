@@ -5,21 +5,20 @@ This script creates comprehensive test files for all agents without tests.
 """
 import json
 from pathlib import Path
-from typing import List, Dict, Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 TESTS_DIR = PROJECT_ROOT / "tests"
 
-def load_agents_without_tests() -> List[Dict[str, Any]]:
+def load_agents_without_tests() -> list[dict[str, Any]]:
     """Load list of agents without tests from discovery data."""
     discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
-    with open(discovery_path, 'r', encoding='utf-8') as f:
+    with open(discovery_path, encoding='utf-8') as f:
         agents = json.load(f)
 
     return [a for a in agents if not a.get('has_tests', False)]
 
-def generate_test_content(agent: Dict[str, Any]) -> str:
+def generate_test_content(agent: dict[str, Any]) -> str:
     """Generate test file content for an agent."""
     class_name = agent['class_name']
     path = agent['path']
@@ -34,9 +33,9 @@ def generate_test_content(agent: Dict[str, Any]) -> str:
 
     # Determine test directory
     if layer == "Apps":
-        test_subdir = "apps"
+        pass
     else:
-        test_subdir = layer.lower().replace(' ', '_').split('/')[0]
+        layer.lower().replace(' ', '_').split('/')[0]
 
     test_content = f'''"""
 Test suite for {class_name}
@@ -190,7 +189,7 @@ class Test{class_name}Integration:
 
     return test_content
 
-def create_test_file(agent: Dict[str, Any]) -> Path:
+def create_test_file(agent: dict[str, Any]) -> Path:
     """Create test file for an agent."""
     class_name = agent['class_name']
     layer = agent['layer']

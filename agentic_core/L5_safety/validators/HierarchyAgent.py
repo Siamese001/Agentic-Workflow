@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 HierarchyAgent - Unified Hierarchy Management
 Consolidates HierarchyEnforcerAgent and HierarchyHealerAgent into a single agent.
@@ -20,31 +22,32 @@ PURPOSE: Complete hierarchy management including:
 LOCATION: agentic_core/L5_safety/guardrails/ (SSOT-compliant)
 """
 
+import logging
 import shutil
 import time
-import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
-# [SSOT IMPORT] Master Constitution is the absolute source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-    ROOT_PROTECTED_FILES,
-    ALLOWED_DUPLICATE_FILENAMES,
-    VARIABLE_DEPTH_SUBFOLDERS,
-)
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.gravity.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+
+# [SSOT IMPORT] Master Constitution is the absolute source of truth
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    ALLOWED_DUPLICATE_FILENAMES,
+    CORE_SUBFOLDER_MAP,
+    ROOT_PROTECTED_FILES,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+    SOVEREIGN_REGISTRY,
+    VARIABLE_DEPTH_SUBFOLDERS,
+)
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [MISSION AUDIT] Standardized logging for L4 Ledger consumption
 logging.basicConfig(level=logging.INFO)
@@ -129,7 +132,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             rel_target = target
 
         print(f"\n{'='*60}")
-        print(f"FILE MOVE APPROVAL REQUIRED")
+        print("FILE MOVE APPROVAL REQUIRED")
         print(f"{'='*60}")
         print(f"Source: {rel_source}")
         print(f"Target: {rel_target}")
@@ -156,7 +159,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     # STRUCTURE CREATION
     # ========================================================================
 
-    def create_missing_structure(self) -> Dict[str, Any]:
+    def create_missing_structure(self) -> dict[str, Any]:
         """
         Create missing L2 (Layer) and L3 (Sub-territory) directories.
 
@@ -206,7 +209,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return results
 
-    def _create_dir_with_init(self, path: Path, results: Dict, rel_label: str) -> None:
+    def _create_dir_with_init(self, path: Path, results: dict, rel_label: str) -> None:
         """Helper to create directory and touch __init__.py sentinel."""
         try:
             path.mkdir(parents=True, exist_ok=True)
@@ -221,7 +224,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     # FILE RELOCATION (from HierarchyHealerAgent)
     # ========================================================================
 
-    def relocate_misplaced_files(self) -> Dict[str, Any]:
+    def relocate_misplaced_files(self) -> dict[str, Any]:
         """
         Relocate files from non-approved L1/L2 folders to approved locations.
 
@@ -262,7 +265,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return results
 
-    def _relocate_l2_layer_files(self, agentic_core_path: Path, bad_layer_l2: str, approved_layers_l2: set, results: Dict[str, Any]) -> None:
+    def _relocate_l2_layer_files(self, agentic_core_path: Path, bad_layer_l2: str, approved_layers_l2: set, results: dict[str, Any]) -> None:
         """Relocate files from non-approved L2 layer."""
         bad_path = agentic_core_path / bad_layer_l2
 
@@ -280,7 +283,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         if self.healing_enabled:
             self._cleanup_empty_folder(bad_path, bad_layer_l2, results)
 
-    def _relocate_file_to_l2(self, py_file: Path, bad_layer_l2: str, agentic_core_path: Path, approved_layers_l2: set, results: Dict[str, Any]) -> None:
+    def _relocate_file_to_l2(self, py_file: Path, bad_layer_l2: str, agentic_core_path: Path, approved_layers_l2: set, results: dict[str, Any]) -> None:
         """Relocate a single file to approved L2 layer."""
         try:
             target_layer_l2 = get_best_target_l1(bad_layer_l2, approved_layers_l2)
@@ -304,7 +307,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         except Exception as e:
             results["errors"].append(f"{py_file.name}: {e}")
 
-    def _relocate_l3_territory_files(self, agentic_core_path: Path, layer_l2_name: str, results: Dict[str, Any]) -> None:
+    def _relocate_l3_territory_files(self, agentic_core_path: Path, layer_l2_name: str, results: dict[str, Any]) -> None:
         """Relocate files from non-approved L3 territories."""
         layer_l2_path = agentic_core_path / layer_l2_name
         if not layer_l2_path.exists():
@@ -337,7 +340,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             if self.healing_enabled:
                 self._cleanup_empty_folder(bad_path, f"{layer_l2_name}/{bad_territory_l3}", results)
 
-    def _relocate_file_to_l3(self, py_file: Path, layer_l2_name: str, layer_l2_path: Path, bad_territory_l3: str, results: Dict[str, Any]) -> None:
+    def _relocate_file_to_l3(self, py_file: Path, layer_l2_name: str, layer_l2_path: Path, bad_territory_l3: str, results: dict[str, Any]) -> None:
         """Relocate a single file to approved L3 territory."""
         try:
             target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
@@ -359,7 +362,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         except Exception as e:
             results["errors"].append(f"{py_file.name}: {e}")
 
-    def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: Dict[str, Any]) -> None:
+    def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: dict[str, Any]) -> None:
         """Remove empty folder tree after relocation."""
         try:
             self._remove_empty_dirs(folder_path)
@@ -373,7 +376,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     # DEPTH ENFORCEMENT (from HierarchyEnforcerAgent)
     # ========================================================================
 
-    def enforce_depth_rules(self) -> Dict[str, Any]:
+    def enforce_depth_rules(self) -> dict[str, Any]:
         """
         Enforce depth rules and archive violations.
 
@@ -423,7 +426,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         expected_depth = SOVEREIGN_REGISTRY.get(root_key, {}).get("depth", 2)
         archived, violations = 0, 0
         # Phase 6.5: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+        from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
         all_files = list(get_python_files(self.project_root)) + list(get_data_files(self.project_root, extensions=['.json', '.md', '.yaml', '.yml']))
         for file_path in all_files:
             if file_path.is_dir():
@@ -543,7 +546,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             rel_target = target_path
 
         print(f"\n{'='*60}")
-        print(f"ARCHIVE APPROVAL REQUIRED")
+        print("ARCHIVE APPROVAL REQUIRED")
         print(f"{'='*60}")
         print(f"File:   {rel_source}")
         print(f"Target: {rel_target}")
@@ -660,7 +663,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     # ORPHAN PURGING (from HierarchyHealerAgent)
     # ========================================================================
 
-    def purge_orphaned_files(self) -> Dict[str, Any]:
+    def purge_orphaned_files(self) -> dict[str, Any]:
         """
         Purge code and assets in forbidden or root-level locations.
 
@@ -799,7 +802,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                       purge_orphans: bool = True,
                       execute: bool = False,
                       dry_run: bool = True,
-                      **kwargs) -> Dict[str, Any]:
+                      **kwargs) -> dict[str, Any]:
         """
         Unified hierarchy healing with granular control.
 
@@ -878,7 +881,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             print(f"Orphans purged: {results['summary']['orphans_purged']}")
             print(f"\nTotal actions taken: {results['summary']['total_actions']}")
         else:
-            print(f"[DRY-RUN] No changes were made - run with healing_enabled=True to fix violations")
+            print("[DRY-RUN] No changes were made - run with healing_enabled=True to fix violations")
         print("=" * 80)
 
         return results
@@ -891,9 +894,9 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None,
+        _call_path: set[str] | None = None,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Unified Hierarchy Healing - Enforces structure, relocation, and depth rules.
 
@@ -961,7 +964,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         'observability', # SSOT: agentic_core/L6_observability/
     }
 
-    def scan_root_violations(self) -> Dict[str, Any]:
+    def scan_root_violations(self) -> dict[str, Any]:
         """
         Scan project root for SSOT violations.
 
@@ -1034,7 +1037,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         'coverage_html': 'reports/coverage_html',  # Or add to .gitignore
     }
 
-    def heal_root_violations(self, dry_run: bool = True) -> Dict[str, Any]:
+    def heal_root_violations(self, dry_run: bool = True) -> dict[str, Any]:
         """
         Heal root directory SSOT violations.
 
@@ -1135,7 +1138,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         )
         return results
 
-    def _merge_root_folder_to_ssot(self, folder_name: str, dry_run: bool) -> Dict[str, Any]:
+    def _merge_root_folder_to_ssot(self, folder_name: str, dry_run: bool) -> dict[str, Any]:
         """
         Merge a root folder's contents into its SSOT location.
 
@@ -1168,7 +1171,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Logger.info(f"HierarchyAgent: Merging {folder_name}/ -> {ssot_target}/")
 
         # Phase 6.5: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+        from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
         # Iterate through all files in root folder
         all_files = list(get_python_files(root_folder)) + list(get_data_files(root_folder, extensions=['.json', '.md', '.yaml', '.yml', '.txt', '.log']))
         for src_file in all_files:
@@ -1227,7 +1230,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return result
 
-    def _handle_coverage_html(self, dry_run: bool) -> Dict[str, Any]:
+    def _handle_coverage_html(self, dry_run: bool) -> dict[str, Any]:
         """
         Handle coverage_html/ folder by adding to .gitignore.
 

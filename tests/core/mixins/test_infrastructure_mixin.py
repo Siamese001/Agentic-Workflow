@@ -4,12 +4,10 @@ Test Suite for InfrastructureMixin
 Verifies the Method Resolution Order (MRO) and state aggregation
 of the consolidated InfrastructureMixin (Opportunity #4).
 """
-import pytest
-from unittest.mock import MagicMock
 
-from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 

@@ -9,18 +9,15 @@ import json
 import logging
 import re
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
+from typing import Any
 
 from pydantic import BaseModel, ValidationError
 
-from .unified_formatter import (
-    UnifiedFormatter, FormatResult, FormatType,
-    FormatterStrategy, get_unified_formatter
-)
 from .signal_infrastructure import EngineType
+from .unified_formatter import FormatResult, FormatType, get_unified_formatter
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +36,9 @@ class RepairResult:
     """Result of a repair attempt."""
     success: bool
     repaired_data: Any
-    strategy_used: Optional[RepairStrategy] = None
-    error_message: Optional[str] = None
-    original_error: Optional[str] = None
+    strategy_used: RepairStrategy | None = None
+    error_message: str | None = None
+    original_error: str | None = None
     attempts: int = 0
 
 
@@ -52,8 +49,8 @@ class FormatRepair(ABC):
     async def repair(
         self,
         broken_content: str,
-        target_schema: Optional[BaseModel] = None,
-        context: Optional[Dict[str, Any]] = None
+        target_schema: BaseModel | None = None,
+        context: dict[str, Any] | None = None
     ) -> RepairResult:
         """Repair broken content.
 
@@ -97,8 +94,8 @@ class JSONRepairStrategy(FormatRepair):
     async def repair(
         self,
         broken_content: str,
-        target_schema: Optional[BaseModel] = None,
-        context: Optional[Dict[str, Any]] = None
+        target_schema: BaseModel | None = None,
+        context: dict[str, Any] | None = None
     ) -> RepairResult:
         """Repair JSON content.
 
@@ -214,8 +211,8 @@ class MarkdownStripStrategy(FormatRepair):
     async def repair(
         self,
         broken_content: str,
-        target_schema: Optional[BaseModel] = None,
-        context: Optional[Dict[str, Any]] = None
+        target_schema: BaseModel | None = None,
+        context: dict[str, Any] | None = None
     ) -> RepairResult:
         """Strip markdown from content.
 
@@ -270,8 +267,8 @@ class RegexExtractStrategy(FormatRepair):
     async def repair(
         self,
         broken_content: str,
-        target_schema: Optional[BaseModel] = None,
-        context: Optional[Dict[str, Any]] = None
+        target_schema: BaseModel | None = None,
+        context: dict[str, Any] | None = None
     ) -> RepairResult:
         """Extract data using regex.
 
@@ -338,8 +335,8 @@ class SchemaFillStrategy(FormatRepair):
     async def repair(
         self,
         broken_content: str,
-        target_schema: Optional[BaseModel] = None,
-        context: Optional[Dict[str, Any]] = None
+        target_schema: BaseModel | None = None,
+        context: dict[str, Any] | None = None
     ) -> RepairResult:
         """Fill missing schema fields.
 
@@ -392,7 +389,7 @@ class SchemaFillStrategy(FormatRepair):
                 attempts=1
             )
 
-    def _fill_missing_fields(self, data: Dict, schema: BaseModel) -> Dict:
+    def _fill_missing_fields(self, data: dict, schema: BaseModel) -> dict:
         """Fill missing fields based on schema.
 
         Args:
@@ -440,8 +437,8 @@ class FallbackTextStrategy(FormatRepair):
     async def repair(
         self,
         broken_content: str,
-        target_schema: Optional[BaseModel] = None,
-        context: Optional[Dict[str, Any]] = None
+        target_schema: BaseModel | None = None,
+        context: dict[str, Any] | None = None
     ) -> RepairResult:
         """Provide text fallback.
 
@@ -514,10 +511,10 @@ class SelfHealingFormatter:
     async def format_with_healing(
         self,
         data: Any,
-        format_type: Union[FormatType, str],
-        engine_type: Optional[EngineType] = None,
-        config: Optional[Dict[str, Any]] = None,
-        target_schema: Optional[BaseModel] = None
+        format_type: FormatType | str,
+        engine_type: EngineType | None = None,
+        config: dict[str, Any] | None = None,
+        target_schema: BaseModel | None = None
     ) -> FormatResult:
         """Format data with automatic healing.
 
@@ -611,7 +608,7 @@ class SelfHealingFormatter:
             errors=result.errors
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get healing statistics.
 
         Returns:
@@ -637,7 +634,7 @@ class SelfHealingFormatter:
 
 
 # Global self-healing formatter
-_healing_formatter: Optional[SelfHealingFormatter] = None
+_healing_formatter: SelfHealingFormatter | None = None
 
 
 def get_self_healing_formatter() -> SelfHealingFormatter:
@@ -655,10 +652,10 @@ def get_self_healing_formatter() -> SelfHealingFormatter:
 # Convenience functions
 async def format_with_healing(
     data: Any,
-    format_type: Union[FormatType, str],
-    engine_type: Optional[EngineType] = None,
-    config: Optional[Dict[str, Any]] = None,
-    target_schema: Optional[BaseModel] = None
+    format_type: FormatType | str,
+    engine_type: EngineType | None = None,
+    config: dict[str, Any] | None = None,
+    target_schema: BaseModel | None = None
 ) -> FormatResult:
     """Format data with self-healing.
 

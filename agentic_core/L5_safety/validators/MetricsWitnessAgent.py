@@ -15,16 +15,18 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 
 # Sovereign Hardening Mixins – Phase 35
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -70,16 +72,18 @@ class MetricsWitnessAgent(
         """
         super().__init__()
         self.Logger = logging.getLogger(f"{self.__class__.__name__}")
-        self.MANDATORY_COMPONENTS: List[str] = ["metrics"]
-        self.metrics: Optional[Any] = None
+        self.MANDATORY_COMPONENTS: list[str] = ["metrics"]
+        self.metrics: Any | None = None
 
         try:
-            from agentic_core.L6_observability.metrics.MetricsAgent import metrics_agent as MetricsAgentCls
+            from agentic_core.L6_observability.metrics.MetricsAgent import (
+                metrics_agent as MetricsAgentCls,
+            )
             self.metrics = MetricsAgentCls(project_root)
         except Exception:
             self.Logger.warning("MetricsAgent unavailable – witness operating in degraded mode")
 
-    def calculate_structural_ssot_score(self) -> Tuple[float, List[str]]:
+    def calculate_structural_ssot_score(self) -> tuple[float, list[str]]:
         """
         Calculate Structural SSOT dimension score.
 
@@ -89,7 +93,7 @@ class MetricsWitnessAgent(
             Tuple of (score: float, issues: List[str]).
             Score is 0-100, with 5-point penalty per violation.
         """
-        issues: List[str] = []
+        issues: list[str] = []
         if not self.metrics:
             return 100.0, ["MetricsAgent unavailable – assuming perfect structural compliance"]
 
@@ -104,7 +108,7 @@ class MetricsWitnessAgent(
 
         return score, issues
 
-    def calculate_healing_resilience_score(self) -> Tuple[float, List[str]]:
+    def calculate_healing_resilience_score(self) -> tuple[float, list[str]]:
         """
         Calculate Healing Resilience dimension score.
 
@@ -114,7 +118,7 @@ class MetricsWitnessAgent(
             Tuple of (score: float, issues: List[str]).
             Score is 0-100 based on healing success ratio.
         """
-        issues: List[str] = []
+        issues: list[str] = []
         if not self.metrics:
             return 100.0, ["MetricsAgent unavailable – assuming full healing resilience"]
 
@@ -133,7 +137,7 @@ class MetricsWitnessAgent(
 
         return score, issues
 
-    async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+    async def _detect_action_opportunity(self) -> dict[str, Any] | None:
         """
         Detect opportunities for proactive action.
 
@@ -154,8 +158,8 @@ class MetricsWitnessAgent(
     async def _execute_conservative(
         self,
         ctx: Any,
-        **context: Dict[str, Any]
-    ) -> Dict[str, Tuple[float, List[str]]]:
+        **context: dict[str, Any]
+    ) -> dict[str, tuple[float, list[str]]]:
         """
         Execute in conservative mode with cached/fallback scores.
 
@@ -175,8 +179,8 @@ class MetricsWitnessAgent(
     async def _execute_minimal(
         self,
         ctx: Any,
-        **context: Dict[str, Any]
-    ) -> Dict[str, str]:
+        **context: dict[str, Any]
+    ) -> dict[str, str]:
         """
         Execute in minimal mode for resource preservation.
 
@@ -196,8 +200,8 @@ class MetricsWitnessAgent(
     async def _execute_standard(
         self,
         ctx: Any,
-        **context: Dict[str, Any]
-    ) -> Dict[str, Tuple[float, List[str]]]:
+        **context: dict[str, Any]
+    ) -> dict[str, tuple[float, list[str]]]:
         """
         Execute in standard mode with full metrics calculation.
 
@@ -213,7 +217,7 @@ class MetricsWitnessAgent(
             "Healing Resilience": self.calculate_healing_resilience_score(),
         }
 
-    def heal_repository(self) -> Dict[str, int]:
+    def heal_repository(self) -> dict[str, int]:
         """
         Execute healing chain via parent class.
 

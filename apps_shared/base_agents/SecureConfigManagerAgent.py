@@ -5,33 +5,35 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """Secure Configuration Management - Handles secrets, keys, and config validation.
 
 This module provides secure configuration management with encrypted key storage,
 configuration validation, and prevention of hardcoded secrets.
 """
 
+import base64
 import json
 import logging
 import os
+import threading
 import time
-from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from typing import Any
+
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-import base64
-import threading
 
-from .secure_error import SecurityError, ConfigurationError
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
+from .secure_error import ConfigurationError
 
 Logger = logging.getLogger(__name__)
 
@@ -42,8 +44,8 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
     def __init__(
         self,
-        config_dir: Optional[Path] = None,
-        master_password: Optional[str] = None,
+        config_dir: Path | None = None,
+        master_password: str | None = None,
         env_prefix: str = "AGENTIC_"
     ) -> None:
         """Initialize the secure config manager.
@@ -70,7 +72,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
         Logger.info(f"Initialized SecureConfigManagerAgent with config dir: {self.config_dir}")
 
-    def _init_encryption(self, master_password: Optional[str]) -> None:
+    def _init_encryption(self, master_password: str | None) -> None:
         """Initialize encryption keys.
 
         Args:
@@ -120,7 +122,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         """
         return self.cipher.decrypt(encrypted_data).decode()
 
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> dict[str, Any]:
         """Load encrypted configuration.
 
         Returns:
@@ -155,7 +157,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             Logger.error(f"Failed to save config: {e}")
             raise ConfigurationError(f"Configuration save failed: {e}")
 
-    def _load_keys(self) -> Dict[str, Dict[str, Any]]:
+    def _load_keys(self) -> dict[str, dict[str, Any]]:
         """Load encryption keys with metadata.
 
         Returns:
@@ -255,7 +257,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
             return key_b64
 
-    def get_key(self, key_name: str) -> Optional[str]:
+    def get_key(self, key_name: str) -> str | None:
         """Get an encryption key.
 
         Args:
@@ -299,7 +301,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             Logger.info(f"Rotated key: {key_name}")
             return new_key
 
-    def _key_needs_rotation(self, key_data: Dict[str, Any]) -> bool:
+    def _key_needs_rotation(self, key_data: dict[str, Any]) -> bool:
         """Check if a key needs rotation.
 
         Args:
@@ -314,7 +316,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         rotation_time = last_rotated + (rotation_days * 24 * 60 * 60)
         return time.time() > rotation_time
 
-    def list_keys_needing_rotation(self) -> List[str]:
+    def list_keys_needing_rotation(self) -> list[str]:
         """List keys that need rotation.
 
         Returns:
@@ -327,7 +329,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
                     needs_rotation.append(key_name)
             return needs_rotation
 
-    def validate_config(self, schema: Dict[str, Any]) -> List[str]:
+    def validate_config(self, schema: dict[str, Any]) -> list[str]:
         """Validate configuration against a schema.
 
         Args:
@@ -351,7 +353,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
         return errors
 
-    def export_config(self, include_secrets: bool = False) -> Dict[str, Any]:
+    def export_config(self, include_secrets: bool = False) -> dict[str, Any]:
         """Export configuration for backup.
 
         Args:
@@ -432,8 +434,8 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Sovereign security healing - validates encryption, detects exposed secrets,
         and reconciles config formats.
@@ -485,7 +487,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
 
 # Global config manager instance
-_default_manager: Optional[SecureConfigManagerAgent] = None
+_default_manager: SecureConfigManagerAgent | None = None
 _manager_lock = threading.Lock()
 
 
@@ -529,7 +531,7 @@ def set_config(key: str, value: Any, sensitive: bool = False) -> None:
     get_config_manager().set(key, value, sensitive)
 
 
-def get_encryption_key(key_name: str) -> Optional[str]:
+def get_encryption_key(key_name: str) -> str | None:
     """Get an encryption key from the default manager.
 
     Args:
@@ -540,6 +542,6 @@ def get_encryption_key(key_name: str) -> Optional[str]:
     """
     return get_config_manager().get_key(key_name)
 
-def get_secure_config_manager(config_dir: Optional[Path] = None, master_password: Optional[str] = None) -> SecureConfigManagerAgent:
+def get_secure_config_manager(config_dir: Path | None = None, master_password: str | None = None) -> SecureConfigManagerAgent:
     """Factory function to get secure config manager."""
     return SecureConfigManagerAgent(config_dir, master_password)

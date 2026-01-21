@@ -20,9 +20,8 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.infrastructure import (
-    SemanticKnowledgeClient,
     KnowledgeNamespace,
-    SearchResult,
+    SemanticKnowledgeClient,
 )
 
 
@@ -38,7 +37,7 @@ def test_client_initialization():
         print("❌ FAILED: Client not available (check PINECONE_API_KEY)")
         return False
 
-    print(f"✅ PASSED: Client initialized")
+    print("✅ PASSED: Client initialized")
     print(f"   Index: {client.index_name}")
     return True
 
@@ -73,10 +72,10 @@ def test_get_stats():
         print(f"❌ FAILED: {stats['error']}")
         return False
 
-    print(f"✅ PASSED: Stats retrieved")
+    print("✅ PASSED: Stats retrieved")
     print(f"   Total records: {stats.get('total_records', 0)}")
     print(f"   Dimension: {stats.get('dimension', 0)}")
-    print(f"   Namespaces:")
+    print("   Namespaces:")
     for ns, count in stats.get("namespaces", {}).items():
         print(f"     - {ns}: {count} records")
 

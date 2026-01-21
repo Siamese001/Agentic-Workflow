@@ -8,19 +8,16 @@ is lost and enabling debugging and manual recovery.
 import asyncio
 import json
 import logging
-import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import aiofiles
-from pydantic import BaseModel
 
-from .core.envelope import SignalEnvelope, PipelineStageStatus
-from .core.checkpoint_manager import CheckpointManager, CheckpointConfig
+from .core.envelope import SignalEnvelope
 
 logger = logging.getLogger(__name__)
 
@@ -56,11 +53,11 @@ class DeadLetterItem:
     retry_count: int = 0
     max_retries: int = 3
     status: DeadLetterStatus = DeadLetterStatus.PENDING_REVIEW
-    investigation_notes: Optional[str] = None
-    resolved_by: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    investigation_notes: str | None = None
+    resolved_by: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization.
 
         Returns:
@@ -81,7 +78,7 @@ class DeadLetterItem:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "DeadLetterItem":
+    def from_dict(cls, data: dict[str, Any]) -> "DeadLetterItem":
         """Create from dictionary.
 
         Args:
@@ -123,7 +120,7 @@ class DeadLetterStorage(ABC):
         pass
 
     @abstractmethod
-    async def get(self, item_id: str) -> Optional[DeadLetterItem]:
+    async def get(self, item_id: str) -> DeadLetterItem | None:
         """Get item by ID.
 
         Args:
@@ -137,9 +134,9 @@ class DeadLetterStorage(ABC):
     @abstractmethod
     async def list(
         self,
-        status: Optional[DeadLetterStatus] = None,
+        status: DeadLetterStatus | None = None,
         limit: int = 100
-    ) -> List[DeadLetterItem]:
+    ) -> list[DeadLetterItem]:
         """List items in queue.
 
         Args:
@@ -152,7 +149,7 @@ class DeadLetterStorage(ABC):
         pass
 
     @abstractmethod
-    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: Optional[str] = None) -> bool:
+    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: str | None = None) -> bool:
         """Update item status.
 
         Args:
@@ -253,7 +250,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             logger.error(f"Failed to add to dead letter queue: {e}")
             return False
 
-    async def get(self, item_id: str) -> Optional[DeadLetterItem]:
+    async def get(self, item_id: str) -> DeadLetterItem | None:
         """Get item by ID.
 
         Args:
@@ -267,7 +264,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             path = self.storage_path / status_dir / f"{item_id}.json"
             if path.exists():
                 try:
-                    async with aiofiles.open(path, 'r') as f:
+                    async with aiofiles.open(path) as f:
                         content = await f.read()
                     data = json.loads(content)
                     return DeadLetterItem.from_dict(data)
@@ -278,9 +275,9 @@ class FileDeadLetterStorage(DeadLetterStorage):
 
     async def list(
         self,
-        status: Optional[DeadLetterStatus] = None,
+        status: DeadLetterStatus | None = None,
         limit: int = 100
-    ) -> List[DeadLetterItem]:
+    ) -> list[DeadLetterItem]:
         """List items in queue.
 
         Args:
@@ -315,7 +312,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     break
 
                 try:
-                    async with aiofiles.open(file_path, 'r') as f:
+                    async with aiofiles.open(file_path) as f:
                         content = await f.read()
                     data = json.loads(content)
                     item = DeadLetterItem.from_dict(data)
@@ -331,7 +328,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
         items.sort(key=lambda x: x.timestamp, reverse=True)
         return items[:limit]
 
-    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: Optional[str] = None) -> bool:
+    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: str | None = None) -> bool:
         """Update item status.
 
         Args:
@@ -430,7 +427,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
 class DeadLetterQueue:
     """Manages dead letter envelopes for debugging and recovery."""
 
-    def __init__(self, storage: Optional[DeadLetterStorage] = None):
+    def __init__(self, storage: DeadLetterStorage | None = None):
         """Initialize dead letter queue.
 
         Args:
@@ -455,7 +452,7 @@ class DeadLetterQueue:
         failure_reason: FailureReason,
         failure_stage: str,
         error_message: str,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ) -> bool:
         """Add failed envelope to dead letter queue.
 
@@ -487,7 +484,7 @@ class DeadLetterQueue:
 
         return success
 
-    async def get_failed_envelope(self, trace_id: str) -> Optional[DeadLetterItem]:
+    async def get_failed_envelope(self, trace_id: str) -> DeadLetterItem | None:
         """Get failed envelope by trace ID.
 
         Args:
@@ -500,9 +497,9 @@ class DeadLetterQueue:
 
     async def list_failed_envelopes(
         self,
-        status: Optional[DeadLetterStatus] = None,
+        status: DeadLetterStatus | None = None,
         limit: int = 100
-    ) -> List[DeadLetterItem]:
+    ) -> list[DeadLetterItem]:
         """List failed envelopes.
 
         Args:
@@ -552,7 +549,7 @@ class DeadLetterQueue:
 
         return success
 
-    async def requeue(self, trace_id: str, notes: str) -> Optional[SignalEnvelope]:
+    async def requeue(self, trace_id: str, notes: str) -> SignalEnvelope | None:
         """Requeue envelope for processing.
 
         Args:
@@ -584,7 +581,7 @@ class DeadLetterQueue:
 
         return item.envelope
 
-    async def cleanup(self, older_than: Optional[timedelta] = None) -> int:
+    async def cleanup(self, older_than: timedelta | None = None) -> int:
         """Clean up old resolved items.
 
         Args:
@@ -598,7 +595,7 @@ class DeadLetterQueue:
 
         return await self.storage.cleanup(older_than)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get dead letter queue statistics.
 
         Returns:
@@ -606,7 +603,7 @@ class DeadLetterQueue:
         """
         return self._stats.copy()
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of dead letter queue.
 
         Returns:
@@ -628,7 +625,7 @@ class DeadLetterQueue:
 
 
 # Global dead letter queue
-_dlq: Optional[DeadLetterQueue] = None
+_dlq: DeadLetterQueue | None = None
 _dlq_lock = asyncio.Lock()
 
 

@@ -1,22 +1,25 @@
 from __future__ import annotations
+
 # Sovereign RAG Manager
 # Territory: agentic_core/knowledge (cross-subfolder orchestrator)
 # Canon Key 9 - Retrieval-Augmented Generation integration
-
 import json
 from pathlib import Path
-from typing import List, Dict, Optional
 
 # Internal imports referencing the mandated structure
 try:
-    from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
-    from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
     from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
-    from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
-    from agentic_core.knowledge.static_index.action_verbs import ACTION_VERBS, STRONG_VERBS
-    from agentic_core.knowledge.static_index.skill_taxonomy import SKILL_TAXONOMY, ALL_SKILLS
     from agentic_core.knowledge.ResearchCache.cache_store import ResearchCache
-    from agentic_core.semantic_memory.embeddings.core_embedder import clear_embedding_cache, _embedding_cache
+    from agentic_core.knowledge.static_index.action_verbs import ACTION_VERBS, STRONG_VERBS
+    from agentic_core.knowledge.static_index.skill_taxonomy import ALL_SKILLS, SKILL_TAXONOMY
+
+    from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
+    from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
+    from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
+    from agentic_core.semantic_memory.embeddings.core_embedder import (
+        _embedding_cache,
+        clear_embedding_cache,
+    )
 except ImportError:
     # Fallback to avoid mission failure if sub-modules are mid-relocation
     ACTION_VERBS, STRONG_VERBS = {}, []
@@ -54,8 +57,9 @@ class SovereignRAGManager:
         # Optional: Initialize vector store, embedder, and BM25 if available
         try:
             from agentic_core.semantic_memory.embeddings.GeminiEmbedder import GeminiEmbedder
-            from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
             from agentic_core.semantic_memory.store.Bm25Store import get_bm25_store
+
+            from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
             self.embedder = GeminiEmbedder()
             self.vector_store = PineconeVectorStore()
             self.Bm25Store = get_bm25_store()
@@ -68,7 +72,7 @@ class SovereignRAGManager:
         # Optional: Initialize LLM engine for reranking
         self.engine = None
 
-    def _load_static_index(self) -> Dict:
+    def _load_static_index(self) -> dict:
         """Load all hard-coded knowledge bases for immediate retrieval."""
         return {
             "action_verbs": {
@@ -95,7 +99,7 @@ class SovereignRAGManager:
                 return CSVDocumentLoader.load(file_path)
         raise ValueError(f"Unsupported format: {file_path.suffix}")
 
-    def index_document(self, doc_id: str, text_chunks: List[str], metadata: dict = None) -> None:
+    def index_document(self, doc_id: str, text_chunks: list[str], metadata: dict = None) -> None:
         """Index document chunks into vector store and BM25 index."""
         try:
             # Vector indexing
@@ -123,7 +127,7 @@ class SovereignRAGManager:
         domain: str = "general",
         top_k: int = 5,
         use_cache: bool = True,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """
         Ultra-hardened hybrid retrieval with RRF fusion and LLM reranking.
         """
@@ -181,7 +185,7 @@ class SovereignRAGManager:
 
         return final_results or [{"source": "fallback", "content": "No relevant knowledge found.", "score": 0.0}]
 
-    def _rrf_fusion(self, vector_list: List[Dict], bm25_list: List[Dict], k: int = 60) -> List[Dict]:
+    def _rrf_fusion(self, vector_list: list[dict], bm25_list: list[dict], k: int = 60) -> list[dict]:
         """Reciprocal Rank Fusion — combines multiple retrieval scores."""
         scores = {}
 
@@ -207,7 +211,7 @@ class SovereignRAGManager:
 
         return result
 
-    async def _llm_rerank(self, query: str, candidates: List[Dict], top_k: int) -> List[Dict]:
+    async def _llm_rerank(self, query: str, candidates: list[dict], top_k: int) -> list[dict]:
         """Final precision reranking via LLM judgment."""
         if not self.engine or not candidates:
             return candidates[:top_k]
@@ -252,7 +256,7 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
         return "\n".join(context_parts)
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Knowledge agent - operational only."""
         if _call_path is None:
             _call_path = set()

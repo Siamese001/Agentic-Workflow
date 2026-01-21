@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 Test Coverage Guardian Agent
@@ -22,30 +24,18 @@ import inspect
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from agentic_core.utils.security import safe_execute
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.security import safe_execute
 
 
 @dataclass
@@ -81,7 +71,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         # [FIX] distinct scope for coverage vs. root
         self.target_scope = getattr(ctx, 'target_scope', AGENTIC_CORE_DIR)
 
-    def _load_history(self) -> List[Dict[str, Any]]:
+    def _load_history(self) -> list[dict[str, Any]]:
         """
         Load coverage history from JSON file.
 
@@ -95,7 +85,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 return []
         return []
 
-    def _save_history(self, entry: Dict[str, Any]) -> None:
+    def _save_history(self, entry: dict[str, Any]) -> None:
         """
         Save coverage entry to history.
 
@@ -110,7 +100,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             json.dumps(history[-30:], indent=2), encoding="utf-8"
         )
 
-    def _run_advanced_coverage(self) -> Dict[str, Any]:
+    def _run_advanced_coverage(self) -> dict[str, Any]:
         """Run pytest with branch coverage and generate reports."""
         try:
             # [FIX] Run coverage on the dynamic target scope
@@ -162,7 +152,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 )
         return {"files": {}}
 
-    def _discover_property_candidates(self) -> List[Dict]:
+    def _discover_property_candidates(self) -> list[dict]:
         """Scan target scope for functions suitable for property testing."""
         candidates = []
         # [FIX] Use dynamic target scope instead of hardcoded agentic_core
@@ -208,7 +198,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 continue
         return candidates
 
-    def _generate_property_test(self, candidate: Dict) -> tuple:
+    def _generate_property_test(self, candidate: dict) -> tuple:
         """Generate advanced Hypothesis property test with type-aware strategies."""
         # [FIX] Relative path handling for generalized scopes
         rel = Path(candidate["file"]).relative_to(self.target_scope)
@@ -275,7 +265,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         )
         return test_path, "\n".join(imports) + "\n\n" + header + "\n" + decorator + "\n" + body
 
-    def _discover_stateful_candidates(self) -> List[Dict]:
+    def _discover_stateful_candidates(self) -> list[dict]:
         """Find classes with mutable state in core layers (L3, L4)."""
         candidates = []
         target_layers = ["L4_state", "L3_orchestration", "L2_execution"]
@@ -308,7 +298,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 continue
         return candidates
 
-    def _generate_stateful_test(self, candidate: Dict) -> tuple:
+    def _generate_stateful_test(self, candidate: dict) -> tuple:
         """Generate RuleBasedStateMachine harness for complex objects."""
         rel = Path(candidate["file"]).relative_to(AGENTIC_CORE_DIR)
         test_name = f"test_stateful_{rel.with_suffix('').as_posix().replace('/', '_')}_{candidate['class']}.py"
@@ -344,12 +334,12 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         )
         return test_path, content
 
-    def _run_mutmut(self) -> Dict[str, Any]:
+    def _run_mutmut(self) -> dict[str, Any]:
         """Run mutation testing using mutmut."""
         try:
             # [FIX] Mutate the dynamic target scope
             # Run mutmut - use check=False because mutations may fail
-            result = safe_execute(
+            safe_execute(
                 ["mutmut", "run", "--paths-to-mutate", f"{self.target_scope}/"],
                 capture_output=True,
                 text=True,
@@ -394,7 +384,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 self.ctx.report("TestCoverageGuardianAgent", 0, False, f"Mutation testing failed: {e}")
             return {"score": 0, "survived": 0, "examples": []}
 
-    async def execute(self) -> Dict:
+    async def execute(self) -> dict:
         """Ultimate verification: coverage, mutation, property, and stateful testing."""
         print("   [SOVEREIGN VERIFICATION] Running coverage, mutation, and stateful discovery...")
 
@@ -442,7 +432,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             {
                 "timestamp": datetime.now().isoformat(),
                 "line_coverage": round(line_cov, 1),
-                "branch_coverage": round(branch_cov, 1) if isinstance(branch_cov, (int, float)) else 0,
+                "branch_coverage": round(branch_cov, 1) if isinstance(branch_cov, int | float) else 0,
                 "mutation_score": round(mut_score, 1),
                 "property_tests": prop_gen,
                 "property_candidates": total_candidates,
@@ -451,12 +441,12 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         )
 
         print(
-            f"   [METRICS] Line: {line_cov:.1f}% | Branch: {branch_cov if isinstance(branch_cov, (int, float)) else 'N/A'} | Mutation: {mut_score:.1f}% | New Stateful: {state_gen}"
+            f"   [METRICS] Line: {line_cov:.1f}% | Branch: {branch_cov if isinstance(branch_cov, int | float) else 'N/A'} | Mutation: {mut_score:.1f}% | New Stateful: {state_gen}"
         )
 
         return {
             "line_coverage": line_cov,
-            "branch_coverage": branch_cov if isinstance(branch_cov, (int, float)) else 0,
+            "branch_coverage": branch_cov if isinstance(branch_cov, int | float) else 0,
             "mutation_score": mut_score,
             "property_tests_generated": prop_gen,
             "property_candidates_found": total_candidates,
@@ -466,7 +456,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety/guardrails - operational only."""
         if _call_path is None:
             _call_path = set()

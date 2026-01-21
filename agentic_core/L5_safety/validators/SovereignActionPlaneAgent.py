@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """Sovereign Action Plane Implementation.
 
 Bypasses corrupted registry files with Toolsmith logic from the monolith.
@@ -13,32 +15,18 @@ Bypasses corrupted registry files with Toolsmith logic from the monolith.
 import asyncio
 import logging
 import os
-import re
 import subprocess
 import time
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from typing import Any
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+
 Logger: Any = logging.getLogger(__name__)
 
 class SovereignToolsmith:
@@ -54,7 +42,7 @@ class SovereignToolsmith:
         self.output_dir: str = output_dir
         os.makedirs(output_dir, exist_ok=True)
 
-    async def forge_diagnostic_tool(self, failure_context: str) -> Optional[str]:
+    async def forge_diagnostic_tool(self, failure_context: str) -> str | None:
         """
         Forge a diagnostic tool based on failure context.
 
@@ -102,7 +90,7 @@ class SovereignSandbox:
         self._is_running = False
         Logger.info('Sovereign Sandbox stopped')
 
-    async def execute_tool(self, tool_path: str, args: Optional[List[str]] = None) -> Dict[str, Any]:
+    async def execute_tool(self, tool_path: str, args: list[str] | None = None) -> dict[str, Any]:
         """
         Execute a tool in the sandbox.
 
@@ -172,11 +160,11 @@ class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
         assert hasattr(self, '_sandbox'), "Missing _sandbox"
         return True
 
-    def get_capabilities(self) -> List[Any]:
+    def get_capabilities(self) -> list[Any]:
         """Get available action capabilities."""
         return ['tool_execution', 'file_operations', 'diagnostic_tool_creation']
 
-    def get_available_tools(self) -> List[str]:
+    def get_available_tools(self) -> list[str]:
         """Get list of available tool names."""
         return ['python', 'shell', 'diagnostic_tool']
 
@@ -216,7 +204,7 @@ class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
             ExecutionResult = {'request': {'action_type': request.action_type, 'parameters': request.parameters, 'timestamp': time.time()}, 'result': {'success': result.success, 'output': result.output, 'error': result.error, 'execution_time': result.execution_time, 'metadata': getattr(result, 'metadata', {})}}
             await self._signal_ledger.append_result(ExecutionResult)
 
-    async def execute_batch(self, requests: List[ActionRequest], parallel: bool=True) -> List[ActionResult]:
+    async def execute_batch(self, requests: list[ActionRequest], parallel: bool=True) -> list[ActionResult]:
         """Execute multiple action requests."""
         if parallel:
             results: Any = await asyncio.gather(*[self.execute(req) for req in requests], return_exceptions=True)
@@ -243,7 +231,7 @@ class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
                 result = await self._sandbox.execute_tool(tool_path, args)
         return ActionResult(success=result['success'], output=result['stdout'], error=result['stderr'] if not result['success'] else '', execution_time=time.time() - start_time, metadata={'return_code': result['return_code'], 'self_repaired': not result['success'] and 'SyntaxError' in result.get('stderr', '')})
 
-    async def _attempt_tool_repair(self, tool_path: str, error_message: str) -> Dict[str, Any]:
+    async def _attempt_tool_repair(self, tool_path: str, error_message: str) -> dict[str, Any]:
         """Attempt to repair a tool that has a syntax error.
 
         Args:
@@ -254,14 +242,14 @@ class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
             Dictionary with repair result
         """
         try:
-            with open(tool_path, 'r') as f:
+            with open(tool_path) as f:
                 tool_code = f.read()
             fixed_code = tool_code
             if 'invalid syntax' in error_message:
                 lines = tool_code.split('\n')
                 fixed_lines = []
-                for i, line in enumerate(lines):
-                    if any((keyword in line for keyword in ['if ', 'for ', 'while ', 'def ', 'class '])) and (not line.strip().endswith(':')):
+                for _i, line in enumerate(lines):
+                    if any(keyword in line for keyword in ['if ', 'for ', 'while ', 'def ', 'class ']) and (not line.strip().endswith(':')):
                         if not line.strip().startswith('#'):
                             line = line.rstrip() + ':'
                     if line.count('(') != line.count(')'):
@@ -301,7 +289,7 @@ class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
                     f.write(content)
                 output = f'Successfully wrote to {file_path}'
             elif operation == 'read':
-                with open(file_path, 'r') as f:
+                with open(file_path) as f:
                     output = f.read()
             elif operation == 'delete':
                 os.remove(file_path)
@@ -318,7 +306,7 @@ class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

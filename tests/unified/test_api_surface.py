@@ -6,10 +6,11 @@ Tests verify that:
 - Config constants are accessible via clean imports
 - Facade pattern works correctly
 """
-import pytest
 import inspect
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -18,12 +19,11 @@ sys.path.insert(0, str(PROJECT_ROOT))
 def test_unified_api_exports():
     """Verify cleaner import paths for Agents."""
     # New clean import
-    from agentic_core.unified import UnifiedCodeValidatorAgent
-
     # Old deep import
     from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
-        UnifiedCodeValidatorAgent as Original
+        UnifiedCodeValidatorAgent as Original,
     )
+    from agentic_core.unified import UnifiedCodeValidatorAgent
 
     assert UnifiedCodeValidatorAgent is Original
     assert inspect.isclass(UnifiedCodeValidatorAgent)
@@ -31,10 +31,10 @@ def test_unified_api_exports():
 
 def test_unified_structure_validator_export():
     """Verify UnifiedStructureValidatorAgent is exported."""
-    from agentic_core.unified import UnifiedStructureValidatorAgent
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent as Original
+        UnifiedStructureValidatorAgent as Original,
     )
+    from agentic_core.unified import UnifiedStructureValidatorAgent
 
     assert UnifiedStructureValidatorAgent is Original
     assert inspect.isclass(UnifiedStructureValidatorAgent)
@@ -42,27 +42,27 @@ def test_unified_structure_validator_export():
 
 def test_unified_code_enforcer_export():
     """Verify UnifiedCodeEnforcerAgent is exported."""
-    from agentic_core.unified import UnifiedCodeEnforcerAgent
     from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
-        UnifiedCodeEnforcerAgent as Original
+        UnifiedCodeEnforcerAgent as Original,
     )
+    from agentic_core.unified import UnifiedCodeEnforcerAgent
 
     assert UnifiedCodeEnforcerAgent is Original
 
 
 def test_unified_resource_manager_export():
     """Verify UnifiedResourceManagerAgent is exported."""
-    from agentic_core.unified import UnifiedResourceManagerAgent
     from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
-        UnifiedResourceManagerAgent as Original
+        UnifiedResourceManagerAgent as Original,
     )
+    from agentic_core.unified import UnifiedResourceManagerAgent
 
     assert UnifiedResourceManagerAgent is Original
 
 
 def test_config_api_exports():
     """Verify cleaner import paths for Config."""
-    from agentic_core.config import SOVEREIGN_REGISTRY, DEFAULT_EXCLUDE_DIRS
+    from agentic_core.config import DEFAULT_EXCLUDE_DIRS, SOVEREIGN_REGISTRY
 
     assert isinstance(SOVEREIGN_REGISTRY, dict)
     assert isinstance(DEFAULT_EXCLUDE_DIRS, frozenset)
@@ -99,11 +99,11 @@ def test_unified_validation_types():
     """Verify validation types are exported from unified."""
     from agentic_core.unified import (
         RuleSet,
+        StructureViolation,
+        StructureViolationType,
         ValidationReport,
         Violation,
         ViolationType,
-        StructureViolation,
-        StructureViolationType,
     )
 
     # All should be importable

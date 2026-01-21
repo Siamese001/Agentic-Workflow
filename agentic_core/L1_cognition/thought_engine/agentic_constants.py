@@ -5,14 +5,17 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 Constants for the Agentic Core system.
 [SSOT] Structural constants derived from structure_blueprint.py
 
 Contains all shared constants used across the agentic framework.
 """
-from agentic_core.L5_safety.validators.structure_blueprint import ROOT_PROTECTED_FILES
 from typing import Any
+
+from agentic_core.L5_safety.validators.structure_blueprint import ROOT_PROTECTED_FILES
+
 max_complexity: Any = 10
 max_func_lines: Any = 50
 max_nesting_spaces: Any = 40

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Merge Module
 
@@ -21,7 +22,8 @@ Author: Agentic-Workflow Team
 Version: 1.0.0
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 __version__ = '1.0.0'
 __author__ = 'Agentic-Workflow Team'

@@ -1,11 +1,11 @@
 from __future__ import annotations
+
 """
 Sovereign Multi-Dimensional Auditor v3.0
 The Supreme Court of the Agentic Architecture.
 Aggregates reports from all Guardians.
 """
 import json
-import os
 import sys
 
 try:
@@ -15,7 +15,6 @@ except ImportError:
     YAML_AVAILABLE = False
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List
 
 # [SSOT] IMPORT PHYSICAL LAW FROM BLUEPRINT
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
@@ -27,7 +26,9 @@ if str(REPO_ROOT) not in sys.path:
 
 # Import available Guardians
 try:
-    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import check_file as check_underscore_fields
+    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import (
+        check_file as check_underscore_fields,
+    )
 except ImportError:
     check_underscore_fields = None
 

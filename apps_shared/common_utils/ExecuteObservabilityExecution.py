@@ -5,13 +5,14 @@ proper monitoring, tracing, and metrics collection.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Callable
 import logging
-from datetime import datetime
-from enum import Enum
 import time
 import uuid
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -39,10 +40,10 @@ class ObservabilityRequest:
     request_id: str
     operation_type: ObservabilityType
     target: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     execution_level: ExecutionLevel = ExecutionLevel.BASIC
-    timeout: Optional[float] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    timeout: float | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -51,12 +52,12 @@ class ObservabilityResult:
     request_id: str
     operation_type: ObservabilityType
     success: bool
-    data: Optional[Dict[str, Any]] = None
-    metrics: Dict[str, float] = field(default_factory=dict)
-    traces: List[Dict[str, Any]] = field(default_factory=list)
-    error: Optional[str] = None
+    data: dict[str, Any] | None = None
+    metrics: dict[str, float] = field(default_factory=dict)
+    traces: list[dict[str, Any]] = field(default_factory=list)
+    error: str | None = None
     execution_time: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -72,12 +73,12 @@ class ObservabilityConfig:
 class ObservabilityExecutionAdapter:
     """Main adapter for observability execution."""
 
-    def __init__(self, config: Optional[ObservabilityConfig] = None):
+    def __init__(self, config: ObservabilityConfig | None = None):
         self.config = config or ObservabilityConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._operation_handlers: Dict[ObservabilityType, Callable] = {}
-        self._active_traces: Dict[str, Dict[str, Any]] = {}
-        self._metrics_store: Dict[str, List[float]] = {}
+        self._operation_handlers: dict[ObservabilityType, Callable] = {}
+        self._active_traces: dict[str, dict[str, Any]] = {}
+        self._metrics_store: dict[str, list[float]] = {}
         self._initialize_handlers()
 
     def register_handler(self, operation_type: ObservabilityType,
@@ -139,7 +140,7 @@ class ObservabilityExecutionAdapter:
             self.logger.error(f"Observability execution failed: {str(e)}")
             return self._create_error_result(request, str(e), start_time)
 
-    def execute_batch(self, requests: List[ObservabilityRequest]) -> List[ObservabilityResult]:
+    def execute_batch(self, requests: list[ObservabilityRequest]) -> list[ObservabilityResult]:
         """Execute multiple observability operations.
 
         Args:
@@ -156,7 +157,7 @@ class ObservabilityExecutionAdapter:
 
         return results
 
-    def get_trace(self, trace_id: str) -> Optional[Dict[str, Any]]:
+    def get_trace(self, trace_id: str) -> dict[str, Any] | None:
         """Get trace information.
 
         Args:
@@ -168,7 +169,7 @@ class ObservabilityExecutionAdapter:
         return self._active_traces.get(trace_id)
 
     def get_metrics(self, metric_name: str,
-                   time_range: Optional[Tuple[float, float]] = None) -> List[float]:
+                   time_range: tuple[float, float] | None = None) -> list[float]:
         """Get metrics data.
 
         Args:
@@ -186,7 +187,7 @@ class ObservabilityExecutionAdapter:
 
         return values
 
-    def clear_traces(self, older_than: Optional[float] = None) -> int:
+    def clear_traces(self, older_than: float | None = None) -> int:
         """Clear old traces.
 
         Args:
@@ -215,7 +216,7 @@ class ObservabilityExecutionAdapter:
 
     def _execute_with_monitoring(self, handler: Callable,
                                 request: ObservabilityRequest,
-                                trace_id: Optional[str]) -> ObservabilityResult:
+                                trace_id: str | None) -> ObservabilityResult:
         """Execute operation with monitoring."""
         try:
             # Add trace context to parameters
@@ -295,7 +296,7 @@ class ObservabilityExecutionAdapter:
     def _initialize_handlers(self) -> None:
         """Initialize default operation handlers."""
         # Trace operation handler
-        def _trace_handler(params: Dict[str, Any]) -> Dict[str, Any]:
+        def _trace_handler(params: dict[str, Any]) -> dict[str, Any]:
             operation = params.get("operation")
             component = params.get("component", "unknown")
 
@@ -312,7 +313,7 @@ class ObservabilityExecutionAdapter:
             }
 
         # Metric operation handler
-        def _metric_handler(params: Dict[str, Any]) -> Dict[str, Any]:
+        def _metric_handler(params: dict[str, Any]) -> dict[str, Any]:
             metric_name = params.get("name")
             value = params.get("value", 0)
             tags = params.get("tags", {})
@@ -330,7 +331,7 @@ class ObservabilityExecutionAdapter:
             }
 
         # Log operation handler
-        def _log_handler(params: Dict[str, Any]) -> Dict[str, Any]:
+        def _log_handler(params: dict[str, Any]) -> dict[str, Any]:
             level = params.get("level", "info")
             message = params.get("message", "")
             context = params.get("context", {})
@@ -349,7 +350,7 @@ class ObservabilityExecutionAdapter:
             }
 
         # Event operation handler
-        def _event_handler(params: Dict[str, Any]) -> Dict[str, Any]:
+        def _event_handler(params: dict[str, Any]) -> dict[str, Any]:
             event_type = params.get("type")
             source = params.get("source", "unknown")
             data = params.get("data", {})
@@ -367,7 +368,7 @@ class ObservabilityExecutionAdapter:
             }
 
         # Profile operation handler
-        def _profile_handler(params: Dict[str, Any]) -> Dict[str, Any]:
+        def _profile_handler(params: dict[str, Any]) -> dict[str, Any]:
             target = params.get("target")
             duration = params.get("duration", 0)
 
@@ -414,9 +415,9 @@ def execute_observability_execution(
     request_id: str,
     operation_type: str,
     target: str,
-    parameters: Dict[str, Any],
+    parameters: dict[str, Any],
     execution_level: str = "basic"
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Execute observability operation.
 
     Args:

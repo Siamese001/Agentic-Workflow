@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Operational Configuration for Runtime Agents
 Centralized settings for file scanning, deduplication, and operational tasks.
@@ -6,13 +7,12 @@ Centralized settings for file scanning, deduplication, and operational tasks.
 This is separate from structure_blueprint.py which defines compliance rules.
 This config is for OPERATIONAL agents that need to know what to scan/exclude.
 """
-from typing import FrozenSet, List
 
 # ============================================================================
 # DIRECTORY EXCLUSIONS - What operational agents should NEVER touch
 # ============================================================================
 
-OPERATIONAL_EXCLUDED_DIRS: FrozenSet[str] = frozenset({
+OPERATIONAL_EXCLUDED_DIRS: frozenset[str] = frozenset({
     # Version control
     '.git',
 
@@ -66,7 +66,7 @@ OPERATIONAL_EXCLUDED_DIRS: FrozenSet[str] = frozenset({
 # SCAN TARGETS - Directories that operational agents SHOULD scan
 # ============================================================================
 
-OPERATIONAL_SCAN_TARGETS: List[str] = [
+OPERATIONAL_SCAN_TARGETS: list[str] = [
     'agentic_core',
     'apps_lic',
     'apps_rg',
@@ -79,7 +79,7 @@ OPERATIONAL_SCAN_TARGETS: List[str] = [
 # ALLOWED DUPLICATES - Files legitimately duplicated across directories
 # ============================================================================
 
-OPERATIONAL_ALLOWED_DUPLICATES: FrozenSet[str] = frozenset({
+OPERATIONAL_ALLOWED_DUPLICATES: frozenset[str] = frozenset({
     # Python package infrastructure (required in every package)
     '__init__.py',
     '__main__.py',
@@ -101,18 +101,18 @@ OPERATIONAL_ALLOWED_DUPLICATES: FrozenSet[str] = frozenset({
 # FILE EXTENSIONS - What file types to scan
 # ============================================================================
 
-OPERATIONAL_PYTHON_EXTENSIONS: FrozenSet[str] = frozenset({
+OPERATIONAL_PYTHON_EXTENSIONS: frozenset[str] = frozenset({
     '.py',
 })
 
-OPERATIONAL_CONFIG_EXTENSIONS: FrozenSet[str] = frozenset({
+OPERATIONAL_CONFIG_EXTENSIONS: frozenset[str] = frozenset({
     '.json',
     '.yaml',
     '.yml',
     '.toml',
 })
 
-OPERATIONAL_ALL_EXTENSIONS: FrozenSet[str] = (
+OPERATIONAL_ALL_EXTENSIONS: frozenset[str] = (
     OPERATIONAL_PYTHON_EXTENSIONS | OPERATIONAL_CONFIG_EXTENSIONS
 )
 

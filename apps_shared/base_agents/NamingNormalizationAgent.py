@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 [DEPRECATED] NamingNormalizationAgent - ABSORBED INTO NamingAgent
 
@@ -24,11 +25,11 @@ Use instead:
 
 This file will be removed in a future release.
 """
-import warnings
 import re
 import shutil
+import warnings
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
@@ -43,6 +44,7 @@ warnings.warn(
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
+
 # DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
 class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
@@ -56,7 +58,7 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     SNAKE_CASE_PATTERN: re.Pattern = re.compile('^[a-z0-9_]+$')
     CAMEL_OR_PASCAL: re.Pattern = re.compile('^[A-Z][a-zA-Z0-9]*$|^[a-z]+([A-Z][a-z]+)+')
 
-    def __init__(self, ctx: Optional[Any] = None, project_root: Optional[str] = None) -> None:
+    def __init__(self, ctx: Any | None = None, project_root: str | None = None) -> None:
         """
         Initialize the naming normalization agent.
 
@@ -64,10 +66,10 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             ctx: Optional execution context
             project_root: Optional project root directory
         """
-        self.ctx: Optional[Any] = ctx
-        self.project_root: Optional[str] = project_root
+        self.ctx: Any | None = ctx
+        self.project_root: str | None = project_root
 
-    async def execute(self, file_path: str) -> Dict[str, Any]:
+    async def execute(self, file_path: str) -> dict[str, Any]:
         """
         Execute method for validator compatibility.
 
@@ -121,7 +123,7 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         return decorator
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Deprecated naming agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -138,7 +140,7 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         finally:
             _call_path.discard(agent_name)
 
-    async def heal_violation(self, file_path: Path, ctx: Any=None) -> Dict[str, Any]:
+    async def heal_violation(self, file_path: Path, ctx: Any=None) -> dict[str, Any]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

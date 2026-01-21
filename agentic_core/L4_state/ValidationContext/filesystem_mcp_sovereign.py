@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """L4 State: Sovereign Filesystem MCP Client — Atomic Eternal Operations
 Ultra-hardened integration of Filesystem MCP with Roots, L5 shielding, and Redis cache.
 Zero tolerance for path escape or unrecorded writes.
@@ -7,8 +8,6 @@ Zero tolerance for path escape or unrecorded writes.
 import json
 import logging
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
     MCPConnectionManager,
@@ -59,7 +58,7 @@ class SovereignFilesystemMcp:
             mcp_authority.record_breach(f"FS Read Failure: {safe_path}")
             raise
 
-    async def atomic_fission_write(self, files: Dict[str, str], monolith_path: str) -> Dict:
+    async def atomic_fission_write(self, files: dict[str, str], monolith_path: str) -> dict:
         """Executes a physical fission event via the MCP server."""
         for p in files: self._validate_path(p)
         self._validate_path(monolith_path)
@@ -89,7 +88,7 @@ class SovereignFilesystemMcp:
             mcp_authority.record_breach(f"Fission Write Failure: {monolith_path}")
             raise
 
-    async def set_roots(self, roots: List[str]) -> None:
+    async def set_roots(self, roots: list[str]) -> None:
         """Sets the physical boundaries for the MCP server session."""
         validated = [r for r in roots if any(r.startswith(p) for p in ALLOWED_ROOT_PREFIXES)]
         if not validated:

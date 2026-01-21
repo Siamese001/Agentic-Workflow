@@ -14,16 +14,17 @@ Tracks performance metrics for the mission orchestrator.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
-from typing import Dict, Any, Optional
 import time
+from pathlib import Path
+from typing import Any
+
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 
 
 # [SOVEREIGN FACTORY]
-def get_performance_analyst(project_root: Path) -> 'PerformanceAnalystAgentSimple':
+def get_performance_analyst(project_root: Path) -> PerformanceAnalystAgentSimple:
     """Factory function to get PerformanceAnalystAgent instance."""
     return PerformanceAnalystAgentSimple(project_root)
 
@@ -44,7 +45,7 @@ class PerformanceAnalystAgentSimple:
         """Start tracking performance for an agent."""
         self.start_times[agent_name] = time.time()
 
-    def stop_tracking(self, agent_name: str) -> Dict[str, Any]:
+    def stop_tracking(self, agent_name: str) -> dict[str, Any]:
         """Stop tracking and return metrics for an agent."""
         if agent_name in self.start_times:
             duration = time.time() - self.start_times[agent_name]
@@ -56,7 +57,7 @@ class PerformanceAnalystAgentSimple:
             return self.metrics[agent_name]
         return {}
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get all collected metrics."""
         return self.metrics
 
@@ -67,8 +68,8 @@ class PerformanceAnalystAgentSimple:
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Performance analyst healing - reports metrics status.
         """

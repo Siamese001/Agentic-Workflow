@@ -15,7 +15,8 @@ Re-exported from L5_safety for backwards compatibility.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from typing import Dict, Any, Optional
+from typing import Any
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -57,7 +58,7 @@ except ImportError:
         is not available. Used for testing and development environments.
         """
 
-        def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any) -> Dict[str, Any]:
+        def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any) -> dict[str, Any]:
             """
             Autonomous healing method (Canon Key 51 compliance).
 
@@ -140,7 +141,7 @@ except ImportError:
             return PlacementResult()
 
 
-def get_naming_agent(project_root: Optional[str] = None) -> NamingAgent:
+def get_naming_agent(project_root: str | None = None) -> NamingAgent:
     """
     Get a NamingAgent instance.
 

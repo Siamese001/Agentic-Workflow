@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict
 
 import pytest
 
 # from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
-async def _id_node(ctx: Dict[str, object]) -> Dict[str, object]:
+async def _id_node(ctx: dict[str, object]) -> dict[str, object]:
     return dict(ctx)
 
 

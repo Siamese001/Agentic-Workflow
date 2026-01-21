@@ -2,10 +2,13 @@
 """
 Remove duplicate const realAgentData declarations by line numbers.
 """
-from pathlib import Path
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
+)
+
 
 def remove_duplicates():
     """Remove duplicate realAgentData declarations at specific line numbers."""

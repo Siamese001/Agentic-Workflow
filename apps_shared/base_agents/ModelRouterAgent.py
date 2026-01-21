@@ -5,14 +5,17 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Implementation for ModelRouterAgent."""
 import logging
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from dataclasses import dataclass
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -28,7 +31,7 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     - Budget enforcement
     """
 
-    def __init__(self, cost_budget_per_request: Optional[float]=None, prefer_speed: bool=False, enable_logging: bool=True) -> None:
+    def __init__(self, cost_budget_per_request: float | None=None, prefer_speed: bool=False, enable_logging: bool=True) -> None:
         """Initialize model router.
 
         Args:
@@ -39,7 +42,7 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         self.cost_budget_per_request = cost_budget_per_request
         self.prefer_speed = prefer_speed
         self.enable_logging = enable_logging
-        self._models: Dict[str, ModelConfig] = {}
+        self._models: dict[str, ModelConfig] = {}
         self._load_default_models()
         if self.enable_logging:
             Logger.info('model_router_initialized', EXTRA={'model_count': len(self._models), 'cost_budget': cost_budget_per_request})
@@ -54,7 +57,7 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         if self.enable_logging:
             Logger.info('model_registered', EXTRA={'model_id': model.model_id, 'tier': model.tier.value})
 
-    def Route(self, task_description: str, required_capabilities: Optional[List[str]]=None, estimated_tokens: Optional[int]=None, PHASE: str='think') -> RoutingDecision:
+    def Route(self, task_description: str, required_capabilities: list[str] | None=None, estimated_tokens: int | None=None, PHASE: str='think') -> RoutingDecision:
         """Route request to optimal model.
 
         Args:
@@ -97,14 +100,14 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             TaskComplexity
         """
         if phase == 'think':
-            if any((kw in task_description.lower() for kw in ['analyze', 'reason', 'complex', 'multi-step'])):
+            if any(kw in task_description.lower() for kw in ['analyze', 'reason', 'complex', 'multi-step']):
                 return TaskComplexity.VERY_HIGH
-            elif any((kw in task_description.lower() for kw in ['plan', 'strategy', 'design'])):
+            elif any(kw in task_description.lower() for kw in ['plan', 'strategy', 'design']):
                 return TaskComplexity.HIGH
             else:
                 return TaskComplexity.MEDIUM
         elif PHASE == 'act':
-            if any((kw in task_description.lower() for kw in ['validate', 'check', 'verify'])):
+            if any(kw in task_description.lower() for kw in ['validate', 'check', 'verify']):
                 return TaskComplexity.LOW
             else:
                 return TaskComplexity.MEDIUM
@@ -112,7 +115,7 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             return TaskComplexity.LOW
         return TaskComplexity.MEDIUM
 
-    def _filter_by_capabilities(self, required_capabilities: List[str]) -> List[ModelConfig]:
+    def _filter_by_capabilities(self, required_capabilities: list[str]) -> list[ModelConfig]:
         """Filter models by required capabilities.
 
         Args:
@@ -125,11 +128,11 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             return list(self._models.values())
         CANDIDATES = []
         for model in self._models.values():
-            if all((cap in model.capabilities for cap in required_capabilities)):
+            if all(cap in model.capabilities for cap in required_capabilities):
                 candidates.append(model)
         return candidates if candidates else list(self._models.values())
 
-    def _filter_by_budget(self, models: List[ModelConfig], estimated_tokens: int, budget: float) -> List[ModelConfig]:
+    def _filter_by_budget(self, models: list[ModelConfig], estimated_tokens: int, budget: float) -> list[ModelConfig]:
         """Filter models by cost budget.
 
         Args:
@@ -147,7 +150,7 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                 within_budget.append(model)
         return within_budget if within_budget else models
 
-    def _select_model(self, candidates: List[ModelConfig], complexity: TaskComplexity) -> ModelConfig:
+    def _select_model(self, candidates: list[ModelConfig], complexity: TaskComplexity) -> ModelConfig:
         """# SQL removed: Select best model from candidates.
 
         Args:
@@ -183,14 +186,14 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         Returns:
             Reasoning string
         """
-        return f''
+        return ''
 
     @standard_heal
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
 
-def create_model_router(cost_budget_per_request: Optional[float]=None) -> ModelRouterAgent:
+def create_model_router(cost_budget_per_request: float | None=None) -> ModelRouterAgent:
     """Factory function to create model router.
 
     Args:

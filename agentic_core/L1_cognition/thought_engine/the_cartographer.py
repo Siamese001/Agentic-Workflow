@@ -1,11 +1,14 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class TheCartographer:
@@ -30,17 +33,17 @@ class TheCartographer:
         self.api_key = os.getenv('GOOGLE_API_KEY')
         self.primary_root = Path.cwd()
         self.additional_roots = self._get_additional_roots()
-        self.file_summaries: Dict[str, str] = {}
+        self.file_summaries: dict[str, str] = {}
         self.exclude_patterns = {'.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.mypy_cache', '.coverage', '*.egg-info', '.DS_Store'}
 
-    def _get_additional_roots(self) -> List[Path]:
+    def _get_additional_roots(self) -> list[Path]:
         """
         Get additional repository roots from environment variables.
 
         Returns:
             List of additional repository root paths
         """
-        roots: List[Path] = []
+        roots: list[Path] = []
         env_roots = os.getenv('ADDITIONAL_REPO_ROOTS', '')
         if env_roots:
             for root_path in env_roots.split(','):
@@ -52,7 +55,7 @@ class TheCartographer:
                         LOGGER.info(f'📍 Scanning additional root: {root_path}')
         return roots
 
-    async def map_all_repositories(self) -> Dict[str, Any]:
+    async def map_all_repositories(self) -> dict[str, Any]:
         """
         Map all repositories (primary + additional).
 
@@ -60,7 +63,7 @@ class TheCartographer:
             Dictionary with mapping results
         """
         LOGGER.info('🗺️  TheCartographer: Beginning semantic mapping')
-        results: Dict[str, Any] = {'primary_root': str(self.primary_root), 'additional_roots': [str(r) for r in self.additional_roots], 'files_mapped': 0, 'summaries_generated': 0, 'repositories': {}}
+        results: dict[str, Any] = {'primary_root': str(self.primary_root), 'additional_roots': [str(r) for r in self.additional_roots], 'files_mapped': 0, 'summaries_generated': 0, 'repositories': {}}
         primary_result: Any = await self._map_repository(self.primary_root, 'primary')
         results['repositories']['primary'] = primary_result
         results['files_mapped'] += primary_result.get('files_mapped', 0)
@@ -74,7 +77,7 @@ class TheCartographer:
         LOGGER.info(f"[OK] TheCartographer: Mapped {results['files_mapped']} files")
         return results
 
-    async def _map_repository(self, root_path: Path, repo_name: str) -> Dict[str, Any]:
+    async def _map_repository(self, root_path: Path, repo_name: str) -> dict[str, Any]:
         """
         Map a single repository.
 
@@ -85,5 +88,5 @@ class TheCartographer:
         Returns:
             Mapping result for this repository
         """
-        result: Dict[str, Any] = {'repo_name': repo_name, 'root_path': str(root_path), 'files_mapped': 0, 'summaries_generated': 0, 'files': []}
+        result: dict[str, Any] = {'repo_name': repo_name, 'root_path': str(root_path), 'files_mapped': 0, 'summaries_generated': 0, 'files': []}
         return result

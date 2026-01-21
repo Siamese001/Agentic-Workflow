@@ -28,7 +28,7 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Pattern, Set
+from typing import Any
 
 from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 
@@ -97,7 +97,7 @@ class ConstitutionalOverseer:
                 return ViolationCheck(True, f'Access to sensitive path forbidden: {path}')
         if operation == 'delete':
             critical_extensions = ['.py', '.sh', '.bat', '.cmd', '.ps1']
-            if any((file_path.endswith(ext) for ext in critical_extensions)):
+            if any(file_path.endswith(ext) for ext in critical_extensions):
                 return ViolationCheck(True, 'Deletion of executable files is forbidden')
         return ViolationCheck(False, 'File operation validated - SAFE')
 
@@ -129,7 +129,7 @@ class ConstitutionalOverseer:
         except re.error as e:
             LOGGER.error(f'Invalid regex pattern: {e}')
 
-    def get_forbidden_patterns(self) -> List[str]:
+    def get_forbidden_patterns(self) -> list[str]:
         """Get list of forbidden patterns.
 
         Returns:
@@ -137,8 +137,9 @@ class ConstitutionalOverseer:
         """
         return self._forbidden_commands.copy()
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -164,7 +165,7 @@ class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         self.eval_patterns = ['eval\\s*\\(', 'exec\\s*\\(', '__import__\\s*\\(', 'compile\\s*\\(']
         LOGGER.info(f'SafetyInspectorAgent initialized (Socratic Judge: {enable_socratic_judge})')
 
-    async def scan_file(self, file_path: str) -> Dict[str, List[str]]:
+    async def scan_file(self, file_path: str) -> dict[str, list[str]]:
         """
         Scan a file for security violations.
 
@@ -176,7 +177,7 @@ class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         """
         violations: Any = {'secrets': [], 'todos': [], 'prints': [], 'debuggers': [], 'empty_except': [], 'bare_except': [], 'evals': []}
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content: Any = f.read()
                 lines: Any = content.split('\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n')
             for pattern in self.secret_patterns:
@@ -240,7 +241,7 @@ class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         try:
             from agentic_core.L2_execution.mcp.llm_router_mcp_client import get_llm_router_client
             llm_router = get_llm_router_client()
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 code_snippet = f.read()
             prompt = f"""\nRole: Socratic Judge - Expert Code Security Reviewer\n\nContext: Analyzing potential code Violation in {file_path}\nIssue: {issue}\nQuestion: {question}\n\nCode Snippet:\n{code_snippet[:2000]}  # Limit to first 2000 chars\n```\n\nInstructions:\n1. Analyze the code context carefully\n2. Determine if this is a REAL security Violation or just:\n   - Test data/example code\n   - Placeholder/mock value\n   - Documentation comment\n   - Safe usage of a potentially dangerous function\n\n3. Consider:\n   - Is the code in a test file?\n   - Is the value obviously fake (e.g., "xxx", "test", "example")?\n   - Is this a demonstration or documentation?\n   - Is the usage actually safe in this context?\n\nAnswer with ONLY "YES" if it's a real Violation or "NO" if it's a false positive.\n"""
             result_dict = await llm_router.validate_content(prompt, validation_type='socratic_judge')
@@ -267,7 +268,7 @@ class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         self._false_positive_cache.clear()
         LOGGER.info('False positive cache cleared')
 
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"healed": 0, "skipped": 0, "parent": result}

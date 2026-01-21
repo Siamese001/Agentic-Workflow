@@ -6,7 +6,6 @@ Filters to actual production/blueprint agent files only.
 import json
 import sys
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 def extract_basename(path: str) -> str:
@@ -52,7 +51,7 @@ def is_actual_agent_file(path: str) -> bool:
 
 def generate_table(json_file: Path, output_file: Path):
     """Generate Markdown table from JSON report."""
-    with open(json_file, 'r', encoding='utf-8') as f:
+    with open(json_file, encoding='utf-8') as f:
         content = f.read()
         # Skip log lines at the beginning
         json_start = content.find('[')

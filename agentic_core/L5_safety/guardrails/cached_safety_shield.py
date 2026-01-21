@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 CachedSafetyShield - Eternal L5 Safety Base with Redis Sovereign Cache
 """
@@ -6,8 +7,10 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 import redis
+
 
 class CachedSafetyShield:
     def __init__(self, project_root=None, session_id: str='l5_global'):
@@ -45,7 +48,7 @@ class cached_safety_shield_impl:
         self.prefix_gravity = f'l5_gravity:{session_id}'
         self.prefix_policy = f'l5_policy:{session_id}'
 
-    def get_cached_verdict(self, category: str, identifier: str) -> Optional[Dict]:
+    def get_cached_verdict(self, category: str, identifier: str) -> dict | None:
         """Instant recall of previous safety decisions."""
         key: Any = f'l5_{category}:{self.session_id}:{hashlib.sha256(identifier.encode()).hexdigest()}'
         try:
@@ -57,7 +60,7 @@ class cached_safety_shield_impl:
         except Exception:
             return None
 
-    def store_verdict(self, category: str, identifier: str, Verdict: Dict, ttl: int=86400) -> Any:
+    def store_verdict(self, category: str, identifier: str, Verdict: dict, ttl: int=86400) -> Any:
         """Warm the cache with a fresh safety Verdict."""
         key: Any = f'l5_{category}:{self.session_id}:{hashlib.sha256(identifier.encode()).hexdigest()}'
         try:

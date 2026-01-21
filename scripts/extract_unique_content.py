@@ -6,9 +6,9 @@ Only extracts content that doesn't exist in current codebase.
 
 import ast
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
 
-def build_codebase_index(dirs: List[str]) -> Tuple[Set[str], Set[str]]:
+
+def build_codebase_index(dirs: list[str]) -> tuple[set[str], set[str]]:
     """Build index of all class and function names in current codebase."""
     classes = set()
     functions = set()
@@ -23,14 +23,14 @@ def build_codebase_index(dirs: List[str]) -> Tuple[Set[str], Set[str]]:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
                         classes.add(node.name.lower())
-                    elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         functions.add(node.name.lower())
             except:
                 continue
 
     return classes, functions
 
-def analyze_archive_file(file_path: Path, existing_classes: Set[str], existing_functions: Set[str]) -> Dict:
+def analyze_archive_file(file_path: Path, existing_classes: set[str], existing_functions: set[str]) -> dict:
     """Analyze an archived file and identify unique content."""
     try:
         content = file_path.read_text(encoding='utf-8', errors='replace')
@@ -55,7 +55,7 @@ def analyze_archive_file(file_path: Path, existing_classes: Set[str], existing_f
 
                 # Get methods
                 methods = [item.name for item in node.body
-                          if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                          if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef)]
 
                 unique_classes.append({
                     'name': node.name,
@@ -68,7 +68,7 @@ def analyze_archive_file(file_path: Path, existing_classes: Set[str], existing_f
             else:
                 existing_in_file.append(node.name)
 
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             if node.name.lower() not in existing_functions and not node.name.startswith('_'):
                 params = [arg.arg for arg in node.args.args if arg.arg != 'self']
                 unique_functions.append({

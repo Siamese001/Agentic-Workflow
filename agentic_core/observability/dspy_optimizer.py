@@ -1,14 +1,17 @@
 from __future__ import annotations
+
 import hashlib
+
 '''Brief description of functionality and purpose.'''
 
 import logging
 import os
 import pickle
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol
+from typing import Any
 
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
@@ -25,9 +28,9 @@ except ImportError:
 # NAMING FIXED: OptimizationExample → OptimizationExample
 class OptimizationExample:
     """A single training example for DSPy optimization."""
-    inputs: Dict[str, Any]
-    ideal_output: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    inputs: dict[str, Any]
+    ideal_output: dict[str, Any]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -37,7 +40,7 @@ class OptimizationResult:
     optimized_prompt: str
     performance_score: float
     improvement_percentage: float
-    best_examples: List[OptimizationExample]
+    best_examples: list[OptimizationExample]
     optimization_time_seconds: float
 
 
@@ -96,8 +99,8 @@ class DsPyOptimizer:
         self,
         base_prompt: str,
         signature_class: type,
-        training_examples: List[OptimizationExample],
-        validation_examples: List[OptimizationExample],
+        training_examples: list[OptimizationExample],
+        validation_examples: list[OptimizationExample],
         metric_func: Callable,
         max_examples: int = 50
     ) -> OptimizationResult:
@@ -211,7 +214,7 @@ class DsPyOptimizer:
 
         return OptimizedModule(signature_class, base_prompt)
 
-    def _convert_to_dspy_examples(self, examples: List[OptimizationExample]):
+    def _convert_to_dspy_examples(self, examples: list[OptimizationExample]):
         """Convert our examples to DSPy format."""
         dspy_examples = []
 
@@ -234,7 +237,7 @@ class DsPyOptimizer:
     def _evaluate_module(
         self,
         module: dspy.Module,
-        examples: List[OptimizationExample],
+        examples: list[OptimizationExample],
         metric_func: Callable
     ) -> float:
         """Evaluate a module on examples."""
@@ -258,7 +261,7 @@ class DsPyOptimizer:
         self,
         prompt: str,
         signature_class: type,
-        examples: List[OptimizationExample],
+        examples: list[OptimizationExample],
         metric_func: Callable
     ) -> float:
         """Evaluate baseline performance without optimization."""
@@ -296,7 +299,7 @@ class DsPyOptimizer:
         except Exception as e:
             LOGGER.warning(f"Failed to cache result: {e}")
 
-    def _load_from_cache(self, key: str) -> Optional[OptimizationResult]:
+    def _load_from_cache(self, key: str) -> OptimizationResult | None:
         """Load optimization result from cache."""
         cache_file = self.cache_dir / f"opt_{key}.pkl"
         try:
@@ -346,7 +349,7 @@ class PromptSignatureRegistry:
     )
 
     @classmethod
-    def get_signature(cls, agent_type: str) -> Optional[dspy.Signature]:
+    def get_signature(cls, agent_type: str) -> dspy.Signature | None:
         """Get a signature for a specific agent type."""
         signatures = {
             "coder": cls.CODE_GENERATION,
@@ -375,7 +378,7 @@ class OptimizedHopModule(dspy.Module):
 
 
 # Common Metric functions
-def code_compilation_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
+def code_compilation_metric(predicted: dict[str, Any], ground_truth: dict[str, Any]) -> float:
     """Metric for code generation - checks if code would compile."""
     try:
         code = predicted.get("verified_code", "")
@@ -396,7 +399,7 @@ def code_compilation_metric(predicted: Dict[str, Any], ground_truth: Dict[str, A
         return 0.0
 
 
-def factual_accuracy_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
+def factual_accuracy_metric(predicted: dict[str, Any], ground_truth: dict[str, Any]) -> float:
     """Metric for factual accuracy - checks key facts match."""
     pred_analysis = predicted.get("analysis", "")
     truth_analysis = ground_truth.get("analysis", "")
@@ -412,7 +415,7 @@ def factual_accuracy_metric(predicted: Dict[str, Any], ground_truth: Dict[str, A
     return overlap / len(truth_words)
 
 
-def tool_selection_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
+def tool_selection_metric(predicted: dict[str, Any], ground_truth: dict[str, Any]) -> float:
     """Metric for tool selection - checks if the right tool was chosen."""
     pred_tool = predicted.get("selected_tool", "").lower()
     truth_tool = ground_truth.get("selected_tool", "").lower()

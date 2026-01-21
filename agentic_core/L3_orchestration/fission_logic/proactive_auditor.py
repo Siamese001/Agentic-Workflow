@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Proactive Fission Scanner - L3 Orchestration
 
@@ -14,13 +15,10 @@ Strategy:
 """
 import logging
 import os
-import re
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class ProactiveFissionScanner:
@@ -59,13 +57,13 @@ class ProactiveFissionScanner:
             Number of lines in file
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 return len(f.readlines())
         except Exception as e:
             Logger.warning(f'   [!]  Could not read {file_path}: {e}')
             return 0
 
-    async def scan_repository(self, target_dir: str) -> List[Dict[str, any]]:
+    async def scan_repository(self, target_dir: str) -> list[dict[str, any]]:
         """
         Identifies files that meet the 'Atomic Criticality' criteria.
 
@@ -107,7 +105,7 @@ class ProactiveFissionScanner:
         else:
             return 'CRITICAL'
 
-    async def generate_pre_emptive_strategy(self, file_path: str) -> Dict[str, any]:
+    async def generate_pre_emptive_strategy(self, file_path: str) -> dict[str, any]:
         """
         Uses Brave Search to find the best modular split for the specific file type.
 
@@ -124,13 +122,13 @@ class ProactiveFissionScanner:
             design_patterns: Any = await self.router.call_mcp('brave_search', {'query': query, 'purpose': 'Find modular design patterns'})
             structural_twins: Any = await self.router.call_mcp('pinecone', {'query': f'similar structure to {file_name}', 'top_k': 3, 'purpose': 'Find files with similar structure'})
             strategy: Any = {'file_path': file_path, 'design_patterns': design_patterns, 'structural_twins': structural_twins, 'recommended_split': self._recommend_split(file_path)}
-            Logger.info(f'   [OK] Strategy generated')
+            Logger.info('   [OK] Strategy generated')
             return strategy
         except Exception as e:
             Logger.error(f'   [X] Strategy generation failed: {e}')
             return {'file_path': file_path, 'error': str(e)}
 
-    def _recommend_split(self, file_path: str) -> Dict[str, str]:
+    def _recommend_split(self, file_path: str) -> dict[str, str]:
         """
         Recommend split pattern based on file name and content.
 
@@ -144,7 +142,7 @@ class ProactiveFissionScanner:
         parent_dir = Path(file_path).parent
         return {'core': f'{parent_dir}/{base_name}_core.py', 'signals': f'{parent_dir}/{base_name}_signals.py', 'utils': f'{parent_dir}/{base_name}_utils.py', 'facade': file_path}
 
-    async def create_refactor_proposal(self, candidates: List[Dict[str, any]]) -> str:
+    async def create_refactor_proposal(self, candidates: list[dict[str, any]]) -> str:
         """
         Creates a GitKraken refactor proposal branch.
 
@@ -169,7 +167,7 @@ class ProactiveFissionScanner:
             Logger.error(f'   [X] Failed to create refactor proposal: {e}')
             return None
 
-    async def generate_audit_report(self, candidates: List[Dict[str, any]]) -> Dict[str, any]:
+    async def generate_audit_report(self, candidates: list[dict[str, any]]) -> dict[str, any]:
         """
         Generate comprehensive audit report.
 
@@ -179,7 +177,7 @@ class ProactiveFissionScanner:
         Returns:
             Audit report dictionary
         """
-        Logger.info(f'[STATS] Generating audit report')
+        Logger.info('[STATS] Generating audit report')
         severity_counts: Any = {'LOW': 0, 'MEDIUM': 0, 'HIGH': 0, 'CRITICAL': 0}
         total_lines: Any = 0
         for candidate in candidates:

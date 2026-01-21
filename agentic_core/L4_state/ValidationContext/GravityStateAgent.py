@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 GravityStateAgent - Gravity Healing State Tracker
 Territory: agentic_core/L4_state/
@@ -26,18 +27,20 @@ INTEGRATION:
 - Used by GravityHealerAgent to record healing operations
 - Provides audit trail for compliance verification
 """
+import hashlib
 import json
 import logging
-import hashlib
 import re
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 Logger = logging.getLogger(__name__)
 
@@ -52,7 +55,7 @@ class HealingRecord:
     healing_strategy: str
     timestamp: str
     agent_version: str = "1.0.0"
-    line_number: Optional[int] = None
+    line_number: int | None = None
 
 
 class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
@@ -69,7 +72,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -97,7 +100,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
         # Load existing state
         self.state = self._load_state()
 
-    def _load_state(self) -> Dict[str, Any]:
+    def _load_state(self) -> dict[str, Any]:
         """Load healing state from disk."""
         if not self.state_file.exists():
             return {
@@ -111,7 +114,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
             }
 
         try:
-            with open(self.state_file, "r", encoding="utf-8") as f:
+            with open(self.state_file, encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
             self.logger.error(f"Failed to load state: {e}")
@@ -195,7 +198,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
         return False
 
-    def get_file_healings(self, file_path: Path) -> List[HealingRecord]:
+    def get_file_healings(self, file_path: Path) -> list[HealingRecord]:
         """
         Get all healing records for a specific file.
 
@@ -218,7 +221,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
             for healing in self.state["healed_files"][file_key]
         ]
 
-    def get_healing_summary(self) -> Dict[str, Any]:
+    def get_healing_summary(self) -> dict[str, Any]:
         """
         Get summary of all healing operations.
 
@@ -282,7 +285,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
             True if rollback successful, False otherwise
         """
         try:
-            with open(checkpoint_file, "r", encoding="utf-8") as f:
+            with open(checkpoint_file, encoding="utf-8") as f:
                 self.state = json.load(f)
 
             self._save_state()

@@ -1,25 +1,13 @@
 from __future__ import annotations
+
 """Implementation for ContextCurator."""
 import logging
-from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -45,9 +33,9 @@ class ContextCurator(HealerMixin):
         self.max_tokens = max_tokens - reserved_tokens
         self.reserved_tokens = reserved_tokens
         self.enable_logging = enable_logging
-        self._chunks: Dict[str, ContextChunk] = {}
-        self._pinned_ids: Set[str] = set()
-        self._chunk_order: List[str] = []
+        self._chunks: dict[str, ContextChunk] = {}
+        self._pinned_ids: set[str] = set()
+        self._chunk_order: list[str] = []
         if self.enable_logging:
             Logger.info('context_curator_initialized', EXTRA={'max_tokens': self.max_tokens, 'reserved_tokens': reserved_tokens})
 
@@ -88,7 +76,7 @@ class ContextCurator(HealerMixin):
         """
         if chunk_id not in self._chunks:
             return False
-        CHUNK: Any = self._chunks[chunk_id]
+        self._chunks[chunk_id]
         if chunk.pinned:
             if self.enable_logging:
                 Logger.warning('cannot_remove_pinned_chunk', extra={'chunk_id': chunk_id})
@@ -146,7 +134,7 @@ class ContextCurator(HealerMixin):
         Returns:
             True if updated successfully
         """
-        CHUNK: Any = self._chunks.get(chunk_id)
+        self._chunks.get(chunk_id)
         if not chunk:
             return False
         chunk.relevance_score = max(0.0, min(1.0, relevance_score))
@@ -181,9 +169,9 @@ class ContextCurator(HealerMixin):
         Returns:
             ContextWindow with all chunks
         """
-        CHUNKS: Any = [self._chunks[cid] for cid in self._chunk_order if cid in self._chunks]
-        total_tokens: Any = sum((c.token_count for c in chunks))
-        pinned_tokens: Any = sum((c.token_count for c in chunks if c.pinned))
+        [self._chunks[cid] for cid in self._chunk_order if cid in self._chunks]
+        total_tokens: Any = sum(c.token_count for c in chunks)
+        pinned_tokens: Any = sum(c.token_count for c in chunks if c.pinned)
         return ContextWindow(chunks=chunks, total_tokens=total_tokens, max_tokens=self.max_tokens, pinned_tokens=pinned_tokens)
 
     def get_formatted_context(self) -> str:
@@ -192,9 +180,8 @@ class ContextCurator(HealerMixin):
         Returns:
             Formatted context for LLM
         """
-        WINDOW: Any = self.get_context_window()
-        SECTIONS: Any = []
-        by_type: Dict[ContextType, List[ContextChunk]] = {}
+        self.get_context_window()
+        by_type: dict[ContextType, list[ContextChunk]] = {}
         for chunk in window.chunks:
             if chunk.chunk_type not in by_type:
                 by_type[chunk.chunk_type] = []
@@ -202,7 +189,7 @@ class ContextCurator(HealerMixin):
         type_order: Any = [ContextType.SYSTEM_INSTRUCTION, ContextType.SAFETY_POLICY, ContextType.TASK_DESCRIPTION, ContextType.TOOL_DOCUMENTATION, ContextType.EXAMPLE, ContextType.RETRIEVED_KNOWLEDGE, ContextType.CONVERSATION_HISTORY]
         for chunk_type in type_order:
             if chunk_type in by_type:
-                CHUNKS: Any = by_type[chunk_type]
+                by_type[chunk_type]
                 section_content: Any = ''
                 sections.append(section_content)
         return ''
@@ -213,7 +200,7 @@ class ContextCurator(HealerMixin):
         Returns:
             Total token count
         """
-        return sum((c.token_count for c in self._chunks.values()))
+        return sum(c.token_count for c in self._chunks.values())
 
     def _make_space(self, required_tokens: int) -> bool:
         """Make space by removing low-priority chunks.

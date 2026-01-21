@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Secure Error Handling - Prevents sensitive data leakage in exceptions.
 
 This module provides secure exception handling that sanitizes error messages,
@@ -12,14 +13,15 @@ removes sensitive information from stack traces, and provides safe error
 reporting mechanisms.
 """
 
+import inspect
 import logging
 import re
 import traceback
-from typing import Any, Dict, List, Optional, Type, Union
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from functools import wraps
-import inspect
+from typing import Any
+
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -27,7 +29,7 @@ Logger = logging.getLogger(__name__)
 class SecureError(Exception):
     """Base class for secure errors with sanitized messages."""
 
-    def __init__(self, message: str, ErrorCode: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, ErrorCode: str | None = None, context: dict[str, Any] | None = None):
         """Initialize secure error.
 
         Args:
@@ -40,7 +42,7 @@ class SecureError(Exception):
         self.context = context or {}
         self.timestamp = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert error to dictionary for safe serialization.
 
         Returns:
@@ -159,10 +161,10 @@ class ErrorSanitizer:
     @classmethod
     def create_secure_error(
         cls,
-        error_type: Type[SecureError],
+        error_type: type[SecureError],
         original_error: Exception,
-        ErrorCode: Optional[str] = None,
-        add_context: Optional[Dict[str, Any]] = None
+        ErrorCode: str | None = None,
+        add_context: dict[str, Any] | None = None
     ) -> SecureError:
         """Create a secure error from an original exception.
 
@@ -203,8 +205,8 @@ class ErrorSanitizer:
 
 
 def secure_exception(
-    error_type: Type[SecureError] = SecurityError,
-    ErrorCode: Optional[str] = None,
+    error_type: type[SecureError] = SecurityError,
+    ErrorCode: str | None = None,
     sanitize_args: bool = True
 ):
     """Decorator to secure exceptions from functions.
@@ -299,7 +301,7 @@ class SecureErrorHandler:
     def handle_error(
         self,
         error: Exception,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
         include_stack: bool = False
     ) -> SecureError:
         """Handle an error securely.
@@ -328,7 +330,7 @@ class SecureErrorHandler:
         }
 
         if context:
-            log_data["context"] = {k: "<sanitized>" for k in context.keys()}
+            log_data["context"] = dict.fromkeys(context.keys(), "<sanitized>")
 
         self.Logger.error("Secure error: %s", log_data)
 
@@ -342,10 +344,10 @@ class SecureErrorHandler:
 
     def raise_secure(
         self,
-        error_type: Type[SecureError],
+        error_type: type[SecureError],
         message: str,
-        ErrorCode: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        ErrorCode: str | None = None,
+        context: dict[str, Any] | None = None
     ) -> None:
         """Raise a secure error.
 
@@ -368,8 +370,8 @@ class SecureErrorHandler:
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -395,7 +397,7 @@ default_error_handler = SecureErrorHandler()
 
 def handle_secure_error(
     error: Exception,
-    context: Optional[Dict[str, Any]] = None
+    context: dict[str, Any] | None = None
 ) -> SecureError:
     """Handle an error using the default secure error handler.
 

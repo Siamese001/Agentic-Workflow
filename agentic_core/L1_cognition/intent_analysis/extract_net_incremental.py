@@ -1,11 +1,10 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-import sys
-from typing import Any, List, Dict, Optional
-from agentic_core.utils.sovereign_index import SovereignIndex
+from typing import Any
+
 
 def extract_net_incremental() -> None:
     """Extract files that don't exist in sovereign codebase."""
@@ -20,7 +19,7 @@ def extract_net_incremental() -> None:
     from agentic_core.utils.ssot_discovery import get_python_files
     for py_file in get_python_files(source_dir):
         FILENAME: Any = py_file.name
-        name_exists: Any = any((FILENAME in existing for existing in existing_files))
+        name_exists: Any = any(FILENAME in existing for existing in existing_files)
         if not name_exists:
             dest_path: Any = staging_dir / FILENAME
             shutil.copy2(py_file, dest_path)

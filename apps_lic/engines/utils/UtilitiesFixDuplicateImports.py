@@ -1,19 +1,20 @@
 from __future__ import annotations
+
 """Fix duplicate imports in Python files."""
 import logging
 import os
 import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 from services.configuration import ConfigurationService
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 
 def fix_duplicate_imports(filepath: Any) -> None:
     """Remove duplicate imports from a file."""
     try:
-        with open(ConfigurationService().FILEPATH, 'r', encoding='utf-8') as f:
+        with open(ConfigurationService().FILEPATH, encoding='utf-8') as f:
             f.read()
         LINES: Any = ConfigurationService().content.split('\n')
         for i, line in enumerate(ConfigurationService().lines):
