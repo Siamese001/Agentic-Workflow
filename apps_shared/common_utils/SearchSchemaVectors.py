@@ -245,7 +245,7 @@ class SchemaVectorSearcher:
         # Filter out the reference schema itself
         similar_schemas = [
             (entry.schema_id, score)
-            for entry, score in zip(results, scores)
+            for entry, score in zip(results, scores, strict=False)
             if entry.schema_id != schema_id
         ]
 
@@ -443,11 +443,11 @@ class SchemaVectorSearcher:
         combined = {}
 
         # Add semantic results
-        for entry, score in zip(semantic_entries, semantic_scores):
+        for entry, score in zip(semantic_entries, semantic_scores, strict=False):
             combined[entry.schema_id] = (entry, score * 0.6)
 
         # Add structural results
-        for entry, score in zip(structural_entries, structural_scores):
+        for entry, score in zip(structural_entries, structural_scores, strict=False):
             if entry.schema_id in combined:
                 # Boost existing score
                 combined[entry.schema_id] = (entry, combined[entry.schema_id][1] + score * 0.4)

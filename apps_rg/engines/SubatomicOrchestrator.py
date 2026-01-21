@@ -344,7 +344,7 @@ class SubatomicOrchestrator:
                 results = await asyncio.gather(*tasks, return_exceptions=True)
 
                 # Process results
-                for node, result in zip(ready_nodes, results):
+                for node, result in zip(ready_nodes, results, strict=False):
                     if isinstance(result, Exception):
                         Logger.error(f"Node {node.config.hop_id} failed: {result}")
                         execution_state["failed_nodes"].add(node)

@@ -525,7 +525,7 @@ class AsyncBulletCritiqueAgent(BaseAgent):
         )
 
         final_critiqued_bullets = []
-        for bullet, critique in zip(bullets, critique_results):
+        for bullet, critique in zip(bullets, critique_results, strict=False):
             final_critiqued_bullets.append(
                 {
                     "text": bullet["text"],

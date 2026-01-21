@@ -21,10 +21,10 @@ import logging
 import time
 from pathlib import Path
 
-from agentic_core.schemas.models.runtime_models import MicroCheckpoint
 from cryptography.fernet import Fernet
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.schemas.models.runtime_models import MicroCheckpoint
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin

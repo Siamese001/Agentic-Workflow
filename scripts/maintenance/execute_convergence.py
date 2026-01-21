@@ -15,8 +15,8 @@ Exit Codes:
 """
 from __future__ import annotations
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")

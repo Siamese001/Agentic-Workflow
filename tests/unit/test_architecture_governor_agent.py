@@ -9,8 +9,9 @@ Phase 1 Upgrade Tests (2026-01-21):
 - Test canonical key compliance
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 
 class TestArchitectureGovernorAgentActivation:
@@ -820,12 +821,12 @@ class TestPhase4CentralizedASTEngine:
 
     def test_governor_and_validator_consistency(self, mock_project_with_violation):
         """Test that Governor and StructuralValidator find same violations."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
-            ArchitectureGovernorAgent,
-        )
         from agentic_core.L5_safety.unified.StructuralValidatorAgent import (
             StructuralValidatorAgent,
             StructureConfig,
+        )
+        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+            ArchitectureGovernorAgent,
         )
 
         gov_agent = ArchitectureGovernorAgent(project_root=mock_project_with_violation)

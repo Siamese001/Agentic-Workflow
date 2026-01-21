@@ -7,8 +7,10 @@ Tests verify:
 3. Auto-approve sovereignty switch applies to Phase 2 logic
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
 

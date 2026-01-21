@@ -115,7 +115,7 @@ class HealerMixin(InstructionalInjectionMixin):
         self._healer_cache_ttl = 300  # 5min suppression (configurable)
         self._healer_max_depth = 5
         self._healer_current_depth = 0
-        
+
         # Phase 23: Per-Violation-Type Per-File budget tracking
         # Key: (file_path, violation_type) -> count
         self._healer_granular_budget: dict[tuple[str, str], int] = {}
@@ -168,7 +168,7 @@ class HealerMixin(InstructionalInjectionMixin):
         file_path_str = str(violation.get("path", ""))
         violation_type = violation.get("violation_type", "UNKNOWN")
         granular_key = (file_path_str, violation_type)
-        
+
         current_granular_count = self._healer_granular_budget.get(granular_key, 0)
         if current_granular_count >= self._max_healing_per_violation_type_per_file:
             Logger.warning(
@@ -353,14 +353,14 @@ class HealerMixin(InstructionalInjectionMixin):
         self._healing_count = 0
         # Phase 23: Also reset granular budget
         self._healer_granular_budget = {}
-    
+
     def reset_granular_budget_for_file(self, file_path: str) -> None:
         """
         [Phase 23] Reset granular budget for a specific file.
-        
+
         Useful when a file has been significantly modified and
         previous healing attempts should not count against new attempts.
-        
+
         Args:
             file_path: Path to the file to reset budget for
         """
@@ -368,11 +368,11 @@ class HealerMixin(InstructionalInjectionMixin):
         for key in keys_to_remove:
             del self._healer_granular_budget[key]
         Logger.debug(f"[HEALING] Reset granular budget for {file_path}")
-    
+
     def get_granular_budget_stats(self) -> dict[str, Any]:
         """
         [Phase 23] Get granular budget statistics.
-        
+
         Returns:
             Dictionary with budget usage per file and violation type
         """

@@ -382,7 +382,7 @@ class TestL6ObservabilityBaseAgent:
             scores.append(critique.data_points["overall_score"])
 
         # All grades should be identical (no bias by layer)
-        assert len(set(grades)) == 1, f"Grades vary by layer: {dict(zip(layers, grades))}"
+        assert len(set(grades)) == 1, f"Grades vary by layer: {dict(zip(layers, grades, strict=False))}"
 
         # All scores should be identical
         assert len(set(scores)) == 1, "Scores vary by layer"

@@ -5,9 +5,10 @@ Tests for post-purge purity, CI script exit codes, and pre-commit integration.
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestPostPurgePurity:
@@ -133,6 +134,7 @@ class TestCIScriptExitCodes:
 
             # Import and run main after patching
             import importlib
+
             import scripts.ci.sovereign_lockdown_check as ci_script
 
             importlib.reload(ci_script)
@@ -161,6 +163,7 @@ class TestCIScriptExitCodes:
             MockAgent.return_value = mock_instance
 
             import importlib
+
             import scripts.ci.sovereign_lockdown_check as ci_script
 
             importlib.reload(ci_script)
@@ -178,6 +181,7 @@ class TestCIScriptExitCodes:
             MockAgent.side_effect = Exception("Test error")
 
             import importlib
+
             import scripts.ci.sovereign_lockdown_check as ci_script
 
             importlib.reload(ci_script)

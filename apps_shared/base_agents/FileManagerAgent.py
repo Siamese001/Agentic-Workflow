@@ -19,12 +19,11 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 

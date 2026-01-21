@@ -25,9 +25,9 @@ _logger = logging.getLogger(__name__)
 """Pure orchestration of resume generation using shared atoms."""
 
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from shared.configuration.config import ContentConstraintsConfig
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

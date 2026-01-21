@@ -17,8 +17,9 @@ from __future__ import annotations
 
 import logging
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -29,9 +30,9 @@ class ExecutionTrace:
     agent_name: str
     task_id: str
     status: str  # "success", "failure", "timeout"
-    error_type: Optional[str] = None
-    error_message: Optional[str] = None
-    duration_ms: Optional[float] = None
+    error_type: str | None = None
+    error_message: str | None = None
+    duration_ms: float | None = None
     metadata: dict = field(default_factory=dict)
 
 
@@ -56,10 +57,10 @@ class KnowledgeGraphBridge:
     
     Resilient Mode: If MCP is unavailable, logs warning but doesn't crash.
     """
-    
-    _instance: Optional[KnowledgeGraphBridge] = None
+
+    _instance: KnowledgeGraphBridge | None = None
     _instance_lock = threading.RLock()
-    
+
     # Relation types for architectural truths
     RELATION_INTERACTS_WITH = "INTERACTS_WITH"
     RELATION_FAILED_CALL = "FAILED_CALL"
@@ -67,7 +68,7 @@ class KnowledgeGraphBridge:
     RELATION_INHERITS_RULES_FROM = "INHERITS_RULES_FROM"
     RELATION_DEPENDS_ON = "DEPENDS_ON"
     RELATION_INCOMPATIBLE_WITH = "INCOMPATIBLE_WITH"
-    
+
     @classmethod
     def get_instance(cls) -> KnowledgeGraphBridge:
         """Get the singleton instance of KnowledgeGraphBridge."""
@@ -75,19 +76,19 @@ class KnowledgeGraphBridge:
             if cls._instance is None:
                 cls._instance = cls()
             return cls._instance
-    
+
     @classmethod
     def reset_instance(cls) -> None:
         """Reset the singleton instance (for testing only)."""
         with cls._instance_lock:
             cls._instance = None
-    
+
     def __init__(self):
         """Initialize the Knowledge Graph Bridge."""
         self._lock = threading.RLock()
         self._mcp_available = False
         self._mcp_client = None
-        
+
         # Statistics
         self.stats = {
             "entities_created": 0,
@@ -96,10 +97,10 @@ class KnowledgeGraphBridge:
             "searches_performed": 0,
             "mcp_errors": 0,
         }
-        
+
         # Try to connect to MCP
         self._init_mcp()
-    
+
     def _init_mcp(self) -> None:
         """
         Initialize connection to Memory MCP server.
@@ -115,19 +116,19 @@ class KnowledgeGraphBridge:
         except Exception as e:
             self._mcp_available = False
             Logger.warning(f"[KnowledgeGraph] Memory MCP unavailable: {e}")
-    
+
     @property
     def is_available(self) -> bool:
         """Check if the Knowledge Graph is available."""
         return self._mcp_available
-    
+
     def _safe_mcp_call(
         self,
         operation: str,
         mcp_fn: Callable,
         *args,
         **kwargs
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """
         Safely execute an MCP operation with error handling.
         
@@ -142,7 +143,7 @@ class KnowledgeGraphBridge:
         if not self._mcp_available:
             Logger.debug(f"[KnowledgeGraph] Skipping {operation}: MCP unavailable")
             return None
-        
+
         try:
             result = mcp_fn(*args, **kwargs)
             return result
@@ -151,7 +152,7 @@ class KnowledgeGraphBridge:
                 self.stats["mcp_errors"] += 1
             Logger.warning(f"[KnowledgeGraph] {operation} failed: {e}")
             return None
-    
+
     def register_agent(self, agent_name: str, agent_type: str = "Agent") -> bool:
         """
         Register an agent as an entity in the Knowledge Graph.
@@ -166,16 +167,16 @@ class KnowledgeGraphBridge:
         entity = {
             "name": agent_name,
             "entityType": agent_type,
-            "observations": [f"Registered at startup"]
+            "observations": ["Registered at startup"]
         }
-        
+
         # Store locally for now (MCP integration via tool calls)
         with self._lock:
             self.stats["entities_created"] += 1
-        
+
         Logger.debug(f"[KnowledgeGraph] Registered agent: {agent_name}")
         return True
-    
+
     def discover_agent_context(self, agent_name: str) -> dict[str, Any]:
         """
         Auto-discover context for an agent on startup.
@@ -198,17 +199,17 @@ class KnowledgeGraphBridge:
             "incompatibilities": [],
             "weak_nodes": [],
         }
-        
+
         with self._lock:
             self.stats["searches_performed"] += 1
-        
+
         # In production, this would query the MCP:
         # results = mcp7_search_nodes(query=agent_name)
         # results = mcp7_open_nodes(names=[agent_name])
-        
+
         Logger.debug(f"[KnowledgeGraph] Discovered context for: {agent_name}")
         return context
-    
+
     def create_relation(
         self,
         from_entity: str,
@@ -231,16 +232,16 @@ class KnowledgeGraphBridge:
             "to": to_entity,
             "relationType": relation_type,
         }
-        
+
         with self._lock:
             self.stats["relations_created"] += 1
-        
+
         Logger.debug(
             f"[KnowledgeGraph] Created relation: {from_entity} "
             f"--{relation_type}--> {to_entity}"
         )
         return True
-    
+
     def add_observation(self, entity_name: str, observation: str) -> bool:
         """
         Add an observation to an entity.
@@ -259,10 +260,10 @@ class KnowledgeGraphBridge:
         """
         with self._lock:
             self.stats["observations_added"] += 1
-        
+
         Logger.debug(f"[KnowledgeGraph] Added observation to {entity_name}: {observation}")
         return True
-    
+
     def reflect_on_execution(self, trace: ExecutionTrace) -> None:
         """
         Reflect on an execution trace and synthesize truths for the KG.
@@ -282,14 +283,14 @@ class KnowledgeGraphBridge:
                 to_entity=trace.task_id,
                 relation_type=self.RELATION_SUCCESSFULLY_COMPLETED,
             )
-            
+
             # Add performance observation if notable
             if trace.duration_ms and trace.duration_ms > 5000:
                 self.add_observation(
                     trace.agent_name,
                     f"Slow execution ({trace.duration_ms:.0f}ms) on task {trace.task_id}"
                 )
-        
+
         elif trace.status == "failure":
             # Create failure relation
             self.create_relation(
@@ -297,13 +298,13 @@ class KnowledgeGraphBridge:
                 to_entity=trace.task_id,
                 relation_type=self.RELATION_FAILED_CALL,
             )
-            
+
             # Add detailed observation
             self.add_observation(
                 trace.agent_name,
                 f"Failed task {trace.task_id} due to {trace.error_type}: {trace.error_message}"
             )
-        
+
         elif trace.status == "timeout":
             # Timeout is a special failure
             self.create_relation(
@@ -311,18 +312,18 @@ class KnowledgeGraphBridge:
                 to_entity=trace.task_id,
                 relation_type=self.RELATION_FAILED_CALL,
             )
-            
+
             self.add_observation(
                 trace.agent_name,
                 f"Timeout on task {trace.task_id} after {trace.duration_ms:.0f}ms"
             )
-    
+
     def record_agent_interaction(
         self,
         caller_agent: str,
         callee_agent: str,
         success: bool,
-        error_type: Optional[str] = None,
+        error_type: str | None = None,
     ) -> None:
         """
         Record an interaction between two agents.
@@ -341,7 +342,7 @@ class KnowledgeGraphBridge:
             to_entity=callee_agent,
             relation_type=self.RELATION_INTERACTS_WITH,
         )
-        
+
         if not success:
             # Record the failure
             self.create_relation(
@@ -349,13 +350,13 @@ class KnowledgeGraphBridge:
                 to_entity=callee_agent,
                 relation_type=self.RELATION_FAILED_CALL,
             )
-            
+
             if error_type:
                 self.add_observation(
                     caller_agent,
                     f"Failed call to {callee_agent}: {error_type}"
                 )
-    
+
     def establish_inheritance(
         self,
         child_entity: str,
@@ -376,12 +377,12 @@ class KnowledgeGraphBridge:
             to_entity=parent_entity,
             relation_type=self.RELATION_INHERITS_RULES_FROM,
         )
-        
+
         Logger.info(
             f"[KnowledgeGraph] Established inheritance: "
             f"{child_entity} inherits from {parent_entity}"
         )
-    
+
     def mark_incompatibility(
         self,
         entity_a: str,
@@ -403,12 +404,12 @@ class KnowledgeGraphBridge:
             to_entity=entity_b,
             relation_type=self.RELATION_INCOMPATIBLE_WITH,
         )
-        
+
         self.add_observation(
             entity_a,
             f"Incompatible with {entity_b}: {reason}"
         )
-    
+
     def get_statistics(self) -> dict[str, Any]:
         """Get Knowledge Graph statistics."""
         with self._lock:

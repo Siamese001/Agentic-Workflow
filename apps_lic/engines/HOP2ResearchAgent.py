@@ -17,9 +17,8 @@ from typing import Any
 
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from apps_shared.utils.state_manager import StateManager
-
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from apps_shared.utils.state_manager import StateManager
 from apps_shared.utils.vector_memory import VectorMemoryStore
 
 Logger = logging.getLogger(__name__)

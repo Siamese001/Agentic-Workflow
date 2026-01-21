@@ -216,7 +216,7 @@ class ObservabilityToolInvoker:
 
         results = []
 
-        for context, parameters in zip(contexts, parameters_list):
+        for context, parameters in zip(contexts, parameters_list, strict=False):
             result = self.invoke_tool(context, parameters)
             results.append(result)
 

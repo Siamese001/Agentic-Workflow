@@ -344,7 +344,7 @@ class _ModuleAnalyzer(ast.NodeVisitor):
                 isinstance(op, ast.Eq)
                 and isinstance(comp, ast.Constant)
                 and comp.value == "__main__"
-                for op, comp in zip(node.test.ops, node.test.comparators)
+                for op, comp in zip(node.test.ops, node.test.comparators, strict=False)
             )
         ):
             self.has_main_guard = True

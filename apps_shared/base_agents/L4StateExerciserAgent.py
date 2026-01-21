@@ -12,11 +12,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
 )
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 

@@ -186,7 +186,7 @@ class ConfidenceEstimator:
 
         # Weight recent steps more heavily
         weights = [i + 1 for i in range(len(step_confidences))]
-        weighted_sum = sum(c * w for c, w in zip(step_confidences, weights))
+        weighted_sum = sum(c * w for c, w in zip(step_confidences, weights, strict=False))
         weight_sum = sum(weights)
 
         return weighted_sum / weight_sum

@@ -17,12 +17,11 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+# PHASE 2.1: L0 Structural Standardization
+from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-
-# PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)

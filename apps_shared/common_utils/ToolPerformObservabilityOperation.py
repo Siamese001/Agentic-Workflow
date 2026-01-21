@@ -220,7 +220,7 @@ class ObservabilityOperationPerformer:
 
         results = []
 
-        for context, inputs in zip(contexts, inputs_list):
+        for context, inputs in zip(contexts, inputs_list, strict=False):
             result = self.perform_operation(context, inputs)
             results.append(result)
 

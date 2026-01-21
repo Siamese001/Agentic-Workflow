@@ -281,7 +281,7 @@ class SchemaContextMatcher:
         # Weighted average
         if scores and weights:
             total_weight = sum(weights)
-            return sum(s * w for s, w in zip(scores, weights)) / total_weight
+            return sum(s * w for s, w in zip(scores, weights, strict=False)) / total_weight
 
         return 0.0
 

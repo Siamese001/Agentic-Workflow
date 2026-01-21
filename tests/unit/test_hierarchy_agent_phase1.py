@@ -7,8 +7,10 @@ Tests verify:
 3. Dry-run safety prevents physical changes
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
 

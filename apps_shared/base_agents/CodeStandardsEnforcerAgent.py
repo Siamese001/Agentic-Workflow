@@ -334,7 +334,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
         - Float equality comparisons (Key 33)
         - None comparisons using == instead of 'is' (Key 34)
         """
-        for op, comparator in zip(node.ops, node.comparators):
+        for op, comparator in zip(node.ops, node.comparators, strict=False):
             # Check for None comparisons with == or !=
             if isinstance(op, (ast.Eq, ast.NotEq)):
                 if isinstance(comparator, ast.Constant) and comparator.value is None:

@@ -11,9 +11,9 @@ Usage:
     python scripts/find_corrupted_files.py --fix    # Scan and fix
 """
 
-from pathlib import Path
-import sys
 import ast
+import sys
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,

@@ -1,6 +1,6 @@
 # Pre-Commit and Agent Responsibility Reconciliation
 
-**Date:** January 21, 2026  
+**Date:** January 21, 2026
 **Purpose:** Ensure pre-commit hooks and agent responsibilities do not overlap
 
 ---
@@ -273,7 +273,7 @@ After removing hooks, verify:
 
 ## Conclusion
 
-**Overlaps Identified:** 2 (duplicate filenames, SSOT folder structure)  
-**Hooks to Remove:** 2  
-**Hooks to Keep:** 7  
+**Overlaps Identified:** 2 (duplicate filenames, SSOT folder structure)
+**Hooks to Remove:** 2
+**Hooks to Keep:** 7
 **Result:** Reduced commit latency, eliminated redundancy, maintained safety

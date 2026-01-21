@@ -46,6 +46,10 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import SSOT for dashboard directory - NO HARDCODING
 # SSOT: Import all metric definitions from single source
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
+)
 from scripts.dashboard_ssot_definitions import (
     COL_CANONICAL_INHERITANCE,
     COL_CODE_QUALITY,
@@ -84,11 +88,6 @@ from scripts.dashboard_ssot_definitions import (
     calc_typed_pct,
 )
 from scripts.dashboard_ssot_definitions import FIELD_INVOCATION as FIELD_INVOCATION_CONST
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    DASHBOARD_DIR,
-    get_validated_project_root,
-)
 
 # =============================================================================
 # SSOT HELPER FUNCTIONS
@@ -2695,8 +2694,9 @@ def run_all_tests() -> bool:
 
     try:
         # Import and test API endpoints
-        from agentic_core.L6_observability.api.runtime_api import app
         from fastapi.testclient import TestClient
+
+        from agentic_core.L6_observability.api.runtime_api import app
 
         client = TestClient(app)
 
@@ -2761,8 +2761,9 @@ def run_all_tests() -> bool:
         else:
             # Try to import - may fail if dependencies are missing
             try:
-                from agentic_core.L6_observability.api.runtime_api import app, meta_agent
                 from fastapi.testclient import TestClient
+
+                from agentic_core.L6_observability.api.runtime_api import app, meta_agent
 
                 client = TestClient(app)
 

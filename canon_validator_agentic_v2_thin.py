@@ -456,7 +456,6 @@ def main():
         try:
             # Import Guardian and Targets Config
             from agentic_core.config.autonomy_targets import get_target
-
             from agentic_core.L5_safety.validators.AutonomyGuardianAgent import (
                 get_autonomy_guardian,
             )
@@ -657,11 +656,10 @@ def main():
         try:
             # [PHASE 3] UNIFIED ORCHESTRATION - Strategy Pattern
             # The 5-tier logic is now encapsulated in HealingStrategy
+            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
             from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import (
                 get_checkpoint_manager,
             )
-
-            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
             from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
             # Helper to safely load Performance Analyst (L6)

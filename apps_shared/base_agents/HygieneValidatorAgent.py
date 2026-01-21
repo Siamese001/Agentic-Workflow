@@ -50,7 +50,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.bases import L0MaintenanceBaseAgent
-
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SCRIPTS_DIR,
